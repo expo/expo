@@ -299,14 +299,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v52.0.0': {
-    EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
-    NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
-    SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
-    SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
-    BufferOptions: '/versions/v52.0.0/sdk/video/#bufferoptions-1',
-    CameraPosition: '/versions/v52.0.0/sdk/maps/#cameraposition-2',
-  },
   'v53.0.0': {
     EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
