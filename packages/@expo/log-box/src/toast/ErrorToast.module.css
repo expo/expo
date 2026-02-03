@@ -1,3 +1,68 @@
+.container {
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+  left: 10px;
+  right: 10px;
+  max-width: 320px;
+  position: fixed;
+  display: flex;
+}
+
+.toast {
+  background-color: #632e2c;
+  height: 48px;
+  justify-content: center;
+  margin-bottom: 4px;
+  display: flex;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  border: 1px solid var(--expo-log-color-danger);
+  cursor: pointer;
+  overflow: hidden;
+  flex: 1;
+  padding: 0 10px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (hover: hover) {
+  .toast:hover {
+    background-color: #924340;
+  }
+}
+
+.message {
+  user-select: none;
+  padding-left: 8px;
+  color: var(--expo-log-color-label);
+  flex: 1;
+  font-size: 14px;
+  line-height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.count {
+  min-width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background: var(--expo-log-color-danger);
+}
+
+.countText {
+  color: var(--expo-log-color-label);
+  font-size: 14px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 600;
+  text-shadow: 0px 0px 3px rgba(51, 51, 51, 0.8);
+}
+
 .dismissButton {
   background: transparent;
   border: none;
@@ -26,4 +91,10 @@
 
 .dismissButton:active .dismissContent {
   opacity: 0.5;
+}
+
+.dismissIcon {
+  width: 12px;
+  height: 12px;
+  color: white;
 }

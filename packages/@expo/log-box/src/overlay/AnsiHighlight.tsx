@@ -8,6 +8,8 @@
 import Anser from 'anser';
 import React from 'react';
 
+import styles from './AnsiHighlight.module.css';
+
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS: Record<string, string> = {
   'ansi-black': 'rgb(27, 27, 27)',
@@ -52,7 +54,11 @@ export class Ansi extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      return <span style={{ ...this.props.style, whiteSpace: 'pre' }}>Error rendering ANSI text.</span>;
+      return (
+        <span className={styles.text} style={this.props.style}>
+          Error rendering ANSI text.
+        </span>
+      );
     }
     return <AnsiUnsafe text={this.props.text || ''} style={this.props.style} />;
   }
@@ -61,7 +67,11 @@ export class Ansi extends React.Component<
 export function AnsiUnsafe({ text, style }: { text: string; style: React.CSSProperties }) {
   // TMP
   if (!text) {
-    return <span style={{ ...style, whiteSpace: 'pre' }}>Text not provided to Ansi component.</span>;
+    return (
+      <span className={styles.text} style={style}>
+        Text not provided to Ansi component.
+      </span>
+    );
   }
 
   let commonWhitespaceLength = Infinity;
@@ -99,7 +109,7 @@ export function AnsiUnsafe({ text, style }: { text: string; style: React.CSSProp
   return (
     <>
       {parsedLines.map((items, i) => (
-        <div style={{ display: 'flex', flexDirection: 'row' }} key={i}>
+        <div className={styles.line} key={i}>
           {items.map((bundle, key) => {
             const textStyle: React.CSSProperties =
               bundle.fg && COLORS[bundle.fg]
@@ -111,7 +121,7 @@ export function AnsiUnsafe({ text, style }: { text: string; style: React.CSSProp
                     backgroundColor: bundle.bg && COLORS[bundle.bg],
                   };
             return (
-              <span style={{ ...style, ...textStyle, whiteSpace: 'pre' }} key={key}>
+              <span className={styles.text} style={{ ...style, ...textStyle }} key={key}>
                 {getText(bundle.content, key)}
               </span>
             );
