@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Migrate away from react-native-web to fix styles in SPA output.
+
 ### 💡 Others
 
 ## 55.0.5 — 2026-02-03
