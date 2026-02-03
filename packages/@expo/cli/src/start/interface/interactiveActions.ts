@@ -30,6 +30,9 @@ export class DevServerManagerActions {
   printDevServerInfo(
     options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
   ) {
+    // Keep track of approximately how much space we have to print our usage guide
+    let rows = process.stdout.rows || Infinity;
+
     // If native dev server is running, print its URL.
     if (this.devServerManager.getNativeDevServerPort()) {
       const devServer = this.devServerManager.getDefaultDevServer();
@@ -37,7 +40,9 @@ export class DevServerManagerActions {
         const nativeRuntimeUrl = devServer.getNativeRuntimeUrl()!;
         const interstitialPageUrl = devServer.getRedirectUrl();
 
-        printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
+        const qr = printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
+        rows -= qr.lines;
+        qr.print();
 
         if (interstitialPageUrl) {
           Log.log(
@@ -45,6 +50,7 @@ export class DevServerManagerActions {
               chalk`Choose an app to open your project at {underline ${interstitialPageUrl}}`
             )
           );
+          rows--;
         }
 
         if (env.__EXPO_E2E_TEST) {
@@ -52,12 +58,14 @@ export class DevServerManagerActions {
           console.info(
             `[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: devServer.getDevServerUrl() })}`
           );
+          rows--;
         }
 
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
         if (options.devClient === false) {
           // TODO: if development build, change this message!
           Log.log(printItem('Scan the QR code above to open the project in Expo Go.'));
+          rows--;
         } else {
           Log.log(
             printItem(
@@ -65,6 +73,7 @@ export class DevServerManagerActions {
                 learnMore('https://expo.fyi/start')
             )
           );
+          rows--;
         }
       } catch (error) {
         console.log('err', error);
@@ -75,6 +84,7 @@ export class DevServerManagerActions {
           const serverUrl = devServer.getDevServerUrl();
           Log.log(printItem(chalk`Metro waiting on {underline ${serverUrl}}`));
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
+          rows -= 2;
         }
       }
     }
@@ -85,10 +95,11 @@ export class DevServerManagerActions {
       if (webUrl) {
         Log.log();
         Log.log(printItem(chalk`Web is waiting on {underline ${webUrl}}`));
+        rows -= 2;
       }
     }
 
-    printUsage(options, { verbose: false });
+    printUsage(options, { verbose: false, rows });
     printHelp();
     Log.log();
   }
