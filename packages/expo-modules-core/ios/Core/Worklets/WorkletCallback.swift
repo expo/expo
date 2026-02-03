@@ -1,9 +1,9 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 public class WorkletCallback: SharedObject {
-  internal let worklet: Worklet
+  private let worklet: Worklet
 
-  internal init(worklet: Worklet) {
+  init(worklet: Worklet) {
     self.worklet = worklet
     super.init()
   }
