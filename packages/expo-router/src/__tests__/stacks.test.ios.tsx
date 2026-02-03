@@ -478,6 +478,53 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
+describe('presentation validation', () => {
+  let consoleSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
+
+  it('throws when an invalid presentation is set via screen options', () => {
+    expect(() => {
+      renderRouter({
+        _layout: () => <Stack screenOptions={{ presentation: 'xyz' as any }} />,
+        index: () => <Text>Index</Text>,
+      });
+    }).toThrow('Invalid presentation value "xyz"');
+  });
+
+  it('throws when an invalid presentation is set via layout options', () => {
+    expect(() => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index" options={{ presentation: 'xyz' as any }} />
+          </Stack>
+        ),
+        index: () => <Text>Index</Text>,
+      });
+    }).toThrow('Invalid presentation value "xyz"');
+  });
+
+  it('throws when an invalid presentation is set via page-level Stack.Screen', () => {
+    expect(() => {
+      renderRouter({
+        index: () => (
+          <>
+            <Stack.Screen options={{ presentation: 'xyz' as any }} />
+            <Text>Index</Text>
+          </>
+        ),
+      });
+    }).toThrow('Invalid presentation value "xyz"');
+  });
+});
+
 describe('singular', () => {
   test('singular should only allow one instance of a screen', () => {
     renderRouter(

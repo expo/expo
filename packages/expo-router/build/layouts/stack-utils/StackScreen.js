@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackScreen = void 0;
+exports.validateStackPresentation = validateStackPresentation;
 exports.appendScreenStackPropsToOptions = appendScreenStackPropsToOptions;
 const react_1 = require("react");
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
@@ -67,8 +68,34 @@ exports.StackScreen = Object.assign(function StackScreen({ children, options, ..
     Title: screen_1.StackScreenTitle,
     BackButton: screen_1.StackScreenBackButton,
 });
+const VALID_PRESENTATIONS = [
+    'card',
+    'modal',
+    'transparentModal',
+    'containedModal',
+    'containedTransparentModal',
+    'fullScreenModal',
+    'formSheet',
+    'pageSheet',
+];
+function validateStackPresentation(options) {
+    if (typeof options === 'function') {
+        return (...args) => {
+            const resolved = options(...args);
+            validateStackPresentation(resolved);
+            return resolved;
+        };
+    }
+    const presentation = options.presentation;
+    if (presentation &&
+        !VALID_PRESENTATIONS.includes(presentation)) {
+        throw new Error(`Invalid presentation value "${presentation}" passed to Stack.Screen. Valid values are: ${VALID_PRESENTATIONS.map((v) => `"${v}"`).join(', ')}.`);
+    }
+    return options;
+}
 function appendScreenStackPropsToOptions(options, props) {
     let updatedOptions = { ...options, ...props.options };
+    validateStackPresentation(updatedOptions);
     function appendChildOptions(child, opts) {
         if ((0, children_1.isChildOfType)(child, StackHeaderComponent_1.StackHeaderComponent)) {
             return (0, StackHeaderComponent_1.appendStackHeaderPropsToOptions)(opts, child.props);
