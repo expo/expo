@@ -166,6 +166,7 @@ struct DevMenuFABView: View {
   @State private var dragStartPosition: CGPoint = .zero
   @State private var isSnackSession = false
   @State private var isLesson = false
+  @State private var isLessonCompleted = false
   @State private var hasBeenEdited = false
   @State private var snackName = "Playground"
   @State private var snackDescription = "Learn to code for mobile"
@@ -235,6 +236,7 @@ struct DevMenuFABView: View {
               gearPosition: position,
               screenWidth: screenWidth,
               isLesson: isLesson,
+              isLessonCompleted: isLessonCompleted,
               hasBeenEdited: hasBeenEdited,
               // onSave: handleSave,  // TODO: Add back when save functionality is implemented
               onComplete: handleComplete,
@@ -319,6 +321,14 @@ struct DevMenuFABView: View {
     isLesson = session.isLesson
     hasBeenEdited = session.hasBeenEdited
 
+    // Check if this lesson is already completed
+    if let lessonId = session.lessonId {
+      let completedLessons = UserDefaults.standard.array(forKey: "ExpoGoCompletedLessons") as? [Int] ?? []
+      isLessonCompleted = completedLessons.contains(lessonId)
+    } else {
+      isLessonCompleted = false
+    }
+
     if let id = session.snackId {
       // Extract a display name from the snack ID
       // e.g., "@username/my-snack" -> "my-snack", "new" -> "Playground"
@@ -351,15 +361,24 @@ struct DevMenuFABView: View {
   }
 
   private func handleComplete() {
-    // Save lesson completion to UserDefaults
+    // Toggle lesson completion in UserDefaults
     if let lessonId = SnackEditingSession.shared.lessonId {
       var completedLessons = UserDefaults.standard.array(forKey: "ExpoGoCompletedLessons") as? [Int] ?? []
-      if !completedLessons.contains(lessonId) {
-        completedLessons.append(lessonId)
+
+      if isLessonCompleted {
+        // Uncomplete: remove from list and stay on lesson
+        completedLessons.removeAll { $0 == lessonId }
         UserDefaults.standard.set(completedLessons, forKey: "ExpoGoCompletedLessons")
+        isLessonCompleted = false
+      } else {
+        // Complete: add to list and navigate home
+        if !completedLessons.contains(lessonId) {
+          completedLessons.append(lessonId)
+          UserDefaults.standard.set(completedLessons, forKey: "ExpoGoCompletedLessons")
+        }
+        DevMenuManager.shared.navigateHome()
       }
     }
-    DevMenuManager.shared.navigateHome()
   }
 
   private func dragGesture(bounds: CGSize, safeArea: EdgeInsets) -> some Gesture {

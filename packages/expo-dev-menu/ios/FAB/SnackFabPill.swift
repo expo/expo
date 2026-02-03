@@ -37,6 +37,7 @@ struct SnackActionPanel: View {
   let gearPosition: CGPoint  // Top-left of gear frame
   let screenWidth: CGFloat
   let isLesson: Bool
+  let isLessonCompleted: Bool
   let hasBeenEdited: Bool
   // let onSave: () -> Void  // TODO: Add back when save functionality is implemented
   let onComplete: () -> Void
@@ -153,8 +154,7 @@ struct SnackActionPanel: View {
         Spacer()
         if isLesson {
           completeButton
-            .opacity(hasBeenEdited ? 1.0 : 0.4)
-            .disabled(!hasBeenEdited)
+            .disabled(!isLessonCompleted && !hasBeenEdited)
         }
       }
       .padding(.horizontal, normalPadding)
@@ -181,18 +181,26 @@ struct SnackActionPanel: View {
     .buttonStyle(.plain)
   }
 
+  private var isCompleteButtonEnabled: Bool {
+    isLessonCompleted || hasBeenEdited
+  }
+
   private var completeButton: some View {
     Button(action: onComplete) {
       HStack(spacing: 6) {
-        Image(systemName: "checkmark.circle.fill")
+        Image(systemName: isLessonCompleted ? "checkmark.circle.fill" : "checkmark.circle")
           .font(.system(size: 13, weight: .semibold))
-        Text("Complete")
+        Text(isLessonCompleted ? "Done!" : "Mark complete")
           .font(.system(size: 14, weight: .semibold))
       }
-      .foregroundColor(.white)
+      .foregroundColor(isCompleteButtonEnabled ? .white : .secondary)
       .padding(.horizontal, 16)
       .padding(.vertical, 10)
-      .background(Color.blue, in: Capsule())
+      .background(
+        isLessonCompleted ? Color.green :
+          (isCompleteButtonEnabled ? Color.blue : Color.secondary.opacity(0.3)),
+        in: Capsule()
+      )
     }
     .buttonStyle(.plain)
   }
