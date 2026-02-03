@@ -24,10 +24,5 @@ export function WorkletsTesterView(props: WorkletsTesterViewProps) {
     [onPressSync]
   );
 
-  return (
-    <NativeView
-      {...restProps}
-      onPressSync={callback?.__expo_shared_object_id__ as number | undefined}
-    />
-  );
+  return <NativeView {...restProps} onPressSync={callback?.__expo_shared_object_id__} />;
 }
