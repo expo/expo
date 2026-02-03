@@ -4,20 +4,20 @@ import ExpoModulesCore
 import EXUpdatesInterface
 import React
 
-public class DevLauncherWrapperView: UIView {
+private class DevLauncherWrapperView: UIView {
   weak var devLauncherViewController: UIViewController?
   private var devLauncherConstraints: [NSLayoutConstraint] = []
 
   #if os(iOS)
   @objc
-  public func orientationDidChange() {
+  func orientationDidChange() {
     if let controller = devLauncherViewController {
       setDevLauncherViewControllerConstraints(controller)
     }
   }
   #endif
 
-  public func setDevLauncherViewControllerConstraints(_ viewController: UIViewController) {
+  func setDevLauncherViewControllerConstraints(_ viewController: UIViewController) {
     viewController.view.translatesAutoresizingMaskIntoConstraints = false
     if !devLauncherConstraints.isEmpty {
       NSLayoutConstraint.deactivate(devLauncherConstraints)
@@ -32,7 +32,7 @@ public class DevLauncherWrapperView: UIView {
   }
 
 #if !os(macOS)
-  public override func didMoveToWindow() {
+  override func didMoveToWindow() {
     super.didMoveToWindow()
     #if os(iOS)
     if window != nil {
@@ -57,7 +57,7 @@ public class DevLauncherWrapperView: UIView {
     }
   }
 
-  public override func willMove(toWindow newWindow: UIWindow?) {
+  override func willMove(toWindow newWindow: UIWindow?) {
     super.willMove(toWindow: newWindow)
     if newWindow == nil {
       devLauncherViewController?.willMove(toParent: nil)
