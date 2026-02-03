@@ -432,6 +432,8 @@ export type AudioMode = {
      * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
      *   On Android, this means no audio focus is requested. Best suited for sound effects,
      *   UI feedback, or short audio clips.
+     *
+     * @default 'mixWithOthers'
      */
     interruptionMode: InterruptionMode;
     /**
@@ -479,6 +481,8 @@ export type AudioMode = {
  *   On Android, this means no audio focus is requested. Best suited for sound effects,
  *   UI feedback, or short audio clips. Note that on Android your app won't receive
  *   audio focus loss callbacks (for example, during phone calls) when using this mode.
+ *
+ *  @default 'mixWithOthers'
  *
  *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
  *
