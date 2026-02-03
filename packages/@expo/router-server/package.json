@@ -39,7 +39,7 @@
     "react-dom": "*",
     "expo": "*",
     "expo-constants": "^55.0.3",
-    "expo-font": "~55.0.3",
+    "expo-font": "^55.0.3",
     "expo-router": "*",
     "expo-server": "^55.0.3",
     "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
