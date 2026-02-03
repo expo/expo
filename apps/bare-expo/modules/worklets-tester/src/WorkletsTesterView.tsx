@@ -1,9 +1,11 @@
 import { requireNativeView } from 'expo';
 import { createWorkletCallback, useReleasingSharedObject } from 'expo-modules-core';
 import { createSerializable } from 'react-native-worklets';
+import { type ViewStyle } from 'react-native';
 
 type WorkletsTesterViewProps = {
   onPressSync?: (message: string) => void;
+  style?: ViewStyle;
 };
 
 type NativeWorkletsTesterViewProps = Omit<WorkletsTesterViewProps, 'onPressSync'> & {

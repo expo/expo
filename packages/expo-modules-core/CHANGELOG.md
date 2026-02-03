@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added `WorkletCallback` support in view props, enabling worklet functions to be passed as component props for synchronous callbacks from native views. ([#42809](https://github.com/expo/expo/pull/42809) by [@nishan](https://github.com/intergalacticspacehighway))
 - [macOS] Added `NSEdgeInsets.zero` extension to better match `UIEdgeInsets`. ([#42675](https://github.com/expo/expo/pull/42675) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
