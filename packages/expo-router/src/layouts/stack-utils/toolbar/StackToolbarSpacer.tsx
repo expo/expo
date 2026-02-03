@@ -1,8 +1,9 @@
 'use client';
 import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stack';
+import { useId } from 'react';
 
-import { NativeToolbarSpacer } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
+import { RouterToolbarItem } from '../../../toolbar/native';
 
 export interface StackToolbarSpacerProps {
   /**
@@ -78,11 +79,11 @@ export interface StackToolbarSpacerProps {
 export const StackToolbarSpacer: React.FC<StackToolbarSpacerProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement === 'bottom') {
-    return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground} />;
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
   }
 
-  return null;
+  return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground} />;
 };
 
 export function convertStackToolbarSpacerPropsToRNHeaderItem(
@@ -98,7 +99,7 @@ export function convertStackToolbarSpacerPropsToRNHeaderItem(
   if (width === undefined) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn(
-        'Stack.Toolbar.Spacer requires `width` when used in Left or Right placement. Flexible spacers are only supported in Bottom placement.'
+        'Stack.Toolbar.Spacer requires `width` when used in left or right placement. Flexible spacers are only supported in Bottom placement.'
       );
     }
     return undefined;
@@ -109,3 +110,32 @@ export function convertStackToolbarSpacerPropsToRNHeaderItem(
     spacing: width ?? 0,
   };
 }
+
+// #region NativeToolbarSpacer
+
+interface NativeToolbarSpacerProps {
+  hidden?: boolean;
+  hidesSharedBackground?: boolean;
+  sharesBackground?: boolean;
+  width?: number;
+}
+
+/**
+ * Native toolbar spacer component for bottom toolbar.
+ * Renders as RouterToolbarItem with type 'fixedSpacer' or 'fluidSpacer'.
+ */
+const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps> = (props) => {
+  const id = useId();
+  return (
+    <RouterToolbarItem
+      hidesSharedBackground={props.hidesSharedBackground}
+      hidden={props.hidden}
+      identifier={id}
+      sharesBackground={props.sharesBackground}
+      type={props.width ? 'fixedSpacer' : 'fluidSpacer'}
+      width={props.width}
+    />
+  );
+};
+
+// #endregion

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 10.0.12 — 2026-02-03
+
+### 💡 Others
+
+- Loosen `@babel/code-frame` dependency range ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+
 ## 10.0.11 — 2026-01-26
 
 _This version does not introduce any user-facing changes._

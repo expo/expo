@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Improve `.gitignore` and `.easignore` handling to correctly identify ignore status of files ([#42756](https://github.com/expo/expo/pull/42756) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 1.18.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
 
 ## 1.18.2 — 2026-01-26
 

@@ -1,9 +1,9 @@
 import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
 import { type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
+import { type ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import { type StackHeaderItemSharedProps } from '../shared';
+import { type StackHeaderItemSharedProps } from './shared';
 export interface StackToolbarMenuProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
@@ -55,6 +55,23 @@ export interface StackToolbarMenuProps {
      * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
      */
     icon?: StackHeaderItemSharedProps['icon'];
+    /**
+     * Controls how image-based icons are rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+     * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+     *
+     * **Default behavior:**
+     * - If `tintColor` is specified, defaults to `'template'`
+     * - If no `tintColor`, defaults to `'original'`
+     *
+     * This prop only affects image-based icons (not SF Symbols).
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+     *
+     * @platform ios
+     */
+    iconRenderingMode?: 'template' | 'original';
     /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
@@ -159,6 +176,23 @@ export interface StackToolbarMenuActionProps {
      * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
      */
     image?: ImageRef;
+    /**
+     * Controls how image-based icons are rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+     * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+     *
+     * **Default behavior:**
+     * - If `tintColor` is specified, defaults to `'template'`
+     * - If no `tintColor`, defaults to `'original'`
+     *
+     * This prop only affects image-based icons (not SF Symbols).
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+     *
+     * @platform ios
+     */
+    iconRenderingMode?: 'template' | 'original';
     /**
      * If `true`, the menu item will be displayed as destructive.
      *

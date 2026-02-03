@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- [iOS] Add `colorScheme` prop to control map appearance (light/dark mode). ([#42199](https://github.com/expo/expo/pull/42199) by [@huextrat](https://github.com/huextrat))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+### 🎉 New features
+
+- [iOS] Add `colorScheme` prop to control map appearance (light/dark mode). ([#42199](https://github.com/expo/expo/pull/42199) by [@huextrat](https://github.com/huextrat))
 
 ## 55.0.2 — 2026-01-26
 

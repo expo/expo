@@ -119,15 +119,18 @@ for (const outputMode of outputModes) {
     test('navigates from route without loader to route with loader', async ({ page }) => {
       const pageErrors = pageCollectErrors(page);
 
-      // Start at index route (no loader)
-      await page.goto(expoStart.url.href);
+      const url = new URL(expoStart.url.href);
+      url.pathname = '/no-loader';
 
-      // Navigate to second route (has loader)
-      await page.click('a[href="/second"]');
+      // Start on no loader route
+      await page.goto(url.toString());
+
+      // Navigate to index route (has loader)
+      await page.click('a[href="/"]');
       await page.waitForSelector('[data-testid="loader-result"]');
 
       const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
-      expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
+      expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'root-index' });
 
       expect(pageErrors.all).toEqual([]);
     });

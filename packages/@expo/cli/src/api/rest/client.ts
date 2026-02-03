@@ -6,7 +6,6 @@ import type { FetchLike } from './client.types';
 import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 import { wrapFetchWithProgress } from './wrapFetchWithProgress';
-import { wrapFetchWithProxy } from './wrapFetchWithProxy';
 import { wrapFetchWithUserAgent } from './wrapFetchWithUserAgent';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
@@ -120,10 +119,7 @@ export function wrapFetchWithCredentials(fetchFunction: FetchLike): FetchLike {
       return response;
     } catch (error: any) {
       // When running `expo start`, but wifi or internet has issues
-      if (
-        isNetworkError(error) || // node-fetch error handling
-        ('cause' in error && isNetworkError(error.cause)) // undici error handling
-      ) {
+      if (isNetworkError(error) || ('cause' in error && isNetworkError(error.cause))) {
         disableNetwork();
 
         throw new CommandError(
@@ -159,9 +155,7 @@ const fetchWithOffline = wrapFetchWithOffline(wrapFetchWithUserAgent(fetch));
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 
-const fetchWithProxy = wrapFetchWithProxy(fetchWithBaseUrl);
-
-const fetchWithCredentials = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithProxy));
+const fetchWithCredentials = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithBaseUrl));
 
 /**
  * Create an instance of the fully qualified fetch command (auto authentication and api) but with caching in the '~/.expo' directory.
@@ -196,4 +190,4 @@ export function createCachedFetch({
 }
 
 /** Instance of fetch with automatic base URL pointing to the Expo API, user credential injection, and API error handling. Caching not included.  */
-export const fetchAsync = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithProxy));
+export const fetchAsync = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithBaseUrl));

@@ -451,6 +451,14 @@ export interface NativeTabTriggerProps {
    */
   contentStyle?: NativeTabOptions['contentStyle'];
   /**
+   * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+   *
+   * @platform iOS
+   */
+  disableTransparentOnScrollEdge?: boolean;
+  /**
    * Listeners for navigation events on this tab.
    *
    * Supported events:

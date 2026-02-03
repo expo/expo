@@ -284,6 +284,7 @@ export const general = [
     makeGroup('Reference', [
       makePage('router/error-handling.mdx'),
       makePage('router/reference/url-parameters.mdx'),
+      makePage('router/reference/color.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/link-preview.mdx'),
@@ -535,6 +536,7 @@ export const eas = [
       makePage('eas-update/download-updates.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
+      makePage('eas-update/bundle-diffing.mdx'),
       makePage('eas-update/optimize-assets.mdx'),
       makePage('eas-update/deployment-patterns.mdx'),
     ]),
@@ -557,7 +559,6 @@ export const eas = [
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
-      makePage('eas-update/faq.mdx'),
     ]),
   ]),
   makeSection('EAS Metadata', [

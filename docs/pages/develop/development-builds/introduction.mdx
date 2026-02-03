@@ -18,15 +18,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <Collapsible summary="Difference between Expo Go and development builds">
 
-When you create your first React Native project with `npx create-expo-app` and ran it with `npx expo start`, you most likely start off using the [Expo Go](https://expo.dev/go) app for development. Expo Go is a native app that the Expo team built and submitted to the [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) and [Apple App Store](https://apps.apple.com/us/app/expo-go/id982107779) so you can get coding quickly. It is a sandbox app with a number of native libraries included within (see the [dependencies list](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23)). This means that developers may update their app's JavaScript code on their local machine and see the changes on Expo Go.
-
-A React Native app consists of two parts: the **native app (Expo Go)** and the **JavaScript bundle (`npx expo start`)**. It is immutable and when you're using the Expo Go app for development, you can only rely on the native code and tools that exist in Expo Go. The only way to get around it is to build your native app yourself instead of using Expo's pre-packaged sandbox. This is exactly what a **Development Build is, your own version of Expo Go**, where you are free to use any native libraries and change any native config.
+[Expo Go](https://expo.dev/go) is a playground app for students and learners to get started quickly. It comes with a fixed set of native libraries built in, so you can write JavaScript code and see changes instantly without building a native app yourself. A development build is a fully featured development environment for working on your production-grade Expo apps.
 
 </Collapsible>
 
 <Collapsible summary="Native app and JavaScript bundle">
 
-The **native app (Expo Go)** is immutable once installed. Native build tools are required to create this bundle, and it needs to be signed to be installable on real devices. To add a new library with native code or change metadata that is shipped with the app (for example app name, icon, splash screen) the app needs to be rebuilt and re-installed on the device.
+The **native app** is what you install on your device. Expo Go is a pre-built native app that works like a playground &mdash; it can't be changed after you install it. To add new native libraries or change things like your app name and icon, you need to build your own native app (a development build).
 
 The **JavaScript bundle (`npx expo start`)** is where your app's UI code and business logic are. In production apps, there is one **main.js** bundle that is shipped with the app itself. In development, this JS bundle is live reloaded from your local machine. The main role of React Native is to provide a way for the JavaScript code to access the native APIs (Image, Camera, Notifications, and more). However, only APIs and libraries that were bundled in the **native app** can be used.
 
@@ -40,7 +38,7 @@ The **JavaScript bundle (`npx expo start`)** is where your app's UI code and bus
 
 ## Why use a development build (a.k.a what _can't_ you do in Expo Go and why)
 
-Expo Go is the perfect tool for learning, prototyping, and experimenting, but most production apps will convert to using development builds sooner rather than later. It helps to know exactly what is _impossible_ in Expo Go and _why_, so you can make an informed decision on when and why to make this move.
+Expo Go is a playground for students and learners to understand the basics of React Native. It's limited and not useful for building production-grade projects, so most apps will convert to using development builds. It helps to know exactly what is _impossible_ in Expo Go and _why_, so you can make an informed decision on when and why to make this move.
 
 <Collapsible summary="Use libraries with native code that aren't in Expo Go">
 

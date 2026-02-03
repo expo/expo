@@ -6,6 +6,7 @@ import { useRouter } from 'next/compat/router';
 import { isEasPath } from '~/common/routes';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRouteWithSection } from '~/types/common';
+import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
 import { ForumsLink, EditPageLink, IssuesLink, LlmsTxtLink, ShareFeedbackLink } from './Links';
@@ -128,6 +129,7 @@ export const Footer = ({
             )}
           </UL>
         </div>
+        <NewsletterSignUp />
       </div>
     </footer>
   );

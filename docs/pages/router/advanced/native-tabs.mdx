@@ -466,7 +466,7 @@ Since the native tab layout's appearance varies by platform, the customization o
 
 > **info** `hidden` property is available in SDK 55 and later.
 
-You can hide the tab bar using `hidden` prop on the `NativeTabs` component. In order to hide tab bar for specific screens, you can use context API to set the `hidden` prop dynamically.
+You can hide the tab bar using `hidden` prop on the `NativeTabs` component. To hide tab bar for specific screens, you can use context API to set the `hidden` prop dynamically.
 
 ```tsx context/TabBarContext.tsx
 import { createContext } from 'react';
@@ -973,6 +973,12 @@ export default function HomeScreen() {
   );
 }
 ```
+
+## Migrating native tabs from SDK 54 to 55
+
+SDK 55 changes how you access tab bar item components. Instead of importing `Icon`, `Label`, and `Badge` separately, use the compound component API: `NativeTabs.Trigger.Icon`, `NativeTabs.Trigger.Label`, and `NativeTabs.Trigger.Badge`. For Android icons, the `md` prop is the new recommended way to use Material Symbols.
+
+<DiffBlock source="/static/diffs/router/native-tabs/sdk-54-to-55-migration.diff" />
 
 ## Migrating from JavaScript tabs
 

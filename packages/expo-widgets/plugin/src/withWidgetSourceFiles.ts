@@ -49,7 +49,7 @@ const createIndexSwift = (widgets: WidgetConfig[], targetPath: string): string =
   const numberOfBundles = Math.ceil(numberOfWidgets / 4);
   let output = `import WidgetKit
 import SwiftUI
-import ExpoWidgets
+internal import ExpoWidgets
 `;
 
   for (let i = 0; i < numberOfBundles; i++) {
@@ -91,7 +91,7 @@ struct ExportWidgets${index}: WidgetBundle {
 
 const widgetSwift = (widget: WidgetConfig): string => `import WidgetKit
 import SwiftUI
-import ExpoWidgets
+internal import ExpoWidgets
 
 struct ${widget.name}: Widget {
   let name: String = "${widget.name}"

@@ -5,6 +5,7 @@ export declare const getAndroidConfig: (args: Result<Spec>) => Promise<BuildConf
 export declare const getIosConfig: (args: Result<Spec>) => Promise<BuildConfigIos>;
 export declare const getTasksAndroidConfig: (args: Result<Spec>) => Promise<{
     libraryName: string;
+    dryRun: boolean;
     help: boolean;
     verbose: boolean;
 }>;

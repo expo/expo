@@ -46,7 +46,7 @@ const withConfig = (config, { bundleIdentifier, targetName, groupIdentifier }) =
                                 {
                                     targetName,
                                     bundleIdentifier,
-                                    entitlements: [],
+                                    entitlements: {},
                                 },
                             ],
                         },
@@ -54,7 +54,7 @@ const withConfig = (config, { bundleIdentifier, targetName, groupIdentifier }) =
                 },
             },
         };
-        configIndex = 0;
+        configIndex = config.extra.eas.build.experimental.ios.appExtensions.length - 1;
     }
     if (config.extra) {
         const widgetsExtensionConfig = config.extra.eas.build.experimental.ios.appExtensions[configIndex];

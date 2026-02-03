@@ -4,8 +4,13 @@ description: Learn how to use the Stack navigator in Expo Router.
 hasVideoLink: true
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 import { ReactNavigationOptions } from '~/ui/components/ReactNavigationOptions';
+import { TabsGroup, Tabs, Tab } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <VideoBoxLink
@@ -18,6 +23,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 A stack navigator is the foundational way of navigating between routes in an app. On Android, a stacked route animates on top of the current screen. On iOS, a stacked route animates from the right. Expo Router provides a `Stack` navigation component that creates a navigation stack and allows you to add new routes in your app.
 
 This guide provides information on how you can create a `Stack` navigator in your project and customize an individual route's options and header.
+
+<TabsGroup>
 
 ## Get started
 
@@ -39,9 +46,11 @@ export default function Layout() {
 
 ## Screen options and header configuration
 
+Starting in SDK 55, you can configure screen options and the header using either the options-based API or the new composition components API. Both APIs can be used interchangeably in your project.
+
 ### Statically configure route options
 
-You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure a route's options. This is also useful for [tabs](/router/advanced/tabs/) or [drawers](/router/advanced/drawer/) as they need an icon defined ahead of time.
+You can use the `<Stack.Screen name={routeName} />` component in the layout component route to statically configure a route's options.
 
 ```tsx app/_layout.tsx|collapseHeight=440
 import { Stack } from 'expo-router';
@@ -63,28 +72,6 @@ export default function Layout() {
       {/* Optionally configure static options outside the route.*/}
       <Stack.Screen name="home" options={{}} />
     </Stack>
-  );
-}
-```
-
-As an alternative to the `<Stack.Screen>` component, you can use [`navigation.setOptions()`](https://reactnavigation.org/docs/navigation-object/#setoptions) to configure a route's options from within the route's component file.
-
-```tsx app/index.tsx
-import { Stack, useNavigation } from 'expo-router';
-import { Text, View } from 'react-native';
-import { useEffect } from 'react';
-
-export default function Home() {
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.setOptions({ headerShown: false });
-  }, [navigation]);
-
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
   );
 }
 ```
@@ -113,69 +100,13 @@ export default function Layout() {
 }
 ```
 
-To configure the header bar dynamically for an individual route, use that navigator's `<Stack.Screen>` component in the routes's file. This is useful for interactions that change the UI.
-
-```tsx app/index.tsx
-import { Link, Stack } from 'expo-router';
-import { Image, Text, View, StyleSheet } from 'react-native';
-
-function LogoTitle() {
-  return (
-    <Image style={styles.image} source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} />
-  );
-}
-
-export default function Home() {
-  return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          /* @info <A href="https://reactnavigation.org/docs/headers/#adjusting-header-stylesheader-styles">Click for more information on adjusting header styles from React Navigation documentation</A>.*/
-          title: 'My home',
-          headerStyle: { backgroundColor: '#f4511e' },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          /* @end */
-
-          /* @info <A href="https://reactnavigation.org/docs/headers/#replacing-the-title-with-a-custom-component">Click for more information on replacing a title with a custom component from React Navigation documentation</A>.*/
-          headerTitle: props => <LogoTitle {...props} />,
-          /* @end */
-        }}
-      />
-      <Text>Home Screen</Text>
-      <Link href={{ pathname: 'details', params: { name: 'Bacon' } }}>Go to Details</Link>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    width: 50,
-    height: 50,
-  },
-});
-```
-
-### Available header options
-
-The `Stack` navigator supports comprehensive header configuration options. Below are all the header-related options available:
-
-<ReactNavigationOptions category="header" />
-
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
-
 ### Set screen options dynamically
 
-To configure a route's option dynamically, you can always use the `<Stack.Screen>` component in that route's file.
+To configure a route's options dynamically, you can use either the composition components or the options-based API.
 
-As an alternative, you can also use the [imperative API's `router.setParams()`](/versions/latest/sdk/router/#router) function to configure the route dynamically.
+<Tabs>
+
+<Tab label="Options API">
 
 ```tsx app/details.tsx
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -190,6 +121,7 @@ export default function Details() {
       <Stack.Screen
         options={{
           title: params.name,
+          headerStyle: { backgroundColor: 'lightblue' },
         }}
       />
       <Text
@@ -211,9 +143,67 @@ const styles = StyleSheet.create({
 });
 ```
 
+</Tab>
+<Tab label="Composition components">
+
+> **important** Screen composition API is in alpha and available in SDK 55 and later.
+
+```tsx app/details.tsx
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function Details() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+
+  return (
+    <View style={styles.container}>
+      <Stack.Screen.Title>{params.name}</Stack.Screen.Title>
+      <Stack.Header style={{ backgroundColor: 'lightblue' }} />
+      <Text
+        onPress={() => {
+          router.setParams({ name: 'Updated' });
+        }}>
+        Update the title
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+</Tab>
+</Tabs>
+
+### Available header options
+
+The `Stack` navigator supports comprehensive header configuration options. Below are all the header-related options available:
+
+<ReactNavigationOptions category="header" />
+
+For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
+
 ### Header buttons
 
-You can add buttons to the header by using the `headerLeft` and `headerRight` options. These options accept a React component that renders in the header.
+You can add buttons to the header by using the `headerLeft` and `headerRight` options or `<Stack.Toolbar>` component. These options accept a React component that renders in the header.
+
+<BoxLink
+  title="Stack Toolbar"
+  description="Configure iOS header toolbar with support for Liquid Glass."
+  href="/router/advanced/stack-toolbar/"
+  Icon={BookOpen02Icon}
+/>
+
+<Tabs>
+
+<Tab label="Options API">
 
 ```tsx app/index.tsx
 import { Stack } from 'expo-router';
@@ -249,6 +239,49 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+</Tab>
+<Tab label="Composition components">
+
+> **important** Screen composition API is in alpha and available in SDK 55 and later.
+
+```tsx app/index.tsx
+import { Stack } from 'expo-router';
+import { Button, Text, Image, StyleSheet } from 'react-native';
+import { useState } from 'react';
+
+function LogoTitle() {
+  return (
+    <Image style={styles.image} source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} />
+  );
+}
+
+export default function Home() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <Stack.Screen.Title asChild>
+        <LogoTitle />
+      </Stack.Screen.Title>
+      <Stack.Toolbar placement="right" asChild>
+        <Button onPress={() => setCount(c => c + 1)} title="Update count" />
+      </Stack.Toolbar>
+      <Text>Count: {count}</Text>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  image: {
+    width: 50,
+    height: 50,
+  },
+});
+```
+
+</Tab>
+</Tabs>
 
 ### Other screen options
 
@@ -517,3 +550,92 @@ Create a [development build](/develop/development-builds/create-a-build/#prerequ
 Switch from native navigation library ([`@react-navigation/native`](https://reactnavigation.org/docs/native-stack-navigator/)) to a JavaScript-based stack navigator library such as [`@react-navigation/stack`](https://reactnavigation.org/docs/stack-navigator/), which gives you full control over the header UI but at the cost of performance benefits of using the highly optimized iOS navigation views/controllers.
 
 For more information, see [JavaScript stack with `@react-navigation/stack`](#javascript-stack-with-react-navigationstack).
+
+## Common problems
+
+<Collapsible summary="Large title does not collapse when scrolling">
+
+When using `headerLargeTitle: true` (or `<Stack.Screen.Title large>`) with a `ScrollView` or `FlatList`, the large title may not collapse on scroll. This happens when the scrollable view is not the direct first child of the screen component.
+
+To fix this, ensure `ScrollView` or `FlatList` is the first child rendered by your screen component. If you need a wrapper, set `collapsable={false}` on it:
+
+```tsx app/index.tsx
+import { Stack } from 'expo-router';
+import { ScrollView, View, Text } from 'react-native';
+
+/* @info Correct: ScrollView is the direct first child */
+export default function Home() {
+  return (
+    <ScrollView>
+      <Stack.Screen.Title large>Home</Stack.Screen.Title>
+      <Text>Content here</Text>
+    </ScrollView>
+  );
+}
+/* @end */
+```
+
+If you need to wrap the `ScrollView`, set `collapsable={false}` on the wrapper:
+
+```tsx app/index.tsx
+import { Stack } from 'expo-router';
+import { ScrollView, View, Text } from 'react-native';
+
+export default function Home() {
+  return (
+    /* @info Set collapsable={false} on any wrapper around ScrollView */
+    <View collapsable={false}>
+      /* @end */
+      <ScrollView>
+        <Stack.Screen.Title large>Home</Stack.Screen.Title>
+        <Text>Content here</Text>
+      </ScrollView>
+    </View>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="White background flashes when navigating between screens">
+
+A white flash between screen transitions usually means the navigation stack is using a light background while your app uses a dark theme.
+
+To fix this, wrap your root layout with React Navigation's `ThemeProvider` and pass the appropriate theme:
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { Stack } from 'expo-router';
+import { useColorScheme } from 'react-native';
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    /* @info Wrap your layout with ThemeProvider to set backgrounds for all screens */
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      /* @end */
+      <Stack />
+    </ThemeProvider>
+  );
+}
+```
+
+For apps that are always dark-themed:
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider value={DarkTheme}>
+      <Stack />
+    </ThemeProvider>
+  );
+}
+```
+
+</Collapsible>
+
+</TabsGroup>

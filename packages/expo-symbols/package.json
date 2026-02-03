@@ -1,6 +1,6 @@
 {
   "name": "expo-symbols",
-  "version": "55.0.2",
+  "version": "55.0.3",
   "description": "Provides access to the SF Symbols library on iOS for React Native and Expo apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2",
-    "expo-font": "^55.0.2"
+    "expo-font": "^55.0.3"
   },
   "peerDependencies": {
     "expo": "*",

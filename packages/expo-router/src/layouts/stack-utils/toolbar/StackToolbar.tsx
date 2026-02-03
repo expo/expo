@@ -4,7 +4,7 @@ import { StackToolbarMenu, StackToolbarMenuAction } from './StackToolbarMenu';
 import { StackToolbarSearchBarSlot } from './StackToolbarSearchBarSlot';
 import { StackToolbarSpacer } from './StackToolbarSpacer';
 import { StackToolbarView } from './StackToolbarView';
-import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from '../common-primitives';
+import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
 
 StackToolbar.Button = StackToolbarButton;
 StackToolbar.Menu = StackToolbarMenu;

@@ -9,43 +9,64 @@ struct DevMenuOnboardingView: View {
     Rectangle()
       .fill(.ultraThinMaterial)
       .ignoresSafeArea()
-      .overlay(onboardingOverlay)
+      .overlay(OnboardingOverlay(onFinish: onFinish, isVisible: $isVisible))
       .offset(x: 0, y: isVisible ? 0.0 : 650.0)
       .animation(.easeInOut(duration: 0.5), value: isVisible)
   }
+}
 
-  private var onboardingOverlay: some View {
-    VStack(spacing: 24) {
+private struct OnboardingOverlay: View {
+  let onFinish: () -> Void
+  @Binding var isVisible: Bool
+  var appName = "development builds"
+  
+  var body: some View {
+    ScrollView {
       VStack(spacing: 16) {
-        Text("This is the developer menu. It gives you access to useful tools in \(appName).")
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .font(.callout)
+        Image("dev-tools", bundle: getDevMenuBundle())
+          .resizable()
+          .scaledToFit()
+          .frame(height: 80)
+          .frame(maxWidth: .infinity)
+          .padding(.vertical, 20)
+          .background(Color.black)
+          .cornerRadius(12)
 
-#if targetEnvironment(simulator)
-        VStack(spacing: 4) {
-          Text("You can open it at any time with the **⌃ + d** keyboard shortcut.")
+        VStack(spacing: 12) {
+          Text("This is the developer menu. It gives you access to useful tools in \(appName).")
             .frame(maxWidth: .infinity, alignment: .leading)
             .font(.callout)
 
-          Text("(Connect Hardware Keyboard must be enabled on your simulator to use this shortcut, you can toggle it with **⌘ + shift + K**.)")
-            .foregroundColor(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .font(.footnote)
-        }
+#if targetEnvironment(simulator)
+          VStack(spacing: 4) {
+            Text("You can open it at any time by pressing the blue button with the gear icon, or with the **⌃ + d** keyboard shortcut.")
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .font(.callout)
+
+            Text("(Connect Hardware Keyboard must be enabled on your simulator to use this shortcut, you can toggle it with **⌘ + shift + K**.)")
+              .foregroundColor(.secondary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .font(.footnote)
+          }
 #else
-        Text("You can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.")
-          .foregroundColor(.primary)
-          .frame(maxWidth: .infinity, alignment: .leading)
+          Text("You can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.")
+            .foregroundColor(.primary)
+            .frame(maxWidth: .infinity, alignment: .leading)
 #endif
+        }
+
+        ContinueButton(onFinish: onFinish, isVisible: $isVisible)
       }
-
-      continueButton
-      Spacer()
+      .padding()
     }
-    .padding()
   }
+}
 
-  private var continueButton: some View {
+private struct ContinueButton: View {
+  let onFinish: () -> Void
+  @Binding var isVisible: Bool
+  
+  var body: some View {
     Button {
       withAnimation(.easeInOut(duration: 0.3)) {
         isVisible = false

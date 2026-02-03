@@ -4,10 +4,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 
 open class AlertDialogButtonPressedEvent() : Record, Serializable
@@ -18,11 +17,11 @@ data class AlertDialogProps(
   val confirmButtonText: String? = null,
   val dismissButtonText: String? = null,
   val visible: Boolean = false,
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun ExpoViewComposableScope.AlertDialogContent(
+fun FunctionalComposableScope.AlertDialogContent(
   props: AlertDialogProps,
   onDismissPressed: (AlertDialogButtonPressedEvent) -> Unit,
   onConfirmPressed: (AlertDialogButtonPressedEvent) -> Unit
