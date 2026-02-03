@@ -11,6 +11,9 @@ public class SnackEditingSession {
   /// Notification posted when session state changes (ready/cleared)
   public static let sessionDidChangeNotification = Notification.Name("SnackEditingSessionDidChange")
 
+  /// Notification posted when code has been edited
+  public static let codeDidChangeNotification = Notification.Name("SnackEditingSessionCodeDidChange")
+
   // MARK: - Properties
 
   /// The current channel ID
@@ -18,6 +21,15 @@ public class SnackEditingSession {
 
   /// The snack identifier (e.g., @username/snackname)
   public private(set) var snackId: String?
+
+  /// Whether this session is a lesson (for Expo Go Learn tab)
+  public private(set) var isLesson: Bool = false
+
+  /// The lesson ID if this is a lesson session
+  public private(set) var lessonId: Int?
+
+  /// The lesson description if this is a lesson session
+  public private(set) var lessonDescription: String?
 
   /// The session client connected to Snackpub
   public private(set) var sessionClient: SnackSessionClient?
@@ -79,13 +91,18 @@ public class SnackEditingSession {
   ///   - channel: The generated channel ID
   ///   - isStaging: Whether to use staging Snackpub
   ///   - clearFirst: Whether to clear existing session (false when called from setupSession which already cleared)
+  ///   - isLesson: Whether this is a lesson session from Expo Go Learn tab
+  ///   - lessonId: The lesson ID if this is a lesson session
   public func setupSessionWithCode(
     snackId: String = "new",
     code: [String: SnackSessionClient.SnackFile],
     dependencies: [String: [String: Any]] = [:],
     channel: String,
     isStaging: Bool = false,
-    clearFirst: Bool = true
+    clearFirst: Bool = true,
+    isLesson: Bool = false,
+    lessonId: Int? = nil,
+    lessonDescription: String? = nil
   ) async {
     // Clear any existing session (unless caller already did)
     if clearFirst {
@@ -95,6 +112,9 @@ public class SnackEditingSession {
     self.snackId = snackId
     self.channel = channel
     self.setupError = nil
+    self.isLesson = isLesson
+    self.lessonId = lessonId
+    self.lessonDescription = lessonDescription
 
     // Create session client in host mode with provided code
     let client = SnackSessionClient(
@@ -134,6 +154,11 @@ public class SnackEditingSession {
     return sessionClient?.currentFiles
   }
 
+  /// Whether the code has been edited since session started
+  public var hasBeenEdited: Bool {
+    return sessionClient?.hasBeenEdited ?? false
+  }
+
   /// Resets files to original (discards edits). Call this on app reload.
   public func resetFiles() {
     sessionClient?.resetToOriginalFiles()
@@ -148,6 +173,9 @@ public class SnackEditingSession {
     snackId = nil
     isReady = false
     setupError = nil
+    isLesson = false
+    lessonId = nil
+    lessonDescription = nil
   }
 
   /// Checks if there's an active session for the given channel

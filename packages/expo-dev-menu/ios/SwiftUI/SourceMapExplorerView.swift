@@ -468,8 +468,7 @@ struct CodeFileView: View {
     CodeTextEditor(
       text: $displayContent,
       font: .monospacedSystemFont(ofSize: CGFloat(fontSize), weight: .regular),
-      textColor: UIColor(theme.plain),
-      backgroundColor: UIColor(theme.background)
+      theme: theme
     )
     #else
     TextEditor(text: $displayContent)
@@ -585,19 +584,17 @@ private extension View {
 }
 
 #if os(iOS)
-/// A text editor configured for code editing - disables smart quotes, smart dashes, and autocorrection
+/// A text editor configured for code editing with live syntax highlighting
 struct CodeTextEditor: UIViewRepresentable {
   @Binding var text: String
   var font: UIFont
-  var textColor: UIColor
-  var backgroundColor: UIColor
+  var theme: SyntaxHighlighter.Theme
 
   func makeUIView(context: Context) -> UITextView {
     let textView = UITextView()
     textView.delegate = context.coordinator
     textView.font = font
-    textView.textColor = textColor
-    textView.backgroundColor = backgroundColor
+    textView.backgroundColor = UIColor(theme.background)
     textView.autocorrectionType = .no
     textView.autocapitalizationType = .none
     textView.smartQuotesType = .no
@@ -605,31 +602,74 @@ struct CodeTextEditor: UIViewRepresentable {
     textView.smartInsertDeleteType = .no
     textView.spellCheckingType = .no
     textView.keyboardType = .asciiCapable
+
+    // Apply initial highlighting
+    textView.text = text
+    applyHighlighting(to: textView)
+
     return textView
   }
 
   func updateUIView(_ textView: UITextView, context: Context) {
+    // Only update if text changed externally (not from user typing)
     if textView.text != text {
+      let selectedRange = textView.selectedRange
       textView.text = text
+      applyHighlighting(to: textView)
+      // Restore cursor position if still valid
+      if selectedRange.location + selectedRange.length <= textView.text.count {
+        textView.selectedRange = selectedRange
+      }
     }
-    textView.font = font
-    textView.textColor = textColor
-    textView.backgroundColor = backgroundColor
+    textView.backgroundColor = UIColor(theme.background)
   }
 
   func makeCoordinator() -> Coordinator {
     Coordinator(self)
   }
 
+  /// Apply syntax highlighting using our existing tokenizer
+  fileprivate func applyHighlighting(to textView: UITextView) {
+    let text = textView.text ?? ""
+    let tokens = SyntaxHighlighter.tokenize(text)
+
+    let attributed = NSMutableAttributedString()
+    for token in tokens {
+      let attrs: [NSAttributedString.Key: Any] = [
+        .foregroundColor: UIColor(token.type.color(in: theme)),
+        .font: font
+      ]
+      attributed.append(NSAttributedString(string: token.text, attributes: attrs))
+    }
+
+    // Preserve selection
+    let selectedRange = textView.selectedRange
+    textView.attributedText = attributed
+    if selectedRange.location + selectedRange.length <= attributed.length {
+      textView.selectedRange = selectedRange
+    }
+  }
+
   class Coordinator: NSObject, UITextViewDelegate {
     var parent: CodeTextEditor
+    private var highlightTask: DispatchWorkItem?
 
     init(_ parent: CodeTextEditor) {
       self.parent = parent
     }
 
     func textViewDidChange(_ textView: UITextView) {
+      // Update binding immediately for responsiveness
       parent.text = textView.text
+
+      // Debounce highlighting to avoid lag while typing fast
+      highlightTask?.cancel()
+      let task = DispatchWorkItem { [weak self] in
+        guard let self = self else { return }
+        self.parent.applyHighlighting(to: textView)
+      }
+      highlightTask = task
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: task)
     }
   }
 }

@@ -47,6 +47,9 @@ public class SnackSessionClient {
   private var hostedFiles: [String: SnackFile]?
   private var onHostReady: (() -> Void)?
 
+  /// Whether the code has been edited since session started
+  public private(set) var hasBeenEdited: Bool = false
+
   // MARK: - Initialization
 
   init(channel: String, isStaging: Bool = false) {
@@ -73,6 +76,7 @@ public class SnackSessionClient {
   func resetToOriginalFiles() {
     if let hostedFiles = hostedFiles {
       currentFiles = hostedFiles
+      hasBeenEdited = false
     }
   }
 
@@ -213,6 +217,12 @@ public class SnackSessionClient {
 
     // Update local cache
     currentFiles[path] = SnackFile(path: path, contents: newContents, isAsset: false)
+
+    // Mark as edited and notify observers
+    if !hasBeenEdited {
+      hasBeenEdited = true
+      NotificationCenter.default.post(name: SnackEditingSession.codeDidChangeNotification, object: nil)
+    }
   }
 
   /// Generates a unified diff in the format used by the 'diff' npm package

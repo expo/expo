@@ -36,7 +36,11 @@ struct SnackActionPanel: View {
   let snappedEdge: SnappedEdge
   let gearPosition: CGPoint  // Top-left of gear frame
   let screenWidth: CGFloat
-  let onSave: () -> Void
+  let isLesson: Bool
+  let hasBeenEdited: Bool
+  // let onSave: () -> Void  // TODO: Add back when save functionality is implemented
+  let onComplete: () -> Void
+  let onGoBack: () -> Void
 
   @FocusState private var isDescriptionFocused: Bool
 
@@ -143,25 +147,55 @@ struct SnackActionPanel: View {
 
       Spacer()
 
-      // Save button at bottom right
-      HStack {
-        Spacer()
-        saveButton
+      // Action buttons at bottom
+      if isLesson {
+        HStack {
+          goBackButton
+          Spacer()
+          completeButton
+            .opacity(hasBeenEdited ? 1.0 : 0.4)
+            .disabled(!hasBeenEdited)
+        }
+        .padding(.horizontal, normalPadding)
+        .padding(.bottom, 16)
       }
-      .padding(.horizontal, normalPadding)
-      .padding(.bottom, 16)
+      // TODO: Add back Save button when save functionality is implemented
+      // else {
+      //   HStack {
+      //     Spacer()
+      //     saveButton
+      //   }
+      //   .padding(.horizontal, normalPadding)
+      //   .padding(.bottom, 16)
+      // }
     }
     .background(glassBackground)
     .clipShape(RoundedRectangle(cornerRadius: 20))
     .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 4)
   }
 
-  private var saveButton: some View {
-    Button(action: onSave) {
+  private var goBackButton: some View {
+    Button(action: onGoBack) {
       HStack(spacing: 6) {
-        Image(systemName: "square.and.arrow.down")
+        Image(systemName: "chevron.left")
           .font(.system(size: 13, weight: .semibold))
-        Text("Save")
+        Text("Go back")
+          .font(.system(size: 14, weight: .semibold))
+      }
+      .foregroundColor(.primary)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 10)
+      .background(.ultraThinMaterial, in: Capsule())
+    }
+    .buttonStyle(.plain)
+  }
+
+  private var completeButton: some View {
+    Button(action: onComplete) {
+      HStack(spacing: 6) {
+        Image(systemName: "checkmark.circle.fill")
+          .font(.system(size: 13, weight: .semibold))
+        Text("Complete")
           .font(.system(size: 14, weight: .semibold))
       }
       .foregroundColor(.white)
@@ -171,6 +205,23 @@ struct SnackActionPanel: View {
     }
     .buttonStyle(.plain)
   }
+
+  // TODO: Add back when save functionality is implemented
+  // private var saveButton: some View {
+  //   Button(action: onSave) {
+  //     HStack(spacing: 6) {
+  //       Image(systemName: "square.and.arrow.down")
+  //         .font(.system(size: 13, weight: .semibold))
+  //       Text("Save")
+  //         .font(.system(size: 14, weight: .semibold))
+  //     }
+  //     .foregroundColor(.white)
+  //     .padding(.horizontal, 16)
+  //     .padding(.vertical, 10)
+  //     .background(Color.blue, in: Capsule())
+  //   }
+  //   .buttonStyle(.plain)
+  // }
 
   private var glassBackground: some View {
     ZStack {
