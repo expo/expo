@@ -261,6 +261,10 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: 'package.json'
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
