@@ -663,6 +663,10 @@ struct CodeTextEditor: UIViewRepresentable {
     textView.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
     textView.textContainer.lineFragmentPadding = 0  // Remove default 5pt padding
 
+    // Initialize coordinator tracking state
+    context.coordinator.lastWrapLines = wrapLines
+    context.coordinator.lastFontSize = font.pointSize
+
     // Configure line wrapping
     configureWrapping(for: textView)
 
@@ -680,22 +684,38 @@ struct CodeTextEditor: UIViewRepresentable {
 
   func updateUIView(_ textView: UITextView, context: Context) {
     let wasEditable = textView.isEditable
+    let coordinator = context.coordinator
     textView.isEditable = isEditable
+    textView.backgroundColor = UIColor(theme.background)
 
-    // Update wrapping if changed
-    configureWrapping(for: textView)
+    // Check what changed
+    let fontChanged = coordinator.lastFontSize != font.pointSize
+    let wrapChanged = coordinator.lastWrapLines != wrapLines
+    let textChanged = textView.text != text
 
-    // Only update if text changed externally (not from user typing)
-    if textView.text != text {
-      let selectedRange = textView.selectedRange
+    // Update tracking
+    coordinator.lastFontSize = font.pointSize
+    coordinator.lastWrapLines = wrapLines
+
+    // Update text if needed
+    if textChanged {
       textView.text = text
+    }
+
+    // Configure wrapping if changed
+    if wrapChanged {
+      configureWrapping(for: textView)
+    }
+
+    // Re-apply highlighting if text, font, or wrap changed
+    if textChanged || fontChanged || wrapChanged {
+      let selectedRange = textView.selectedRange
       applyHighlighting(to: textView)
       // Restore cursor position if still valid
-      if selectedRange.location + selectedRange.length <= textView.text.count {
+      if selectedRange.location + selectedRange.length <= (textView.text?.count ?? 0) {
         textView.selectedRange = selectedRange
       }
     }
-    textView.backgroundColor = UIColor(theme.background)
 
     // Focus when transitioning from read-only to edit mode
     if isEditable && !wasEditable && !textView.isFirstResponder {
@@ -722,16 +742,19 @@ struct CodeTextEditor: UIViewRepresentable {
       // Wrap lines - text container tracks text view width
       textView.textContainer.lineBreakMode = .byWordWrapping
       textView.textContainer.widthTracksTextView = true
-      textView.isScrollEnabled = true
+      // Reset container size to track the text view
+      textView.textContainer.size = CGSize(width: textView.bounds.width - textView.textContainerInset.left - textView.textContainerInset.right, height: CGFloat.greatestFiniteMagnitude)
     } else {
       // No wrap - allow horizontal scrolling
       textView.textContainer.lineBreakMode = .byClipping
       textView.textContainer.widthTracksTextView = false
       textView.textContainer.size = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
-      textView.isScrollEnabled = true
     }
-    // Force layout update
-    textView.layoutManager.ensureLayout(for: textView.textContainer)
+
+    // Force complete layout invalidation
+    textView.layoutManager.invalidateLayout(forCharacterRange: NSRange(location: 0, length: textView.text.count), actualCharacterRange: nil)
+    textView.setNeedsLayout()
+    textView.layoutIfNeeded()
   }
 
   func makeCoordinator() -> Coordinator {
@@ -770,6 +793,8 @@ struct CodeTextEditor: UIViewRepresentable {
   class Coordinator: NSObject, UITextViewDelegate {
     var parent: CodeTextEditor
     private var highlightTask: DispatchWorkItem?
+    var lastWrapLines: Bool?
+    var lastFontSize: CGFloat?
 
     init(_ parent: CodeTextEditor) {
       self.parent = parent

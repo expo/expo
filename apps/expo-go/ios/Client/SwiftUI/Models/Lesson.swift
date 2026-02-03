@@ -93,7 +93,7 @@ function LessonContent({ children }) {
         <FormattedText style={styles.description}>{description}</FormattedText>
         <View style={styles.instructionBox}>
           <Text style={styles.instruction}>
-            💡 Press the ⚙️ icon → Source code explorer → open <Text style={styles.bold}>App.js</Text> to edit this example.
+            💡 Press the ⚙️ icon → Source code explorer → open <Text style={styles.bold}>App.js</Text> to edit this example. Drag the gear to move the panel if it's in the way.
           </Text>
         </View>
       </View>
@@ -371,7 +371,7 @@ export default function App() {
 
   return (
     <Lesson>
-      <View style={styles.container}>
+      <View style={[styles.container, todos.length === 0 && styles.containerEmpty]}>
         <View style={styles.inputRow}>
           <TextInput
             style={styles.input}
@@ -384,16 +384,17 @@ export default function App() {
             <Text style={styles.addButtonText}>Add</Text>
           </Pressable>
         </View>
-        <ScrollView style={styles.list}>
-          {todos.map((todo, index) => (
-            <View key={index} style={styles.todoItem}>
-              <Text style={styles.todoText}>{todo}</Text>
-            </View>
-          ))}
-          {todos.length === 0 && (
-            <Text style={styles.emptyText}>No todos yet. Add one above!</Text>
-          )}
-        </ScrollView>
+        {todos.length === 0 ? (
+          <Text style={styles.emptyText}>No todos yet. Add one above!</Text>
+        ) : (
+          <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
+            {todos.map((todo, index) => (
+              <View key={index} style={styles.todoItem}>
+                <Text style={styles.todoText}>{todo}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        )}
       </View>
     </Lesson>
   );
@@ -403,6 +404,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  containerEmpty: {
+    justifyContent: 'center',
   },
   inputRow: {
     flexDirection: 'row',
@@ -431,6 +435,9 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
+  listContent: {
+    paddingBottom: 16,
+  },
   todoItem: {
     backgroundColor: '#f5f5f5',
     padding: 16,
@@ -443,7 +450,7 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     color: '#999',
-    marginTop: 32,
+    marginTop: 16,
   },
 });
 """
