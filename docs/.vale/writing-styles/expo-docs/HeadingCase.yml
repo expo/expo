@@ -149,6 +149,7 @@ exceptions:
   - '.*OTA.*'
   - '.*OTF.*'
   - '.*PostCSS.*'
+  - '.*PostHog.*'
   - '.*PRAGMA.*'
   - '.*Prebuild.*'
   - '.*Privacy Shield.*'
