@@ -282,7 +282,7 @@ jobs:
       - name: Debug yarn integrity
         shell: bash
         run: |
-          echo ls -la node_modules
+          ls -la node_modules
       - name: Upload .yarn-integrity
         uses: actions/upload-artifact@v4
         with:
