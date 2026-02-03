@@ -373,6 +373,35 @@ describe(appendScreenStackPropsToOptions, () => {
     });
   });
 
+  describe('presentation validation', () => {
+    it.each([
+      'card',
+      'modal',
+      'transparentModal',
+      'containedModal',
+      'containedTransparentModal',
+      'fullScreenModal',
+      'formSheet',
+      'pageSheet',
+    ] as const)('does not throw for valid presentation value "%s"', (presentation) => {
+      expect(() => {
+        appendScreenStackPropsToOptions({ presentation }, {});
+      }).not.toThrow();
+    });
+
+    it('throws for invalid presentation value', () => {
+      expect(() => {
+        appendScreenStackPropsToOptions({ presentation: 'invalidValue' as any }, {});
+      }).toThrow('Invalid presentation value "invalidValue"');
+    });
+
+    it('does not throw when presentation is not set', () => {
+      expect(() => {
+        appendScreenStackPropsToOptions({}, {});
+      }).not.toThrow();
+    });
+  });
+
   describe('non-element children', () => {
     it('ignores null children', () => {
       const result = appendScreenStackPropsToOptions(

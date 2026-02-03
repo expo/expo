@@ -7,4 +7,9 @@ export { StackSearchBar, type StackSearchBarProps } from './StackSearchBar';
 export * from './toolbar';
 export * from './screen';
 
-export { StackScreen, appendScreenStackPropsToOptions, type StackScreenProps } from './StackScreen';
+export {
+  StackScreen,
+  appendScreenStackPropsToOptions,
+  validateStackPresentation,
+  type StackScreenProps,
+} from './StackScreen';
