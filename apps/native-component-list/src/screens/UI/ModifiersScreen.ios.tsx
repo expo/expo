@@ -683,22 +683,9 @@ export default function ModifiersScreen() {
 
           <AppearSection />
 
+          {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
-            {/* <VStack spacing={16}> */}
             <Text>{'Try tapping the empty space between texts:'}</Text>
-            {/* <HStack
-                        spacing={0}
-                        modifiers={[
-                          padding({ vertical: 12, horizontal: 16 }),
-                          background('#FF6B6B20'),
-                          cornerRadius(8),
-                          onTapGesture(() => Alert.alert('Without contentShape', 'Tapped! (Only works on text)')),
-                        ]}
-                      >
-                        <Text>Left</Text>
-                        <Spacer />
-                        <Text>Right</Text>
-                      </HStack> */}
             <HStack
               modifiers={[
                 cornerRadius(8),
@@ -729,7 +716,6 @@ export default function ModifiersScreen() {
               <Text>Right label</Text>
             </HStack>
             <Text>Taps: {contentShapeButtonCounter}</Text>
-            {/* </VStack> */}
           </Section>
 
           <Section title="Misc">
