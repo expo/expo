@@ -1,8 +1,8 @@
 diff --git a/packages/expo-brownfield/plugin/templates/android/build.gradle.kts b/packages/expo-brownfield/plugin/templates/android/build.gradle.kts
-index a22a00aaab..f2b6d065f9 100644
+index 3cfc7c9a7e..c3f8cb6617 100644
 --- a/packages/expo-brownfield/plugin/templates/android/build.gradle.kts
 +++ b/packages/expo-brownfield/plugin/templates/android/build.gradle.kts
-@@ -51,8 +51,22 @@ android {
+@@ -52,8 +52,22 @@ android {
    kotlinOptions { jvmTarget = "17" }
  }
  
@@ -21,7 +21,7 @@ index a22a00aaab..f2b6d065f9 100644
    api("com.facebook.hermes:hermes-android")
    compileOnly("androidx.fragment:fragment-ktx:1.6.1")
 +
++  debugOnly(project(":expo-brownfield"))
 +  debugOnly(project(":expo-dev-menu"))
 +  debugOnly(project(":expo-manifests"))
-+  debugOnly("com.squareup.okhttp3:okhttp:4.9.2")
  }
