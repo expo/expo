@@ -141,7 +141,7 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ### Modify babel.config.js
 
-If your project has a **babel.config.js** file, ensure you use `babel-preset-expo` as the `preset`. If you don't need any custom Babel configuration, you can delete the file entirely &mdash; the default template does not include one.
+If your project has a **babel.config.js** file, ensure you use `babel-preset-expo` as the `preset`. If you don't need any custom Babel configuration, you can delete the file entirely:
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -156,6 +156,29 @@ module.exports = function (api) {
 
 <Step label="5">
 
+### Configure path aliases
+
+If you are using the [`src` directory](/router/reference/src-directory/), add path aliases to your **tsconfig.json** so you can use short import paths like `@/components/button` instead of relative paths:
+
+```json tsconfig.json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+}
+```
+
+The `@/*` alias maps to the **src** directory in the above example.
+
+</Step>
+
+<Step label="6">
+
 ### Clear bundler cache
 
 After updating the configuration, run the following command to clear the bundler cache:
@@ -164,7 +187,7 @@ After updating the configuration, run the following command to clear the bundler
 
 </Step>
 
-<Step label="6">
+<Step label="7">
 
 ### Update resolutions
 
