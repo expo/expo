@@ -41,10 +41,9 @@ export default function TextInputScreen() {
     React.useState<(typeof submitLabelOptions)[number]>('continue');
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
-  const onChangeSync = React.useCallback((value: string) => {
+  const onChangeTextSync = React.useCallback((value: string) => {
     'worklet';
-    const newValue = value.replace(/[^0-9]/g, '');
-    return newValue;
+    console.log('onChangeTextSync from worklet: ', value);
   }, []);
 
   return (
@@ -153,8 +152,8 @@ export default function TextInputScreen() {
             }}
           />
         </Section>
-        <Section title="Sync Validation (onChangeSync)">
-          <TextField placeholder="Numbers only" onChangeSync={onChangeSync} />
+        <Section title="Sync Validation (onChangeTextSync)">
+          <TextField placeholder="Numbers only" onChangeTextSync={onChangeTextSync} />
         </Section>
         <Section title="Secure Text Input">
           <SecureField ref={secureRef} defaultValue="hey there" keyboardType="numeric" />

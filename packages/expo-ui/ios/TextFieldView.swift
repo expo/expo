@@ -25,7 +25,7 @@ final class TextFieldProps: UIBaseViewProps {
   @Field var autocorrection: Bool = true
   @Field var allowNewlines: Bool = true
   @Field var autoFocus: Bool = false
-  @Field var onChangeSync: WorkletCallback?
+  @Field var onChangeTextSync: WorkletCallback?
   var onValueChanged = EventDispatcher()
   var onFocusChanged = EventDispatcher()
   var onSelectionChanged = EventDispatcher()
@@ -196,7 +196,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
       }
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
-        try? props.onChangeSync?.call(arguments: [newValue])
+        try? props.onChangeTextSync?.call(arguments: [newValue])
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue
