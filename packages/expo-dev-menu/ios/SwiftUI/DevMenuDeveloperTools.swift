@@ -36,7 +36,7 @@ struct DevMenuDeveloperTools: View {
 
         Divider()
         #endif
-        
+
         DevMenuActionButton(
           title: "Toggle performance monitor",
           icon: "speedometer",
@@ -57,8 +57,8 @@ struct DevMenuDeveloperTools: View {
           Divider()
 
           DevMenuActionButton(
-            title: "Open JS debugger",
-            icon: "ladybug",
+            title: "Open DevTools",
+            icon: "chevron.left.chevron.right",
             action: viewModel.openJSInspector
           )
         }
@@ -79,7 +79,7 @@ struct DevMenuDeveloperTools: View {
         Divider()
 
         DevMenuToggleButton(
-          title: "Show dev tools button",
+          title: "Show dev menu button",
           icon: "hand.tap",
           isEnabled: viewModel.showFloatingActionButton,
           action: viewModel.toggleFloatingActionButton

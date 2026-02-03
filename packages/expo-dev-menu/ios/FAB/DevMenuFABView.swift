@@ -52,7 +52,7 @@ struct FabPill: View {
         }
 
       if showLabel {
-        Text("Dev tools")
+        Text("Dev menu")
           .font(.system(size: 11, weight: .medium))
           .foregroundStyle(.secondary)
           .fixedSize()

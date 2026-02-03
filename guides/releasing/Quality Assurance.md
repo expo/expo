@@ -20,7 +20,7 @@ Unversioned QA: Test in native-component-list.
   - Reload manually, your change should appear
   - Make and save another change, reenable Fast Refresh, your change should show up automatically
 - Debug JS in-place
-  - Open JS debugger either pressing `j` or from the dev menu in Expo Go
+  - Open DevTools either pressing `j` or from the dev menu in Expo Go
   - Add a breakpoint (maybe add a button to your app), ensure the breakpoint works
   - Click Reload on the webpage, make sure it reloads the app
 - Other dev tools
