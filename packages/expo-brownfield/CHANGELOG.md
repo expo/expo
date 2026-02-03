@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.5 — 2026-02-03
+
+### 🐛 Bug fixes
+
 - [Android] strip com.facebook.react:hermes-android in [#42769](https://github.com/expo/expo/pull/42769) by [@pmleczek](https://github.com/pmleczek)
 
 ### 💡 Others

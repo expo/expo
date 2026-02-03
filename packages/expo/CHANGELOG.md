@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.0-preview.8 — 2026-02-03
+
+### 🐛 Bug fixes
+
 - [iOS] Restore dev menu on tvOS. ([#42737](https://github.com/expo/expo/pull/42737) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.16.3 — 2026-02-03
+
+### 💡 Others
+
 - Drop `p-limit` dependency ([#42487](https://github.com/expo/expo/pull/42487) by [@kitten](https://github.com/kitten))
 
 ## 0.16.2 — 2026-01-26
