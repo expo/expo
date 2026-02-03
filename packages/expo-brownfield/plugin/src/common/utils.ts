@@ -17,13 +17,9 @@ const checkExpoConfig = (config: ExpoConfig, pluginName: string): boolean => {
     return false;
   }
 
-  config.plugins.forEach((plugin) => {
-    if ((Array.isArray(plugin) && plugin[0] === pluginName) || plugin === pluginName) {
-      return true;
-    }
-  });
-
-  return false;
+  return config.plugins.some((plugin) =>
+    Array.isArray(plugin) ? plugin[0] === pluginName : plugin === pluginName
+  );
 };
 
 /**

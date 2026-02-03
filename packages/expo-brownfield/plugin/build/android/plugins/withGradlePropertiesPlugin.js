@@ -6,7 +6,8 @@ const withGradlePropertiesPlugin = (config) => {
     return (0, config_plugins_1.withGradleProperties)(config, (config) => {
         if ((0, common_1.checkPlugin)(config, 'expo-dev-menu')) {
             const devMenuReleaseConfiguration = getDevMenuReleaseConfiguration();
-            if (!devMenuReleaseConfiguration.some((item) => config.modResults.includes(item))) {
+            const hasDevMenuConfig = config.modResults.some((item) => item.type === 'property' && item.key === 'expo.devmenu.configureInRelease');
+            if (!hasDevMenuConfig) {
                 config.modResults = [...config.modResults, ...devMenuReleaseConfiguration];
             }
         }

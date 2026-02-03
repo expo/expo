@@ -20,12 +20,7 @@ const checkExpoConfig = (config, pluginName) => {
     if (!config.plugins) {
         return false;
     }
-    config.plugins.forEach((plugin) => {
-        if ((Array.isArray(plugin) && plugin[0] === pluginName) || plugin === pluginName) {
-            return true;
-        }
-    });
-    return false;
+    return config.plugins.some((plugin) => Array.isArray(plugin) ? plugin[0] === pluginName : plugin === pluginName);
 };
 /**
  * Check if the plugin is installed in the package.json
