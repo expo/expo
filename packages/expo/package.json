@@ -101,7 +101,7 @@
     "whatwg-url-minimum": "^0.1.1"
   },
   "devDependencies": {
-    "@expo/dom-webview": "55.0.2",
+    "@expo/dom-webview": "^55.0.2",
     "@expo/metro-runtime": "^55.0.4",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
