@@ -12,6 +12,7 @@
 #include "../concepts/jni_deref.h"
 #include "../concepts/jni.h"
 #include "../concepts/jsi.h"
+#include "ReturnType.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -33,6 +34,13 @@ namespace expo {
 jsi::Value convert(
   JNIEnv *env,
   jsi::Runtime &rt,
+  const jni::local_ref<jobject> &value
+);
+
+jsi::Value convert(
+  JNIEnv *env,
+  jsi::Runtime &rt,
+  ReturnType returnType,
   const jni::local_ref<jobject> &value
 );
 

@@ -44,6 +44,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     takesOwner: Boolean,
     enumerable: Boolean,
     desiredTypes: Array<ExpectedType>,
+    cppReturnType: Int,
     body: JNIFunctionBody
   )
 
