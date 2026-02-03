@@ -1,12 +1,12 @@
 import chalk from 'chalk';
 
-import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
+import { BLT, printHelp, printItem, printUsage, StartOptions } from './commandsTable';
 import { createDevToolsMenuItems } from './createDevToolsMenuItems';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
-import { openBrowserAsync } from '../../utils/open';
 import { ExpoChoice, selectAsync } from '../../utils/prompts';
+import { printQRCode } from '../../utils/qr';
 import { DevServerManager } from '../server/DevServerManager';
 import {
   openJsInspector,
