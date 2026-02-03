@@ -80,12 +80,7 @@ function Transition({
   }, [status, onExitComplete]);
 
   return (
-    <div
-      ref={ref}
-      style={{
-        overflow: 'hidden',
-        transition: 'height 0.3s ease, opacity 0.3s ease',
-      }}>
+    <div ref={ref} className={styles.transition}>
       {children}
     </div>
   );
@@ -247,60 +242,19 @@ export function StackTraceList({
   });
 
   return (
-    <div style={{ marginTop: 5, display: 'flex', flexDirection: 'column', gap: 6 }}>
+    <div className={styles.root}>
       {/* Header */}
-      <div
-        ref={ref}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          marginBottom: 4,
-          justifyContent: 'space-between',
-        }}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div ref={ref} className={styles.header}>
+        <div className={styles.headerLeft}>
           {type === 'component' ? (
-            <ReactIcon
-              stroke="unset"
-              style={{
-                width: '1rem',
-                height: '1rem',
-                color: 'var(--expo-log-color-label)',
-              }}
-            />
+            <ReactIcon stroke="unset" className={styles.headerIcon} />
           ) : (
-            <JavaScriptIcon
-              style={{
-                width: '1rem',
-                height: '1rem',
-                color: 'var(--expo-log-color-label)',
-              }}
-            />
+            <JavaScriptIcon className={styles.headerIcon} />
           )}
-          <h3
-            style={{
-              fontFamily: 'var(--expo-log-font-family)',
-              color: 'var(--expo-log-color-label)',
-              fontSize: 18,
-              fontWeight: '600',
-              margin: 0,
-            }}>
+          <h3 className={styles.headerTitle}>
             {type === 'component' ? 'Component Stack' : 'Call Stack'}
           </h3>
-          <span
-            data-text
-            style={{
-              backgroundColor: 'rgba(234.6, 234.6, 244.8, 0.1)',
-              fontFamily: 'var(--expo-log-font-family)',
-              color: 'var(--expo-log-color-label)',
-              borderRadius: 50,
-              fontSize: 12,
-              aspectRatio: '1/1',
-              display: 'flex',
-              width: 22,
-              height: 22,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+          <span data-text className={styles.badge}>
             {stackCount}
           </span>
 
@@ -310,20 +264,9 @@ export function StackTraceList({
           />
         </div>
 
-        <button
-          className={styles.collapseButton}
-          onClick={() => setCollapsed(!collapsed)}>
-          <div
-            title={collapseTitle.full}
-            className={styles.collapseContent}>
-            <span
-              className={styles.collapseTitle}
-              style={{
-                fontFamily: 'var(--expo-log-font-family)',
-                fontSize: 14,
-                userSelect: 'none',
-                color: 'rgba(234.6, 234.6, 244.8, 0.6)',
-              }}>
+        <button className={styles.collapseButton} onClick={() => setCollapsed(!collapsed)}>
+          <div title={collapseTitle.full} className={styles.collapseContent}>
+            <span className={styles.collapseTitle}>
               {containerWidth > 440 ? collapseTitle.full : collapseTitle.short}
             </span>
 
@@ -336,8 +279,7 @@ export function StackTraceList({
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
-              strokeLinejoin="round"
-              className="md-hidden">
+              strokeLinejoin="round">
               {collapsed ? (
                 <>
                   <path d="m7 15 5 5 5-5" />
@@ -356,21 +298,8 @@ export function StackTraceList({
 
       {/* Body */}
       {symbolicationStatus !== 'COMPLETE' && (
-        <div
-          style={{
-            backgroundColor: `var(--expo-log-secondary-system-background)`,
-            border: `1px solid var(--expo-log-color-border)`,
-            padding: `10px 15px`,
-            borderRadius: 5,
-          }}>
-          <span
-            style={{
-              fontFamily: 'var(--expo-log-font-family)',
-              color: 'var(--expo-log-color-label)',
-              opacity: 0.7,
-              fontSize: 13,
-              fontWeight: '400',
-            }}>
+        <div className={styles.warningBox}>
+          <span className={styles.warningText}>
             This call stack is not symbolicated. Some features are unavailable such as viewing the
             function name or tapping to open files.
           </span>
@@ -378,7 +307,7 @@ export function StackTraceList({
       )}
 
       {/* List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div className={styles.list}>
         <List
           initialDelay={initialDelay}
           items={stackTraceItems}
@@ -406,9 +335,7 @@ function StackTraceItem({
       aria-disabled={!isLaunchable ? true : undefined}
       onClick={onPress}
       className={styles.stackFrame}
-      style={{
-        opacity: frame.collapse === true ? 0.4 : 1,
-      }}>
+      data-collapsed={frame.collapse === true ? '' : undefined}>
       <code className={styles.stackFrameTitle}>{frame.methodName}</code>
       <code className={styles.stackFrameFile}>{fileName}</code>
     </div>
