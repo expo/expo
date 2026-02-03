@@ -113,17 +113,17 @@ export type TextFieldProps = {
    * A worklet callback triggered synchronously on the UI runtime when text changes.
    * The function must include the `'worklet'` directive.
    */
-  onChangeSync?: (value: string) => string | void;
+  onChangeTextSync?: (value: string) => void;
 } & CommonViewModifierProps;
 
 export type NativeTextFieldProps = Omit<
   TextFieldProps,
-  'onChangeText' | 'onSubmit' | 'onChangeSync'
+  'onChangeText' | 'onSubmit' | 'onChangeTextSync'
 > & {} & ViewEvent<'onValueChanged', { value: string }> &
   ViewEvent<'onFocusChanged', { value: boolean }> &
   ViewEvent<'onSelectionChanged', { start: number; end: number }> &
   ViewEvent<'onSubmit', { value: string }> & {
-    onChangeSync?: number;
+    onChangeTextSync?: number;
   };
 // We have to work around the `role` and `onPress` props being reserved by React Native.
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
@@ -132,7 +132,7 @@ const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNa
 );
 
 function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
-  const { modifiers, onChangeSync, ...restProps } = props;
+  const { modifiers, onChangeTextSync, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
@@ -156,11 +156,14 @@ function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
 export function TextField(props: TextFieldProps) {
-  const { onChangeSync, ...restProps } = props;
-  const onChangeSyncId = useWorkletCallback(onChangeSync, [onChangeSync]);
+  const { onChangeTextSync, ...restProps } = props;
+  const onChangeTextSyncId = useWorkletCallback(onChangeTextSync, [onChangeTextSync]);
 
   return (
-    <TextFieldNativeView {...transformTextFieldProps(restProps)} onChangeSync={onChangeSyncId} />
+    <TextFieldNativeView
+      {...transformTextFieldProps(restProps)}
+      onChangeTextSync={onChangeTextSyncId}
+    />
   );
 }
 

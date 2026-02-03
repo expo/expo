@@ -11,8 +11,6 @@ const createWorkletCallback: ((fn: SerializableRef<(...args: any[]) => any>) => 
 /**
  * Wraps a worklet function in a `WorkletCallback` SharedObject and returns its numeric ID,
  * which can be passed as a prop through React Native's serialization.
- *
- * Uses `useReleasingSharedObject` for proper cleanup on unmount and fast refresh.
  */
 export function useWorkletCallback(
   workletFn: ((...args: any[]) => any) | undefined,
