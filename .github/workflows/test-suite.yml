@@ -281,6 +281,16 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Upload .yarn-integrity
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-integrity
+          path: |
+            node_modules/.yarn-integrity
+            apps/*/node_modules/.yarn-integrity
+            packages/*/node_modules/.yarn-integrity
+            packages/@expo/*/node_modules/.yarn-integrity
+            react-native-lab/react-native/node_modules/.yarn-integrity
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
