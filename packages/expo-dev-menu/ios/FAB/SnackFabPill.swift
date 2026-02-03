@@ -147,27 +147,18 @@ struct SnackActionPanel: View {
 
       Spacer()
 
-      // Action buttons at bottom
-      if isLesson {
-        HStack {
-          goBackButton
-          Spacer()
+      // Action buttons at bottom - always show Go back, conditionally show Complete for lessons
+      HStack {
+        goBackButton
+        Spacer()
+        if isLesson {
           completeButton
             .opacity(hasBeenEdited ? 1.0 : 0.4)
             .disabled(!hasBeenEdited)
         }
-        .padding(.horizontal, normalPadding)
-        .padding(.bottom, 16)
       }
-      // TODO: Add back Save button when save functionality is implemented
-      // else {
-      //   HStack {
-      //     Spacer()
-      //     saveButton
-      //   }
-      //   .padding(.horizontal, normalPadding)
-      //   .padding(.bottom, 16)
-      // }
+      .padding(.horizontal, normalPadding)
+      .padding(.bottom, 16)
     }
     .background(glassBackground)
     .clipShape(RoundedRectangle(cornerRadius: 20))
