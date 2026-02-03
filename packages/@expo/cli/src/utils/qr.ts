@@ -4,11 +4,21 @@ import { toQR } from 'toqr';
 import { env } from './env';
 import * as Log from '../log';
 
+export interface QROutput {
+  lines: number;
+  print(): void;
+}
+
 /** Print the world famous 'Expo QR Code'. */
-export function printQRCode(url: string) {
+export function printQRCode(url: string): QROutput {
   const qr = toQR(url);
   const output = supportsSextants() ? createSextantOutput(qr) : createHalfblockOutput(qr);
-  Log.log(output);
+  return {
+    lines: output.split('\n').length,
+    print() {
+      Log.log(output);
+    },
+  };
 }
 
 /** On specific terminals we can print a smaller QR code */
