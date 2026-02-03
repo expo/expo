@@ -7,7 +7,7 @@ import type { Shape } from './shapes/index';
  * This modifier is essential for making entire view areas (including `Spacer` or empty space)
  * interactive. Without it, only visible elements like `Text` or `Image` respond to tap gestures.
  * 
- * @param shape - A shape configuration from the shapes API (rectangle, circle, capsule, ellipse, roundedRectangle)
+ * @param shape - A shape configuration from the shapes API (rectangle, circle, capsule, ellipse, roundedRectangle).
  * 
  * @example
  * ```tsx
