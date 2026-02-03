@@ -13,10 +13,6 @@
       "types": "./build/swift-ui/modifiers/index.d.ts",
       "default": "./src/swift-ui/modifiers/index.ts"
     },
-    "./swift-ui/TextField/Sync": {
-      "types": "./build/swift-ui/TextField/Sync.d.ts",
-      "default": "./src/swift-ui/TextField/Sync.tsx"
-    },
     "./jetpack-compose": {
       "types": "./build/jetpack-compose/index.d.ts",
       "default": "./src/jetpack-compose/index.ts"
