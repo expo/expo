@@ -20,10 +20,7 @@ const SyncTextFieldNativeView: React.ComponentType<NativeSyncTextFieldProps> = r
   'TextFieldView'
 );
 
-/**
- * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
- */
-export function TextField(props: SyncTextFieldProps) {
+export function SyncTextField(props: SyncTextFieldProps) {
   const { onChangeTextSync, ...restProps } = props;
   const callback = useReleasingSharedObject(
     () =>
