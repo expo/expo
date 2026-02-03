@@ -15,7 +15,6 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
-  private var firstViewLoad: Bool = true
 
   /**
    * Initializes ReactNativeHostManager instance
@@ -74,31 +73,24 @@ public class ReactNativeHostManager {
   }
 
   private func setupDevMenu() {
-    if firstViewLoad {
-      guard let reactNativeFactory else {
-        fatalError("Trying to setup dev menu without initialized reactNativeFactory")
-      }
-
-      firstViewLoad = false
-      // Needed to set up delegates (e.g. for expo-dev-menu)
-      reactNativeFactory.startReactNative(
-        withModuleName: "main", // TOOD(pmleczek): Unhardcode module name
-        in: nil,
-        launchOptions: nil
-      )
-
-      #if DEBUG && canImport(EXDevMenu)
-      ManifestProvider.fetchManifest(bundleURL: reactNativeDelegate?.bundleURL()) { json, url in
-        if let json, let url {
-          let manifest = ManifestFactory.manifest(forManifestJSON: json)
-          DevMenuManager.shared.updateCurrentManifest(manifest, manifestURL: url)
-        }
-      }
-      // if let manifestJSON = ManifestProvider.fetchManifest(bundleURL: reactNativeDelegate?.bundleURL()),
-      //    let manifest = ManifestFactory.manifest(forManifestJSON: manifestJSON) {
-      //   DevMenuManager.shared.updateCurrentManifest(manifest, manifestURL: manifestURL)
-      // }
-      #endif
+    guard let reactNativeFactory else {
+      fatalError("Trying to setup dev menu without initialized reactNativeFactory")
     }
+
+    // Needed to set up delegates (e.g. for expo-dev-menu)
+    reactNativeFactory.startReactNative(
+      withModuleName: "main", // TOOD(pmleczek): Unhardcode module name
+      in: nil,
+      launchOptions: nil
+    )
+
+    #if DEBUG && canImport(EXDevMenu)
+    ManifestProvider.fetchManifest(bundleURL: reactNativeDelegate?.bundleURL()) { json, url in
+      if let json, let url {
+        let manifest = ManifestFactory.manifest(forManifestJSON: json)
+        DevMenuManager.shared.updateCurrentManifest(manifest, manifestURL: url)
+      }
+    }
+    #endif
   }
 }
