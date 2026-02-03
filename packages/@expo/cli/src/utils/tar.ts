@@ -34,7 +34,29 @@ export interface ExtractOptions {
   checksumAlgorithm?: string;
 }
 
+/**
+ * Web Streams operate via microtasks which don't keep the Node.js event loop alive.
+ * Without a ref'd handle, Node.js may exit mid-operation when the event loop appears empty.
+ * This wrapper keeps the event loop alive for the duration of the given async function.
+ */
+async function withEventLoopKeepalive<T>(fn: () => Promise<T>): Promise<T> {
+  const keepalive = setInterval(() => {}, 2_147_483_647);
+  try {
+    return await fn();
+  } finally {
+    clearInterval(keepalive);
+  }
+}
+
 export async function extractStream(
+  input: ReadableStream,
+  output: string,
+  options: ExtractOptions = {}
+): Promise<string> {
+  return withEventLoopKeepalive(() => extractStreamImpl(input, output, options));
+}
+
+async function extractStreamImpl(
   input: ReadableStream,
   output: string,
   options: ExtractOptions = {}
