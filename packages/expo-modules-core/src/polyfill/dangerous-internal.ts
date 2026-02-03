@@ -30,7 +30,7 @@ export function installExpoGlobalPolyfill() {
     installOnUIRuntime: () => {
       throw new Error('Method not implemented.');
     },
-    createWorkletCallback: () => {
+    createWorkletCallback: (_serializedWorklet: unknown) => {
       throw new Error('Method not implemented.');
     },
   };

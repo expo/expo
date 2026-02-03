@@ -60,12 +60,6 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*",
-    "react-native": "*",
-    "react-native-worklets": "*"
-  },
-  "peerDependenciesMeta": {
-    "react-native-worklets": {
-      "optional": true
-    }
+    "react-native": "*"
   }
 }

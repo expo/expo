@@ -31,5 +31,11 @@ public final class WorkletsTesterModule: Module {
       }
       worklet.schedule(on: uiRuntime, arguments: [2026, "worklet", true])
     }
+
+    View(WorkletsTesterView.self) {
+      Prop("onPressSync") { (view, callback: WorkletCallback?) in
+        view.onPressSync = callback
+      }
+    }
   }
 }
