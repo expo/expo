@@ -120,7 +120,7 @@ internal fun tryToStopShakeDetector(currentDevSupportManager: DevSupportManager)
       )
     shakeDetector.stop()
   } catch (e: Exception) {
-    Log.w("DevLauncher", "Couldn't stop shake detector.", e)
+    Log.w("DevMenuSupport(brownfield)", "Couldn't stop shake detector.", e)
   }
 }
 
