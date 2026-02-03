@@ -15,12 +15,19 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
+  private var firstLoad: Bool = true
+  private var firstLoadInitialized: Bool = false
 
   /**
    * Initializes ReactNativeHostManager instance
    * Instance can be initialized only once
    */
   public func initialize() {
+    if firstLoadInitialized {
+      return
+    }
+
+    firstLoadInitialized = true
     initializeInstance()
     // Ensure this won't get stripped by the Swift compiler
     _ = ExpoModulesProvider()
@@ -34,8 +41,12 @@ public class ReactNativeHostManager {
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
-    cleanupPreviousInstance()
-    initializeInstance()
+    if !(firstLoad && firstLoadInitialized) {
+      cleanupPreviousInstance()
+      initializeInstance()
+    }
+
+    firstLoad = false
 
     guard let reactNativeFactory else {
       fatalError("Trying to load view without initializing reactNativeFactory")
