@@ -1,6 +1,7 @@
 'use client';
 
 import { DependencyList, useEffect, useRef, useState } from 'react';
+import { processColor } from 'react-native';
 
 import { Image } from './Image';
 import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
@@ -49,6 +50,10 @@ export function useImage(
 ): ImageRef | null {
   const resolvedSource = resolveSource(source) as ImageSource;
   const [image, setImage] = useState<ImageRef | null>(null);
+
+  if (options.tintColor) {
+    options.tintColor = processColor(options.tintColor);
+  }
 
   // Since options are not dependencies of the below effect, we store them in a ref.
   // Once the image is asynchronously loaded, the effect will use the most recent options,

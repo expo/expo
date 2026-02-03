@@ -1,5 +1,5 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
-import { ImageStyle as RNImageStyle, TextStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import { ImageStyle as RNImageStyle, TextStyle, StyleProp, View, ViewProps, ViewStyle, ColorValue, ProcessedColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
@@ -666,6 +666,13 @@ export type ImageLoadOptions = {
      * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
      */
     maxHeight?: number;
+    /**
+     * A color used to tint template images (a bitmap image where only the opacity matters).
+     * The color is applied to every non-transparent pixel, causing the image's shape to adopt that color.
+     * This effect is not applied to placeholders.
+     * @default null
+     */
+    tintColor?: ProcessedColorValue | ColorValue | number | undefined | null;
     /**
      * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
      */
