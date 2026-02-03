@@ -8,7 +8,7 @@ struct Lesson: Identifiable {
   let title: String
   let icon: String  // SF Symbol name
   let description: String  // Long description for lesson UI
-  let shortDescription: String  // Short description for panel (8-10 words)
+  let shortDescription: String  // Short description for panel (max 5 words)
   let appCode: String
 
   /// Display name for the snack action panel (e.g., "Lesson 1: View & Text")
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
       title: "Styling",
       icon: "paintbrush.fill",
       description: "Styles are JavaScript objects with camelCase names (`backgroundColor`, not background-color). Numbers are density-independent pixels — no 'px' needed. Try changing colors, bumping `fontSize` to 40, or adding `fontWeight: 'bold'`.",
-      shortDescription: "JavaScript objects with camelCase names",
+      shortDescription: "JavaScript objects with camelCase",
       appCode: """
 import Lesson from './lesson-files/Lesson';
 import { View, Text, StyleSheet } from 'react-native';
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
       title: "Pressable & State",
       icon: "hand.tap.fill",
       description: "`<Pressable>` fires `onPress` when tapped. `useState` stores a value and re-renders the screen when it changes. Try adding `onLongPress` to decrement, or reset to 0 at 10.",
-      shortDescription: "Handle taps and store changing values",
+      shortDescription: "Handle taps and store values",
       appCode: """
 import { useState } from 'react';
 import Lesson from './lesson-files/Lesson';
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
       title: "TextInput",
       icon: "keyboard",
       description: "`<TextInput>` accepts keyboard input. Store text in state, pass it as `value`, and update via `onChangeText` to keep everything in sync. Try adding `keyboardType='numeric'` or `secureTextEntry`.",
-      shortDescription: "Accept keyboard input and sync to state",
+      shortDescription: "Keyboard input synced to state",
       appCode: """
 import { useState } from 'react';
 import Lesson from './lesson-files/Lesson';
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
       title: "Mini Todo List",
       icon: "checklist",
       description: "This combines everything: `View`, `Text`, `TextInput`, `Pressable`, `useState`, and `ScrollView`. Try adding delete-on-tap (hint: `filter` by index) or a 'done' style.",
-      shortDescription: "Combine everything into a working app",
+      shortDescription: "Combine everything into an app",
       appCode: """
 import { useState } from 'react';
 import Lesson from './lesson-files/Lesson';

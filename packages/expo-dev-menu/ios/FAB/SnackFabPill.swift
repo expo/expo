@@ -84,6 +84,7 @@ struct SnackActionPanel: View {
 
   // Padding for title row (same on both sides to center)
   private let titlePadding: CGFloat = 65
+  private let descriptionPadding: CGFloat = 32
   private let normalPadding: CGFloat = 16
   private let maxTitleLength = 45
 
@@ -143,7 +144,7 @@ struct SnackActionPanel: View {
           isDescriptionFocused = false
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, titlePadding)
+        .padding(.horizontal, descriptionPadding)
         .padding(.top, 7)
 
       Spacer()
