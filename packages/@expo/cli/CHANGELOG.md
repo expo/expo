@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add `~/Android/Sdk` to detected Android SDK locations on Linux ([#42761](https://github.com/expo/expo/pull/42761) by [@kitten](https://github.com/kitten))
+
 ## 55.0.5 — 2026-02-03
 
 ### 🛠 Breaking changes
