@@ -34,7 +34,7 @@ export declare const shapes: {
         };
     }) => {
         cornerRadius: number | undefined;
-        roundedCornerStyle: "continuous" | "circular" | undefined;
+        roundedCornerStyle: "circular" | "continuous" | undefined;
         cornerSize: {
             width: number;
             height: number;
@@ -44,7 +44,7 @@ export declare const shapes: {
     capsule: (params?: {
         roundedCornerStyle?: "continuous" | "circular";
     }) => {
-        roundedCornerStyle: "continuous" | "circular" | undefined;
+        roundedCornerStyle: "circular" | "continuous" | undefined;
         shape: string;
     };
     rectangle: () => {

@@ -685,7 +685,7 @@ export default function ModifiersScreen() {
 
           {/* Container Shape Modifier */}
           <Section title="Content Shape Modifier">
-            <Text>{'Try tapping the empty space between texts:'}</Text>
+            <Text>Try tapping the empty space between texts:</Text>
             <HStack
               modifiers={[
                 cornerRadius(8),
