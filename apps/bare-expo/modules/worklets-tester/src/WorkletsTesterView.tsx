@@ -4,7 +4,6 @@ import { createSerializable } from 'react-native-worklets';
 
 type WorkletsTesterViewProps = {
   onPressSync?: (message: string) => void;
-  style?: any;
 };
 
 type NativeWorkletsTesterViewProps = Omit<WorkletsTesterViewProps, 'onPressSync'> & {
