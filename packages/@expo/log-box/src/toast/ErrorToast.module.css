@@ -23,6 +23,7 @@
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  font-family: var(--expo-log-font-family);
 }
 
 @media (hover: hover) {
@@ -35,6 +36,7 @@
   user-select: none;
   padding-left: 8px;
   color: var(--expo-log-color-label);
+  font-family: var(--expo-log-font-family);
   flex: 1;
   font-size: 14px;
   line-height: 22px;
@@ -56,6 +58,7 @@
 
 .countText {
   color: var(--expo-log-color-label);
+  font-family: var(--expo-log-font-family);
   font-size: 14px;
   line-height: 18px;
   text-align: center;

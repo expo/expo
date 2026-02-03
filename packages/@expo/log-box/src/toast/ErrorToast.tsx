@@ -81,7 +81,7 @@ function ErrorToast(props: {
   useSymbolicatedLog(log);
 
   return (
-    <button className={styles.toast} onClick={props.onPressOpen}>
+    <div className={styles.toast} onClick={props.onPressOpen} role="button" tabIndex={0}>
       <Count count={totalLogCount} />
 
       <span className={styles.message}>
@@ -89,7 +89,7 @@ function ErrorToast(props: {
       </span>
 
       <Dismiss onPress={props.onPressDismiss} />
-    </button>
+    </div>
   );
 }
 
@@ -103,7 +103,12 @@ function Count({ count }: { count: number }) {
 
 function Dismiss({ onPress }: { onPress: () => void }) {
   return (
-    <button className={styles.dismissButton} onClick={onPress}>
+    <button
+      className={styles.dismissButton}
+      onClick={(e) => {
+        e.stopPropagation();
+        onPress();
+      }}>
       <div className={styles.dismissContent}>
         <svg
           className={styles.dismissIcon}
