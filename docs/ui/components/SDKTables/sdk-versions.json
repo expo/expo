@@ -1,6 +1,6 @@
 {
   "sdkVersions": [
-        {
+    {
       "sdk": "55.0.0",
       "android": "7+",
       "compileSdkVersion": "36",
@@ -64,32 +64,6 @@
       "react-native-tvos": "0.74-stable",
       "react": "18.2.0",
       "node": "18.20.x"
-    },
-    {
-      "sdk": "50.0.0",
-      "android": "6+",
-      "compileSdkVersion": "34",
-      "targetSdkVersion": "34",
-      "ios": "13.4+",
-      "xcode": "15.4",
-      "react-native": "0.73",
-      "react-native-web": "0.19.6",
-      "react-native-tvos": "0.74-stable",
-      "react": "18.2.0",
-      "node": "18.19.x"
-    },
-    {
-      "sdk": "49.0.0",
-      "android": "5+",
-      "compileSdkVersion": "33",
-      "targetSdkVersion": "33",
-      "ios": "13+",
-      "xcode": "15.4",
-      "react-native": "0.72",
-      "react-native-web": "0.19.6",
-      "react-native-tvos": "Not supported",
-      "react": "18.2.0",
-      "node": "16.20.x"
     }
   ]
 }
