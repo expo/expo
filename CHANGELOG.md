@@ -386,6 +386,8 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-application`**
   - Remove "Please" from warnings and errors ([#36862](https://github.com/expo/expo/pull/36862) by [@brentvatne](https://github.com/brentvatne))
   - Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+- **`expo-ui`**
+  - [iOS] Added contentShape() modifier for SwiftUI ([#42813](https://github.com/expo/expo/pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
 
 ## 53.0.0 — 2025-04-30
 
