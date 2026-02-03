@@ -19,7 +19,7 @@
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
-    "@expo/dom-webview": "55.0.2",
+    "@expo/dom-webview": "^55.0.2",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10"
   },
