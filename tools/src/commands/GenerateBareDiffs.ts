@@ -57,11 +57,8 @@ function sdkToBranch(sdkVersion: string) {
 }
 
 const TEMPLATE_PATH = 'templates/expo-template-bare-minimum';
+const STATIC_EXCLUDES = [`:(exclude,glob)${TEMPLATE_PATH}/.npmignore`];
 
-/**
- * Reads a gitignore file from the given branch via `git show` and converts each
- * pattern into a pathspec exclude that can be passed directly to `git diff`.
- */
 async function getExcludePathspecs(
   branch: string,
   gitignorePath: string,
@@ -78,9 +75,19 @@ async function getExcludePathspecs(
   }
 
   const excludes: string[] = [];
+  let hasNegation = false;
   for (const rawLine of content.split('\n')) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#') || line.startsWith('!')) continue;
+    let line = rawLine.trim();
+    if (!line) continue;
+    if (line.startsWith('\\#') || line.startsWith('\\!')) {
+      line = line.slice(1);
+    } else {
+      if (line.startsWith('#')) continue;
+      if (line.startsWith('!')) {
+        hasNegation = true;
+        continue;
+      }
+    }
 
     const isDir = line.endsWith('/');
     let pattern = isDir ? line.slice(0, -1) : line;
@@ -94,6 +101,7 @@ async function getExcludePathspecs(
       excludes.push(`:(exclude,glob)${prefix}**/${pattern}${isDir ? '/**' : ''}`);
     }
   }
+  if (hasNegation) return [];
   return excludes;
 }
 
@@ -114,7 +122,7 @@ async function executeDiffCommand(diffDirPathRaw, sdkFrom: string, sdkTo: string
 
   const diff = await spawnAsync(
     'git',
-    ['diff', diffCommand, '--', TEMPLATE_PATH, ...excludes],
+    ['diff', diffCommand, '--', TEMPLATE_PATH, ...STATIC_EXCLUDES, ...excludes],
     {
       cwd: EXPO_DIR,
     }
