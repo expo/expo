@@ -20,7 +20,10 @@ function supportsSextants() {
   }
   const isWindowsTerminal = process.platform === 'win32' && !!process.env.WT_SESSION?.length;
   const isGhostty = process.env.TERM_PROGRAM === 'ghostty';
-  return isWindowsTerminal || isGhostty;
+  const isWezterm = process.env.TERM_PROGRAM === 'WezTerm';
+  const isKitty = !!process.env.KITTY_WINDOW_ID?.length;
+  const isAlacritty = !!process.env.ALACRITTY_WINDOW_ID?.length;
+  return isWindowsTerminal || isGhostty || isWezterm || isKitty || isAlacritty;
 }
 
 /** ANSI QR code output by using half-blocks (1x2-sized unicode blocks) */
