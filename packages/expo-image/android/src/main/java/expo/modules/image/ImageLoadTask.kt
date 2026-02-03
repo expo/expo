@@ -29,7 +29,7 @@ open class ImageLoadTask(
           .asDrawable()
           .load(model)
           .centerInside()
-          .customize(options.tintColor){
+          .customize(options.tintColor) {
             apply(RequestOptions().set(CustomOptions.tintColor, it))
           }
           .submit(options.maxWidth, options.maxHeight)
