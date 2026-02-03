@@ -5,7 +5,6 @@ description: A guide for adding Expo and React Native to existing native apps an
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -502,87 +501,3 @@ You have completed all the basic steps to integrate React Native with your appli
 <Terminal cmd={['$ yarn start']} />
 
 Metro builds your TypeScript application code into a bundle, serves it through its HTTP server, and shares the bundle from `localhost` on your developer environment to a simulator or device, allowing for [hot reloading](https://reactnative.dev/blog/2016/03/24/introducing-hot-reloading). Now you can build and run your app as normal. Once you reach your React-powered Activity inside the app, it should load the JavaScript code from the development server.
-
-## Configuration in app config
-
-The `expo-brownfield` package provides a [config plugin](/config-plugins/introduction/) that can be used to configure the brownfield integration when using [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/). This plugin allows you to customize how your Expo project is packaged and integrated into your existing native app.
-
-<ConfigPluginExample>
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-brownfield",
-        {
-          "ios": {
-            "targetName": "MyBrownfieldTarget",
-            "bundleIdentifier": "com.example.brownfield"
-          },
-          "android": {
-            "group": "com.example",
-            "libraryName": "brownfield",
-            "package": "com.example.brownfield",
-            "version": "1.0.0"
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-</ConfigPluginExample>
-
-<ConfigPluginProperties
-  properties={[
-    {
-      name: 'ios.targetName',
-      platform: 'ios',
-      description:
-        'Name of the Xcode target for the brownfield integration. This is used to create a separate target in your Xcode project for the React Native code.',
-      default: '"<scheme>brownfield" or "<slug>brownfield"',
-    },
-    {
-      name: 'ios.bundleIdentifier',
-      platform: 'ios',
-      description:
-        'Bundle identifier for the brownfield target. This should be unique and different from your main app bundle identifier.',
-      default: '"<ios.bundleIdentifier base>.<targetName>" or "com.example.<targetName>"',
-    },
-    {
-      name: 'android.group',
-      platform: 'android',
-      description:
-        'Maven group ID for the generated Android library. This is used when publishing the library to a Maven repository.',
-      default: '"<package without last segment>"',
-    },
-    {
-      name: 'android.libraryName',
-      platform: 'android',
-      description: 'Name of the generated Android library module.',
-      default: '"brownfield"',
-    },
-    {
-      name: 'android.package',
-      platform: 'android',
-      description: 'Java/Kotlin package name for the generated Android library code.',
-      default: '"<android.package>.brownfield" or "com.example.brownfield"',
-    },
-    {
-      name: 'android.version',
-      platform: 'android',
-      description:
-        'Version string for the generated Android library. This is used when publishing to a Maven repository.',
-      default: '"1.0.0"',
-    },
-    {
-      name: 'android.publishing',
-      platform: 'android',
-      description:
-        'Publishing configuration for the generated Android library. Supports `localMaven`, `localDirectory`, `remotePublic`, and `remotePrivate` publication types. Each type has different configuration options for specifying where and how the library is published.',
-      default: '[{ type: "localMaven" }]',
-    },
-  ]}
-/>
