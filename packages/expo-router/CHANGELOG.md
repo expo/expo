@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo-image` dependency range in `expo-router` ([#42808](https://github.com/expo/expo/pull/42808) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.0-preview.5 — 2026-02-03

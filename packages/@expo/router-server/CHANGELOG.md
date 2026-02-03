@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Open up `expo-font` dependency range in `@expo/router-server` ([#42808](https://github.com/expo/expo/pull/42808) by [@kitten](https://github.com/kitten))
+
 ## 55.0.4 — 2026-02-03
 
 ### 🐛 Bug fixes
