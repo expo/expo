@@ -8,6 +8,7 @@ public class ManifestProvider {
   ) {
     #if DEBUG
       guard let manifestURL = resolveManifestURL(bundleURL) else {
+        completion(nil, nil)
         return
       }
 
@@ -21,6 +22,7 @@ public class ManifestProvider {
       let task = URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
           print("❌ Error fetching manifest: \(error.localizedDescription)")
+          completion(nil, nil)
           return
         }
 
@@ -30,11 +32,13 @@ public class ManifestProvider {
         else {
           let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
           print("⚠️ Invalid response when fetching manifest (status: \(statusCode))")
+          completion(nil, nil)
           return
         }
 
         guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
           print("⚠️ Could not parse manifest JSON")
+          completion(nil, nil)
           return
         }
 

@@ -46,13 +46,12 @@ public class ReactNativeHostManager {
       initializeInstance()
     }
 
-    firstLoad = false
-
     guard let reactNativeFactory else {
       fatalError("Trying to load view without initializing reactNativeFactory")
     }
 
-    setupDevMenu()
+    firstLoad = false
+    setupDevMenu(moduleName)
 
     return reactNativeFactory.rootViewFactory.view(
       withModuleName: moduleName,
@@ -88,14 +87,14 @@ public class ReactNativeHostManager {
    * fetches and updates the manifest for dev menu if dev menu is
    * available
    */
-  private func setupDevMenu() {
+  private func setupDevMenu(_ moduleName: String) {
     guard let reactNativeFactory else {
       fatalError("Trying to setup dev menu without initialized reactNativeFactory")
     }
 
     // Needed to set up delegates (e.g. for expo-dev-menu)
     reactNativeFactory.startReactNative(
-      withModuleName: "main", // TOOD(pmleczek): Unhardcode module name
+      withModuleName: "main",
       in: nil,
       launchOptions: nil
     )
