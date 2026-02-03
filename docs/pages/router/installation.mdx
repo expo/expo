@@ -20,6 +20,8 @@ We recommend creating a new Expo app using `create-expo-app` to create a project
 
 <Terminal cmd={['$ npx create-expo-app@latest']} />
 
+The default template creates a project with the [`src/app/`](/router/reference/src-directory/) directory for routes, [native tabs](/router/advanced/native-tabs/) on mobile platforms, [custom tabs](/router/advanced/custom-tabs/) on web, [typed routes](/router/reference/typed-routes/), and the [React Compiler](https://react.dev/learn/react-compiler) enabled.
+
 </Step>
 
 <Step label="2">
@@ -61,7 +63,7 @@ The above command will install versions of these libraries that are compatible w
 
 ### Setup entry point
 
-For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/\_layout.tsx**](/router/basics/layout/#root-layout).
+For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**src/app/\_layout.tsx**](/router/reference/src-directory/) (or [**app/\_layout.tsx**](/router/basics/layout/#root-layout) if not using the **src** directory).
 
 ```json package.json
 {
@@ -79,7 +81,7 @@ You can create a custom entry point in your Expo Router project to initialize an
 
 1. Create a new file in the root of your project, such as **index.js**. After creating this file, the project structure should look like this:
 
-   <FileTree files={['app/_layout.tsx', 'index.js', 'package.json', 'Other project files']} />
+   <FileTree files={['src/app/_layout.tsx', 'index.js', 'package.json', 'Other project files']} />
 
 2. Import or add your custom configuration to the file. Then, import `expo-router/entry` to register the app entry. Remember to always import it last to ensure all configurations are properly set up before the app renders.
 
@@ -108,11 +110,14 @@ You can create a custom entry point in your Expo Router project to initialize an
 
 ### Modify project configuration
 
-Add a deep linking `scheme` in your [app config](/workflow/configuration/):
+Add a deep linking `scheme` and enable [typed routes](/router/reference/typed-routes/) in your [app config](/workflow/configuration/):
 
 ```json app.json
 {
-  "scheme": "your-app-scheme"
+  "scheme": "your-app-scheme",
+  "experiments": {
+    "typedRoutes": true
+  }
 }
 ```
 
@@ -136,7 +141,7 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ### Modify babel.config.js
 
-Ensure you use `babel-preset-expo` as the `preset`, in the **babel.config.js** file or delete the file:
+If your project has a **babel.config.js** file, ensure you use `babel-preset-expo` as the `preset`. If you don't need any custom Babel configuration, you can delete the file entirely &mdash; the default template does not include one.
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -153,7 +158,7 @@ module.exports = function (api) {
 
 ### Clear bundler cache
 
-After updating the Babel config file, run the following command to clear the bundler cache:
+After updating the configuration, run the following command to clear the bundler cache:
 
 <Terminal cmd={['$ npx expo start --clear']} />
 
