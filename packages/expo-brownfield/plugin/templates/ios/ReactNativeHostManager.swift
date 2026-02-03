@@ -83,6 +83,11 @@ public class ReactNativeHostManager {
     }
   }
 
+  /**
+   * Starts React Native (which initializes delegates) and
+   * fetches and updates the manifest for dev menu if dev menu is
+   * available
+   */
   private func setupDevMenu() {
     guard let reactNativeFactory else {
       fatalError("Trying to setup dev menu without initialized reactNativeFactory")
