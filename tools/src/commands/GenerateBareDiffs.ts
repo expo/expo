@@ -56,15 +56,65 @@ function sdkToBranch(sdkVersion: string) {
   return `sdk-${sdkVersion}`;
 }
 
+const TEMPLATE_PATH = 'templates/expo-template-bare-minimum';
+
+/**
+ * Reads a gitignore file from the given branch via `git show` and converts each
+ * pattern into a pathspec exclude that can be passed directly to `git diff`.
+ */
+async function getExcludePathspecs(
+  branch: string,
+  gitignorePath: string,
+  scope: string
+): Promise<string[]> {
+  let content: string;
+  try {
+    const result = await spawnAsync('git', ['show', `${branch}:${gitignorePath}`], {
+      cwd: EXPO_DIR,
+    });
+    content = result.stdout;
+  } catch {
+    return [];
+  }
+
+  const excludes: string[] = [];
+  for (const rawLine of content.split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#') || line.startsWith('!')) continue;
+
+    const isDir = line.endsWith('/');
+    let pattern = isDir ? line.slice(0, -1) : line;
+    const isRooted = pattern.startsWith('/');
+    if (isRooted) pattern = pattern.slice(1);
+
+    const prefix = `${TEMPLATE_PATH}/${scope}`;
+    if (isRooted) {
+      excludes.push(`:(exclude,glob)${prefix}${pattern}${isDir ? '/**' : ''}`);
+    } else {
+      excludes.push(`:(exclude,glob)${prefix}**/${pattern}${isDir ? '/**' : ''}`);
+    }
+  }
+  return excludes;
+}
+
 async function executeDiffCommand(diffDirPathRaw, sdkFrom: string, sdkTo: string) {
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
   const diffPath = path.join(diffDirPathRaw, `${sdkFrom}..${sdkTo}.diff`);
+  const branch = `origin/${sdkToBranch(sdkTo)}`;
 
   await Git.fetchAsync();
 
+  const excludes = (
+    await Promise.all([
+      getExcludePathspecs(branch, `${TEMPLATE_PATH}/gitignore`, ''),
+      getExcludePathspecs(branch, `${TEMPLATE_PATH}/android/gitignore`, 'android/'),
+      getExcludePathspecs(branch, `${TEMPLATE_PATH}/ios/gitignore`, 'ios/'),
+    ])
+  ).flat();
+
   const diff = await spawnAsync(
     'git',
-    ['diff', diffCommand, '--', 'templates/expo-template-bare-minimum', ':!**/build/**'],
+    ['diff', diffCommand, '--', TEMPLATE_PATH, ...excludes],
     {
       cwd: EXPO_DIR,
     }
