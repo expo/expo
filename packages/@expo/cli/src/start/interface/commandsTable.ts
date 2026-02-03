@@ -45,10 +45,17 @@ export function printUsage(
   const switchMsg = `switch to ${options.devClient === false ? 'development build' : 'Expo Go'}`;
   const target = options.devClient === false ? `Expo Go` : 'development build';
 
-  Log.log();
-  Log.log(printItem(chalk`Using {cyan ${target}}`));
+  const printPrefix = ({ short }: { short: boolean }) => {
+    Log.log();
+    let message = chalk`Using {cyan ${target}}`;
+    if (!short) {
+      message += chalk` {dim │ Press {bold s} to ${switchMsg}}`;
+    }
+    Log.log(printItem(message));
+  };
 
   if (verbose) {
+    printPrefix({ short: true });
     return logCommandsTable([
       { key: 's', msg: switchMsg },
       {},
@@ -86,7 +93,10 @@ export function printUsage(
   // If we're not in verbose mode, we check if we have enough space. If we don't, we don't print
   // the full usage guide and rely on the `printHelp()` message being shown instead
   if ((rows || Infinity) - RESERVED_ROWS > table.lines) {
+    printPrefix({ short: true });
     table.print();
+  } else {
+    printPrefix({ short: false });
   }
 }
 
