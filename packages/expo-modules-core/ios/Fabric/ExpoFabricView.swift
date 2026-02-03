@@ -14,7 +14,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
    The view definition that setup from `ExpoFabricView.create()`.
    */
-  private var viewDefinition: AnyViewDefinition?
+  var viewDefinition: AnyViewDefinition?
 
   /**
    A dictionary of prop objects that contain prop setters.
@@ -228,6 +228,16 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     fatalError("The AppContext must be injected in the 'ExpoFabricView' class")
   }
   // swiftlint:enable unavailable_function
+}
+
+extension ExpoFabricView: @preconcurrency WorkletMethodProvider {
+  var workletViewDefinition: AnyViewDefinition? {
+    viewDefinition
+  }
+
+  func contentViewForWorklet() -> Any {
+    self
+  }
 }
 
 #endif // RCT_NEW_ARCH_ENABLED

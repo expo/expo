@@ -1,4 +1,4 @@
-import { Ref } from 'react';
+import { type Ref, type RefObject } from 'react';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 /**
@@ -93,6 +93,7 @@ export type TextFieldProps = {
     autoFocus?: boolean;
     /**
      * A worklet callback triggered synchronously on the UI runtime when text changes.
+     * The function must include the `'worklet'` directive.
      */
     onChangeSync?: (value: string) => string | void;
 } & CommonViewModifierProps;
@@ -112,4 +113,11 @@ export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText' | 'onSubm
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */
 export declare function TextField(props: TextFieldProps): import("react").JSX.Element;
+export type TextFieldWorkletRef = {
+    setText: (text: string) => void;
+    getText: () => string;
+    focus: () => void;
+    blur: () => void;
+};
+export declare function useTextFieldWorkletRef(ref: RefObject<TextFieldRef | null>): TextFieldWorkletRef | null;
 //# sourceMappingURL=index.d.ts.map

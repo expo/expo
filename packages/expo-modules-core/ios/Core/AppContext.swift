@@ -539,6 +539,43 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // Install `global.expo.NativeModule`.
     EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
+
+    // Install `global.expo.callViewMethod` for calling view methods from worklets.
+    // It runs on main thread, so view access is safe.
+    let callViewMethodFn = uiRuntime.createSyncFunction("callViewMethod", argsCount: 8) {
+      [weak self] _, args in
+      guard let appContext = self, args.count >= 2 else {
+        return .undefined
+      }
+
+      let viewTag = args[0].getInt()
+      let methodName = args[1].getString()
+
+      let methodArgs: [Any] = Array(args.dropFirst(2)).compactMap { $0.getRaw() }
+
+      guard let wrapperView = appContext.findView(withTag: viewTag, ofType: NSObject.self) else {
+        return .undefined
+      }
+
+      guard let provider = wrapperView as? WorkletMethodProvider else {
+        return .undefined
+      }
+      guard let viewDef = provider.workletViewDefinition else {
+        return .undefined
+      }
+      guard let workletFn = viewDef.workletFunctions[methodName] else {
+        return .undefined
+      }
+
+      let contentView = provider.contentViewForWorklet()
+      let result = try workletFn.call(view: contentView, arguments: methodArgs, appContext: appContext)
+
+      if let result {
+        return JavaScriptValue.from(result as AnyObject, runtime: uiRuntime)
+      }
+      return .undefined
+    }
+    coreObject.setProperty("callViewMethod", value: callViewMethodFn)
   }
 
   /**

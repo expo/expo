@@ -113,6 +113,13 @@ declare namespace ExpoGlobal {
    * @platform ios
    */
   export function createWorkletCallback(serializedWorklet: unknown): any;
+
+  /**
+   * Calls a native view method synchronously from the UI runtime.
+   * Used by worklet-callable view functions registered with the `WorkletFunction` DSL.
+   * @platform ios
+   */
+  export function callViewMethod(viewTag: number, methodName: string, ...args: any[]): any;
 }
 
 /* eslint-disable no-var */

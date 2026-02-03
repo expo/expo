@@ -104,6 +104,10 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     textManager.text = text
   }
 
+  func getText() -> String {
+    return textManager.text
+  }
+
   func focus() {
     textManager.isFocused = true
   }

@@ -35,6 +35,11 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   let classes: [String: ClassDefinition]
 
   /**
+   A dictionary of worklet-callable view functions defined by the object.
+   */
+  public let workletFunctions: [String: AnyWorkletViewFunction]
+
+  /**
    Default initializer receiving children definitions from the result builder.
    */
   init(definitions: [AnyDefinition]) {
@@ -70,6 +75,12 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
       .compactMap { $0 as? ClassDefinition }
       .reduce(into: [String: ClassDefinition]()) { dict, klass in
         dict[klass.name] = klass
+      }
+
+    self.workletFunctions = definitions
+      .compactMap { $0 as? AnyWorkletViewFunction }
+      .reduce(into: [String: AnyWorkletViewFunction]()) { dict, fn in
+        dict[fn.name] = fn
       }
   }
 

@@ -1,3 +1,5 @@
+import { WorkletsTester } from 'worklets-tester';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
@@ -243,6 +245,17 @@ export const UIScreens = [
     },
   },
 ];
+
+if (WorkletsTester.isAvailable()) {
+  UIScreens.push({
+    name: 'Sync TextInput (Worklets)',
+    route: 'ui/sync-text-input',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SyncTextInputScreen'));
+    },
+  });
+}
 
 export default function UIScreen() {
   const apis = componentScreensToListElements(UIScreens);

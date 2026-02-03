@@ -22,6 +22,9 @@ export function installExpoGlobalPolyfill() {
     reloadAppAsync: async () => {
       window.location.reload();
     },
+    callViewMethod: () => {
+      throw new Error('Method not implemented.');
+    },
 
     expoModulesCoreVersion: undefined,
     cacheDir: undefined,

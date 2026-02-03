@@ -50,6 +50,20 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setSelection") { (view: TextFieldView, start: Int, end: Int) in
         view.setSelection(start: start, end: end)
       }
+
+      // Worklet-callable versions (synchronous, called from UI runtime)
+      WorkletFunction("setText") { (view: TextFieldView, text: String) in
+        view.setText(text)
+      }
+      WorkletFunction("getText") { (view: TextFieldView) -> String in
+        return view.getText()
+      }
+      WorkletFunction("focus") { (view: TextFieldView) in
+        view.focus()
+      }
+      WorkletFunction("blur") { (view: TextFieldView) in
+        view.blur()
+      }
     }
     View(ShareLinkView.self) {
       AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in

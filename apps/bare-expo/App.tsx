@@ -4,6 +4,7 @@ import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
+import SyncTextInputScreen from 'native-component-list/src/screens/UI/SyncTextInputScreen.ios';
 
 let Notifications;
 try {
@@ -86,5 +87,5 @@ export default function Main() {
 
   const isLoaded = useLoaded();
 
-  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
+  return <ThemeProvider>{isLoaded ? <SyncTextInputScreen /> : null}</ThemeProvider>;
 }

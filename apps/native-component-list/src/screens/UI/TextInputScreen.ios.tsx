@@ -1,4 +1,3 @@
-import 'react-native-reanimated';
 import {
   Button,
   Host,
@@ -20,9 +19,7 @@ import {
   buttonStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { installOnUIRuntime } from 'expo';
 
-installOnUIRuntime();
 export default function TextInputScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
   const secureRef = React.useRef<TextFieldRef>(null);
@@ -40,12 +37,6 @@ export default function TextInputScreen() {
   const [selectedSubmitLabel, setSelectedSubmitLabel] =
     React.useState<(typeof submitLabelOptions)[number]>('continue');
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
-
-  const onChangeSync = React.useCallback((value: string) => {
-    'worklet';
-    const newValue = value.replace(/[^0-9]/g, '');
-    return newValue;
-  }, []);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -152,9 +143,6 @@ export default function TextInputScreen() {
               console.log('value', value);
             }}
           />
-        </Section>
-        <Section title="Sync Validation (onChangeSync)">
-          <TextField placeholder="Numbers only" onChangeSync={onChangeSync} />
         </Section>
         <Section title="Secure Text Input">
           <SecureField ref={secureRef} defaultValue="hey there" keyboardType="numeric" />

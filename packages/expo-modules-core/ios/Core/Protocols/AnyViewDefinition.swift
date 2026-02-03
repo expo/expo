@@ -40,6 +40,11 @@ public protocol AnyViewDefinition: Sendable {
   func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: AppleView)
 
   /**
+   A dictionary of worklet-callable view functions.
+   */
+  var workletFunctions: [String: AnyWorkletViewFunction] { get }
+
+  /**
    Creates a JavaScript object that may be used as a React component prototype.
    */
   @JavaScriptActor

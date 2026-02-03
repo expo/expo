@@ -36,6 +36,13 @@ public struct ViewDefinitionBuilder<ViewType: UIView> {
   }
 
   /**
+   Accepts `WorkletFunction` definition elements.
+   */
+  public static func buildExpression(_ element: WorkletViewFunctionDefinition) -> AnyViewDefinitionElement {
+    return element
+  }
+
+  /**
    Accepts functions as a view definition elements.
    */
   public static func buildExpression<ElementType: ViewDefinitionFunctionElement>(

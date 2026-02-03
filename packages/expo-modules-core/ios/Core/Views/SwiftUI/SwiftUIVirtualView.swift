@@ -2,6 +2,16 @@
 
 import SwiftUI
 
+/**
+ Protocol for type-erased access to a view's definition and content view,
+ used by the worklet `callViewMethod` dispatcher.
+ The UI runtime runs on the main thread, so callers are guaranteed to be on `@MainActor`.
+ */
+protocol WorkletMethodProvider: AnyObject {
+  var workletViewDefinition: AnyViewDefinition? { get }
+  func contentViewForWorklet() -> Any
+}
+
 extension ExpoSwiftUI {
   /**
    An NSObject acting as a fake UIView for RCTMountingManager to represent a SwiftUI view.
@@ -17,7 +27,7 @@ extension ExpoSwiftUI {
     /**
      The view definition that setup from `ExpoFabricView.create()`.
      */
-    private var viewDefinition: AnyViewDefinition?
+    var viewDefinition: AnyViewDefinition?
 
     /**
      Props object that stores all the props for this particular view.
@@ -179,5 +189,17 @@ extension ExpoSwiftUI {
         }
       }
     }
+  }
+}
+
+// MARK: - WorkletMethodProvider conformance
+
+extension ExpoSwiftUI.SwiftUIVirtualView: @preconcurrency WorkletMethodProvider {
+  var workletViewDefinition: AnyViewDefinition? {
+    viewDefinition
+  }
+
+  func contentViewForWorklet() -> Any {
+    contentView
   }
 }

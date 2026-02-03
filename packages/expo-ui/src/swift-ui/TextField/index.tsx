@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import { useWorkletCallback } from 'expo-modules-core';
-import { Ref } from 'react';
+import { useWorkletCallback, useViewTag } from 'expo-modules-core';
+import { useMemo, type Ref, type RefObject } from 'react';
 
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -161,5 +161,43 @@ export function TextField(props: TextFieldProps) {
 
   return (
     <TextFieldNativeView {...transformTextFieldProps(restProps)} onChangeSync={onChangeSyncId} />
+  );
+}
+
+export type TextFieldWorkletRef = {
+  setText: (text: string) => void;
+  getText: () => string;
+  focus: () => void;
+  blur: () => void;
+};
+
+export function useTextFieldWorkletRef(
+  ref: RefObject<TextFieldRef | null>
+): TextFieldWorkletRef | null {
+  const viewTag = useViewTag(ref);
+
+  return useMemo(
+    () =>
+      viewTag == null
+        ? null
+        : {
+            setText: (text: string) => {
+              'worklet';
+              globalThis.expo.callViewMethod(viewTag, 'setText', text);
+            },
+            getText: (): string => {
+              'worklet';
+              return globalThis.expo.callViewMethod(viewTag, 'getText') as string;
+            },
+            focus: () => {
+              'worklet';
+              globalThis.expo.callViewMethod(viewTag, 'focus');
+            },
+            blur: () => {
+              'worklet';
+              globalThis.expo.callViewMethod(viewTag, 'blur');
+            },
+          },
+    [viewTag]
   );
 }

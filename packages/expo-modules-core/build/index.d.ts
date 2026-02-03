@@ -23,4 +23,5 @@ export { LegacyEventEmitter } from './LegacyEventEmitter';
 export { default as NativeModulesProxy } from './NativeModulesProxy';
 export { installOnUIRuntime, createWorkletCallback } from './worklets';
 export { useWorkletCallback } from './hooks/useWorkletCallback';
+export { useViewTag } from './hooks/useViewTag';
 //# sourceMappingURL=index.d.ts.map
