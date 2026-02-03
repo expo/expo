@@ -10,5 +10,5 @@ data class ImageLoadOptions(
   @Field
   val maxHeight: Int = SIZE_ORIGINAL,
   @Field
-  val tintColor: Int? = null,
+  val tintColor: Int? = null
 ) : Record
