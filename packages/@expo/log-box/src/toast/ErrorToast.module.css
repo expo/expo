@@ -1,0 +1,29 @@
+.dismissButton {
+  background: transparent;
+  border: none;
+  padding: 12px 10px;
+  margin: -12px -10px;
+  margin-left: calc(5px - 10px);
+  cursor: pointer;
+}
+
+.dismissContent {
+  background-color: rgba(255, 255, 255, 0.1);
+  height: 20px;
+  width: 20px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+@media (hover: hover) {
+  .dismissButton:hover .dismissContent {
+    opacity: 0.8;
+  }
+}
+
+.dismissButton:active .dismissContent {
+  opacity: 0.5;
+}

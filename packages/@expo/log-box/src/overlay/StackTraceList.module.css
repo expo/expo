@@ -1,3 +1,29 @@
+.collapseButton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.collapseContent {
+  padding: 6px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  outline-color: transparent;
+  color: rgba(234.6, 234.6, 244.8, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  user-select: none;
+}
+
+@media (hover: hover) {
+  .collapseButton:hover .collapseContent {
+    background-color: rgba(234.6, 234.6, 244.8, 0.1);
+  }
+}
+
 .collapseTitle {
   display: none;
 }

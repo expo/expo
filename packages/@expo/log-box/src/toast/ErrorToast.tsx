@@ -6,8 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useEffect, useCallback, useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
 
+import styles from './ErrorToast.module.css';
 import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog, useLogs } from '../Data/LogBoxLog';
 import { LogBoxMessage } from '../overlay/Message';
@@ -119,18 +119,21 @@ function ErrorToast(props: {
       <button data-expo-log-toast onClick={props.onPressOpen}>
         <Count count={totalLogCount} />
 
-        <Text
-          numberOfLines={1}
+        <span
           style={{
             userSelect: 'none',
             paddingLeft: 8,
             color: 'var(--expo-log-color-label)',
             flex: 1,
             fontSize: 14,
-            lineHeight: 22,
+            lineHeight: '22px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: 'block',
           }}>
           {log.message && <LogBoxMessage maxLength={40} message={log.message} />}
-        </Text>
+        </span>
 
         <Dismiss onPress={props.onPressDismiss} />
       </button>
@@ -150,73 +153,43 @@ function Count({ count }: { count: number }) {
         display: 'flex',
         background: 'var(--expo-log-color-danger)',
       }}>
-      <Text
+      <span
         style={{
           color: 'var(--expo-log-color-label)',
           fontSize: 14,
-          lineHeight: 18,
+          lineHeight: '18px',
           textAlign: 'center',
           fontWeight: '600',
-          // @ts-ignore
           textShadow: `0px 0px 3px rgba(51, 51, 51, 0.8)`,
         }}>
         {count <= 1 ? '!' : count}
-      </Text>
+      </span>
     </div>
   );
 }
 
 function Dismiss({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable
-      style={{
-        marginLeft: 5,
-      }}
-      hitSlop={{
-        top: 12,
-        right: 10,
-        bottom: 12,
-        left: 10,
-      }}
-      onPress={onPress}>
-      {({
-        /** @ts-expect-error: react-native types are broken. */
-        hovered,
-        pressed,
-      }) => (
-        <View
-          style={[
-            {
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              height: 20,
-              width: 20,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-            hovered && { opacity: 0.8 },
-            pressed && { opacity: 0.5 },
-          ]}>
-          <svg
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            style={{
-              width: 12,
-              height: 12,
-              color: 'white',
-              // color: 'var(--expo-log-color-danger)',
-            }}>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M17 7L7 17M7 7L17 17"
-            />
-          </svg>
-        </View>
-      )}
-    </Pressable>
+    <button className={styles.dismissButton} onClick={onPress}>
+      <div className={styles.dismissContent}>
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          style={{
+            width: 12,
+            height: 12,
+            color: 'white',
+          }}>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M17 7L7 17M7 7L17 17"
+          />
+        </svg>
+      </div>
+    </button>
   );
 }
 

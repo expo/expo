@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useState, type SVGProps } from 'react';
-import { Pressable } from 'react-native';
 
 import { LogBoxInspectorSourceMapStatus } from './LogBoxInspectorSourceMapStatus';
 import styles from './StackTraceList.module.css';
@@ -311,64 +310,48 @@ export function StackTraceList({
           />
         </div>
 
-        <Pressable onPress={() => setCollapsed(!collapsed)}>
-          {({
-            //@ts-expect-error fix rn-web typings
-            hovered,
-          }) => (
-            <div
-              title={collapseTitle.full}
+        <button
+          className={styles.collapseButton}
+          onClick={() => setCollapsed(!collapsed)}>
+          <div
+            title={collapseTitle.full}
+            className={styles.collapseContent}>
+            <span
+              className={styles.collapseTitle}
               style={{
-                padding: 6,
-                borderRadius: 8,
-                transition: 'background-color 0.3s',
-                outlineColor: 'transparent',
-                backgroundColor: hovered ? 'rgba(234.6, 234.6, 244.8, 0.1)' : undefined,
-                color: 'rgba(234.6, 234.6, 244.8, 0.6)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 2,
+                fontFamily: 'var(--expo-log-font-family)',
+                fontSize: 14,
                 userSelect: 'none',
-                cursor: 'pointer',
+                color: 'rgba(234.6, 234.6, 244.8, 0.6)',
               }}>
-              <span
-                className={styles.collapseTitle}
-                style={{
-                  fontFamily: 'var(--expo-log-font-family)',
-                  fontSize: 14,
-                  userSelect: 'none',
-                  color: 'rgba(234.6, 234.6, 244.8, 0.6)',
-                }}>
-                {containerWidth > 440 ? collapseTitle.full : collapseTitle.short}
-              </span>
+              {containerWidth > 440 ? collapseTitle.full : collapseTitle.short}
+            </span>
 
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="md-hidden">
-                {collapsed ? (
-                  <>
-                    <path d="m7 15 5 5 5-5" />
-                    <path d="m7 9 5-5 5 5" />
-                  </>
-                ) : (
-                  <>
-                    <path d="m7 20 5-5 5 5" />
-                    <path d="m7 4 5 5 5-5" />
-                  </>
-                )}
-              </svg>
-            </div>
-          )}
-        </Pressable>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="md-hidden">
+              {collapsed ? (
+                <>
+                  <path d="m7 15 5 5 5-5" />
+                  <path d="m7 9 5-5 5 5" />
+                </>
+              ) : (
+                <>
+                  <path d="m7 20 5-5 5 5" />
+                  <path d="m7 4 5 5 5-5" />
+                </>
+              )}
+            </svg>
+          </div>
+        </button>
       </div>
 
       {/* Body */}
