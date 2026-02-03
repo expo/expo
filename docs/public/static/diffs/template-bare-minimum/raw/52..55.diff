@@ -1,15 +1,3 @@
-diff --git a/templates/expo-template-bare-minimum/.npmignore b/templates/expo-template-bare-minimum/.npmignore
-index a12b9e9eeb2..c5366ea9a59 100644
---- a/templates/expo-template-bare-minimum/.npmignore
-+++ b/templates/expo-template-bare-minimum/.npmignore
-@@ -7,6 +7,7 @@
- .expo
- .npmignore
- .vscode
-+.cursor
- package-lock.json
- yarn.lock
- yarn-error.log
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
 index 84879d83acd..fc185e53bc3 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
