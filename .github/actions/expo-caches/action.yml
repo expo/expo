@@ -98,6 +98,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: yarn-integrity
+        include-hidden-files: true
         path: |
           node_modules/.yarn-integrity
           apps/*/node_modules/.yarn-integrity
