@@ -52,10 +52,10 @@ const native_1 = require("../../../toolbar/native");
  */
 const StackToolbarSpacer = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement === 'bottom') {
-        return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
     }
-    return null;
+    return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
 };
 exports.StackToolbarSpacer = StackToolbarSpacer;
 function convertStackToolbarSpacerPropsToRNHeaderItem(props) {
@@ -66,7 +66,7 @@ function convertStackToolbarSpacerPropsToRNHeaderItem(props) {
     // Warn if using flexible spacer in Left/Right placement
     if (width === undefined) {
         if (process.env.NODE_ENV !== 'production') {
-            console.warn('Stack.Toolbar.Spacer requires `width` when used in Left or Right placement. Flexible spacers are only supported in Bottom placement.');
+            console.warn('Stack.Toolbar.Spacer requires `width` when used in left or right placement. Flexible spacers are only supported in Bottom placement.');
         }
         return undefined;
     }
