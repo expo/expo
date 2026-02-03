@@ -717,11 +717,11 @@ export default function ModifiersScreen() {
               modifiers={[
                 contentShape(shapes.rectangle()),
                 onTapGesture(() => {
-                  setcontentShapeButtonCounter(contentShapeButtonCounter + 1);
-                  Alert.alert(
-                    'With contentShape',
-                    `Works everywhere! Count: ${contentShapeButtonCounter + 1}`
-                  );
+                  setcontentShapeButtonCounter((prev) => {
+                    const nextCount = prev + 1;
+                    Alert.alert('With contentShape', `Works everywhere! Count: ${nextCount}`);
+                    return nextCount;
+                  });
                 }),
               ]}>
               <Text>Left label</Text>
