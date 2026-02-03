@@ -165,6 +165,8 @@ struct DevMenuFABView: View {
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
   @State private var isSnackSession = false
+  @State private var isLesson = false
+  @State private var hasBeenEdited = false
   @State private var snackName = "Playground"
   @State private var snackDescription = "Learn to code for mobile"
   @State private var screenWidth: CGFloat = 0
@@ -232,7 +234,11 @@ struct DevMenuFABView: View {
               snappedEdge: currentEdge,
               gearPosition: position,
               screenWidth: screenWidth,
-              onSave: handleSave
+              isLesson: isLesson,
+              hasBeenEdited: hasBeenEdited,
+              // onSave: handleSave,  // TODO: Add back when save functionality is implemented
+              onComplete: handleComplete,
+              onGoBack: handleGoBack
             )
           }
 
@@ -300,6 +306,9 @@ struct DevMenuFABView: View {
       .onReceive(NotificationCenter.default.publisher(for: SnackEditingSession.sessionDidChangeNotification)) { _ in
         updateSnackSessionState()
       }
+      .onReceive(NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)) { _ in
+        hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
+      }
     }
     .ignoresSafeArea()
   }
@@ -307,6 +316,9 @@ struct DevMenuFABView: View {
   private func updateSnackSessionState() {
     let session = SnackEditingSession.shared
     isSnackSession = session.isReady
+    isLesson = session.isLesson
+    hasBeenEdited = session.hasBeenEdited
+
     if let id = session.snackId {
       // Extract a display name from the snack ID
       // e.g., "@username/my-snack" -> "my-snack", "new" -> "Playground"
@@ -320,11 +332,34 @@ struct DevMenuFABView: View {
     } else {
       snackName = "Playground"
     }
+
+    // Use lesson description if available
+    if let description = session.lessonDescription {
+      snackDescription = description
+    } else {
+      snackDescription = "Learn to code for mobile"
+    }
   }
 
-  private func handleSave() {
-    // TODO: Implement save functionality
-    print("Save tapped for snack: \(snackName)")
+  // TODO: Add back when save functionality is implemented
+  // private func handleSave() {
+  //   print("Save tapped for snack: \(snackName)")
+  // }
+
+  private func handleGoBack() {
+    DevMenuManager.shared.navigateHome()
+  }
+
+  private func handleComplete() {
+    // Save lesson completion to UserDefaults
+    if let lessonId = SnackEditingSession.shared.lessonId {
+      var completedLessons = UserDefaults.standard.array(forKey: "ExpoGoCompletedLessons") as? [Int] ?? []
+      if !completedLessons.contains(lessonId) {
+        completedLessons.append(lessonId)
+        UserDefaults.standard.set(completedLessons, forKey: "ExpoGoCompletedLessons")
+      }
+    }
+    DevMenuManager.shared.navigateHome()
   }
 
   private func dragGesture(bounds: CGSize, safeArea: EdgeInsets) -> some Gesture {
