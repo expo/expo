@@ -286,7 +286,7 @@ jobs:
       - name: Upload .yarn-integrity
         uses: actions/upload-artifact@v4
         with:
-          name: yarn-integrity
+          name: yarn-integrity-2
           include-hidden-files: true
           path: |
             node_modules/.yarn-integrity
