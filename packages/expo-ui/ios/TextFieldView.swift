@@ -196,10 +196,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
       }
       .onChange(of: textManager.text) { newValue in
         props.onValueChanged(["value": newValue])
-        if let result = try? props.onChangeSync?.callReturning(arguments: [newValue]),
-           let transformed = result as? String {
-          textManager.text = transformed
-        }
+        try? props.onChangeSync?.call(arguments: [newValue])
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue
