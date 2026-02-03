@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Wrap native tab content in SafeAreaProvider to expose tabs insets ([#42770](https://github.com/expo/expo/pull/42770) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Fix `expo-image` dependency range in `expo-router` ([#42808](https://github.com/expo/expo/pull/42808) by [@kitten](https://github.com/kitten))
