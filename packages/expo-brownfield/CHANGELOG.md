@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] strip com.facebook.react:hermes-android in [#42769](https://github.com/expo/expo/pull/42769) by [@pmleczek](https://github.com/pmleczek)
+- [iOS] Brownfield fixes & improvements for iOS in [#42782](https://github.com/expo/expo/pull/42782) by [@pmleczek](https://github.com/pmleczek)
 
 ### 💡 Others
 
