@@ -1,6 +1,16 @@
 # Snack Runtime Bundle
 
-This directory contains the pre-embedded Snack runtime JavaScript bundle for offline/faster loading of Snacks in Expo Go.
+This directory contains the pre-embedded Snack runtime for offline/faster loading of Snacks in Expo Go.
+
+## Contents
+
+| File | Description | Size |
+|------|-------------|------|
+| `snack-runtime.hbc` | Hermes bytecode bundle | 8.54 MB |
+| `manifest.json` | Embedded manifest with asset mappings | - |
+| `assets/` | 70 assets (fonts, images) | 3.95 MB |
+
+**Total size: 12.50 MB**
 
 ## Version Information
 
@@ -12,38 +22,24 @@ This directory contains the pre-embedded Snack runtime JavaScript bundle for off
 | **SDK Version** | `55.0.0` |
 | **Branch** | `production` |
 | **Created** | `2026-01-29T00:38:56.206Z` |
-| **Bundle Format** | Hermes JavaScript bytecode |
-| **Bundle Size** | ~8.5MB |
-| **Downloaded** | `2026-02-04T02:39:13.435Z` |
+| **Downloaded** | `2026-02-04T04:54:31.831Z` |
 
-## How This Bundle Was Downloaded
+## How to Update
 
 ```bash
-yarn download-snack-runtime --platform ios
-```
+# Re-download everything (skips existing files)
+yarn download-snack-runtime
 
-Or manually:
-
-```bash
-# 1. Fetch manifest
-curl -s "https://u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824/group/c9fb9b03-1a02-471e-b0e0-bcce08392ce1" \
-  -H "expo-platform: ios" \
-  -H "Accept: multipart/mixed" > /tmp/snack-manifest.txt
-
-# 2. Parse manifest for launchAsset.url and extensions.assetRequestHeaders
-# 3. Download bundle with authorization header
+# Force re-download by removing the directory first
+rm -rf ios/Exponent/Supporting/SnackRuntime
+yarn download-snack-runtime
 ```
 
 ## How to Enable
 
-Set the UserDefaults key `ExpoGoUseEmbeddedSnackRuntime` to `true`:
-
-```objc
-[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ExpoGoUseEmbeddedSnackRuntime"];
-```
+Set `USE_EMBEDDED_SNACK_RUNTIME` to `true` in `EXBuildConstants.plist`.
 
 ## Related Files
 
-- `EXAppLoaderExpoUpdates.m` - Contains the loading logic
-- `cp-bundle-resources-conditionally.sh` - Build phase that copies this folder to app bundle
-- `SettingsManager.swift` - Swift interface for the flag
+- `EXAppLoaderExpoUpdates.m` - Loading logic for embedded runtime
+- `cp-bundle-resources-conditionally.sh` - Build phase that copies this folder

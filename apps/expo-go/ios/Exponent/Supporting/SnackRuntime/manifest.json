@@ -1,0 +1,640 @@
+{
+  "id": "019c0730-5dce-76e4-a1b0-c909d61e0182",
+  "createdAt": "2026-01-29T00:38:56.206Z",
+  "runtimeVersion": "exposdk:55.0.0",
+  "metadata": {
+    "updateGroup": "c9fb9b03-1a02-471e-b0e0-bcce08392ce1",
+    "branchName": "production"
+  },
+  "extra": {
+    "expoClient": {
+      "web": {
+        "bundler": "metro",
+        "favicon": "./assets/favicon.png"
+      },
+      "icon": "./assets/icon.png",
+      "name": "Snack",
+      "slug": "snack",
+      "extra": {
+        "eas": {
+          "projectId": "933fd9c0-1666-11e7-afca-d980795c5824"
+        },
+        "router": {}
+      },
+      "owner": "exponent",
+      "scheme": "snack",
+      "splash": {
+        "image": "./assets/splash.png"
+      },
+      "plugins": [
+        "expo-font",
+        "expo-router",
+        "expo-asset"
+      ],
+      "updates": {
+        "url": "https://u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824"
+      },
+      "version": "1.0.0",
+      "platforms": [
+        "android",
+        "ios",
+        "web"
+      ],
+      "sdkVersion": "55.0.0",
+      "description": "Write code in Expo's online editor and instantly use it on your phone",
+      "experiments": {
+        "baseUrl": "/v2/55"
+      },
+      "notification": {
+        "icon": "./assets/notification-icon.png",
+        "color": "#000000"
+      },
+      "primaryColor": "#000000",
+      "runtimeVersion": {
+        "policy": "sdkVersion"
+      },
+      "developmentClient": {
+        "silentLaunch": true
+      },
+      "assetBundlePatterns": [
+        "**/*"
+      ]
+    },
+    "eas": {
+      "projectId": "933fd9c0-1666-11e7-afca-d980795c5824"
+    },
+    "scopeKey": "@exponent/snack"
+  },
+  "bundleUrl": "file://SnackRuntime/snack-runtime.hbc",
+  "launchAsset": {
+    "key": "730609b0bce9274842573803e48b26b3",
+    "hash": "NGXiXJQRb9Kw5oSJOP5idMO6MMub1hWHvRIuKHQayeg",
+    "contentType": "application/javascript",
+    "url": "file://SnackRuntime/snack-runtime.hbc",
+    "nsBundleDir": "SnackRuntime",
+    "nsBundleFilename": "snack-runtime",
+    "type": "hbc"
+  },
+  "assets": [
+    {
+      "key": "19cbaa9ed24b8c3c3fdd031eeb73c1af",
+      "hash": "f6u9e8wB2T8KVImxc8q4s8bgaIVHNHrVcbkRvKjmCq4",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "19cbaa9ed24b8c3c3fdd031eeb73c1af",
+      "type": "png"
+    },
+    {
+      "key": "3f78af31cca60105799838a1a7a59fbd",
+      "hash": "CKnVtRPPlH4i7egemoQ72Nd2OmNETNIUhL_edmLMZUM",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3f78af31cca60105799838a1a7a59fbd",
+      "type": "ttf"
+    },
+    {
+      "key": "31b5ffea3daddc69dd01a1f3d6cf63c5",
+      "hash": "FvkimFh7qytGm8E8DfxtXRcbyhC60MkFOtFrwCO_cX0",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "31b5ffea3daddc69dd01a1f3d6cf63c5",
+      "type": "ttf"
+    },
+    {
+      "key": "140c53a7643ea949007aa9a282153849",
+      "hash": "pcrrTTlcXjLx1aMKyzgq68Zk8brf0UkxmQfyIV5OPiY",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "140c53a7643ea949007aa9a282153849",
+      "type": "ttf"
+    },
+    {
+      "key": "ca4b48e04dc1ce10bfbddb262c8b835f",
+      "hash": "AriOrZGt5XENfKGO20Omllpx2TcywG8pDMB6bdJJ6Yc",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "ca4b48e04dc1ce10bfbddb262c8b835f",
+      "type": "ttf"
+    },
+    {
+      "key": "b49ae8ab2dbccb02c4d11caaacf09eab",
+      "hash": "lNq58dWxPqB2nRJKLaDQJDPzuZ1t6loHwERqdxWBAMA",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "b49ae8ab2dbccb02c4d11caaacf09eab",
+      "type": "ttf"
+    },
+    {
+      "key": "b06871f281fee6b241d60582ae9369b9",
+      "hash": "qljzPyOaD7AvXHpsRcBD16msmgkzNYBmlOzW1O3A1qg",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "b06871f281fee6b241d60582ae9369b9",
+      "type": "ttf"
+    },
+    {
+      "key": "1f77739ca9ff2188b539c36f30ffa2be",
+      "hash": "xlG4pn0xkyBvYiw8Ow-8pKLycnEIxCErUsHiouhMmzE",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1f77739ca9ff2188b539c36f30ffa2be",
+      "type": "ttf"
+    },
+    {
+      "key": "605ed7926cf39a2ad5ec2d1f9d391d3d",
+      "hash": "PQavHzHNg6znomWgFLj7Xe4Vdw7KyPelVVUZDmJ-A8I",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "605ed7926cf39a2ad5ec2d1f9d391d3d",
+      "type": "ttf"
+    },
+    {
+      "key": "3b89dd103490708d19a95adcae52210e",
+      "hash": "BvTQCSPqJGl99d8LkphBdZkdi9JXdqAtUxu0AeOT7EI",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3b89dd103490708d19a95adcae52210e",
+      "type": "ttf"
+    },
+    {
+      "key": "370dd5af19f8364907b6e2c41f45dbbf",
+      "hash": "ZPn7YjaB8RImHpovl4JngkOfOSXeqPRKV9Hk25W6bP0",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "370dd5af19f8364907b6e2c41f45dbbf",
+      "type": "ttf"
+    },
+    {
+      "key": "adec7d6f310bc577f05e8fe06a5daccf",
+      "hash": "MfCZwT9uS6BfG0cb8XDLVJMklHQiKRc3LePKXPKeaho",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "adec7d6f310bc577f05e8fe06a5daccf",
+      "type": "ttf"
+    },
+    {
+      "key": "56c8d80832e37783f12c05db7c8849e2",
+      "hash": "vIRLWwLT862rtRTeTgwCCCUtMSNBO9A_Yof6RGrO6Fk",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "56c8d80832e37783f12c05db7c8849e2",
+      "type": "ttf"
+    },
+    {
+      "key": "e20945d7c929279ef7a6f1db184a4470",
+      "hash": "fh3QPdTOkLZYBSVUzXRZ3xZxZxc4mlUvpMbVal-JM-Y",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "e20945d7c929279ef7a6f1db184a4470",
+      "type": "ttf"
+    },
+    {
+      "key": "b4eb097d35f44ed943676fd56f6bdc51",
+      "hash": "-iq30lV4GbK_5QCeRoRO-nFwzxd753NdQ6oqwSlfHVQ",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "b4eb097d35f44ed943676fd56f6bdc51",
+      "type": "ttf"
+    },
+    {
+      "key": "6e435534bd35da5fef04168860a9b8fa",
+      "hash": "YeirpaTpgf4iz3yOi82-oAR251xiw38Bv37jM2HWhCg",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "6e435534bd35da5fef04168860a9b8fa",
+      "type": "ttf"
+    },
+    {
+      "key": "4e85bc9ebe07e0340c9c4fc2f6c38908",
+      "hash": "7xSfCL3S_wmk4shXNHa3sPP7sVtiOVSt5ZiZ5xdb7do",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "4e85bc9ebe07e0340c9c4fc2f6c38908",
+      "type": "ttf"
+    },
+    {
+      "key": "871378c6eab492a3e689a9385dc45a12",
+      "hash": "m8TZ9emU53S9w--amofadJr19QuGFHPvfRzD1vgikmc",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "871378c6eab492a3e689a9385dc45a12",
+      "type": "ttf"
+    },
+    {
+      "key": "d2285965fe34b05465047401b8595dd0",
+      "hash": "P1Ad2wXHCCm7tRz-nKn_9X854GBFfCV7PM8l33Z_CHA",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d2285965fe34b05465047401b8595dd0",
+      "type": "ttf"
+    },
+    {
+      "key": "1681f34aaca71b8dfb70756bca331eb2",
+      "hash": "3Y7kA7vL9eWLd9ykrAPrr6E6KEo9h9jqnKSQQ1qG-kg",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1681f34aaca71b8dfb70756bca331eb2",
+      "type": "ttf"
+    },
+    {
+      "key": "2e38e3ef2dc9c7aafd21c14df3a1cdb8",
+      "hash": "wTr1v-tqXn0tJs6ib8ydIJ9zACuG_byd6PAyXkO7Wow",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "2e38e3ef2dc9c7aafd21c14df3a1cdb8",
+      "type": "png"
+    },
+    {
+      "key": "7d40544b395c5949f4646f5e150fe020",
+      "hash": "LN_rjlzN55dvcBL7jM5zryIpAp7iHU8VCf7RFIccbNg",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "7d40544b395c5949f4646f5e150fe020",
+      "type": "png"
+    },
+    {
+      "key": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "hash": "K3RDqaWOksoRpXW9wRWYYVpX3eMFzYznDWAmBrMCzZg",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "type": "png"
+    },
+    {
+      "key": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "hash": "Pd0Hc-0n4j0leJ8wFzGzrEVa2L5aonoKG4OPicbSciU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "type": "png"
+    },
+    {
+      "key": "2d0a9133e39524f138be6d4db9f4851f",
+      "hash": "ku2BdqyMtENipfxqNwNiagAGrGt8snLumfWFAmLsBw4",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "2d0a9133e39524f138be6d4db9f4851f",
+      "type": "png"
+    },
+    {
+      "key": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "hash": "mtuMXvypMuK3MrKT2oE70uMZUiYwVrzp4lF_7A8LanY",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "hash": "yGu0he7mh-BsUA_EI09RpnhLRTDCrhHQx2SBEQvOMQU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "61ca7e64b7d605716c57706cef640b9a",
+      "hash": "0Dpc16Zu8QxRR5FvnVh4stCgpa1G9AWjHNmWfvqlWv0",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "61ca7e64b7d605716c57706cef640b9a",
+      "type": "png"
+    },
+    {
+      "key": "aff2c65b39a296d4f7e96d0f58169170",
+      "hash": "q1YT0s5w-mfFkm6DE1NmSUUZn8GV-m_nbF_jzsRS4xo",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "aff2c65b39a296d4f7e96d0f58169170",
+      "type": "png"
+    },
+    {
+      "key": "d8e7601e3df962f83c62371ac14964d8",
+      "hash": "xOVOagp95jaqFTN4-8YupKQWlb_t-Af5Dfexj_1zP2c",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d8e7601e3df962f83c62371ac14964d8",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "hash": "yGu0he7mh-BsUA_EI09RpnhLRTDCrhHQx2SBEQvOMQU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "hash": "IyXFOnPlTEOMu8YN_92LUT1HG6QuL1ZxPvQEuV4Mofw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "d84e297c3b3e49a614248143d53e40ca",
+      "hash": "sbwYEMoj4sOM12lxxDWR1yYWEGEkDYt5KwV1cZbdtSg",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d84e297c3b3e49a614248143d53e40ca",
+      "type": "png"
+    },
+    {
+      "key": "1190ab078c57159f4245a328118fcd9a",
+      "hash": "y9-SE-VfZcSNB2rNhCO3ya7k8bgRAf9slaOMTNioZGE",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1190ab078c57159f4245a328118fcd9a",
+      "type": "png"
+    },
+    {
+      "key": "78c625386b4d0690b421eb0fc78f7b9c",
+      "hash": "0FydMNefRaeOVYWi5-xnxqBqiD3ZE34dUFnoyHszznY",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "78c625386b4d0690b421eb0fc78f7b9c",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "hash": "IyXFOnPlTEOMu8YN_92LUT1HG6QuL1ZxPvQEuV4Mofw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "hash": "3Fa5dr1FY44RJfZol0NSXmiGrgvvLI9GUZlIM2hagx8",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "d62ddc38b69aff346c20a28774933d6a",
+      "hash": "tDSnzxjC1M50fHCULqL-4tRBLZOWftkrNy-BC7kmHqU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d62ddc38b69aff346c20a28774933d6a",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "d1ea1496f9057eb392d5bbf3732a61b7",
+      "hash": "wV7HKnTROVchGAgxPVw13rf3YGxtItvdzrAADU4FR60",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d1ea1496f9057eb392d5bbf3732a61b7",
+      "type": "png"
+    },
+    {
+      "key": "19eeb73b9593a38f8e9f418337fc7d10",
+      "hash": "ppou21tsYLhDPVttI8afUgzNimAvP2DnmW5Ilxi8F1w",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "19eeb73b9593a38f8e9f418337fc7d10",
+      "type": "png"
+    },
+    {
+      "key": "ab19f4cbc543357183a20571f68380a3",
+      "hash": "J_TSKdRAklv3IS1d__pF1Zayx7O7KQXJa4ObIIGh2-s",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "ab19f4cbc543357183a20571f68380a3",
+      "type": "png"
+    },
+    {
+      "key": "d8b800c443b8972542883e0b9de2bdc6",
+      "hash": "cIp5z1YbiipIUM4CVFhNOlIxBGvgj7f630tu39sxF4s",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d8b800c443b8972542883e0b9de2bdc6",
+      "type": "png"
+    },
+    {
+      "key": "412dd9275b6b48ad28f5e3d81bb1f626",
+      "hash": "rPaRlXo7zOfRlYVtzpilzxTc4QvqKKpcELNVDAeOI7U",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "412dd9275b6b48ad28f5e3d81bb1f626",
+      "type": "png"
+    },
+    {
+      "key": "017bc6ba3fc25503e5eb5e53826d48a8",
+      "hash": "beyjK1a5f6H6h_rNaZa0bMRRkKVTQA5_698dIJMJm1c",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "017bc6ba3fc25503e5eb5e53826d48a8",
+      "type": "png"
+    },
+    {
+      "key": "20e71bdf79e3a97bf55fd9e164041578",
+      "hash": "78edo8TJffsVcb_2IClYqwUpxaox6DkmAFeLPjWdFEc",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "20e71bdf79e3a97bf55fd9e164041578",
+      "type": "png"
+    },
+    {
+      "key": "7d40544b395c5949f4646f5e150fe020",
+      "hash": "LN_rjlzN55dvcBL7jM5zryIpAp7iHU8VCf7RFIccbNg",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "7d40544b395c5949f4646f5e150fe020",
+      "type": "png"
+    },
+    {
+      "key": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "hash": "K3RDqaWOksoRpXW9wRWYYVpX3eMFzYznDWAmBrMCzZg",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "type": "png"
+    },
+    {
+      "key": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "hash": "Pd0Hc-0n4j0leJ8wFzGzrEVa2L5aonoKG4OPicbSciU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "type": "png"
+    },
+    {
+      "key": "2d0a9133e39524f138be6d4db9f4851f",
+      "hash": "ku2BdqyMtENipfxqNwNiagAGrGt8snLumfWFAmLsBw4",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "2d0a9133e39524f138be6d4db9f4851f",
+      "type": "png"
+    },
+    {
+      "key": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "hash": "mtuMXvypMuK3MrKT2oE70uMZUiYwVrzp4lF_7A8LanY",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "hash": "yGu0he7mh-BsUA_EI09RpnhLRTDCrhHQx2SBEQvOMQU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "61ca7e64b7d605716c57706cef640b9a",
+      "hash": "0Dpc16Zu8QxRR5FvnVh4stCgpa1G9AWjHNmWfvqlWv0",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "61ca7e64b7d605716c57706cef640b9a",
+      "type": "png"
+    },
+    {
+      "key": "aff2c65b39a296d4f7e96d0f58169170",
+      "hash": "q1YT0s5w-mfFkm6DE1NmSUUZn8GV-m_nbF_jzsRS4xo",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "aff2c65b39a296d4f7e96d0f58169170",
+      "type": "png"
+    },
+    {
+      "key": "d8e7601e3df962f83c62371ac14964d8",
+      "hash": "xOVOagp95jaqFTN4-8YupKQWlb_t-Af5Dfexj_1zP2c",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d8e7601e3df962f83c62371ac14964d8",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "hash": "yGu0he7mh-BsUA_EI09RpnhLRTDCrhHQx2SBEQvOMQU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "hash": "IyXFOnPlTEOMu8YN_92LUT1HG6QuL1ZxPvQEuV4Mofw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "d84e297c3b3e49a614248143d53e40ca",
+      "hash": "sbwYEMoj4sOM12lxxDWR1yYWEGEkDYt5KwV1cZbdtSg",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d84e297c3b3e49a614248143d53e40ca",
+      "type": "png"
+    },
+    {
+      "key": "1190ab078c57159f4245a328118fcd9a",
+      "hash": "y9-SE-VfZcSNB2rNhCO3ya7k8bgRAf9slaOMTNioZGE",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1190ab078c57159f4245a328118fcd9a",
+      "type": "png"
+    },
+    {
+      "key": "78c625386b4d0690b421eb0fc78f7b9c",
+      "hash": "0FydMNefRaeOVYWi5-xnxqBqiD3ZE34dUFnoyHszznY",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "78c625386b4d0690b421eb0fc78f7b9c",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "hash": "IyXFOnPlTEOMu8YN_92LUT1HG6QuL1ZxPvQEuV4Mofw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "hash": "3Fa5dr1FY44RJfZol0NSXmiGrgvvLI9GUZlIM2hagx8",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "d62ddc38b69aff346c20a28774933d6a",
+      "hash": "tDSnzxjC1M50fHCULqL-4tRBLZOWftkrNy-BC7kmHqU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d62ddc38b69aff346c20a28774933d6a",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "hash": "7xP8DfxS7COBdYX9fhCfvfWTo7JUnEDOcaybDtoSzCw",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "a4e0725c66112486cc6f4ab4e0025528",
+      "hash": "N_pfJVE0il60FHWie8jOeIBAo-87MjEYXHhsBYQnSAk",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "a4e0725c66112486cc6f4ab4e0025528",
+      "type": "png"
+    },
+    {
+      "key": "92342ace2ac52e29a7fce51b89c2cbd0",
+      "hash": "Wk4paoEO3uI7usXxNnG-ZtPSQVZLZ9EFQ5UjKrmkraU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "92342ace2ac52e29a7fce51b89c2cbd0",
+      "type": "png"
+    },
+    {
+      "key": "7c519c6f00d65602c16b98bdffddc6f4",
+      "hash": "e1afBN99EXEwn2WAY7-kt2AS077pKrAmG_8alYuKLLM",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "7c519c6f00d65602c16b98bdffddc6f4",
+      "type": "png"
+    },
+    {
+      "key": "ccb993f31c04afbcca02178df04f4170",
+      "hash": "L4mCZz0x-TybyASb5BJYQ0aZKdFxi5NbCF0ciiJTIVU",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "ccb993f31c04afbcca02178df04f4170",
+      "type": "png"
+    }
+  ]
+}

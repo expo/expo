@@ -12,5 +12,7 @@ fi
 SNACK_RUNTIME_SRC="${PROJECT_DIR}/Exponent/Supporting/SnackRuntime"
 SNACK_RUNTIME_DST="${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/SnackRuntime"
 if [ -d "$SNACK_RUNTIME_SRC" ]; then
+    # Remove existing to avoid nested folders from cp -r
+    rm -rf "$SNACK_RUNTIME_DST"
     cp -r "$SNACK_RUNTIME_SRC" "$SNACK_RUNTIME_DST"
 fi

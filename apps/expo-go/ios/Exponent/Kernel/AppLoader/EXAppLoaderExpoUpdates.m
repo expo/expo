@@ -356,16 +356,51 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
     return NO;
   }
 
-  return [BuildConstants sharedInstance].useEmbeddedSnackRuntime;
+  return [EXBuildConstants sharedInstance].useEmbeddedSnackRuntime;
 }
 
 - (void)_loadEmbeddedSnackRuntime
 {
-  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"snack-runtime" ofType:@"hbc" inDirectory:@"SnackRuntime"];
+  // Load the embedded manifest.json
+  NSString *manifestPath = [[NSBundle mainBundle] pathForResource:@"manifest" ofType:@"json" inDirectory:@"SnackRuntime"];
+  if (!manifestPath) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1000
+                             userInfo:@{NSLocalizedDescriptionKey: @"Embedded Snack runtime manifest not found"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
 
-  if (!bundlePath) {
+  NSData *manifestData = [NSData dataWithContentsOfFile:manifestPath];
+  if (!manifestData) {
     _error = [NSError errorWithDomain:@"EXAppLoader"
                                  code:1001
+                             userInfo:@{NSLocalizedDescriptionKey: @"Failed to read embedded Snack runtime manifest"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  NSError *jsonError;
+  NSMutableDictionary *manifestJson = [[NSJSONSerialization JSONObjectWithData:manifestData options:NSJSONReadingMutableContainers error:&jsonError] mutableCopy];
+  if (jsonError || !manifestJson) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1002
+                             userInfo:@{NSLocalizedDescriptionKey: @"Failed to parse embedded Snack runtime manifest"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  // Load the bundle
+  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"snack-runtime" ofType:@"hbc" inDirectory:@"SnackRuntime"];
+  if (!bundlePath) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1003
                              userInfo:@{NSLocalizedDescriptionKey: @"Embedded Snack runtime bundle not found"}];
     if (self.delegate) {
       [self.delegate appLoader:self didFailWithError:_error];
@@ -376,7 +411,7 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
   NSData *bundleData = [NSData dataWithContentsOfFile:bundlePath];
   if (!bundleData) {
     _error = [NSError errorWithDomain:@"EXAppLoader"
-                                 code:1002
+                                 code:1004
                              userInfo:@{NSLocalizedDescriptionKey: @"Failed to read embedded Snack runtime bundle"}];
     if (self.delegate) {
       [self.delegate appLoader:self didFailWithError:_error];
@@ -384,22 +419,36 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
     return;
   }
 
-  // Create a minimal manifest for the embedded Snack runtime
-  NSDictionary *manifestJson = @{
-    @"id": [[NSUUID UUID] UUIDString],
-    @"scopeKey": [NSString stringWithFormat:@"@snack/embedded-%@", [EXVersions sharedInstance].sdkVersion],
-    @"extra": @{
-      @"scopeKey": [NSString stringWithFormat:@"@snack/embedded-%@", [EXVersions sharedInstance].sdkVersion],
-      @"expoClient": @{
-        @"name": @"Snack",
-        @"slug": @"snack",
-        @"sdkVersion": [EXVersions sharedInstance].sdkVersion,
-        @"platforms": @[@"ios", @"android", @"web"]
-      }
-    },
-    @"runtimeVersion": [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].sdkVersion],
-    @"isVerified": @YES
-  };
+  // Update launchAsset.url to point to the actual local file path
+  // ExpoUpdatesManifest.bundleUrl() reads from launchAsset.url
+  NSURL *bundleUrl = [NSURL fileURLWithPath:bundlePath];
+  NSMutableDictionary *launchAsset = [manifestJson[@"launchAsset"] mutableCopy] ?: [NSMutableDictionary new];
+  launchAsset[@"url"] = bundleUrl.absoluteString;
+  manifestJson[@"launchAsset"] = launchAsset;
+
+  // Add required fields if not present
+  if (!manifestJson[@"scopeKey"]) {
+    manifestJson[@"scopeKey"] = [NSString stringWithFormat:@"@snack/embedded-%@", [EXVersions sharedInstance].sdkVersion];
+  }
+  if (!manifestJson[@"isVerified"]) {
+    manifestJson[@"isVerified"] = @YES;
+  }
+
+  // Ensure extra.expoClient exists for SDK version detection
+  NSMutableDictionary *extra = [manifestJson[@"extra"] mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary *expoClient = [extra[@"expoClient"] mutableCopy] ?: [NSMutableDictionary new];
+  if (!expoClient[@"sdkVersion"]) {
+    expoClient[@"sdkVersion"] = [EXVersions sharedInstance].sdkVersion;
+  }
+  if (!expoClient[@"name"]) {
+    expoClient[@"name"] = @"Snack";
+  }
+  if (!expoClient[@"slug"]) {
+    expoClient[@"slug"] = @"snack";
+  }
+  extra[@"expoClient"] = expoClient;
+  extra[@"scopeKey"] = manifestJson[@"scopeKey"];
+  manifestJson[@"extra"] = extra;
 
   EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:manifestJson];
 
