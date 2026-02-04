@@ -93,7 +93,7 @@ runs:
           packages/*/node_modules
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
-        key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
+        key: ${{ runner.os }}-workspace-modules-clean-${{ hashFiles('yarn.lock') }}
     - name: Upload .yarn-integrity
       uses: actions/upload-artifact@v4
       with:
