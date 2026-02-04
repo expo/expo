@@ -27,8 +27,14 @@ export const printHelp = (): void => {
 };
 
 export const getTerminalColumns = () => process.stdout.columns || 80;
-export const printItem = (text: string): string =>
-  `${BLT} ` + wrapAnsi(text, getTerminalColumns()).trimStart();
+
+export const printItem = (text: string, opts?: { dim: boolean }): string => {
+  let output = `${BLT} ` + wrapAnsi(text, getTerminalColumns()).trimStart();
+  if (opts?.dim) {
+    output = chalk`{dim ${output}}`;
+  }
+  return output;
+};
 
 export function printUsage(
   options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>,
