@@ -42,6 +42,8 @@ export type RouteNode = {
     contextKey: string;
     /** Redirect Context Module ID, used for matching children. */
     destinationContextKey?: string;
+    /** Actual destination path for redirects (e.g., 'blog/expo-apps'). */
+    destinationPath?: string;
     /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
     parentContextKey?: string;
     /** Is the redirect permanent. */

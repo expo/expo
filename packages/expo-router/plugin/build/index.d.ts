@@ -18,7 +18,27 @@ declare const withRouter: ConfigPlugin<{
     /** Generate partial typed routes */
     partialTypedGroups?: boolean;
     /** A list of headers that are set on every route response from the server */
-    headers: Record<string, string | string[]>;
+    headers?: Record<string, string | string[]>;
+    /** Static redirects configuration. Redirects are performed before the request reaches the route handler. */
+    redirects?: {
+        /** The source path pattern to match (e.g., '/old-page' or '/blog/:slug') */
+        source: string;
+        /** The destination path to redirect to (e.g., '/new-page' or '/posts/:slug') */
+        destination: string;
+        /** Whether the redirect is permanent (301) or temporary (302). Defaults to false (302). */
+        permanent?: boolean;
+        /** HTTP methods to apply this redirect to. If not specified, applies to all methods. */
+        methods?: string[];
+    }[];
+    /** URL rewrites configuration. Rewrites allow you to map an incoming request path to a different destination path. */
+    rewrites?: {
+        /** The source path pattern to match (e.g., '/api/:path*') */
+        source: string;
+        /** The destination path to rewrite to (e.g., '/internal-api/:path*') */
+        destination: string;
+        /** HTTP methods to apply this rewrite to. If not specified, applies to all methods. */
+        methods?: string[];
+    }[];
     /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
     unstable_useServerMiddleware?: boolean;
     /** Enable experimental data loader support. Requires `web.output: 'static'` to be set in app config. */

@@ -117,9 +117,15 @@ export function getServerManifest(
       if (shouldLinkExternally(redirect.route.destinationContextKey!)) {
         redirect.absoluteRoutePath = redirect.route.destinationContextKey!;
       } else {
+        // Use the stored destination path directly
+        // This preserves the actual destination like /blog/expo-apps
+        // instead of the route pattern like /blog/[post]
         redirect.absoluteRoutePath =
-          flat.find(({ route }) => route.contextKey === redirect.route.destinationContextKey)
-            ?.normalizedContextKey ?? '/';
+          '/' +
+          (redirect.route.destinationPath ??
+            flat.find(({ route }) => route.contextKey === redirect.route.destinationContextKey)
+              ?.normalizedContextKey ??
+            '');
       }
 
       return redirect;
@@ -131,9 +137,13 @@ export function getServerManifest(
     ({ normalizedContextKey }) => normalizedContextKey
   )
     .map((rewrite) => {
+      // Use the stored destination path directly, similar to redirects above
       rewrite.absoluteRoutePath =
-        flat.find(({ route }) => route.contextKey === rewrite.route.destinationContextKey)
-          ?.normalizedContextKey ?? '/';
+        '/' +
+        (rewrite.route.destinationPath ??
+          flat.find(({ route }) => route.contextKey === rewrite.route.destinationContextKey)
+            ?.normalizedContextKey ??
+          '');
 
       return rewrite;
     })
