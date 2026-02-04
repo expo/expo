@@ -1,0 +1,58 @@
+# Basic Flow
+#
+# Verifies that:
+# - Native app using brownfield artifacts launches
+# - Brownfield app can be launched
+# - Brownfield app can be navigated into multiple times
+# - Navigation in the brownfield app works
+appId: host.exp.exponent.brownfield.test.android
+---
+# Launch and verify the native app
+- launchApp
+- assertVisible:
+    id: openReactNativeButton
+# Launch and verify the brownfield app
+- tapOn:
+    id: openReactNativeButton
+- assertVisible: Expo + Brownfield = 🖤
+- assertVisible:
+    id: home-tab
+- assertVisible:
+    id: apis-tab
+# Hide LogBox (collides with taps)
+# - tapOn: Open debugger to view warnings.
+# Validate navigating through the app
+- tapOn:
+    id: apis-tab
+- assertVisible: Communication
+- assertVisible: Bi-directional communication API
+- assertVisible: Navigation
+- assertVisible: Navigation API
+- tapOn:
+    id: apis-navigation
+- assertVisible: Navigation
+- assertVisible:
+    id: navigation-pop-to-native
+- assertVisible:
+    id: navigation-enable-native-back
+- assertVisible:
+    id: navigation-disable-native-back
+# Return to the native app
+- back
+- assertVisible:
+    id: openReactNativeButton
+# Verify second launch (navigation state should be restored)
+- tapOn:
+    id: openReactNativeButton
+- assertVisible: Navigation
+- assertVisible:
+    id: navigation-pop-to-native
+# Varify RN navigation
+- assertVisible:
+    id: header-back-button
+- tapOn:
+    id: header-back-button
+- assertVisible: Communication
+- assertVisible: Bi-directional communication API
+- assertVisible: Navigation
+- assertVisible: Navigation API
