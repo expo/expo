@@ -15,7 +15,7 @@ Before diving into how to construct your app's navigation tree with Expo Router,
 
 All navigation routes in your app are defined by the files and sub-directories inside the [**src/app**](/router/reference/src-directory/) directory. Every file inside the **src/app** directory has a default export that defines a distinct page in your app (except for the special **\_layout** files).
 
-Accordingly, directories inside **src/app** define groups of related screens together as stacks, tabs, or in other arrangements.
+Accordingly, directories inside **src/app** define groups of related screens together.
 
 ### 2. All pages have a URL
 
@@ -23,7 +23,7 @@ All pages have a URL path that matches the file's location in the **src/app** di
 
 ### 3. First index.tsx is the initial route
 
-With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. In the [default template](/router/installation/#quick-start), this is **src/app/index.tsx**. If the app user should start by default in a deeper part of your navigation tree, you can use a [route group](/router/basics/notation/#parentheses) (a directory where the name is surrounded in parentheses), and that will not count as part of the URL. For example, a file at **src/app/(auth)/login.tsx** has the URL `/login`, not `/auth/login`.
+With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. In the [default template](/router/installation/#quick-start), this is **src/app/index.tsx**. If the app user should start by default in a deeper part of your navigation tree, you can use a [route group](/router/basics/notation/#parentheses) (a directory where the name is surrounded in parentheses), and that will not count as part of the URL. If you want your first screen to be a group of tabs, you might put all of the tab pages inside the **src/app/(tabs)** directory and define the default tab as **index.tsx**. With this arrangement, the `/` URL will take the user directly to **src/app/(tabs)/index.tsx** file.
 
 ### 4. Root \_layout.tsx replaces App.jsx/tsx
 
