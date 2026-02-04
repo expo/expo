@@ -32,14 +32,14 @@ public fun fetchManifest(reactHost: ReactHost, completion: (Manifest?, String?) 
   Thread {
     val manifestUrl = getManifestUrl(reactHost)
     if (manifestUrl == null) {
-      println("ManifestProvider: No manifest URL found")
+      Log.e("DevMenuSupport(brownfield)", "No manifest URL found")
       completion(null, null)
       return@Thread
     }
 
     val manifest = makeManifestRequest(manifestUrl)
     if (manifest == null) {
-      println("ManifestProvider: Failed to fetch manifest")
+      Log.e("DevMenuSupport(brownfield)", "Failed to fetch manifest")
       completion(null, null)
       return@Thread
     }
@@ -71,23 +71,22 @@ internal fun makeManifestRequest(manifestUrl: String): Manifest? {
       if (response.isSuccessful) {
         val responseBody = response.body?.string()
         if (responseBody != null) {
+          Log.d("DevMenuSupport(brownfield)", "Successfully fetched manifest")
           val manifestJson = JSONObject(responseBody)
-          val manifest = Manifest.fromManifestJson(manifestJson)
-          println("ManifestProvider: Successfully fetched manifest")
-          return manifest
+          return Manifest.fromManifestJson(manifestJson)
         }
       } else {
-        println("ManifestProvider: Failed to fetch manifest: ${response.code}")
+        Log.e("DevMenuSupport(brownfield)", "Failed to fetch manifest: ${response.code}")
         return null
       }
     }
 
     return null
   } catch (e: IOException) {
-    println("ManifestProvider: Failed to connect to Metro: ${e.message}")
+    Log.e("DevMenuSupport(brownfield)", "Failed to connect to Metro: ${e.message}")
     return null
   } catch (e: Exception) {
-    println("ManifestProvider: Failed to fetch manifest: ${e.message}")
+    Log.e("DevMenuSupport(brownfield)", "Failed to retrieve manifest: ${e.message}")
     return null
   }
 }
@@ -99,19 +98,19 @@ internal fun getManifestUrl(reactHost: ReactHost): String? {
   try {
     val sourceUrl = reactHost.devSupportManager?.sourceUrl
     if (sourceUrl == null) {
-      println("ManifestProvider: No source URL found in reactHost.devSupportManager")
+      Log.e("DevMenuSupport(brownfield)", "No source URL found in reactHost.devSupportManager")
       return null
     }
 
     val url = URL(sourceUrl)
     if (url.port == -1) {
-      println("ManifestProvider: No port found in source URL")
+      Log.e("DevMenuSupport(brownfield)", "No port found in source URL")
       return null
     }
 
     return "${url.protocol}://${url.host}:${url.port}"
   } catch (e: MalformedURLException) {
-    println("ManifestProvider: Failed to parse source URL: ${e.message}")
+    Log.e("DevMenuSupport(brownfield)", "Failed to parse source URL: ${e.message}")
     return null
   }
 }
