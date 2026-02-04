@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -29,24 +30,26 @@ object DevMenuSupport {
  * Fetches the manifest from the bundler server
  */
 public fun fetchManifest(reactHost: ReactHost, completion: (Manifest?, String?) -> Unit) {
-  Thread {
+  DevMenuSupport.coroutineScope.launch {
     val manifestUrl = getManifestUrl(reactHost)
     if (manifestUrl == null) {
       Log.e("DevMenuSupport(brownfield)", "No manifest URL found")
       completion(null, null)
-      return@Thread
+      return@launch
     }
 
-    val manifest = makeManifestRequest(manifestUrl)
+    val manifest = withContext(Dispatchers.IO) {
+      makeManifestRequest(manifestUrl)
+    }
+
     if (manifest == null) {
       Log.e("DevMenuSupport(brownfield)", "Failed to fetch manifest")
       completion(null, null)
-      return@Thread
+      return@launch
     }
 
     completion(manifest, manifestUrl)
   }
-    .start()
 }
 
 /*
@@ -94,7 +97,7 @@ internal fun makeManifestRequest(manifestUrl: String): Manifest? {
 /**
  * Gets the manifest URL from the React host
  */
-internal fun getManifestUrl(reactHost: ReactHost): String? {
+internal suspend fun getManifestUrl(reactHost: ReactHost): String? {
   try {
     val sourceUrl = reactHost.devSupportManager?.sourceUrl
     if (sourceUrl == null) {
