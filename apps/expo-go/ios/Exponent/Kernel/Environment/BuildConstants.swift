@@ -33,6 +33,6 @@ public final class BuildConstants: NSObject {
       expoRuntimeVersion = runtimeVersion
     }
 
-    useEmbeddedSnackRuntime = config["USE_EMBEDDED_SNACK_RUNTIME"] as? Bool ?? false
+    useEmbeddedSnackRuntime = config["USE_EMBEDDED_SNACK_RUNTIME"] as? Bool ?? true
   }
 }
