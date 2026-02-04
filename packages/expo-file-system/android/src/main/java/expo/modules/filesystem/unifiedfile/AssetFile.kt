@@ -69,7 +69,10 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
 
   override fun listFilesAsUnified(): List<UnifiedFileInterface> {
     val list = context.assets.list(path)
-    return list?.map { name -> AssetFile(context, File(path, name).toUri()) as UnifiedFileInterface } ?: emptyList()
+    return list?.map { name ->
+      val childPath = if (path.isEmpty()) name else "$path/$name"
+      AssetFile(context, "asset://$childPath".toUri()) as UnifiedFileInterface
+    } ?: emptyList()
   }
 
   override val type: String?
