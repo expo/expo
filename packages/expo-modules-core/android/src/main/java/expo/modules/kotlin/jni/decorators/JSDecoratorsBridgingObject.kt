@@ -44,6 +44,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     takesOwner: Boolean,
     enumerable: Boolean,
     desiredTypes: Array<ExpectedType>,
+    cppReturnType: Int,
     body: JNIFunctionBody
   )
 
@@ -98,13 +99,13 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     )
   }
 
-  override fun deallocate() {
+  @Throws(Throwable::class)
+  protected fun finalize() {
     mHybridData.resetNative()
   }
 
-  @Throws(Throwable::class)
-  protected fun finalize() {
-    deallocate()
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 
   fun ObjectDefinitionData.exportConstants() {

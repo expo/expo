@@ -173,12 +173,14 @@ internal fun PublishingExtension.setupRepository(publication: PublicationConfig,
  * @param project The project to create the publication for.
  * @param libraryExtension The library extension to use.
  * @param rnVersion The React Native version to set (not null only for brownfield project).
+ * @param hermesVersion The Hermes version to set (not null only for brownfield project).
  */
 internal fun PublishingExtension.createPublication(
   from: String,
   project: Project,
   libraryExtension: LibraryExtension,
   rnVersion: String?,
+  hermesVersion: String?,
 ) {
   val _artifactId =
     if (rnVersion != null) {
@@ -196,8 +198,8 @@ internal fun PublishingExtension.createPublication(
 
       pom.withXml { xml ->
         removeReactNativeDependencyPom(xml)
-        if (rnVersion != null) {
-          setReactNativeVersionPom(xml, rnVersion)
+        if (rnVersion != null && hermesVersion != null) {
+          setReactNativeVersionPom(xml, rnVersion, hermesVersion)
         }
       }
     }

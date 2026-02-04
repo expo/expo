@@ -9,10 +9,37 @@ import type { SerialAsset } from '@expo/metro-config/build/serializer/serializer
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import prettyBytes from 'pretty-bytes';
 
 import { Log } from '../log';
 import { env } from '../utils/env';
+
+let bytesFormatter: Intl.NumberFormat | undefined | null;
+
+const prettyBytes = (bytes: number): string => {
+  try {
+    if (bytesFormatter === undefined && typeof Intl === 'object') {
+      bytesFormatter = new Intl.NumberFormat('en', {
+        notation: 'compact',
+        style: 'unit',
+        unit: 'byte',
+        unitDisplay: 'narrow',
+      });
+    }
+    if (bytesFormatter != null) {
+      return bytesFormatter.format(bytes);
+    }
+  } catch {
+    bytesFormatter = null;
+  }
+  // Fall back if ICU is unavailable, which is rare but possible with custom Node.js builds
+  if (bytes >= 900_000) {
+    return `${(bytes / 1_000_000).toFixed(1)}MB`;
+  } else if (bytes >= 900) {
+    return `${(bytes / 1_000).toFixed(1)}KB`;
+  } else {
+    return `${bytes}B`;
+  }
+};
 
 const BLT = '\u203A';
 
@@ -265,14 +292,25 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   }
 
   if (loaderEntries.length) {
+    const loadersWithoutSourcemaps = loaderEntries.filter((entry) => !entry[0].endsWith('.map'));
     Log.log('');
-    Log.log(chalk.bold`${BLT} Loader outputs (${loaderEntries.length}):`);
+    Log.log(chalk.bold`${BLT} Loaders (${loadersWithoutSourcemaps.length}):`);
 
-    for (const [loaderFilename, assets] of loaderEntries.sort(
+    for (const [loaderFilename, assets] of loadersWithoutSourcemaps.sort(
       (a, b) => a[0].length - b[0].length
     )) {
       const id = assets.loaderId!;
-      Log.log(id === '/' ? '/ ' + chalk.gray('(index)') : id, sizeStr(assets.contents));
+      const hasSourceMap = loaderEntries.find(
+        ([filename, entry]) =>
+          filename !== loaderFilename &&
+          entry.loaderId === assets.loaderId &&
+          filename.endsWith('.map')
+      );
+      Log.log(
+        id === '/' ? '/ ' + chalk.gray('(index)') : id,
+        sizeStr(assets.contents),
+        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+      );
     }
   }
 

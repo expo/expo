@@ -126,7 +126,7 @@ data class UpdatesConfiguration(
     enableExpoUpdatesProtocolV0CompatibilityMode = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE) ?: context?.getMetadataValue("expo.modules.updates.ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE") ?: false,
     enableBsdiffPatchSupport = overrideMap?.readValueCheckingType<Boolean>(UPDATES_CONFIGURATION_ENABLE_BSDIFF_PATCH_SUPPORT)
       ?: context?.getMetadataValue("expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT")
-      ?: true,
+      ?: false,
     disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap),
     hasUpdatesOverride = configOverride != null
   )

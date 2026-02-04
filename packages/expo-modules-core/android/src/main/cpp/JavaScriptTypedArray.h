@@ -2,7 +2,6 @@
 
 #include "TypedArray.h"
 #include "JavaScriptObject.h"
-#include "WeakRuntimeHolder.h"
 
 #include <fbjni/fbjni.h>
 #include <fbjni/ByteBuffer.h>
@@ -33,11 +32,6 @@ public:
 
   JavaScriptTypedArray(
     std::weak_ptr<JavaScriptRuntime> runtime,
-    std::shared_ptr<jsi::Object> jsObject
-  );
-
-  JavaScriptTypedArray(
-    WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
 

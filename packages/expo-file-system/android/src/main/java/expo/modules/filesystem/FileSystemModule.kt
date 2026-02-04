@@ -150,18 +150,19 @@ class FileSystemModule : Module() {
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+        val append = options?.append ?: false
         if (content.`is`(String::class)) {
           content.get(String::class).let {
             if (options?.encoding == EncodingType.BASE64) {
-              file.write(Base64.decode(it, Base64.DEFAULT))
+              file.write(Base64.decode(it, Base64.DEFAULT), append)
             } else {
-              file.write(it)
+              file.write(it, append)
             }
           }
         }
         if (content.`is`(TypedArray::class)) {
           content.get(TypedArray::class).let {
-            file.write(it)
+            file.write(it, append)
           }
         }
       }
@@ -255,7 +256,7 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile ->
         FileSystemFileHandle(file)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
       Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->

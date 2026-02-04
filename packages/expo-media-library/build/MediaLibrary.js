@@ -437,7 +437,9 @@ export async function getAssetsAsync(assetsOptions = {}) {
 export function addListener(listener) {
     return MediaLibrary.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
 }
-// @docsMissing
+/**
+ * @deprecated use subscription.remove() instead.
+ */
 export function removeSubscription(subscription) {
     subscription.remove();
 }

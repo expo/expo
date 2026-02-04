@@ -5,7 +5,7 @@ import ContactsUI
 let onContactsChangeEventName = "onContactsChange"
 
 public class ContactsModule: Module, OnContactPickingResultHandler {
-  private let contactStore = CNContactStore()
+  private lazy var contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?
@@ -578,7 +578,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     let path = url.path
     let standardizedPath = NSString(string: path).standardizingPath
 
-    guard FileSystemUtilities.permissions(appContext, for: url).contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
+    guard FileSystemUtilities.isReadableFile(appContext, url) else {
       return nil
     }
 

@@ -54,6 +54,7 @@ export async function exportAppAsync(
     dev,
     dumpAssetmap,
     sourceMaps,
+    inlineSourceMaps,
     minify,
     bytecode,
     maxWorkers,
@@ -63,6 +64,7 @@ export async function exportAppAsync(
     Options,
     | 'dumpAssetmap'
     | 'sourceMaps'
+    | 'inlineSourceMaps'
     | 'dev'
     | 'clear'
     | 'outputDir'
@@ -196,7 +198,8 @@ export async function exportAppAsync(
                 }),
                 mode: dev ? 'development' : 'production',
                 engine: isHermes ? 'hermes' : undefined,
-                serializerIncludeMaps: sourceMaps,
+                serializerIncludeMaps: sourceMaps || inlineSourceMaps,
+                inlineSourceMap: inlineSourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,
                 hosted: hostedNative,

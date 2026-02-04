@@ -39,7 +39,7 @@ function runVoidBenchmark(): BenchmarkResult {
   }
 
   let bridgeTime = 0;
-  {
+  if (BridgeModule) {
     const start = performance.now();
     for (let i = 0; i < runs; i++) {
       BridgeModule.nothing();
@@ -82,7 +82,7 @@ function runNumberBenchmark(): BenchmarkResult {
   }
 
   let bridgeTime = 0;
-  {
+  if (BridgeModule) {
     const start = performance.now();
     let num = 0;
     for (let i = 0; i < runs; i++) {
@@ -124,7 +124,7 @@ function runStringsBenchmark(): BenchmarkResult {
   }
 
   let bridgeTime = 0;
-  {
+  if (BridgeModule) {
     const start = performance.now();
     for (let i = 0; i < runs; i++) {
       BridgeModule.addStrings('hello', 'world');
@@ -165,7 +165,7 @@ function runArrayBenchmark(): BenchmarkResult {
   }
 
   let bridgeTime = 0;
-  {
+  if (BridgeModule) {
     const start = performance.now();
     for (let i = 0; i < runs; i++) {
       BridgeModule.foldArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);

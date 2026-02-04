@@ -12,11 +12,11 @@ exports.createSourceId = createSourceId;
 const crypto_1 = require("crypto");
 const fs_1 = require("fs");
 const promises_1 = __importDefault(require("fs/promises"));
-const p_limit_1 = __importDefault(require("p-limit"));
 const path_1 = __importDefault(require("path"));
 const stream_1 = require("stream");
 const FileHookTransform_1 = require("./FileHookTransform");
 const ReactImportsPatcher_1 = require("./ReactImportsPatcher");
+const Concurrency_1 = require("../utils/Concurrency");
 const Path_1 = require("../utils/Path");
 const Predicates_1 = require("../utils/Predicates");
 const Profile_1 = require("../utils/Profile");
@@ -24,7 +24,7 @@ const Profile_1 = require("../utils/Profile");
  * Create a `Fingerprint` from `HashSources` array
  */
 async function createFingerprintFromSourcesAsync(sources, projectRoot, options) {
-    const limiter = (0, p_limit_1.default)(options.concurrentIoLimit);
+    const limiter = (0, Concurrency_1.createLimiter)(options.concurrentIoLimit);
     const fingerprintSources = await Promise.all(sources.map((source) => createFingerprintSourceAsync(source, limiter, projectRoot, options)));
     const hasher = (0, crypto_1.createHash)(options.hashAlgorithm);
     for (const source of fingerprintSources) {

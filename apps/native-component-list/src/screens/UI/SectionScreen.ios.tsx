@@ -1,5 +1,5 @@
 import { Host, List, Section, Text, Toggle } from '@expo/ui/swift-ui';
-import { headerProminence } from '@expo/ui/swift-ui/modifiers';
+import { headerProminence, listStyle } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function SectionScreen() {
@@ -9,8 +9,10 @@ export default function SectionScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <List
-        listStyle="sidebar"
-        modifiers={[headerProminence(increasedHeader ? 'increased' : 'standard')]}>
+        modifiers={[
+          listStyle('sidebar'),
+          headerProminence(increasedHeader ? 'increased' : 'standard'),
+        ]}>
         <Section title="Controls">
           <Toggle
             label="Increased header prominence"

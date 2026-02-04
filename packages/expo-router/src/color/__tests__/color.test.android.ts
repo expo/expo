@@ -65,10 +65,7 @@ it('returns null for ios base color', () => {
   const color = Color.ios.systemBlue;
   expect(typeof color).toBe('object');
   expect(color).toStrictEqual(null);
-  expect(warnMock).toHaveBeenCalledTimes(1);
-  expect(warnMock).toHaveBeenCalledWith(
-    `Color.ios.systemBlue is not available on android. Consider using a different color for this platform.`
-  );
+  expect(warnMock).not.toHaveBeenCalled();
 });
 
 jest.mock('../materialColor', () => {

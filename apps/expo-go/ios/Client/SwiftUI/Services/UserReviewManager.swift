@@ -9,13 +9,22 @@ final class UserReviewManager: ObservableObject {
   @Published private(set) var shouldShowReviewSection = false
 
   private let storageKey = "userReviewInfo"
+  private let lastCrashKey = "EXKernelLastFatalErrorDateDefaultsKey"
   private var info = UserReviewInfo()
   private var appsCount = 0
   private var snacksCount = 0
+  private var lastCrashDate: Date?
 
   init() {
     loadInfo()
+    loadLastCrashDate()
     refreshShouldShow()
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleWillEnterForeground),
+      name: UIApplication.willEnterForegroundNotification,
+      object: nil
+    )
   }
 
   func recordHomeAppear() {
@@ -54,14 +63,22 @@ final class UserReviewManager: ObservableObject {
     let noRecentDismisses = info.lastDismissDate.map {
       now.timeIntervalSince($0) > 15 * 24 * 60 * 60
     } ?? true
+    let noRecentCrashes = lastCrashDate.map {
+      now.timeIntervalSince($0) > 60 * 60
+    } ?? true
     let hasAskedForReview = info.askedForNativeReviewDate != nil
     let hasFeedbackForm = info.showFeedbackFormDate != nil
     let meetsUsageThreshold = info.appOpenedCounter >= 50 || appsCount >= 5 || snacksCount >= 5
 
+    #if targetEnvironment(simulator)
+    shouldShowReviewSection = false
+    #else
     shouldShowReviewSection = noRecentDismisses
       && !hasAskedForReview
       && !hasFeedbackForm
+      && noRecentCrashes
       && meetsUsageThreshold
+    #endif
   }
 
   private func requestStoreReview() {
@@ -95,6 +112,19 @@ final class UserReviewManager: ObservableObject {
       info = decoded
     } else {
       info = UserReviewInfo()
+    }
+  }
+
+  @objc private func handleWillEnterForeground() {
+    loadLastCrashDate()
+    refreshShouldShow()
+  }
+
+  private func loadLastCrashDate() {
+    if let date = UserDefaults.standard.object(forKey: lastCrashKey) as? Date {
+      lastCrashDate = date
+    } else {
+      lastCrashDate = nil
     }
   }
 

@@ -95,6 +95,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  @objc
+  public var _uiRuntime: WorkletRuntime? {
+    didSet {
+      if _uiRuntime != oldValue {
+        MainActor.assumeIsolated {
+          try? prepareUIRuntime()
+        }
+      }
+    }
+  }
+
+  public var uiRuntime: WorkletRuntime {
+    get throws {
+      if let uiRuntime = _uiRuntime {
+        return uiRuntime
+      }
+      throw Exceptions.UIRuntimeLost()
+    }
+  }
+
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
    It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
@@ -166,7 +186,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
     return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
@@ -201,9 +221,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       throw JavaScriptClassNotFoundException()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
-    let object = try runtime.createObject(withPrototype: prototype)
-
-    return object
+    return try runtime.createObject(withPrototype: prototype)
   }
 
   // MARK: - Legacy modules
@@ -236,12 +254,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Provides access to the image loader from legacy module registry.
    */
   public var imageLoader: EXImageLoaderInterface? {
-    guard let bridge = reactBridge else {
-      // TODO: Find a way to do this without a bridge
-      log.warn("Unable to get the image loader because the bridge is not available.")
+    guard let loader = hostWrapper?.findModule(withName: "RCTImageLoader", lazilyLoadIfNecessary: true) as? RCTImageLoader else {
+      log.warn("Unable to get the RCTImageLoader module.")
       return nil
     }
-    return ImageLoader(bridge: bridge)
+    return ImageLoader(rctImageLoader: loader)
   }
 
   /**
@@ -498,7 +515,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
-    
+
     // Install `global.expo.SharedRef`.
     EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
@@ -507,6 +524,21 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+  }
+
+  @MainActor
+  internal func prepareUIRuntime() throws {
+    let uiRuntime = try uiRuntime
+    let coreObject = uiRuntime.createObject()
+
+    // Initialize `global.expo`.
+    uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
   }
 
   /**
@@ -537,7 +569,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       moduleRegistry.post(event: .appContextDestroys)
     }
   }
-  
+
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
@@ -563,8 +595,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
       return providerClass.init()
     }
 
-    // [2] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    for bundle in Bundle.allFrameworks {
+      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
+      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
+        return providerClass.init()
+      }
+    }
+
+    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
+  }
+
+  public func reloadAppAsync(_ reason: String = "Reload from appContext") {
+    if moduleRegistry.has(moduleWithName: "ExpoGo") {
+      NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
+    } else {
+      DispatchQueue.main.async {
+        RCTTriggerReloadCommandListeners(reason)
+      }
+    }
   }
 }
 

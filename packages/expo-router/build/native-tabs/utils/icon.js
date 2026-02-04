@@ -44,16 +44,16 @@ function useAwaitedScreensIcon(icon) {
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
 }
-function convertOptionsIconToRNScreensPropsIcon(icon) {
+function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
     if (!icon) {
         return undefined;
     }
     return {
-        ios: convertOptionsIconToIOSPropsIcon(icon),
+        ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
         android: convertOptionsIconToAndroidPropsIcon(icon),
     };
 }
-function convertOptionsIconToIOSPropsIcon(icon) {
+function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
     if (icon && 'sf' in icon && icon.sf) {
         return {
             type: 'sfSymbol',
@@ -61,6 +61,10 @@ function convertOptionsIconToIOSPropsIcon(icon) {
         };
     }
     if (icon && 'src' in icon && icon.src) {
+        const effectiveRenderingMode = icon.renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
+        if (effectiveRenderingMode === 'original') {
+            return { type: 'imageSource', imageSource: icon.src };
+        }
         return { type: 'templateSource', templateSource: icon.src };
     }
     return undefined;

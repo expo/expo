@@ -12,11 +12,12 @@ import expo.modules.core.interfaces.DoNotStrip
 class JavaScriptWeakObject @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
-  }
-
-  override fun deallocate() {
     mHybridData.resetNative()
   }
+
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
+  }
+
   external fun lock(): JavaScriptObject
 }

@@ -55,7 +55,9 @@ Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function
 const imperative_api_1 = require("./imperative-api");
 const href_1 = require("./link/href");
 const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
+const LoaderCache_1 = require("./loaders/LoaderCache");
 const ServerDataLoaderContext_1 = require("./loaders/ServerDataLoaderContext");
+const getLoaderData_1 = require("./loaders/getLoaderData");
 const utils_1 = require("./loaders/utils");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -244,8 +246,6 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
         throw new Error('The URLSearchParams object return from useSearchParams is read-only');
     }
 }
-const loaderDataCache = new Map();
-const loaderPromiseCache = new Map();
 /**
  * Returns the result of the `loader` function for the calling route.
  *
@@ -255,12 +255,11 @@ const loaderPromiseCache = new Map();
  * import { useLoaderData } from 'expo-router';
  *
  * export function loader() {
- *   return Promise.resolve({ foo: 'bar' }}
+ *   return Promise.resolve({ foo: 'bar' }};
  * }
  *
  * export default function Route() {
- *  // { foo: 'bar' }
- *  const data = useLoaderData<typeof loader>();
+ *  const data = useLoaderData<typeof loader>(); // { foo: 'bar' }
  *
  *  return <Text>Data: {JSON.stringify(data)}</Text>;
  * }
@@ -269,43 +268,32 @@ function useLoaderData() {
     const routeNode = (0, Route_1.useRouteNode)();
     const params = useLocalSearchParams();
     const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
+    const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
     if (!routeNode) {
         throw new Error('No route node found. This is likely a bug in expo-router.');
     }
     const resolvedPath = `/${(0, href_1.resolveHref)({ pathname: routeNode?.route, params })}`;
+    // Normalize by stripping trailing `/index` to match URL pathname
+    const normalizedPath = resolvedPath.replace(/\/index$/, '') || '/';
     // First invocation of this hook will happen server-side, so we look up the loaded data from context
     if (serverDataLoaderContext) {
-        return serverDataLoaderContext[resolvedPath];
+        return serverDataLoaderContext[normalizedPath];
     }
     // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
     // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
     if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-        if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
-            return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
+        if (globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath]) {
+            return globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath];
         }
     }
-    // Check cache for route data
-    if (loaderDataCache.has(resolvedPath)) {
-        return loaderDataCache.get(resolvedPath);
+    const result = (0, getLoaderData_1.getLoaderData)({
+        resolvedPath: normalizedPath,
+        cache: loaderCache,
+        fetcher: utils_1.fetchLoader,
+    });
+    if (result instanceof Promise) {
+        return (0, react_1.use)(result);
     }
-    // Fetch data if not cached
-    if (!loaderPromiseCache.has(resolvedPath)) {
-        const promise = (0, utils_1.fetchLoaderModule)(resolvedPath)
-            .then((data) => {
-            loaderDataCache.set(resolvedPath, data);
-            return data;
-        })
-            .catch((error) => {
-            console.error(`Failed to load loader data for route: ${resolvedPath}:`, error);
-            throw new Error(`Failed to load loader data for route: ${resolvedPath}`, {
-                cause: error,
-            });
-        })
-            .finally(() => {
-            loaderPromiseCache.delete(resolvedPath);
-        });
-        loaderPromiseCache.set(resolvedPath, promise);
-    }
-    return (0, react_1.use)(loaderPromiseCache.get(resolvedPath));
+    return result;
 }
 //# sourceMappingURL=hooks.js.map

@@ -40,6 +40,7 @@ exports.LinkPreview = LinkPreview;
 exports.LinkTrigger = LinkTrigger;
 const react_1 = __importStar(require("react"));
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
+const NativeMenuContext_1 = require("./NativeMenuContext");
 const primitives_1 = require("../primitives");
 const HrefPreview_1 = require("./preview/HrefPreview");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
@@ -51,13 +52,11 @@ const children_1 = require("../utils/children");
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
  *
- * > **Note**: You can use the alias `Link.MenuAction` for this component.
- *
  * @platform ios
  */
 function LinkMenuAction(props) {
     const identifier = (0, react_1.useId)();
-    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(NativeMenuContext_1.NativeMenuContext)) {
         return null;
     }
     const { unstable_keepPresented, onPress, children, title, ...rest } = props;
@@ -75,7 +74,7 @@ function LinkMenuAction(props) {
  * Groups context menu actions for a link.
  *
  * If multiple `Link.Menu` components are used within a single `Link`, only the first will be rendered.
- * Only `Link.MenuAction` and `LinkMenuAction` components are allowed as children.
+ * Only `Link.MenuAction` and `Link.Menu` components are allowed as children.
  *
  * @example
  * ```tsx
@@ -85,13 +84,11 @@ function LinkMenuAction(props) {
  * </Link.Menu>
  * ```
  *
- * > **Note**: You can use the alias `Link.Menu` for this component.
- *
  * @platform ios
  */
 const LinkMenu = (props) => {
     const identifier = (0, react_1.useId)();
-    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(NativeMenuContext_1.NativeMenuContext)) {
         return null;
     }
     const children = react_1.default.Children.toArray(props.children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === LinkMenuAction || child.type === exports.LinkMenu));
@@ -124,8 +121,6 @@ exports.LinkMenu = LinkMenu;
  *   <Link.Preview />
  * </Link>
  * ```
- *
- * > **Note**: You can use the alias `Link.Preview` for this component.
  *
  * @platform ios
  */
@@ -166,8 +161,6 @@ function LinkPreview(props) {
  *   </Link.Trigger>
  * </Link>
  * ```
- *
- * > **Note**: You can use the alias `Link.Trigger` for this component.
  *
  * @platform ios
  */

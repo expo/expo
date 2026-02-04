@@ -45,8 +45,13 @@
 #endif
 
 // Import 3rd party modules that need to be scoped.
+#if __has_include(<RNCAsyncStorage/RNCAsyncStorage.h>)
 #import <RNCAsyncStorage/RNCAsyncStorage.h>
+#endif
+
+#if __has_include(<RNCWebViewManager.h>)
 #import <RNCWebViewManager.h>
+#endif
 
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
@@ -102,7 +107,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   // Register scoped 3rd party modules. Some of them are separate pods that
   // don't have access to EXScopedModuleRegistry and so they can't register themselves.
+#if __has_include(<RNCWebViewManager.h>)
   EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
+#endif
 }
 
 - (void)hostDidStart:(NSURL *)bundleURL
@@ -264,7 +271,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
 {
-  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue]);
+  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue] || _manifest.isDevelopmentMode);
 }
 
 - (void)_openJsInspector:(NSURL *)bundleURL
@@ -406,7 +413,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     } else {
       RCTLogWarn(@"No exceptions manager provided when building extra modules.");
     }
-  } else if (moduleClass == RNCAsyncStorage.class) {
+  }
+#if __has_include(<RNCAsyncStorage/RNCAsyncStorage.h>)
+  else if (moduleClass == RNCAsyncStorage.class) {
     NSString *documentDirectory;
     if (_params[@"fileSystemDirectories"]) {
       documentDirectory = _params[@"fileSystemDirectories"][@"documentDirectory"];
@@ -417,6 +426,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     NSString *localStorageDirectory = [documentDirectory stringByAppendingPathComponent:@"RCTAsyncLocalStorage"];
     return [[moduleClass alloc] initWithStorageDirectory:localStorageDirectory];
   }
+#endif
 
   return [moduleClass new];
 }

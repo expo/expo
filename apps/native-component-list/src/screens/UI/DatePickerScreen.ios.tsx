@@ -7,7 +7,7 @@ import {
   LabeledContent,
   Picker,
   Section,
-  Switch,
+  Toggle,
   Text,
 } from '@expo/ui/swift-ui';
 import {
@@ -17,6 +17,7 @@ import {
   tag,
   tint,
   Animation,
+  foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
@@ -101,7 +102,7 @@ export default function DatePickerScreen() {
               </Text>
             ))}
           </Picker>
-          <Switch value={useRange} label="Limit to next 30 days" onValueChange={setUseRange} />
+          <Toggle isOn={useRange} label="Limit to next 30 days" onIsOnChange={setUseRange} />
           <ColorPicker label="Tint Color" selection={tintColor} onSelectionChange={setTintColor} />
         </Section>
         <Section title="Date Picker with custom label">
@@ -114,7 +115,9 @@ export default function DatePickerScreen() {
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
             onDateChange={(date) => setSelectedDate(date)}
             modifiers={[datePickerStyle(styleOptions[styleIndex])]}>
-            <Text color="#007AFF">Select date</Text>
+            <Text modifiers={[foregroundStyle({ type: 'color', color: '#007AFF' })]}>
+              Select date
+            </Text>
             <Text>{selectedDate.toDateString()}</Text>
           </DatePicker>
         </Section>

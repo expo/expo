@@ -7,9 +7,7 @@ private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
 private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
 
 public final class FileSystemLegacyModule: Module {
-  private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(
-    sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
-  )
+  private var sessionTaskDispatcher: EXSessionTaskDispatcher!
   private lazy var taskHandlersManager = EXTaskHandlersManager()
   private lazy var resourceManager = PHAssetResourceManager()
 
@@ -40,6 +38,14 @@ public final class FileSystemLegacyModule: Module {
     }
 
     Events(EVENT_DOWNLOAD_PROGRESS, EVENT_UPLOAD_PROGRESS)
+    
+    OnCreate {
+      Task { @MainActor in
+        sessionTaskDispatcher = EXSessionTaskDispatcher(
+          sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
+        )
+      }
+    }
 
     AsyncFunction("getInfoAsync") { (url: URL, options: InfoOptions, promise: Promise) in
       let optionsDict = options.toDictionary(appContext: appContext)
@@ -69,12 +75,32 @@ public final class FileSystemLegacyModule: Module {
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
       try ensurePathPermission(appContext, path: url.path, flag: .write)
 
+      let data: Data?
       if options.encoding == .base64 {
-        try writeFileAsBase64(path: url.path, string: string)
-        return
+        data = Data(base64Encoded: string, options: .ignoreUnknownCharacters)
+      } else {
+        data = string.data(using: options.encoding.toStringEncoding() ?? .utf8)
       }
+
+      guard let data else {
+        throw FileNotWritableException(url.path)
+      }
+
       do {
-        try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
+        if options.append {
+          if !FileManager.default.fileExists(atPath: url.path) {
+            try data.write(to: url, options: .atomic)
+          } else {
+            let fileHandle = try FileHandle(forWritingTo: url)
+            defer {
+              fileHandle.closeFile()
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(data)
+          }
+        } else {
+          try data.write(to: url, options: .atomic)
+        }
       } catch {
         throw FileNotWritableException(url.path)
           .causedBy(error)

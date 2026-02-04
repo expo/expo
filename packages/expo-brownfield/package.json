@@ -1,10 +1,10 @@
 {
   "name": "expo-brownfield",
-  "version": "0.0.1",
+  "version": "55.0.6",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
-  "bin": "./plugin/build/cli/index.js",
+  "bin": "./bin/cli.js",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -18,31 +18,16 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "expo-module lint && expo-module lint plugin && expo-module lint cli",
+    "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
+    "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js",
     "prepare": "expo-module prepare",
+    "prepack": "node scripts/resolve-symlinks.js resolve",
+    "postpack": "node scripts/resolve-symlinks.js restore",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "files": [
-    "android/src",
-    "android/build.gradle",
-    "build/",
-    "gradle-plugins/",
-    "ios/",
-    "plugin/",
-    "templates/",
-    "src/",
-    ".eslintignore",
-    ".eslintrc.js",
-    "CHANGELOG.md",
-    "README.md",
-    "app.plugin.js",
-    "babel.config.js",
-    "expo-module.config.json",
-    "package.json",
-    "tsconfig.json"
-  ],
   "keywords": [
     "react-native",
     "expo",
@@ -58,20 +43,22 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "TODO: add homepage",
+  "homepage": "https://docs.expo.dev/versions/unversioned/sdk/brownfield/",
   "jest": {
     "preset": "expo-module-scripts"
   },
   "dependencies": {
     "arg": "^5.0.2",
     "chalk": "^4.1.2",
-    "expo-build-properties": "~1.0.8",
+    "diff": "^5.2.0",
+    "expo-build-properties": "~55.0.5",
+    "expo-manifests": "~55.0.4",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
-    "jest-expo": "~54.0.11"
+    "@types/diff": "^5.2.0",
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*"

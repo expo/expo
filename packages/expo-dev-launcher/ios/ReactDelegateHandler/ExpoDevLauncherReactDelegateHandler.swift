@@ -6,10 +6,39 @@ import React
 
 private class DevLauncherWrapperView: UIView {
   weak var devLauncherViewController: UIViewController?
+  private var devLauncherConstraints: [NSLayoutConstraint] = []
+
+  #if os(iOS)
+  @objc
+  func orientationDidChange() {
+    if let controller = devLauncherViewController {
+      setDevLauncherViewControllerConstraints(controller)
+    }
+  }
+  #endif
+
+  func setDevLauncherViewControllerConstraints(_ viewController: UIViewController) {
+    viewController.view.translatesAutoresizingMaskIntoConstraints = false
+    if !devLauncherConstraints.isEmpty {
+      NSLayoutConstraint.deactivate(devLauncherConstraints)
+    }
+    devLauncherConstraints = [
+      viewController.view.topAnchor.constraint(equalTo: self.topAnchor),
+      viewController.view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+      viewController.view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+      viewController.view.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+    ]
+    NSLayoutConstraint.activate(devLauncherConstraints)
+  }
 
 #if !os(macOS)
   override func didMoveToWindow() {
     super.didMoveToWindow()
+    #if os(iOS)
+    if window != nil {
+      NotificationCenter.default.addObserver(self, selector: #selector(orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    #endif
 
     guard let devLauncherViewController,
       let window,
@@ -18,7 +47,9 @@ private class DevLauncherWrapperView: UIView {
     }
 
     let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
-    if !isSwiftUIController && devLauncherViewController.parent != rootViewController {
+    // TODO(pmleczek): Revisit this for a more reliable solution
+    let isBrownfield = NSStringFromClass(type(of: rootViewController)).contains("UINavigationController")
+    if !isSwiftUIController && !isBrownfield && devLauncherViewController.parent != rootViewController {
       rootViewController.addChild(devLauncherViewController)
       devLauncherViewController.didMove(toParent: rootViewController)
       devLauncherViewController.view.setNeedsLayout()
@@ -31,6 +62,9 @@ private class DevLauncherWrapperView: UIView {
     if newWindow == nil {
       devLauncherViewController?.willMove(toParent: nil)
       devLauncherViewController?.removeFromParent()
+      #if os(iOS)
+      NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+      #endif
     }
   }
 #endif
@@ -57,12 +91,14 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
-    EXDevLauncherController.sharedInstance().start(self, launchOptions: launchOptions)
+
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
       sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
     }
+
+    EXDevLauncherController.sharedInstance().start(self, launchOptions: launchOptions)
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
@@ -74,14 +110,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     let wrapperView = DevLauncherWrapperView()
     wrapperView.devLauncherViewController = viewController
     wrapperView.addSubview(viewController.view)
-    viewController.view.translatesAutoresizingMaskIntoConstraints = false
-    NSLayoutConstraint.activate([
-      viewController.view.topAnchor.constraint(equalTo: wrapperView.topAnchor),
-      viewController.view.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor),
-      viewController.view.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor),
-      viewController.view.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor)
-    ])
-
+    wrapperView.setDevLauncherViewControllerConstraints(viewController)
     return wrapperView
   }
 

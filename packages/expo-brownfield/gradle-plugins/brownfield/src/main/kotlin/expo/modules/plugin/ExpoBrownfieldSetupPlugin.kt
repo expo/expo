@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.json.JSONObject
+import org.gradle.api.GradleException
 
 class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -18,6 +19,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       setupBundleDependencyForRelease(project)
       setupCopyingNativeLibsForType(project, "Release")
       setupCopyingNativeLibsForType(project, "Debug")
+      wireDevLauncherTasks(project)
     }
   }
 
@@ -28,12 +30,14 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
    */
   private fun setupDependencySubstitution(project: Project) {
     val rnVersion = getReactNativeVersion(project)
+    val hermesVersion = getHermesVersion(project)
     project.logger.lifecycle("Resolved React Native version: $rnVersion")
+    project.logger.lifecycle("Resolved Hermes version: $hermesVersion")
 
     project.configurations.configureEach { config ->
       config.resolutionStrategy {
         it.force("com.facebook.react:react-android:$rnVersion")
-        it.force("com.facebook.react:hermes-android:$rnVersion")
+        it.force("com.facebook.hermes:hermes-android:$hermesVersion")
       }
     }
   }
@@ -54,8 +58,8 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     libraryExtension.sourceSets.getByName("release").apply {
       jniLibs.srcDirs("libsRelease")
-      assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
-      res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
+      assets.srcDirs("$appBuildDir/generated/assets/react/release")
+      res.srcDirs("$appBuildDir/generated/res/react/release")
     }
 
     libraryExtension.sourceSets.getByName("debug").apply { jniLibs.srcDirs("libsDebug") }
@@ -149,7 +153,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     val fromDir =
       appProject.layout.buildDirectory.dir(
-        "intermediates/stripped_native_libs/${buildType.toLowerCase()}/strip${buildType}DebugSymbols/out/lib"
+        "intermediates/stripped_native_libs/${buildType.lowercase()}/strip${buildType}DebugSymbols/out/lib"
       )
     val intoDir = brownfieldProject.rootProject.file("${brownfieldProject.name}/libs${buildType}")
 
@@ -206,6 +210,30 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   }
 
   /**
+   * Get the Hermes version for the project.
+   *
+   * @param project The project to get the Hermes version for.
+   * @return The Hermes version for the project.
+   * @throws IllegalStateException if the Hermes version cannot be inferred.
+   */
+  private fun getHermesVersion(project: Project): String {
+    val process =
+      ProcessBuilder("node", "--print", "require('hermes-compiler/package.json').version")
+        .directory(project.rootProject.projectDir)
+        .redirectErrorStream(true)
+        .start()
+
+    val version = process.inputStream.bufferedReader().readText().trim()
+    process.waitFor()
+
+    if (process.exitValue() == 0 && version.isNotEmpty()) {
+      return version
+    }
+
+    throw IllegalStateException("Failed to infer Hermes version via Node")
+  }
+
+  /**
    * Get the React Native version from the package.json file.
    *
    * This method is used as a fallback when the React Native version cannot be inferred via Node.
@@ -233,5 +261,30 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
         ?: throw IllegalStateException("react-native not found in package.json dependencies")
 
     return version.removePrefix("^").removePrefix("~")
+  }
+
+  /**
+   * Add explicit dependency between the `sourceDebugJar` and `generateServiceApolloSources`
+   * tasks in `expo-dev-launcher` project.
+   * 
+   * @param brownfieldProject The brownfield project
+   */
+  private fun wireDevLauncherTasks(brownfieldProject: Project) {
+    try {
+      val devLauncherProject = brownfieldProject.rootProject.project(":expo-dev-launcher")
+
+      val sourceDebugTask = devLauncherProject.tasks.findByName("sourceDebugJar")
+      val apolloSourcesTask = devLauncherProject.tasks.findByName("generateServiceApolloSources")
+      
+      if (sourceDebugTask == null || apolloSourcesTask == null) {
+        brownfieldProject.logger.warn("WARNING: Application uses expo-dev-launcher but tasks: sourceDebugJar and generateServiceApolloSources")
+        brownfieldProject.logger.warn("Skipping explicitly defining dependency between the tasks...")
+        return
+      }
+
+      sourceDebugTask.dependsOn(apolloSourcesTask)
+    } catch (e: GradleException) {
+      // no-op  
+    }
   }
 }
