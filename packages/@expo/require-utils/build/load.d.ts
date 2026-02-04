@@ -13,4 +13,8 @@ export interface ModuleOptions {
 }
 declare function evalModule(code: string, filename: string, opts?: ModuleOptions): any;
 declare function loadModule(filename: string): Promise<any>;
-export { evalModule, loadModule };
+/** Require module or evaluate with TypeScript
+ * NOTE: Requiring ESM has been added in all LTS versions (Node 20.19+, 22.12+, 24).
+ * This already forms the minimum required Node version as of Expo SDK 54 */
+declare function loadModuleSync(filename: string): any;
+export { evalModule, loadModule, loadModuleSync };
