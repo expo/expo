@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- [iOS] Wrap native tab content in SafeAreaProvider to expose tabs insets ([#42770](https://github.com/expo/expo/pull/42770) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Fix `expo-image` dependency range in `expo-router` ([#42808](https://github.com/expo/expo/pull/42808) by [@kitten](https://github.com/kitten))
+- [android] fix linking in two places and state restoration after activity recreation ([#42644](https://github.com/expo/expo/pull/42644) by [@Ubax](https://github.com/Ubax))
+- detect incorrect screen presentation ([#42829](https://github.com/expo/expo/pull/42829) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
