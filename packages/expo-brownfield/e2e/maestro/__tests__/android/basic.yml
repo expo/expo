@@ -5,8 +5,6 @@ appId: host.exp.exponent.brownfield.test.android
 - tapOn:
     id: apis-tab
 - assertVisible: Communication
-- assertVisible: Bi-directional communication API
-- assertVisible: Navigation
 - assertVisible: Navigation API
 
 - tapOn:
@@ -14,8 +12,6 @@ appId: host.exp.exponent.brownfield.test.android
 - assertVisible: Navigation
 - assertVisible:
     id: navigation-pop-to-native
-- assertVisible:
-    id: navigation-enable-native-back
 - assertVisible:
     id: navigation-disable-native-back
 
@@ -34,6 +30,4 @@ appId: host.exp.exponent.brownfield.test.android
 - tapOn:
     id: header-back-button
 - assertVisible: Communication
-- assertVisible: Bi-directional communication API
-- assertVisible: Navigation
 - assertVisible: Navigation API

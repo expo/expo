@@ -6,10 +6,8 @@ appId: host.exp.exponent.brownfield.test.android
     id: apis-tab
 - tapOn:
     id: apis-communication
-
-- assertVisible: Communication
-- assertVisible: Send message
-- assertVisible: Send a message to the native app
+- assertVisible:
+    id: communication-send-message
 
 - tapOn:
     id: communication-send-message

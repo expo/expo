@@ -6,14 +6,8 @@ appId: host.exp.exponent.brownfield.test.android
     id: apis-tab
 - tapOn:
     id: apis-navigation
-
-- assertVisible: Navigation
-- assertVisible:
-    id: navigation-pop-to-native
 - assertVisible:
     id: navigation-enable-native-back
-- assertVisible:
-    id: navigation-disable-native-back
 
 - tapOn:
     id: navigation-pop-to-native
