@@ -2,6 +2,9 @@ import fs from 'node:fs';
 import * as nodeModule from 'node:module';
 import path from 'node:path';
 import url from 'node:url';
+import type * as ts from 'typescript';
+
+import { annotateError, formatDiagnostic } from './codeframe';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];
@@ -19,21 +22,20 @@ declare global {
   }
 }
 
-let ts: typeof import('typescript') | null | undefined;
-
+let _ts: typeof import('typescript') | null | undefined;
 function loadTypescript() {
-  if (ts === undefined) {
+  if (_ts === undefined) {
     try {
-      ts = require('typescript');
+      _ts = require('typescript');
     } catch (error: any) {
       if (error.code !== 'MODULE_NOT_FOUND') {
         throw error;
       } else {
-        ts = null;
+        _ts = null;
       }
     }
   }
-  return ts;
+  return _ts;
 }
 
 const parent = module;
@@ -99,13 +101,15 @@ const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'func
 function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
   let inputCode = code;
   let inputFilename = filename;
+  let diagnostic: ts.Diagnostic | undefined;
   if (filename.endsWith('.ts') || filename.endsWith('.cts') || filename.endsWith('.mts')) {
     const ext = path.extname(filename);
     const ts = loadTypescript();
+
     if (ts) {
       const output = ts.transpileModule(code, {
         fileName: filename,
-        reportDiagnostics: false,
+        reportDiagnostics: true,
         compilerOptions: {
           module: ext === '.cts' ? ts.ModuleKind.CommonJS : ts.ModuleKind.ESNext,
           moduleResolution: ts.ModuleResolutionKind.Bundler,
@@ -114,10 +118,14 @@ function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
           inlineSourceMap: true,
         },
       });
-      inputCode = output ? output.outputText : inputCode;
+      inputCode = output?.outputText || inputCode;
+      if (output?.diagnostics?.length) {
+        diagnostic = output.diagnostics[0];
+      }
     }
 
     if (hasStripTypeScriptTypes && inputCode === code) {
+      // This may throw its own error, but this contains a code-frame already
       inputCode = nodeModule.stripTypeScriptTypes(code, {
         mode: 'transform',
         sourceMap: true,
@@ -132,11 +140,17 @@ function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
     }
   }
 
-  const mod = compileModule(inputCode, inputFilename, opts);
-  if (inputFilename !== filename) {
-    require.cache[filename] = mod;
+  try {
+    const mod = compileModule(inputCode, inputFilename, opts);
+    if (inputFilename !== filename) {
+      require.cache[filename] = mod;
+    }
+    return mod;
+  } catch (error: any) {
+    // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
+    // since it's likely more useful than the eval error
+    throw formatDiagnostic(diagnostic) ?? annotateError(code, filename, error) ?? error;
   }
-  return mod;
 }
 
 async function requireOrImport(filename: string) {

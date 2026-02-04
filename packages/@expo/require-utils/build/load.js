@@ -34,23 +34,30 @@ function _nodeUrl() {
   };
   return data;
 }
+function _codeframe() {
+  const data = require("./codeframe");
+  _codeframe = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
-let ts;
+let _ts;
 function loadTypescript() {
-  if (ts === undefined) {
+  if (_ts === undefined) {
     try {
-      ts = require('typescript');
+      _ts = require('typescript');
     } catch (error) {
       if (error.code !== 'MODULE_NOT_FOUND') {
         throw error;
       } else {
-        ts = null;
+        _ts = null;
       }
     }
   }
-  return ts;
+  return _ts;
 }
 const parent = module;
 const tsExtensionMapping = {
@@ -108,13 +115,14 @@ const hasStripTypeScriptTypes = typeof nodeModule().stripTypeScriptTypes === 'fu
 function evalModule(code, filename, opts = {}) {
   let inputCode = code;
   let inputFilename = filename;
+  let diagnostic;
   if (filename.endsWith('.ts') || filename.endsWith('.cts') || filename.endsWith('.mts')) {
     const ext = _nodePath().default.extname(filename);
     const ts = loadTypescript();
     if (ts) {
       const output = ts.transpileModule(code, {
         fileName: filename,
-        reportDiagnostics: false,
+        reportDiagnostics: true,
         compilerOptions: {
           module: ext === '.cts' ? ts.ModuleKind.CommonJS : ts.ModuleKind.ESNext,
           moduleResolution: ts.ModuleResolutionKind.Bundler,
@@ -123,9 +131,13 @@ function evalModule(code, filename, opts = {}) {
           inlineSourceMap: true
         }
       });
-      inputCode = output ? output.outputText : inputCode;
+      inputCode = output?.outputText || inputCode;
+      if (output?.diagnostics?.length) {
+        diagnostic = output.diagnostics[0];
+      }
     }
     if (hasStripTypeScriptTypes && inputCode === code) {
+      // This may throw its own error, but this contains a code-frame already
       inputCode = nodeModule().stripTypeScriptTypes(code, {
         mode: 'transform',
         sourceMap: true
@@ -138,11 +150,17 @@ function evalModule(code, filename, opts = {}) {
       }
     }
   }
-  const mod = compileModule(inputCode, inputFilename, opts);
-  if (inputFilename !== filename) {
-    require.cache[filename] = mod;
+  try {
+    const mod = compileModule(inputCode, inputFilename, opts);
+    if (inputFilename !== filename) {
+      require.cache[filename] = mod;
+    }
+    return mod;
+  } catch (error) {
+    // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
+    // since it's likely more useful than the eval error
+    throw (0, _codeframe().formatDiagnostic)(diagnostic) ?? (0, _codeframe().annotateError)(code, filename, error) ?? error;
   }
-  return mod;
 }
 async function requireOrImport(filename) {
   try {
