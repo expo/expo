@@ -52,7 +52,7 @@ sealed class CopyMoveStrategy(
 
   internal abstract fun prepareAsDestination(source: UnifiedFileInterface, spec: DestinationSpec): DestinationSink
 
-  // / Implementations
+  // Implementations
 
   class LocalFile(override val file: JavaFile) : CopyMoveStrategy(file) {
     override fun prepareAsDestination(source: UnifiedFileInterface, spec: DestinationSpec): DestinationSink {
@@ -110,8 +110,10 @@ sealed class CopyMoveStrategy(
 
       // → SAF File (not a directory spec)
       if (!spec.isDirectory) {
-        if (file.exists() && !spec.overwrite) throw DestinationAlreadyExistsException()
-        if (file.exists() && spec.overwrite) file.deleteRecursively()
+        if (file.exists()) {
+          if (!spec.overwrite) throw DestinationAlreadyExistsException()
+          file.deleteRecursively()
+        }
         return DestinationSink.SAF(spec, file, isContainer = false)
       }
 
