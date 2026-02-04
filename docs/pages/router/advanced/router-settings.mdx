@@ -14,9 +14,9 @@ import { FileTree } from '~/ui/components/FileTree';
 
 When deep linking to a route, you may want to provide a user with a "back" button. The `initialRouteName` sets the default screen of the stack and should match a valid filename (without the extension).
 
-<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/other.tsx']} />
+<FileTree files={['src/app/_layout.tsx', 'src/app/index.tsx', 'src/app/other.tsx']} />
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
