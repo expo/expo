@@ -11,7 +11,8 @@ const Header = ({ title }: HeaderProps) => {
     <View style={styles.container}>
       <Pressable
         style={({ pressed }) => [styles.backButton, pressed && styles.focused]}
-        onPress={() => router.back()}>
+        onPress={() => router.back()}
+        testID="header-back-button">
         <Feather name="arrow-left" size={24} color="black" />
       </Pressable>
       <Text style={styles.title}>{title}</Text>
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    paddingLeft: 16,
+    marginLeft: 16,
     left: 0,
   },
 });

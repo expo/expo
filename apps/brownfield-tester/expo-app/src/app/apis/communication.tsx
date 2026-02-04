@@ -29,6 +29,7 @@ const Communication = () => {
         description="Send a message to the native app"
         icon="send"
         onPress={() => ExpoBrownfield.sendMessage(MESSAGE)}
+        testID="communication-send-message"
       />
       <View style={styles.container}>
         <Text style={styles.title}>Received message (latest):</Text>
