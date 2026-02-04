@@ -6,7 +6,8 @@
     "paths": {
       "ThemeProvider": ["../common/ThemeProvider"],
       "benchmarking": ["./modules/benchmarking"],
-      "worklets-tester": ["./modules/worklets-tester"]
+      "worklets-tester": ["./modules/worklets-tester"],
+      "test-expo-ui": ["./modules/test-expo-ui"]
     }
   }
 }

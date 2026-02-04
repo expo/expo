@@ -3098,6 +3098,9 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
+  - TestExpoUi (1.0.0):
+    - ExpoModulesCore
+    - ExpoUI
   - UMAppLoader (55.0.2)
   - WorkletsTester (0.0.1):
     - ExpoModulesCore
@@ -3318,6 +3321,7 @@ DEPENDENCIES:
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - RNWorklets (from `../../../node_modules/react-native-worklets`)
+  - TestExpoUi (from `../modules/test-expo-ui/ios`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - WorkletsTester (from `../modules/worklets-tester/ios`)
   - Yoga (from `../../../node_modules/react-native/ReactCommon/yoga`)
@@ -3763,6 +3767,9 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-svg"
   RNWorklets:
     :path: "../../../node_modules/react-native-worklets"
+  TestExpoUi:
+    inhibit_warnings: false
+    :path: "../modules/test-expo-ui/ios"
   UMAppLoader:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-app-loader/ios"
@@ -3957,6 +3964,7 @@ SPEC CHECKSUMS:
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
+  TestExpoUi: 3c8a53d43492d7db3f4c94cf4a48cba7a82da424
   UMAppLoader: 71b50bcc31d86495e52c0b4cd17e2708bf297be3
   WorkletsTester: f76956000cdf163c71f8eb20fe09f1bfa21acbaf
   Yoga: 35d573dff66536d48493acb65a519482f8219fe8
