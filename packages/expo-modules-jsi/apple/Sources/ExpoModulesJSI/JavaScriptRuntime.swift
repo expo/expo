@@ -84,13 +84,13 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    */
   public func createHostObject(
     get: @escaping (_ propertyName: String) -> JavaScriptValue,
-    set: @escaping (_ propertyName: String, _ value: consuming JavaScriptValue) -> Void,
+    set: @escaping (_ propertyName: String, _ value: JavaScriptValue) -> Void,
     getPropertyNames: @escaping () -> [String],
     dealloc: @escaping () -> Void
   ) -> JavaScriptObject {
     func getter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>) -> facebook.jsi.Value {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
-      return context.get(String(cString: propertyName)).pointee
+      return context.get(String(cString: propertyName)).asJSIValue()
     }
 
     func setter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>, valuePointer: UnsafeMutableRawPointer) {
@@ -130,7 +130,7 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    Type of the closure that is passed to the `createSyncFunction` function.
    */
   public typealias SyncFunctionClosure = @JavaScriptActor (
-    _ this: consuming JavaScriptValue,
+    _ this: JavaScriptValue,
     _ arguments: consuming JSValuesBuffer
   ) throws -> JavaScriptValue
 
@@ -184,7 +184,7 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    It is invoked from asynchronous context, so it can await and call other asynchronous functions.
    */
   public typealias AsyncFunctionClosure = @JavaScriptActor (
-    _ this: consuming JavaScriptValue,
+    _ this: JavaScriptValue,
     _ arguments: consuming JSValuesBuffer,
   ) async throws -> JavaScriptValue
 
@@ -362,7 +362,7 @@ private func createFunctionClosure(runtime: JavaScriptRuntime, name: String, _ c
       do {
         let thisValue = JavaScriptValue(context.runtime, this)
         let result = try context.call(thisValue, argumentsRef.take())
-        return result.pointee
+        return result.asJSIValue()
       } catch {
         // TODO: Implement throwing `facebook.jsi.JSError`, returns `undefined` until then
         return .undefined()

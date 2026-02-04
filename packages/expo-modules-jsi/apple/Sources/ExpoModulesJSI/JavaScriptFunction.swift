@@ -100,6 +100,16 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     return JavaScriptValue(runtime, expo.valueFromFunction(jsiRuntime, pointee))
   }
 
+  /**
+   Returns the function as a `facebook.jsi.Value` instance.
+   */
+  internal func asJSIValue() -> facebook.jsi.Value {
+    guard let jsiRunetime = runtime?.pointee else {
+      JS.runtimeLostFatalError()
+    }
+    return expo.valueFromFunction(jsiRunetime, pointee)
+  }
+
   public func asObject() -> JavaScriptObject {
     guard let runtime else {
       JS.runtimeLostFatalError()
@@ -110,7 +120,7 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
 }
 
 extension JavaScriptFunction: JSRepresentable {
-  public static func fromJSValue(_ value: borrowing JavaScriptValue) -> JavaScriptFunction {
+  public static func fromJSValue(_ value: JavaScriptValue) -> JavaScriptFunction {
     return value.getFunction()
   }
 
@@ -125,6 +135,6 @@ extension JavaScriptFunction: JSIRepresentable {
   }
 
   func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
-    return asValue().pointee
+    return asJSIValue()
   }
 }

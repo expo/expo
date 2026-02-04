@@ -54,7 +54,7 @@ public struct JSValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   @JavaScriptActor
-  public func map<T>(_ transform: @JavaScriptActor (_ value: consuming JavaScriptValue, _ index: Int) throws -> T) rethrows -> [T] {
+  public func map<T>(_ transform: @JavaScriptActor (_ value: JavaScriptValue, _ index: Int) throws -> T) rethrows -> [T] {
     var result: [T] = []
     result.reserveCapacity(count)
     for index in 0..<count {
@@ -111,7 +111,7 @@ public struct JSValuesBuffer: JavaScriptType, ~Copyable {
       if let value = value as? JSIRepresentable {
         buffer.initializeElement(at: index, to: value.toJSIValue(in: runtime.pointee))
       } else {
-        buffer.initializeElement(at: index, to: value.toJSValue(in: runtime).pointee)
+        buffer.initializeElement(at: index, to: value.toJSValue(in: runtime).toJSIValue(in: runtime.pointee))
       }
       index += 1
     }
@@ -122,7 +122,7 @@ public struct JSValuesBuffer: JavaScriptType, ~Copyable {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: refs.count)
     for (index, ref) in refs.enumerated() {
       if let value = ref.take() {
-        buffer.initializeElement(at: index, to: value.toJSValue(in: runtime).pointee)
+        buffer.initializeElement(at: index, to: value.toJSValue(in: runtime).toJSIValue(in: runtime.pointee))
       } else {
         buffer.initializeElement(at: index, to: .undefined())
       }

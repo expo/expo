@@ -21,6 +21,13 @@ public struct JavaScriptError: JavaScriptType, ~Copyable {
     }
     return JavaScriptValue(runtime, expo.valueFromError(runtime.pointee, pointee))
   }
+
+  internal func asJSIValue() -> facebook.jsi.Value {
+    guard let runtime else {
+      JS.runtimeLostFatalError()
+    }
+    return expo.valueFromError(runtime.pointee, pointee)
+  }
 }
 
 public struct ScriptEvaluationError: Error {
@@ -30,7 +37,7 @@ public struct ScriptEvaluationError: Error {
 // MARK: - JSRepresentable
 
 extension JavaScriptError: JSRepresentable {
-  public static func fromJSValue(_ value: borrowing JavaScriptValue) -> JavaScriptError {
+  public static func fromJSValue(_ value: JavaScriptValue) -> JavaScriptError {
     fatalError("Unimplemented")
   }
 
@@ -45,7 +52,7 @@ extension JavaScriptError: JSIRepresentable {
   }
 
   func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
-    return asValue().pointee
+    return asJSIValue()
   }
 }
 

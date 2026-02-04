@@ -14,7 +14,7 @@ public protocol JSRepresentable: Sendable, ~Copyable {
   /**
    Creates an instance of this type from the given JS value.
    */
-  static func fromJSValue(_ value: borrowing JavaScriptValue) -> Self
+  static func fromJSValue(_ value: JavaScriptValue) -> Self
   /**
    Creates a JS value representing this value in the given runtime.
    */
@@ -22,7 +22,7 @@ public protocol JSRepresentable: Sendable, ~Copyable {
 }
 
 public extension JSRepresentable {
-  static func fromJSValue(_ value: borrowing JavaScriptValue) -> Self {
+  static func fromJSValue(_ value: JavaScriptValue) -> Self {
     guard let jsiRuntime = value.runtime else {
       JS.runtimeLostFatalError()
     }

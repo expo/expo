@@ -45,7 +45,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /**
    Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
    */
-  public func instanceOf(_ constructor: borrowing JavaScriptValue) -> Bool {
+  public func instanceOf(_ constructor: JavaScriptValue) -> Bool {
     return instanceOf(constructor.getFunction())
   }
 
@@ -114,7 +114,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /**
    Sets a prototype of the object. Same as `Object.setPrototypeOf(object, prototype)` in JS.
    */
-  public func setPrototype(_ prototype: consuming JavaScriptValue) {
+  public func setPrototype(_ prototype: JavaScriptValue) {
     pointee.setPrototype(runtime.pointee, prototype.pointee)
   }
 
@@ -128,13 +128,13 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     expo.setProperty(runtime.pointee, pointee, name, double)
   }
 
-  public func setProperty(_ name: String, value: consuming JavaScriptValue) {
+  public func setProperty(_ name: String, value: JavaScriptValue) {
     // This specialization is to avoid copying the value; `asValue()` on `JavaScriptValue` needs to do a copy.
-    expo.setProperty(runtime.pointee, pointee, name, value.pointee)
+    expo.setProperty(runtime.pointee, pointee, name, value.toJSIValue(in: runtime.pointee))
   }
 
   public func setProperty<T: JSRepresentable & ~Copyable>(_ name: String, value: consuming T) {
-    let jsiValue = value.toJSValue(in: runtime).pointee
+    let jsiValue = value.toJSValue(in: runtime).toJSIValue(in: runtime.pointee)
     expo.setProperty(runtime.pointee, pointee, name, jsiValue)
   }
 
@@ -191,6 +191,16 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
   }
 
+  /**
+   Returns the object as a `facebook.jsi.Value` instance.
+   */
+  internal func asJSIValue() -> facebook.jsi.Value {
+    return facebook.jsi.Value(runtime.pointee, pointee)
+  }
+
+  /**
+   Creates a weak reference to the object. If the only references to an object are these, the object is eligible for GC.
+   */
   public func createWeak() -> JavaScriptWeakObject {
     return JavaScriptWeakObject(runtime, self)
   }
@@ -248,7 +258,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 }
 
 extension JavaScriptObject: JSRepresentable {
-  public static func fromJSValue(_ value: borrowing JavaScriptValue) -> JavaScriptObject {
+  public static func fromJSValue(_ value: JavaScriptValue) -> JavaScriptObject {
     return value.getObject()
   }
 
@@ -263,7 +273,7 @@ extension JavaScriptObject: JSIRepresentable {
   }
 
   func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
-    return asValue().pointee
+    return asJSIValue()
   }
 }
 
@@ -285,7 +295,7 @@ public struct PropertyDescriptor: ~Copyable {
   let writable: Bool
   let value: JavaScriptValue?
 
-  public init(configurable: Bool = false, enumerable: Bool = false, writable: Bool = false, value: consuming JavaScriptValue? = nil) {
+  public init(configurable: Bool = false, enumerable: Bool = false, writable: Bool = false, value: JavaScriptValue? = nil) {
     self.configurable = configurable
     self.enumerable = enumerable
     self.writable = writable

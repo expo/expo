@@ -3,8 +3,8 @@
 internal import jsi
 internal import ExpoModulesJSI_Cxx
 
-public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
-  internal weak var runtime: JavaScriptRuntime?
+public final class JavaScriptValue: JavaScriptType, Escapable {
+  internal weak let runtime: JavaScriptRuntime?
   internal let pointee: facebook.jsi.Value
 
   /**
@@ -36,7 +36,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
    */
   public init(_ runtime: JavaScriptRuntime, _ value: JSRepresentable) {
     self.runtime = runtime
-    self.pointee = value.toJSValue(in: runtime).pointee
+    self.pointee = value.toJSValue(in: runtime).toJSIValue(in: runtime.pointee)
   }
 
   /**
@@ -120,6 +120,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
 
   /**
    Checks whether the value is an instance of a global class of the given name.
+   For example `value.is("Promise")` checks whether the value is a promise.
    */
   public func `is`(_ typeName: String) -> Bool {
     guard let runtime else {
@@ -250,7 +251,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
   /**
    Same as calling `JSON.stringify` with this value, given replacer and space.
    */
-  public func jsonStringify(replacer: consuming JavaScriptValue? = nil, space: consuming JavaScriptValue? = nil) throws -> String? {
+  public func jsonStringify(replacer: JavaScriptValue? = nil, space: JavaScriptValue? = nil) throws -> String? {
     guard let runtime else {
       // Some types do not need the runtime. Handle them before crashing due to missing runtime.
       switch kind {
@@ -270,7 +271,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
       .global()
       .getPropertyAsObject("JSON")
       .getPropertyAsFunction("stringify")
-      .call(arguments: copy().ref(), replacer?.ref(), space?.ref())
+      .call(arguments: self, replacer, space)
     return value.isString() ? value.getString() : nil
   }
 
@@ -279,6 +280,25 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
   public func asValue() -> JavaScriptValue {
     // We need to copy the value as `self` would be borrowed
     return copy()
+  }
+
+  internal func asJSIValue() -> facebook.jsi.Value {
+    if let runtime {
+      return facebook.jsi.Value(runtime.pointee, pointee)
+    }
+    // Some simple value kinds do not require the runtime.
+    switch kind {
+    case .undefined:
+      return facebook.jsi.Value.undefined()
+    case .null:
+      return facebook.jsi.Value.null()
+    case .bool:
+      return facebook.jsi.Value(getBool())
+    case .number:
+      return facebook.jsi.Value(getDouble())
+    default:
+      JS.runtimeLostFatalError()
+    }
   }
 
   // MARK: - Kind
@@ -322,7 +342,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
   /**
    Tests whether two values are strictly equal, according to https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
    */
-  public func isEqual(to another: borrowing JavaScriptValue) -> Bool {
+  public func isEqual(to another: JavaScriptValue) -> Bool {
     if let jsiRuntime = runtime?.pointee ?? another.runtime?.pointee {
       return facebook.jsi.Value.strictEquals(jsiRuntime, pointee, another.pointee)
     }
@@ -346,7 +366,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
   /**
    Same as `isEqual(to:)`.
    */
-  public static func == (lhs: borrowing Self, rhs: borrowing Self) -> Bool {
+  public static func == (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
     // Note that we implement comparison operator, but we don't add conformance to `Equatable` because it requires types to be copyable.
     // This proposal solves it: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0499-support-non-copyable-simple-protocols.md
     return lhs.isEqual(to: rhs)
@@ -355,7 +375,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
   /**
    Negates the result of `isEqual(to:)`.
    */
-  public static func != (lhs: borrowing Self, rhs: borrowing Self) -> Bool {
+  public static func != (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
     return !lhs.isEqual(to: rhs)
   }
 
@@ -395,7 +415,7 @@ public struct JavaScriptValue: JavaScriptType, Escapable, ~Copyable {
 }
 
 extension JavaScriptValue: JSRepresentable {
-  public static func fromJSValue(_ value: borrowing JavaScriptValue) -> JavaScriptValue {
+  public static func fromJSValue(_ value: JavaScriptValue) -> JavaScriptValue {
     return value.copy()
   }
 
@@ -406,11 +426,11 @@ extension JavaScriptValue: JSRepresentable {
 }
 
 extension JavaScriptValue: JSIRepresentable {
-  public/*!*/ static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptValue {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptValue {
     fatalError("Unimplemented")
   }
 
-  public/*!*/ func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
     return facebook.jsi.Value(runtime, pointee)
   }
 }

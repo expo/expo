@@ -4,7 +4,7 @@ internal import ExpoModulesJSI_Cxx
 
 public struct JavaScriptHostObject: ~Copyable {
   public typealias GetClosure = (_ propertyName: String) -> JavaScriptValue
-  public typealias SetClosure = (_ propertyName: String, _ value: consuming JavaScriptValue) -> Void
+  public typealias SetClosure = (_ propertyName: String, _ value: JavaScriptValue) -> Void
   public typealias GetPropertyNamesClosure = () -> [String]
   public typealias DeallocClosure = () -> Void
 

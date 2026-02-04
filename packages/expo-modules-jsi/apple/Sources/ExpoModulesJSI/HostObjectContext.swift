@@ -1,15 +1,17 @@
-
+/**
+ Context that captures Swift types to pass them to JSI host object as an unmanaged pointer for interoperability with C++.
+ */
 internal class HostObjectContext {
   let runtime: JavaScriptRuntime
   let get: (String) -> JavaScriptValue
-  let set: (String, consuming JavaScriptValue) -> Void
+  let set: (String, JavaScriptValue) -> Void
   let getPropertyNames: () -> [String]
   let dealloc: () -> Void
 
   init(
     runtime: JavaScriptRuntime,
     _ get: @escaping (String) -> JavaScriptValue,
-    _ set: @escaping (String, consuming JavaScriptValue) -> Void,
+    _ set: @escaping (String, JavaScriptValue) -> Void,
     _ getPropertyNames: @escaping () -> [String],
     _ dealloc: @escaping () -> Void
   ) {

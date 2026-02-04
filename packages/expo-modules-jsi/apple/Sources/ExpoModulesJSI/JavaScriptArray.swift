@@ -24,7 +24,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     return JavaScriptValue(runtime, pointee.getValueAtIndex(runtime.pointee, index))
   }
 
-  public func map<U>(_ transform: (_ value: borrowing JavaScriptValue) throws -> U) rethrows -> [U] {
+  public func map<U>(_ transform: (_ value: JavaScriptValue) throws -> U) rethrows -> [U] {
     return try (0..<size).map { index in
       let value = self.getValue(atIndex: index)
       return try transform(value)

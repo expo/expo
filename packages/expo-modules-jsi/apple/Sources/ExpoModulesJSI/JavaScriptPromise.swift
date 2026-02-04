@@ -59,7 +59,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     self.object = try! runtime
       .global()
       .getPropertyAsFunction("Promise")
-      .callAsConstructor(setup.ref())
+      .callAsConstructor(setup.asValue())
       .getObject()
   }
 
@@ -82,20 +82,19 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     return object.asValue()
   }
 
-  public func resolve(_ result: consuming JavaScriptValue) {
+  public func resolve(_ result: JavaScriptValue) {
     guard let runtime else {
       return
     }
     guard !resolveFunction.isEmpty else {
       preconditionFailure("Cannot settle a promise more than once")
     }
-    let resultRef = result.ref()
 
     // `resolve` is not isolated, so make sure to jump to JS thread.
     runtime.execute { [resolveFunction, rejectFunction] in
       // Call the actual resolver given in the Promise setup.
       // This will also call `deferredPromise.resolve` in the `then` handler.
-      _ = try! resolveFunction.take().getFunction().call(arguments: resultRef)
+      _ = try! resolveFunction.take().getFunction().call(arguments: result)
 
       // Release the rejecter, we cannot call it anymore.
       rejectFunction.release()
@@ -110,13 +109,13 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       preconditionFailure("Cannot settle a promise more than once")
     }
     // Create a JS error from any (native) error.
-    let errorRef = JavaScriptError(runtime, message: error.localizedDescription).ref()
+    let errorValue = JavaScriptError(runtime, message: error.localizedDescription).asValue()
 
     // `reject` is not isolated, so make sure to jump to JS thread.
     runtime.execute { [resolveFunction, rejectFunction] in
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
-      _ = try! rejectFunction.take().getFunction().call(arguments: errorRef)
+      _ = try! rejectFunction.take().getFunction().call(arguments: errorValue)
 
       // Release the resolver, we cannot call it anymore.
       resolveFunction.release()
