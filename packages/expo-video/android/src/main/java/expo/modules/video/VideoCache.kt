@@ -32,7 +32,6 @@ class VideoCache(context: Context) {
   private val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
   private var cacheEvictor = LeastRecentlyUsedCacheEvictor(getMaxCacheSize())
   var instance = SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
-  
   // Function that gets the cache size from shared preferences
   private fun getMaxCacheSize(): Long {
     return sharedPreferences.getLong(CACHE_SIZE_KEY, DEFAULT_CACHE_SIZE)
