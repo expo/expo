@@ -9,7 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~55.0.0-preview.8",
+    "expo": "~55.0.0-preview.9",
     "expo-clipboard": "55.0.4",
     "expo-dev-client": "~55.0.4",
     "expo-image": "~55.0.3",

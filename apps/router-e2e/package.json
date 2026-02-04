@@ -60,10 +60,10 @@
   "dependencies": {
     "@expo/dom-webview": "55.0.2",
     "@expo/vector-icons": "^15.0.2",
-    "expo": "~55.0.0-preview.8",
+    "expo": "~55.0.0-preview.9",
     "expo-haptics": "~55.0.4",
     "expo-linking": "~55.0.3",
-    "expo-router": "^55.0.0-preview.5",
+    "expo-router": "^55.0.0-preview.6",
     "expo-speech": "~55.0.4",
     "expo-sqlite": "~55.0.4",
     "expo-symbols": "~55.0.3",

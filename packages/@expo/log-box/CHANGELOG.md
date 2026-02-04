@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Migrate away from react-native-web to fix styles in SPA output. ([#42853](https://github.com/expo/expo/pull/42853) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 55.0.5 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.4 — 2026-02-03
 

@@ -12,6 +12,10 @@
 
 - [test] setup maestro e2e tests for expo-brownfield on android in [#42864](https://github.com/expo/expo/pull/42864) by [@pmleczek](https://github.com/pmleczek)
 
+## 55.0.6 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.5 — 2026-02-03
 
 ### 🐛 Bug fixes

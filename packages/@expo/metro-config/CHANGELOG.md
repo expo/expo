@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Switch to `@expo/env`'s `parseEnv` helper ([#42763](https://github.com/expo/expo/pull/42763) by [@kitten](https://github.com/kitten))
+
 ## 55.0.4 — 2026-02-03
 
 _This version does not introduce any user-facing changes._

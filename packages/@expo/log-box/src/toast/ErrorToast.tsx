@@ -6,8 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useEffect, useCallback, useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
 
+import styles from './ErrorToast.module.css';
 import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog, useLogs } from '../Data/LogBoxLog';
 import { LogBoxMessage } from '../overlay/Message';
@@ -47,15 +47,7 @@ function ErrorToastStack({ logs }: { logs: LogBoxLog[] }) {
   );
 
   return (
-    <div
-      style={{
-        bottom: 'calc(6px + env(safe-area-inset-bottom, 0px))',
-        left: 10,
-        right: 10,
-        maxWidth: 320,
-        position: 'fixed',
-        display: 'flex',
-      }}>
+    <div className={styles.container}>
       {errors.length > 0 && (
         <ErrorToast
           log={errors[errors.length - 1]}
@@ -89,134 +81,45 @@ function ErrorToast(props: {
   useSymbolicatedLog(log);
 
   return (
-    <>
-      <style>
-        {`
-[data-expo-log-toast] {
-  background-color: #632e2c;
-  height: 48px;
-  justify-content: center;
-  margin-bottom: 4px;
-  display: flex;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-  border: 1px solid var(--expo-log-color-danger);
-  /* border: 1px solid var(--expo-log-color-border); */
-  cursor: pointer;
-  overflow: hidden;
-  flex: 1;
-  padding: 0 10px;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-}
+    <div className={styles.toast} onClick={props.onPressOpen} role="button" tabIndex={0}>
+      <Count count={totalLogCount} />
 
-[data-expo-log-toast]:hover {
-  background-color: #924340;
-}
-`}
-      </style>
-      <button data-expo-log-toast onClick={props.onPressOpen}>
-        <Count count={totalLogCount} />
+      <span className={styles.message}>
+        {log.message && <LogBoxMessage maxLength={40} message={log.message} />}
+      </span>
 
-        <Text
-          numberOfLines={1}
-          style={{
-            userSelect: 'none',
-            paddingLeft: 8,
-            color: 'var(--expo-log-color-label)',
-            flex: 1,
-            fontSize: 14,
-            lineHeight: 22,
-          }}>
-          {log.message && <LogBoxMessage maxLength={40} message={log.message} />}
-        </Text>
-
-        <Dismiss onPress={props.onPressDismiss} />
-      </button>
-    </>
+      <Dismiss onPress={props.onPressDismiss} />
+    </div>
   );
 }
 
 function Count({ count }: { count: number }) {
   return (
-    <div
-      style={{
-        minWidth: 30,
-        height: 30,
-        borderRadius: 6,
-        justifyContent: 'center',
-        alignItems: 'center',
-        display: 'flex',
-        background: 'var(--expo-log-color-danger)',
-      }}>
-      <Text
-        style={{
-          color: 'var(--expo-log-color-label)',
-          fontSize: 14,
-          lineHeight: 18,
-          textAlign: 'center',
-          fontWeight: '600',
-          // @ts-ignore
-          textShadow: `0px 0px 3px rgba(51, 51, 51, 0.8)`,
-        }}>
-        {count <= 1 ? '!' : count}
-      </Text>
+    <div className={styles.count}>
+      <span className={styles.countText}>{count <= 1 ? '!' : count}</span>
     </div>
   );
 }
 
 function Dismiss({ onPress }: { onPress: () => void }) {
   return (
-    <Pressable
-      style={{
-        marginLeft: 5,
-      }}
-      hitSlop={{
-        top: 12,
-        right: 10,
-        bottom: 12,
-        left: 10,
-      }}
-      onPress={onPress}>
-      {({
-        /** @ts-expect-error: react-native types are broken. */
-        hovered,
-        pressed,
-      }) => (
-        <View
-          style={[
-            {
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              height: 20,
-              width: 20,
-              borderRadius: 25,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-            hovered && { opacity: 0.8 },
-            pressed && { opacity: 0.5 },
-          ]}>
-          <svg
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            style={{
-              width: 12,
-              height: 12,
-              color: 'white',
-              // color: 'var(--expo-log-color-danger)',
-            }}>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M17 7L7 17M7 7L17 17"
-            />
-          </svg>
-        </View>
-      )}
-    </Pressable>
+    <button
+      className={styles.dismissButton}
+      onClick={(e) => {
+        e.stopPropagation();
+        onPress();
+      }}>
+      <div className={styles.dismissContent}>
+        <svg className={styles.dismissIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M17 7L7 17M7 7L17 17"
+          />
+        </svg>
+      </div>
+    </button>
   );
 }
 
