@@ -12,25 +12,12 @@ exports.load = load;
 exports.loadEnvFiles = loadEnvFiles;
 exports.loadProjectEnv = loadProjectEnv;
 exports.logLoadedEnv = logLoadedEnv;
+exports.parseEnv = parseEnv;
 exports.parseEnvFiles = parseEnvFiles;
 exports.parseProjectEnv = parseProjectEnv;
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
-    return data;
-  };
-  return data;
-}
-function dotenv() {
-  const data = _interopRequireWildcard(require("dotenv"));
-  dotenv = function () {
-    return data;
-  };
-  return data;
-}
-function _dotenvExpand() {
-  const data = require("dotenv-expand");
-  _dotenvExpand = function () {
     return data;
   };
   return data;
@@ -63,8 +50,13 @@ function _nodePath() {
   };
   return data;
 }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _parse() {
+  const data = require("./parse");
+  _parse = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:env');
 
@@ -140,12 +132,7 @@ function parseEnvFiles(envFiles, {
   [...envFiles].reverse().forEach(envFile => {
     try {
       const envFileContent = _nodeFs().default.readFileSync(envFile, 'utf8');
-      const envFileParsed = dotenv().parse(envFileContent);
-
-      // If there are parsing issues, mark the file as not-parsed
-      if (!envFileParsed) {
-        return debug(`Failed to load environment variables from: ${envFile}%s`);
-      }
+      const envFileParsed = (0, _parse().parse)(envFileContent);
       loadedEnvFiles.push(envFile);
       debug(`Loaded environment variables from: ${envFile}`);
       for (const key of Object.keys(envFileParsed)) {
@@ -168,7 +155,7 @@ function parseEnvFiles(envFiles, {
     }
   });
   return {
-    env: expandEnvFromSystem(loadedEnvVars, systemEnv),
+    env: (0, _parse().expand)(loadedEnvVars, systemEnv),
     files: loadedEnvFiles.reverse()
   };
 }
@@ -210,35 +197,6 @@ function loadEnvFiles(envFiles, {
     ...parsed,
     loaded: loadedEnvKeys
   };
-}
-
-/**
- * Expand the parsed environment variables using the existing system environment variables.
- * This does not mutate the existing system environment variables, and only returns the expanded variables.
- */
-function expandEnvFromSystem(parsedEnv, systemEnv = process.env) {
-  const expandedEnv = {};
-
-  // Pass a clone of the system environment variables to avoid mutating the original environment.
-  // When the expansion is done, we only store the environment variables that were initially parsed from `parsedEnv`.
-  const allExpandedEnv = (0, _dotenvExpand().expand)({
-    parsed: parsedEnv,
-    processEnv: {
-      ...systemEnv
-    }
-  });
-  if (allExpandedEnv.error) {
-    _nodeConsole().default.error(`Failed to expand environment variables, using non-expanded environment variables: ${allExpandedEnv.error}`);
-    return parsedEnv;
-  }
-
-  // Only store the values that were initially parsed, from `parsedEnv`.
-  for (const key of Object.keys(parsedEnv)) {
-    if (allExpandedEnv.parsed?.[key]) {
-      expandedEnv[key] = allExpandedEnv.parsed[key];
-    }
-  }
-  return expandedEnv;
 }
 
 /**
@@ -352,5 +310,17 @@ function getFiles(mode, {
     mode,
     silent
   });
+}
+
+/**
+ * Parses the contents of a single `.env` file, optionally expanding it immediately.
+ */
+function parseEnv(contents, sourceEnv) {
+  try {
+    const env = (0, _parse().parse)(contents);
+    return (0, _parse().expand)(env, sourceEnv || {});
+  } catch {
+    return {};
+  }
 }
 //# sourceMappingURL=index.js.map
