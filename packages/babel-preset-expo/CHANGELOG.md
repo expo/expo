@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-02-03
+
+### 💡 Others
+
+- Add missing support for inlining environment variables as optional member expressions ([#42752](https://github.com/expo/expo/pull/42752) by [@kitten](https://github.com/kitten))
+
 ## 55.0.2 — 2026-01-26
 
 _This version does not introduce any user-facing changes._

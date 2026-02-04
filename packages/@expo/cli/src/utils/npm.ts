@@ -10,15 +10,8 @@ import { Readable } from 'stream';
 
 import { CommandError } from './errors';
 import { extractStream } from './tar';
-import { createCachedFetch } from '../api/rest/client';
 
 const debug = require('debug')('expo:utils:npm') as typeof console.log;
-
-const cachedFetch = createCachedFetch({
-  cacheDirectory: 'template-cache',
-  // Time to live. How long (in ms) responses remain cached before being automatically ejected. If undefined, responses are never automatically ejected from the cache.
-  // ttl: 1000,
-});
 
 export function sanitizeNpmPackageName(name: string): string {
   // https://github.com/npm/validate-npm-package-name/#naming-rules
@@ -130,7 +123,7 @@ function renameNpmTarballEntries(expName: string | undefined) {
  * Extracts a tarball stream to a directory and returns the checksum of the tarball.
  */
 export async function extractNpmTarballAsync(
-  stream: NodeJS.ReadableStream,
+  stream: ReadableStream,
   output: string,
   props: ExtractProps
 ): Promise<string> {
@@ -146,11 +139,11 @@ export async function extractNpmTarballFromUrlAsync(
   output: string,
   props: ExtractProps
 ): Promise<string> {
-  const response = await cachedFetch(url);
+  const response = await fetch(url);
   if (!response.ok || !response.body) {
     throw new Error(`Unexpected response: ${response.statusText}. From url: ${url}`);
   }
-  return await extractNpmTarballAsync(Readable.fromWeb(response.body), output, props);
+  return await extractNpmTarballAsync(response.body, output, props);
 }
 
 export async function downloadAndExtractNpmModuleAsync(
@@ -168,8 +161,11 @@ export async function extractLocalNpmTarballAsync(
   output: string,
   props: ExtractProps
 ): Promise<string> {
-  const readStream = fs.createReadStream(tarFilePath);
-  return await extractNpmTarballAsync(readStream, output, props);
+  return await extractNpmTarballAsync(
+    Readable.toWeb(fs.createReadStream(tarFilePath)) as ReadableStream,
+    output,
+    props
+  );
 }
 
 export async function packNpmTarballAsync(packageDir: string): Promise<string> {

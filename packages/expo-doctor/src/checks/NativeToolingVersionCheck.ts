@@ -39,6 +39,7 @@ async function checkMinimumXcodeVersionAsync(
   // Table of SDK version compatibility with Xcode versions
   const compatibilityTable: Record<string, string> = {
     '51': '<=16.2.0',
+    '55': '>=26.0.0',
   };
 
   const majorSdkVersion = semver.major(sdkVersion).toString();

@@ -1,15 +1,31 @@
-import spawnAsync from '@expo/spawn-async';
 import { streamToAsyncIterable, TarTypeFlag, untar } from 'multitars';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { PassThrough, Readable } from 'node:stream';
-import zlib from 'node:zlib';
+import { Readable } from 'node:stream';
 
-import * as Log from '../log';
 import { ensureDirectoryAsync } from './dir';
 
 const debug = require('debug')('expo:utils:tar') as typeof console.log;
+
+class ChecksumStream extends TransformStream {
+  hash: crypto.Hash;
+  constructor(algorithm: string) {
+    super({
+      transform: (chunk, controller) => {
+        this.hash.update(chunk);
+        controller.enqueue(chunk);
+      },
+    });
+    this.hash = crypto.createHash(algorithm);
+  }
+
+  digest(): Buffer;
+  digest(encoding: crypto.BinaryToTextEncoding): string;
+  digest(encoding?: crypto.BinaryToTextEncoding): string | Buffer {
+    return this.hash.digest(encoding!);
+  }
+}
 
 export interface ExtractOptions {
   strip?: number;
@@ -19,7 +35,7 @@ export interface ExtractOptions {
 }
 
 export async function extractStream(
-  input: NodeJS.ReadableStream,
+  input: ReadableStream,
   output: string,
   options: ExtractOptions = {}
 ): Promise<string> {
@@ -28,17 +44,10 @@ export async function extractStream(
 
   const { checksumAlgorithm, strip = 0, rename, filter } = options;
 
-  const hash = crypto.createHash(checksumAlgorithm || 'md5');
-  const digestStream = new PassThrough();
-  digestStream.on('data', (chunk) => hash.update(chunk));
+  const checksumStream = new ChecksumStream(checksumAlgorithm || 'md5');
+  const decompressionStream = new DecompressionStream('gzip');
 
-  const gunzip = zlib.createGunzip({
-    flush: zlib.constants.Z_SYNC_FLUSH,
-    finishFlush: zlib.constants.Z_SYNC_FLUSH,
-  });
-
-  const archive = input.pipe(digestStream).pipe(gunzip);
-  const body = Readable.toWeb(archive);
+  const body = input.pipeThrough(checksumStream).pipeThrough(decompressionStream);
 
   for await (const file of untar(body)) {
     let name = path.normalize(file.name);
@@ -122,7 +131,7 @@ export async function extractStream(
     }
   }
 
-  return hash.digest('hex');
+  return checksumStream.digest('hex');
 }
 
 /** Extract a tar using built-in tools if available and falling back on Node.js. */
@@ -131,5 +140,9 @@ export async function extractAsync(
   output: string,
   options?: ExtractOptions
 ): Promise<void> {
-  await extractStream(fs.createReadStream(input), output, options);
+  await extractStream(
+    Readable.toWeb(fs.createReadStream(input)) as ReadableStream,
+    output,
+    options
+  );
 }

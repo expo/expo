@@ -1,17 +1,19 @@
 'use client';
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
-import { Children, useMemo, type ReactNode } from 'react';
-import type { StyleProp, TextStyle } from 'react-native';
+import { Children, useId, useMemo, type ReactNode } from 'react';
+import { StyleSheet, type ColorValue, type StyleProp, type TextStyle } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { NativeToolbarButton } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
-import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../utils/children';
-import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../common-primitives';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   type StackHeaderItemSharedProps,
-} from '../shared';
+} from './shared';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
+import { RouterToolbarItem } from '../../../toolbar/native';
+import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../utils/children';
+import type { BasicTextStyle } from '../../../utils/font';
 
 export interface StackToolbarButtonProps {
   accessibilityLabel?: string;
@@ -199,21 +201,21 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
     }
   }
 
-  if (placement === 'bottom') {
-    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
-    return (
-      <NativeToolbarButton
-        {...sharedProps}
-        icon={icon}
-        image={props.image}
-        imageRenderingMode={props.iconRenderingMode}
-      />
-    );
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
   }
 
-  return null;
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
+  // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+  const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+  return (
+    <NativeToolbarButton
+      {...sharedProps}
+      icon={icon}
+      image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
+    />
+  );
 };
 
 export function convertStackToolbarButtonPropsToRNHeaderItem(
@@ -232,3 +234,57 @@ export function convertStackToolbarButtonPropsToRNHeaderItem(
 }
 
 const ALLOWED_CHILDREN = [StackToolbarLabel, StackToolbarIcon, StackToolbarBadge];
+
+// #region NativeToolbarButton
+
+interface NativeToolbarButtonProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  disabled?: boolean;
+  hidden?: boolean;
+  hidesSharedBackground?: boolean;
+  icon?: SFSymbol;
+  image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
+  onPress?: () => void;
+  possibleTitles?: string[];
+  selected?: boolean;
+  separateBackground?: boolean;
+  style?: StyleProp<BasicTextStyle>;
+  tintColor?: ColorValue;
+  variant?: 'plain' | 'done' | 'prominent';
+  label?: string;
+}
+
+/**
+ * Native toolbar button component for bottom toolbar.
+ * Renders as RouterToolbarItem.
+ */
+const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) => {
+  const id = useId();
+  const renderingMode =
+    props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
+  return (
+    <RouterToolbarItem
+      accessibilityHint={props.accessibilityHint}
+      accessibilityLabel={props.accessibilityLabel}
+      barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant}
+      disabled={props.disabled}
+      hidden={props.hidden}
+      hidesSharedBackground={props.hidesSharedBackground}
+      identifier={id}
+      image={props.image}
+      imageRenderingMode={renderingMode}
+      onSelected={props.onPress}
+      possibleTitles={props.possibleTitles}
+      selected={props.selected}
+      sharesBackground={!props.separateBackground}
+      systemImageName={props.icon}
+      title={props.label}
+      tintColor={props.tintColor}
+      titleStyle={StyleSheet.flatten(props.style)}
+    />
+  );
+};
+
+// #endregion

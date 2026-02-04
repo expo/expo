@@ -93,11 +93,64 @@ export type UserInteractionEvent = {
      */
     type: 'ExpoWidgetsUserInteraction';
 };
+/**
+ * Event emitted when a push token is received for a live activity.
+ */
+export type PushTokenEvent = {
+    /**
+     * The ID of the live activity.
+     */
+    activityId: string;
+    /**
+     * The push token for the live activity.
+     */
+    pushToken: string;
+};
+/**
+ * Event emitted when a push-to-start token is received.
+ */
+export type PushToStartTokenEvent = {
+    /**
+     * The push-to-start token for starting live activities remotely.
+     */
+    activityPushToStartToken: string;
+};
+/**
+ * Information about a running live activity.
+ */
+export type LiveActivityInfo = {
+    /**
+     * The unique identifier of the live activity.
+     */
+    id: string;
+    /**
+     * The name of the live activity.
+     */
+    name: string;
+    /**
+     * The push token for the live activity, if available.
+     */
+    pushToken?: string;
+};
+/**
+ * Dismissal policy for ending a live activity.
+ */
+export type LiveActivityDismissalPolicy = 'default' | 'immediate';
 export type ExpoWidgetsEvents = {
     /**
      * Function that is invoked when user interacts with a widget.
      * @param event Interaction event details.
      */
-    onUserInteraction: (event: UserInteractionEvent) => void;
+    onExpoWidgetsUserInteraction: (event: UserInteractionEvent) => void;
+    /**
+     * Function that is invoked when a push-to-start token is received.
+     * @param event Token event details.
+     */
+    onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
+    /**
+     * Function that is invoked when a push token is received for a live activity.
+     * @param event Token event details.
+     */
+    onExpoWidgetsTokenReceived: (event: PushTokenEvent) => void;
 };
 //# sourceMappingURL=Widgets.types.d.ts.map

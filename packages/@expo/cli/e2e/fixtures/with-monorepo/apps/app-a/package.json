@@ -4,19 +4,16 @@
   "name": "app-a",
   "main": "expo-router/entry",
   "dependencies": {
-    "expo": "^54",
-    "expo-constants": "~18.0.9",
-    "expo-linking": "~8.0.8",
-    "expo-router": "~6.0.11",
-    "expo-status-bar": "~3.0.8",
+    "expo": "^55 || ^55.0.0-0",
+    "expo-constants": "^55",
+    "expo-linking": "^55",
+    "expo-router": "^55 || ^55.0.0-0",
+    "expo-status-bar": "^55",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-native": "0.81.4",
-    "react-native-safe-area-context": "~5.6.0",
-    "react-native-screens": "~4.18.0",
+    "react-native": "0.83.1",
+    "react-native-safe-area-context": "~5.6.2",
+    "react-native-screens": "~4.22.0",
     "react-native-web": "~0.21.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.25.2"
   }
 }

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React, { useEffect } from 'react';
-import { ScrollView } from 'react-native';
 
 import { Ansi } from './AnsiHighlight';
 import styles from './CodeFrame.module.css';
@@ -174,9 +173,10 @@ function CodeFrame({
           display: 'flex',
           flexDirection: 'column',
         }}>
-        <ScrollView
-          horizontal
-          contentContainerStyle={{
+        <div
+          style={{
+            overflowX: 'auto',
+            display: 'flex',
             flexDirection: 'column',
           }}>
           {content && (
@@ -185,14 +185,13 @@ function CodeFrame({
                 flexDirection: 'column',
                 color: 'var(--expo-log-color-label)',
                 fontSize: 12,
-                includeFontPadding: false,
-                lineHeight: 20,
+                lineHeight: '20px',
                 fontFamily: 'var(--expo-log-font-mono)',
               }}
               text={content}
             />
           )}
-        </ScrollView>
+        </div>
       </div>
     </div>
   );

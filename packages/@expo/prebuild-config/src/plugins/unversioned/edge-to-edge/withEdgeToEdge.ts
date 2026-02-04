@@ -6,28 +6,24 @@ import {
 } from '@expo/config-plugins';
 import { type ExpoConfig } from '@expo/config-types';
 
-import { withConfigureEdgeToEdgeEnforcement } from './withConfigureEdgeToEdgeEnforcement';
-import { withEdgeToEdgeEnabledGradleProperties } from './withEdgeToEdgeEnabledGradleProperties';
 import { withEnforceNavigationBarContrast } from './withEnforceNavigationBarContrast';
 import { withRestoreDefaultTheme } from './withRestoreDefaultTheme';
 
 const TAG = 'EDGE_TO_EDGE_PLUGIN';
 
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
-export type GradlePropertiesConfig = ExportedConfigWithProps<
-  AndroidConfig.Properties.PropertiesItem[]
->;
 
 export const withEdgeToEdge: ConfigPlugin = (config) => {
   return applyEdgeToEdge(config);
 };
 
 export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
-  config = withEdgeToEdgeEnabledGradleProperties(config, { edgeToEdgeEnabled: true });
-  // Enable/disable edge-to-edge enforcement
-  config = withConfigureEdgeToEdgeEnforcement(config, {
-    disableEdgeToEdgeEnforcement: false,
-  });
+  if ('edgeToEdgeEnabled' in (config.android ?? {})) {
+    WarningAggregator.addWarningAndroid(
+      TAG,
+      '`edgeToEdgeEnabled` customization is no longer available - Android 16 makes edge-to-edge mandatory. Remove the `edgeToEdgeEnabled` entry from your app.json/app.config.js.'
+    );
+  }
 
   config = withEnforceNavigationBarContrast(
     config,

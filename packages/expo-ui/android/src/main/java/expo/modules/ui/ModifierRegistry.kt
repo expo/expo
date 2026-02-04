@@ -25,222 +25,287 @@ import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.records.recordFromMap
 import expo.modules.kotlin.views.ComposableScope
+
+typealias ModifierType = Map<String, Any?>
+typealias ModifierList = List<ModifierType>
+typealias ModifierFactory = (ModifierType, ComposableScope?, AppContext?) -> Modifier
+
+// region Modifier Params
+
+internal data class PaddingAllParams(
+  @Field val all: Int = 0
+) : Record
+
+internal data class PaddingParams(
+  @Field val start: Int = 0,
+  @Field val top: Int = 0,
+  @Field val end: Int = 0,
+  @Field val bottom: Int = 0
+) : Record
+
+internal data class SizeParams(
+  @Field val width: Int = 0,
+  @Field val height: Int = 0
+) : Record
+
+internal data class FillMaxSizeParams(
+  @Field val fraction: Float = 1.0f
+) : Record
+
+internal data class FillMaxWidthParams(
+  @Field val fraction: Float = 1.0f
+) : Record
+
+internal data class FillMaxHeightParams(
+  @Field val fraction: Float = 1.0f
+) : Record
+
+internal data class OffsetParams(
+  @Field val x: Int = 0,
+  @Field val y: Int = 0
+) : Record
+
+internal data class BackgroundParams(
+  @Field val color: Color? = null
+) : Record
+
+internal data class BorderParams(
+  @Field val borderWidth: Int = 1,
+  @Field val borderColor: Color? = null
+) : Record
+
+internal data class ShadowParams(
+  @Field val elevation: Int = 0
+) : Record
+
+internal data class AlphaParams(
+  @Field val alpha: Float = 1.0f
+) : Record
+
+internal data class BlurParams(
+  @Field val radius: Int = 0
+) : Record
+
+internal data class RotateParams(
+  @Field val degrees: Float = 0f
+) : Record
+
+internal data class ZIndexParams(
+  @Field val index: Float = 0f
+) : Record
+
+internal data class AnimateContentSizeParams(
+  @Field val dampingRatio: Float = Spring.DampingRatioNoBouncy,
+  @Field val stiffness: Float = Spring.StiffnessMedium
+) : Record
+
+internal data class WeightParams(
+  @Field val weight: Float = 1f
+) : Record
+
+internal data class TestIDParams(
+  @Field val testID: String? = null
+) : Record
+
+internal data class ClipParams(
+  @Field val shape: ShapeRecord? = null
+) : Record
+
+// endregion
 
 /**
  * Registry for Compose view modifiers that can be applied from React Native.
- * This system uses JSON config pattern (like iOS SwiftUI modifiers) instead of SharedRef.
- *
  * Usage in JS:
  * ```typescript
- * const mod = paddingAll(10); // Returns { $type: 'paddingAll', all: 10 }
- * <Button modifiers={[mod]} />
+ * <Button modifiers={[paddingAll(10)]} />
  * ```
  *
  * Usage in Native:
  * ```kotlin
- * modifier = ModifierRegistry.applyModifiers(props.modifiers, composableScope)
+ * modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
+ * ```
  * ```
  */
 object ModifierRegistry {
+
+  private val modifierFactories: MutableMap<String, ModifierFactory> = mutableMapOf()
+
+  init {
+    registerBuiltInModifiers()
+  }
+
+  /**
+   * Registers a new modifier with the given type name.
+   * The modifier factory creates a Modifier from params, scope, and appContext.
+   */
+  fun register(
+    type: String,
+    factory: ModifierFactory
+  ) {
+    modifierFactories[type] = factory
+  }
+
   /**
    * Applies an array of modifier configs to build a Compose Modifier chain.
    */
   fun applyModifiers(
-    modifiers: List<ModifierConfig>?,
-    scope: ComposableScope? = null,
-    appContext: AppContext? = null
+    modifiers: List<ModifierType>?,
+    appContext: AppContext,
+    scope: ComposableScope
   ): Modifier {
-    if (modifiers == null) return Modifier
+    if (modifiers.isNullOrEmpty()) return Modifier
     return modifiers.fold(Modifier as Modifier) { acc, config ->
-      acc.then(applyModifier(config, scope, appContext))
+      val type = config["\$type"] as? String ?: return@fold acc
+      val modifier = modifierFactories[type]?.invoke(config, scope, appContext) ?: Modifier
+      acc.then(modifier)
     }
   }
 
-  private fun applyModifier(
-    config: ModifierConfig,
-    scope: ComposableScope?,
-    appContext: AppContext?
-  ): Modifier {
-    return when (config.type) {
-      // Padding modifiers
-      "paddingAll" -> {
-        val all = config.all ?: 0
-        Modifier.padding(all.dp)
-      }
-      "padding" -> {
-        Modifier.padding(
-          (config.start ?: 0).dp,
-          (config.top ?: 0).dp,
-          (config.end ?: 0).dp,
-          (config.bottom ?: 0).dp
-        )
-      }
+  /**
+   * Checks if a modifier type is registered.
+   */
+  fun hasModifier(type: String): Boolean {
+    return modifierFactories[type] != null
+  }
 
-      // Size modifiers
-      "size" -> {
-        Modifier.size(
-          (config.width ?: 0).dp,
-          (config.height ?: 0).dp
-        )
-      }
-      "fillMaxSize" -> {
-        Modifier.fillMaxSize(fraction = config.fraction ?: 1.0f)
-      }
-      "fillMaxWidth" -> {
-        Modifier.fillMaxWidth(fraction = config.fraction ?: 1.0f)
-      }
-      "fillMaxHeight" -> {
-        Modifier.fillMaxHeight(fraction = config.fraction ?: 1.0f)
-      }
+  /**
+   * Returns all registered modifier types.
+   */
+  fun registeredTypes(): List<String> {
+    return modifierFactories.keys.toList()
+  }
 
-      // Position modifiers
-      "offset" -> {
-        Modifier.offset((config.x ?: 0).dp, (config.y ?: 0).dp)
-      }
+  private fun registerBuiltInModifiers() {
+    // Padding modifiers
+    register("paddingAll") { map, _, _ ->
+      val params = recordFromMap<PaddingAllParams>(map)
+      Modifier.padding(params.all.dp)
+    }
 
-      // Appearance modifiers
-      "background" -> {
-        config.color?.let { color ->
-          Modifier.background(color.compose)
-        } ?: Modifier
-      }
-      "border" -> {
-        val borderWidth = config.borderWidth ?: 1
-        config.borderColor?.let { borderColor ->
-          Modifier.border(BorderStroke(borderWidth.dp, borderColor.compose))
-        } ?: Modifier
-      }
-      "shadow" -> {
-        val elevation = config.elevation ?: 0
-        Modifier.shadow(elevation.dp)
-      }
-      "alpha" -> {
-        val alpha = config.alpha ?: 1.0f
-        Modifier.alpha(alpha)
-      }
-      "blur" -> {
-        val radius = config.radius ?: 0
-        Modifier.blur(radius.dp)
-      }
+    register("padding") { map, _, _ ->
+      val params = recordFromMap<PaddingParams>(map)
+      Modifier.padding(
+        params.start.dp,
+        params.top.dp,
+        params.end.dp,
+        params.bottom.dp
+      )
+    }
 
-      // Transform modifiers
-      "rotate" -> {
-        val degrees = config.degrees ?: 0f
-        Modifier.rotate(degrees)
-      }
-      "zIndex" -> {
-        val index = config.index ?: 0f
-        Modifier.zIndex(index)
-      }
+    // Size modifiers
+    register("size") { map, _, _ ->
+      val params = recordFromMap<SizeParams>(map)
+      Modifier.size(params.width.dp, params.height.dp)
+    }
 
-      // Animation modifiers
-      "animateContentSize" -> {
-        val dampingRatio = config.dampingRatio ?: Spring.DampingRatioNoBouncy
-        val stiffness = config.stiffness ?: Spring.StiffnessMedium
-        Modifier.animateContentSize(
-          spring(dampingRatio = dampingRatio, stiffness = stiffness)
-        )
-      }
+    register("fillMaxSize") { map, _, _ ->
+      val params = recordFromMap<FillMaxSizeParams>(map)
+      Modifier.fillMaxSize(fraction = params.fraction)
+    }
 
-      // Scope-dependent modifiers
-      "weight" -> {
-        val weight = config.weight ?: 1f
-        scope?.rowScope?.run {
-          Modifier.weight(weight)
-        } ?: scope?.columnScope?.run {
-          Modifier.weight(weight)
-        } ?: Modifier
-      }
-      "matchParentSize" -> {
-        scope?.boxScope?.run {
-          Modifier.matchParentSize()
-        } ?: Modifier
-      }
+    register("fillMaxWidth") { map, _, _ ->
+      val params = recordFromMap<FillMaxWidthParams>(map)
+      Modifier.fillMaxWidth(fraction = params.fraction)
+    }
 
-      // Utility modifiers
-      "testID" -> {
-        config.testID?.let { testID ->
-          Modifier.applyTestTag(testID)
-        } ?: Modifier
-      }
-      "clip" -> {
-        config.shape?.let { shapeRecord ->
-          shapeFromShapeRecord(shapeRecord)?.let { shape ->
-            Modifier.clip(shape)
-          }
-        } ?: Modifier
-      }
+    register("fillMaxHeight") { map, _, _ ->
+      val params = recordFromMap<FillMaxHeightParams>(map)
+      Modifier.fillMaxHeight(fraction = params.fraction)
+    }
 
-      // Callback modifiers
-      "clickable" -> {
-        // Note: eventListener callback is handled by the component layer
-        // This returns just the clickable modifier without the callback
-        // The actual callback invocation should be set up at the component level
-        Modifier.clickable { }
-      }
+    // Position modifiers
+    register("offset") { map, _, _ ->
+      val params = recordFromMap<OffsetParams>(map)
+      Modifier.offset(params.x.dp, params.y.dp)
+    }
 
-      // Unknown modifier type - return empty modifier
-      else -> Modifier
+    // Appearance modifiers
+    register("background") { map, _, _ ->
+      val params = recordFromMap<BackgroundParams>(map)
+      params.color?.let { color ->
+        Modifier.background(color.compose)
+      } ?: Modifier
+    }
+
+    register("border") { map, _, _ ->
+      val params = recordFromMap<BorderParams>(map)
+      params.borderColor?.let { borderColor ->
+        Modifier.border(BorderStroke(params.borderWidth.dp, borderColor.compose))
+      } ?: Modifier
+    }
+
+    register("shadow") { map, _, _ ->
+      val params = recordFromMap<ShadowParams>(map)
+      Modifier.shadow(params.elevation.dp)
+    }
+
+    register("alpha") { map, _, _ ->
+      val params = recordFromMap<AlphaParams>(map)
+      Modifier.alpha(params.alpha)
+    }
+
+    register("blur") { map, _, _ ->
+      val params = recordFromMap<BlurParams>(map)
+      Modifier.blur(params.radius.dp)
+    }
+
+    // Transform modifiers
+    register("rotate") { map, _, _ ->
+      val params = recordFromMap<RotateParams>(map)
+      Modifier.rotate(params.degrees)
+    }
+
+    register("zIndex") { map, _, _ ->
+      val params = recordFromMap<ZIndexParams>(map)
+      Modifier.zIndex(params.index)
+    }
+
+    // Animation modifiers
+    register("animateContentSize") { map, _, _ ->
+      val params = recordFromMap<AnimateContentSizeParams>(map)
+      Modifier.animateContentSize(
+        spring(dampingRatio = params.dampingRatio, stiffness = params.stiffness)
+      )
+    }
+
+    // Scope-dependent modifiers
+    register("weight") { map, scope, _ ->
+      val params = recordFromMap<WeightParams>(map)
+      scope?.rowScope?.run {
+        Modifier.weight(params.weight)
+      } ?: scope?.columnScope?.run {
+        Modifier.weight(params.weight)
+      } ?: Modifier
+    }
+
+    register("matchParentSize") { _, scope, _ ->
+      scope?.boxScope?.run {
+        Modifier.matchParentSize()
+      } ?: Modifier
+    }
+
+    // Utility modifiers
+    register("testID") { map, _, _ ->
+      val params = recordFromMap<TestIDParams>(map)
+      params.testID?.let { testID ->
+        Modifier.applyTestTag(testID)
+      } ?: Modifier
+    }
+
+    register("clip") { map, _, _ ->
+      val params = recordFromMap<ClipParams>(map)
+      params.shape?.let { shapeRecord ->
+        shapeFromShapeRecord(shapeRecord)?.let { shape ->
+          Modifier.clip(shape)
+        }
+      } ?: Modifier
+    }
+
+    // Callback modifiers
+    register("clickable") { _, _, _ ->
+      Modifier.clickable { }
     }
   }
 }
-
-/**
- * Modifier configuration record that maps to JSON from JavaScript.
- *
- * Example JSON:
- * ```json
- * { "$type": "paddingAll", "all": 10 }
- * { "$type": "weight", "weight": 1.0 }
- * { "$type": "background", "color": "#FF0000" }
- * ```
- */
-data class ModifierConfig(
-  @Field(key = "\$type")
-  val type: String = "",
-
-  // Padding
-  @Field val all: Int? = null,
-  @Field val start: Int? = null,
-  @Field val top: Int? = null,
-  @Field val end: Int? = null,
-  @Field val bottom: Int? = null,
-
-  // Size
-  @Field val width: Int? = null,
-  @Field val height: Int? = null,
-  @Field val fraction: Float? = null,
-
-  // Position
-  @Field val x: Int? = null,
-  @Field val y: Int? = null,
-
-  // Appearance
-  @Field val color: Color? = null,
-  @Field val borderWidth: Int? = null,
-  @Field val borderColor: Color? = null,
-  @Field val elevation: Int? = null,
-  @Field val alpha: Float? = null,
-  @Field val radius: Int? = null,
-
-  // Transform
-  @Field val degrees: Float? = null,
-  @Field val index: Float? = null,
-
-  // Animation
-  @Field val dampingRatio: Float? = null,
-  @Field val stiffness: Float? = null,
-
-  // Scope-dependent
-  @Field val weight: Float? = null,
-
-  // Utility
-  @Field val testID: String? = null,
-  @Field val shape: ShapeRecord? = null,
-
-  // Scope metadata (optional, for documentation/debugging)
-  @Field(key = "\$scope")
-  val scope: String? = null
-) : Record

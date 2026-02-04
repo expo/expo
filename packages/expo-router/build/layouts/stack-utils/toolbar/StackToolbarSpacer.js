@@ -3,8 +3,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarSpacer = void 0;
 exports.convertStackToolbarSpacerPropsToRNHeaderItem = convertStackToolbarSpacerPropsToRNHeaderItem;
-const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
+const react_1 = require("react");
 const context_1 = require("./context");
+const native_1 = require("../../../toolbar/native");
 /**
  * A spacing helper used inside `Stack.Toolbar` to create empty space between toolbar items.
  *
@@ -51,10 +52,10 @@ const context_1 = require("./context");
  */
 const StackToolbarSpacer = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement === 'bottom') {
-        return <bottom_toolbar_native_elements_1.NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
     }
-    return null;
+    return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
 };
 exports.StackToolbarSpacer = StackToolbarSpacer;
 function convertStackToolbarSpacerPropsToRNHeaderItem(props) {
@@ -65,7 +66,7 @@ function convertStackToolbarSpacerPropsToRNHeaderItem(props) {
     // Warn if using flexible spacer in Left/Right placement
     if (width === undefined) {
         if (process.env.NODE_ENV !== 'production') {
-            console.warn('Stack.Toolbar.Spacer requires `width` when used in Left or Right placement. Flexible spacers are only supported in Bottom placement.');
+            console.warn('Stack.Toolbar.Spacer requires `width` when used in left or right placement. Flexible spacers are only supported in Bottom placement.');
         }
         return undefined;
     }
@@ -74,4 +75,13 @@ function convertStackToolbarSpacerPropsToRNHeaderItem(props) {
         spacing: width ?? 0,
     };
 }
+/**
+ * Native toolbar spacer component for bottom toolbar.
+ * Renders as RouterToolbarItem with type 'fixedSpacer' or 'fluidSpacer'.
+ */
+const NativeToolbarSpacer = (props) => {
+    const id = (0, react_1.useId)();
+    return (<native_1.RouterToolbarItem hidesSharedBackground={props.hidesSharedBackground} hidden={props.hidden} identifier={id} sharesBackground={props.sharesBackground} type={props.width ? 'fixedSpacer' : 'fluidSpacer'} width={props.width}/>);
+};
+// #endregion
 //# sourceMappingURL=StackToolbarSpacer.js.map
