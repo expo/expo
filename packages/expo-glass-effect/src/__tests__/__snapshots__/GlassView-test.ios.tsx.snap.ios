@@ -2,24 +2,14 @@
 
 exports[`renders a clear liquid glass view 1`] = `
 <ViewManagerAdapter_ExpoGlassEffect
-  glassEffectStyle={
-    {
-      "animate": false,
-      "style": "clear",
-    }
-  }
+  glassEffectStyle="clear"
   testID="glass-view"
 />
 `;
 
 exports[`renders a regular liquid glass view 1`] = `
 <ViewManagerAdapter_ExpoGlassEffect
-  glassEffectStyle={
-    {
-      "animate": false,
-      "style": "regular",
-    }
-  }
+  glassEffectStyle="regular"
   testID="glass-view"
 />
 `;
