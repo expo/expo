@@ -7,6 +7,17 @@ jest.mock('@expo/config-plugins', () => ({
   withPlugins: jest.fn((config, plugins) => config),
 }));
 
+jest.mock('@expo/require-utils', () => {
+  const requireUtils = jest.requireActual('@expo/require-utils');
+  return {
+    ...requireUtils,
+    loadModuleSync(filename: string) {
+      const contents = require('fs').readFileSync(filename, 'utf8');
+      return requireUtils.evalModule(contents, filename);
+    },
+  };
+});
+
 describe(getProjectConfigDescriptionWithPaths, () => {
   it(`describes a project using both a static and dynamic config`, () => {
     const message = getProjectConfigDescriptionWithPaths('/', {
