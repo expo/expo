@@ -174,8 +174,7 @@ function NativeStackNavigator({
     const GLASS = isLiquidGlassAvailable();
     Object.keys(descriptors).forEach((key) => {
       const options = descriptors[key].options;
-      const internalGestureEnabled =
-        options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
+      const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
       if (internalGestureEnabled !== undefined) {
         options.gestureEnabled = internalGestureEnabled;
       }
