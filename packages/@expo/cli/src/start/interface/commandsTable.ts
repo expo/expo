@@ -55,7 +55,7 @@ export function printUsage(
     Log.log();
     let message = chalk`Using {cyan ${target}}`;
     if (!short) {
-      message += chalk` {dim │ Press {bold s} to ${switchMsg}}`;
+      message += chalk` {dim (Press {bold s} to ${switchMsg})}`;
     }
     Log.log(printItem(message));
   };
