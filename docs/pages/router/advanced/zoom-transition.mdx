@@ -353,37 +353,3 @@ If you attempt to use Link with zoom transition to a screen that is not part of 
 The zoom transition feature requires iOS 18 or later. While the components will render on older versions, the zoom animation will not be applied.
 
 </Collapsible>
-
-<Collapsible summary="Using zoom transition with ScrollView">
-
-When using zoom transitions on screens with a `ScrollView`, the swipe-to-dismiss gesture may conflict with scrolling. To prevent accidental dismissal while scrolling, use the `usePreventZoomTransitionDismissal` hook with `unstable_dismissalBoundsRect`:
-
-```tsx app/image.tsx
-import { Link, usePreventZoomTransitionDismissal } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView } from 'react-native';
-
-export default function Screen() {
-  const [shouldPrevent, setShouldPrevent] = useState(false);
-  usePreventZoomTransitionDismissal(
-    shouldPrevent
-      ? undefined
-      : {
-          unstable_dismissalBoundsRect: { minX: 0, minY: 0 },
-        }
-  );
-  return (
-    <ScrollView
-      style={{ flex: 1 }}
-      onScroll={event => {
-        setShouldPrevent(event.nativeEvent.contentOffset.y > 1);
-      }}>
-      {/* Content */}
-    </ScrollView>
-  );
-}
-```
-
-This approach disables the swipe-to-dismiss gesture when the scroll position is at the top, allowing users to scroll down without accidentally triggering the dismissal animation. Once scrolled, the gesture is re-enabled.
-
-</Collapsible>
