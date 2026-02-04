@@ -244,6 +244,65 @@ open class DevMenuManager: NSObject {
   public func updateCurrentManifest(_ manifest: Manifest?, manifestURL: URL?) {
     currentManifest = manifest
     currentManifestURL = manifestURL
+
+    // Handle snack session setup/cleanup when app changes
+    handleSnackSessionForManifest(url: manifestURL)
+  }
+
+  /// Manages SnackEditingSession when the current app changes.
+  /// - Clears session when switching to a non-snack app or different snack
+  /// - Sets up session for QR code snacks (UI-opened snacks already set up their session)
+  private func handleSnackSessionForManifest(url: URL?) {
+    let (snackId, channel) = parseSnackParams(from: url)
+
+    // If URL has no snack-channel, this is not a snack - clear any existing session
+    guard let channel = channel else {
+      if SnackEditingSession.shared.channel != nil {
+        SnackEditingSession.shared.clearSession()
+      }
+      return
+    }
+
+    // If we already have a session for this channel, don't re-setup
+    // (UI-opened snacks/lessons set up the session before calling openApp)
+    if SnackEditingSession.shared.channel == channel {
+      return
+    }
+
+    // Different channel - need to handle the transition
+    // If URL has snackId, this is a QR code snack - set up new session
+    // If no snackId, this is a lesson/playground that should have been set up by UI
+    // (but wasn't, possibly due to race condition) - clear stale session
+    guard let snackId = snackId else {
+      // Lesson/playground URL but channel doesn't match - clear stale session
+      // The UI should have set this up, but we have a stale session from something else
+      if SnackEditingSession.shared.channel != nil {
+        SnackEditingSession.shared.clearSession()
+      }
+      return
+    }
+
+    // QR code snack - set up new session (this also clears any existing session)
+    let isStaging = url?.absoluteString.contains("staging") ?? false
+    Task {
+      await SnackEditingSession.shared.setupSession(
+        snackId: snackId,
+        channel: channel,
+        isStaging: isStaging
+      )
+    }
+  }
+
+  private func parseSnackParams(from url: URL?) -> (snackId: String?, channel: String?) {
+    guard let url = url,
+          let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+      return (nil, nil)
+    }
+
+    let snackId = components.queryItems?.first(where: { $0.name == "snack" })?.value
+    let channel = components.queryItems?.first(where: { $0.name == "snack-channel" })?.value
+
+    return (snackId, channel)
   }
 
   @objc

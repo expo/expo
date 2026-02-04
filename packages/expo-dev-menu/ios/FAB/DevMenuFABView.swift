@@ -169,7 +169,7 @@ struct DevMenuFABView: View {
   @State private var isLessonCompleted = false
   @State private var hasBeenEdited = false
   @State private var snackName = "Playground"
-  @State private var snackDescription = "Learn to code for mobile"
+  @State private var snackDescription = "Learn to code on mobile"
   @State private var screenWidth: CGFloat = 0
   @State private var screenHeight: CGFloat = 0
   @State private var currentEdge: SnappedEdge = .left
@@ -182,7 +182,7 @@ struct DevMenuFABView: View {
   )
 
   /// Compute the hit test frame based on current state.
-  /// When panel is visible, the panel has equal margins on both sides.
+  /// When panel is visible (lessons or lesson-like snacks), the panel has equal margins on both sides.
   private func hitTestFrame(edge: SnappedEdge) -> CGRect {
     let showingPanel = isSnackSession && !isDragging
 
@@ -226,12 +226,12 @@ struct DevMenuFABView: View {
 
       ZStack {
         if isPositioned {
-          // Panel rendered behind the gear
+          // Panel rendered behind the gear (for lessons and lesson-like snacks)
           if isSnackSession {
             SnackActionPanel(
               isDragging: isDragging,
-              snackName: $snackName,
-              snackDescription: $snackDescription,
+              snackName: snackName,
+              snackDescription: snackDescription,
               snappedEdge: currentEdge,
               gearPosition: position,
               screenWidth: screenWidth,
@@ -258,9 +258,14 @@ struct DevMenuFABView: View {
         screenWidth = geometry.size.width
         screenHeight = geometry.size.height
 
-        // Restore saved position or use default
+        // Check session state to determine positioning behavior
+        updateSnackSessionState()
+
+        // Panel sessions (lessons/lesson-like snacks) always use default position (top-left)
         let initialPos: CGPoint
-        if let storedPos = Self.loadStoredPosition() {
+        if isSnackSession {
+          initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea, forPanelSession: true)
+        } else if let storedPos = Self.loadStoredPosition() {
           // Clamp stored position to valid bounds
           let margin = FABConstants.margin
           let minX = margin / 2
@@ -280,7 +285,6 @@ struct DevMenuFABView: View {
         currentEdge = initialPos.x < geometry.size.width / 2 ? .left : .right
         isPositioned = true
         onFrameChange(hitTestFrame(edge: currentEdge))
-        updateSnackSessionState()
       }
       .onChange(of: geometry.size) { newSize in
         screenWidth = newSize.width
@@ -317,7 +321,6 @@ struct DevMenuFABView: View {
 
   private func updateSnackSessionState() {
     let session = SnackEditingSession.shared
-    isSnackSession = session.isReady
     isLesson = session.isLesson
     hasBeenEdited = session.hasBeenEdited
 
@@ -329,26 +332,18 @@ struct DevMenuFABView: View {
       isLessonCompleted = false
     }
 
-    if let id = session.snackId {
-      // Extract a display name from the snack ID
-      // e.g., "@username/my-snack" -> "my-snack", "new" -> "Playground"
-      if id == "new" {
-        snackName = "Playground"
-      } else if let lastSlash = id.lastIndex(of: "/") {
-        snackName = String(id[id.index(after: lastSlash)...])
-      } else {
-        snackName = id
-      }
-    } else {
-      snackName = "Playground"
-    }
+    // Use the centralized display name
+    snackName = session.displayName
 
     // Use lesson description if available
     if let description = session.lessonDescription {
       snackDescription = description
     } else {
-      snackDescription = "Learn to code for mobile"
+      snackDescription = "Learn to code on mobile"
     }
+
+    // Panel shows for official lessons OR snacks with "lesson" or "learn" in the name
+    isSnackSession = session.isLessonLikeSession
   }
 
   // TODO: Add back when save functionality is implemented
@@ -439,16 +434,27 @@ struct DevMenuFABView: View {
           DispatchQueue.main.async {
             isDragging = false
             position = newPos
-            Self.savePosition(newPos)
+            // Don't persist position changes for panel sessions (lessons/lesson-like snacks)
+            if !isSnackSession {
+              Self.savePosition(newPos)
+            }
             onFrameChange(CGRect(origin: newPos, size: fabSize))
           }
         }
       }
   }
 
-  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
-    CGPoint(
-      x: FABConstants.margin / 2,
+  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets, forPanelSession: Bool? = nil) -> CGPoint {
+    // Use provided value or check current state
+    let isPanelSession = forPanelSession ?? isSnackSession
+
+    // Panel sessions default to top-left, non-panel sessions default to top-right
+    let xPosition = isPanelSession
+      ? FABConstants.margin / 2
+      : bounds.width - fabSize.width - FABConstants.margin / 2
+
+    return CGPoint(
+      x: xPosition,
       y: safeArea.top + FABConstants.verticalPadding + FABConstants.margin
     )
   }

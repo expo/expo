@@ -22,6 +22,9 @@ public class SnackEditingSession {
   /// The snack identifier (e.g., @username/snackname)
   public private(set) var snackId: String?
 
+  /// The snack display name (fetched from API)
+  public private(set) var snackName: String?
+
   /// Whether this session is a lesson (for Expo Go Learn tab)
   public private(set) var isLesson: Bool = false
 
@@ -56,17 +59,24 @@ public class SnackEditingSession {
   ///   - snackId: The snack identifier (e.g., @username/snackname)
   ///   - channel: The generated channel ID
   ///   - isStaging: Whether to use staging Snackpub
-  public func setupSession(snackId: String, channel: String, isStaging: Bool) async {
+  ///   - name: Optional display name (if known, e.g., from GraphQL)
+  public func setupSession(snackId: String, channel: String, isStaging: Bool, name: String? = nil) async {
     // Clear any existing session first (before fetch, in case fetch fails)
     clearSession()
 
     // Set these early so they're available even if fetch fails
     self.snackId = snackId
     self.channel = channel
+    self.snackName = name
 
     do {
       // Fetch snack code and dependencies from API
-      let (files, dependencies) = try await fetchSnackCode(snackId: snackId, isStaging: isStaging)
+      let (files, dependencies, fetchedName) = try await fetchSnackCode(snackId: snackId, isStaging: isStaging)
+
+      // Use provided name, or fall back to fetched name from API
+      if self.snackName == nil {
+        self.snackName = fetchedName
+      }
 
       // Set up session with fetched code (pass clearFirst: false since we already cleared)
       await setupSessionWithCode(
@@ -159,9 +169,41 @@ public class SnackEditingSession {
     return sessionClient?.hasBeenEdited ?? false
   }
 
+  /// The display name for this snack, extracted from snackName or snackId
+  public var displayName: String {
+    // Prefer the fetched display name
+    if let name = snackName, !name.isEmpty {
+      return name
+    }
+    // Extract from snack ID
+    if let id = snackId {
+      if id == "new" {
+        return "Playground"
+      }
+      if let lastSlash = id.lastIndex(of: "/") {
+        return String(id[id.index(after: lastSlash)...])
+      }
+      return id
+    }
+    return "Playground"
+  }
+
+  /// Whether this is a lesson-like session (official lesson or snack with "lesson"/"learn" in name)
+  public var isLessonLikeSession: Bool {
+    guard isReady else { return false }
+    if isLesson { return true }
+    return displayName.localizedCaseInsensitiveContains("lesson") ||
+           displayName.localizedCaseInsensitiveContains("learn")
+  }
+
   /// Resets files to original (discards edits). Call this on app reload.
   public func resetFiles() {
     sessionClient?.resetToOriginalFiles()
+  }
+
+  /// Resets files to original and broadcasts to the runtime (no reload needed)
+  public func resetAndBroadcast() {
+    sessionClient?.resetAndBroadcast()
   }
 
   /// Clears the current session.
@@ -171,6 +213,7 @@ public class SnackEditingSession {
     sessionClient = nil
     channel = nil
     snackId = nil
+    snackName = nil
     isReady = false
     setupError = nil
     isLesson = false
@@ -186,7 +229,7 @@ public class SnackEditingSession {
   // MARK: - Private Methods
 
   /// Fetches snack code from the Snack API
-  private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackSessionClient.SnackFile], dependencies: [String: [String: Any]]) {
+  private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackSessionClient.SnackFile], dependencies: [String: [String: Any]], name: String?) {
     let apiHost = isStaging ? "https://staging.exp.host" : "https://exp.host"
 
     // Handle @snack/ prefix
@@ -239,7 +282,7 @@ public class SnackEditingSession {
       }
     }
 
-    return (files, dependencies)
+    return (files, dependencies, snackResponse.name)
   }
 }
 
@@ -267,6 +310,7 @@ enum SnackEditingSessionError: LocalizedError {
 private struct SnackApiResponse: Codable {
   let id: String
   let hashId: String
+  let name: String?
   let code: [String: SnackApiFile]
   let dependencies: [String: SnackDependency]?
 

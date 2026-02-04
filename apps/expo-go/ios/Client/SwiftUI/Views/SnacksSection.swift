@@ -62,7 +62,8 @@ struct SnackRowWithAction: View {
       await SnackEditingSession.shared.setupSession(
         snackId: snackId,
         channel: channel,
-        isStaging: false
+        isStaging: false,
+        name: snack.name
       )
     }
 

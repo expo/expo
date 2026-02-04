@@ -34,7 +34,24 @@ struct DevMenuDeveloperTools: View {
         }
         .buttonStyle(.plain)
 
-        Divider()
+        #if !os(macOS)
+        // Only show divider if there are more items below
+        if !viewModel.shouldHideFABToggle || viewModel.hasActiveSnackSession {
+          Divider()
+        }
+        #endif
+        #endif
+
+        #if !os(tvOS) && !os(macOS)
+        // Show reset button for any snack session (lessons or saved snacks)
+        if viewModel.hasActiveSnackSession {
+          DevMenuActionButton(
+            title: "Undo all changes",
+            icon: "arrow.counterclockwise",
+            action: viewModel.resetCode,
+            disabled: !viewModel.hasBeenEdited
+          )
+        }
         #endif
 
         if viewModel.configuration.showPerformanceMonitor {
@@ -82,14 +99,15 @@ struct DevMenuDeveloperTools: View {
         }
 
         #if !os(tvOS) && !os(macOS)
-        Divider()
-
-        DevMenuToggleButton(
-          title: "Dev tools button",
-          icon: "hand.tap",
-          isEnabled: viewModel.showFloatingActionButton,
-          action: viewModel.toggleFloatingActionButton
-        )
+        // Hide the FAB toggle for lessons and snacks with "lesson" or "learn" in name
+        if !viewModel.shouldHideFABToggle {
+          DevMenuToggleButton(
+            title: "Tools button",
+            icon: "hand.tap",
+            isEnabled: viewModel.showFloatingActionButton,
+            action: viewModel.toggleFloatingActionButton
+          )
+        }
         #endif
       }
       .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))

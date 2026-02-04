@@ -180,6 +180,7 @@ class SourceMapService {
     return components.queryItems?.first(where: { $0.name == "snack-channel" })?.value
   }
 
+
   /// Sends a file update to the Snack session (if connected)
   /// - Returns: true if the update was sent, false if no active session
   static func sendSnackFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {

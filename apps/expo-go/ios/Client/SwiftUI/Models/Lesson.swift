@@ -47,7 +47,8 @@ struct Lesson: Identifiable {
 
   /// Dependencies required by the lesson (uses "*" for preloaded modules)
   static let snackDependencies: [String: [String: Any]] = [
-    "react-native-safe-area-context": ["version": "*"]
+    "react-native-safe-area-context": ["version": "*"],
+    "@expo/vector-icons": ["version": "*"]
   ]
 }
 
@@ -56,23 +57,37 @@ struct Lesson: Identifiable {
 extension Lesson {
   /// The Lesson.js wrapper component shared by all lessons
   static let sharedLessonComponent = """
-import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Platform, Linking } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { description } from './data';
 
-// Renders text with `code` spans highlighted in monospace
+// Renders text with `code` spans and https:// URLs as links
 function FormattedText({ children, style }) {
   if (typeof children !== 'string') {
     return <Text style={style}>{children}</Text>;
   }
 
-  const parts = children.split(/(`[^`]+`)/g);
+  // Match `code` spans and https:// URLs
+  const parts = children.split(/(`[^`]+`|https:\\/\\/[^\\s]+)/g);
   return (
     <Text style={style}>
       {parts.map((part, i) => {
         if (part.startsWith('`') && part.endsWith('`')) {
           const code = part.slice(1, -1);
           return <Text key={i} style={styles.code}>{code}</Text>;
+        }
+        if (part.startsWith('https://')) {
+          // Display without https:// prefix
+          const displayUrl = part.replace('https://', '');
+          return (
+            <Text
+              key={i}
+              style={styles.link}
+              onPress={() => Linking.openURL(part)}
+            >
+              {displayUrl}
+            </Text>
+          );
         }
         return part;
       })}
@@ -136,6 +151,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#c41a68',
     backgroundColor: '#f0f0f0',
+  },
+  link: {
+    color: '#0077FF',
+    textDecorationLine: 'underline',
   },
   instructionBox: {
     marginTop: 12,
@@ -371,7 +390,10 @@ export default function App() {
 
   return (
     <Lesson>
-      <View style={[styles.container, todos.length === 0 && styles.containerEmpty]}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
         <View style={styles.inputRow}>
           <TextInput
             style={styles.input}
@@ -387,15 +409,13 @@ export default function App() {
         {todos.length === 0 ? (
           <Text style={styles.emptyText}>No todos yet. Add one above!</Text>
         ) : (
-          <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
-            {todos.map((todo, index) => (
-              <View key={index} style={styles.todoItem}>
-                <Text style={styles.todoText}>{todo}</Text>
-              </View>
-            ))}
-          </ScrollView>
+          todos.map((todo, index) => (
+            <View key={index} style={styles.todoItem}>
+              <Text style={styles.todoText}>{todo}</Text>
+            </View>
+          ))
         )}
-      </View>
+      </ScrollView>
     </Lesson>
   );
 }
@@ -403,14 +423,17 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
   },
-  containerEmpty: {
+  contentContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
   },
   inputRow: {
     flexDirection: 'row',
     marginBottom: 16,
+    width: '100%',
   },
   input: {
     flex: 1,
@@ -432,17 +455,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  list: {
-    flex: 1,
-  },
-  listContent: {
-    paddingBottom: 16,
-  },
   todoItem: {
     backgroundColor: '#f5f5f5',
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
+    width: '100%',
   },
   todoText: {
     fontSize: 16,
@@ -451,6 +469,52 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#999',
     marginTop: 16,
+  },
+});
+"""
+    ),
+
+    // Lesson 6: Icons
+    Lesson(
+      id: 6,
+      title: "Icons",
+      icon: "star.fill",
+      description: "`@expo/vector-icons` includes thousands of icons from popular sets like Ionicons, MaterialIcons, and FontAwesome. Just import and use with `name`, `size`, and `color`. Browse all icons at https://icons.expo.fyi",
+      shortDescription: "Add icons from popular sets",
+      appCode: """
+import Lesson from './lesson-files/Lesson';
+import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+
+export default function App() {
+  return (
+    <Lesson>
+      <View style={styles.container}>
+        <View style={styles.row}>
+          <Ionicons name="heart" size={48} color="#FF3B30" />
+          <MaterialIcons name="star" size={48} color="#FFD700" />
+          <FontAwesome name="rocket" size={48} color="#0077FF" />
+        </View>
+        <Text style={styles.hint}>Try: "home", "settings", "camera"</Text>
+      </View>
+    </Lesson>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 24,
+    marginBottom: 20,
+  },
+  hint: {
+    fontSize: 14,
+    color: '#666',
   },
 });
 """

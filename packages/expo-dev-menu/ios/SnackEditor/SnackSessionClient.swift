@@ -80,6 +80,15 @@ public class SnackSessionClient {
     }
   }
 
+  /// Resets currentFiles to original and broadcasts the change to the runtime
+  func resetAndBroadcast() {
+    guard let hostedFiles = hostedFiles else { return }
+    currentFiles = hostedFiles
+    hasBeenEdited = false
+    sendCodeMessage(files: hostedFiles)
+    NotificationCenter.default.post(name: SnackEditingSession.codeDidChangeNotification, object: nil)
+  }
+
   deinit {
     disconnect()
   }

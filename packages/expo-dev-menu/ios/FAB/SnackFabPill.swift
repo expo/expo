@@ -31,8 +31,8 @@ struct FabGearButton: View {
 /// The panel is a wide rectangle with the gear icon overlapping its corner.
 struct SnackActionPanel: View {
   let isDragging: Bool
-  @Binding var snackName: String
-  @Binding var snackDescription: String
+  let snackName: String
+  let snackDescription: String
   let snappedEdge: SnappedEdge
   let gearPosition: CGPoint  // Top-left of gear frame
   let screenWidth: CGFloat
@@ -42,8 +42,6 @@ struct SnackActionPanel: View {
   // let onSave: () -> Void  // TODO: Add back when save functionality is implemented
   let onComplete: () -> Void
   let onGoBack: () -> Void
-
-  @FocusState private var isDescriptionFocused: Bool
 
   // Panel dimensions
   private let panelHeight: CGFloat = 140
@@ -86,7 +84,6 @@ struct SnackActionPanel: View {
   private let titlePadding: CGFloat = 65
   private let descriptionPadding: CGFloat = 32
   private let normalPadding: CGFloat = 16
-  private let maxTitleLength = 45
 
   private var shouldShow: Bool {
     !isDragging && screenWidth > 0
@@ -110,39 +107,22 @@ struct SnackActionPanel: View {
     .animation(.easeOut(duration: 0.2), value: shouldShow)
   }
 
-  @FocusState private var isNameFocused: Bool
-
   private var panelContent: some View {
     VStack(alignment: .leading, spacing: 0) {
-      // Snack name - centered, single line, editable
-      TextField("Snack name", text: $snackName)
+      // Snack name - centered, single line, non-editable
+      Text(snackName)
         .font(.system(size: 17, weight: .semibold))
         .foregroundColor(.primary)
-        .textFieldStyle(.plain)
-        .multilineTextAlignment(.center)
         .lineLimit(1)
-        .focused($isNameFocused)
-        .onChange(of: snackName) { newValue in
-          if newValue.count > maxTitleLength {
-            snackName = String(newValue.prefix(maxTitleLength))
-          }
-        }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, titlePadding)
         .padding(.top, 20)
 
-      // Description row - centered, single line
-      TextField("Description", text: $snackDescription)
+      // Description row - centered, single line, non-editable
+      Text(snackDescription)
         .font(.system(size: 14))
         .foregroundColor(.secondary)
-        .textFieldStyle(.plain)
         .lineLimit(1)
-        .multilineTextAlignment(.center)
-        .focused($isDescriptionFocused)
-        .submitLabel(.done)
-        .onSubmit {
-          isDescriptionFocused = false
-        }
         .frame(maxWidth: .infinity)
         .padding(.horizontal, descriptionPadding)
         .padding(.top, 7)
