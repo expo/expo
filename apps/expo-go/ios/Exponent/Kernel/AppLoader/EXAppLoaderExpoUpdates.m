@@ -452,6 +452,10 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
 
   EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:manifestJson];
 
+  // Create launcher with asset files map for JS to resolve embedded assets
+  EXEmbeddedSnackLauncher *launcher = [[EXEmbeddedSnackLauncher alloc] initWithManifestJson:manifestJson bundleUrl:bundleUrl];
+  _appLauncher = launcher;
+
   _startupEndTime = [NSDate now];
   _optimisticManifest = manifest;
   _confirmedManifest = manifest;
