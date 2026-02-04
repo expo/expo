@@ -3,8 +3,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarView = void 0;
 exports.convertStackToolbarViewPropsToRNHeaderItem = convertStackToolbarViewPropsToRNHeaderItem;
-const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
+const react_1 = require("react");
 const context_1 = require("./context");
+const native_1 = require("../../../toolbar/native");
 /**
  * A wrapper to render custom content in the toolbar.
  *
@@ -37,10 +38,10 @@ const context_1 = require("./context");
  */
 const StackToolbarView = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement === 'bottom') {
-        return <bottom_toolbar_native_elements_1.NativeToolbarView {...props}>{props.children}</bottom_toolbar_native_elements_1.NativeToolbarView>;
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.View must be used inside a Stack.Toolbar');
     }
-    return null;
+    return <NativeToolbarView {...props}>{props.children}</NativeToolbarView>;
 };
 exports.StackToolbarView = StackToolbarView;
 function convertStackToolbarViewPropsToRNHeaderItem(props) {
@@ -58,4 +59,15 @@ function convertStackToolbarViewPropsToRNHeaderItem(props) {
         hidesSharedBackground,
     };
 }
+/**
+ * Native toolbar view component for bottom toolbar.
+ * Renders as RouterToolbarItem with children.
+ */
+const NativeToolbarView = ({ children, hidden, hidesSharedBackground, separateBackground, }) => {
+    const id = (0, react_1.useId)();
+    return (<native_1.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} hidden={hidden} identifier={id} sharesBackground={!separateBackground}>
+      {children}
+    </native_1.RouterToolbarItem>);
+};
+// #endregion
 //# sourceMappingURL=StackToolbarView.js.map

@@ -5,7 +5,7 @@ export {
   type StackToolbarBadgeProps,
   type StackToolbarIconProps,
   type StackToolbarLabelProps,
-} from '../common-primitives';
+} from './toolbar-primitives';
 
 export { StackToolbar } from './StackToolbar';
 
@@ -30,3 +30,5 @@ export { StackToolbarSpacer, type StackToolbarSpacerProps } from './StackToolbar
 export { StackToolbarView, type StackToolbarViewProps } from './StackToolbarView';
 
 export type { ToolbarPlacement } from './context';
+
+export type { StackHeaderItemSharedProps } from './shared';

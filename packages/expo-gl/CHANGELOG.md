@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed a crash caused by the missing module registry. ([#42653](https://github.com/expo/expo/pull/42653) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed a crash caused by the missing module registry. ([#42653](https://github.com/expo/expo/pull/42653) by [@tsapeta](https://github.com/tsapeta))
 
 ## 55.0.3 — 2026-01-27
 

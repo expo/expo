@@ -94,6 +94,9 @@ process.env.ABC;
 console.log(process.env.NODE_ENV);
 console.log(process.env.EXPO_PUBLIC_NODE_ENV);
 process.env.EXPO_PUBLIC_FOO;
+process.env['EXPO_PUBLIC_FOO'];
+process.env?.EXPO_PUBLIC_FOO;
+process.env?.['EXPO_PUBLIC_FOO'];
 
 env.EXPO_PUBLIC_URL;
 
@@ -126,6 +129,9 @@ process.env.ABC;
 console.log(process.env.NODE_ENV);
 console.log(process.env.EXPO_PUBLIC_NODE_ENV);
 process.env.EXPO_PUBLIC_FOO;
+process.env['EXPO_PUBLIC_FOO'];
+process.env?.EXPO_PUBLIC_FOO;
+process.env?.['EXPO_PUBLIC_FOO'];
 
 env.EXPO_PUBLIC_URL;
 

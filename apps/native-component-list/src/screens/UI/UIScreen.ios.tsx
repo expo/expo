@@ -242,6 +242,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
     },
   },
+  {
+    name: 'Extending Expo UI',
+    route: 'ui/extending',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

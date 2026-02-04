@@ -46,7 +46,12 @@ class DevMenuViewController: UIViewController {
     let rootView = DevMenuRootView()
     let hostingController = UIHostingController(rootView: rootView)
 
+    #if os(tvOS)
+    hostingController.view.backgroundColor =
+      preferredUserInterfaceStyle == .dark ? UIColor.systemGray.withAlphaComponent(0.8) : UIColor.white.withAlphaComponent(0.8)
+    #else
     hostingController.view.backgroundColor = UIColor.clear
+    #endif
 
     addChild(hostingController)
     view.addSubview(hostingController.view)

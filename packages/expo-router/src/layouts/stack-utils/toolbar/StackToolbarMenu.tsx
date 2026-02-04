@@ -5,23 +5,29 @@ import type {
   NativeStackHeaderItemMenuSubmenu,
 } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
-import { Children, useMemo, type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
+import { Children, useId, useMemo, type ReactNode } from 'react';
+import {
+  StyleSheet,
+  type ColorValue,
+  type ImageSourcePropType,
+  type StyleProp,
+  type TextStyle,
+} from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { NativeToolbarMenu, NativeToolbarMenuAction } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
-import { MenuAction } from '../../../primitives/menu';
+import {
+  convertStackHeaderSharedPropsToRNSharedHeaderItem,
+  type StackHeaderItemSharedProps,
+} from './shared';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
+import { LinkMenuAction } from '../../../link/elements';
+import { NativeLinkPreviewAction } from '../../../link/preview/native';
 import {
   filterAllowedChildrenElements,
   getFirstChildOfType,
   isChildOfType,
 } from '../../../utils/children';
-import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../common-primitives';
-import {
-  convertStackHeaderSharedPropsToRNSharedHeaderItem,
-  type StackHeaderItemSharedProps,
-} from '../shared';
 
 /**
  * Computes the label and menu title from children and title prop.
@@ -441,20 +447,20 @@ export interface StackToolbarMenuActionProps {
 export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement === 'bottom') {
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    const icon = typeof props.icon === 'string' ? props.icon : undefined;
-    return (
-      <NativeToolbarMenuAction
-        {...props}
-        icon={icon}
-        image={props.image}
-        imageRenderingMode={props.iconRenderingMode}
-      />
-    );
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
   }
 
-  return <MenuAction {...props} />;
+  // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+  const icon = typeof props.icon === 'string' ? props.icon : undefined;
+  return (
+    <NativeToolbarMenuAction
+      {...props}
+      icon={icon}
+      image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
+    />
+  );
 };
 
 export function convertStackToolbarMenuActionPropsToRNHeaderItem(
@@ -485,6 +491,103 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   }
   return item;
 }
+
+// #region NativeToolbarMenu
+
+interface NativeToolbarMenuProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  children?: ReactNode;
+  subtitle?: string;
+  destructive?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
+  hidesSharedBackground?: boolean;
+  icon?: SFSymbol;
+  // TODO(@ubax): Add useImage support in a follow-up PR.
+  /**
+   * Image to display for the menu item.
+   */
+  image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
+  inline?: boolean;
+  label?: string;
+  palette?: boolean;
+  separateBackground?: boolean;
+  style?: StyleProp<TextStyle>;
+  title?: string;
+  tintColor?: ColorValue;
+  variant?: 'plain' | 'done' | 'prominent';
+  elementSize?: 'auto' | 'small' | 'medium' | 'large';
+}
+
+/**
+ * Native toolbar menu component for bottom toolbar.
+ * Renders as NativeLinkPreviewAction.
+ */
+const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
+  accessibilityHint,
+  accessibilityLabel,
+  separateBackground,
+  hidesSharedBackground,
+  palette,
+  inline,
+  hidden,
+  subtitle,
+  title,
+  label,
+  destructive,
+  children,
+  icon,
+  image,
+  imageRenderingMode,
+  tintColor,
+  variant,
+  style,
+  elementSize,
+}) => {
+  const identifier = useId();
+
+  const titleStyle = StyleSheet.flatten(style);
+  const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
+  return (
+    <NativeLinkPreviewAction
+      sharesBackground={!separateBackground}
+      hidesSharedBackground={hidesSharedBackground}
+      hidden={hidden}
+      icon={icon}
+      // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+      image={image}
+      imageRenderingMode={renderingMode}
+      destructive={destructive}
+      subtitle={subtitle}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      displayAsPalette={palette}
+      displayInline={inline}
+      preferredElementSize={elementSize}
+      tintColor={tintColor}
+      titleStyle={titleStyle}
+      barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
+      title={title ?? ''}
+      label={label}
+      onSelected={() => {}}
+      children={children}
+      identifier={identifier}
+    />
+  );
+};
+
+// #endregion
+
+// #region NativeToolbarMenuAction
+
+/**
+ * Native toolbar menu action - reuses LinkMenuAction.
+ */
+const NativeToolbarMenuAction = LinkMenuAction;
+
+// #endregion
 
 const ALLOWED_CHILDREN = [
   StackToolbarMenu,
