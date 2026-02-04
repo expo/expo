@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  detect-platforms-for-e2e:
+  detect-platform-for-e2e:
     runs-on: ubuntu-24.04
     outputs:
       should_run_ios: ${{ steps.changes.outputs.should_run_ios }}
