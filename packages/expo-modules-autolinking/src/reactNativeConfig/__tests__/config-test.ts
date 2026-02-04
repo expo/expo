@@ -5,7 +5,6 @@ import resolveFrom from 'resolve-from';
 import { loadConfigAsync } from '../config';
 
 jest.mock('fs/promises');
-jest.mock('resolve-from');
 
 const EXPO_MONOREPO_ROOT = path.resolve(__dirname, '../../../../..');
 
