@@ -10,6 +10,7 @@ on:
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
+      - packages/expo-file-system/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
       - packages/expo-notifications/android/**
@@ -25,6 +26,7 @@ on:
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
+      - packages/expo-file-system/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
       - packages/expo-notifications/android/**
