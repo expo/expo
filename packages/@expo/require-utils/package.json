@@ -35,6 +35,9 @@
       "optional": true
     }
   },
+  "dependencies": {
+    "@babel/code-frame": "^7.20.0"
+  },
   "devDependencies": {
     "@types/node": "^22.14.0",
     "expo-module-scripts": "^55.0.2",
