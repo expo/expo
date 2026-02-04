@@ -39,7 +39,7 @@ export default function GlassOpacityAnimationExample({
 
   return (
     <>
-      <Text style={styles.title}>Opacity Animation Workaround (iOS 26+)</Text>
+      <Text style={styles.title}>Opacity Animation Workaround (iOS 26.1+)</Text>
       <View style={styles.backgroundContainer}>
         <Image
           style={styles.backgroundImage}
