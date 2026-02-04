@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add Xcode 26.0.0 requirement for SDK 55 ([#42852](https://github.com/expo/expo/pull/42852) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 1.18.4 — 2026-02-03
 
 ### 🐛 Bug fixes
