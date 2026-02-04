@@ -14,7 +14,6 @@
 
 ### 🎉 New features
 
-- Hello world repro
 - [iOS] Add delegate method to control visibility of "Open React Native dev menu" option. ([#42541](https://github.com/expo/expo/pull/42541) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add action button. ([#42587](https://github.com/expo/expo/pull/42587) by [@alanjhughes](https://github.com/alanjhughes))
 
