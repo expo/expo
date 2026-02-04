@@ -171,7 +171,7 @@ Since `opacity` values less than `1` cause `GlassView` to render incorrectly, yo
 <SnackInline label='Glass effect opacity animation workaround' dependencies={['expo-glass-effect', 'react-native-reanimated']} platforms={['ios']}>
 
 ```jsx
-import { GlassStyle, GlassView, GlassViewProps } from 'expo-glass-effect';
+import { GlassView } from 'expo-glass-effect';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import Animated, {
   useAnimatedProps,
@@ -185,21 +185,18 @@ const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);
 export default function GlassOpacityAnimationExample() {
   const fadeOpacity = useSharedValue(0);
 
-  const glassViewProps =
-    useAnimatedProps <
-    GlassViewProps >
-    (() => {
-      const glassEffectStyle = fadeOpacity.value > 0.01 ? 'regular' : 'none';
-      return {
-        glassEffectStyle,
-        style: {
-          width: 150,
-          height: 100,
-          borderRadius: 12,
-          position: 'absolute',
-        },
-      };
-    });
+  const glassViewProps = useAnimatedProps(() => {
+    const glassEffectStyle = fadeOpacity.value > 0.01 ? 'regular' : 'none';
+    return {
+      glassEffectStyle,
+      style: {
+        width: 150,
+        height: 100,
+        borderRadius: 12,
+        position: 'absolute',
+      },
+    };
+  });
 
   const fadeOpacityStyle = useAnimatedStyle(() => ({
     position: 'absolute',
@@ -211,7 +208,7 @@ export default function GlassOpacityAnimationExample() {
 
   return (
     <>
-      <Text style={styles.title}>Opacity Animation Workaround (iOS 26+)</Text>
+      <Text style={styles.title}>Opacity Animation Workaround (iOS 26.1+)</Text>
       <View style={styles.backgroundContainer}>
         <Image
           style={styles.backgroundImage}
