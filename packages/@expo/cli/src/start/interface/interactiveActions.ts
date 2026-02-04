@@ -62,8 +62,6 @@ export class DevServerManagerActions {
         rows--;
         Log.log(printItem(qrMessage, { dim: true }));
 
-        // NOTE(@kitten): These currently always print the same hostname, which makes the URLs
-        // similar enough for us not having to print "Metro waiting on..." again. At most, the
         if (interstitialPageUrl) {
           rows--;
           Log.log(
