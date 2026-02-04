@@ -6,6 +6,8 @@ import {
   ExpoTimelineEntry,
   ExpoWidgetsEvents,
   LiveActivityComponent,
+  LiveActivityDismissalPolicy,
+  LiveActivityInfo,
   WidgetFamily,
   WidgetBase,
 } from './Widgets.types';
@@ -114,7 +116,59 @@ export const updateWidgetSnapshot = <T extends object>(
  * @return An event subscription that can be used to remove the listener.
  */
 export function addUserInteractionListener(
-  listener: ExpoWidgetsEvents['onUserInteraction']
+  listener: ExpoWidgetsEvents['onExpoWidgetsUserInteraction']
 ): EventSubscription {
-  return ExpoWidgetModule.addListener('onUserInteraction', listener);
+  return ExpoWidgetModule.addListener('onExpoWidgetsUserInteraction', listener);
+}
+
+/**
+ * Adds a listener for push-to-start token events.
+ * This token can be used to start live activities remotely via APNs.
+ * @param listener Callback function to handle push-to-start token events.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export function addPushToStartTokenListener(
+  listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']
+): EventSubscription {
+  return ExpoWidgetModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
+}
+
+/**
+ * Ends a live activity.
+ * @param activityId The ID of the live activity to end.
+ * @param dismissalPolicy How the live activity should be dismissed from the screen.
+ */
+export function endLiveActivity(
+  activityId: string,
+  dismissalPolicy: LiveActivityDismissalPolicy = 'default'
+): void {
+  return ExpoWidgetModule.endLiveActivity(activityId, dismissalPolicy);
+}
+
+/**
+ * Adds a listener for push token updates.
+ * @param listener Callback function to handle push token updates.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export function addPushTokenListener(
+  listener: ExpoWidgetsEvents['onExpoWidgetsTokenReceived']
+): EventSubscription {
+  return ExpoWidgetModule.addListener('onExpoWidgetsTokenReceived', listener);
+}
+
+/**
+ * Gets the push token for a specific live activity.
+ * @param activityId The ID of the live activity.
+ * @return A promise that resolves to the push token, or null if not available.
+ */
+export async function getLiveActivityPushToken(activityId: string): Promise<string | null> {
+  return ExpoWidgetModule.getLiveActivityPushToken(activityId);
+}
+
+/**
+ * Gets all currently running live activities.
+ * @return An array of live activity information objects.
+ */
+export function getLiveActivities(): LiveActivityInfo[] {
+  return ExpoWidgetModule.getLiveActivities();
 }

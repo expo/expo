@@ -16,6 +16,7 @@ import React, { useEffect, useMemo } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
+import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
@@ -257,6 +258,10 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const res = value.loadRoute();
     ScreenComponent = fromImport(value, res).default!;
   }
+  const WrappedScreenComponent: typeof ScreenComponent = (props: object) => {
+    useColorSchemeChangesIfNeeded();
+    return <ScreenComponent {...props} />;
+  };
   function BaseRoute({
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
@@ -330,7 +335,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         <ZoomTransitionTargetContextProvider route={route}>
           <ZoomTransitionEnabler route={route} />
           <React.Suspense fallback={<SuspenseFallback route={value} />}>
-            <ScreenComponent
+            <WrappedScreenComponent
               {...props}
               // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
               // the intention is to make it possible to deduce shared routes.

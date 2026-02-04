@@ -63,6 +63,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
     [DevMenuManager.shared setDelegate:self];
     [DevMenuManager shared].configuration.onboardingAppName = @"Expo Go";
+    [[DevMenuManager shared] setShowFloatingActionButton:YES];
 
     // Register keyboard commands (e.g., Cmd+D) for simulator
     [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];

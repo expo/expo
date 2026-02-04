@@ -14,7 +14,6 @@ jest.mock('ora');
 jest.mock('os');
 jest.mock('progress');
 jest.mock('resolve-from');
-jest.mock('tar');
 jest.mock('webpack-dev-server');
 jest.mock('webpack');
 

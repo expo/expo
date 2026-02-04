@@ -38,6 +38,7 @@ import {
   StackSearchBar,
   StackToolbar,
   appendScreenStackPropsToOptions,
+  validateStackPresentation,
 } from './stack-utils';
 import { isChildOfType } from '../utils/children';
 import { Protected, type ProtectedProps } from '../views/Protected';
@@ -598,9 +599,14 @@ const Stack = Object.assign(
         } else {
           return appendScreenStackPropsToOptions({}, screenStackProps);
         }
-      } else {
-        return props.screenOptions;
+      } else if (props.screenOptions) {
+        const screenOptions = props.screenOptions;
+        if (typeof screenOptions === 'function') {
+          return validateStackPresentation(screenOptions);
+        }
+        return validateStackPresentation(screenOptions);
       }
+      return props.screenOptions;
     }, [props.screenOptions, props.children]);
 
     const screenOptions = useMemo(() => {

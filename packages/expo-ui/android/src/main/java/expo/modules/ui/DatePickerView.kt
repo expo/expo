@@ -18,7 +18,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
@@ -55,18 +55,18 @@ data class DateTimePickerProps(
   val showVariantToggle: Boolean = true,
   val is24Hour: Boolean = true,
   val color: AndroidColor? = null,
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpoViewComposableScope.DateTimePickerContent(props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
+fun FunctionalComposableScope.DateTimePickerContent(props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
   if (props.displayedComponents == DisplayedComponents.HOUR_AND_MINUTE) {
-    ExpoTimePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers)) {
+    ExpoTimePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)) {
       onDateSelected(it)
     }
   } else {
-    ExpoDatePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers)) {
+    ExpoDatePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)) {
       onDateSelected(it)
     }
   }

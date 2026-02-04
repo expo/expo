@@ -49,5 +49,7 @@ export declare const StackScreen: (({ children, options, ...rest }: StackScreenP
     Title: typeof StackScreenTitle;
     BackButton: typeof StackScreenBackButton;
 };
+export declare function validateStackPresentation(options: NativeStackNavigationOptions): NativeStackNavigationOptions;
+export declare function validateStackPresentation<F extends (...args: never[]) => NativeStackNavigationOptions>(options: F): F;
 export declare function appendScreenStackPropsToOptions(options: NativeStackNavigationOptions, props: StackScreenProps): NativeStackNavigationOptions;
 //# sourceMappingURL=StackScreen.d.ts.map

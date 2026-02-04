@@ -189,6 +189,11 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public func setShowFloatingActionButton(_ enabled: Bool) {
+    DevMenuPreferences.showFloatingActionButton = enabled
+  }
+
+  @objc
   public func updateCurrentBridge(_ bridge: RCTBridge?) {
     currentBridge = bridge
     if bridge != nil {
@@ -441,6 +446,8 @@ open class DevMenuManager: NSObject {
       DispatchQueue.main.async {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
+#elseif os(tvOS)
+        self.window?.makeKeyAndVisible()
 #else
         self.updateFABVisibility()
 

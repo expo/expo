@@ -15,6 +15,7 @@
   "workspaces": {
     "packages": [
       "apps/*",
+      "apps/brownfield-tester/*",
       "packages/*",
       "packages/@expo/*"
     ]

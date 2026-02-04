@@ -55,7 +55,9 @@ Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function
 const imperative_api_1 = require("./imperative-api");
 const href_1 = require("./link/href");
 const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
+const LoaderCache_1 = require("./loaders/LoaderCache");
 const ServerDataLoaderContext_1 = require("./loaders/ServerDataLoaderContext");
+const getLoaderData_1 = require("./loaders/getLoaderData");
 const utils_1 = require("./loaders/utils");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -244,9 +246,6 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
         throw new Error('The URLSearchParams object return from useSearchParams is read-only');
     }
 }
-const loaderDataCache = new Map();
-const loaderPromiseCache = new Map();
-const loaderErrorCache = new Map();
 /**
  * Returns the result of the `loader` function for the calling route.
  *
@@ -269,6 +268,7 @@ function useLoaderData() {
     const routeNode = (0, Route_1.useRouteNode)();
     const params = useLocalSearchParams();
     const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
+    const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
     if (!routeNode) {
         throw new Error('No route node found. This is likely a bug in expo-router.');
     }
@@ -286,34 +286,14 @@ function useLoaderData() {
             return globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath];
         }
     }
-    // Check error cache first to prevent infinite retry loops when a loader fails.
-    // We throw the cached error instead of starting a new fetch.
-    if (loaderErrorCache.has(normalizedPath)) {
-        throw loaderErrorCache.get(normalizedPath);
+    const result = (0, getLoaderData_1.getLoaderData)({
+        resolvedPath: normalizedPath,
+        cache: loaderCache,
+        fetcher: utils_1.fetchLoader,
+    });
+    if (result instanceof Promise) {
+        return (0, react_1.use)(result);
     }
-    // Check cache for route data
-    if (loaderDataCache.has(normalizedPath)) {
-        return loaderDataCache.get(normalizedPath);
-    }
-    // Fetch data if not cached
-    if (!loaderPromiseCache.has(normalizedPath)) {
-        const promise = (0, utils_1.fetchLoaderModule)(normalizedPath)
-            .then((data) => {
-            loaderDataCache.set(normalizedPath, data);
-            loaderErrorCache.delete(normalizedPath);
-            loaderPromiseCache.delete(normalizedPath);
-            return data;
-        })
-            .catch((error) => {
-            const wrappedError = new Error(`Failed to load loader data for route: ${normalizedPath}`, {
-                cause: error,
-            });
-            loaderErrorCache.set(normalizedPath, wrappedError);
-            loaderPromiseCache.delete(normalizedPath);
-            throw wrappedError;
-        });
-        loaderPromiseCache.set(normalizedPath, promise);
-    }
-    return (0, react_1.use)(loaderPromiseCache.get(normalizedPath));
+    return result;
 }
 //# sourceMappingURL=hooks.js.map

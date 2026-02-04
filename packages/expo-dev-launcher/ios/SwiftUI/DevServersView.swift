@@ -91,7 +91,7 @@ struct DevServersView: View {
       }
 
       if showingURLInput {
-        TextField("http://10.0.0.25:8081", text: $urlText)
+        TextField("exp://", text: $urlText)
         #if !os(macOS)
           .autocapitalization(.none)
         #endif
@@ -99,7 +99,6 @@ struct DevServersView: View {
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
           .foregroundColor(.primary)
-          .onSubmit(connectToURL)
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
@@ -143,7 +142,9 @@ struct DevServersView: View {
   }
 
   private var connectButton: some View {
-    Button(action: connectToURL) {
+    Button {
+      connectToURL()
+    } label: {
       Text("Connect")
         .font(.headline)
         .foregroundColor(.white)
@@ -153,7 +154,7 @@ struct DevServersView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .disabled(urlText.isEmpty)
-    .buttonStyle(PlainButtonStyle())
+    .buttonStyle(.plain)
   }
 }
 

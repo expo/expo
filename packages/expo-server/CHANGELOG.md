@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.3 — 2026-02-03
+
+### 🎉 New features
+
 - Expose new helper `requestHeaders()` in Runtime API ([#42626](https://github.com/expo/expo/pull/42626) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 - Expose `ImmutableHeaders` type ([#42645](https://github.com/expo/expo/pull/42645) by [@hassankhan](https://github.com/hassankhan))
-
-### 💡 Others
 
 ## 55.0.2 — 2026-01-26
 

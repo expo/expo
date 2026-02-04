@@ -216,10 +216,14 @@ export async function loadMetroConfigAsync(
   };
 }
 
+interface InstantiateMetroConfigOptions extends LoadMetroConfigOptions {
+  host?: string;
+}
+
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
-  options: LoadMetroConfigOptions,
+  options: InstantiateMetroConfigOptions,
   {
     isExporting,
     exp = getConfig(metroBundler.projectRoot, {
@@ -283,7 +287,7 @@ export async function instantiateMetroAsync(
       return middleware.use(metroMiddleware);
     };
 
-    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint({ serverBaseUrl });
+    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint();
     Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
   }
 
@@ -302,6 +306,7 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
+      host: options.host,
       websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
     },
