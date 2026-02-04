@@ -29,13 +29,13 @@ Both hooks are typed and accessed the same way. However, the only difference is 
 
 The example below demonstrates the difference between `useLocalSearchParams` and `useGlobalSearchParams`. It uses the following **app** directory structure:
 
-<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/[user].tsx']} />
+<FileTree files={['src/app/_layout.tsx', 'src/app/index.tsx', 'src/app/[user].tsx']} />
 
 <Step label="1">
 
     The Root Layout is a stack navigator:
 
-    ```tsx app/_layout.tsx
+    ```tsx src/app/_layout.tsx
     import { Stack } from 'expo-router';
 
     export default function Layout() {
@@ -47,9 +47,9 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
 <Step label="2">
 
-    The initial route redirects to the dynamic route **app/[user].tsx**, with **user=evanbacon**:
+    The initial route redirects to the dynamic route **src/app/[user].tsx**, with **user=evanbacon**:
 
-    ```tsx app/index.tsx
+    ```tsx src/app/index.tsx
     import { Redirect } from 'expo-router';
 
     export default function Route() {
@@ -61,9 +61,9 @@ The example below demonstrates the difference between `useLocalSearchParams` and
 
 <Step label="3">
 
-    The dynamic route **app/[user]** prints out the global and local URL parameters (route parameters, in this case). It also allows for pushing new instances of the same route with different **route parameters**:
+    The dynamic route **src/app/[user]** prints out the global and local URL parameters (route parameters, in this case). It also allows for pushing new instances of the same route with different **route parameters**:
 
-    ```tsx app/[user].tsx
+    ```tsx src/app/[user].tsx
     import { Text, View } from 'react-native';
     import { useLocalSearchParams, useGlobalSearchParams, Link } from 'expo-router';
 
@@ -132,7 +132,7 @@ Pressing "Visit james" has a similar effect:
 
 Both the `useLocalSearchParams` and `useGlobalSearchParams` can be statically typed using a generic. The following is an example for the `user` route parameter:
 
-```tsx app/[user].tsx
+```tsx src/app/[user].tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -148,7 +148,7 @@ export default function Route() {
 
 Any search parameters (for example, `?query=...`) can be typed optionally:
 
-```tsx app/[user].tsx
+```tsx src/app/[user].tsx
 const { user, query } = useLocalSearchParams<{ user: string; query?: string }>();
 
 // Given the URL: `/evanbacon?query=hello`
@@ -157,7 +157,7 @@ const { user, query } = useLocalSearchParams<{ user: string; query?: string }>()
 
 When used with the rest syntax (`...`), route parameters are returned as a string array:
 
-```tsx app/[...everything].tsx
+```tsx src/app/[...everything].tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -179,7 +179,7 @@ export default function Route() {
 Any search parameters will continue to be returned as individual strings:
 
 {/* prettier-ignore */}
-```tsx app/[...everything].tsx
+```tsx src/app/[...everything].tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -208,7 +208,7 @@ URL parameters can be updated using the **router.setParams** function from the i
 
 The following example uses a `<TextInput>` to update the search parameter **q**:
 
-```tsx app/search.tsx
+```tsx src/app/search.tsx
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
@@ -243,7 +243,7 @@ export default function Page() {
 
 Here is an example using an `onPress` event to update the route parameter **user**:
 
-```tsx app/[user].tsx
+```tsx src/app/[user].tsx
 import { useLocalSearchParams, router } from 'expo-router';
 import { Text } from 'react-native';
 
@@ -265,9 +265,9 @@ Route parameters are used to match a route, while search parameters are used to 
 
 <FileTree
   files={[
-    'app/index.tsx',
+    'src/app/index.tsx',
     [
-      'app/[user].tsx',
+      'src/app/[user].tsx',
       <>
         <code>user</code> is a <b>route parameter</b>
       </>,
@@ -275,9 +275,9 @@ Route parameters are used to match a route, while search parameters are used to 
   ]}
 />
 
-When the `app/[user]` route is matched, the `user` parameter is passed to the component and never a nullish value. Both search and route parameters can be used together and are accessible with the `useLocalSearchParams` and `useGlobalSearchParams` hooks:
+When the `src/app/[user]` route is matched, the `user` parameter is passed to the component and never a nullish value. Both search and route parameters can be used together and are accessible with the `useLocalSearchParams` and `useGlobalSearchParams` hooks:
 
-```tsx app/[user].tsx
+```tsx src/app/[user].tsx
 import { useLocalSearchParams } from 'expo-router';
 
 export default function User() {
@@ -300,7 +300,7 @@ export default function User() {
 
 Whenever a route parameter is changed, the component will re-mount.
 
-```tsx app/[user].tsx
+```tsx src/app/[user].tsx
 import { Text } from 'react-native';
 import { router, useLocalSearchParams, Link } from 'expo-router';
 
@@ -324,7 +324,7 @@ TODO: REMOVE COMMENT WHEN https://github.com/expo/expo/pull/30268 IS PUBLISHED
 
 URL parameters that are present multiple times will be grouped together as an array.
 
-```tsx app/hash.tsx
+```tsx src/app/hash.tsx
 import { router, useLocalSearchParams } from 'expo-router';
 
 export default function Route() {
@@ -341,7 +341,7 @@ export default function Route() {
 The URL [hash](https://developer.mozilla.org/en-US/docs/Web/API/URL/hash) is a string that follows the `#` symbol in a URL. It is commonly used on websites to link to a specific section of a page, but it can also be used to store data. Expo Router treats the hash as a special search parameter using the name `#`. It can be accessed and modified using the same hooks and APIs from [search parameters](#local-versus-global-search-parameters).
 
 {/* prettier-ignore */}
-```tsx app/hash.tsx
+```tsx src/app/hash.tsx
 import { Text } from 'react-native';
 import { router, useLocalSearchParams, Link } from 'expo-router';
 
