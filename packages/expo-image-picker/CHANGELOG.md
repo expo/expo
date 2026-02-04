@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Improved MIME type resolution.
+
 ## 55.0.4 — 2026-02-03
 
 _This version does not introduce any user-facing changes._
