@@ -60,7 +60,7 @@ export class DevServerManagerActions {
           qrMessage += ` (${learnMore('https://expo.fyi/start')})`;
         }
         rows--;
-        Log.log(chalk`{dim ${printItem(qrMessage)}}`);
+        Log.log(printItem(qrMessage, { dim: true }));
 
         // NOTE(@kitten): These currently always print the same hostname, which makes the URLs
         // similar enough for us not having to print "Metro waiting on..." again. At most, the
