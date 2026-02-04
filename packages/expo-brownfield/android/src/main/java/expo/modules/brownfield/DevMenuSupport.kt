@@ -115,7 +115,7 @@ internal suspend fun getManifestUrl(reactHost: ReactHost): String? {
         return null
       }
 
-      Log.w("DevMenuSupport(brownfield)", "Fetching from the default port for protocol ${url.protocol}: ${defaultPort}")
+      Log.w("DevMenuSupport(brownfield)", "Fetching from the default port for protocol ${url.protocol}: $defaultPort")
       return "${url.protocol}://${url.host}:${url.defaultPort}"
     }
 
