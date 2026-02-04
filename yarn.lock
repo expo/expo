@@ -15345,10 +15345,10 @@ toidentifier@1.0.1, toidentifier@~1.0.1:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.1.tgz#3be34321a88a820ed1bd80dfaa33e479fbb8dd35"
   integrity sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==
 
-toqr@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/toqr/-/toqr-0.1.0.tgz#c5b0342daa8dbe41108fca4563a83bd8dc013747"
-  integrity sha512-4CGF27PDWEKi0a/DRqwfyb2QPIYz8txynqlIRtbrSiT06KnC1kdmhcc/5MWARLRZ37RelwssnBkhsM1OsV07Kg==
+toqr@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/toqr/-/toqr-0.1.1.tgz#fb987ea706be36affc89336ca26543a16062725a"
+  integrity sha512-FWAPzCIHZHnrE/5/w9MPk0kK25hSQSH2IKhYh9PyjS3SG/+IEMvlwIHbhz+oF7xl54I+ueZlVnMjyzdSwLmAwA==
 
 tough-cookie@^4.1.2:
   version "4.1.3"
