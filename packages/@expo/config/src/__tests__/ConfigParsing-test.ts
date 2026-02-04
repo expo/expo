@@ -8,6 +8,7 @@ const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 
+// NOTE: For testing, we need to bypass the jest-require here and only eval
 jest.mock('@expo/require-utils', () => {
   const requireUtils = jest.requireActual('@expo/require-utils');
   return {

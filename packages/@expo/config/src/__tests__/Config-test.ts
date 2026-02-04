@@ -7,6 +7,7 @@ jest.mock('@expo/config-plugins', () => ({
   withPlugins: jest.fn((config, plugins) => config),
 }));
 
+// NOTE: For testing, we need to bypass the jest-require here and only eval
 jest.mock('@expo/require-utils', () => {
   const requireUtils = jest.requireActual('@expo/require-utils');
   return {
