@@ -18,11 +18,12 @@ exports.loadConfigAsync = (0, utils_1.memoize)(async function loadConfigAsync(pa
         return (await (0, utils_1.fileExistsAsync)(file)) ? file : null;
     }))).find((path) => path != null);
     if (configPath) {
-        return (0, require_utils_1.evalModule)(await promises_1.default.readFile(configPath, 'utf8'), configPath, 
+        const mod = (0, require_utils_1.evalModule)(await promises_1.default.readFile(configPath, 'utf8'), configPath, 
         // NOTE: We need to mock the Community CLI temporarily, because
         // some packages are checking the version of the CLI in the `react-native.config.js` file.
         // We can remove this once we remove this check from packages.
         { paths: [mockedNativeModules] });
+        return mod.default ?? mod ?? null;
     }
     else {
         return null;
