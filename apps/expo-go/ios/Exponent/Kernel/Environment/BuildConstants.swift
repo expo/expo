@@ -10,6 +10,7 @@ public final class BuildConstants: NSObject {
   public private(set) var apiServerEndpoint: URL?
   public var sdkVersion: String?
   public var expoRuntimeVersion: String = ""
+  public var useEmbeddedSnackRuntime: Bool = false
 
   private override init() {
     super.init()
@@ -31,5 +32,7 @@ public final class BuildConstants: NSObject {
     if let runtimeVersion = config["EXPO_RUNTIME_VERSION"] as? String {
       expoRuntimeVersion = runtimeVersion
     }
+
+    useEmbeddedSnackRuntime = config["USE_EMBEDDED_SNACK_RUNTIME"] as? Bool ?? false
   }
 }

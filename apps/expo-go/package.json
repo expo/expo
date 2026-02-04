@@ -8,7 +8,8 @@
     "test": "jest",
     "lint": "eslint .",
     "start": "expo start --port 80",
-    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
+    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml",
+    "download-snack-runtime": "node scripts/download-snack-runtime.js --platform ios"
   },
   "author": "Expo",
   "license": "MIT",

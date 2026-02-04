@@ -19,6 +19,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d980795c5824";
+
 @interface EXAppLoaderExpoUpdates ()
 
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
@@ -329,10 +331,88 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_beginRequest
 {
   _startupStartTime = [NSDate now];
+
+  // Check if we should use the embedded Snack runtime
+  if ([self _shouldUseEmbeddedSnackRuntime]) {
+    [self _loadEmbeddedSnackRuntime];
+    return;
+  }
+
   if (![self _initializeDatabase]) {
     return;
   }
   [self _startLoaderTask];
+}
+
+- (BOOL)_isSnackUrl
+{
+  NSString *urlString = _httpManifestUrl.absoluteString;
+  return [urlString containsString:kSnackRuntimeProjectId];
+}
+
+- (BOOL)_shouldUseEmbeddedSnackRuntime
+{
+  if (![self _isSnackUrl]) {
+    return NO;
+  }
+
+  return [BuildConstants sharedInstance].useEmbeddedSnackRuntime;
+}
+
+- (void)_loadEmbeddedSnackRuntime
+{
+  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"snack-runtime" ofType:@"hbc" inDirectory:@"SnackRuntime"];
+
+  if (!bundlePath) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1001
+                             userInfo:@{NSLocalizedDescriptionKey: @"Embedded Snack runtime bundle not found"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  NSData *bundleData = [NSData dataWithContentsOfFile:bundlePath];
+  if (!bundleData) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1002
+                             userInfo:@{NSLocalizedDescriptionKey: @"Failed to read embedded Snack runtime bundle"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  // Create a minimal manifest for the embedded Snack runtime
+  NSDictionary *manifestJson = @{
+    @"id": [[NSUUID UUID] UUIDString],
+    @"scopeKey": [NSString stringWithFormat:@"@snack/embedded-%@", [EXVersions sharedInstance].sdkVersion],
+    @"extra": @{
+      @"scopeKey": [NSString stringWithFormat:@"@snack/embedded-%@", [EXVersions sharedInstance].sdkVersion],
+      @"expoClient": @{
+        @"name": @"Snack",
+        @"slug": @"snack",
+        @"sdkVersion": [EXVersions sharedInstance].sdkVersion,
+        @"platforms": @[@"ios", @"android", @"web"]
+      }
+    },
+    @"runtimeVersion": [NSString stringWithFormat:@"exposdk:%@", [EXVersions sharedInstance].sdkVersion],
+    @"isVerified": @YES
+  };
+
+  EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:manifestJson];
+
+  _startupEndTime = [NSDate now];
+  _optimisticManifest = manifest;
+  _confirmedManifest = manifest;
+  _bundle = bundleData;
+  _isUpToDate = YES;
+
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+    [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
+  }
 }
 
 - (void)_startLoaderTask
