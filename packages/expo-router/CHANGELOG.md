@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [ios] Add xcasset icon support to native tabs ([#42867](https://github.com/expo/expo/pull/42867) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
