@@ -17,7 +17,7 @@ This guide specifies how to handle unmatched routes and errors in your app when 
 
 Native apps don't have a server so there are technically no 404s. However, if you're implementing a router universally, then it makes sense to handle missing routes. This is done automatically for each app, but you can also customize it.
 
-```tsx app/+not-found.tsx
+```tsx src/app/+not-found.tsx
 import { Unmatched } from 'expo-router';
 export default Unmatched;
 ```
@@ -46,7 +46,7 @@ Expo Router enables fine-tuned error handling to enable a more opinionated data-
 You can export a nested [`ErrorBoundary`](/versions/latest/sdk/router/#errorboundary) component from any route to intercept and format component-level errors using [React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary):
 
 {/* prettier-ignore */}
-```tsx app/home.tsx
+```tsx src/app/home.tsx
 import { View, Text } from 'react-native';
 import { type ErrorBoundaryProps } from 'expo-router';
 
