@@ -94,12 +94,12 @@ When building a cross-platform app, you may want to use [native tabs](/router/ad
     ['src/app/index.tsx'],
     ['src/app/feed.tsx'],
     ['src/app/profile.tsx'],
-    ['src/components/app-tabs.tsx', 'AppTabs (native tabs) for Android and iOS'],
-    ['src/components/app-tabs.web.tsx', 'AppTabs (custom tabs) for web'],
+    ['src/components/app-tabs.native.tsx', 'AppTabs (native tabs) for Android and iOS'],
+    ['src/components/app-tabs.tsx', 'AppTabs (custom tabs) for web'],
   ]}
 />
 
-The root layout renders an `AppTabs` component. Expo's module resolution automatically picks **app-tabs.tsx** on Android and iOS, and **app-tabs.web.tsx** on web, allowing each platform to use a tab implementation suited to its conventions.
+The root layout renders an `AppTabs` component. Expo's module resolution automatically picks **app-tabs.native.tsx** on Android and iOS, and **app-tabs.tsx** on web, allowing each platform to use a tab implementation suited to its conventions.
 
 For a complete example of this pattern with code, see [Platform-specific tabs](/router/basics/layout/#platform-specific-tabs) in the Layout guide.
 
