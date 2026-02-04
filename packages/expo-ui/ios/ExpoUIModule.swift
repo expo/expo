@@ -103,6 +103,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
     ExpoUIView(ListForEachView.self)
+    ExpoUIView(SyncTextFieldView.self)
 
     // Picker
     ExpoUIView(PickerView.self)
