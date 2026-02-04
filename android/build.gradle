@@ -1,0 +1,60 @@
+// android/build.gradle
+// Fixed for Gradle 7+ compatibility (removed deprecated maven plugin)
+
+def DEFAULT_COMPILE_SDK_VERSION = 34
+def DEFAULT_BUILD_TOOLS_VERSION = '34.0.0'
+def DEFAULT_MIN_SDK_VERSION = 21
+def DEFAULT_TARGET_SDK_VERSION = 34
+
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+apply plugin: 'com.android.library'
+
+buildscript {
+    if (project == rootProject) {
+        repositories {
+            google()
+            mavenCentral()
+        }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:8.1.0'
+        }
+    }
+}
+
+android {
+    compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
+    buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
+    namespace "com.reactlibrary"
+
+    defaultConfig {
+        minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
+        targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
+        versionCode 1
+        versionName "1.0"
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url "$rootDir/../node_modules/react-native/android"
+    }
+    maven {
+        url "$rootDir/../node_modules/jsc-android/dist"
+    }
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'com.facebook.react:react-native:+'
+    implementation files('libs/slf4j-api-1.7.30.jar')
+    implementation files('libs/slf4j-android-1.7.30.jar')
+}
