@@ -13,14 +13,16 @@ const mockedNativeModules = path.join(__dirname, '..', '..', 'node_modules_mock'
 export const loadConfigAsync = memoize(async function loadConfigAsync<
   T extends RNConfigReactNativeConfig,
 >(packageRoot: string): Promise<T | null> {
-  const configPath = (await Promise.all(
-    ['react-native.config.js', 'react-native.config.ts'].map(async (fileName) => {
-      const file = path.join(packageRoot, fileName);
-      return (await fileExistsAsync(file)) ? file : null;
-    })
-  )).find((path) => path != null);
+  const configPath = (
+    await Promise.all(
+      ['react-native.config.js', 'react-native.config.ts'].map(async (fileName) => {
+        const file = path.join(packageRoot, fileName);
+        return (await fileExistsAsync(file)) ? file : null;
+      })
+    )
+  ).find((path) => path != null);
   if (configPath) {
-    return evalModule(
+    const mod = evalModule(
       await fs.readFile(configPath, 'utf8'),
       configPath,
       // NOTE: We need to mock the Community CLI temporarily, because
@@ -28,6 +30,7 @@ export const loadConfigAsync = memoize(async function loadConfigAsync<
       // We can remove this once we remove this check from packages.
       { paths: [mockedNativeModules] }
     );
+    return mod.default ?? mod ?? null;
   } else {
     return null;
   }
