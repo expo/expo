@@ -29,7 +29,7 @@ Shared routes can be navigated directly by including the group name in the route
 
 > Array syntax is an advanced concept that is unique to native app development.
 
-Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group. For example, `app/(home,search)/[user].tsx` &mdash; creates `app/(home)/[user].tsx` and `app/(search)/[user].tsx` in memory.
+Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group. For example, `src/app/(home,search)/[user].tsx` &mdash; creates `src/app/(home)/[user].tsx` and `src/app/(search)/[user].tsx` in memory.
 
 To distinguish between the two routes use a layout's `segment` prop:
 
