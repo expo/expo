@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">android</string>
+    <string name="react_native_fragment">React Native Fragment</string>
+    <string name="open_rn_button_text">Open React Native app</string>
 </resources>
