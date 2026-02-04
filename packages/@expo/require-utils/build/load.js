@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.evalModule = evalModule;
 exports.loadModule = loadModule;
+exports.loadModuleSync = loadModuleSync;
 function _nodeFs() {
   const data = _interopRequireDefault(require("node:fs"));
   _nodeFs = function () {
@@ -161,5 +162,25 @@ async function loadModule(filename) {
       throw error;
     }
   }
+}
+
+/** Require module or evaluate with TypeScript
+ * NOTE: Requiring ESM has been added in all LTS versions (Node 20.19+, 22.12+, 24).
+ * This already forms the minimum required Node version as of Expo SDK 54 */
+function loadModuleSync(filename) {
+  try {
+    if (!isTypescriptFilename(filename)) {
+      return require(filename);
+    }
+  } catch (error) {
+    if (error.code === 'MODULE_NOT_FOUND') {
+      throw error;
+    }
+    // We fallback to always evaluating the entrypoint module
+    // This is out of safety, since we're not trusting the requiring ESM feature
+    // and evaluating the module manually bypasses the error when it's flagged off
+  }
+  const code = _nodeFs().default.readFileSync(filename, 'utf8');
+  return evalModule(code, filename);
 }
 //# sourceMappingURL=load.js.map
