@@ -40,7 +40,6 @@
 #import <ExpoModulesCore/EXBridgeModule.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXSingletonModule.h>
-#import <ExpoModulesCore/EXUnimodulesCompat.h>
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>

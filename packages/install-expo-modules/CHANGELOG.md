@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 0.14.5 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- Allow React Native TV projects. ([#42791](https://github.com/expo/expo/pull/42791) by [@douglowder](https://github.com/douglowder))
+
+## 0.14.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.13.13 - 2025-12-04
 
 ### 💡 Others

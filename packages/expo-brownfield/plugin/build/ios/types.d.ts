@@ -4,6 +4,7 @@ export interface PluginConfig {
 }
 export type IOSPluginProps = Partial<PluginConfig>;
 export type PluginProps = IOSPluginProps | undefined;
+export type PbxNativeTargetSection = Record<string, PbxNativeTarget | string>;
 export interface PbxNativeTarget {
     isa: string;
     name: string;
@@ -11,9 +12,13 @@ export interface PbxNativeTarget {
     productReference: string;
     productType: string;
     buildConfigurationList: string;
-    buildPhases: unknown[];
+    buildPhases: BuildPhase[];
     buildRules: unknown[];
     dependencies: unknown[];
+}
+export interface BuildPhase {
+    value: string;
+    comment: string;
 }
 export interface Target {
     uuid: string;

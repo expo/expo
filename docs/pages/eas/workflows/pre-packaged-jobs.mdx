@@ -1016,6 +1016,21 @@ You can pass the following parameters into the `params` list:
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
 
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                     | Type   | Description                                                              |
+| -------------------------- | ------ | ------------------------------------------------------------------------ |
+| maestro_cloud_url          | string | URL to the Maestro Cloud upload results page.                            |
+| total_flows_count          | number | Total number of flows that were executed.                                |
+| successful_flows_count     | number | Number of flows that completed successfully (status SUCCESS or WARNING). |
+| failed_flows_count         | number | Number of flows that failed (status ERROR or STOPPED).                   |
+| successful_flow_names_json | string | JSON array containing the names of successful flows.                     |
+| failed_flow_names_json     | string | JSON array containing the names of failed flows.                         |
+
+> **Note:** When using `async: true` mode, only the `maestro_cloud_url` output is guaranteed to be valid. Other outputs (flow counts and flow names) may be invalid or empty because the job does not wait for the upload to complete and the flows have not been executed yet.
+
 ### Examples
 
 Here are some practical examples of using the Maestro job:
@@ -1057,6 +1072,35 @@ jobs:
       build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
       maestro_project_id: proj_01jw6hxgmdffrbye9fqn0pyzm0
       flows: ./maestro/flows
+```
+
+</Collapsible>
+
+<Collapsible summary="Using Maestro Cloud outputs in subsequent jobs">
+
+This workflow runs Maestro Cloud tests and then uses the test results in a Slack notification.
+
+```yaml .eas/workflows/maestro-with-notification.yml
+name: Maestro Cloud with Notification
+
+jobs:
+  maestro_test:
+    name: Run Maestro Cloud Tests
+    type: maestro-cloud
+    environment: preview
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+
+  notify:
+    name: Send Test Results
+    after: [maestro_test]
+    type: slack
+    environment: production
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }} # make sure to set it up in the right environment (see "environment: ..." above)
+      message: 'Tests complete: ${{ after.maestro_test.outputs.successful_flows_count }}/${{ after.maestro_test.outputs.total_flows_count }} passed'
 ```
 
 </Collapsible>
@@ -1166,7 +1210,7 @@ jobs:
 
 ## GitHub Comment
 
-Automatically post reports of your workflow's completed builds and updates to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
+Automatically post reports of your workflow's completed builds, updates, and deployments to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, displaying EAS Hosting deployment previews, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
 
 ### Prerequisites
 
@@ -1182,8 +1226,9 @@ jobs:
       message: string # optional - custom message to include in the report
       build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
       update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
+      deployment_ids: string[] # optional - specific deployment IDs to include, defaults to all related to the workflow
 
-  # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
+  # instead of using message and the builds, updates, and deployments table, you can also override the comment contents with `payload`
   custom_github_comment:
     type: github-comment
     params:
@@ -1200,11 +1245,12 @@ Default behavior is auto discovery builds and updates, you can specify any of th
 
 | Parameter        | Type     | Description                                                                                                                                                      |
 | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| message          | string   | Optional. Custom message to include at the top of the comment. Defaults to "Your builds and updates are ready for testing!"                                      |
+| message          | string   | Optional. Custom message to include at the top of the comment. Defaults to "Your builds, updates, and deployments are ready for testing!"                        |
 | build_ids        | string[] | Optional. Array of specific build IDs to include. If not specified, auto-discovers all completed/failed/canceled builds. Use empty array `[]` to exclude builds. |
 | update_group_ids | string[] | Optional. Array of specific update group IDs to include. If not specified, auto-discovers all successful updates. Use empty array `[]` to exclude updates.       |
+| deployment_ids   | string[] | Optional. Array of specific deployment IDs to include. If not specified, auto-discovers all successful deployments. Use empty array `[]` to exclude deployments. |
 
-> **Auto-discovery behavior**: When `build_ids` or `update_group_ids` are not specified (undefined), the job automatically discovers all relevant builds and updates from the current workflow. To explicitly exclude builds or updates, pass an empty array `[]`.
+> **Auto-discovery behavior**: When `build_ids`, `update_group_ids`, or `deployment_ids` are not specified (undefined), the job automatically discovers all relevant builds, updates, and deployments from the current workflow. To explicitly exclude builds, updates, or deployments, pass an empty array `[]`.
 
 ##### Mode 2: Payload mode
 
@@ -1228,9 +1274,9 @@ Here are practical examples demonstrating both modes of the GitHub Comment job:
 
 #### Auto-with-overrides mode examples
 
-<Collapsible summary="Auto-discover all builds and updates">
+<Collapsible summary="Auto-discover all builds, updates, and deployments">
 
-This is the simplest usage - automatically discovers and posts all builds and updates from the workflow.
+This is the simplest usage - automatically discovers and posts all builds, updates, and deployments from the workflow.
 
 ```yaml .eas/workflows/pr-auto-comment.yml
 name: PR Auto Comment
@@ -1243,16 +1289,16 @@ jobs:
 
   comment_on_pr:
     name: Post Results to PR
-    after: [build_ios, build_android, publish_update]
+    after: [build_ios, build_android, publish_update, deploy]
     type: github-comment
-    # No params needed - auto-discovers all builds and updates
+    # No params needed - auto-discovers all builds, updates, and deployments
 ```
 
 </Collapsible>
 
 <Collapsible summary="Custom message with auto-discovery">
 
-Adds a custom message while still auto-discovering all builds and updates.
+Adds a custom message while still auto-discovering all builds, updates, and deployments.
 
 ```yaml .eas/workflows/pr-custom-message.yml
 name: PR Custom Message
@@ -1265,11 +1311,33 @@ jobs:
 
   comment_on_pr:
     name: Post Build to PR
-    after: [build_ios, build_android, publish_update]
+    after: [build_ios, build_android, publish_update, deploy]
     type: github-comment
     params:
       message: '🎉 Preview builds are ready! Please test these changes before approving the PR.'
-      # build_ids and update_group_ids are undefined, so auto-discovery is enabled
+      # build_ids, update_group_ids, and deployment_ids are undefined, so auto-discovery is enabled
+```
+
+</Collapsible>
+
+<Collapsible summary="PR preview with EAS Hosting deployment">
+
+This workflow deploys a preview of your website using EAS Hosting and posts the deployment details to the pull request.
+
+```yaml .eas/workflows/pr-preview.yml
+name: PR Preview
+
+on:
+  pull_request: {}
+
+jobs:
+  deploy:
+    type: deploy
+    name: Deploy PR Preview
+
+  comment:
+    needs: [deploy]
+    type: github-comment
 ```
 
 </Collapsible>
@@ -1302,7 +1370,7 @@ jobs:
 
 </Collapsible>
 
-<Collapsible summary="Exclude builds or updates">
+<Collapsible summary="Exclude builds, updates, or deployments">
 
 Use empty arrays to exclude specific content types.
 
@@ -1322,6 +1390,7 @@ jobs:
     params:
       message: 'New update available for testing!'
       build_ids: [] # Empty array excludes all builds
+      deployment_ids: [] # Empty array excludes all deployments
       # update_group_ids undefined = auto-discover updates
 ```
 

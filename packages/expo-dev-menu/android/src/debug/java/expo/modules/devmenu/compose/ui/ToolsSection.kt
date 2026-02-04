@@ -3,6 +3,7 @@ package expo.modules.devmenu.compose.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.DevToolsSettings
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuActionHandler
@@ -85,55 +86,59 @@ fun ToolsSection(
         }
       )
 
-      Divider(thickness = 0.5.dp)
+      // TODO(@lukmccall): Re-enable when toggling fast refresh is not longer crashing app
+//      Divider(thickness = 0.5.dp)
+//
+//      NewMenuButton(
+//        withSurface = false,
+//        icon = {
+//          MenuIcons.Refresh(
+//            size = 20.dp,
+//            tint = NewAppTheme.colors.icon.tertiary
+//          )
+//        },
+//        content = {
+//          NewText(
+//            text = "Fast Refresh"
+//          )
+//        },
+//        rightComponent = {
+//          ToggleSwitch(
+//            isToggled = devToolsSettings.isHotLoadingEnabled
+//          )
+//        },
+//        onClick = {
+//          onAction(DevMenuAction.ToggleFastRefresh(!devToolsSettings.isHotLoadingEnabled))
+//        }
+//      )
 
-      NewMenuButton(
-        withSurface = false,
-        icon = {
-          MenuIcons.Refresh(
-            size = 20.dp,
-            tint = NewAppTheme.colors.icon.tertiary
-          )
-        },
-        content = {
-          NewText(
-            text = "Fast Refresh"
-          )
-        },
-        rightComponent = {
-          ToggleSwitch(
-            isToggled = devToolsSettings.isHotLoadingEnabled
-          )
-        },
-        onClick = {
-          onAction(DevMenuAction.ToggleFastRefresh(!devToolsSettings.isHotLoadingEnabled))
-        }
-      )
+      // Hide FAB toggle on Quest devices since FAB is always on there
+      if (!VRUtilities.isQuest()) {
+        Divider(thickness = 0.5.dp)
 
-      Divider(color = NewAppTheme.colors.border.default)
-
-      NewMenuButton(
-        withSurface = false,
-        icon = {
-          MenuIcons.Fab(
-            size = 20.dp,
-            tint = NewAppTheme.colors.icon.tertiary
-          )
-        },
-        content = {
-          NewText(
-            text = "Action button"
-          )
-        },
-        rightComponent = {
-          ToggleSwitch(
-            isToggled = showFab
-          )
-        },
-        onClick = {
-          onAction(DevMenuAction.ToggleFab)
-        }
-      )
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            MenuIcons.Fab(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(
+              text = "Action button"
+            )
+          },
+          rightComponent = {
+            ToggleSwitch(
+              isToggled = showFab
+            )
+          },
+          onClick = {
+            onAction(DevMenuAction.ToggleFab)
+          }
+        )
+      }
     }
   }
 }

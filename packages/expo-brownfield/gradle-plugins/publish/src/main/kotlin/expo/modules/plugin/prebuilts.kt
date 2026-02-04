@@ -21,12 +21,11 @@ internal fun setupPrebuiltsCopying(rootProject: Project) {
       )
     }
 
-    val taskName =
-      rootProject.gradle.startParameter.taskNames.firstOrNull()
-        ?: throw IllegalStateException("Cannot find task in the Gradle start parameter")
-    val repo = parsePublishInvocation(rootProject, taskName)
+    // During Gradle sync, no tasks are specified - skip prebuilts setup
+    val taskName = rootProject.gradle.startParameter.taskNames.firstOrNull() ?: return@afterEvaluate
+    val repo = parsePublishInvocation(rootProject, taskName) ?: return@afterEvaluate
 
-    if (repo != null) {
+    run {
       val publication = findPublicationWithRepository(configExtension.publications.toList(), repo)
       createPrebuiltsPublicationTask(publication, rootProject, configExtension.libraryName.get())
     }

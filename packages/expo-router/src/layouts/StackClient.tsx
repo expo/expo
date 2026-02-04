@@ -35,7 +35,10 @@ import {
   type StackScreenProps,
   StackHeader,
   StackScreen,
+  StackSearchBar,
+  StackToolbar,
   appendScreenStackPropsToOptions,
+  validateStackPresentation,
 } from './stack-utils';
 import { isChildOfType } from '../utils/children';
 import { Protected, type ProtectedProps } from '../views/Protected';
@@ -558,9 +561,9 @@ function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
           return null;
         } else {
           if (React.isValidElement(child)) {
-            console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
+            console.warn(`Unknown child element passed to Stack: ${child.type}`);
           } else {
-            console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
+            console.warn(`Unknown child element passed to Stack: ${child}`);
           }
         }
         return null;
@@ -569,6 +572,11 @@ function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
   };
 }
 
+/**
+ * Renders a native stack navigator.
+ *
+ * @hideType
+ */
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
@@ -591,9 +599,14 @@ const Stack = Object.assign(
         } else {
           return appendScreenStackPropsToOptions({}, screenStackProps);
         }
-      } else {
-        return props.screenOptions;
+      } else if (props.screenOptions) {
+        const screenOptions = props.screenOptions;
+        if (typeof screenOptions === 'function') {
+          return validateStackPresentation(screenOptions);
+        }
+        return validateStackPresentation(screenOptions);
       }
+      return props.screenOptions;
     }, [props.screenOptions, props.children]);
 
     const screenOptions = useMemo(() => {
@@ -620,6 +633,8 @@ const Stack = Object.assign(
     Screen: StackScreen,
     Protected,
     Header: StackHeader,
+    SearchBar: StackSearchBar,
+    Toolbar: StackToolbar,
   }
 );
 

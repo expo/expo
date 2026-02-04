@@ -33,7 +33,7 @@ export interface RequestHandlerParams
  * Returns a request handler for http that serves the response using Remix.
  */
 export function createRequestHandler(
-  params: { build: string; environment?: string | null },
+  params: { build: string; environment?: string | null; isDevelopment?: boolean },
   setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
   const run = createNodeRequestScope(STORE, params);
@@ -106,6 +106,7 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   return new Request(url.href, init);
 }
 
+// NOTE(@hassankhan): This doesn't seem to be used anywhere and is likely safe to remove
 export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers {
   const headers = new Headers();
   for (const [key, values] of Object.entries(requestHeaders)) {

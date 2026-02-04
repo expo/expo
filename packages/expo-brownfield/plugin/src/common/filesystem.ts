@@ -1,3 +1,4 @@
+import { applyPatch } from 'diff';
 import { accessSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -103,4 +104,32 @@ export const readFromTemplate = (
   }
 
   return templateContents;
+};
+
+/**
+ * Applies a unified diff patch to a file.
+ * @param patchFile - The name of the patch file in the patches directory
+ * @param targetFilePath - The absolute path to the file to patch
+ */
+export const applyPatchToFile = (patchFile: string, targetFilePath: string) => {
+  const patchPath = path.join(__filename, '../../..', 'templates', 'patches', patchFile);
+
+  if (!existsSync(patchPath)) {
+    throw new Error(`Patch file ${patchFile} doesn't exist at ${patchPath}`);
+  }
+
+  if (!existsSync(targetFilePath)) {
+    throw new Error(`Target file doesn't exist at ${targetFilePath}`);
+  }
+
+  const patchContent = readFileSync(patchPath, 'utf-8');
+  const originalContent = readFileSync(targetFilePath, 'utf-8');
+
+  const patchedContent = applyPatch(originalContent, patchContent);
+
+  if (patchedContent === false) {
+    throw new Error(`Failed to apply patch ${patchFile} to ${targetFilePath}`);
+  }
+
+  writeFileSync(targetFilePath, patchedContent);
 };

@@ -24,11 +24,13 @@ export declare function isSpeakingAsync(): Promise<boolean>;
 export declare function stop(): Promise<void>;
 /**
  * Pauses current speech. This method is not available on Android.
+ * @platform ios, web
  */
 export declare function pause(): Promise<void>;
 /**
  * Resumes speaking previously paused speech or does nothing if there's none. This method is not
  * available on Android.
+ * @platform ios, web
  */
 export declare function resume(): Promise<void>;
 /**

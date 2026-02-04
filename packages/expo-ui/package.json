@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "0.2.0-beta.10",
+  "version": "55.0.0-preview.4",
   "description": "A collection of UI components",
   "sideEffects": false,
   "exports": {
@@ -16,6 +16,10 @@
     "./jetpack-compose": {
       "types": "./build/jetpack-compose/index.d.ts",
       "default": "./src/jetpack-compose/index.ts"
+    },
+    "./jetpack-compose/modifiers": {
+      "types": "./build/jetpack-compose/modifiers/index.d.ts",
+      "default": "./src/jetpack-compose/modifiers/index.ts"
     }
   },
   "scripts": {
@@ -47,7 +51,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*",

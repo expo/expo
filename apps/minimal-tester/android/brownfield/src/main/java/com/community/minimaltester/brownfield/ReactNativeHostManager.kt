@@ -28,6 +28,26 @@ class ReactNativeHostManager {
       return
     }
 
+    // Ensure that `index.android.bundle` is available in the assets
+    // for release builds
+    if (!BuildConfig.DEBUG) {
+      val assets = application.applicationContext.assets.list("")?.toList()
+        ?: emptyList<String>()
+      if (!assets.contains("index.android.bundle")) {
+        val bundleList = assets
+          .filter { it.endsWith(".bundle") }
+          .map { "- $it" }.joinToString("\n")
+          ?: "None"
+
+          throw IllegalStateException("""
+          Cannot find `index.android.bundle` in the assets
+          Available JS bundles:
+          $bundleList
+          """.trimIndent()
+        )
+      }
+    }
+
     DefaultNewArchitectureEntryPoint.releaseLevel =
         try {
           ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())

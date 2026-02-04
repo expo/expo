@@ -1,6 +1,6 @@
 {
   "name": "expo-tracking-transparency",
-  "version": "6.0.7",
+  "version": "55.0.4",
   "description": "A library for tracking app users and managing tracking permissions",
   "main": "build/TrackingTransparency.js",
   "types": "build/TrackingTransparency.d.ts",
@@ -30,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/tracking-transparency",
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*",

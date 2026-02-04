@@ -27,11 +27,6 @@ android {
     )
     buildConfigField("boolean", "IS_HERMES_ENABLED", properties["hermesEnabled"].toString())
     buildConfigField(
-        "boolean",
-        "IS_EDGE_TO_EDGE_ENABLED",
-        properties["edgeToEdgeEnabled"].toString(),
-    )
-    buildConfigField(
         "String",
         "REACT_NATIVE_RELEASE_LEVEL",
         "\"${findProperty("reactNativeReleaseLevel") ?: "stable"}\"",
@@ -53,6 +48,6 @@ android {
 
 dependencies {
   api("com.facebook.react:react-android")
-  api("com.facebook.react:hermes-android")
+  api("com.facebook.hermes:hermes-android")
   compileOnly("androidx.fragment:fragment-ktx:1.6.1")
 }

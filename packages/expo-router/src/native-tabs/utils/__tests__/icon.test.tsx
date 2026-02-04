@@ -59,7 +59,7 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
     const src = { uri: 'https://example.com/icon.png' };
     const result = convertOptionsIconToRNScreensPropsIcon({ src });
     expect(result).toEqual({
-      ios: { type: 'templateSource', templateSource: src },
+      ios: { type: 'imageSource', imageSource: src },
       android: { type: 'imageSource', imageSource: src },
     });
   });
@@ -68,7 +68,7 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
     const src = 123 as any;
     const result = convertOptionsIconToRNScreensPropsIcon({ src });
     expect(result).toEqual({
-      ios: { type: 'templateSource', templateSource: src },
+      ios: { type: 'imageSource', imageSource: src },
       android: { type: 'imageSource', imageSource: src },
     });
   });
@@ -103,6 +103,74 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
     expect(convertOptionsIconToRNScreensPropsIcon(drawableOnly)).toEqual({
       ios: undefined,
       android: { type: 'drawableResource', name: 'ic_launcher' },
+    });
+  });
+
+  describe('renderingMode', () => {
+    it('returns templateSource for iOS when renderingMode is "template"', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'template' });
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('returns imageSource for iOS when renderingMode is "original"', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'original' });
+      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+    });
+
+    it('returns imageSource for Android regardless of renderingMode', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const resultTemplate = convertOptionsIconToRNScreensPropsIcon({
+        src,
+        renderingMode: 'template',
+      });
+      const resultOriginal = convertOptionsIconToRNScreensPropsIcon({
+        src,
+        renderingMode: 'original',
+      });
+      // Android always uses imageSource
+      expect(resultTemplate?.android).toEqual({ type: 'imageSource', imageSource: src });
+      expect(resultOriginal?.android).toEqual({ type: 'imageSource', imageSource: src });
+    });
+  });
+
+  describe('smart default with iconColor', () => {
+    it('defaults to imageSource (original) when iconColor is undefined', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src }, undefined);
+      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+    });
+
+    it('defaults to templateSource (template) when iconColor is set', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src }, '#ff0000');
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('respects explicit renderingMode="original" even when iconColor is set', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon(
+        { src, renderingMode: 'original' },
+        '#ff0000'
+      );
+      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+    });
+
+    it('respects explicit renderingMode="template" even when iconColor is undefined', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon(
+        { src, renderingMode: 'template' },
+        undefined
+      );
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('does not affect Android behavior when iconColor is set', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src }, '#ff0000');
+      // Android always uses imageSource regardless of iconColor
+      expect(result?.android).toEqual({ type: 'imageSource', imageSource: src });
     });
   });
 });

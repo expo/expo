@@ -6,6 +6,30 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
 - [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Support `mixWithOthers` interruption mode. ([#41670](https://github.com/expo/expo/pull/41670) by [@alanjhughes](https://github.com/alanjhughes))
@@ -60,6 +84,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Removed requiring shouldPlayInBackground to be true for background recording. ([#42134](https://github.com/expo/expo/pull/42134) by [@chrfalch](https://github.com/chrfalch))
 
 ## 1.0.11 — 2025-09-11
 

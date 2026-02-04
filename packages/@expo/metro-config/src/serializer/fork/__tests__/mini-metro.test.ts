@@ -399,6 +399,7 @@ it(`can create a micro Metro graph fixture`, async () => {
             "engine": undefined,
             "environment": undefined,
             "optimize": undefined,
+            "reactCompiler": undefined,
           },
           "dev": true,
           "experimentalImportSupport": true,

@@ -10,9 +10,11 @@ export type VersionSelectorProps = {
   availableVersions: string[];
 };
 
+const packageJsonObject: Record<string, unknown> = packageJson;
+
 export const BETA_MAJOR_VERSION =
-  'betaVersion' in packageJson && typeof packageJson.betaVersion === 'string'
-    ? packageJson.betaVersion.split('.')[0]
+  typeof packageJsonObject.betaVersion === 'string'
+    ? packageJsonObject.betaVersion.split('.')[0]
     : undefined;
 
 export const VersionSelector = ({

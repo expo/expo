@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix asset loading when Metro server runs over HTTPS by deriving scheme from `manifestBaseUrl` instead of hardcoding `http://`. ([#42184](https://github.com/expo/expo/pull/42184) by [@ink404](https://github.com/ink404))
+
+### 💡 Others
+
 - validate asset names with `isAndroidAssetNameValid` from `expo/config-plugins` ([#39883](https://github.com/expo/expo/pull/39883) by [@vonovak](https://github.com/vonovak))
 
 ## 12.0.11 - 2025-12-05

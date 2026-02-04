@@ -1,3 +1,4 @@
 import { type ConfigPlugin } from 'expo/config-plugins';
-declare const withPodfilePropertiesPlugin: ConfigPlugin;
+import type { PluginConfig } from '../types';
+declare const withPodfilePropertiesPlugin: ConfigPlugin<PluginConfig>;
 export default withPodfilePropertiesPlugin;

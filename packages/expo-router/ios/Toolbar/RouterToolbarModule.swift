@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import UIKit
 
 public class RouterToolbarModule: Module {
   public func definition() -> ModuleDefinition {
@@ -22,8 +23,14 @@ public class RouterToolbarModule: Module {
       Prop("systemImageName") { (view: RouterToolbarItemView, systemImageName: String?) in
         view.systemImageName = systemImageName
       }
+      Prop("image") { (view: RouterToolbarItemView, image: SharedRef<UIImage>?) in
+        view.customImage = image
+      }
       Prop("tintColor") { (view: RouterToolbarItemView, tintColor: UIColor?) in
         view.customTintColor = tintColor
+      }
+      Prop("imageRenderingMode") { (view: RouterToolbarItemView, mode: ImageRenderingMode?) in
+        view.imageRenderingMode = mode
       }
       Prop("hidesSharedBackground") { (view: RouterToolbarItemView, hidesSharedBackground: Bool) in
         view.hidesSharedBackground = hidesSharedBackground
@@ -91,6 +98,11 @@ enum BarItemStyle: String, Enumerable {
       }
     }
   }
+}
+
+enum ImageRenderingMode: String, Enumerable {
+  case template
+  case original
 }
 
 struct BadgeConfigurationRecord: Record {

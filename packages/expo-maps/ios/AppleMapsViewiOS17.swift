@@ -39,12 +39,21 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
     MapReader { reader in
       Map(position: $state.mapCameraPosition) {
         ForEach(props.markers) { marker in
-          Marker(
-            marker.title,
-            systemImage: marker.systemImage,
-            coordinate: marker.clLocationCoordinate2D
-          )
-          .tint(marker.tintColor)
+          if marker.hasMonogram {
+            Marker(
+              marker.title,
+              monogram: Text(marker.monogram),
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+          } else {
+            Marker(
+              marker.title,
+              systemImage: marker.systemImage,
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+          }
         }
 
         ForEach(props.polylines) { polyline in
@@ -147,6 +156,9 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
           state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
           state.hasInitializedCamera = true
         }
+      }
+      .let(props.colorScheme.toColorScheme()) { view, colorScheme in
+        view.environment(\.colorScheme, colorScheme)
       }
     }
   }

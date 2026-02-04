@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 import { ComponentType } from 'react';
 
-import { type SubmenuProps, type ContextMenuProps } from './types';
+import { type ContextMenuProps } from './types';
 
-export { type ActivationMethod, type ContextMenuProps } from './types';
+export { type ContextMenuProps } from './types';
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
 
@@ -25,14 +25,14 @@ const MenuNativeItemsView: ComponentType<object> = requireNativeView(
 type NativeMenuProps = ContextMenuProps;
 
 /**
- * Items visible inside the context menu. It could be `Section`, `Divider`, `Button`, `Switch`, `Picker` or even `ContextMenu` itself for nested menus. Remember to use components from the `@expo/ui/swift-ui` library.
+ * Items visible inside the context menu. It could be `Section`, `Divider`, `Button`, `Toggle`, `Picker` or even `ContextMenu` itself for nested menus. Remember to use components from the `@expo/ui/swift-ui` library.
  */
 export function Items(props: { children: React.ReactNode }) {
   return <MenuNativeItemsView {...props} />;
 }
 
 /**
- * The component visible all the time that triggers the menu when tapped or long-pressed.
+ * The component visible all the time that triggers the context menu when long-pressed.
  */
 export function Trigger(props: { children: React.ReactNode }) {
   return <MenuNativeTriggerView {...props} />;
@@ -56,17 +56,4 @@ ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 
-/**
- * @deprecated Use `ContextMenu` component as submenu instead.
- */
-const Submenu = (props: SubmenuProps) => {
-  const { button, children, ...rest } = props;
-  return (
-    <ContextMenu {...rest}>
-      <ContextMenu.Items>{children}</ContextMenu.Items>
-      <ContextMenu.Trigger>{button}</ContextMenu.Trigger>
-    </ContextMenu>
-  );
-};
-
-export { ContextMenu, Submenu };
+export { ContextMenu };

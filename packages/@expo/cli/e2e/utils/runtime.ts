@@ -19,13 +19,15 @@ type RuntimeType =
 
 export type ServerTestConfiguration = {
   name: string;
-  createServer: () => BackgroundServer;
+  createServer: (overrideServe?: ServerTestOptions['serve']) => BackgroundServer;
   prepareDist: () => Promise<[outputDir: string, outputName?: string]>;
 };
 
 export type ServerTestOptions = {
   /** The E2E test scenario directory name (e.g., 'server-middleware-async') */
   fixtureName: string;
+  /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
+  uniqueOutputKey?: string;
   /** Options for the export command */
   export?: {
     /** Environment variables to pass to the export command */
@@ -66,7 +68,7 @@ export function prepareServers(
   runtimes: RuntimeType[],
   options: ServerTestOptions
 ): ServerTestConfiguration[] {
-  const { fixtureName } = options;
+  const { fixtureName, uniqueOutputKey } = options;
   const projectRoot = getRouterE2ERoot();
 
   const exportEnv = options.export?.env ?? {};
@@ -83,7 +85,7 @@ export function prepareServers(
   const knownRuntimeConfigs: Record<RuntimeType, Omit<ServerTestConfiguration, 'name'>> = {
     [RUNTIME_EXPO_SERVE]: {
       prepareDist: async () => {
-        const outputName = `dist-${fixtureName}-expo-serve`;
+        const outputName = generateOutputDir('expo-serve', fixtureName, uniqueOutputKey);
         const outputDir = path.join(projectRoot, outputName);
 
         await executeExpoAsync(
@@ -94,12 +96,13 @@ export function prepareServers(
 
         return [outputDir, outputName];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createExpoServe({
           cwd: projectRoot,
           env: {
             NODE_ENV: 'production',
             ...serveEnv,
+            ...overrideServe?.env,
           },
         }),
     },
@@ -107,19 +110,20 @@ export function prepareServers(
       prepareDist: async () => {
         return [''];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createExpoStart({
           cwd: projectRoot,
           env: {
             ...defaultExportEnv,
             ...serveEnv,
+            ...overrideServe?.env,
             NODE_ENV: 'development',
           },
         }),
     },
     [RUNTIME_EXPRESS_SERVER]: {
       prepareDist: async () => {
-        const outputName = `dist-${fixtureName}-express`;
+        const outputName = generateOutputDir('express', fixtureName, uniqueOutputKey);
         const outputDir = path.join(projectRoot, outputName);
 
         await executeExpoAsync(
@@ -130,7 +134,7 @@ export function prepareServers(
 
         return [outputDir, outputName];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createBackgroundServer({
           command: ['node', path.join(projectRoot, `__e2e__/${fixtureName}/express.js`)],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Express server listening'),
@@ -138,12 +142,13 @@ export function prepareServers(
           env: {
             NODE_ENV: 'production',
             ...serveEnv,
+            ...overrideServe?.env,
           },
         }),
     },
     [RUNTIME_WORKERD]: {
       prepareDist: async () => {
-        const outputName = `dist-${fixtureName}-workerd`;
+        const outputName = generateOutputDir('workerd', fixtureName, uniqueOutputKey);
         const outputDir = path.join(projectRoot, outputName);
 
         await executeExpoAsync(
@@ -167,16 +172,23 @@ export function prepareServers(
 
         return [outputDir];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createBackgroundServer({
           command: [
             'node_modules/.bin/workerd',
             'serve',
-            path.join(projectRoot, `dist-${fixtureName}-workerd`, 'server/config.capnp'),
+            path.join(
+              projectRoot,
+              generateOutputDir('workerd', fixtureName, uniqueOutputKey),
+              'server/config.capnp'
+            ),
           ],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
           port: 8787,
           cwd: projectRoot,
+          env: {
+            ...overrideServe?.env,
+          },
         }),
     },
   };
@@ -200,7 +212,12 @@ export function prepareServers(
  *
  * @remarks Must be called at the top level of a `describe()` block that uses `prepareServers()`.
  */
-export function setupServer(config: ServerTestConfiguration) {
+export function setupServer(
+  /** Server configuration from `prepareServers()` */
+  config: ServerTestConfiguration,
+  /** Optional overrides to pass to `expo serve` for this specific test scenario */
+  options?: Pick<ServerTestOptions, 'serve'>
+) {
   let outputDir: string | undefined;
   let server: BackgroundServer;
 
@@ -209,7 +226,7 @@ export function setupServer(config: ServerTestConfiguration) {
     const [newOutputDir, outputName] = await config.prepareDist();
     console.timeEnd('export-server');
     outputDir = newOutputDir;
-    server = config.createServer();
+    server = config.createServer(options?.serve);
     if (outputName) {
       await server.startAsync([outputName]);
     } else {
@@ -246,4 +263,8 @@ export function setupServer(config: ServerTestConfiguration) {
       return config.name === RUNTIME_WORKERD;
     },
   };
+}
+
+function generateOutputDir(runtimeName: string, fixtureName: string, uniqueOutputKey?: string) {
+  return `dist-${fixtureName}-${runtimeName}${uniqueOutputKey ? `-${uniqueOutputKey}` : ''}`;
 }

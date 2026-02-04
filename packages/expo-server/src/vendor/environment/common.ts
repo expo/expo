@@ -1,6 +1,7 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
 import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
-import { parseParams } from '../../utils/matchers';
+import { isResponse, parseParams } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -32,6 +33,7 @@ interface EnvironmentInput {
   readText(request: string): Promise<string | null>;
   readJson(request: string): Promise<unknown>;
   loadModule(request: string): Promise<unknown>;
+  isDevelopment: boolean;
 }
 
 export function createEnvironment(input: EnvironmentInput) {
@@ -40,7 +42,7 @@ export function createEnvironment(input: EnvironmentInput) {
   let ssrRenderer: SsrRenderFn | null = null;
 
   async function getCachedRoutesManifest(): Promise<Manifest> {
-    if (!cachedManifest) {
+    if (!cachedManifest || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
       cachedManifest = initManifestRegExp(json as RawManifest);
     }
@@ -48,7 +50,7 @@ export function createEnvironment(input: EnvironmentInput) {
   }
 
   async function getServerRenderer(): Promise<SsrRenderFn | null> {
-    if (ssrRenderer) {
+    if (ssrRenderer && !input.isDevelopment) {
       return ssrRenderer;
     }
 
@@ -82,14 +84,16 @@ export function createEnvironment(input: EnvironmentInput) {
 
   async function executeLoader(request: Request, route: Route): Promise<unknown> {
     if (!route.loader) {
-      return null;
+      return undefined;
     }
+
     const loaderModule = (await input.loadModule(route.loader)) as LoaderModule | null;
-    if (!loaderModule?.loader) {
-      return null;
+    if (!loaderModule) {
+      throw new Error(`Loader module not found at: ${route.loader}`);
     }
+
     const params = parseParams(request, route);
-    return loaderModule.loader({ params, request });
+    return loaderModule.loader(new ImmutableRequest(request), params);
   }
 
   return {
@@ -104,16 +108,11 @@ export function createEnvironment(input: EnvironmentInput) {
         let renderOptions: RenderOptions | undefined;
 
         try {
-          const data = await executeLoader(request, route);
-          if (data !== null) {
-            renderOptions = { loader: { data } };
+          if (route.loader) {
+            const result = await executeLoader(request, route);
+            const data = isResponse(result) ? await result.json() : result;
+            renderOptions = { loader: { data: data ?? null } };
           }
-        } catch (error) {
-          console.error('Loader error:', error);
-          throw error;
-        }
-
-        try {
           return await renderer(request, renderOptions);
         } catch (error) {
           console.error('SSR render error:', error);
@@ -150,8 +149,14 @@ export function createEnvironment(input: EnvironmentInput) {
       return mod;
     },
 
-    async getLoaderData(request: Request, route: Route): Promise<unknown> {
-      return executeLoader(request, route);
+    async getLoaderData(request: Request, route: Route): Promise<Response> {
+      const result = await executeLoader(request, route);
+
+      if (isResponse(result)) {
+        return result;
+      }
+
+      return Response.json(result ?? null);
     },
   };
 }

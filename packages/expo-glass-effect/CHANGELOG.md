@@ -6,14 +6,37 @@
 
 ### 🎉 New features
 
-- Add `isGlassEffectAPIAvailable` API to prevent some iOS 26 beta version crashes ([#40992](https://github.com/expo/expo/pull/40992) by [@nishan](https://github.com/intergalacticspacehighway))
-- Add `tvOS` support ([#41962](https://github.com/expo/expo/pull/41962) by [@nishan](https://github.com/intergalacticspacehighway))
-- Add ref prop type to `GlassContainer` and `GlassView` components ([#41799](https://github.com/expo/expo/pull/41799) by [@pchalupa](https://github.com/pchalupa))
 - Add animation config to `glassEffectStyle` ([#42005](https://github.com/expo/expo/pull/42005) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+- Add ref prop type to `GlassContainer` and `GlassView` components ([#41799](https://github.com/expo/expo/pull/41799) by [@pchalupa](https://github.com/pchalupa))
+
+### 🎉 New features
+
+- Add `isGlassEffectAPIAvailable` API to prevent some iOS 26 beta version crashes ([#40992](https://github.com/expo/expo/pull/40992) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add `tvOS` support ([#41962](https://github.com/expo/expo/pull/41962) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add `colorScheme` prop to override user interface style of `GlassView` ([#42164](https://github.com/expo/expo/pull/42164) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 0.1.8 - 2025-12-05
 

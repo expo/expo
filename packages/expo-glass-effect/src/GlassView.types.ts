@@ -19,6 +19,8 @@ export type GlassEffectStyleConfig = {
   animationDuration?: number;
 };
 
+export type GlassColorScheme = 'auto' | 'light' | 'dark';
+
 export type GlassViewProps = {
   /**
    * Glass effect style to apply to the view.
@@ -36,5 +38,11 @@ export type GlassViewProps = {
    * @default false
    */
   isInteractive?: boolean;
+  /**
+   * The color scheme for the glass effect appearance.
+   * Use this to override the system appearance when your app has its own theme toggle.
+   * @default 'auto'
+   */
+  colorScheme?: GlassColorScheme;
   ref?: Ref<View>;
 } & ViewProps;

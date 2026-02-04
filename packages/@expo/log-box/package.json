@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "0.0.13-canary-20251023-4c86f95",
+  "version": "55.0.5",
   "main": "app/index.ts",
   "scripts": {
     "start": "expo start",
@@ -19,14 +19,14 @@
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
-    "@expo/dom-webview": "*",
+    "@expo/dom-webview": "^55.0.2",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "^55.0.2",
     "glob": "^13.0.0",
     "npm-run-all2": "^8.0.4",
     "react": "19.2.0",
@@ -36,12 +36,10 @@
     "typescript-plugin-css-modules": "^5.2.0"
   },
   "peerDependencies": {
-    "@expo/dom-webview": "*",
+    "@expo/dom-webview": "^55.0.2",
     "expo": "*",
     "react": "*",
-    "react-dom": "*",
-    "react-native": "*",
-    "react-native-web": "*"
+    "react-native": "*"
   },
   "license": "MIT",
   "author": "Expo",

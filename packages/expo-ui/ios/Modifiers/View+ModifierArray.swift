@@ -31,3 +31,22 @@ internal extension View {
     }
   }
 }
+
+internal extension Text {
+  func applyTextModifiers(_ modifiers: ModifierArray?, appContext: AppContext?) -> Text {
+    guard let modifiers, let appContext else { return self }
+
+    return modifiers.reduce(self) { currentText, modifierConfig in
+      guard let type = modifierConfig["$type"] as? String else {
+        return currentText
+      }
+
+      return ViewModifierRegistry.shared.applyTextModifier(
+        type,
+        to: currentText,
+        appContext: appContext,
+        params: modifierConfig
+      )
+    }
+  }
+}

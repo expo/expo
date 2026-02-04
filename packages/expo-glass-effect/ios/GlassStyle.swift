@@ -31,3 +31,20 @@ internal struct GlassEffectStyleConfig: Record {
   @Field
   var animationDuration: Double?
 }
+
+internal enum GlassColorScheme: String, Enumerable {
+  case auto
+  case light
+  case dark
+
+  func toUIUserInterfaceStyle() -> UIUserInterfaceStyle {
+    switch self {
+    case .auto:
+      return .unspecified
+    case .light:
+      return .light
+    case .dark:
+      return .dark
+    }
+  }
+}

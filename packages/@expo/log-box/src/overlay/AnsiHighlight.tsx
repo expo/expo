@@ -7,8 +7,8 @@
  */
 import Anser from 'anser';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { StyleProp, TextStyle } from 'react-native';
+
+import styles from './AnsiHighlight.module.css';
 
 // Afterglow theme from https://iterm2colorschemes.com/
 const COLORS: Record<string, string> = {
@@ -35,11 +35,11 @@ export class Ansi extends React.Component<
   {
     // TODO: Does undefined make sense here?
     text: string | undefined;
-    style: StyleProp<TextStyle>;
+    style: React.CSSProperties;
   },
   { hasError: boolean }
 > {
-  constructor(props: { text: string; style: StyleProp<TextStyle> }) {
+  constructor(props: { text: string; style: React.CSSProperties }) {
     super(props);
     this.state = { hasError: false };
   }
@@ -54,16 +54,24 @@ export class Ansi extends React.Component<
 
   render() {
     if (this.state.hasError) {
-      return <Text style={this.props.style}>Error rendering ANSI text.</Text>;
+      return (
+        <span className={styles.text} style={this.props.style}>
+          Error rendering ANSI text.
+        </span>
+      );
     }
     return <AnsiUnsafe text={this.props.text || ''} style={this.props.style} />;
   }
 }
 
-export function AnsiUnsafe({ text, style }: { text: string; style: StyleProp<TextStyle> }) {
+export function AnsiUnsafe({ text, style }: { text: string; style: React.CSSProperties }) {
   // TMP
   if (!text) {
-    return <Text style={style}>Text not provided to Ansi component.</Text>;
+    return (
+      <span className={styles.text} style={style}>
+        Text not provided to Ansi component.
+      </span>
+    );
   }
 
   let commonWhitespaceLength = Infinity;
@@ -101,9 +109,9 @@ export function AnsiUnsafe({ text, style }: { text: string; style: StyleProp<Tex
   return (
     <>
       {parsedLines.map((items, i) => (
-        <View style={styles.line} key={i}>
+        <div className={styles.line} key={i}>
           {items.map((bundle, key) => {
-            const textStyle =
+            const textStyle: React.CSSProperties =
               bundle.fg && COLORS[bundle.fg]
                 ? {
                     backgroundColor: bundle.bg && COLORS[bundle.bg],
@@ -113,19 +121,13 @@ export function AnsiUnsafe({ text, style }: { text: string; style: StyleProp<Tex
                     backgroundColor: bundle.bg && COLORS[bundle.bg],
                   };
             return (
-              <Text style={[style, textStyle]} key={key}>
+              <span className={styles.text} style={{ ...style, ...textStyle }} key={key}>
                 {getText(bundle.content, key)}
-              </Text>
+              </span>
             );
           })}
-        </View>
+        </div>
       ))}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  line: {
-    flexDirection: 'row',
-  },
-});

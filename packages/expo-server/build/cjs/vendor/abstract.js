@@ -26,9 +26,7 @@ function noopBeforeResponse(responseInit, _route) {
 function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, getLoaderData, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     let manifest = null;
     return async function handler(request) {
-        if (!manifest) {
-            manifest = await getRoutesManifest();
-        }
+        manifest = await getRoutesManifest();
         return requestHandler(request, manifest);
     };
     async function requestHandler(incomingRequest, manifest) {
@@ -83,7 +81,7 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
         if (request.method === 'GET' || request.method === 'HEAD') {
             const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
             const matchedPath = isLoaderRequest
-                ? url.pathname.replace('/_expo/loaders', '')
+                ? url.pathname.replace('/_expo/loaders', '').replace(/\/index$/, '/')
                 : url.pathname;
             for (const route of manifest.htmlRoutes) {
                 if (!route.namedRegex.test(matchedPath)) {
@@ -98,13 +96,7 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                     // NOTE(@hassankhan): Relocate the request rewriting logic from here
                     url.pathname = matchedPath;
                     const loaderRequest = new Request(url, request);
-                    const data = await getLoaderData(loaderRequest, route);
-                    return createResponse('api', route, JSON.stringify(data), {
-                        status: 200,
-                        headers: new Headers({
-                            'Content-Type': 'application/json',
-                        }),
-                    });
+                    return createResponseFrom('api', route, await getLoaderData(loaderRequest, route));
                 }
                 const html = await getHtml(request, route);
                 return respondHTML(html, route);

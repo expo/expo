@@ -4,7 +4,15 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   var identifier: String = ""
   // MARK: - Shared props
   @NativeActionProp(updateAction: true, updateMenu: true) var title: String = ""
+  @NativeActionProp(updateMenu: true) var label: String?
   @NativeActionProp(updateAction: true, updateMenu: true) var icon: String?
+  var customImage: SharedRef<UIImage>? {
+    didSet {
+      updateUiAction()
+      updateMenu()
+    }
+  }
+  @NativeActionProp(updateAction: true, updateMenu: true) var imageRenderingMode: ImageRenderingMode?
   @NativeActionProp(updateAction: true, updateMenu: true) var destructive: Bool?
   @NativeActionProp(updateAction: true, updateMenu: true) var disabled: Bool = false
 
@@ -48,6 +56,17 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     isMenuAction ? menuAction : baseUiAction
   }
 
+  private var image: UIImage? {
+    if let customImage = customImage {
+      let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      return customImage.ref.withRenderingMode(renderingMode)
+    }
+    if let icon = icon {
+      return UIImage(systemName: icon)
+    }
+    return nil
+  }
+
   required init(appContext: AppContext? = nil) {
     baseUiAction = UIAction(title: "", handler: { _ in })
     menuAction = UIMenu(title: "", image: nil, options: [], children: [])
@@ -78,7 +97,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
     menuAction = UIMenu(
       title: title,
-      image: icon.flatMap { UIImage(systemName: $0) },
+      image: image,
       options: options,
       children: subActions
     )
@@ -109,7 +128,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     }
 
     baseUiAction.title = title
-    baseUiAction.image = icon.flatMap { UIImage(systemName: $0) }
+    baseUiAction.image = image
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn == true ? .on : .off
 

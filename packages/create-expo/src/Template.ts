@@ -1,5 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
-import JsonFile from '@expo/json-file';
+import JsonFile, { JSONObject } from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -313,6 +313,12 @@ export async function renameTemplateAppNameAsync({
   );
 }
 
+function templateHasNativeCode(root: string): boolean {
+  return [path.join(root, 'android'), path.join(root, 'ios')].some((folder) =>
+    fs.existsSync(folder)
+  );
+}
+
 /**
  * Sanitize a template (or example) with expected `package.json` properties and files.
  */
@@ -323,8 +329,21 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
 
   const templatePath = path.join(__dirname, '../template/gitignore');
   const ignorePath = path.join(projectRoot, '.gitignore');
+
+  let nativeFoldersIgnored = false;
   if (!fs.existsSync(ignorePath)) {
-    await fs.promises.copyFile(templatePath, ignorePath);
+    if (process.env.NODE_ENV !== 'test') {
+      await fs.promises.copyFile(templatePath, ignorePath);
+    }
+  } else {
+    // If the template has a gitignore file already, we apply a heuristic to check if it ignores
+    // native folders. We're not strictly checking both ios|android but either loosely
+    try {
+      const ignoreContents = fs.readFileSync(ignorePath, 'utf-8');
+      nativeFoldersIgnored = /^\/?(?:ios|android)\/?/gm.test(ignoreContents);
+    } catch {
+      nativeFoldersIgnored = false;
+    }
   }
 
   const defaultConfig: ExpoConfig = {
@@ -354,6 +373,35 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
   delete packageJson.description;
   delete packageJson.tags;
   delete packageJson.repository;
+
+  if (
+    (typeof packageJson.scripts === 'object' || packageJson.scripts == null) &&
+    !(packageJson.scripts as JSONObject)?.android &&
+    !(packageJson.scripts as JSONObject)?.ios
+  ) {
+    // When we're creating a template that:
+    // - does not have ios/android scripts
+    // - doesn't have native codes
+    // - has native folders ignored
+    // we automatically add ios/android scripts since prebuild will likely trigger, and used to add these scripts automatically
+    // but doesn't anymore
+    if (templateHasNativeCode(projectRoot)) {
+      packageJson.scripts = {
+        ...packageJson.scripts,
+        android: 'expo run:android',
+        ios: 'expo run:ios',
+      };
+    } else if (nativeFoldersIgnored) {
+      packageJson.scripts = {
+        ...packageJson.scripts,
+        android: 'expo start --android',
+        ios: 'expo start --ios',
+      };
+    } else {
+      // By default we don't do anything since we don't know if `start` or `run:*` are good defaults
+      // We assume that most templates have scripts in this case (e.g. the default template has its own already)
+    }
+  }
 
   // Only strip the license if it's 0BSD, used by our templates. Leave other licenses alone.
   if (packageJson.license === '0BSD') {

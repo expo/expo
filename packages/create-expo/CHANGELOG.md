@@ -6,11 +6,31 @@
 
 ### 🎉 New features
 
-- Skip initializing git repo if inside another repo ([#42052](https://github.com/expo/expo/pull/42052) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.6.3 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.0 — 2026-01-21
+
+### 🎉 New features
+
+- Skip initializing git repo if inside another repo ([#42052](https://github.com/expo/expo/pull/42052) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Auto-add missing android/ios npm scripts when they're likely missing ([#41964](https://github.com/expo/expo/pull/41964) by [@kitten](https://github.com/kitten))
 
 ## 3.5.10 - 2025-12-04
 
