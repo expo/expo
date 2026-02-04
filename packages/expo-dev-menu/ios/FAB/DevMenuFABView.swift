@@ -299,7 +299,29 @@ struct DevMenuFABView: View {
         currentEdge = newPos.x < newSize.width / 2 ? .left : .right
         onFrameChange(hitTestFrame(edge: currentEdge))
       }
-      .onChange(of: isSnackSession) { _ in
+      .onChange(of: isSnackSession) { newValue in
+        // Reset position when session type changes
+        let newPos: CGPoint
+        if newValue {
+          // Transitioning TO lesson-like session: move to top-left
+          newPos = defaultPosition(bounds: geometry.size, safeArea: safeArea, forPanelSession: true)
+        } else if let storedPos = Self.loadStoredPosition() {
+          // Transitioning FROM lesson-like session: restore stored position
+          let margin = FABConstants.margin
+          let minX = margin / 2
+          let maxX = geometry.size.width - fabSize.width - margin / 2
+          let minY = margin + safeArea.top + FABConstants.verticalPadding
+          let maxY = geometry.size.height - fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
+          newPos = CGPoint(
+            x: storedPos.x.clamped(to: minX...maxX),
+            y: storedPos.y.clamped(to: minY...maxY)
+          )
+        } else {
+          // No stored position: use default (top-right for non-lessons)
+          newPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
+        }
+        position = newPos
+        currentEdge = newPos.x < geometry.size.width / 2 ? .left : .right
         onFrameChange(hitTestFrame(edge: currentEdge))
       }
       .onChange(of: isDragging) { _ in
