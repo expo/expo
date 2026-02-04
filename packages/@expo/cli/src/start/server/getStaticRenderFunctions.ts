@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { evalModule } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
-import requireString from 'require-from-string';
 
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
 import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
@@ -147,5 +147,5 @@ export function evalMetroNoHandling(projectRoot: string, src: string, filename: 
     debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
   }
 
-  return profile(requireString, 'eval-metro-bundle')(src, filename);
+  return profile(evalModule, 'eval-metro-bundle')(src, filename);
 }
