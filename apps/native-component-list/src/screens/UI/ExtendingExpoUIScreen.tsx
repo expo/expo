@@ -3,19 +3,19 @@ import { padding, cornerRadius, background } from '@expo/ui/swift-ui/modifiers';
 import { requireNativeModule } from 'expo';
 import { MyCustomView, customBorder } from 'test-expo-ui';
 
-let hasTextExpoUiModule = false;
+let hasTestExpoUiModule = false;
 try {
   requireNativeModule('TestExpoUi');
-  hasTextExpoUiModule = true;
+  hasTestExpoUiModule = true;
 } catch {
-  hasTextExpoUiModule = false;
+  hasTestExpoUiModule = false;
 }
 
 export default function ExtendingExpoUIScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack modifiers={[padding({ all: 16 })]}>
-        {hasTextExpoUiModule ? (
+        {hasTestExpoUiModule ? (
           <MyCustomView
             title="Hello from MyCustomView"
             modifiers={[
