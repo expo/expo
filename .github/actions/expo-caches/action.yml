@@ -89,11 +89,11 @@ runs:
         path: |
           node_modules
           apps/*/node_modules/
-          apps/*/__generated__/appentry.js
+          apps/*/__generated__/AppEntry.js
           packages/*/node_modules/*.
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
-        key: ${{ runner.os }}-workspace-modules-clean-v2-${{ hashFiles('yarn.lock') }}
+        key: ${{ runner.os }}-workspace-modules-clean-${{ hashFiles('yarn.lock') }}
     - name: Upload cache
       if: inputs.yarn-workspace != 'true'
       uses: actions/upload-artifact@v4
@@ -103,7 +103,7 @@ runs:
         path: |
           node_modules
           apps/*/node_modules/
-          apps/*/__generated__/appentry.js
+          apps/*/__generated__/AppEntry.js
           packages/*/node_modules/*.
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
