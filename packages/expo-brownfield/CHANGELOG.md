@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 55.0.6 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- [Android] strip com.facebook.react:hermes-android in [#42769](https://github.com/expo/expo/pull/42769) by [@pmleczek](https://github.com/pmleczek)
+- [iOS] Brownfield fixes & improvements for iOS in [#42782](https://github.com/expo/expo/pull/42782) by [@pmleczek](https://github.com/pmleczek)
+
+### 💡 Others
+
 - [test] Added E2E tests and improvements for CLI in [#42120](https://github.com/expo/expo/pull/42120) by [@pmleczek](https://github.com/pmleczek)
 
 ## 55.0.4 — 2026-01-27

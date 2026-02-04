@@ -8,6 +8,7 @@ import { requireNativeModule } from 'expo';
 import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
+import { contentShape } from './contentShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
@@ -1005,6 +1006,7 @@ export type BuiltInModifier =
   | ReturnType<typeof glassEffectId>
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
+  | ReturnType<typeof contentShape>
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
@@ -1071,6 +1073,7 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 
 export * from './animation/index';
 export * from './containerShape';
+export * from './contentShape';
 export * from './shapes/index';
 export * from './background';
 export type * from './types';

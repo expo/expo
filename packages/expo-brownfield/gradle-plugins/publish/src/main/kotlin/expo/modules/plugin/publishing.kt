@@ -103,8 +103,8 @@ internal fun createModuleRelatedTasks(project: Project, rnVersion: String?, herm
  * Create and register a task to remove react-native dependency from the module.json file for
  * specific publishing variant.
  *
- * com.facebook.react:react-native is deprecated and has to be stripped similarly to what React
- * Native Gradle plugin does.
+ * com.facebook.react:react-native and com.facebook.react:hermes-android are deprecated
+ * and have to be stripped similarly to what React Native Gradle plugin does.
  *
  * @param project The project to remove react-native dependency from.
  * @param variant The variant name.
@@ -124,6 +124,9 @@ internal fun createRemoveReactNativeDependencyModuleTask(project: Project, varia
         moduleJson?.dependencyLists()?.forEach { dependencies ->
           dependencies.removeAll {
             it["group"] == "com.facebook.react" && it["module"] == "react-native"
+          }
+          dependencies.removeAll {
+            it["group"] == "com.facebook.react" && it["module"] == "hermes-android"
           }
         }
 

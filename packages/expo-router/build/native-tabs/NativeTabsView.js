@@ -37,6 +37,7 @@ exports.NativeTabsView = NativeTabsView;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const react_native_screens_1 = require("react-native-screens");
 const experimental_1 = require("react-native-screens/experimental");
 const appearance_1 = require("./appearance");
@@ -120,11 +121,21 @@ function Screen(props) {
         ]}>
       {contentRenderer()}
     </react_native_1.View>);
-    const wrappedContent = process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (<experimental_1.SafeAreaView 
-    // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
-    collapsable={false} style={{ flex: 1 }} edges={{ bottom: true }}>
-        {content}
-      </experimental_1.SafeAreaView>) : (content);
+    const wrappedContent = (0, react_1.useMemo)(() => {
+        if (process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets) {
+            return (<experimental_1.SafeAreaView 
+            // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+            collapsable={false} style={{ flex: 1 }} edges={{ bottom: true }}>
+          {content}
+        </experimental_1.SafeAreaView>);
+        }
+        else if (process.env.EXPO_OS === 'ios') {
+            return <react_native_safe_area_context_1.SafeAreaProvider>{content}</react_native_safe_area_context_1.SafeAreaProvider>;
+        }
+        else {
+            return content;
+        }
+    }, [content, options.disableAutomaticContentInsets]);
     return (<react_native_screens_1.Tabs.Screen {...options} overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon, standardAppearance?.stacked?.normal?.tabBarItemIconColor)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon, standardAppearance?.stacked?.selected?.tabBarItemIconColor)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
       {wrappedContent}
     </react_native_screens_1.Tabs.Screen>);
