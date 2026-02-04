@@ -11,7 +11,7 @@ const MESSAGE: MessageType = {
   source: {
     platform: 'React Native',
   },
-  timestamps: [new Date().toISOString(), new Date().toISOString(), new Date().toISOString()],
+  timestamps: new Date().toISOString(),
   data: {
     message: 'Hello, world!',
     array: [1, 2, 3, 4, 5, true, false, { key: 'value' }],
