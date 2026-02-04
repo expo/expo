@@ -214,7 +214,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     if (Platform.OS === 'android') {
-      describe('Android bundle directory listing (issue #41367)', () => {
+      describe('Android bundle directory listing', () => {
         it('returns correct names for files in bundle directory', () => {
           const dir = new Directory(Paths.bundle);
           const items = dir.list();
