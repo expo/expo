@@ -19,6 +19,8 @@ jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
   };
 });
 
+const mockAssetBytes = new Uint8Array([1, 2, 3]);
+
 jest.mock('../ExpoAsset', () => {
   const ExpoAsset = jest.requireActual('../ExpoAsset');
   return {
@@ -26,6 +28,7 @@ jest.mock('../ExpoAsset', () => {
     downloadAsync: jest.fn(
       async () => 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png'
     ),
+    bytes: jest.fn(async () => mockAssetBytes),
   };
 });
 
@@ -34,6 +37,9 @@ jest.mock('../ExpoAsset.web', () => {
   return {
     ...ExpoAsset,
     downloadAsync: jest.fn(async () => 'https://example.com/icon.png'),
+    bytes: jest.fn(async () => {
+      throw new Error('Test');
+    }),
   };
 });
 
@@ -176,6 +182,350 @@ it(`downloads uncached assets`, async () => {
       default: 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png',
     })
   );
+});
+
+describe('Asset contents', () => {
+  describe('bytes', () => {
+    if (Platform.OS === 'android') {
+      describe('android', () => {
+        it('receives uint8array of asset', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          await expect(asset.bytes()).resolves.toEqual(mockAssetBytes);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+      });
+    }
+
+    if (Platform.OS === 'web') {
+      if (!globalThis.fetch) {
+        globalThis.fetch = async () => null as unknown as Response;
+      }
+
+      describe('web', () => {
+        beforeEach(() => {
+          jest.spyOn(globalThis, 'fetch');
+        });
+
+        afterEach(() => {
+          (globalThis.fetch as jest.Mock).mockRestore();
+        });
+
+        it('receives uint8array of asset', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: true,
+            status: 200,
+            statusText: '',
+            text: async () => null,
+            arrayBuffer: async () => mockAssetBytes.buffer,
+          });
+
+          await expect(asset.bytes()).resolves.toEqual(mockAssetBytes);
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+
+        it('throws server error during request of asset bytes', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: false,
+            status: 404,
+            statusText: 'Not Found',
+            text: async () => 'Data not found on server',
+            arrayBuffer: async () => null,
+          });
+
+          await expect(() => asset.bytes()).rejects.toThrow(
+            `File "${mockImageMetadata.uri}" not fetched: Not Found (404): Data not found on server`
+          );
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+
+        it('throws network error during request of asset bytes', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          (globalThis.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+
+          await expect(() => asset.bytes()).rejects.toThrow('Network error');
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+      });
+    }
+  });
+
+  describe('arrayBuffer', () => {
+    if (Platform.OS === 'android') {
+      describe('android', () => {
+        it('receives arrayBuffer of asset', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          await expect(asset.arrayBuffer()).resolves.toEqual(mockAssetBytes.buffer);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+      });
+    }
+
+    if (Platform.OS === 'web') {
+      if (!globalThis.fetch) {
+        globalThis.fetch = async () => null as unknown as Response;
+      }
+
+      describe('web', () => {
+        beforeEach(() => {
+          jest.spyOn(globalThis, 'fetch');
+        });
+
+        afterEach(() => {
+          (globalThis.fetch as jest.Mock).mockRestore();
+        });
+
+        it('receives arrayBuffer of asset', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: true,
+            status: 200,
+            statusText: '',
+            text: async () => null,
+            arrayBuffer: async () => mockAssetBytes.buffer,
+          });
+
+          await expect(asset.arrayBuffer()).resolves.toEqual(mockAssetBytes.buffer);
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+
+        it('throws server error during request of asset arrayBuffer', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: false,
+            status: 404,
+            statusText: 'Not Found',
+            text: async () => 'Data not found on server',
+            arrayBuffer: async () => null,
+          });
+
+          await expect(() => asset.arrayBuffer()).rejects.toThrow(
+            `File "${mockImageMetadata.uri}" not fetched: Not Found (404): Data not found on server`
+          );
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+
+        it('throws network error during request of asset arrayBuffer', async () => {
+          const { Asset } = require('../index');
+
+          const asset = Asset.fromMetadata(mockImageMetadata);
+
+          (globalThis.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+
+          await expect(() => asset.arrayBuffer()).rejects.toThrow('Network error');
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+
+          expect(asset.localUri).toBeNull();
+          expect(asset.downloading).toBe(false);
+          expect(asset.downloaded).toBe(false);
+        });
+      });
+    }
+  });
+
+  describe('content', () => {
+    if (Platform.OS === 'android') {
+      describe('android', () => {
+        it('receives content as uint8array of asset', async () => {
+          const { Asset } = require('../index');
+
+          await expect(Asset.content(mockImageMetadata)).resolves.toEqual(mockAssetBytes);
+        });
+      });
+    }
+
+    if (Platform.OS === 'web') {
+      if (!globalThis.fetch) {
+        globalThis.fetch = async () => null as unknown as Response;
+      }
+
+      describe('web', () => {
+        beforeEach(() => {
+          jest.spyOn(globalThis, 'fetch');
+        });
+
+        afterEach(() => {
+          (globalThis.fetch as jest.Mock).mockRestore();
+        });
+
+        it('receives content as uint8array of asset', async () => {
+          const { Asset } = require('../index');
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: true,
+            status: 200,
+            statusText: '',
+            text: async () => null,
+            arrayBuffer: async () => mockAssetBytes.buffer,
+          });
+
+          await expect(Asset.content(mockImageMetadata)).resolves.toEqual(mockAssetBytes);
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+        });
+
+        it('throws server error during request of asset bytes', async () => {
+          const { Asset } = require('../index');
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: false,
+            status: 404,
+            statusText: 'Not Found',
+            text: async () => 'Data not found on server',
+            arrayBuffer: async () => null,
+          });
+
+          await expect(() => Asset.content(mockImageMetadata)).rejects.toThrow(
+            `File "${mockImageMetadata.uri}" not fetched: Not Found (404): Data not found on server`
+          );
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+        });
+
+        it('throws network error during request of asset bytes', async () => {
+          const { Asset } = require('../index');
+
+          (globalThis.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+
+          await expect(() => Asset.content(mockImageMetadata)).rejects.toThrow('Network error');
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+        });
+      });
+    }
+  });
+
+  describe('contentArrayBuffer', () => {
+    if (Platform.OS === 'android') {
+      describe('android', () => {
+        it('receives content as ArrayBuffer of asset', async () => {
+          const { Asset } = require('../index');
+
+          await expect(Asset.contentArrayBuffer(mockImageMetadata)).resolves.toEqual(
+            mockAssetBytes.buffer
+          );
+        });
+      });
+    }
+
+    if (Platform.OS === 'web') {
+      if (!globalThis.fetch) {
+        globalThis.fetch = async () => null as unknown as Response;
+      }
+
+      describe('web', () => {
+        beforeEach(() => {
+          jest.spyOn(globalThis, 'fetch');
+        });
+
+        afterEach(() => {
+          (globalThis.fetch as jest.Mock).mockRestore();
+        });
+
+        it('receives content as ArrayBuffer of asset', async () => {
+          const { Asset } = require('../index');
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: true,
+            status: 200,
+            statusText: '',
+            text: async () => null,
+            arrayBuffer: async () => mockAssetBytes.buffer,
+          });
+
+          await expect(Asset.contentArrayBuffer(mockImageMetadata)).resolves.toEqual(
+            mockAssetBytes.buffer
+          );
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+        });
+
+        it('throws server error during request of asset ArrayBuffer', async () => {
+          const { Asset } = require('../index');
+
+          (globalThis.fetch as jest.Mock).mockResolvedValue({
+            ok: false,
+            status: 404,
+            statusText: 'Not Found',
+            text: async () => 'Data not found on server',
+            arrayBuffer: async () => null,
+          });
+
+          await expect(() => Asset.contentArrayBuffer(mockImageMetadata)).rejects.toThrow(
+            `File "${mockImageMetadata.uri}" not fetched: Not Found (404): Data not found on server`
+          );
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+        });
+
+        it('throws network error during request of asset ArrayBuffer', async () => {
+          const { Asset } = require('../index');
+
+          (globalThis.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+
+          await expect(() => Asset.contentArrayBuffer(mockImageMetadata)).rejects.toThrow(
+            'Network error'
+          );
+
+          expect(fetch).toHaveBeenCalledWith(mockImageMetadata.uri);
+        });
+      });
+    }
+  });
 });
 
 it(`uses the local file system's cache directory for downloads`, async () => {

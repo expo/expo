@@ -12,4 +12,10 @@ const AssetModule = requireNativeModule('ExpoAsset');
 export async function downloadAsync(url, md5Hash, type) {
     return AssetModule.downloadAsync(url, md5Hash, type);
 }
+/**
+ * Returns content of asset as `Uint8Array` from the given URL.
+ */
+export async function bytes(url) {
+    return AssetModule.bytes(url);
+}
 //# sourceMappingURL=ExpoAsset.js.map

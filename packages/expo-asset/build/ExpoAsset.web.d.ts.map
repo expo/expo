@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoAsset.web.d.ts","sourceRoot":"","sources":["../src/ExpoAsset.web.ts"],"names":[],"mappings":"AAAA,wBAAsB,aAAa,CACjC,GAAG,EAAE,MAAM,EACX,KAAK,EAAE,MAAM,GAAG,IAAI,EACpB,KAAK,EAAE,MAAM,GACZ,OAAO,CAAC,MAAM,CAAC,CAEjB"}
+{"version":3,"file":"ExpoAsset.web.d.ts","sourceRoot":"","sources":["../src/ExpoAsset.web.ts"],"names":[],"mappings":"AAAA,wBAAsB,aAAa,CACjC,GAAG,EAAE,MAAM,EACX,KAAK,EAAE,MAAM,GAAG,IAAI,EACpB,KAAK,EAAE,MAAM,GACZ,OAAO,CAAC,MAAM,CAAC,CAEjB;AAED,wBAAsB,KAAK,CAAC,GAAG,EAAE,MAAM,GAAG,OAAO,CAAC,UAAU,CAAC,WAAW,CAAC,CAAC,CAEzE"}
