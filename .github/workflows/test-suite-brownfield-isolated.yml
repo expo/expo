@@ -31,20 +31,21 @@ jobs:
         id: changes
         uses: ./.github/actions/detect-platform-change
         with:
-          # TODO(pmleczek): Run on all correct paths
           android-paths: >-
             "packages/expo-brownfield/android/**",
-            "apps/bare-expo/**/android/**"
+            "packages/expo-brownfield/gradle-plugins/**"
 
-          # TODO(pmleczek): Run on all correct paths
           ios-paths: >-
-            "packages/**/ios/**",
-            "apps/bare-expo/**/ios/**"
+            "packages/expo-brownfield/ios/**"
 
-          # TODO(pmleczek): Run on all correct paths
           common-paths: >-
             .github/workflows/test-suite-brownfield-isolated.yml,
-            "apps/brownfield-tester/expo-app/**"
+            "apps/brownfield-tester/expo-app/**",
+            "packages/expo-brownfield/plugin/**",
+            "packages/expo-brownfield/src/**",
+            "packages/expo-brownfield/e2e/maestro/**",
+            "packages/expo-brownfield/e2e/scripts/**"
+
   android-e2e:
     runs-on: ubuntu-24.04
     needs: detect-platform-for-e2e
@@ -99,7 +100,7 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            ./scripts/run-e2e-tests-android.sh
+            ./scripts/run-e2e-android.sh
           working-directory: packages/expo-brownfield/e2e
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
