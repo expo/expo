@@ -93,7 +93,6 @@ jobs:
           yarn-tools: 'true'
           bare-expo-pods: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
@@ -187,7 +186,6 @@ jobs:
         with:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
@@ -362,7 +360,6 @@ jobs:
         with:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
