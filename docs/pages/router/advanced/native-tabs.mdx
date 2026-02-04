@@ -976,15 +976,15 @@ export default function HomeScreen() {
 
 ### Custom web layout
 
-Native tabs render platform-specific tab bars on iOS and Android, but there is no standard system tab bar on web. On web, native tabs fall back to a basic implementation, loosely based on iPad design. You can use headless tabs from `expo-router/ui` to provide a custom web layout while keeping native tabs on mobile. There are two ways to set this up.
+Native tabs render platform-specific tab bars on Android and iOS, but there is no standard system tab bar on web. On web, native tabs fall back to a basic implementation, loosely based on iPad design. You can use headless tabs from `expo-router/ui` to provide a custom web layout while keeping native tabs on mobile. There are two ways to set this up.
 
 #### Platform-specific layout files
 
-Use a `_layout.web.tsx` file alongside your `_layout.tsx`. The web file completely replaces the layout on web, so each platform can have an entirely different layout.
+Use a **\_layout.web.tsx** file alongside your **\_layout.tsx**. The web file completely replaces the layout on web, so each platform can have an entirely different layout.
 
 <FileTree
   files={[
-    'app/_layout.tsx — native tabs for iOS and Android',
+    'app/_layout.tsx — native tabs for Android and iOS',
     'app/_layout.web.tsx — headless tabs for web',
   ]}
 />
@@ -1024,12 +1024,12 @@ const styles = StyleSheet.create({
 
 #### Shared component with platform extensions
 
-Extract the tab UI into a component with platform-specific extensions. A single `_layout.tsx` handles shared logic (providers, wrappers, analytics) and imports the tab component, which resolves to the correct platform file.
+Extract the tab UI into a component with platform-specific extensions. A single **\_layout.tsx** handles shared logic (providers, wrappers, analytics) and imports the tab component, which resolves to the correct platform file.
 
 <FileTree
   files={[
     'app/_layout.tsx — shared layout, imports AppTabs',
-    'components/app-tabs.tsx — native tabs for iOS and Android',
+    'components/app-tabs.tsx — native tabs for Android and iOS',
     'components/app-tabs.web.tsx — headless tabs for web',
   ]}
 />
