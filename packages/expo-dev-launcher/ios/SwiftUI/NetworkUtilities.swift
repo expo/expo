@@ -19,7 +19,7 @@ func buildHttpHost(endpoint: NWEndpoint) -> String? {
     case .ipv4(IPv4Address.loopback):
       "localhost"
     case .ipv4(let ip):
-      IPv4Address(ip.rawValue)!.debugDescription // drop interface suffix
+      IPv4Address(ip.rawValue)?.debugDescription // drop interface suffix
     case .ipv6(IPv6Address.loopback):
       "localhost"
     case .ipv6(let ip):
@@ -30,32 +30,61 @@ func buildHttpHost(endpoint: NWEndpoint) -> String? {
   return hostname.map { "http://\($0):\(remotePort)" }
 }
 
+private final class AtomicFlag: @unchecked Sendable {
+  private var _value = false
+  private let lock = NSLock()
+  
+  func testAndSet() -> Bool {
+    lock.lock()
+    defer { lock.unlock() }
+    if _value { return false }
+    _value = true
+    return true
+  }
+}
+
 func connectionStart(
   connection: NWConnection,
   queue: DispatchQueue,
-  timeout: TimeInterval = 2,
+  timeout: TimeInterval = 3
 ) async throws {
-  try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
-    connection.stateUpdateHandler = { state in
-      let handler = connection.stateUpdateHandler
-      connection.stateUpdateHandler = nil
-      switch state {
+  try await withTaskCancellationHandler {
+    try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+      let didResume = AtomicFlag()
+      
+      let timeoutWork = DispatchWorkItem { [weak connection] in
+        guard didResume.testAndSet() else { return }
+        connection?.stateUpdateHandler = nil
+        connection?.cancel()
+        cont.resume(throwing: ConnectionError.failedConnection)
+      }
+      queue.asyncAfter(deadline: .now() + timeout, execute: timeoutWork)
+      
+      connection.stateUpdateHandler = { [weak connection] state in
+        switch state {
         case .ready:
+          timeoutWork.cancel()
+          guard didResume.testAndSet() else { return }
+          connection?.stateUpdateHandler = nil
           cont.resume()
         case .failed(let error):
+          timeoutWork.cancel()
+          guard didResume.testAndSet() else { return }
+          connection?.stateUpdateHandler = nil
           cont.resume(throwing: error)
         case .cancelled:
+          timeoutWork.cancel()
+          guard didResume.testAndSet() else { return }
+          connection?.stateUpdateHandler = nil
           cont.resume(throwing: ConnectionError.failedConnection)
         default:
-          connection.stateUpdateHandler = handler
+          break
+        }
       }
+      connection.start(queue: queue)
     }
-
-    queue.asyncAfter(deadline: .now() + timeout) {
-      connection.cancel()
-    }
-
-    connection.start(queue: queue)
+  } onCancel: {
+    connection.cancel()
   }
 }
 
@@ -178,6 +207,27 @@ class NetworkUtilities {
   static func resolveBundlerEndpoint(
     endpoint: NWEndpoint,
     queue: DispatchQueue,
+    timeout: TimeInterval = 7
+  ) async throws -> String? {
+    return try await withThrowingTaskGroup(of: String?.self) { group in
+      group.addTask {
+        return try await performBundlerEndpointResolution(endpoint: endpoint, queue: queue)
+      }
+
+      group.addTask {
+        try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+        throw ConnectionError.failedConnection
+      }
+
+      let result = try await group.next()
+      group.cancelAll()
+      return result ?? nil
+    }
+  }
+
+  private static func performBundlerEndpointResolution(
+    endpoint: NWEndpoint,
+    queue: DispatchQueue
   ) async throws -> String? {
     let params = NWParameters.tcp
     params.includePeerToPeer = true
