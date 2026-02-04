@@ -196,7 +196,6 @@ class TestStorageProvider : DocumentsProvider() {
   }
 
   override fun isChildDocument(parentDocumentId: String, documentId: String): Boolean {
-    // This is crucial for tree URI validation
     if (parentDocumentId == ROOT_DOC_ID) {
       // Everything except root is a child of root
       return documentId != ROOT_DOC_ID
@@ -212,12 +211,11 @@ class TestStorageProvider : DocumentsProvider() {
     }
   }
 
-  // Helper methods to map between document IDs and actual files
   private fun getFileForDocId(id: String): File {
     return when (id) {
       ROOT_DOC_ID -> baseDir
       else -> {
-        // Document IDs are just relative paths from baseDir
+        // Document IDs are relative paths from baseDir
         File(baseDir, id)
       }
     }
