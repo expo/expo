@@ -29,7 +29,6 @@ val Uri.isAssetUri
     return scheme == "asset"
   }
 
-// TODO: Is this correct?
 fun Uri.isSAFUri(context: Context): Boolean =
   isContentUri && (
     DocumentsContract.isDocumentUri(context, this) || DocumentsContract.isTreeUri(this)

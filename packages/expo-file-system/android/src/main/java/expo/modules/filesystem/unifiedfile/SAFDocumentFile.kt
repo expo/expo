@@ -95,12 +95,6 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
     return SAFDocumentFile(context, child.uri)
   }
 
-  /**
-   * Internal property exposing the DocumentFile for use within the package
-   */
-  internal val document: DocumentFile?
-    get() = documentFile
-
   override fun walkTopDown(): Sequence<SAFDocumentFile> {
     return sequence {
       yield(this@SAFDocumentFile)
