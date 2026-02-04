@@ -86,15 +86,27 @@ runs:
       with:
         # See "workspaces" → "packages" in the root package.json for the source of truth of
         # which node_modules are affected by the root yarn.lock
-        include-hidden-files: true
         path: |
           node_modules
-          apps/*/node_modules
-          apps/*/__generated__/AppEntry.js
-          packages/*/node_modules
+          apps/*/node_modules/
+          apps/*/__generated__/appentry.js
+          packages/*/node_modules/*.
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
         key: ${{ runner.os }}-workspace-modules-clean-v2-${{ hashFiles('yarn.lock') }}
+    - name: Upload cache
+      if: inputs.yarn-workspace != 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: workspace-modules-cache
+        include-hidden-files: true
+        path: |
+          node_modules
+          apps/*/node_modules/
+          apps/*/__generated__/appentry.js
+          packages/*/node_modules/*.
+          packages/@expo/*/node_modules
+          react-native-lab/react-native/node_modules
     - name: Upload .yarn-integrity
       uses: actions/upload-artifact@v4
       with:
