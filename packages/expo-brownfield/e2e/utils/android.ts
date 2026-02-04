@@ -147,19 +147,21 @@ export const getPublishingLines = (
 
   let name, url, username, password;
   publishing.forEach((publication) => {
+    count[publication.type]++;
+
     switch (publication.type) {
       case 'localMaven':
         lines.push('localDefault {', 'type = "localMaven"');
         break;
       case 'localDirectory':
-        name = publication.name ?? `localDirectory${count['localDirectory'] + 1} {`;
+        name = publication.name ?? `localDirectory${count['localDirectory']} {`;
         url = path.isAbsolute(publication.path)
           ? publication.path
           : path.join(projectRoot, publication.path);
         lines.push(name, 'type = "localDirectory"', `url = "file://${url}"`);
         break;
       case 'remotePublic':
-        name = publication.name ?? `remotePublic${count['remotePublic'] + 1} {`;
+        name = publication.name ?? `remotePublic${count['remotePublic']} {`;
         url = publication.url;
         lines.push(name, 'type = "remotePublic"', `url = "${url}"`);
         if (publication.allowInsecure) {
@@ -167,7 +169,7 @@ export const getPublishingLines = (
         }
         break;
       case 'remotePrivate':
-        name = publication.name ?? `remotePrivate${count['remotePrivate'] + 1} {`;
+        name = publication.name ?? `remotePrivate${count['remotePrivate']} {`;
         url = typeof publication.url === 'object' ? env[publication.url.variable] : publication.url;
         username =
           typeof publication.username === 'object'

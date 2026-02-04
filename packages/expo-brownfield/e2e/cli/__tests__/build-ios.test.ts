@@ -102,7 +102,7 @@ describe('build:ios command', () => {
    */
   describe('with prebuild', () => {
     beforeAll(async () => {
-      TEMP_DIR_PREBUILD = await createTempProject('buildiospb', true);
+      TEMP_DIR_PREBUILD = await createTempProject('buildiospb', true, true);
     }, 600000);
 
     afterAll(async () => {

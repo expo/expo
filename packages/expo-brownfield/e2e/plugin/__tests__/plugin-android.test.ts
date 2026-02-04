@@ -217,7 +217,7 @@ describe('plugin for android', () => {
    * - Multiple repositories of the same type are properly handled
    *   by prefixing publication names with numbers
    */
-  it('should properly handle mulitple repos of the same type', async () => {
+  it('should properly handle multiple repos of the same type', async () => {
     const PUBLISHING = [
       {
         type: 'localMaven',
@@ -245,7 +245,7 @@ describe('plugin for android', () => {
    * Expected behavior:
    * - Multiple repositories of the same type with different names are properly handled
    */
-  it('should properly handle mulitple repos of the same type with different names', async () => {
+  it('should properly handle multiple repos of the same type with different names', async () => {
     const PUBLISHING = [
       {
         type: 'localMaven',

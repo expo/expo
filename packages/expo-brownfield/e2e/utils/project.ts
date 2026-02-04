@@ -12,22 +12,25 @@ const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
   ? path.resolve(process.env.EXPO_E2E_TEMP_DIR)
   : tempDir;
 
+export const projectName = (suffix: string) => PROJECT_NAME + suffix;
+
 /**
  * Create a temporary project for testing
  */
 export const createTempProject = async (
   suffix: string,
-  prebuild: boolean = false
+  prebuild: boolean = false,
+  install: boolean = false
 ): Promise<string> => {
-  const projectRoot = path.join(TEMP_DIR, PROJECT_NAME + suffix);
+  const projectRoot = path.join(TEMP_DIR, projectName(suffix));
   await removeProject(projectRoot);
 
   try {
-    await createProjectWithTemplate(TEMP_DIR, PROJECT_NAME + suffix);
+    await createProjectWithTemplate(TEMP_DIR, projectName(suffix));
     await installPackage(projectRoot);
     if (prebuild) {
       await addPlugin(projectRoot);
-      await prebuildProject(projectRoot);
+      await prebuildProject(projectRoot, undefined, install);
     }
   } catch (error) {
     console.error(error);
@@ -41,7 +44,7 @@ export const createTempProject = async (
  * Clean up the temporary project
  */
 export const cleanUpProject = async (suffix: string = ''): Promise<void> => {
-  const projectRoot = path.join(TEMP_DIR, PROJECT_NAME + suffix);
+  const projectRoot = path.join(TEMP_DIR, projectName(suffix));
   await removeProject(projectRoot);
 };
 
@@ -148,13 +151,19 @@ const installPackage = async (projectRoot: string) => {
 /**
  * Prebuild the project
  */
-export const prebuildProject = async (projectRoot: string, platform?: 'android' | 'ios') => {
-  let platformArgs = [];
-  if (platform) {
-    platformArgs = ['--platform', platform];
-  }
-
-  await executeExpoCLIAsync(projectRoot, ['prebuild', '--clean', ...platformArgs]);
+export const prebuildProject = async (
+  projectRoot: string,
+  platform?: 'android' | 'ios',
+  install: boolean = false
+) => {
+  const platformArgs = platform ? ['--platform', platform] : [];
+  const noInstallArgs = install ? [] : ['--no-install'];
+  await executeExpoCLIAsync(projectRoot, [
+    'prebuild',
+    '--clean',
+    ...noInstallArgs,
+    ...platformArgs,
+  ]);
 };
 
 /**

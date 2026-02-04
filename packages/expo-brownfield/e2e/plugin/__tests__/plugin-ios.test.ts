@@ -10,20 +10,21 @@ import {
   validateBundleIdentifier,
   validateBuildSettings,
 } from '../../utils/ios';
-import { createTempProject, cleanUpProject } from '../../utils/project';
+import { createTempProject, cleanUpProject, projectName } from '../../utils/project';
 
 let TEMP_DIR: string;
+const PROJECT_SUFFIX = 'pluginios';
 
 /**
  * Validates the plugin behavior for iOS
  */
 describe('plugin for ios', () => {
   beforeAll(async () => {
-    TEMP_DIR = await createTempProject('pluginios');
+    TEMP_DIR = await createTempProject(PROJECT_SUFFIX);
   }, 600000);
 
   afterAll(async () => {
-    await cleanUpProject('pluginios');
+    await cleanUpProject(PROJECT_SUFFIX);
   }, 600000);
 
   /**
@@ -70,7 +71,7 @@ describe('plugin for ios', () => {
    */
   it('should create a group for the brownfield framework', async () => {
     await setupPlugin(TEMP_DIR);
-    validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield');
+    validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
   });
 
   /**
@@ -92,7 +93,12 @@ describe('plugin for ios', () => {
       'ReactNativeViewController.swift',
       'testapppluginiosbrownfield.entitlements',
     ];
-    validateBrownfieldFiles(TEMP_DIR, 'testapppluginiosbrownfield', files);
+    validateBrownfieldFiles(
+      TEMP_DIR,
+      'testapppluginiosbrownfield',
+      files,
+      projectName(PROJECT_SUFFIX)
+    );
   });
 
   /**
@@ -112,7 +118,7 @@ describe('plugin for ios', () => {
    */
   it('should configure the build phases', async () => {
     await setupPlugin(TEMP_DIR);
-    validateBuildPhases(TEMP_DIR, 'testapppluginiosbrownfield');
+    validateBuildPhases(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
   });
 
   /**
@@ -121,7 +127,7 @@ describe('plugin for ios', () => {
    */
   it('should properly set up build settings', async () => {
     await setupPlugin(TEMP_DIR);
-    validateBuildSettings(TEMP_DIR, 'testapppluginiosbrownfield');
+    validateBuildSettings(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
   });
 
   /**
@@ -132,7 +138,7 @@ describe('plugin for ios', () => {
    */
   it('should properly infer values if no props are passed', async () => {
     await setupPlugin(TEMP_DIR);
-    validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield');
+    validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
     validateBundleIdentifier(
       TEMP_DIR,
       new RegExp('[a-zA-Z0-9-]+\\.testapppluginiosbrownfield'),
@@ -148,7 +154,7 @@ describe('plugin for ios', () => {
     const TARGET_NAME = 'MyBrownfield';
     await setupPlugin(TEMP_DIR, { targetName: TARGET_NAME });
 
-    validateBrownfieldGroup(TEMP_DIR, TARGET_NAME);
+    validateBrownfieldGroup(TEMP_DIR, TARGET_NAME, projectName(PROJECT_SUFFIX));
     validateBundleIdentifier(TEMP_DIR, new RegExp(`[a-zA-Z0-9-]+\\.${TARGET_NAME}`), TARGET_NAME);
   });
 

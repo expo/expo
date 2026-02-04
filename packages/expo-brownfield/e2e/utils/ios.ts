@@ -26,7 +26,7 @@ export const validateBuildProperties = (projectRoot: string) => {
 /**
  * Validates that the podfile is modified
  */
-export const validatePodfile = async (projectRoot: string, targetName: string) => {
+export const validatePodfile = (projectRoot: string, targetName: string) => {
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   expect(fs.existsSync(podfilePath)).toBe(true);
 
@@ -50,8 +50,12 @@ export const validatePodfileProperties = (
 /**
  * Validates that a group is created for the brownfield framework
  */
-export const validateBrownfieldGroup = (projectRoot: string, targetName: string) => {
-  const pbxproj = parsePbxproj(projectRoot);
+export const validateBrownfieldGroup = (
+  projectRoot: string,
+  targetName: string,
+  projectName: string
+) => {
+  const pbxproj = parsePbxproj(projectRoot, projectName);
 
   const groupPath = path.join(projectRoot, 'ios', targetName);
   expect(fs.existsSync(groupPath)).toBe(true);
@@ -71,7 +75,8 @@ export const validateBrownfieldGroup = (projectRoot: string, targetName: string)
 export const validateBrownfieldFiles = (
   projectRoot: string,
   targetName: string,
-  files: string[]
+  files: string[],
+  projectName: string
 ) => {
   const frameworkPath = path.join(projectRoot, 'ios', targetName);
   expect(fs.existsSync(frameworkPath)).toBe(true);
@@ -79,9 +84,9 @@ export const validateBrownfieldFiles = (
   const directoryFiles = fs.readdirSync(frameworkPath);
   expect(files.every((file) => directoryFiles.includes(file))).toBe(true);
 
-  const pbxproj = parsePbxproj(projectRoot);
+  const pbxproj = parsePbxproj(projectRoot, projectName);
 
-  const buildPhases = getBuildPhases(projectRoot, targetName);
+  const buildPhases = getBuildPhases(projectRoot, targetName, projectName);
   const sourcesBuildPhase = buildPhases.find(
     (phase) => phase in pbxproj.objects && pbxproj.objects[phase].isa === 'PBXSourcesBuildPhase'
   );
@@ -135,9 +140,13 @@ export const validateAppDelegatePatch = (
 /**
  * Validates that the build phases are properly set
  */
-export const validateBuildPhases = (projectRoot: string, targetName: string) => {
-  const pbxproj = parsePbxproj(projectRoot);
-  const buildPhases = getBuildPhases(projectRoot, targetName);
+export const validateBuildPhases = (
+  projectRoot: string,
+  targetName: string,
+  projectName: string
+) => {
+  const pbxproj = parsePbxproj(projectRoot, projectName);
+  const buildPhases = getBuildPhases(projectRoot, targetName, projectName);
 
   const bundlePhase = buildPhases.find(
     (phase) =>
@@ -152,8 +161,12 @@ export const validateBuildPhases = (projectRoot: string, targetName: string) => 
 /**
  * Validates that the build settings are properly set
  */
-export const validateBuildSettings = (projectRoot: string, targetName: string) => {
-  const pbxproj = parsePbxproj(projectRoot);
+export const validateBuildSettings = (
+  projectRoot: string,
+  targetName: string,
+  projectName: string
+) => {
+  const pbxproj = parsePbxproj(projectRoot, projectName);
 
   const frameworkTarget = Object.keys(pbxproj.objects).find(
     (key) =>
@@ -204,8 +217,8 @@ const validatePodfileProperty = (projectRoot: string, key: string, value: string
 /**
  * Gets the build phases for a given target name
  */
-const getBuildPhases = (projectRoot: string, targetName: string) => {
-  const pbxproj = parsePbxproj(projectRoot);
+const getBuildPhases = (projectRoot: string, targetName: string, projectName: string) => {
+  const pbxproj = parsePbxproj(projectRoot, projectName);
 
   const frameworkTarget = Object.keys(pbxproj.objects).find(
     (key) =>
@@ -244,13 +257,8 @@ export const validateBundleIdentifier = (
 /**
  * Parses the pbxproj file
  */
-export const parsePbxproj = (projectRoot: string) => {
-  const pbxprojPath = path.join(
-    projectRoot,
-    'ios',
-    `testapppluginios.xcodeproj`,
-    'project.pbxproj'
-  );
+export const parsePbxproj = (projectRoot: string, projectName: string) => {
+  const pbxprojPath = path.join(projectRoot, 'ios', `${projectName}.xcodeproj`, 'project.pbxproj');
   const pbxproj = parse(fs.readFileSync(pbxprojPath, 'utf8'));
   return pbxproj;
 };
