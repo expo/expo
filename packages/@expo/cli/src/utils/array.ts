@@ -63,3 +63,26 @@ export function groupBy<T, K extends keyof any>(list: T[], getKey: (item: T) => 
     {} as Record<K, T[]>
   );
 }
+
+/** Returns a set of duplicated values in an array */
+export function setOfDuplicatedValues<T extends object>(
+  array: T[],
+  key: (item: T) => string
+): Set<string> {
+  const valueCounts = new Map<string, number>();
+
+  array.forEach((item) => {
+    const value = key(item);
+
+    valueCounts.set(value, (valueCounts.get(value) || 0) + 1);
+  });
+
+  const duplicates = new Set<string>();
+  valueCounts.forEach((count, value) => {
+    if (count > 1) {
+      duplicates.add(value);
+    }
+  });
+
+  return duplicates;
+}

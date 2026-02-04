@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { OSType } from '../../../start/platforms/ios/simctl';
 import * as SimControl from '../../../start/platforms/ios/simctl';
+import { setOfDuplicatedValues } from '../../../utils/array';
 import prompt from '../../../utils/prompts';
 import { ConnectedDevice } from '../appleDevice/AppleDevice';
 
@@ -22,7 +23,10 @@ function isSimControlDevice(item: AnyDevice): item is SimControl.Device {
 }
 
 /** Format a device for the prompt list. Exposed for testing. */
-export function formatDeviceChoice(item: AnyDevice): { title: string; value: string } {
+export function formatDeviceChoice(
+  item: AnyDevice,
+  isDeviceNameDuplicated: boolean
+): { title: string; value: string } {
   const isConnected = isConnectedDevice(item) && item.deviceType === 'device';
   const isActive = isSimControlDevice(item) && item.state === 'Booted';
   const symbol =
@@ -34,10 +38,11 @@ export function formatDeviceChoice(item: AnyDevice): { title: string; value: str
           : '🔌 '
         : '';
   const format = isActive ? chalk.bold : (text: string) => text;
+  const deviceName = format(
+    `${item.name}${isDeviceNameDuplicated && isConnected ? ` - ${item.modelName}` : ''}`
+  );
   return {
-    title: `${symbol}${format(item.name)}${
-      item.osVersion ? chalk.dim(` (${item.osVersion})`) : ''
-    }`,
+    title: `${symbol}${deviceName}${item.osVersion ? chalk.dim(` (${item.osVersion})`) : ''}`,
     value: item.udid,
   };
 }
@@ -50,7 +55,10 @@ export async function promptDeviceAsync<T extends AnyDevice>(devices: T[]): Prom
     name: 'value',
     limit: 11,
     message: 'Select a device',
-    choices: devices.map((item) => formatDeviceChoice(item)),
+    choices: () => {
+      const duplicatedDeviceNames = setOfDuplicatedValues(devices, (item) => item.name);
+      return devices.map((item) => formatDeviceChoice(item, duplicatedDeviceNames.has(item.name)));
+    },
     suggest: (input: any, choices: any) => {
       const regex = new RegExp(input, 'i');
       return choices.filter((choice: any) => regex.test(choice.title));

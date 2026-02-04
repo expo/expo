@@ -1221,6 +1221,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Reduce export code paths. ([#29218](https://github.com/expo/expo/pull/29218) by [@EvanBacon](https://github.com/EvanBacon))
+- Display the iOS device model for connected devices. ([#29227](https://github.com/expo/expo/pull/29227) by [@michalzuk](https://github.com/michalzuk))
 - Drop outdated React Native resolver patch. ([#29214](https://github.com/expo/expo/pull/29214) by [@EvanBacon](https://github.com/EvanBacon))
 - Use Metro instance directly for server rendering. ([#28552](https://github.com/expo/expo/pull/28552) by [@EvanBacon](https://github.com/EvanBacon))
 
