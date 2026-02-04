@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `useRouteInfo()` instead of `useRoute()` to construct loader lookup key ([#42874](https://github.com/expo/expo/pull/42874) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 55.0.0-preview.6 — 2026-02-03

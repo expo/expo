@@ -742,7 +742,7 @@ describe(useLoaderData, () => {
   it.each([
     { route: 'index', initialUrl: '/', expectedPath: '/' },
     { route: 'users/index', initialUrl: '/users', expectedPath: '/users' },
-    { route: '(group)/index', initialUrl: '/', expectedPath: '/(group)' },
+    { route: '(group)/index', initialUrl: '/', expectedPath: '/' },
     { route: 'users/[id]', initialUrl: '/users/123', expectedPath: '/users/123' },
   ])('resolves $route to $expectedPath', ({ route, initialUrl, expectedPath }) => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
@@ -750,6 +750,30 @@ describe(useLoaderData, () => {
     };
 
     const { result } = renderHook(() => useLoaderData(), [route], { initialUrl });
+
+    expect(result.current).toEqual({ correct: true });
+  });
+
+  it('resolves nested route under `_layout` to full pathname', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/nested': { correct: true },
+    };
+
+    const { result } = renderHook(() => useLoaderData(), ['nested/_layout', 'nested/index'], {
+      initialUrl: '/nested',
+    });
+
+    expect(result.current).toEqual({ correct: true });
+  });
+
+  it('includes search params in the lookup key', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/request?foo=bar': { correct: true },
+    };
+
+    const { result } = renderHook(() => useLoaderData(), ['request'], {
+      initialUrl: '/request?foo=bar',
+    });
 
     expect(result.current).toEqual({ correct: true });
   });
