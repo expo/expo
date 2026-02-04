@@ -86,7 +86,14 @@ public final class GlassView: ExpoView {
   }
 
   func setGlassStyle(_ config: GlassEffectStyleConfig) {
-    let newStyle = config.style
+    applyGlassStyle(config.style, animate: config.animate, animationDuration: config.animationDuration)
+  }
+
+  func setGlassStyle(_ style: GlassStyle) {
+    applyGlassStyle(style)
+  }
+
+  private func applyGlassStyle(_ newStyle: GlassStyle, animate: Bool = false, animationDuration: Double? = nil) {
     if glassStyle != newStyle {
       glassStyle = newStyle
       guard isGlassEffectAvailable() else {
@@ -108,8 +115,8 @@ public final class GlassView: ExpoView {
           }
         }
 
-        if config.animate {
-          if let duration = config.animationDuration {
+        if animate {
+          if let duration = animationDuration {
             UIView.animate(withDuration: duration, animations: applyEffect)
           } else {
             UIView.animate(animations: applyEffect)

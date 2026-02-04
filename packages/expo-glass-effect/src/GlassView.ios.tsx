@@ -4,24 +4,12 @@
 
 import { requireNativeViewManager } from 'expo-modules-core';
 
-import { GlassViewProps, GlassEffectStyleConfig } from './GlassView.types';
+import { GlassViewProps } from './GlassView.types';
 
-const NativeGlassView = requireNativeViewManager<
-  Omit<GlassViewProps, 'glassEffectStyle'> & { glassEffectStyle: GlassEffectStyleConfig }
->('ExpoGlassEffect', 'GlassView');
+const NativeGlassView = requireNativeViewManager<GlassViewProps>('ExpoGlassEffect', 'GlassView');
 
-function normalizeGlassEffectStyle(
-  style: GlassViewProps['glassEffectStyle']
-): GlassEffectStyleConfig {
-  if (typeof style === 'string') {
-    return { style, animate: false };
-  }
-  return style ?? { style: 'regular', animate: false };
-}
-
-const GlassView = ({ glassEffectStyle, ...props }: GlassViewProps) => {
-  const normalizedStyle = normalizeGlassEffectStyle(glassEffectStyle);
-  return <NativeGlassView glassEffectStyle={normalizedStyle} {...props} />;
+const GlassView = (props: GlassViewProps) => {
+  return <NativeGlassView {...props} />;
 };
 
 export default GlassView;

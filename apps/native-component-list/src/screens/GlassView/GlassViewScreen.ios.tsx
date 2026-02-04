@@ -14,6 +14,8 @@ import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'rea
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
+import GlassOpacityAnimationExample from './GlassOpacityAnimationExample.ios';
+
 // Static color options for tinting
 const colorOptions = [
   { name: 'None', value: undefined },
@@ -227,6 +229,7 @@ export default function GlassViewScreen() {
           <Text style={styles.checkboxLabel}>Animate Transitions</Text>
         </TouchableOpacity>
       </View>
+      <GlassOpacityAnimationExample selectedStyle={selectedStyle} />
     </ScrollView>
   );
 }
