@@ -104,8 +104,16 @@ internal fun getManifestUrl(reactHost: ReactHost): String? {
 
     val url = URL(sourceUrl)
     if (url.port == -1) {
-      Log.e("DevMenuSupport(brownfield)", "No port found in source URL")
-      return null
+      Log.w("DevMenuSupport(brownfield)", "Port for the URL is not specified")
+
+      val defaultPort = url.defaultPort
+      if (defaultPort == -1) {
+        Log.w("DevMenuSupport(brownfield)", "Default port for protocol ${url.protocol} is not specified")
+        return null
+      }
+
+      Log.w("DevMenuSupport(brownfield)", "Fetching from the default port for protocol ${url.protocol}: ${defaultPort}")
+      return "${url.protocol}://${url.host}:${url.defaultPort}"
     }
 
     return "${url.protocol}://${url.host}:${url.port}"
