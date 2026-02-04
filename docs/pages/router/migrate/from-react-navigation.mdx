@@ -70,7 +70,35 @@ Expo Router **does not** add `react-native-gesture-handler` (as of v3), so you'l
 
 ### Copy screens to the app directory
 
-Create an **app** directory in a root **src** directory.
+Create an **app** directory inside a root **src** directory. Expo Router automatically detects the **src/app** directory as the root of your routes.
+
+Ensure your **tsconfig.json** has the `@` path alias configured to point to `src`:
+
+```json tsconfig.json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+}
+```
+
+Also ensure your **app.json** has the `expo-router` plugin configured:
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */
+    /* @end */
+    "plugins": ["expo-router"]
+  }
+}
+```
 
 Layout the structure of your app by creating files according to the [application of Expo Router rules](/router/basics/core-concepts/#the-rules-of-expo-router-applied). Kebab-case and lowercase letters are considered best practice for route filenames.
 
