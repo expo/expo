@@ -54,7 +54,7 @@ export class DevServerManagerActions {
 
         let qrMessage = '';
         if (!options.devClient) {
-          qrMessage = `Scan the QR code to open in ${chalk`{bold Expo Go}`}.`;
+          qrMessage = `Scan the QR code above to open in ${chalk`{bold Expo Go}`}.`;
         } else {
           qrMessage = chalk`Scan the QR code above to open in a {bold development build}.`;
           qrMessage += ` (${learnMore('https://expo.fyi/start')})`;
