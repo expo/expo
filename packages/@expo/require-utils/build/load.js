@@ -173,9 +173,8 @@ async function loadModule(filename) {
   try {
     return await requireOrImport(filename);
   } catch (error) {
-    if (error.code === 'ERR_UNKNOWN_FILE_EXTENSION' && isTypescriptFilename(filename)) {
-      const code = await _nodeFs().default.promises.readFile(filename, 'utf8');
-      return evalModule(code, filename);
+    if (error.code === 'ERR_UNKNOWN_FILE_EXTENSION' || error.code === 'MODULE_NOT_FOUND') {
+      return loadModuleSync(filename);
     } else {
       throw error;
     }

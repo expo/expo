@@ -158,9 +158,7 @@ async function requireOrImport(filename: string) {
     return require(filename);
   } catch {
     return await import(
-      path.isAbsolute(filename)
-        ? url.pathToFileURL(filename).toString()
-        : filename
+      path.isAbsolute(filename) ? url.pathToFileURL(filename).toString() : filename
     );
   }
 }
@@ -169,9 +167,8 @@ async function loadModule(filename: string) {
   try {
     return await requireOrImport(filename);
   } catch (error: any) {
-    if (error.code === 'ERR_UNKNOWN_FILE_EXTENSION' && isTypescriptFilename(filename)) {
-      const code = await fs.promises.readFile(filename, 'utf8');
-      return evalModule(code, filename);
+    if (error.code === 'ERR_UNKNOWN_FILE_EXTENSION' || error.code === 'MODULE_NOT_FOUND') {
+      return loadModuleSync(filename);
     } else {
       throw error;
     }
