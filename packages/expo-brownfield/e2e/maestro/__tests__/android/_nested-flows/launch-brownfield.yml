@@ -1,0 +1,14 @@
+appId: host.exp.exponent.brownfield.test.android
+name: Launch and verify the brownfield app
+---
+- launchApp
+- assertVisible:
+    id: openReactNativeButton
+
+- tapOn:
+    id: openReactNativeButton
+- assertVisible: Expo + Brownfield = 🖤
+- assertVisible:
+    id: home-tab
+- assertVisible:
+    id: apis-tab

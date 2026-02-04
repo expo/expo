@@ -1,28 +1,12 @@
-# Navigation API Flow
-#
-# Verifies that:
-# - `popToNative()` works (regardless of native back button state)
-# - `setNativeBackEnabled()` works
 appId: host.exp.exponent.brownfield.test.android
 ---
-# Launch and verify the native app
-- launchApp
-- assertVisible:
-    id: openReactNativeButton
-# Launch and verify the brownfield app
-- tapOn:
-    id: openReactNativeButton
-- assertVisible: Expo + Brownfield = 🖤
-- assertVisible:
-    id: home-tab
-- assertVisible:
-    id: apis-tab
-# Navigate to the Navigation API screen
+- runFlow: ./_nested-flows/launch-brownfield.yml
+
 - tapOn:
     id: apis-tab
 - tapOn:
     id: apis-navigation
-# Ensure the screen is rendered correctly
+
 - assertVisible: Navigation
 - assertVisible:
     id: navigation-pop-to-native
@@ -30,19 +14,18 @@ appId: host.exp.exponent.brownfield.test.android
     id: navigation-enable-native-back
 - assertVisible:
     id: navigation-disable-native-back
-# Verify `popToNative()` with default back handling
+
 - tapOn:
     id: navigation-pop-to-native
 - assertVisible:
     id: openReactNativeButton
-# Verify `setNativeBackEnabled()`
-# With default back handling user should return to the native app
+
 - tapOn:
     id: openReactNativeButton
 - back
 - assertVisible:
     id: openReactNativeButton
-# With disabled should return within RN app
+
 - tapOn:
     id: openReactNativeButton
 - tapOn:
@@ -52,14 +35,14 @@ appId: host.exp.exponent.brownfield.test.android
 - assertVisible: Bi-directional communication API
 - assertVisible: Navigation
 - assertVisible: Navigation API
-# With disabled `popToNative()` should still return to native app
+
 - tapOn:
     id: apis-navigation
 - tapOn:
     id: navigation-pop-to-native
 - assertVisible:
     id: openReactNativeButton
-# When re-enabled it should return to native app
+
 - tapOn:
     id: openReactNativeButton
 - tapOn:
