@@ -75,6 +75,21 @@ function sortPackagesByDependencies(packages: SPMPackageSource[]): SPMPackageSou
     packageMap.set(pkg.packageName, pkg);
   }
 
+  // Build a map of product name -> package name
+  // This is needed because external packages reference each other by product name
+  // (e.g., "RNWorklets") rather than package name (e.g., "react-native-worklets")
+  const productToPackage = new Map<string, string>();
+  for (const pkg of packages) {
+    try {
+      const spmConfig = pkg.getSwiftPMConfiguration();
+      for (const product of spmConfig.products) {
+        productToPackage.set(product.name, pkg.packageName);
+      }
+    } catch {
+      // If we can't read the config, skip
+    }
+  }
+
   // Build dependency graph: package name -> set of package names it depends on
   const dependsOn = new Map<string, Set<string>>();
 
@@ -85,8 +100,16 @@ function sortPackagesByDependencies(packages: SPMPackageSource[]): SPMPackageSou
       for (const product of spmConfig.products) {
         if (product.externalDependencies) {
           for (const dep of product.externalDependencies) {
-            // Dependencies can be "package-name" or "package-name/ProductName"
-            const packageName = dep.includes('/') ? dep.split('/')[0] : dep;
+            // Dependencies can be "package-name" or "package-name/ProductName" or just "ProductName"
+            let packageName: string;
+            if (dep.includes('/')) {
+              // Format: "package-name/ProductName" - use the package name part
+              packageName = dep.split('/')[0];
+            } else {
+              // Could be a bare product name (e.g., "RNWorklets") or a package name
+              // Try to resolve as product name first, fallback to literal
+              packageName = productToPackage.get(dep) ?? dep;
+            }
             // Only track dependencies that are in our build set
             if (packageMap.has(packageName)) {
               deps.add(packageName);
@@ -166,7 +189,7 @@ function sortPackagesByDependencies(packages: SPMPackageSource[]): SPMPackageSou
   const originalOrder = packages.map((p) => p.packageName).join(', ');
   const sortedOrder = sorted.map((p) => p.packageName).join(', ');
   if (originalOrder !== sortedOrder) {
-    logger.info(`📋 Build order (sorted by dependencies): ${chalk.cyan(sortedOrder)}`);
+    logger.info(`📋 Build order (sorted by dependencies):\n${chalk.cyan(sortedOrder)}`);
   }
 
   return sorted;
@@ -216,7 +239,7 @@ async function main(packageNames: string[], options: ActionOptions) {
     const externalPackages = packages.filter((p) => isExternalPackage(p));
     if (externalPackages.length > 0) {
       logger.info(
-        `📦 External packages to build: ${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
+        `📦 External packages to build:\n${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
       );
     }
 
