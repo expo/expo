@@ -38,7 +38,15 @@ import EXDevMenu
 
     // Determine status text based on what we're opening
     let isLesson = (snackParams?["isLesson"] as? Bool) == true
-    let statusText = isLesson ? "Opening lesson..." : "Opening project..."
+    let isPlayground = (snackParams?["isPlayground"] as? Bool) == true
+    let statusText: String
+    if isLesson {
+      statusText = "Opening lesson..."
+    } else if isPlayground {
+      statusText = "Setting up a new playground..."
+    } else {
+      statusText = "Opening project..."
+    }
 
     // Show loading overlay immediately
     EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: statusText)
