@@ -59,6 +59,11 @@ export async function processPage(filePath, href) {
   const title = attributes.title || '';
   const description = attributes.description || '';
   const packageName = attributes.packageName || '';
+  const platforms = attributes.platforms || [];
+  const sourceCodeUrl = attributes.sourceCodeUrl || '';
+  const isAlpha = attributes.isAlpha || false;
+  const isBeta = attributes.isBeta || false;
+  const isDeprecated = attributes.isDeprecated || false;
 
   if (!title && !body) {
     return null;
@@ -233,6 +238,62 @@ export async function processPage(filePath, href) {
   if (description) {
     parts.push(`_${description}_`);
   }
+
+  // Add SDK metadata for pages with packageName
+  if (packageName) {
+    const metadataLines = [];
+
+    // Platforms
+    if (platforms.length > 0) {
+      const platformLabels = platforms
+        .map(p => {
+          if (p === 'android') return 'Android';
+          if (p === 'ios') return 'iOS';
+          if (p === 'web') return 'Web';
+          if (p === 'expo-go') return 'Expo Go';
+          if (p === 'tvos') return 'tvOS';
+          return p;
+        })
+        .filter(p => p !== 'Expo Go');
+      const expoGo = platforms.includes('expo-go');
+
+      if (platformLabels.length > 0) {
+        metadataLines.push(`**Platforms:** ${platformLabels.join(', ')}`);
+      }
+      if (expoGo) {
+        metadataLines.push('**Included in Expo Go**');
+      }
+    }
+
+    // Status
+    if (isAlpha) {
+      metadataLines.push('**Status:** Alpha');
+    } else if (isBeta) {
+      metadataLines.push('**Status:** Beta');
+    } else if (isDeprecated) {
+      metadataLines.push('**Status:** Deprecated');
+    }
+
+    // Links
+    const links = [];
+    if (sourceCodeUrl) {
+      links.push(`[GitHub](${sourceCodeUrl})`);
+      // Construct changelog URL from sourceCodeUrl
+      const changelogUrl = sourceCodeUrl.replace(/\/tree\/[^/]+\//, '/blob/main/') + '/CHANGELOG.md';
+      links.push(`[Changelog](${changelogUrl})`);
+    }
+    if (packageName) {
+      links.push(`[npm](https://www.npmjs.com/package/${packageName})`);
+    }
+    if (links.length > 0) {
+      metadataLines.push(`**Links:** ${links.join(' | ')}`);
+    }
+
+    if (metadataLines.length > 0) {
+      parts.push(metadataLines.join('\n'));
+    }
+  }
+
   if (content) {
     parts.push(content);
   }

@@ -74,7 +74,7 @@ export function replaceInstallSections(content, packageName) {
     if (!cmd) {
       return '';
     }
-    return `\n\`\`\`bash\n$ npx expo install ${cmd}\n\`\`\`\n`;
+    return `\n\`\`\`bash\n$ npx expo install ${cmd}\n\`\`\`\n\nIf you are installing this in an existing React Native app, make sure to [install \`expo\`](https://docs.expo.dev/bare/installing-expo-modules) in your project.\n`;
   });
 }
 

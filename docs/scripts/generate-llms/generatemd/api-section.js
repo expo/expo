@@ -250,85 +250,94 @@ function renderMethodSignature(methodName, sig) {
 
 function renderApiChildren(children) {
   const lines = [];
-  for (const entry of children) {
-    if (!entry?.name || entry.name === 'default') {
-      continue;
-    }
-    const kind = entry.kind;
-    const description = getCommentText(entry.comment);
 
-    // Functions/hooks (64)
-    if (kind === 64) {
+  // Group children by kind
+  const functions = children.filter(c => c.kind === 64 && c.name && c.name !== 'default');
+  const classes = children.filter(c => c.kind === 128 && c.name && c.name !== 'default');
+  const enums = children.filter(c => c.kind === 8 && c.name && c.name !== 'default');
+  const interfaces = children.filter(c => c.kind === 256 && c.name && c.name !== 'default');
+  const types = children.filter(
+    c => (c.kind === 2097152 || c.kind === 4194304) && c.name && c.name !== 'default'
+  );
+  const constants = children.filter(c => c.kind === 32 && c.name && c.name !== 'default');
+
+  // Render Methods/Functions first
+  if (functions.length > 0) {
+    lines.push('### Methods');
+    for (const entry of functions) {
       const sigs = entry.signatures || [];
       for (const sig of sigs) {
         lines.push(renderMethodSignature(entry.name, sig));
       }
-      continue;
+    }
+  }
+
+  // Render Classes
+  for (const entry of classes) {
+    const description = getCommentText(entry.comment);
+    lines.push(`### ${entry.name} (*Class*)`);
+    if (description) {
+      lines.push(description);
     }
 
-    // Classes (128)
-    if (kind === 128) {
-      lines.push(`### ${entry.name} (*Class*)`);
-      if (description) {
-        lines.push(description);
+    const classChildren = entry.children || [];
+    const properties = classChildren.filter(c => c.kind === 1024);
+    const methods = classChildren.filter(c => c.kind === 2048);
+
+    if (properties.length > 0) {
+      lines.push(`#### ${entry.name} Properties`);
+      for (const prop of properties) {
+        lines.push(renderProperty(prop));
       }
+    }
 
-      const classChildren = entry.children || [];
-      const properties = classChildren.filter(c => c.kind === 1024);
-      const methods = classChildren.filter(c => c.kind === 2048);
-
-      if (properties.length > 0) {
-        lines.push(`#### ${entry.name} Properties`);
-        for (const prop of properties) {
-          lines.push(renderProperty(prop));
+    if (methods.length > 0) {
+      lines.push(`#### ${entry.name} Methods`);
+      for (const method of methods) {
+        const sigs = method.signatures || [];
+        for (const sig of sigs) {
+          lines.push(renderMethodSignature(method.name, { ...sig, flags: method.flags }));
         }
       }
-
-      if (methods.length > 0) {
-        lines.push(`#### ${entry.name} Methods`);
-        for (const method of methods) {
-          const sigs = method.signatures || [];
-          for (const sig of sigs) {
-            lines.push(renderMethodSignature(method.name, { ...sig, flags: method.flags }));
-          }
-        }
-      }
-      continue;
     }
+  }
 
-    // Enums (8)
-    if (kind === 8) {
-      lines.push(`### ${entry.name} (*Enum*)`);
-      if (description) {
-        lines.push(description);
-      }
-      const members = entry.children || [];
-      for (const m of members) {
-        const val = m.defaultValue ? ` = \`${m.defaultValue}\`` : '';
-        const mDesc = getCommentText(m.comment);
-        lines.push(`- **\`${m.name}\`**${val}${mDesc ? ` — ${mDesc}` : ''}`);
-      }
-      continue;
+  // Render Enums
+  for (const entry of enums) {
+    const description = getCommentText(entry.comment);
+    lines.push(`### ${entry.name} (*Enum*)`);
+    if (description) {
+      lines.push(description);
     }
-
-    // Interfaces (256)
-    if (kind === 256) {
-      lines.push(`### ${entry.name} (*Interface*)`);
-      if (description) {
-        lines.push(description);
-      }
-      const props = (entry.children || []).filter(c => c.kind === 1024);
-      if (props.length > 0) {
-        for (const prop of props) {
-          lines.push(renderProperty(prop));
-        }
-      }
-      continue;
+    const members = entry.children || [];
+    for (const m of members) {
+      const val = m.defaultValue ? ` = \`${m.defaultValue}\`` : '';
+      const mDesc = getCommentText(m.comment);
+      lines.push(`- **\`${m.name}\`**${val}${mDesc ? ` — ${mDesc}` : ''}`);
     }
+  }
 
-    // Type aliases (2097152 / 4194304)
-    if (kind === 2097152 || kind === 4194304) {
-      lines.push(`### ${entry.name} (*Type*)`);
+  // Render Interfaces
+  for (const entry of interfaces) {
+    const description = getCommentText(entry.comment);
+    lines.push(`### ${entry.name} (*Interface*)`);
+    if (description) {
+      lines.push(description);
+    }
+    const props = (entry.children || []).filter(c => c.kind === 1024);
+    if (props.length > 0) {
+      for (const prop of props) {
+        lines.push(renderProperty(prop));
+      }
+    }
+  }
+
+  // Render Types
+  if (types.length > 0) {
+    lines.push('### Types');
+    for (const entry of types) {
+      const description = getCommentText(entry.comment);
+      lines.push(`#### ${entry.name}`);
       if (description) {
         lines.push(description);
       }
@@ -336,14 +345,20 @@ function renderApiChildren(children) {
       if (typeStr && typeStr !== 'object') {
         lines.push(`Type: \`${typeStr}\``);
       }
+      // If the entry has direct children (properties), render them
+      if (entry.children?.length) {
+        for (const prop of entry.children) {
+          lines.push(renderProperty(prop));
+        }
+      }
       // If the type is a reflection with children (object type), render its properties
-      if (entry.type?.type === 'reflection' && entry.type.declaration?.children?.length) {
+      else if (entry.type?.type === 'reflection' && entry.type.declaration?.children?.length) {
         for (const prop of entry.type.declaration.children) {
           lines.push(renderProperty(prop));
         }
       }
       // If it's an intersection with a reflection, render the reflection's properties
-      if (entry.type?.type === 'intersection') {
+      else if (entry.type?.type === 'intersection') {
         for (const t of entry.type.types || []) {
           if (t.type === 'reflection' && t.declaration?.children?.length) {
             for (const prop of t.declaration.children) {
@@ -352,18 +367,18 @@ function renderApiChildren(children) {
           }
         }
       }
-      continue;
-    }
-
-    // Variables/constants (32)
-    if (kind === 32) {
-      const valStr = entry.defaultValue ? ` = \`${entry.defaultValue}\`` : '';
-      lines.push(`### ${entry.name} (*Constant*)${valStr}`);
-      if (description) {
-        lines.push(description);
-      }
-      continue;
     }
   }
+
+  // Render Constants
+  for (const entry of constants) {
+    const description = getCommentText(entry.comment);
+    const valStr = entry.defaultValue ? ` = \`${entry.defaultValue}\`` : '';
+    lines.push(`### ${entry.name} (*Constant*)${valStr}`);
+    if (description) {
+      lines.push(description);
+    }
+  }
+
   return lines.join('\n\n');
 }
