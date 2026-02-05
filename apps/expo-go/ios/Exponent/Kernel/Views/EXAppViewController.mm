@@ -390,8 +390,6 @@ NS_ASSUME_NONNULL_BEGIN
   [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
-    // Hide the loading overlay now that splash screen is ready
-    [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
   }
   [self _rebuildHost];
 }
@@ -405,6 +403,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
+  // Hide the loading overlay now that loading is complete
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+  }
+
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
   BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
