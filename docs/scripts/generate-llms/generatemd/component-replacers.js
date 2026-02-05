@@ -275,6 +275,19 @@ export function replaceTerminalObjectCmd(content) {
   });
 }
 
+export function replaceTerminalArrayCmd(content) {
+  // Handle Terminal components with array syntax: cmd={['command1', 'command2']}
+  return content.replace(/<Terminal\s[^>]*cmd={\[([^\]]*)]}[^>]*\/>/gs, (_m, arr) => {
+    const commands = Array.from(arr.matchAll(/["']([^"']*)["']/g))
+      .map(m => m[1].trim())
+      .filter(Boolean);
+    if (commands.length === 0) {
+      return '';
+    }
+    return `\n\n\`\`\`bash\n${commands.join('\n')}\n\`\`\`\n\n`;
+  });
+}
+
 export function replaceVideoBoxLinks(content) {
   return content.replace(/<VideoBoxLink\s+([\S\s]*?)\/>/g, (_m, attrs) => {
     const videoId = extractAttribute(attrs, 'videoId');

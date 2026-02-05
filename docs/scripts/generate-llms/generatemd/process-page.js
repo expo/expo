@@ -17,6 +17,7 @@ import {
   replaceConfigReactNative,
   replaceBuildResourceList,
   replaceTerminalObjectCmd,
+  replaceTerminalArrayCmd,
   replaceVideoBoxLinks,
   replaceApiMethods,
   replaceProgressTracker,
@@ -180,6 +181,8 @@ export async function processPage(filePath, href) {
   content = replaceBuildResourceList(content);
 
   content = replaceTerminalObjectCmd(content);
+
+  content = replaceTerminalArrayCmd(content);
 
   content = replaceVideoBoxLinks(content);
 
