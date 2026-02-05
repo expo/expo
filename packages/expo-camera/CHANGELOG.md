@@ -4,9 +4,26 @@
 
 ### 🛠 Breaking changes
 
+- Apps currently using `getAvailableLensesAsync()` or `onAvailableLensesChanged` will need to update to handle the new return type. The return type changes from `string[]` to `LensInfo[]`.
+
+**Migration:**
+```javascript
+// Before
+const lenses = await getAvailableLensesAsync();
+setSelectedLens(lenses[0]); // string
+
+// After
+const lenses = await getAvailableLensesAsync();
+setSelectedLens(lenses[0].deviceType); // use deviceType for selection
+// lenses[0].localizedName available for display
+```
+
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- [iOS] Fixed `selectedLens` prop to use stable `deviceType` identifiers instead of locale-dependent `localizedName` strings, enabling reliable programmatic lens selection across all device languages.
 
 ### 💡 Others
 
