@@ -1228,6 +1228,15 @@
     debug "^4.3.4"
     uuid "^8.3.2"
 
+"@bacons/xcode@1.0.0-alpha.29":
+  version "1.0.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/@bacons/xcode/-/xcode-1.0.0-alpha.29.tgz#d85a2a8794ec55d456053dbfe90590ec22b8c0d1"
+  integrity sha512-b2P+Y6ovdlie3A8Tx6QBFlbfQPhXe0vDS83W0DVob6732e3TukgVMbVcE9umn36BaeGzmJVjMFtqEyhWetjRWg==
+  dependencies:
+    "@expo/plist" "^0.0.18"
+    debug "^4.3.4"
+    uuid "^8.3.2"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
@@ -8481,10 +8490,10 @@ fdir@^6.5.0:
   resolved "https://registry.yarnpkg.com/fdir/-/fdir-6.5.0.tgz#ed2ab967a331ade62f18d077dae192684d50d350"
   integrity sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==
 
-fetch-nodeshim@^0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/fetch-nodeshim/-/fetch-nodeshim-0.4.4.tgz#ad2e396ae0700dce1eda8e3915d67ad9a2cdb8a8"
-  integrity sha512-LyNa+cxfzsMvf4NyGw4DZpHJlLif9BodSkrjtFCgB2+5zM1iRI6+EcZVOIDeuggNiK4ieff9abWOeDCQQLDWyA==
+fetch-nodeshim@^0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/fetch-nodeshim/-/fetch-nodeshim-0.4.5.tgz#618d643ee1f77040d7dde718147717fd0cbb29a8"
+  integrity sha512-n6dRDiC+/TlluvZxGDBnyNYqPftkDFjJIvXluekSSGildXSXvMWXXo+1/yK363BOZlOI2Q+PitrcLcF5CSolEA==
 
 fetch-retry@^4.1.1:
   version "4.1.1"

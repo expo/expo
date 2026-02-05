@@ -142,6 +142,7 @@
     "client-only": "^0.0.1",
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",
+    "expo-glass-effect": "^55.0.3",
     "expo-image": "^55.0.3",
     "expo-server": "^55.0.3",
     "expo-symbols": "^55.0.3",

@@ -8,7 +8,8 @@
       "@expo/vector-icons": ["react-native-vector-icons"],
       "ThemeProvider": ["../common/ThemeProvider"],
       "benchmarking": ["../bare-expo/modules/benchmarking"],
-      "worklets-tester": ["../bare-expo/modules/worklets-tester"]
+      "worklets-tester": ["../bare-expo/modules/worklets-tester"],
+      "test-expo-ui": ["../bare-expo/modules/test-expo-ui"]
     },
     "types": ["jest"],
     "typeRoots": ["./ts-declarations", "./node_modules/@types", "../../node_modules/@types"],

@@ -53,7 +53,6 @@ const constants_1 = require("./constants");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
-const href_1 = require("./link/href");
 const PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
 const LoaderCache_1 = require("./loaders/LoaderCache");
 const ServerDataLoaderContext_1 = require("./loaders/ServerDataLoaderContext");
@@ -265,16 +264,12 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
  * }
  */
 function useLoaderData() {
-    const routeNode = (0, Route_1.useRouteNode)();
-    const params = useLocalSearchParams();
     const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
     const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
-    if (!routeNode) {
-        throw new Error('No route node found. This is likely a bug in expo-router.');
-    }
-    const resolvedPath = `/${(0, href_1.resolveHref)({ pathname: routeNode?.route, params })}`;
-    // Normalize by stripping trailing `/index` to match URL pathname
-    const normalizedPath = resolvedPath.replace(/\/index$/, '') || '/';
+    const routeInfo = (0, router_store_1.useRouteInfo)();
+    const pathname = routeInfo.pathname || '/';
+    const searchString = routeInfo.searchParams?.toString() || '';
+    const normalizedPath = searchString ? `${pathname}?${searchString}` : pathname;
     // First invocation of this hook will happen server-side, so we look up the loaded data from context
     if (serverDataLoaderContext) {
         return serverDataLoaderContext[normalizedPath];

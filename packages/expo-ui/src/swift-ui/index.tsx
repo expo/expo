@@ -36,3 +36,4 @@ export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';
+export { type CommonViewModifierProps } from './types';

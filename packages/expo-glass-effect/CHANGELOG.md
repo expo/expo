@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add animation config to `glassEffectStyle` ([#42005](https://github.com/expo/expo/pull/42005) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

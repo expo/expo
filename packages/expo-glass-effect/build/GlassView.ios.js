@@ -2,5 +2,8 @@
 'use client';
 import { requireNativeViewManager } from 'expo-modules-core';
 const NativeGlassView = requireNativeViewManager('ExpoGlassEffect', 'GlassView');
-export default NativeGlassView;
+const GlassView = (props) => {
+    return <NativeGlassView {...props}/>;
+};
+export default GlassView;
 //# sourceMappingURL=GlassView.ios.js.map

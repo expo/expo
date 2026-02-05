@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix crash due to `SimpleCache` directory lock conflicts. ([#42723](https://github.com/expo/expo/pull/42723) by [@santitopo](https://github.com/santitopo))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-03
