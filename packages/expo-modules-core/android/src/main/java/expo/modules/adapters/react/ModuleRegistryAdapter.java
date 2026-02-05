@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import androidx.annotation.Nullable;
 
@@ -114,7 +115,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
     List<? extends ViewManager<?, ?>> viewManagers = kViewManagerDelegates
       .stream()
       .map(ViewManagerWrapperDelegate::toRNViewManager)
-      .toList();
+      .collect(Collectors.toList());
     viewManagerList.addAll(viewManagers);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Intentionally to only add Sweet API view managers for Fabric support
