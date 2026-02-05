@@ -195,6 +195,17 @@ function getPlatforms(comment) {
     .filter(Boolean);
 }
 
+function getModifierTags(comment) {
+  const tags = [];
+  if (comment?.modifierTags?.includes('@experimental')) {
+    tags.push('Experimental');
+  }
+  if (comment?.modifierTags?.includes('@deprecated')) {
+    tags.push('Deprecated');
+  }
+  return tags;
+}
+
 function renderProperty(prop) {
   const parts = [];
   const typeStr = resolveType(prop.type);
@@ -239,13 +250,15 @@ function renderMethodSignature(methodName, sig) {
   const returnType = resolveType(sig.type);
   const isStatic = sig.flags?.isStatic;
   const platforms = getPlatforms(sig.comment);
+  const modifiers = getModifierTags(sig.comment);
 
   let header = `**\`${isStatic ? 'static ' : ''}${sig.name || methodName}(${params})\`**`;
   if (returnType) {
     header += ` — Returns: \`${returnType}\``;
   }
-  if (platforms.length > 0) {
-    header += ` — *${platforms.join(', ')}*`;
+  const tags = [...modifiers, ...platforms];
+  if (tags.length > 0) {
+    header += ` — *${tags.join(', ')}*`;
   }
   parts.push(header);
 
