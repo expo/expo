@@ -358,39 +358,7 @@ NS_ASSUME_NONNULL_BEGIN
     [viewController didMoveToParentViewController:self];
     self.contentViewController = viewController;
 
-    NSLog(@"[DevMenu] _completeTransitionToViewController: isShowingApp=%d, reactHost=%@", isShowingApp, appRecord.appManager.reactHost ? @"YES" : @"NO");
-
-    // Set configuration based on manifest (doesn't require reactHost)
-    if (isShowingApp && appRecord.appLoader.manifest) {
-      [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
-
-      DevMenuConfiguration *config = [DevMenuManager shared].configuration;
-
-      BOOL isDev = appRecord.appLoader.manifest.isDevelopmentMode || appRecord.appLoader.manifest.isUsingDeveloperTool;
-      BOOL isSnack = [self _isSnackURL:appRecord.appLoader.manifestUrl];
-
-      NSLog(@"[DevMenu] Configuration: isDev=%d, isSnack=%d", isDev, isSnack);
-
-      if (!isDev) {
-        config.showDebuggingTip = NO;
-        config.showFastRefresh = NO;
-        config.showPerformanceMonitor = NO;
-        config.showElementInspector = NO;
-        config.showRuntimeVersion = NO;
-        config.showHostUrl = NO;
-        config.showSystemSection = !isSnack;
-        config.appNameOverride = isSnack ? @"Playground" : nil;
-      } else {
-        config.showDebuggingTip = YES;
-        config.showFastRefresh = YES;
-        config.showPerformanceMonitor = YES;
-        config.showElementInspector = YES;
-        config.showRuntimeVersion = YES;
-        config.showHostUrl = NO;
-        config.showSystemSection = YES;
-        config.appNameOverride = nil;
-      }
-    }
+    // Dev menu configuration is set in EXReactAppManager where manifest is available
   }
 
   if (isShowingApp) {
