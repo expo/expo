@@ -1,4 +1,4 @@
-appId: host.exp.exponent.brownfield.test.android
+appId: dev.expo.brownfieldintegratedtester
 name: Launch and verify the brownfield app
 ---
 - launchApp

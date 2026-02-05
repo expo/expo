@@ -88,8 +88,14 @@ jobs:
       - name: 🤖 Build and publish Android artifacts (apps/brownfield-tester/expo-app)
         run: |
           npx expo prebuild --clean -p android
-          npx expo-brownfield build:android --repo MavenLocal --all --verbose
+          npx expo-brownfield build:android --repo MavenLocal --verbose
         working-directory: apps/brownfield-tester/expo-app
+      - name: 📱 Build and install Android app (apps/brownfield-tester/android-integrated)
+        run: |
+          ./gradlew clean
+          ./gradlew installRelease --refresh-dependencies
+          adb shell monkey -p dev.expo.brownfieldintegratedtester 1
+        working-directory: apps/brownfield-tester/android-integrated
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -100,7 +106,7 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            ./scripts/run-e2e-android.sh
+            maestro test maestro/__tests__/android
           working-directory: packages/expo-brownfield/e2e
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
@@ -109,5 +115,6 @@ jobs:
           webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
           author_name: E2E Test Suite for Expo Brownfield
+
   # TODO(pmleczek): Add iOS job
   # ios-e2e:
