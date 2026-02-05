@@ -229,10 +229,79 @@ function getExamples(comment) {
     .filter(Boolean);
 }
 
+function getSeeLinks(comment) {
+  if (!comment?.blockTags) {
+    return [];
+  }
+  return comment.blockTags
+    .filter(t => t.tag === '@see')
+    .map(t => {
+      return t.content
+        ?.map(part => part.text || '')
+        .join('')
+        .trim();
+    })
+    .filter(Boolean);
+}
+
+function getSince(comment) {
+  if (!comment?.blockTags) {
+    return '';
+  }
+  const since = comment.blockTags.find(t => t.tag === '@since');
+  if (!since?.content) {
+    return '';
+  }
+  return since.content
+    .map(part => part.text || '')
+    .join('')
+    .trim();
+}
+
+function getDeprecatedMessage(comment) {
+  if (!comment?.blockTags) {
+    return '';
+  }
+  const deprecated = comment.blockTags.find(t => t.tag === '@deprecated');
+  if (!deprecated?.content) {
+    return '';
+  }
+  return deprecated.content
+    .map(part => part.text || '')
+    .join('')
+    .trim();
+}
+
+function formatTypeParameters(typeParameters) {
+  if (!typeParameters?.length) {
+    return '';
+  }
+  const params = typeParameters.map(tp => {
+    let param = tp.name;
+    if (tp.type) {
+      param += ` extends ${resolveType(tp.type)}`;
+    }
+    if (tp.default) {
+      param += ` = ${resolveType(tp.default)}`;
+    }
+    return param;
+  });
+  return `<${params.join(', ')}>`;
+}
+
+function formatExtendedTypes(extendedTypes) {
+  if (!extendedTypes?.length) {
+    return '';
+  }
+  return extendedTypes.map(t => resolveType(t)).join(', ');
+}
+
 function renderProperty(prop) {
   const parts = [];
   const typeStr = resolveType(prop.type);
   const platforms = getPlatforms(prop.comment);
+  const since = getSince(prop.comment);
+  const deprecatedMsg = getDeprecatedMessage(prop.comment);
   const flags = [];
   if (prop.flags?.isOptional) {
     flags.push('Optional');
@@ -257,11 +326,23 @@ function renderProperty(prop) {
   if (platforms.length > 0) {
     header += ` — *${platforms.join(', ')}*`;
   }
+  if (since) {
+    header += ` — *Since: ${since}*`;
+  }
   parts.push(header);
+
+  if (deprecatedMsg) {
+    parts.push(`> **Deprecated:** ${deprecatedMsg}`);
+  }
 
   const desc = getCommentText(prop.comment);
   if (desc) {
     parts.push(desc);
+  }
+
+  const seeLinks = getSeeLinks(prop.comment);
+  if (seeLinks.length > 0) {
+    parts.push(`See: ${seeLinks.join(', ')}`);
   }
 
   const examples = getExamples(prop.comment);
@@ -281,6 +362,8 @@ function renderMethodSignature(methodName, sig) {
   const isStatic = sig.flags?.isStatic;
   const platforms = getPlatforms(sig.comment);
   const modifiers = getModifierTags(sig.comment);
+  const since = getSince(sig.comment);
+  const deprecatedMsg = getDeprecatedMessage(sig.comment);
 
   let header = `**\`${isStatic ? 'static ' : ''}${sig.name || methodName}(${params})\`**`;
   if (returnType) {
@@ -290,7 +373,14 @@ function renderMethodSignature(methodName, sig) {
   if (tags.length > 0) {
     header += ` — *${tags.join(', ')}*`;
   }
+  if (since) {
+    header += ` — *Since: ${since}*`;
+  }
   parts.push(header);
+
+  if (deprecatedMsg) {
+    parts.push(`> **Deprecated:** ${deprecatedMsg}`);
+  }
 
   const desc = getCommentText(sig.comment);
   if (desc) {
@@ -317,6 +407,11 @@ function renderMethodSignature(methodName, sig) {
   const retComment = getReturnComment(sig.comment);
   if (retComment) {
     parts.push(`Returns: ${retComment}`);
+  }
+
+  const seeLinks = getSeeLinks(sig.comment);
+  if (seeLinks.length > 0) {
+    parts.push(`See: ${seeLinks.join(', ')}`);
   }
 
   const examples = getExamples(sig.comment);
@@ -476,14 +571,22 @@ function renderApiChildren(children) {
   // Render Classes
   for (const entry of classes) {
     const description = getCommentText(entry.comment);
-    lines.push(`### ${entry.name} (*Class*)`);
+    const typeParams = formatTypeParameters(entry.typeParameters);
+    const extendsStr = formatExtendedTypes(entry.extendedTypes);
+
+    let classHeader = `### ${entry.name}${typeParams} (*Class*)`;
+    if (extendsStr) {
+      classHeader += ` extends ${extendsStr}`;
+    }
+    lines.push(classHeader);
+
     if (description) {
       lines.push(description);
     }
 
     const classChildren = entry.children || [];
     const properties = classChildren.filter(c => c.kind === 1024);
-    const methods = classChildren.filter(c => c.kind === 2048);
+    const classMethods = classChildren.filter(c => c.kind === 2048);
 
     if (properties.length > 0) {
       lines.push(`#### ${entry.name} Properties`);
@@ -492,9 +595,9 @@ function renderApiChildren(children) {
       }
     }
 
-    if (methods.length > 0) {
+    if (classMethods.length > 0) {
       lines.push(`#### ${entry.name} Methods`);
-      for (const method of methods) {
+      for (const method of classMethods) {
         const sigs = method.signatures || [];
         for (const sig of sigs) {
           lines.push(renderMethodSignature(method.name, { ...sig, flags: method.flags }));
@@ -514,14 +617,34 @@ function renderApiChildren(children) {
     for (const m of members) {
       const val = m.defaultValue ? ` = \`${m.defaultValue}\`` : '';
       const mDesc = getCommentText(m.comment);
-      lines.push(`- **\`${m.name}\`**${val}${mDesc ? ` — ${mDesc}` : ''}`);
+      const deprecatedMsg = getDeprecatedMessage(m.comment);
+      const since = getSince(m.comment);
+      let enumLine = `- **\`${m.name}\`**${val}`;
+      if (since) {
+        enumLine += ` — *Since: ${since}*`;
+      }
+      if (deprecatedMsg) {
+        enumLine += ` — **Deprecated:** ${deprecatedMsg}`;
+      }
+      if (mDesc) {
+        enumLine += ` — ${mDesc}`;
+      }
+      lines.push(enumLine);
     }
   }
 
   // Render Interfaces
   for (const entry of interfaces) {
     const description = getCommentText(entry.comment);
-    lines.push(`### ${entry.name} (*Interface*)`);
+    const typeParams = formatTypeParameters(entry.typeParameters);
+    const extendsStr = formatExtendedTypes(entry.extendedTypes);
+
+    let interfaceHeader = `### ${entry.name}${typeParams} (*Interface*)`;
+    if (extendsStr) {
+      interfaceHeader += ` extends ${extendsStr}`;
+    }
+    lines.push(interfaceHeader);
+
     if (description) {
       lines.push(description);
     }
@@ -539,11 +662,19 @@ function renderApiChildren(children) {
     for (const entry of types) {
       const description = getCommentText(entry.comment);
       const platforms = getPlatforms(entry.comment);
-      let typeHeader = `#### ${entry.name}`;
+      const typeParams = formatTypeParameters(entry.typeParameters);
+      const deprecatedMsg = getDeprecatedMessage(entry.comment);
+
+      let typeHeader = `#### ${entry.name}${typeParams}`;
       if (platforms.length > 0) {
         typeHeader += ` — *${platforms.join(', ')}*`;
       }
       lines.push(typeHeader);
+
+      if (deprecatedMsg) {
+        lines.push(`> **Deprecated:** ${deprecatedMsg}`);
+      }
+
       if (description) {
         lines.push(description);
       }
