@@ -143,7 +143,7 @@ struct DevServersSection: View {
             .fontWeight(.semibold)
             .foregroundColor(.primary)
 
-          Text("Your own space to explore and learn.")
+          Text("Your own space to explore and learn")
             .font(.caption)
             .foregroundColor(.secondary)
         }

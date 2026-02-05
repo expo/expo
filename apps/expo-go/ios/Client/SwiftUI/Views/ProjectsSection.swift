@@ -1,14 +1,18 @@
 //  Copyright © 2025 650 Industries. All rights reserved.
 
 import SwiftUI
+import EXDevMenu
 
 struct ProjectsAndSnacksSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
   @State private var loadingProjectId: String?
   @State private var loadingSnackId: String?
+  @State private var isLoadingDemoProject = false
 
-  private var hasProjects: Bool { !viewModel.projects.isEmpty }
-  private var hasSnacks: Bool { !viewModel.snacks.isEmpty }
+  // TEMPORARY: remove after testing
+  private var hasProjects: Bool { false && !viewModel.projects.isEmpty }
+  // TEMPORARY: remove after testing
+  private var hasSnacks: Bool { false && !viewModel.snacks.isEmpty }
   private var isLoadingData: Bool { viewModel.isLoadingData }
 
   var body: some View {
@@ -23,11 +27,59 @@ struct ProjectsAndSnacksSection: View {
           }
         }
       } else if !hasProjects && !hasSnacks && !isLoadingData {
-        // Empty state
+        // Demo project card
+        Button {
+          startDemoProject()
+        } label: {
+          HStack(spacing: 12) {
+            Image(systemName: "sparkles")
+              .font(.system(size: 14))
+              .foregroundColor(.white)
+              .frame(width: 28, height: 28)
+              .background(Color.blue, in: RoundedRectangle(cornerRadius: 6))
+
+            VStack(alignment: .leading, spacing: 2) {
+              HStack(spacing: 6) {
+                Text("Learning Playground")
+                  .font(.body)
+                  .fontWeight(.semibold)
+                  .foregroundColor(.primary)
+
+                Text("Example")
+                  .font(.caption2)
+                  .fontWeight(.medium)
+                  .foregroundColor(.secondary)
+                  .padding(.horizontal, 6)
+                  .padding(.vertical, 2)
+                  .background(Color.secondary.opacity(0.15), in: RoundedRectangle(cornerRadius: 4))
+              }
+
+              Text("Learn to code on mobile")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            if isLoadingDemoProject {
+              ProgressView()
+            } else {
+              Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+          }
+          .padding()
+          .background(Color.expoSecondarySystemBackground)
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+        }
+        .buttonStyle(.plain)
+        .disabled(viewModel.isLoadingApp)
+
         EmptyStateView(
           icon: "folder",
           message: "No projects yet",
-          description: "Create your first project on expo.dev"
+          description: "Try out the playground example"
         )
       } else {
         VStack(spacing: 6) {
@@ -89,8 +141,40 @@ struct ProjectsAndSnacksSection: View {
       if !isLoading {
         loadingProjectId = nil
         loadingSnackId = nil
+        isLoadingDemoProject = false
       }
     }
+  }
+
+  private func startDemoProject() {
+    isLoadingDemoProject = true
+
+    let service = PlaygroundService.shared
+    let channel = service.generateChannelId()
+
+    let url = service.buildRuntimeUrl(
+      channel: channel,
+      sdkVersion: Versions.sharedInstance.sdkVersion
+    )
+
+    // Convert DemoProject files to the format expected by openApp
+    var codeDict: [String: [String: Any]] = [:]
+    for (path, file) in DemoProject.snackFiles {
+      codeDict[path] = [
+        "contents": file.contents,
+        "type": file.isAsset ? "ASSET" : "CODE"
+      ]
+    }
+
+    let snackParams: NSDictionary = [
+      "channel": channel,
+      "snackId": DemoProject.displayName,
+      "code": codeDict,
+      "dependencies": DemoProject.snackDependencies,
+      "lessonDescription": "Learn to code on mobile"
+    ]
+
+    viewModel.openApp(url: url, snackParams: snackParams)
   }
 }
 
