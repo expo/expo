@@ -155,7 +155,6 @@ export function resolveDiffSource(source) {
   if (!source) {
     return '';
   }
-  // Source paths reference local files relative to docs root
   const localPath = source.startsWith('/') ? path.join(process.cwd(), 'public', source) : '';
   if (localPath && fs.existsSync(localPath)) {
     return fs.readFileSync(localPath, 'utf-8');
@@ -251,7 +250,6 @@ export function replaceBuildResourceList(content) {
 
 export function replaceTerminalObjectCmd(content) {
   return content.replace(/<Terminal\s[\S\s]*?cmd={({[\S\s]*?})}[\S\s]*?\/>/g, (_m, cmdObj) => {
-    // Try to extract the first package manager's commands from the object
     const entryMatch = cmdObj.match(/(?:npm|yarn|pnpm|bun)\s*:\s*\[([\S\s]*?)]/);
     if (!entryMatch) {
       return '';
@@ -692,12 +690,8 @@ export function replaceIconHeadingSpans(content) {
 export function stripMultilineImports(content) {
   const parts = content.split(/(```[\S\s]*?```)/);
   for (let i = 0; i < parts.length; i += 2) {
-    // Only process non-code-block parts
-    // Multiline: import { ... } from '...';
     parts[i] = parts[i].replace(/^import\s+{[^}]*}\s+from\s+["'][^"']+["'];?\s*\n?/gm, '');
-    // Single-line: import Foo from '...';
     parts[i] = parts[i].replace(/^import\s+\w+\s+from\s+["']~\/[^"']+["'];?\s*\n?/gm, '');
-    // import '...' (side-effect imports from internal paths)
     parts[i] = parts[i].replace(/^import\s+["']~\/[^"']+["'];?\s*\n?/gm, '');
   }
   return parts.join('');
