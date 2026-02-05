@@ -68,7 +68,6 @@ class IntentLauncherModule : Module() {
               // JavaScript sends all numbers as doubles. We need to convert them appropriately:
               // - Large values (like calendar timestamps) need to be Long
               // - Smaller values should remain Int for backward compatibility
-              // Calendar timestamps in milliseconds exceed Int.MAX_VALUE (2,147,483,647)
               if (value > Int.MAX_VALUE || value < Int.MIN_VALUE) {
                 value.toLong()
               } else {
