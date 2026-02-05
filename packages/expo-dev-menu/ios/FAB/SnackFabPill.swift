@@ -48,9 +48,8 @@ struct SnackActionPanel: View {
   private let screenEdgeMargin: CGFloat = 12
 
   // The gearPosition is the top-left of the FAB frame (72x94).
-  // The gear icon (44x44) is centered within that frame.
+  // The gear icon (44x44) is aligned to the top of that frame.
   private let fabFrameWidth: CGFloat = 72
-  private let fabFrameHeight: CGFloat = FABConstants.iconSize + 50  // 94
 
   // Gear icon center within the screen
   private var gearCenterX: CGFloat {
@@ -58,7 +57,8 @@ struct SnackActionPanel: View {
   }
 
   private var gearCenterY: CGFloat {
-    gearPosition.y + fabFrameHeight / 2
+    // Gear is aligned to top of frame, so its center is at top + iconSize/2
+    gearPosition.y + FABConstants.iconSize / 2
   }
 
   // Offsets to tuck panel under the gear more

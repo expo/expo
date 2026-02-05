@@ -26,7 +26,9 @@ class SourceMapService {
   static func clearCache() {
     cachedSession = nil
     cachedSessionChannel = nil
-    SnackEditingSession.shared.resetFiles()
+    Task { @MainActor in
+      SnackEditingSession.shared.resetFiles()
+    }
   }
 
   // MARK: - Snack Detection
@@ -183,6 +185,8 @@ class SourceMapService {
 
   /// Sends a file update to the Snack session (if connected)
   /// - Returns: true if the update was sent, false if no active session
+  /// Note: This must be called from MainActor since it accesses SnackEditingSession
+  @MainActor
   static func sendSnackFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {
     let currentChannel = getCurrentChannel()
 
@@ -208,6 +212,7 @@ class SourceMapService {
   }
 
   /// Checks if there's an active Snack session for the current snack
+  @MainActor
   static var hasActiveSnackSession: Bool {
     let currentChannel = getCurrentChannel()
 
@@ -230,6 +235,7 @@ class SourceMapService {
   }
 
   /// Fetches source files from a live Snack session via Snackpub
+  @MainActor
   private func fetchSnackSourceMapFromSession(channel: String) async throws -> SourceMap {
     // Check if SnackEditingSession has files for this channel (published snacks from Expo Go)
     if SnackEditingSession.shared.channel == channel,

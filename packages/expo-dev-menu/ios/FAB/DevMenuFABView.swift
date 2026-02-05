@@ -11,7 +11,7 @@ enum SnappedEdge {
 enum FABConstants {
   static let iconSize: CGFloat = 44
   static let margin: CGFloat = 10
-  static let verticalPadding: CGFloat = 20
+  static let verticalPadding: CGFloat = 0
   static let dragThreshold: CGFloat = 10
   static let momentumFactor: CGFloat = 0.35
   static let labelDismissDelay: TimeInterval = 10
@@ -133,6 +133,16 @@ struct FabPill: View {
   }
 }
 
+/// Configuration for the FAB, determined once when it appears.
+/// This replaces reactive session observation with a read-once approach.
+struct FABConfiguration {
+  let showPanel: Bool
+  let snackName: String
+  let snackDescription: String
+  let isLesson: Bool
+  let lessonId: Int?
+}
+
 struct DevMenuFABView: View {
   let onOpenMenu: () -> Void
   let onFrameChange: (CGRect) -> Void
@@ -160,20 +170,28 @@ struct DevMenuFABView: View {
     UserDefaults.standard.set(true, forKey: hasStoredPositionKey)
   }
 
+  // FAB configuration - read once when view appears
+  // Session state is guaranteed ready before FAB is shown (DevMenuManager waits for setup)
+  @State private var config: FABConfiguration?
+
   @State private var position: CGPoint = .zero
   @State private var isDragging = false
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
-  @State private var isSnackSession = false
-  @State private var isLesson = false
-  @State private var isLessonCompleted = false
-  @State private var hasBeenEdited = false
-  @State private var snackName = "Playground"
-  @State private var snackDescription = "Learn to code on mobile"
   @State private var screenWidth: CGFloat = 0
   @State private var screenHeight: CGFloat = 0
   @State private var currentEdge: SnappedEdge = .left
   @State private var isPositioned = false  // Hide until initial position is set
+  @State private var hasBeenEdited = false  // Updated via notification since sessionClient isn't observable
+  @State private var isLessonCompleted = false  // Updated manually since UserDefaults isn't observable
+
+  // Convenience accessors from config
+  private var snackName: String { config?.snackName ?? "" }
+  private var snackDescription: String { config?.snackDescription ?? "Learn to code on mobile" }
+  private var isLesson: Bool { config?.isLesson ?? false }
+
+  /// Whether to show the snack panel (for lessons and lesson-like snacks)
+  private var isSnackSession: Bool { config?.showPanel ?? false }
 
   private let dragSpring: Animation = .spring(
     response: 0.25,
@@ -205,23 +223,23 @@ struct DevMenuFABView: View {
     }
   }
 
-  // Get bottom safe area from window since .ignoresSafeArea() may zero it out
-  private var windowSafeAreaBottom: CGFloat {
+  // Get safe area from window since .ignoresSafeArea() or initial render may zero out geometry values
+  private var windowSafeArea: UIEdgeInsets {
     guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
           let window = windowScene.windows.first else {
-      return 0
+      return .zero
     }
-    return window.safeAreaInsets.bottom
+    return window.safeAreaInsets
   }
 
   var body: some View {
     GeometryReader { geometry in
-      // Use geometry for top safe area, window for bottom (geometry.bottom may be 0 due to .ignoresSafeArea())
+      // Use window safe area - geometry values may be incorrect initially or due to .ignoresSafeArea()
       let safeArea = EdgeInsets(
-        top: geometry.safeAreaInsets.top,
-        leading: geometry.safeAreaInsets.leading,
-        bottom: windowSafeAreaBottom,
-        trailing: geometry.safeAreaInsets.trailing
+        top: windowSafeArea.top,
+        leading: windowSafeArea.left,
+        bottom: windowSafeArea.bottom,
+        trailing: windowSafeArea.right
       )
 
       ZStack {
@@ -246,7 +264,7 @@ struct DevMenuFABView: View {
 
           // The FabPill (gear) renders on top
           FabPill(isPressed: $isPressed, isDragging: $isDragging, isSnackSession: isSnackSession)
-            .frame(width: fabSize.width, height: fabSize.height)
+            .frame(width: fabSize.width, height: fabSize.height, alignment: .top)
             .position(
               x: position.x + fabSize.width / 2,
               y: position.y + fabSize.height / 2
@@ -258,8 +276,33 @@ struct DevMenuFABView: View {
         screenWidth = geometry.size.width
         screenHeight = geometry.size.height
 
-        // Check session state to determine positioning behavior
-        updateSnackSessionState()
+        // Only initialize once - guard against multiple onAppear calls
+        // (SwiftUI may call onAppear multiple times in certain scenarios)
+        guard config == nil else { return }
+
+        // Read session state ONCE - DevMenuManager ensures session is ready before showing FAB
+        let session = SnackEditingSession.shared
+        if session.isLessonLikeSession {
+          config = FABConfiguration(
+            showPanel: true,
+            snackName: session.displayName,
+            snackDescription: session.lessonDescription ?? "Learn to code on mobile",
+            isLesson: session.isLesson,
+            lessonId: session.lessonId
+          )
+        } else {
+          config = FABConfiguration(
+            showPanel: false,
+            snackName: "",
+            snackDescription: "",
+            isLesson: false,
+            lessonId: nil
+          )
+        }
+
+        // Initialize non-observable state
+        hasBeenEdited = session.hasBeenEdited
+        updateLessonCompletedState()
 
         // Panel sessions (lessons/lesson-like snacks) always use default position (top-left)
         let initialPos: CGPoint
@@ -270,8 +313,8 @@ struct DevMenuFABView: View {
           let margin = FABConstants.margin
           let minX = margin / 2
           let maxX = geometry.size.width - fabSize.width - margin / 2
-          let minY = margin + safeArea.top + FABConstants.verticalPadding
-          let maxY = geometry.size.height - fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
+          let minY = safeArea.top + FABConstants.verticalPadding
+          let maxY = geometry.size.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
 
           initialPos = CGPoint(
             x: storedPos.x.clamped(to: minX...maxX),
@@ -281,9 +324,14 @@ struct DevMenuFABView: View {
           initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
         }
 
-        position = initialPos
-        currentEdge = initialPos.x < geometry.size.width / 2 ? .left : .right
-        isPositioned = true
+        // Set initial position without animation (position starts at .zero)
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+          position = initialPos
+          currentEdge = initialPos.x < geometry.size.width / 2 ? .left : .right
+          isPositioned = true
+        }
         onFrameChange(hitTestFrame(edge: currentEdge))
       }
       .onChange(of: geometry.size) { newSize in
@@ -295,33 +343,13 @@ struct DevMenuFABView: View {
           bounds: newSize,
           safeArea: safeArea
         )
-        position = newPos
-        currentEdge = newPos.x < newSize.width / 2 ? .left : .right
-        onFrameChange(hitTestFrame(edge: currentEdge))
-      }
-      .onChange(of: isSnackSession) { newValue in
-        // Reset position when session type changes
-        let newPos: CGPoint
-        if newValue {
-          // Transitioning TO lesson-like session: move to top-left
-          newPos = defaultPosition(bounds: geometry.size, safeArea: safeArea, forPanelSession: true)
-        } else if let storedPos = Self.loadStoredPosition() {
-          // Transitioning FROM lesson-like session: restore stored position
-          let margin = FABConstants.margin
-          let minX = margin / 2
-          let maxX = geometry.size.width - fabSize.width - margin / 2
-          let minY = margin + safeArea.top + FABConstants.verticalPadding
-          let maxY = geometry.size.height - fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
-          newPos = CGPoint(
-            x: storedPos.x.clamped(to: minX...maxX),
-            y: storedPos.y.clamped(to: minY...maxY)
-          )
-        } else {
-          // No stored position: use default (top-right for non-lessons)
-          newPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
+        // Disable animation for geometry-triggered repositioning
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+          position = newPos
+          currentEdge = newPos.x < newSize.width / 2 ? .left : .right
         }
-        position = newPos
-        currentEdge = newPos.x < geometry.size.width / 2 ? .left : .right
         onFrameChange(hitTestFrame(edge: currentEdge))
       }
       .onChange(of: isDragging) { _ in
@@ -331,41 +359,14 @@ struct DevMenuFABView: View {
         currentEdge = newPos.x < screenWidth / 2 ? .left : .right
       }
       .animation(isDragging ? dragSpring : FABConstants.snapAnimation, value: position)
-      .onReceive(NotificationCenter.default.publisher(for: SnackEditingSession.sessionDidChangeNotification)) { _ in
-        updateSnackSessionState()
-      }
+      // Listen for code changes since sessionClient.hasBeenEdited isn't directly observable
       .onReceive(NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)) { _ in
-        hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
+        Task { @MainActor in
+          hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
+        }
       }
     }
     .ignoresSafeArea()
-  }
-
-  private func updateSnackSessionState() {
-    let session = SnackEditingSession.shared
-    isLesson = session.isLesson
-    hasBeenEdited = session.hasBeenEdited
-
-    // Check if this lesson is already completed
-    if let lessonId = session.lessonId {
-      let completedLessons = UserDefaults.standard.array(forKey: "ExpoGoCompletedLessons") as? [Int] ?? []
-      isLessonCompleted = completedLessons.contains(lessonId)
-    } else {
-      isLessonCompleted = false
-    }
-
-    // Use the centralized display name
-    snackName = session.displayName
-
-    // Use lesson description if available
-    if let description = session.lessonDescription {
-      snackDescription = description
-    } else {
-      snackDescription = "Learn to code on mobile"
-    }
-
-    // Panel shows for official lessons OR snacks with "lesson" or "learn" in the name
-    isSnackSession = session.isLessonLikeSession
   }
 
   // TODO: Add back when save functionality is implemented
@@ -379,14 +380,14 @@ struct DevMenuFABView: View {
 
   private func handleComplete() {
     // Toggle lesson completion in UserDefaults
-    if let lessonId = SnackEditingSession.shared.lessonId {
+    if let lessonId = config?.lessonId {
       var completedLessons = UserDefaults.standard.array(forKey: "ExpoGoCompletedLessons") as? [Int] ?? []
 
       if isLessonCompleted {
         // Uncomplete: remove from list and stay on lesson
         completedLessons.removeAll { $0 == lessonId }
         UserDefaults.standard.set(completedLessons, forKey: "ExpoGoCompletedLessons")
-        isLessonCompleted = false
+        isLessonCompleted = false  // Update UI state
       } else {
         // Complete: add to list and navigate home
         if !completedLessons.contains(lessonId) {
@@ -396,6 +397,16 @@ struct DevMenuFABView: View {
         DevMenuManager.shared.navigateHome()
       }
     }
+  }
+
+  /// Updates isLessonCompleted from UserDefaults (not observable, must be called manually)
+  private func updateLessonCompletedState() {
+    guard let lessonId = config?.lessonId else {
+      isLessonCompleted = false
+      return
+    }
+    let completedLessons = UserDefaults.standard.array(forKey: "ExpoGoCompletedLessons") as? [Int] ?? []
+    isLessonCompleted = completedLessons.contains(lessonId)
   }
 
   private func dragGesture(bounds: CGSize, safeArea: EdgeInsets) -> some Gesture {
@@ -413,14 +424,14 @@ struct DevMenuFABView: View {
           let margin = FABConstants.margin
           let minX = margin
           let maxX = bounds.width - fabSize.width - margin
-          let minY = margin + safeArea.top + FABConstants.verticalPadding
+          let minY = safeArea.top + FABConstants.verticalPadding
 
           let maxY: CGFloat
           if isSnackSession {
             // Leave room for the panel to fit above the safe area
             maxY = bounds.height - safeArea.bottom - panelHeight - panelVerticalOffset + FABConstants.iconSize/2 - fabSize.height/2
           } else {
-            maxY = bounds.height - fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
+            maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
           }
 
           let rawX = dragStartPosition.x + value.translation.width
@@ -477,7 +488,7 @@ struct DevMenuFABView: View {
 
     return CGPoint(
       x: xPosition,
-      y: safeArea.top + FABConstants.verticalPadding + FABConstants.margin
+      y: safeArea.top + FABConstants.verticalPadding
     )
   }
 
@@ -497,13 +508,13 @@ struct DevMenuFABView: View {
       ? edgeMargin
     : bounds.width - self.fabSize.width - edgeMargin
 
-    let minY = margin + safeArea.top + FABConstants.verticalPadding
+    let minY = safeArea.top + FABConstants.verticalPadding
     let maxY: CGFloat
     if isSnackSession {
       // Leave room for the panel to fit above the safe area
       maxY = bounds.height - safeArea.bottom - panelHeight - panelVerticalOffset + FABConstants.iconSize/2 - fabSize.height/2
     } else {
-      maxY = bounds.height - fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
+      maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
     }
     let targetY = (point.y + momentumY).clamped(to: minY...maxY)
 

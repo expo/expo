@@ -4,23 +4,25 @@ import SwiftUI
 
 struct ProjectsAndSnacksSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
+  @State private var loadingProjectId: String?
+  @State private var loadingSnackId: String?
 
   private var hasProjects: Bool { !viewModel.projects.isEmpty }
   private var hasSnacks: Bool { !viewModel.snacks.isEmpty }
-  private var isLoading: Bool { viewModel.isLoadingData }
+  private var isLoadingData: Bool { viewModel.isLoadingData }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       SectionHeader(title: "PROJECTS")
 
-      if isLoading && !hasProjects && !hasSnacks {
+      if isLoadingData && !hasProjects && !hasSnacks {
         // Loading state
         VStack(spacing: 6) {
           ForEach(0..<3, id: \.self) { _ in
             ProjectSkeletonRow()
           }
         }
-      } else if !hasProjects && !hasSnacks && !isLoading {
+      } else if !hasProjects && !hasSnacks && !isLoadingData {
         // Empty state
         EmptyStateView(
           icon: "folder",
@@ -31,7 +33,13 @@ struct ProjectsAndSnacksSection: View {
         VStack(spacing: 6) {
           // Projects
           ForEach(viewModel.projects.prefix(3)) { project in
-            ProjectRowWithNavigation(project: project, shouldNavigateToDetails: false)
+            ProjectRowWithNavigation(
+              project: project,
+              shouldNavigateToDetails: false,
+              isLoading: loadingProjectId == project.id,
+              onLoadingChange: { loadingProjectId = $0 ? project.id : nil }
+            )
+            .disabled(viewModel.isLoadingApp)
           }
 
           if viewModel.projects.count > 3 {
@@ -55,7 +63,12 @@ struct ProjectsAndSnacksSection: View {
 
           // Snacks
           ForEach(viewModel.snacks.prefix(3)) { snack in
-            SnackRowWithAction(snack: snack)
+            SnackRowWithAction(
+              snack: snack,
+              isLoading: loadingSnackId == snack.id,
+              onLoadingChange: { loadingSnackId = $0 ? snack.id : nil }
+            )
+            .disabled(viewModel.isLoadingApp)
           }
 
           if viewModel.snacks.count > 3 {
@@ -70,11 +83,18 @@ struct ProjectsAndSnacksSection: View {
         }
       }
     }
+    .onChange(of: viewModel.isLoadingApp) { isLoading in
+      if !isLoading {
+        loadingProjectId = nil
+        loadingSnackId = nil
+      }
+    }
   }
 }
 
 struct ProjectsSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
+  @State private var loadingProjectId: String?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -82,7 +102,13 @@ struct ProjectsSection: View {
 
       VStack(spacing: 6) {
         ForEach(viewModel.projects.prefix(3)) { project in
-          ProjectRowWithNavigation(project: project, shouldNavigateToDetails: false)
+          ProjectRowWithNavigation(
+            project: project,
+            shouldNavigateToDetails: false,
+            isLoading: loadingProjectId == project.id,
+            onLoadingChange: { loadingProjectId = $0 ? project.id : nil }
+          )
+          .disabled(viewModel.isLoadingApp)
         }
 
         if viewModel.projects.count > 3 {
@@ -96,12 +122,19 @@ struct ProjectsSection: View {
         }
       }
     }
+    .onChange(of: viewModel.isLoadingApp) { isLoading in
+      if !isLoading {
+        loadingProjectId = nil
+      }
+    }
   }
 }
 
 struct ProjectRowWithNavigation: View {
   let project: ExpoProject
   let shouldNavigateToDetails: Bool
+  var isLoading: Bool = false
+  var onLoadingChange: ((Bool) -> Void)?
   @EnvironmentObject var viewModel: HomeViewModel
   @State private var shouldNavigate = false
 
@@ -111,12 +144,12 @@ struct ProjectRowWithNavigation: View {
         destination: ProjectDetailsView(projectId: project.id, initialProject: project),
         isActive: $shouldNavigate
       ) {
-        ProjectRow(project: project) {
+        ProjectRow(project: project, isLoading: isLoading) {
           handleProjectTap()
         }
       }
     } else {
-      ProjectRow(project: project) {
+      ProjectRow(project: project, isLoading: isLoading) {
         handleProjectTap()
       }
     }
@@ -129,7 +162,7 @@ struct ProjectRowWithNavigation: View {
         if branch.updates.count == 1 {
           let update = branch.updates[0]
           if isSDKCompatible(update.expoGoSDKVersion) {
-
+            onLoadingChange?(true)
             viewModel.openApp(url: update.manifestPermalink)
             viewModel.addToRecentlyOpened(
               url: update.manifestPermalink,
@@ -144,6 +177,7 @@ struct ProjectRowWithNavigation: View {
     } else {
       if let branch = project.firstTwoBranches.first,
          let update = branch.updates.first {
+        onLoadingChange?(true)
         viewModel.openApp(url: update.manifestPermalink)
         viewModel.addToRecentlyOpened(
           url: update.manifestPermalink,

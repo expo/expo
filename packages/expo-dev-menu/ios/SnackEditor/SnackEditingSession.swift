@@ -1,11 +1,16 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import Combine
 
 /// Manages the active snack editing session.
 /// This singleton bridges Expo Go (which opens snacks) and the dev menu (which edits them).
 /// When a published snack is opened, Expo Go sets up a session here that the dev menu can use.
-public class SnackEditingSession {
+///
+/// @MainActor ensures all property access is on the main thread for thread safety.
+/// SwiftUI views can observe @Published properties directly.
+@MainActor
+public class SnackEditingSession: ObservableObject {
   public static let shared = SnackEditingSession()
 
   /// Notification posted when session state changes (ready/cleared)
@@ -14,7 +19,24 @@ public class SnackEditingSession {
   /// Notification posted when code has been edited
   public static let codeDidChangeNotification = Notification.Name("SnackEditingSessionCodeDidChange")
 
-  // MARK: - Properties
+  // MARK: - Published Properties (UI-affecting, observed by SwiftUI)
+
+  /// Whether the session is ready to respond to RESEND_CODE
+  @Published public private(set) var isReady: Bool = false
+
+  /// The snack display name (fetched from API)
+  @Published public private(set) var snackName: String?
+
+  /// Whether this session is a lesson (for Expo Go Learn tab)
+  @Published public private(set) var isLesson: Bool = false
+
+  /// The lesson ID if this is a lesson session
+  @Published public private(set) var lessonId: Int?
+
+  /// The lesson description if this is a lesson session
+  @Published public private(set) var lessonDescription: String?
+
+  // MARK: - Non-Published Properties (internal state)
 
   /// The current channel ID
   public private(set) var channel: String?
@@ -22,29 +44,8 @@ public class SnackEditingSession {
   /// The snack identifier (e.g., @username/snackname)
   public private(set) var snackId: String?
 
-  /// The snack display name (fetched from API)
-  public private(set) var snackName: String?
-
-  /// Whether this session is a lesson (for Expo Go Learn tab)
-  public private(set) var isLesson: Bool = false
-
-  /// The lesson ID if this is a lesson session
-  public private(set) var lessonId: Int?
-
-  /// The lesson description if this is a lesson session
-  public private(set) var lessonDescription: String?
-
   /// The session client connected to Snackpub
   public private(set) var sessionClient: SnackSessionClient?
-
-  /// Whether the session is ready to respond to RESEND_CODE
-  public private(set) var isReady: Bool = false {
-    didSet {
-      if isReady != oldValue {
-        NotificationCenter.default.post(name: Self.sessionDidChangeNotification, object: nil)
-      }
-    }
-  }
 
   /// Error if session setup failed
   public private(set) var setupError: Error?
@@ -189,9 +190,13 @@ public class SnackEditingSession {
   }
 
   /// Whether this is a lesson-like session (official lesson or snack with "lesson"/"learn" in name)
+  /// Official lessons don't need to wait for Snackpub connection - the lesson info is set upfront.
+  /// For snacks detected by name, we need the session to be ready to have the display name.
   public var isLessonLikeSession: Bool {
-    guard isReady else { return false }
+    // Official lessons are known immediately (set before Snackpub connects)
     if isLesson { return true }
+    // For name-based detection, need session to be ready
+    guard isReady else { return false }
     return displayName.localizedCaseInsensitiveContains("lesson") ||
            displayName.localizedCaseInsensitiveContains("learn")
   }
@@ -213,12 +218,17 @@ public class SnackEditingSession {
     sessionClient = nil
     channel = nil
     snackId = nil
+    setupError = nil
+
+    // Clear @Published properties - SwiftUI will batch these updates
     snackName = nil
     isReady = false
-    setupError = nil
     isLesson = false
     lessonId = nil
     lessonDescription = nil
+
+    // Post notification for non-SwiftUI observers
+    NotificationCenter.default.post(name: Self.sessionDidChangeNotification, object: nil)
   }
 
   /// Checks if there's an active session for the given channel

@@ -25,6 +25,7 @@ class HomeViewModel: ObservableObject {
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
   @Published var isLoadingData = false
+  @Published var isLoadingApp = false
   @Published var dataError: APIError?
 
   private var cancellables = Set<AnyCancellable>()
@@ -176,6 +177,10 @@ class HomeViewModel: ObservableObject {
 
   func openApp(url: String) {
     openAppViaBridge(url: url)
+  }
+
+  func openApp(url: String, snackParams: NSDictionary) {
+    openAppViaBridge(url: url, snackParams: snackParams)
   }
 
   func updateShakeGesture(_ enabled: Bool) {

@@ -5,6 +5,7 @@ import EXDevMenu
 
 struct SnacksSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
+  @State private var loadingSnackId: String?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -12,7 +13,12 @@ struct SnacksSection: View {
 
       VStack(spacing: 6) {
         ForEach(viewModel.snacks.prefix(3)) { snack in
-          SnackRowWithAction(snack: snack)
+          SnackRowWithAction(
+            snack: snack,
+            isLoading: loadingSnackId == snack.id,
+            onLoadingChange: { loadingSnackId = $0 ? snack.id : nil }
+          )
+          .disabled(viewModel.isLoadingApp)
         }
 
         if viewModel.snacks.count > 3 {
@@ -26,15 +32,22 @@ struct SnacksSection: View {
         }
       }
     }
+    .onChange(of: viewModel.isLoadingApp) { isLoading in
+      if !isLoading {
+        loadingSnackId = nil
+      }
+    }
   }
 }
 
 struct SnackRowWithAction: View {
   let snack: Snack
+  var isLoading: Bool = false
+  var onLoadingChange: ((Bool) -> Void)?
   @EnvironmentObject var viewModel: HomeViewModel
 
   var body: some View {
-    SnackRow(snack: snack) {
+    SnackRow(snack: snack, isLoading: isLoading) {
       openSnack()
     }
   }
@@ -52,25 +65,23 @@ struct SnackRowWithAction: View {
       return
     }
 
+    onLoadingChange?(true)
+
     // Generate channel for this session
     let channel = generateChannelId()
     let snackId = snack.fullName
 
-    // Set up the editing session in the background
-    // This connects to Snackpub and prepares to respond to the snack runtime's RESEND_CODE
-    Task {
-      await SnackEditingSession.shared.setupSession(
-        snackId: snackId,
-        channel: channel,
-        isStaging: false,
-        name: snack.name
-      )
-    }
-
-    // Open the snack with the channel
+    // Open the snack with the channel - session setup happens inside openApp
     let url = createSnackRuntimeUrl(sdkVersion: versions.sdkVersion, snack: snackId, channel: channel)
 
-    viewModel.openApp(url: url)
+    let snackParams: NSDictionary = [
+      "channel": channel,
+      "snackId": snackId,
+      "isStaging": false,
+      "name": snack.name
+    ]
+
+    viewModel.openApp(url: url, snackParams: snackParams)
     // TODO: Re-enable once we properly handle snack sessions when reopening
     // viewModel.addToRecentlyOpened(url: url, name: snack.name, iconUrl: nil)
   }

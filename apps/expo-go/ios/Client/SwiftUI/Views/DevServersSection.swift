@@ -6,6 +6,7 @@ struct DevServersSection: View {
   @State private var showingURLInput = false
   @State private var urlText = ""
   @State private var showingTroubleshootingAlert = false
+  @State private var loadingServerUrl: String?
 
   /// Hide "Enter URL manually" on physical devices (not useful there since users can't easily type URLs)
   private var shouldShowEnterUrl: Bool {
@@ -29,8 +30,9 @@ struct DevServersSection: View {
 
         if !viewModel.developmentServers.isEmpty {
           ForEach(viewModel.developmentServers) { server in
-            DevServerRow(server: server) {
+            DevServerRow(server: server, isLoading: loadingServerUrl == server.url) {
               UIImpactFeedbackGenerator(style: .light).impactOccurred()
+              loadingServerUrl = server.url
               let normalizedUrl = normalizeDevServerUrl(server.url)
               viewModel.addToRecentlyOpened(
                 url: normalizedUrl,
@@ -39,6 +41,7 @@ struct DevServersSection: View {
               )
               viewModel.openApp(url: normalizedUrl)
             }
+            .disabled(viewModel.isLoadingApp)
           }
         }
 
@@ -51,6 +54,11 @@ struct DevServersSection: View {
       Button("OK", role: .cancel) { }
     } message: {
       Text(troubleshootingMessage)
+    }
+    .onChange(of: viewModel.isLoadingApp) { isLoading in
+      if !isLoading {
+        loadingServerUrl = nil
+      }
     }
   }
 
@@ -125,6 +133,7 @@ struct DevServersSection: View {
 
         Button {
           if let url = sanitizeUrlString(urlText) {
+            loadingServerUrl = url
             viewModel.openApp(url: url)
             withAnimation(.easeInOut(duration: 0.3)) {
               showingURLInput = false
@@ -132,15 +141,21 @@ struct DevServersSection: View {
             urlText = ""
           }
         } label: {
-          Text("Connect")
-            .font(.headline)
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(urlText.isEmpty ? Color.gray : Color.black)
-            .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
+          HStack {
+            if viewModel.isLoadingApp && loadingServerUrl != nil && !viewModel.developmentServers.contains(where: { $0.url == loadingServerUrl }) {
+              ProgressView()
+                .tint(.white)
+            }
+            Text("Connect")
+          }
+          .font(.headline)
+          .foregroundColor(.white)
+          .frame(maxWidth: .infinity)
+          .padding()
+          .background(urlText.isEmpty ? Color.gray : Color.black)
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
         }
-        .disabled(urlText.isEmpty)
+        .disabled(urlText.isEmpty || viewModel.isLoadingApp)
         .buttonStyle(PlainButtonStyle())
       }
     }

@@ -4,6 +4,7 @@ import SwiftUI
 
 struct RecentlyOpenedSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
+  @State private var loadingAppUrl: String?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -20,12 +21,19 @@ struct RecentlyOpenedSection: View {
 
       LazyVStack(spacing: 6) {
         ForEach(viewModel.recentlyOpenedApps) { app in
-          RecentlyOpenedAppRow(app: app) {
+          RecentlyOpenedAppRow(app: app, isLoading: loadingAppUrl == app.url) {
+            loadingAppUrl = app.url
             viewModel.openApp(url: app.url)
           }
+          .disabled(viewModel.isLoadingApp)
         }
       }
       .padding(.top)
+    }
+    .onChange(of: viewModel.isLoadingApp) { isLoading in
+      if !isLoading {
+        loadingAppUrl = nil
+      }
     }
   }
 }

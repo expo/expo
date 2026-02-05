@@ -417,6 +417,15 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
 
+  // Skip fade animation when leaving home (going to an app) to avoid flicker
+  // from loading state resetting while still visible
+  BOOL isLeavingHome = fromViewController == _homeViewController;
+  if (isLeavingHome) {
+    toViewController.view.alpha = 1.0f;
+    completion();
+    return;
+  }
+
   fromViewController.view.alpha = 1.0f;
   toViewController.view.alpha = 0.0f;
 

@@ -4,6 +4,7 @@ import SwiftUI
 
 struct DevServerRow: View {
   let server: DevelopmentServer
+  var isLoading: Bool = false
   let onTap: () -> Void
 
   var body: some View {
@@ -28,9 +29,14 @@ struct DevServerRow: View {
         }
 
         Spacer()
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+
+        if isLoading {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

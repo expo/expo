@@ -78,6 +78,12 @@ struct LearnTabView: View {
     .onAppear {
       viewModel.settingsManager.refreshCompletedLessons()
     }
+    .onChange(of: viewModel.isLoadingApp) { isLoading in
+      // Clear local loading state when global loading completes
+      if !isLoading {
+        loadingLessonId = nil
+      }
+    }
     .alert("Unable to Load Lesson", isPresented: .init(
       get: { errorMessage != nil },
       set: { if !$0 { errorMessage = nil } }
@@ -95,41 +101,37 @@ struct LearnTabView: View {
   private func startLesson(_ lesson: Lesson) {
     loadingLessonId = lesson.id
 
-    Task {
-      let service = PlaygroundService.shared
-      let channel = service.generateChannelId()
+    let service = PlaygroundService.shared
+    let channel = service.generateChannelId()
 
-      // Set up editing session with lesson code
-      await SnackEditingSession.shared.setupSessionWithCode(
-        snackId: lesson.snackDisplayName,
-        code: lesson.snackFiles,
-        dependencies: Lesson.snackDependencies,
-        channel: channel,
-        isLesson: true,
-        lessonId: lesson.id,
-        lessonDescription: lesson.shortDescription
-      )
+    // Build URL
+    let url = service.buildRuntimeUrl(
+      channel: channel,
+      sdkVersion: Versions.sharedInstance.sdkVersion
+    )
 
-      // Check for setup errors
-      if let error = SnackEditingSession.shared.setupError {
-        await MainActor.run {
-          loadingLessonId = nil
-          errorMessage = error.localizedDescription
-        }
-        return
-      }
-
-      // Build URL and launch
-      let url = service.buildRuntimeUrl(
-        channel: channel,
-        sdkVersion: Versions.sharedInstance.sdkVersion
-      )
-
-      await MainActor.run {
-        viewModel.openApp(url: url)
-        loadingLessonId = nil
-      }
+    // Convert lesson code to the format expected by openApp
+    var codeDict: [String: [String: Any]] = [:]
+    for (path, file) in lesson.snackFiles {
+      codeDict[path] = [
+        "contents": file.contents,
+        "type": file.isAsset ? "ASSET" : "CODE"
+      ]
     }
+
+    // Build snack params
+    let snackParams: NSDictionary = [
+      "channel": channel,
+      "snackId": lesson.snackDisplayName,
+      "code": codeDict,
+      "dependencies": Lesson.snackDependencies,
+      "isLesson": true,
+      "lessonId": lesson.id,
+      "lessonDescription": lesson.shortDescription
+    ]
+
+    // Open app with snack params - session setup happens inside openApp
+    viewModel.openApp(url: url, snackParams: snackParams)
   }
 
   // MARK: - Playground Creation (kept for future use)
@@ -137,45 +139,44 @@ struct LearnTabView: View {
   private func createNewPlayground() {
     loadingLessonId = 0  // Use 0 to indicate generic loading
 
-    Task {
-      let versions = Versions.sharedInstance
-      let service = PlaygroundService.shared
-      let channel = service.generateChannelId()
+    let versions = Versions.sharedInstance
+    let service = PlaygroundService.shared
+    let channel = service.generateChannelId()
 
-      await SnackEditingSession.shared.setupSessionWithCode(
-        code: PlaygroundService.defaultCode,
-        channel: channel
-      )
+    let url = service.buildRuntimeUrl(channel: channel, sdkVersion: versions.sdkVersion)
 
-      let url = service.buildRuntimeUrl(channel: channel, sdkVersion: versions.sdkVersion)
-
-      await MainActor.run {
-        viewModel.openApp(url: url)
-        loadingLessonId = nil
-      }
+    // Convert default code to the format expected by openApp
+    var codeDict: [String: [String: Any]] = [:]
+    for (path, file) in PlaygroundService.defaultCode {
+      codeDict[path] = [
+        "contents": file.contents,
+        "type": file.isAsset ? "ASSET" : "CODE"
+      ]
     }
+
+    let snackParams: NSDictionary = [
+      "channel": channel,
+      "code": codeDict
+    ]
+
+    viewModel.openApp(url: url, snackParams: snackParams)
   }
 
   private func forkTemplatePlayground() {
     loadingLessonId = 0  // Use 0 to indicate generic loading
 
-    Task {
-      let versions = Versions.sharedInstance
-      let service = PlaygroundService.shared
-      let channel = service.generateChannelId()
+    let versions = Versions.sharedInstance
+    let service = PlaygroundService.shared
+    let channel = service.generateChannelId()
 
-      await SnackEditingSession.shared.setupSession(
-        snackId: service.getTemplateSnackId(),
-        channel: channel,
-        isStaging: false
-      )
+    let url = service.buildRuntimeUrl(channel: channel, sdkVersion: versions.sdkVersion)
 
-      let url = service.buildRuntimeUrl(channel: channel, sdkVersion: versions.sdkVersion)
+    let snackParams: NSDictionary = [
+      "channel": channel,
+      "snackId": service.getTemplateSnackId(),
+      "isStaging": false
+    ]
 
-      await MainActor.run {
-        viewModel.openApp(url: url)
-        loadingLessonId = nil
-      }
-    }
+    viewModel.openApp(url: url, snackParams: snackParams)
   }
 }
