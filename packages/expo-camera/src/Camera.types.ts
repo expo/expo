@@ -462,7 +462,7 @@ export type CameraViewProps = ViewProps & {
    * @platform ios
    */
   selectedLens?: string;
-   /**
+  /**
    * A boolean to enable or disable the torch.
    * @default false
    */
