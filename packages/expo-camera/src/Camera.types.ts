@@ -231,6 +231,24 @@ export type CameraRecordingOptions = {
   codec?: VideoCodec;
 };
 
+
+/**
+ * Information about an available camera lens.
+ */
+export type LensInfo = {
+  /**
+   * The stable device type identifier (e.g., `"AVCaptureDeviceTypeBuiltInUltraWideCamera"`).
+   * Use this value for the `selectedLens` prop.
+   */
+  deviceType: string;
+  /**
+   * The localized display name for the lens (e.g., `"Back Ultra Wide Camera"`).
+   * Use this for displaying lens options in the UI.
+   */
+  localizedName: string;
+};
+
+
 /**
  * @hidden
  */
@@ -244,7 +262,7 @@ export type PictureSavedListener = (event: {
 export type AvailableLensesChangedListener = (event: { nativeEvent: AvailableLenses }) => void;
 
 // @docsMissing
-export type AvailableLenses = { lenses: string[] };
+export type AvailableLenses = { lenses: LensInfo[]; };
 
 /**
  * @hidden
@@ -504,7 +522,7 @@ export interface CameraViewRef {
   readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
   readonly takePictureRef?: (options: CameraPictureOptions) => Promise<PictureRef>;
   readonly getAvailablePictureSizes: () => Promise<string[]>;
-  readonly getAvailableLenses: () => Promise<string[]>;
+  readonly getAvailableLenses: () => Promise<LensInfo[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
   readonly toggleRecording: () => Promise<void>;
   readonly stopRecording: () => Promise<void>;
@@ -664,3 +682,5 @@ export declare class CameraNativeModule extends NativeModule<CameraEvents> {
   readonly Type: Record<keyof CameraType, CameraNativeProps['facing']>;
   readonly FlashMode: Record<keyof FlashMode, CameraNativeProps['flashMode']>;
 }
+
+

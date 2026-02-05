@@ -12,6 +12,7 @@ import {
   ScanningResult,
   VideoCodec,
   AvailableLenses,
+  LensInfo,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
@@ -123,10 +124,10 @@ export default class CameraView extends Component<CameraViewProps> {
   /**
    * Returns the available lenses for the currently selected camera.
    *
-   * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+   * @return An array of `LensInfo` objects containing both the stable `deviceType` identifier and the `localizedName` for display purposes. The `deviceType` can be passed to the `seletedLens` prop.
    * @platform ios
    */
-  async getAvailableLensesAsync(): Promise<string[]> {
+  async getAvailableLensesAsync(): Promise<LensInfo[]> {
     return (await this._cameraRef.current?.getAvailableLenses()) ?? [];
   }
 
