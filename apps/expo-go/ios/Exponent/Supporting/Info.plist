@@ -77,7 +77,7 @@
 	<key>GADDelayAppMeasurementInit</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<true/>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>waze</string>
