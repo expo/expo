@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix route URL detection in `useLoaderData` ([#42912](https://github.com/expo/expo/pull/42912) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 55.0.0-preview.7 — 2026-02-08
