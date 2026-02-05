@@ -45,7 +45,11 @@ Leave this command running in one terminal window so that it can sync your funct
 
 Running `npx convex dev` saves your deployment URL to a **.env.local** file as `EXPO_PUBLIC_CONVEX_URL`. To make it available in your app builds, add it as an [EAS environment variable](/eas/environment-variables/) in a new terminal session:
 
-<Terminal cmd={["$ eas env:create --name EXPO_PUBLIC_CONVEX_URL --value https://YOUR_DEPLOYMENT_URL.convex.cloud --visibility plaintext --environment production --environment preview --environment development"]} />
+<Terminal
+  cmd={[
+    '$ eas env:create --name EXPO_PUBLIC_CONVEX_URL --value https://YOUR_DEPLOYMENT_URL.convex.cloud --visibility plaintext --environment production --environment preview --environment development',
+  ]}
+/>
 
 Replace `https://YOUR_DEPLOYMENT_URL.convex.cloud` with the `EXPO_PUBLIC_CONVEX_URL` value from your **.env.local** file. To learn more, see [Environment variables](/guides/environment-variables/).
 
