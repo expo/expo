@@ -41,9 +41,21 @@ Leave this command running in one terminal window so that it can sync your funct
 
 <Step label="3">
 
+## Save the Convex URL as an EAS environment variable
+
+Running `npx convex dev` saves your deployment URL to a **.env.local** file as `EXPO_PUBLIC_CONVEX_URL`. To make it available in your app builds, add it as an [EAS environment variable](/eas/environment-variables/) in a new terminal session:
+
+<Terminal cmd={["$ eas env:create --name EXPO_PUBLIC_CONVEX_URL --value https://YOUR_DEPLOYMENT_URL.convex.cloud --visibility plaintext --environment production --environment preview --environment development"]} />
+
+Replace `https://YOUR_DEPLOYMENT_URL.convex.cloud` with the `EXPO_PUBLIC_CONVEX_URL` value from your **.env.local** file. To learn more, see [Environment variables](/guides/environment-variables/).
+
+</Step>
+
+<Step label="4">
+
 ## Seed your database
 
-In a new terminal session, create a **sampleData.jsonl** file with the following sample data:
+Next, create a **sampleData.jsonl** file with the following sample data:
 
 ```json sampleData.jsonl
 {"text": "Buy groceries", "isCompleted": true}
@@ -57,7 +69,7 @@ To send this data to Convex, run:
 
 </Step>
 
-<Step label="4">
+<Step label="5">
 
 ## Query the database
 
@@ -76,13 +88,13 @@ export const get = query({
 
 </Step>
 
-<Step label="5">
+<Step label="6">
 
 ## Connect your app
 
-In the top-level **app/\\\_layout.tsx** file in your app, create a `ConvexReactClient` and pass it to a `ConvexProvider` wrapping your component tree:
+In the top-level **src/app/\_layout.tsx** file in your app, create a `ConvexReactClient` and pass it to a `ConvexProvider` wrapping your component tree:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { ConvexProvider, ConvexReactClient } from 'convex/react';
 import { Stack } from 'expo-router';
 
@@ -103,13 +115,13 @@ export default function RootLayout() {
 
 </Step>
 
-<Step label="6">
+<Step label="7">
 
 ## Display the data in your app
 
 In your app, use the `useQuery` hook to fetch data from your `api.tasks.get` API:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { api } from '@/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { Text, View } from 'react-native';
