@@ -1,7 +1,7 @@
 import { type ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
 import path from 'node:path';
 
-import { mkdir } from '../../common';
+import { applyPatchToFile, checkPlugin, mkdir } from '../../common';
 import type { PluginConfig } from '../types';
 import { createFileFromTemplate } from '../utils';
 
@@ -48,6 +48,19 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     });
     createFileFromTemplate('proguard-rules.pro', brownfieldPath);
     createFileFromTemplate('consumer-rules.pro', brownfieldPath);
+
+    // Adjust ReactNativeHostManager and BrownfieldActivity to initialize dev menu
+    if (checkPlugin(config, 'expo-dev-menu')) {
+      applyPatchToFile(
+        'ReactNativeHostManager.patch',
+        path.join(brownfieldSourcesPath, 'ReactNativeHostManager.kt')
+      );
+      applyPatchToFile(
+        'BrownfieldActivity.patch',
+        path.join(brownfieldSourcesPath, 'BrownfieldActivity.kt')
+      );
+      applyPatchToFile('build.gradle.patch', path.join(brownfieldPath, 'build.gradle.kts'));
+    }
 
     return config;
   });

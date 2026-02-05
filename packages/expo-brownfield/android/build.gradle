@@ -19,6 +19,9 @@ android {
 }
 
 dependencies {
+  implementation project(':expo-manifests')
+  implementation "com.facebook.react:react-android"
+  implementation "com.squareup.okhttp3:okhttp:4.9.2"
   compileOnly "androidx.activity:activity-ktx:1.8.0"
   compileOnly "androidx.core:core-ktx:1.12.0"
 }

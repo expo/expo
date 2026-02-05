@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] fix dev menu in isolated brownfield ([#42637](https://github.com/expo/expo/pull/42637) by [@pmleczek](https://github.com/pmleczek))
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-03
