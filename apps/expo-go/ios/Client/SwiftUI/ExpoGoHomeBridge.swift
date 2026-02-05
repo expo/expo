@@ -36,52 +36,64 @@ import EXDevMenu
       return
     }
 
+    // For non-snack apps, open synchronously to avoid timing issues with native module registration.
+    // The async Task wrapper was causing race conditions where the app would start before
+    // native components were fully registered.
+    guard let params = snackParams, let channel = params["channel"] as? String else {
+      // Non-snack app: clear session and open synchronously
+      // We're called from RCTExecuteOnMainQueue so we're already on the main thread
+      MainActor.assumeIsolated {
+        SnackEditingSession.shared.clearSession()
+      }
+      EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
+      completion(true, nil)
+      return
+    }
+
+    // Snack app: need async for session setup
     Task { @MainActor in
       // 1. Clear session before any setup.
       // This ensures the FAB sees cleared state when the app starts loading.
       SnackEditingSession.shared.clearSession()
 
-      // 2. If snack params provided, set up the session
-      if let params = snackParams,
-         let channel = params["channel"] as? String {
-        let isStaging = params["isStaging"] as? Bool ?? false
-        let isLesson = params["isLesson"] as? Bool ?? false
-        let lessonId = params["lessonId"] as? Int
-        let lessonDescription = params["lessonDescription"] as? String
-        let name = params["name"] as? String
+      // 2. Set up the snack session
+      let isStaging = params["isStaging"] as? Bool ?? false
+      let isLesson = params["isLesson"] as? Bool ?? false
+      let lessonId = params["lessonId"] as? Int
+      let lessonDescription = params["lessonDescription"] as? String
+      let name = params["name"] as? String
 
-        if let code = params["code"] as? [String: [String: Any]] {
-          // Lesson/playground: code provided directly
-          var snackFiles: [String: SnackSessionClient.SnackFile] = [:]
-          for (path, fileData) in code {
-            let contents = fileData["contents"] as? String ?? ""
-            let isAsset = fileData["type"] as? String == "ASSET"
-            snackFiles[path] = SnackSessionClient.SnackFile(path: path, contents: contents, isAsset: isAsset)
-          }
-
-          let dependencies = params["dependencies"] as? [String: [String: Any]] ?? [:]
-          let snackId = params["snackId"] as? String ?? "new"
-
-          await SnackEditingSession.shared.setupSessionWithCode(
-            snackId: snackId,
-            code: snackFiles,
-            dependencies: dependencies,
-            channel: channel,
-            isStaging: isStaging,
-            clearFirst: false,  // We already cleared above
-            isLesson: isLesson,
-            lessonId: lessonId,
-            lessonDescription: lessonDescription
-          )
-        } else if let snackId = params["snackId"] as? String {
-          // Published snack: fetch code from API
-          await SnackEditingSession.shared.setupSession(
-            snackId: snackId,
-            channel: channel,
-            isStaging: isStaging,
-            name: name
-          )
+      if let code = params["code"] as? [String: [String: Any]] {
+        // Lesson/playground: code provided directly
+        var snackFiles: [String: SnackSessionClient.SnackFile] = [:]
+        for (path, fileData) in code {
+          let contents = fileData["contents"] as? String ?? ""
+          let isAsset = fileData["type"] as? String == "ASSET"
+          snackFiles[path] = SnackSessionClient.SnackFile(path: path, contents: contents, isAsset: isAsset)
         }
+
+        let dependencies = params["dependencies"] as? [String: [String: Any]] ?? [:]
+        let snackId = params["snackId"] as? String ?? "new"
+
+        await SnackEditingSession.shared.setupSessionWithCode(
+          snackId: snackId,
+          code: snackFiles,
+          dependencies: dependencies,
+          channel: channel,
+          isStaging: isStaging,
+          clearFirst: false,  // We already cleared above
+          isLesson: isLesson,
+          lessonId: lessonId,
+          lessonDescription: lessonDescription
+        )
+      } else if let snackId = params["snackId"] as? String {
+        // Published snack: fetch code from API
+        await SnackEditingSession.shared.setupSession(
+          snackId: snackId,
+          channel: channel,
+          isStaging: isStaging,
+          name: name
+        )
       }
 
       // 3. Create the new app directly (not through linkingManager to avoid circular call)
