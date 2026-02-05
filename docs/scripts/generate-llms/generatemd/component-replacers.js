@@ -16,7 +16,6 @@ export function replaceBoxLinks(content) {
     }
     result += content.slice(cursor, start);
 
-    // Find the proper closing /> by tracking brace depth for JSX expressions
     let end = -1;
     let braceDepth = 0;
 
@@ -843,7 +842,7 @@ export function replaceReactNativeCompatibilityTable(content, href) {
 
   const table = [...header, ...rows].join('\n');
 
-  return content.replace(/<ReactNativeCompatibilityTable\s*\/>/g, `\n${table}\n`);
+  return content.replace(/<ReactNativeCompatibilityTable\s*\/>/g, `\n\n${table}\n`);
 }
 
 export function replaceAndroidIOSCompatibilityTable(content, href) {
@@ -887,5 +886,5 @@ export function replaceAndroidIOSCompatibilityTable(content, href) {
 
   const table = [...header, ...rows].join('\n');
 
-  return content.replace(/<AndroidIOSCompatibilityTable\s*\/>/g, `\n${table}\n`);
+  return content.replace(/<AndroidIOSCompatibilityTable\s*\/>/g, `\n\n${table}\n\n`);
 }

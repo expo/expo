@@ -211,8 +211,12 @@ export async function processPage(filePath, href) {
     .map(l => l.trimEnd())
     .join('\n')
     .replace(/([^\n])\n(#{1,6} )/g, '$1\n\n$2')
+    .replace(/(#{1,6} .+)\n([^\n#])/g, '$1\n\n$2')
+    .replace(/(\*\*[^*]+\*\*)\n([^\n*-])/g, '$1\n\n$2')
+    .replace(/(\*\*[^*]+\*\*)\n(-)/g, '$1\n\n$2')
     .replace(/(```)\n([^\n])/g, '$1\n\n$2')
     .replace(/([^\n])\n(```)/g, '$1\n\n$2')
+    .replace(/([^\n|])\n(\|)/g, '$1\n\n$2')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 
