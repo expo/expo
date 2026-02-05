@@ -206,6 +206,29 @@ function getModifierTags(comment) {
   return tags;
 }
 
+function getExamples(comment) {
+  if (!comment?.blockTags) {
+    return [];
+  }
+  return comment.blockTags
+    .filter(t => t.tag === '@example')
+    .map(t => {
+      return t.content
+        ?.map(part => {
+          if (part.kind === 'code') {
+            return part.text || '';
+          }
+          if (part.kind === 'text') {
+            return part.text || '';
+          }
+          return '';
+        })
+        .join('')
+        .trim();
+    })
+    .filter(Boolean);
+}
+
 function renderProperty(prop) {
   const parts = [];
   const typeStr = resolveType(prop.type);
@@ -239,6 +262,13 @@ function renderProperty(prop) {
   const desc = getCommentText(prop.comment);
   if (desc) {
     parts.push(desc);
+  }
+
+  const examples = getExamples(prop.comment);
+  if (examples.length > 0) {
+    for (const example of examples) {
+      parts.push(example);
+    }
   }
 
   return parts.join('\n\n');
@@ -289,6 +319,110 @@ function renderMethodSignature(methodName, sig) {
     parts.push(`Returns: ${retComment}`);
   }
 
+  const examples = getExamples(sig.comment);
+  if (examples.length > 0) {
+    for (const example of examples) {
+      parts.push(example);
+    }
+  }
+
+  return parts.join('\n\n');
+}
+
+function isReactComponent(entry) {
+  // Check if a kind 32 entry is a React component
+  // Components have a type with reflection that has signatures with a "props" parameter
+  const type = entry.type;
+  if (!type) {
+    return false;
+  }
+
+  // Check intersection types (common for forwardRef components)
+  if (type.type === 'intersection' && type.types) {
+    for (const t of type.types) {
+      if (t.type === 'reflection' && t.declaration?.signatures?.length > 0) {
+        const sig = t.declaration.signatures[0];
+        const hasPropsParam = sig.parameters?.some(p => p.name === 'props');
+        if (hasPropsParam) {
+          return true;
+        }
+      }
+    }
+  }
+
+  // Check direct reflection type
+  if (type.type === 'reflection' && type.declaration?.signatures?.length > 0) {
+    const sig = type.declaration.signatures[0];
+    const hasPropsParam = sig.parameters?.some(p => p.name === 'props');
+    if (hasPropsParam) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function getComponentSignature(entry) {
+  // Get the signature from a component entry
+  const type = entry.type;
+  if (!type) {
+    return null;
+  }
+
+  if (type.type === 'intersection' && type.types) {
+    for (const t of type.types) {
+      if (t.type === 'reflection' && t.declaration?.signatures?.length > 0) {
+        return t.declaration.signatures[0];
+      }
+    }
+  }
+
+  if (type.type === 'reflection' && type.declaration?.signatures?.length > 0) {
+    return type.declaration.signatures[0];
+  }
+
+  return null;
+}
+
+function renderComponent(entry) {
+  const parts = [];
+  const sig = getComponentSignature(entry);
+  const description = sig ? getCommentText(sig.comment) : getCommentText(entry.comment);
+  const platforms = sig ? getPlatforms(sig.comment) : getPlatforms(entry.comment);
+  const modifiers = sig ? getModifierTags(sig.comment) : getModifierTags(entry.comment);
+
+  // Use backtick escaping to avoid collision with JSX cleanup in utils.js
+  let header = `**\`${entry.name}\`** (*Component*)`;
+  const tags = [...modifiers, ...platforms];
+  if (tags.length > 0) {
+    header += ` — *${tags.join(', ')}*`;
+  }
+  parts.push(header);
+
+  if (description) {
+    parts.push(description);
+  }
+
+  // Render props if available
+  if (sig?.parameters?.length > 0) {
+    const propsParam = sig.parameters.find(p => p.name === 'props');
+    if (propsParam?.type) {
+      const propsType = propsParam.type;
+      // If props is a reference to a named type, just mention it
+      if (propsType.type === 'reference' && propsType.name) {
+        parts.push(`Props: See [\`${propsType.name}\`](#${propsType.name.toLowerCase()})`);
+      }
+    }
+  }
+
+  // Render examples if available
+  const examples = sig ? getExamples(sig.comment) : getExamples(entry.comment);
+  if (examples.length > 0) {
+    for (const example of examples) {
+      parts.push(example);
+    }
+  }
+
   return parts.join('\n\n');
 }
 
@@ -296,19 +430,42 @@ function renderApiChildren(children) {
   const lines = [];
 
   // Group children by kind
-  const functions = children.filter(c => c.kind === 64 && c.name && c.name !== 'default');
+  const allFunctions = children.filter(c => c.kind === 64 && c.name && c.name !== 'default');
+  const hooks = allFunctions.filter(c => c.name.startsWith('use'));
+  const methods = allFunctions.filter(c => !c.name.startsWith('use'));
   const classes = children.filter(c => c.kind === 128 && c.name && c.name !== 'default');
   const enums = children.filter(c => c.kind === 8 && c.name && c.name !== 'default');
   const interfaces = children.filter(c => c.kind === 256 && c.name && c.name !== 'default');
   const types = children.filter(
     c => (c.kind === 2097152 || c.kind === 4194304) && c.name && c.name !== 'default'
   );
-  const constants = children.filter(c => c.kind === 32 && c.name && c.name !== 'default');
+  const allConstants = children.filter(c => c.kind === 32 && c.name && c.name !== 'default');
+  const components = allConstants.filter(isReactComponent);
+  const constants = allConstants.filter(c => !isReactComponent(c));
 
-  // Render Methods/Functions first
-  if (functions.length > 0) {
+  // Render Hooks first
+  if (hooks.length > 0) {
+    lines.push('### Hooks');
+    for (const entry of hooks) {
+      const sigs = entry.signatures || [];
+      for (const sig of sigs) {
+        lines.push(renderMethodSignature(entry.name, sig));
+      }
+    }
+  }
+
+  // Render Components
+  if (components.length > 0) {
+    lines.push('### Components');
+    for (const entry of components) {
+      lines.push(renderComponent(entry));
+    }
+  }
+
+  // Render Methods
+  if (methods.length > 0) {
     lines.push('### Methods');
-    for (const entry of functions) {
+    for (const entry of methods) {
       const sigs = entry.signatures || [];
       for (const sig of sigs) {
         lines.push(renderMethodSignature(entry.name, sig));
