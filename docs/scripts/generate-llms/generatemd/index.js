@@ -42,11 +42,9 @@ export async function generateGenerateMd() {
 
     markdown = markdown.replace(/(\n---)+\s*$/, '');
 
-    const sitemap = `---
-
-    ### Sitemap
-
-    [Overview of all docs pages](/llms.txt)`;
+    const sitemap = ['---', '', '### Sitemap', '', '[Overview of all docs pages](/llms.txt)'].join(
+      '\n'
+    );
 
     const outputPath = path.join(OUTPUT_DIRECTORY_NAME, href + '.md');
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
