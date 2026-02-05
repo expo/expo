@@ -63,7 +63,7 @@ class Env {
 
   /** Skip warning users about a dirty git status */
   get EXPO_NO_GIT_STATUS() {
-    return boolish('EXPO_NO_GIT_STATUS', false);
+    return boolish('EXPO_NO_GIT_STATUS', true);
   }
   /** Disable auto web setup */
   get EXPO_NO_WEB_SETUP() {
@@ -144,6 +144,16 @@ class Env {
   }
 
   /**
+   * Instructs a different Metro config to be loaded.
+   * The path, according to metro-config, should be a path relative to the current working directory.
+   * This flag is internal and was added for external tools.
+   * @internal
+   */
+  get EXPO_OVERRIDE_METRO_CONFIG(): string | undefined {
+    return process.env.EXPO_OVERRIDE_METRO_CONFIG?.trim() || undefined;
+  }
+
+  /**
    * Use the network inspector by overriding the metro inspector proxy with a custom version.
    * @deprecated This has been replaced by `@react-native/dev-middleware` and is now unused.
    */
@@ -162,13 +172,6 @@ class Env {
    */
   get EXPO_METRO_UNSTABLE_ERRORS() {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
-  }
-
-  /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
-   * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
-   */
-  get EXPO_USE_STICKY_RESOLVER() {
-    return boolish('EXPO_USE_STICKY_RESOLVER', false);
   }
 
   /** Disable Environment Variable injection in client bundles. */
@@ -290,6 +293,13 @@ class Env {
   /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */
   get EXPO_UNSTABLE_LOG_BOX(): boolean {
     return boolish('EXPO_UNSTABLE_LOG_BOX', false);
+  }
+
+  /**
+   * Enable Bonjour advertising of the Expo CLI on local networks
+   */
+  get EXPO_UNSTABLE_BONJOUR(): boolean {
+    return boolish('EXPO_UNSTABLE_BONJOUR', false);
   }
 }
 

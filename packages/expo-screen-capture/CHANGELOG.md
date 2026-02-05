@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+### 💡 Others
+
+- mark `removeScreenshotListener` call as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fix main thread violation warnings on app startup. ([#42204](https://github.com/expo/expo/pull/42204) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
 - Remove warning about iOS screenshot limitations. ([#40115](https://github.com/expo/expo/pull/40115) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 
 ## 8.0.9 - 2025-12-05

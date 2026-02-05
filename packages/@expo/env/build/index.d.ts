@@ -1,3 +1,4 @@
+import { type EnvOutput } from './parse';
 /** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
 export declare function isEnabled(): boolean;
 /** All conventional modes that should not cause warnings */
@@ -22,9 +23,9 @@ export declare function getEnvFiles({ mode, silent, }?: {
  */
 export declare function parseEnvFiles(envFiles: string[], { systemEnv, }?: {
     /** The system environment to use when expanding environment variables, defaults to `process.env` */
-    systemEnv?: NodeJS.ProcessEnv;
+    systemEnv?: EnvOutput;
 }): {
-    env: Record<string, string>;
+    env: EnvOutput;
     files: string[];
 };
 /**
@@ -43,7 +44,7 @@ export declare function loadEnvFiles(envFiles: string[], { force, silent, system
     loaded: any;
 } | {
     loaded: string[];
-    env: Record<string, string>;
+    env: EnvOutput;
     files: string[];
     result: "loaded";
 };
@@ -52,7 +53,7 @@ export declare function loadEnvFiles(envFiles: string[], { force, silent, system
  * This does not check for collisions of existing system environment variables, or mutates the system environment variables.
  */
 export declare function parseProjectEnv(projectRoot: string, options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof parseEnvFiles>[1]): {
-    env: Record<string, string>;
+    env: EnvOutput;
     files: string[];
 };
 /**
@@ -66,7 +67,7 @@ export declare function loadProjectEnv(projectRoot: string, options?: Parameters
     loaded: any;
 } | {
     loaded: string[];
-    env: Record<string, string>;
+    env: EnvOutput;
     files: string[];
     result: "loaded";
 };
@@ -76,7 +77,7 @@ export declare function logLoadedEnv(envInfo: ReturnType<typeof loadEnvFiles>, o
     loaded: any;
 } | {
     loaded: string[];
-    env: Record<string, string>;
+    env: EnvOutput;
     files: string[];
     result: "loaded";
 };
@@ -90,7 +91,7 @@ export declare function get(projectRoot: string, { force, silent, }?: {
     force?: boolean;
     silent?: boolean;
 }): {
-    env: Record<string, string>;
+    env: EnvOutput;
     files: string[];
 };
 /**
@@ -112,3 +113,7 @@ export declare function load(projectRoot: string, options?: {
 export declare function getFiles(mode: string | undefined, { silent }?: {
     silent?: boolean;
 }): string[];
+/**
+ * Parses the contents of a single `.env` file, optionally expanding it immediately.
+ */
+export declare function parseEnv(contents: string, sourceEnv?: EnvOutput): EnvOutput;

@@ -62,7 +62,7 @@ public final class ModuleHolder {
   // MARK: Calling functions
 
   @preconcurrency
-  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> () = { _ in }) {
+  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> Void = { _ in }) {
     guard let appContext else {
       callback(.failure(Exceptions.AppContextLost()))
       return

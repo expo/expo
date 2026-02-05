@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Called by task manager service to send an event with given body.
  */
-- (void)executeWithBody:(NSDictionary *)body;
+- (void)executeWithBody:(NSDictionary<NSString *, id> *)body;
 
 /**
  *  Whether or not the module was initialized for headless (background) JS app.

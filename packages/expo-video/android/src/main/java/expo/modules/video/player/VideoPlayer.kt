@@ -58,7 +58,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
-  private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
+  private val listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
   private val currentVideoViewRef = MutableWeakReference<VideoView?>(null) { new, old ->
     sendEvent(PlayerEvent.TargetViewChanged(new, old))
   }
@@ -74,7 +74,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLoadControl(loadControl)
     .build()
 
-  internal lateinit var firstFrameEventGenerator: FirstFrameEventGenerator
+  internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   var mediaSession: MediaSession = buildBasicMediaSession(context, player)
   val intervalUpdateClock = IntervalUpdateClock(this)
@@ -239,12 +239,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
       val newCurrentAudioTrack = audioTracks.currentAudioTrack
       availableVideoTracks = tracks.toVideoTracks()
+      refreshPlaybackInfo()
 
       if (isLoadingNewSource) {
         sendEvent(
           PlayerEvent.VideoSourceLoaded(
             commitedSource,
-            this@VideoPlayer.player.duration / 1000.0,
+            duration.toDouble(),
             availableVideoTracks,
             newSubtitleTracks,
             newAudioTracks
@@ -338,10 +339,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     player.addListener(playerListener)
     player.addAnalyticsListener(analyticsListener)
     VideoManager.registerVideoPlayer(this)
-
+    firstFrameEventGenerator = createFirstFrameEventGenerator()
     // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
     appContext.mainQueue.launch {
-      firstFrameEventGenerator = createFirstFrameEventGenerator()
       subtitles.setSubtitlesEnabled(false)
     }
   }
@@ -481,19 +481,24 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {
-    if (listeners.all { it.get() != videoPlayerListener }) {
-      listeners.add(WeakReference(videoPlayerListener))
+    synchronized(listeners) {
+      if (listeners.all { it.get() != videoPlayerListener }) {
+        listeners.add(WeakReference(videoPlayerListener))
+      }
     }
   }
 
   fun removeListener(videoPlayerListener: VideoPlayerListener) {
-    listeners.removeAll { it.get() == videoPlayerListener }
+    synchronized(listeners) {
+      listeners.removeAll { it.get() == videoPlayerListener }
+    }
   }
 
   private fun sendEvent(event: PlayerEvent) {
+    val listenersSnapshot = synchronized(listeners) {
+      listeners.mapNotNull { it.get() }
+    }
     // Emits to the native listeners
-    val listenersSnapshot = listeners.toList().mapNotNull { it.get() }
-
     event.emit(this, listenersSnapshot)
 
     // Emits to the JS side
@@ -503,7 +508,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
-    return FirstFrameEventGenerator(this, currentVideoViewRef) {
+    val appContext = appContext
+      ?: throw Exceptions.AppContextLost()
+
+    return FirstFrameEventGenerator(appContext, this, currentVideoViewRef) {
       sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }

@@ -26,6 +26,18 @@ extension Image {
   }
 }
 
+public extension Color {
+  init(uiColor: NSColor) {
+    self.init(nsColor: uiColor)
+  }
+}
+
+public extension NSColor {
+  static var label: NSColor {
+    return NSColor.labelColor
+  }
+}
+
 extension NSPasteboard {
   public var string: String? {
     get {
@@ -37,6 +49,12 @@ extension NSPasteboard {
         self.setString(newValue, forType: .string)
       }
     }
+  }
+}
+
+extension NSEdgeInsets {
+  public static var zero: NSEdgeInsets {
+    return NSEdgeInsetsZero
   }
 }
 

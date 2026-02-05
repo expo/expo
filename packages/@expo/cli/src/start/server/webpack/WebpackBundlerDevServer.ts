@@ -190,8 +190,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     const compiler = webpack(config);
 
     const server = new WebpackDevServer(compiler, config.devServer);
+    const host =
+      env.WEB_HOST ?? (options.location.hostType === 'localhost' ? 'localhost' : undefined);
+
     // Launch WebpackDevServer.
-    server.listen(port, env.WEB_HOST, function (this: http.Server, error) {
+    server.listen(port, host, function (this: http.Server, error) {
       if (error) {
         Log.error(error.message);
       }

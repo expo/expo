@@ -499,7 +499,9 @@ describe('loaders', () => {
     const indexRoute = routes.children.find((route) => route.route === '(app)/index');
     expect(indexRoute).toBeDefined();
     const loadedIndexRoute = indexRoute.loadRoute();
-    expect(await loadedIndexRoute.loader({ params: {} })).toEqual({ data: 'Loader for index' });
+    expect(await loadedIndexRoute.loader(undefined, {})).toEqual({
+      data: 'Loader for index',
+    });
   });
 
   it('should validate loader is a function in development mode', () => {

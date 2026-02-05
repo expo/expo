@@ -20,20 +20,20 @@ public final class GlassContainer: ExpoView {
   // https://github.com/expo/expo/issues/40911
   private func isGlassContainerEffectAvailable() -> Bool {
     #if compiler(>=6.2)
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       return NSClassFromString("UIGlassContainerEffect") != nil
     }
     #endif
     return false
   }
 
-  public func setSpacing(_ spacing: CGFloat?) {
+  func setSpacing(_ spacing: CGFloat?) {
     if containerSpacing != spacing {
       containerSpacing = spacing
       guard isGlassContainerEffectAvailable() else {
         return
       }
-      if #available(iOS 26.0, *) {
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
         #if compiler(>=6.2) // Xcode 26
         let effect = UIGlassContainerEffect()
         if let spacing = spacing {

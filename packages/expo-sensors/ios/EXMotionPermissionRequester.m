@@ -4,6 +4,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
+#import <React/RCTLog.h>
 
 @implementation EXMotionPermissionRequester
 
@@ -16,12 +17,15 @@
 {
   EXPermissionStatus status;
 
-  if (@available(iOS 11, *)) {
+#ifdef EXPO_DISABLE_MOTION_PERMISSION
+  status = EXPermissionStatusDenied;
+  RCTErrorWithMessage(@"This app has disabled `motionPermission` through the config plugin options so CMPedometer services will fail.");
+#else
     NSString *motionUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMotionUsageDescription"];
     // Related: NSFallDetectionUsageDescription
     if (!(motionUsageDescription)) {
       // TODO: Make aware of plugins, FYI link.
-      EXFatal(EXErrorWithMessage(@"This app is missing the 'NSMotionUsageDescription' so CMPedometer services will fail. Ensure this key exist in the app's Info.plist."));
+      RCTFatal(RCTErrorWithMessage(@"This app is missing the 'NSMotionUsageDescription' so CMPedometer services will fail. Ensure this key exist in the app's Info.plist."));
       status = EXPermissionStatusDenied;
     } else {
       switch ([CMPedometer authorizationStatus]) {
@@ -37,10 +41,8 @@
           break;
       }
     }
-  } else {
-    status = EXPermissionStatusUndetermined;
-  }
- 
+#endif
+
   return @{
     @"status": @(status)
   };
@@ -48,6 +50,9 @@
 
 - (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
+#ifdef EXPO_DISABLE_MOTION_PERMISSION
+  resolve([self getPermissions]);
+#else
   CMPedometer *manager = [CMPedometer new];
   NSDate *today = [[NSDate alloc] init];
    
@@ -57,6 +62,7 @@
     [manager stopPedometerUpdates];
     resolve([self getPermissions]);
   }];
+#endif
 }
 
 @end

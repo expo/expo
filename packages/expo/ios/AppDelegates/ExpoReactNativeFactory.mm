@@ -4,7 +4,11 @@
 
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/EXRuntime.h>
-#import <ExpoModulesCore-Swift.h>
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#else
+#import "ExpoModulesCore-Swift.h"
+#endif
 #import <ReactCommon/RCTHost.h>
 
 @implementation EXReactNativeFactory {
@@ -34,7 +38,7 @@
   // Inject and decorate the `global.expo` object
   _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
   [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
-  
+
   [_appContext registerNativeModules];
 }
 

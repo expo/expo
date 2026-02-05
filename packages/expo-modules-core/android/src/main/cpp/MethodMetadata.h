@@ -5,6 +5,7 @@
 #include "types/CppType.h"
 #include "types/ExpectedType.h"
 #include "types/AnyType.h"
+#include "types/ReturnType.h"
 
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
@@ -48,6 +49,10 @@ public:
      * Representation of expected argument types.
      */
     std::vector<std::unique_ptr<AnyType>> argTypes;
+    /**
+     * Representation of expected return type.
+     */
+    ReturnType returnType = ReturnType::UNKNOWN;
   };
 
   Info info;

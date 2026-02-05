@@ -75,4 +75,3 @@ private func concatDescription(_ description: String, withCause cause: Error?, d
     return description
   }
 }
-

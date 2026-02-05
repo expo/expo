@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enableZoomTransition = enableZoomTransition;
+exports.disableZoomTransition = disableZoomTransition;
 exports.isZoomTransitionEnabled = isZoomTransitionEnabled;
 exports.ZoomTransitionEnabler = ZoomTransitionEnabler;
-function enableZoomTransition() { }
+function disableZoomTransition() { }
 function isZoomTransitionEnabled() {
     return false;
 }

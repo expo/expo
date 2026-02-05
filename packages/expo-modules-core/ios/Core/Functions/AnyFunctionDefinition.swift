@@ -48,7 +48,7 @@ internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder 
     by owner: AnyObject?,
     withArguments args: [Any],
     appContext: AppContext,
-    callback: @Sendable @escaping (FunctionCallResult) -> ()
+    callback: @Sendable @escaping (FunctionCallResult) -> Void
   )
 }
 

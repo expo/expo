@@ -9,9 +9,23 @@ export function renderInShadowRoot(
 } {
   const div = document.createElement('div');
   div.id = id;
+  // Position absolute removes element from document flow, preventing layout impact
+  div.style.position = 'absolute';
   document.body.appendChild(div);
 
   const shadowRoot = div.attachShadow({ mode: 'open' });
+
+  // Inject reset styles to make the portal truly inert (invisible to layout and browser inspector)
+  // This is applied via JS to avoid affecting native platforms where :host becomes :root
+  const resetStyle = document.createElement('style');
+  resetStyle.textContent = `
+    :host {
+      all: initial;
+      direction: ltr;
+      position: absolute;
+    }
+  `;
+  shadowRoot.appendChild(resetStyle);
 
   document.querySelectorAll('style').forEach((styleEl) => {
     const moduleName = styleEl.getAttribute('data-expo-css-hmr');

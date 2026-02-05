@@ -6,9 +6,35 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.3 — 2026-02-03
+
+### 💡 Others
+
+- Add missing support for inlining environment variables as optional member expressions ([#42752](https://github.com/expo/expo/pull/42752) by [@kitten](https://github.com/kitten))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Improve performance of Expo Router babel plugins. ([#41693](https://github.com/expo/expo/pull/41693) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+- Add support for server data loaders in server export mode ([#41934](https://github.com/expo/expo/pull/41934) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
+
+- Resolve app root for each file to support bun monorepos. ([#42315](https://github.com/expo/expo/pull/42315) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

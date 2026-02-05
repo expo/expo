@@ -22,5 +22,5 @@ import { SchedulableNotificationTriggerInput } from './Notifications.types';
  * ```
  * @header schedule
  */
-export default function getNextTriggerDateAsync(trigger: SchedulableNotificationTriggerInput): Promise<number | null>;
+export declare function getNextTriggerDateAsync(trigger: SchedulableNotificationTriggerInput): Promise<number | null>;
 //# sourceMappingURL=getNextTriggerDateAsync.d.ts.map

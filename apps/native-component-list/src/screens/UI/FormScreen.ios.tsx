@@ -6,7 +6,7 @@ import {
   Form,
   Section,
   Slider,
-  Switch,
+  Toggle,
   Text,
   DisclosureGroup,
   ContentUnavailableView,
@@ -20,7 +20,7 @@ export default function FormScreen() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const options = ['$', '$$', '$$$', '$$$$'];
   const [sliderValue, setSliderValue] = useState<number>(0.5);
-  const [switchValue, setSwitchValue] = useState<boolean>(true);
+  const [toggleValue, setToggleValue] = useState<boolean>(true);
 
   const profileImageSizes = ['Large', 'Medium', 'Small'];
   const [disclosureGroupExpanded, setDisclosureGroupExpanded] = useState<boolean>(false);
@@ -64,15 +64,15 @@ export default function FormScreen() {
             }>
             <Text>Value</Text>
           </LabeledContent>
-          <LabeledContent label="Labeled Slider ">
+          <LabeledContent label="Labeled Slider">
             <Slider value={sliderValue} onValueChange={setSliderValue} />
           </LabeledContent>
-          <Switch value={switchValue} label="This is a switch" onValueChange={setSwitchValue} />
+          <Toggle isOn={toggleValue} label="This is a toggle" onIsOnChange={setToggleValue} />
           <ColorPicker
             label="Select a color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Menu picker"
@@ -111,7 +111,7 @@ export default function FormScreen() {
             label="Clear Image Cache"
           />
           <DisclosureGroup
-            onStateChange={setDisclosureGroupExpanded}
+            onIsExpandedChange={setDisclosureGroupExpanded}
             isExpanded={disclosureGroupExpanded}
             label="Show User Profile Details">
             <Text>Name: John Doe</Text>

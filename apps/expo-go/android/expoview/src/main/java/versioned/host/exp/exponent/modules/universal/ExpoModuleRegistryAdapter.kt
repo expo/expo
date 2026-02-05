@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.services.AppDirectoriesService
 import expo.modules.kotlin.services.FilePermissionService
@@ -15,7 +16,6 @@ import versioned.host.exp.exponent.core.modules.ExpoGoModule
 import versioned.host.exp.exponent.core.modules.ExpoGoUpdatesModule
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
-import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler
@@ -37,17 +37,6 @@ open class ExpoModuleRegistryAdapter(
     otherModules: List<NativeModule>
   ): List<NativeModule> {
     val moduleRegistry = mModuleRegistryProvider[scopedContext]
-
-    moduleRegistry.registerInternalModule(SharedCookiesDataSourceFactoryProvider())
-
-    // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
-    moduleRegistry.registerInternalModule(
-      ConstantsBinding(
-        scopedContext,
-        experienceProperties,
-        manifest
-      )
-    )
 
     // Overriding expo-notifications classes
     moduleRegistry.registerInternalModule(
@@ -81,6 +70,14 @@ open class ExpoModuleRegistryAdapter(
       with(appContext.services) {
         register(FilePermissionService::class.java, ScopedFilePermissionService(scopedContext))
         register(AppDirectoriesService::class.java, AppDirectoriesService(scopedContext))
+        register(
+          ConstantsInterface::class.java,
+          ConstantsBinding(
+            scopedContext,
+            experienceProperties,
+            manifest
+          )
+        )
       }
 
       with(appContext.registry) {

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
@@ -142,7 +141,18 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 }
 
-class ExpoViewComposableScope(val view: ComposeFunctionHolder<*>) {
+/**
+ * A composable DSL scope that wraps an [ExpoComposeView] to provide syntax sugar.
+ *
+ * This scope allows defining view content using a functional, DSL-style API
+ * without creating a dedicated subclass of [ExpoComposeView].
+ */
+class FunctionalComposableScope(
+  val view: ComposeFunctionHolder<*>,
+  val composableScope: ComposableScope
+) {
+  val appContext = view.appContext
+
   @Composable
   fun Child(composableScope: ComposableScope, index: Int) {
     view.Child(composableScope, index)
@@ -167,16 +177,15 @@ class ComposeFunctionHolder<Props : ComposeProps>(
   context: Context,
   appContext: AppContext,
   override val name: String,
-  private val composableContent: @Composable ExpoViewComposableScope.(props: Props) -> Unit,
+  private val composableContent: @Composable FunctionalComposableScope.(props: Props) -> Unit,
   override val props: Props
 ) : ExpoComposeView<Props>(context, appContext), ViewFunctionHolder {
   val propsMutableState = mutableStateOf(props)
-  val scope = ExpoViewComposableScope(this)
 
   @Composable
   override fun ComposableScope.Content() {
     val props by propsMutableState
-    with(scope) {
+    with(FunctionalComposableScope(this@ComposeFunctionHolder, this@Content)) {
       composableContent(props)
     }
   }

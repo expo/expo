@@ -19,6 +19,18 @@ name: Link preview menu
 - assertVisible: "Action 2"
 - assertVisible: "2.circle"
 - assertVisible: "Action 3"
+- assertVisible:
+    id: star.fill
+- assertVisible:
+    id: flag.fill
+- assertVisible:
+    id: pin.fill
+- assertVisible:
+    id: "arrow.clockwise"
+- assertVisible:
+    id: "arrow.2.circlepath"
+- assertVisible:
+    id: "pin"
 - assertNotVisible: "3.circle"
 - assertVisible: "Submenu"
 - tapOn: "Submenu"

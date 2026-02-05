@@ -3,10 +3,13 @@
 #import "EXAppState.h"
 #import "EXDevSettings.h"
 #import "EXDisabledDevLoadingView.h"
+#import "EXExpoPerfMonitor.h"
 #import "EXDisabledRedBox.h"
 #import "EXVersionManagerObjC.h"
 #import "EXStatusBarManager.h"
 #import "EXTest.h"
+
+#import <string.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTDevMenu.h>
@@ -42,8 +45,13 @@
 #endif
 
 // Import 3rd party modules that need to be scoped.
+#if __has_include(<RNCAsyncStorage/RNCAsyncStorage.h>)
 #import <RNCAsyncStorage/RNCAsyncStorage.h>
+#endif
+
+#if __has_include(<RNCWebViewManager.h>)
 #import <RNCWebViewManager.h>
+#endif
 
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
@@ -99,7 +107,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   // Register scoped 3rd party modules. Some of them are separate pods that
   // don't have access to EXScopedModuleRegistry and so they can't register themselves.
+#if __has_include(<RNCWebViewManager.h>)
   EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
+#endif
 }
 
 - (void)hostDidStart:(NSURL *)bundleURL
@@ -261,7 +271,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
 {
-  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue]);
+  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue] || _manifest.isDevelopmentMode);
 }
 
 - (void)_openJsInspector:(NSURL *)bundleURL
@@ -277,7 +287,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (id<RCTTurboModule>)_moduleInstanceForHost:(id)host named:(NSString *)name
 {
-  return [[host moduleRegistry] moduleForName:[name UTF8String]];
+  const char *cName = [name UTF8String];
+  id module = [[host moduleRegistry] moduleForName:cName];
+  if (module && strcmp(cName, "PerfMonitor") == 0 && [module respondsToSelector:@selector(updateHost:)]) {
+    [module updateHost:host];
+  }
+  return module;
 }
 
 - (NSArray *)extraModules
@@ -355,6 +370,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if (strcmp(name, "DevSettings") == 0) {
     return EXDevSettings.class;
   }
+  if (strcmp(name, "PerfMonitor") == 0) {
+    return EXExpoPerfMonitor.class;
+  }
   if (strcmp(name, "RedBox") == 0) {
     if (![_params[@"isDeveloper"] boolValue]) {
       // user-facing (not debugging).
@@ -395,7 +413,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     } else {
       RCTLogWarn(@"No exceptions manager provided when building extra modules.");
     }
-  } else if (moduleClass == RNCAsyncStorage.class) {
+  }
+#if __has_include(<RNCAsyncStorage/RNCAsyncStorage.h>)
+  else if (moduleClass == RNCAsyncStorage.class) {
     NSString *documentDirectory;
     if (_params[@"fileSystemDirectories"]) {
       documentDirectory = _params[@"fileSystemDirectories"][@"documentDirectory"];
@@ -406,6 +426,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     NSString *localStorageDirectory = [documentDirectory stringByAppendingPathComponent:@"RCTAsyncLocalStorage"];
     return [[moduleClass alloc] initWithStorageDirectory:localStorageDirectory];
   }
+#endif
 
   return [moduleClass new];
 }

@@ -12,6 +12,7 @@
 #include "../MethodMetadata.h"
 #include "../JNIFunctionBody.h"
 #include "../types/ExpectedType.h"
+#include "../types/ReturnType.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -26,6 +27,7 @@ public:
     jboolean takesOwner,
     jboolean enumerable,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    ReturnType returnType,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
@@ -56,6 +58,7 @@ private:
     bool enumerable,
     bool isAsync,
     std::vector<std::unique_ptr<AnyType>> &&argTypes,
+    ReturnType returnType,
     jni::global_ref<jobject> body
   );
 };

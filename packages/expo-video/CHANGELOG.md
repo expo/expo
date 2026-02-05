@@ -6,6 +6,38 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [Android] Fix crash due to `SimpleCache` directory lock conflicts. ([#42723](https://github.com/expo/expo/pull/42723) by [@santitopo](https://github.com/santitopo))
+
+### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- [Android] Fix uninitialized `firstFrameEventGenerator` exception in VideoView when setting the `player` prop. ([#42615](https://github.com/expo/expo/pull/42615) by [@behenate](https://github.com/behenate))
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- Remove the `allowsFullscreen` prop. ([#41606](https://github.com/expo/expo/pull/41606) by [@behenate](https://github.com/behenate))
+
+### 🎉 New features
+
 - [Android][iOS] Add `seek tolerance` and `scrubbingModeOptions` properties to the player. ([#40203](https://github.com/expo/expo/pull/40203) by [@behenate](https://github.com/behenate))
 - Allow assigning `null` value to the `player` prop of the `VideoView` ([#40860](https://github.com/expo/expo/pull/40860) by [@behenate](https://github.com/behenate))
 - [Android][iOS] Add `averageBitrate` and `peakBitrate` for video tracks. ([#41532](https://github.com/expo/expo/pull/41532) by [@behenate](https://github.com/behenate))
@@ -17,6 +49,9 @@
 - [Web] Fix crash on older versions of Safari. ([#41101](https://github.com/expo/expo/pull/41101) by [@CamWass](https://github.com/CamWass))
 - [Web] Fix video pausing when entering fullscreen in electron apps. ([#40989](https://github.com/expo/expo/pull/40989) by [@behenate](https://github.com/behenate))
 - [Android] Fix crashes when exiting PiP with one than more `VideoView` present on the screen. ([#41090](https://github.com/expo/expo/pull/41090) by [@behenate](https://github.com/behenate))
+- [Android] Fix rare crashes related to VideoPlayer listeners. ([#41608](https://github.com/expo/expo/pull/41608) by [@behenate](https://github.com/behenate))
+- Fix `fullscreenOptions.enable` and `allowsFullscreen` props issues. ([#41600](https://github.com/expo/expo/pull/41600) by [@behenate](https://github.com/behenate))
+- [Android] Fix player duration property refreshing too late. ([#41609](https://github.com/expo/expo/pull/41609) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

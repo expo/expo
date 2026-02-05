@@ -1,3 +1,4 @@
+import { ImmutableHeaders } from '../ImmutableRequest';
 export { StatusError } from './error';
 /** Returns the current request's origin URL.
  *
@@ -6,6 +7,8 @@ export { StatusError } from './error';
  * @returns A request origin
  */
 export declare function origin(): string | null;
+/** Returns an immutable copy of the current request's headers. */
+export declare function requestHeaders(): ImmutableHeaders;
 /** Returns the request's environment, if the server runtime supports this.
  *
  * In EAS Hosting, the returned environment name is the

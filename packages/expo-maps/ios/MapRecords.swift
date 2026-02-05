@@ -13,6 +13,7 @@ struct MapMarker: Identifiable, Record {
   @Field var id: String = UUID().uuidString
   @Field var coordinates: Coordinate
   @Field var systemImage: String = ""
+  @Field var monogram: String = ""
   @Field var tintColor: Color = .red
   @Field var title: String = ""
 
@@ -29,6 +30,11 @@ struct MapMarker: Identifiable, Record {
 
   var mapItem: MKMapItem {
     MKMapItem(placemark: mkPlacemark)
+  }
+
+  /// Returns true if the marker should display a monogram instead of a system image
+  var hasMonogram: Bool {
+    !monogram.isEmpty && systemImage.isEmpty
   }
 }
 
@@ -196,6 +202,23 @@ enum MapStyleEmphasis: String, Enumerable {
       return .muted
     default:
       return .automatic
+    }
+  }
+}
+
+enum MapColorScheme: String, Enumerable {
+  case automatic = "AUTOMATIC"
+  case light = "LIGHT"
+  case dark = "DARK"
+
+  func toColorScheme() -> ColorScheme? {
+    switch self {
+    case .light:
+      return .light
+    case .dark:
+      return .dark
+    case .automatic:
+      return nil
     }
   }
 }

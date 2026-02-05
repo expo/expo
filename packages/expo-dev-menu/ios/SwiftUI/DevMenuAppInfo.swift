@@ -43,6 +43,7 @@ struct DevMenuAppInfo: View {
           .disabled(viewModel.clipboardMessage != nil)
         }
       }
+      .padding(.horizontal)
       .background(Color.expoSystemBackground)
       .cornerRadius(18)
     }

@@ -4,7 +4,15 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   var identifier: String = ""
   // MARK: - Shared props
   @NativeActionProp(updateAction: true, updateMenu: true) var title: String = ""
+  @NativeActionProp(updateMenu: true) var label: String?
   @NativeActionProp(updateAction: true, updateMenu: true) var icon: String?
+  var customImage: SharedRef<UIImage>? {
+    didSet {
+      updateUiAction()
+      updateMenu()
+    }
+  }
+  @NativeActionProp(updateAction: true, updateMenu: true) var imageRenderingMode: ImageRenderingMode?
   @NativeActionProp(updateAction: true, updateMenu: true) var destructive: Bool?
   @NativeActionProp(updateAction: true, updateMenu: true) var disabled: Bool = false
 
@@ -12,12 +20,13 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   @NativeActionProp(updateAction: true) var isOn: Bool?
   @NativeActionProp(updateAction: true) var keepPresented: Bool?
   @NativeActionProp(updateAction: true) var discoverabilityLabel: String?
-  @NativeActionProp(updateAction: true) var subtitle: String?
+  @NativeActionProp(updateAction: true, updateMenu: true) var subtitle: String?
 
   // MARK: - Menu only props
   @NativeActionProp(updateMenu: true) var singleSelection: Bool = false
   @NativeActionProp(updateMenu: true) var displayAsPalette: Bool = false
   @NativeActionProp(updateMenu: true) var displayInline: Bool = false
+  @NativeActionProp(updateMenu: true) var preferredElementSize: MenuElementSize?
 
   // MARK: - UIBarButtonItem props
   @NativeActionProp(updateAction: true, updateMenu: true) var routerHidden: Bool = false
@@ -45,6 +54,17 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
   var uiAction: UIMenuElement {
     isMenuAction ? menuAction : baseUiAction
+  }
+
+  private var image: UIImage? {
+    if let customImage = customImage {
+      let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      return customImage.ref.withRenderingMode(renderingMode)
+    }
+    if let icon = icon {
+      return UIImage(systemName: icon)
+    }
+    return nil
   }
 
   required init(appContext: AppContext? = nil) {
@@ -77,10 +97,20 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
     menuAction = UIMenu(
       title: title,
-      image: icon.flatMap { UIImage(systemName: $0) },
+      image: image,
       options: options,
       children: subActions
     )
+
+    if let subtitle = subtitle {
+      menuAction.subtitle = subtitle
+    }
+
+    if #available(iOS 16.0, *) {
+      if let preferredElementSize = preferredElementSize {
+        menuAction.preferredElementSize = preferredElementSize.toUIMenuElementSize()
+      }
+    }
 
     parentMenuUpdatable?.updateMenu()
   }
@@ -98,7 +128,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     }
 
     baseUiAction.title = title
-    baseUiAction.image = icon.flatMap { UIImage(systemName: $0) }
+    baseUiAction.image = image
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn == true ? .on : .off
 

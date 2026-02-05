@@ -15,6 +15,7 @@ exports.getIsNodeModule = getIsNodeModule;
 exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
 exports.getIsServer = getIsServer;
+exports.getIsLoaderBundle = getIsLoaderBundle;
 exports.getMetroSourceType = getMetroSourceType;
 exports.getBabelRuntimeVersion = getBabelRuntimeVersion;
 exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
@@ -117,6 +118,10 @@ function getReactCompiler(caller) {
 function getIsServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isServer ?? false;
+}
+function getIsLoaderBundle(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.isLoaderBundle ?? false;
 }
 function getMetroSourceType(caller) {
     assertExpoBabelCaller(caller);
