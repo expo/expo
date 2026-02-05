@@ -44,5 +44,5 @@ export async function generateGenerateMd() {
     count++;
   }
 
-  console.log(` \x1b[1m\x1b[32m✓\x1b[0m Generated ${count} per-page .md files`);
+  console.log(` \x1b[1m\x1b[32m✓\x1b[0m Generated ${count} markdown files`);
 }
