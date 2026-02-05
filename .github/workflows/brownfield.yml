@@ -1,9 +1,10 @@
-name: Brownfield E2E Tests (CLI + Plugin)
+name: Brownfield Tests
 
 on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
+    # TODO(pmleczek): Update paths to include paths from filter
     paths:
       - .github/workflows/brownfield.yml
       - packages/expo-brownfield/**
@@ -29,7 +30,7 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         # TODO(pmleczek): Update paths once we wrap up Maestro tests
-        # TODO(pmleczek): Refine paths like expo/**, expo-router/**, etc.
+        # TODO(pmleczek): Refine paths like expo/**, expo-router/**, etc. (?)
         # TODO(pmleczek): Add "- 'packages/expo-updates/**'" to the compilation test filters
         with:
           filters: |
@@ -57,6 +58,7 @@ jobs:
 
   jest-ubuntu-cli:
     runs-on: ubuntu-24.04
+    needs: analyze-changes
     strategy:
       fail-fast: false
       matrix:
@@ -126,6 +128,7 @@ jobs:
 
   jest-macos-cli:
     runs-on: macos-15
+    needs: analyze-changes
     steps:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
@@ -198,5 +201,16 @@ jobs:
         working-directory: packages/expo-brownfield
         run: yarn test:e2e-plugin e2e/plugin/__tests__/plugin-ios.test.ts
 
-  # TODO(pmleczek): Implement
-  # compile
+  compilation-test-android:
+    runs-on: ubuntu-24.04
+    needs: analyze-changes
+    steps:
+      - name: Test
+        run: echo "Test Android :)"
+
+  compilation-test-ios:
+    runs-on: macos-15
+    needs: analyze-changes
+    steps:
+      - name: Test
+        run: echo "Test iOS :)"
