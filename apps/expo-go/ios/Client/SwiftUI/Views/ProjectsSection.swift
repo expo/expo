@@ -9,10 +9,8 @@ struct ProjectsAndSnacksSection: View {
   @State private var loadingSnackId: String?
   @State private var isLoadingDemoProject = false
 
-  // TEMPORARY: remove after testing
-  private var hasProjects: Bool { false && !viewModel.projects.isEmpty }
-  // TEMPORARY: remove after testing
-  private var hasSnacks: Bool { false && !viewModel.snacks.isEmpty }
+  private var hasProjects: Bool { !viewModel.projects.isEmpty }
+  private var hasSnacks: Bool { !viewModel.snacks.isEmpty }
   private var isLoadingData: Bool { viewModel.isLoadingData }
 
   var body: some View {
