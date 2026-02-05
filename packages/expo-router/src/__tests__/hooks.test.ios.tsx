@@ -873,4 +873,39 @@ describe(useLoaderData, () => {
 
     expectType<{ user: { id: number; name: string }; timestamp: number }>(result.current);
   });
+
+  it('resolves loader data for non-focused tab route', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/': { tab: 'home' },
+      '/profile': { tab: 'profile' },
+    };
+
+    const homeResults: any[] = [];
+    const profileResults: any[] = [];
+
+    renderRouter(
+      {
+        _layout: () => <Tabs />,
+        index: function Home() {
+          homeResults.push(useLoaderData());
+          return <Text>Home</Text>;
+        },
+        profile: function Profile() {
+          profileResults.push(useLoaderData());
+          return <Text>Profile</Text>;
+        },
+      },
+      {
+        initialUrl: '/',
+      }
+    );
+
+    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
+
+    act(() => router.push('/profile'));
+
+    expect(profileResults[profileResults.length - 1]).toEqual({ tab: 'profile' });
+    // Home screen should still be showing its own results
+    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
+  });
 });
