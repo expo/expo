@@ -4,11 +4,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarButton = void 0;
 exports.convertStackToolbarButtonPropsToRNHeaderItem = convertStackToolbarButtonPropsToRNHeaderItem;
 const react_1 = require("react");
-const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
+const react_native_1 = require("react-native");
 const context_1 = require("./context");
+const shared_1 = require("./shared");
+const toolbar_primitives_1 = require("./toolbar-primitives");
+const native_1 = require("../../../toolbar/native");
 const children_1 = require("../../../utils/children");
-const common_primitives_1 = require("../common-primitives");
-const shared_1 = require("../shared");
 /**
  * A button used inside `Stack.Toolbar`.
  *
@@ -60,18 +61,18 @@ const StackToolbarButton = (props) => {
         }
     }
     if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
-        const hasBadge = (0, children_1.getFirstChildOfType)(props.children, common_primitives_1.StackToolbarBadge);
+        const hasBadge = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarBadge);
         if (hasBadge) {
             console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
-    if (placement === 'bottom') {
-        const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
-        return (<bottom_toolbar_native_elements_1.NativeToolbarButton {...sharedProps} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
     }
-    return null;
+    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
+    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+    return (<NativeToolbarButton {...sharedProps} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
 };
 exports.StackToolbarButton = StackToolbarButton;
 function convertStackToolbarButtonPropsToRNHeaderItem(props) {
@@ -85,5 +86,15 @@ function convertStackToolbarButtonPropsToRNHeaderItem(props) {
         selected: !!props.selected,
     };
 }
-const ALLOWED_CHILDREN = [common_primitives_1.StackToolbarLabel, common_primitives_1.StackToolbarIcon, common_primitives_1.StackToolbarBadge];
+const ALLOWED_CHILDREN = [toolbar_primitives_1.StackToolbarLabel, toolbar_primitives_1.StackToolbarIcon, toolbar_primitives_1.StackToolbarBadge];
+/**
+ * Native toolbar button component for bottom toolbar.
+ * Renders as RouterToolbarItem.
+ */
+const NativeToolbarButton = (props) => {
+    const id = (0, react_1.useId)();
+    const renderingMode = props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
+    return (<native_1.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} imageRenderingMode={renderingMode} onSelected={props.onPress} possibleTitles={props.possibleTitles} selected={props.selected} sharesBackground={!props.separateBackground} systemImageName={props.icon} title={props.label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)}/>);
+};
+// #endregion
 //# sourceMappingURL=StackToolbarButton.js.map

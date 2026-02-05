@@ -60,6 +60,7 @@ exceptions:
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
+  - '.*Convex.*'
   - '.*Command Line Tools.*'
   - '.*Config Plugin.*'
   - '.*CORS.*'
@@ -149,6 +150,7 @@ exceptions:
   - '.*OTA.*'
   - '.*OTF.*'
   - '.*PostCSS.*'
+  - '.*PostHog.*'
   - '.*PRAGMA.*'
   - '.*Prebuild.*'
   - '.*Privacy Shield.*'
@@ -295,3 +297,4 @@ exceptions:
   - Starting a Live Activity
   - Updating a Live Activity
   - Hiding the Tab bar
+  - Integrated vs Isolated

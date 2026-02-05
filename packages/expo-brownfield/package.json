@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "55.0.4",
+  "version": "55.0.6",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -21,7 +21,8 @@
     "lint": "expo-module lint && expo-module lint plugin && expo-module lint cli",
     "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
-    "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js",
+    "test:e2e-cli": "expo-module test --config e2e/cli/jest.config.js",
+    "test:e2e-plugin": "expo-module test --config e2e/plugin/jest.config.js",
     "prepare": "expo-module prepare",
     "prepack": "node scripts/resolve-symlinks.js resolve",
     "postpack": "node scripts/resolve-symlinks.js restore",
@@ -51,11 +52,13 @@
     "arg": "^5.0.2",
     "chalk": "^4.1.2",
     "diff": "^5.2.0",
-    "expo-build-properties": "~55.0.4",
+    "expo-build-properties": "~55.0.5",
+    "expo-manifests": "~55.0.4",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
+    "@bacons/xcode": "1.0.0-alpha.29",
     "@types/diff": "^5.2.0",
     "expo-module-scripts": "^55.0.2"
   },

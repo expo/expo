@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Switch to `node:util`'s `parseEnv` and preserve previous `dotenv-expand` logic ([#42763](https://github.com/expo/expo/pull/42763) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

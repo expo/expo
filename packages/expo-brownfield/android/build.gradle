@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'expo.modules.brownfield'
-version = '55.0.4'
+version = '55.0.6'
 
 expoModule {
   canBePublished false
@@ -14,11 +14,14 @@ android {
   namespace "expo.modules.brownfield"
   defaultConfig {
     versionCode 1
-    versionName '55.0.4'
+    versionName '55.0.6'
   }
 }
 
 dependencies {
+  implementation project(':expo-manifests')
+  implementation "com.facebook.react:react-android"
+  implementation "com.squareup.okhttp3:okhttp:4.9.2"
   compileOnly "androidx.activity:activity-ktx:1.8.0"
   compileOnly "androidx.core:core-ktx:1.12.0"
 }

@@ -129,6 +129,7 @@ export const home = [
       ],
       { expanded: false }
     ),
+    makePage('develop/database.mdx'),
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
@@ -284,6 +285,7 @@ export const general = [
     makeGroup('Reference', [
       makePage('router/error-handling.mdx'),
       makePage('router/reference/url-parameters.mdx'),
+      makePage('router/reference/color.mdx'),
       makePage('router/reference/sitemap.mdx'),
       makePage('router/reference/redirects.mdx'),
       makePage('router/reference/link-preview.mdx'),
@@ -357,6 +359,7 @@ export const general = [
     ]),
     makeGroup('CMS', [makePage('guides/using-a-cms.mdx')]),
     makeGroup('Database and SDKs', [
+      makePage('guides/using-convex.mdx'),
       makePage('guides/using-firebase.mdx'),
       makePage('guides/using-supabase.mdx'),
     ]),
@@ -384,7 +387,10 @@ export const general = [
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
-        makePage('guides/expo-ui-swift-ui.mdx'),
+      ]),
+      makeSection('Expo UI', [
+        makePage('guides/expo-ui-swift-ui/index.mdx'),
+        makePage('guides/expo-ui-swift-ui/extending.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),

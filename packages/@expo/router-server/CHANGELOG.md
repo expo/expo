@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.5 — 2026-02-03
+
+### 💡 Others
+
+- Open up `expo-font` dependency range in `@expo/router-server` ([#42808](https://github.com/expo/expo/pull/42808) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
 - Mark `expo-router` as optional peer to prevent auto-installation ([#42728](https://github.com/expo/expo/pull/42728) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

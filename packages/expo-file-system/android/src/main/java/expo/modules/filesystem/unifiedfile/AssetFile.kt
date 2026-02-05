@@ -95,7 +95,7 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
     return null
   }
 
-  override fun outputStream(): OutputStream {
+  override fun outputStream(append: Boolean): OutputStream {
     throw UnsupportedOperationException("Asset files are not writable")
   }
 

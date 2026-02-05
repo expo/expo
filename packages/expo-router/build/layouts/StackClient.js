@@ -465,9 +465,14 @@ const Stack = Object.assign((props) => {
                 return (0, stack_utils_1.appendScreenStackPropsToOptions)({}, screenStackProps);
             }
         }
-        else {
-            return props.screenOptions;
+        else if (props.screenOptions) {
+            const screenOptions = props.screenOptions;
+            if (typeof screenOptions === 'function') {
+                return (0, stack_utils_1.validateStackPresentation)(screenOptions);
+            }
+            return (0, stack_utils_1.validateStackPresentation)(screenOptions);
         }
+        return props.screenOptions;
     }, [props.screenOptions, props.children]);
     const screenOptions = (0, react_1.useMemo)(() => {
         const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;

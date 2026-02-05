@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.3 — 2026-01-27
 
 _This version does not introduce any user-facing changes._
@@ -31,6 +35,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [web] fix error propagation in `launchImageLibraryAsync` function on web ([#42716](https://github.com/expo/expo/pull/42716) by [@HubertBer](https://github.com/HubertBer))
 - [android] fix `cropToolbarColor` default value ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
 - [android] do not crash if `ContentProvider` doesn't provide mime type ([#41495](https://github.com/expo/expo/pull/41495) by [@vonovak](https://github.com/vonovak))
 
