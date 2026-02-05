@@ -19,15 +19,12 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.interfaces.ReactActivityHandler.DelayLoadAppHandler
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.kotlin.Utils
-import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -43,7 +40,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
-  private val isNewArchitectureEnabled: Boolean,
+  private val isNewArchitectureEnabled: Boolean, // TODO(@lukmccall): Remove as it's unused
   @get:VisibleForTesting internal var delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
   constructor(activity: ReactActivity, delegate: ReactActivityDelegate) :
@@ -153,27 +150,12 @@ class ReactActivityDelegateWrapper(
         }
 
         val launchOptions = composeLaunchOptions()
-        val reactDelegate: ReactDelegate
-        if (ReactNativeFeatureFlags.enableBridgelessArchitecture) {
-          reactDelegate = ReactDelegate(
-            plainActivity,
-            reactHost,
-            mainComponentName,
-            launchOptions
-          )
-        } else {
-          reactDelegate = object : ReactDelegate(
-            plainActivity,
-            reactNativeHost,
-            mainComponentName,
-            launchOptions,
-            isFabricEnabled
-          ) {
-            override fun createRootView(): ReactRootView? {
-              return this@ReactActivityDelegateWrapper.createRootView() ?: super.createRootView()
-            }
-          }
-        }
+        val reactDelegate = ReactDelegate(
+          plainActivity,
+          reactHost,
+          mainComponentName,
+          launchOptions
+        )
 
         val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
         mReactDelegate.isAccessible = true
@@ -273,18 +255,6 @@ class ReactActivityDelegateWrapper(
      */
     launchLifecycleScopeWithLock {
       loadAppReady.await()
-      if (!ReactNativeFeatureFlags.enableBridgelessArchitecture && delegate.reactInstanceManager.currentReactContext == null) {
-        val reactContextListener = object : ReactInstanceEventListener {
-          override fun onReactContextInitialized(context: ReactContext) {
-            delegate.reactInstanceManager.removeReactInstanceEventListener(this)
-            delegate.onActivityResult(requestCode, resultCode, data)
-          }
-        }
-        return@launchLifecycleScopeWithLock delegate.reactInstanceManager.addReactInstanceEventListener(
-          reactContextListener
-        )
-      }
-
       delegate.onActivityResult(requestCode, resultCode, data)
     }
   }
