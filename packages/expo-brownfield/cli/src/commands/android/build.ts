@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import path from 'path';
 
 import { Args, Errors, Help } from '../../constants';
@@ -41,11 +42,16 @@ const action = async () => {
   let tasks = [];
   if (config.tasks.length > 0) {
     tasks = config.tasks;
-  } else {
+  } else if (config.repositories.length > 0) {
     for (const repository of config.repositories) {
       const task = constructTask(config.buildType, repository);
       tasks.push(task);
     }
+  } else {
+    console.warn(chalk.yellow('⚠  No tasks or repositories specified'));
+    console.warn(chalk.yellow('Defaulting to repository: MavenLocal and configuration: All'));
+    console.warn(chalk.yellow('This repository might not be available in your configuration\n'));
+    tasks.push('publishBrownfieldAllPublicationToMavenLocal');
   }
 
   for (const task of tasks) {

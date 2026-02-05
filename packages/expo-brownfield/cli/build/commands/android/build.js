@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const constants_1 = require("../../constants");
 const utils_1 = require("../../utils");
@@ -30,11 +31,17 @@ const action = async () => {
     if (config.tasks.length > 0) {
         tasks = config.tasks;
     }
-    else {
+    else if (config.repositories.length > 0) {
         for (const repository of config.repositories) {
             const task = constructTask(config.buildType, repository);
             tasks.push(task);
         }
+    }
+    else {
+        console.warn(chalk_1.default.yellow('⚠  No tasks or repositories specified'));
+        console.warn(chalk_1.default.yellow('Defaulting to repository: MavenLocal and configuration: All'));
+        console.warn(chalk_1.default.yellow('This repository might not be available in your configuration\n'));
+        tasks.push('publishBrownfieldAllPublicationToMavenLocal');
     }
     for (const task of tasks) {
         if (!config.dryRun) {
