@@ -41,6 +41,7 @@ jobs:
           common-paths: >-
             .github/workflows/test-suite-brownfield-isolated.yml,
             "apps/brownfield-tester/expo-app/**",
+            "packages/expo-brownfield/cli/**",
             "packages/expo-brownfield/plugin/**",
             "packages/expo-brownfield/src/**",
             "packages/expo-brownfield/e2e/maestro/**"
@@ -99,10 +100,10 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            cd apps/brownfield-tester/android-integrated
-            ./gradlew clean
+            cd apps/brownfield-tester/android-integrated && \
+            ./gradlew clean && \
             ./gradlew installRelease --refresh-dependencies
-            cd ../../packages/expo-brownfield/e2e
+            cd ../../packages/expo-brownfield/e2e && \
             maestro test maestro/__tests__/android
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
