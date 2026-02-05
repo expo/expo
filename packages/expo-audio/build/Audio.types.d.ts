@@ -166,6 +166,13 @@ export type AudioStatus = {
      * @default true
      */
     shouldCorrectPitch: boolean;
+    /**
+     * Whether the media services were reset by the system.
+     * When `true`, the player was interrupted because the system's media daemon crashed.
+     * The player will automatically attempt to recover by reloading the source and resuming playback.
+     * @platform ios
+     */
+    mediaServicesDidReset?: boolean;
 };
 /**
  * Status information for recording operations from the event system.
@@ -185,6 +192,13 @@ export type RecordingStatus = {
     error: string | null;
     /** File URL of the completed recording, if available. */
     url: string | null;
+    /**
+     * Whether the media services were reset by the system.
+     * When `true`, the recording was interrupted because the system's media daemon crashed.
+     * The recorder is now invalid and must be re-prepared by calling `prepareToRecordAsync()`.
+     * @platform ios
+     */
+    mediaServicesDidReset?: boolean;
 };
 /**
  * Current state information for an `AudioRecorder`.

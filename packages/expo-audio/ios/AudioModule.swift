@@ -13,6 +13,7 @@ public class AudioModule: Module {
   private var allowsRecording = false
   private var allowsBackgroundRecording = false
   private var sessionOptions: AVAudioSession.CategoryOptions = []
+  private var lastConfiguredMode: AudioMode?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -90,7 +91,7 @@ public class AudioModule: Module {
     Class(AudioPlayer.self) {
       Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool) -> AudioPlayer in
         let avPlayer = AudioUtils.createAVPlayer(from: source)
-        let player = AudioPlayer(avPlayer, interval: updateInterval)
+        let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
         player.onPlaybackComplete = { [weak self] in
@@ -247,7 +248,7 @@ public class AudioModule: Module {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
         let recordingDir = try recordingDirectory()
         let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
-        let recorder = AudioRecorder(avRecorder)
+        let recorder = AudioRecorder(avRecorder, options: options)
         recorder.owningRegistry = self.registry
         recorder.allowsRecording = allowsRecording
         self.registry.add(recorder)
@@ -354,6 +355,15 @@ public class AudioModule: Module {
       name: AVAudioSession.routeChangeNotification,
       object: session
     )
+
+    #if os(iOS)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleMediaServicesReset(_:)),
+      name: AVAudioSession.mediaServicesWereResetNotification,
+      object: session
+    )
+    #endif
   }
 
   @objc private func handleAudioSessionInterruption(_ notification: Notification) {
@@ -431,6 +441,34 @@ public class AudioModule: Module {
       break
     }
   }
+
+  #if os(iOS)
+  @objc private func handleMediaServicesReset(_ notification: Notification) {
+    reconfigureAudioSession()
+
+    registry.allRecorders.values.forEach { recorder in
+      recorder.handleMediaServicesReset()
+    }
+
+    registry.allPlayers.values.forEach { player in
+      if player.isPlaying {
+        player.wasPlaying = true
+      }
+      player.handleMediaServicesReset()
+    }
+  }
+
+  private func reconfigureAudioSession() {
+    do {
+      if let mode = lastConfiguredMode {
+        try setAudioMode(mode: mode)
+      }
+      try AVAudioSession.sharedInstance().setActive(true)
+    } catch {
+      print("Failed to reconfigure audio session after media services reset: \(error)")
+    }
+  }
+  #endif
 
   private func resumeInterruptedPlayers() {
     registry.allPlayers.values.forEach { player in
@@ -520,6 +558,8 @@ public class AudioModule: Module {
     try AudioUtils.validateAudioMode(mode: mode)
     let session = AVAudioSession.sharedInstance()
     var category: AVAudioSession.Category = session.category
+
+    self.lastConfiguredMode = mode
 
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
