@@ -16,14 +16,26 @@ export function replaceBoxLinks(content) {
     }
     result += content.slice(cursor, start);
 
-    const selfClose = content.indexOf('/>', start);
-    const blockClose = content.indexOf('</BoxLink>', start);
-    let end;
-    if (blockClose !== -1 && (selfClose === -1 || blockClose < selfClose)) {
-      end = blockClose + '</BoxLink>'.length;
-    } else if (selfClose !== -1) {
-      end = selfClose + 2;
-    } else {
+    // Find the proper closing /> by tracking brace depth for JSX expressions
+    let end = -1;
+    let braceDepth = 0;
+
+    for (let i = start + startTag.length; i < content.length; i++) {
+      const char = content[i];
+      if (char === '{') {
+        braceDepth++;
+      } else if (char === '}') {
+        braceDepth--;
+      } else if (braceDepth === 0 && content.slice(i, i + 2) === '/>') {
+        end = i + 2;
+        break;
+      } else if (braceDepth === 0 && content.slice(i, i + 10) === '</BoxLink>') {
+        end = i + 10;
+        break;
+      }
+    }
+
+    if (end === -1) {
       result += content.slice(start);
       break;
     }
@@ -786,4 +798,94 @@ export function stripDataDisplayComponents(content) {
 
 export function stripHeaderNestingLevel(content) {
   return content.replace(/\s*headerNestingLevel={\d+}/g, '');
+}
+
+export function replaceReactNativeCompatibilityTable(content, href) {
+  if (!content.includes('<ReactNativeCompatibilityTable')) {
+    return content;
+  }
+
+  const sdkDataPath = path.join('ui', 'components', 'SDKTables', 'sdk-versions.json');
+  if (!fs.existsSync(sdkDataPath)) {
+    return content.replace(/<ReactNativeCompatibilityTable\s*\/>/g, '');
+  }
+
+  const sdkData = JSON.parse(fs.readFileSync(sdkDataPath, 'utf-8'));
+  const sdkVersions = sdkData.sdkVersions || [];
+
+  // Extract version from href (e.g., /versions/v54.0.0 or /versions/latest)
+  const versionMatch = href.match(/\/versions\/(v[\d.]+|latest|unversioned)/);
+  let resolvedVersion = versionMatch ? versionMatch[1] : 'latest';
+
+  // Resolve 'latest' to actual version
+  if (resolvedVersion === 'latest' || resolvedVersion === 'unversioned') {
+    resolvedVersion = sdkVersions[0]?.sdk ? `v${sdkVersions[0].sdk}` : 'v54.0.0';
+  }
+
+  const normalizedVersion = resolvedVersion.replace(/^v/, '');
+  const currentIndex = sdkVersions.findIndex(v => v.sdk === normalizedVersion);
+
+  if (currentIndex === -1) {
+    return content.replace(/<ReactNativeCompatibilityTable\s*\/>/g, '');
+  }
+
+  const endIndex = Math.min(sdkVersions.length, currentIndex + 3);
+  const versionsToShow = sdkVersions.slice(currentIndex, endIndex);
+
+  const header = [
+    '| Expo SDK version | React Native version | React version | React Native Web version | React Native TV version | Minimum Node.js version |',
+    '| --- | --- | --- | --- | --- | --- |',
+  ];
+
+  const rows = versionsToShow.map(v => {
+    return `| ${v.sdk} | ${v['react-native']} | ${v['react']} | ${v['react-native-web']} | ${v['react-native-tvos']} | ${v['node']} |`;
+  });
+
+  const table = [...header, ...rows].join('\n');
+
+  return content.replace(/<ReactNativeCompatibilityTable\s*\/>/g, `\n${table}\n`);
+}
+
+export function replaceAndroidIOSCompatibilityTable(content, href) {
+  if (!content.includes('<AndroidIOSCompatibilityTable')) {
+    return content;
+  }
+
+  const sdkDataPath = path.join('ui', 'components', 'SDKTables', 'sdk-versions.json');
+  if (!fs.existsSync(sdkDataPath)) {
+    return content.replace(/<AndroidIOSCompatibilityTable\s*\/>/g, '');
+  }
+
+  const sdkData = JSON.parse(fs.readFileSync(sdkDataPath, 'utf-8'));
+  const sdkVersions = sdkData.sdkVersions || [];
+
+  const versionMatch = href.match(/\/versions\/(v[\d.]+|latest|unversioned)/);
+  let resolvedVersion = versionMatch ? versionMatch[1] : 'latest';
+
+  if (resolvedVersion === 'latest' || resolvedVersion === 'unversioned') {
+    resolvedVersion = sdkVersions[0]?.sdk ? `v${sdkVersions[0].sdk}` : 'v54.0.0';
+  }
+
+  const normalizedVersion = resolvedVersion.replace(/^v/, '');
+  const currentIndex = sdkVersions.findIndex(v => v.sdk === normalizedVersion);
+
+  if (currentIndex === -1) {
+    return content.replace(/<AndroidIOSCompatibilityTable\s*\/>/g, '');
+  }
+
+  const endIndex = Math.min(sdkVersions.length, currentIndex + 3);
+  const versionsToShow = sdkVersions.slice(currentIndex, endIndex);
+
+  const header = [
+    '| Expo SDK version | Android version | `compileSdkVersion` | `targetSdkVersion` | iOS version | Xcode version |',
+    '| --- | --- | --- | --- | --- | --- |',
+  ];
+
+  const rows = versionsToShow.map(v => {
+    return `| ${v.sdk} | ${v.android} | ${v.compileSdkVersion} | ${v.targetSdkVersion} | ${v.ios} | ${v.xcode} |`;
+  });
+
+  const table = [...header, ...rows].join('\n');
+
+  return content.replace(/<AndroidIOSCompatibilityTable\s*\/>/g, `\n${table}\n`);
 }

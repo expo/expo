@@ -43,6 +43,8 @@ import {
   replacePlatformTagsWithClass,
   stripDataDisplayComponents,
   stripHeaderNestingLevel,
+  replaceReactNativeCompatibilityTable,
+  replaceAndroidIOSCompatibilityTable,
 } from './component-replacers.js';
 import { PLATFORM_AND_DEVICE_MARKDOWN, DEVELOPMENT_MODE_MARKDOWN } from './constants.js';
 import { generateEasCliReferenceMarkdown } from './eas-cli.js';
@@ -145,6 +147,10 @@ export async function processPage(filePath, href) {
   content = stripDataDisplayComponents(content);
 
   content = stripHeaderNestingLevel(content);
+
+  content = replaceReactNativeCompatibilityTable(content, href);
+
+  content = replaceAndroidIOSCompatibilityTable(content, href);
 
   content = replaceInstructionScenes(content);
 
