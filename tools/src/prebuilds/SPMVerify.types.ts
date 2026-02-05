@@ -36,6 +36,8 @@ export interface XCFrameworkVerificationReport {
 export interface SliceVerificationReport {
   sliceId: string;
   frameworkName: string;
+  /** True if the framework contains only ObjC/C++ code (no Swift modules) */
+  isObjCOnly: boolean;
   machoInfo: VerificationResult;
   linkedDeps: string[];
   headersPresent: VerificationResult;

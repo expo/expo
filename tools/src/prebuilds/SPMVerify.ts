@@ -513,13 +513,22 @@ const verifyHeaders = (frameworkPath: string): VerificationResult => {
 /**
  * Verifies Modules directory presence
  */
-const verifyModules = (frameworkPath: string): VerificationResult => {
+const verifyModules = (frameworkPath: string, isObjCOnly: boolean): VerificationResult => {
   const modulesPath = path.join(frameworkPath, 'Modules');
 
   if (fs.existsSync(modulesPath) && fs.statSync(modulesPath).isDirectory()) {
     return {
       success: true,
       message: 'Modules/ present',
+    };
+  }
+
+  // For ObjC-only frameworks, missing Modules/ is acceptable
+  // They use traditional #import rather than @import
+  if (isObjCOnly) {
+    return {
+      success: true,
+      message: 'Modules/ not required (ObjC/C++ only framework)',
     };
   }
 
@@ -532,13 +541,21 @@ const verifyModules = (frameworkPath: string): VerificationResult => {
 /**
  * Verifies module.modulemap presence
  */
-const verifyModuleMap = (frameworkPath: string): VerificationResult => {
+const verifyModuleMap = (frameworkPath: string, isObjCOnly: boolean): VerificationResult => {
   const moduleMapPath = path.join(frameworkPath, 'Modules', 'module.modulemap');
 
   if (fs.existsSync(moduleMapPath)) {
     return {
       success: true,
       message: 'module.modulemap present',
+    };
+  }
+
+  // For ObjC-only frameworks, missing modulemap is acceptable
+  if (isObjCOnly) {
+    return {
+      success: true,
+      message: 'module.modulemap not required (ObjC/C++ only framework)',
     };
   }
 
@@ -1265,11 +1282,14 @@ const verifySlice = async (
   options?: VerifyOptions,
   dependencyXcframeworkPaths: string[] = []
 ): Promise<SliceVerificationReport> => {
+  // Detect if this is an ObjC-only framework (no Swift modules)
+  const isObjCOnly = !hasSwiftCode(slice.frameworkPath);
+
   const machoInfo = getMachoInfo(slice.binaryPath);
   const linkedDeps = getLinkedDependencies(slice.binaryPath);
   const headersPresent = verifyHeaders(slice.frameworkPath);
-  const modulesPresent = verifyModules(slice.frameworkPath);
-  const moduleMapPresent = verifyModuleMap(slice.frameworkPath);
+  const modulesPresent = verifyModules(slice.frameworkPath, isObjCOnly);
+  const moduleMapPresent = verifyModuleMap(slice.frameworkPath, isObjCOnly);
 
   let modularHeadersValid: VerificationResult = { success: true, message: 'Skipped' };
   let clangModuleImport: VerificationResult = { success: true, message: 'Skipped' };
@@ -1283,12 +1303,21 @@ const verifySlice = async (
       dependencyXcframeworkPaths
     );
 
-    spinner.info('Verifying clang module import...');
-    clangModuleImport = await verifyClangModuleImport(
-      slice,
-      xcframeworkPath,
-      dependencyXcframeworkPaths
-    );
+    // Skip clang @import check for ObjC-only frameworks without Modules/
+    // They use traditional #import and @import is not applicable
+    if (isObjCOnly && !fs.existsSync(path.join(slice.frameworkPath, 'Modules'))) {
+      clangModuleImport = {
+        success: true,
+        message: '@import not applicable (ObjC/C++ only framework without Modules/)',
+      };
+    } else {
+      spinner.info('Verifying clang module import...');
+      clangModuleImport = await verifyClangModuleImport(
+        slice,
+        xcframeworkPath,
+        dependencyXcframeworkPaths
+      );
+    }
   }
 
   if (!options?.skipSwiftCheck) {
@@ -1299,6 +1328,7 @@ const verifySlice = async (
   return {
     sliceId: slice.sliceId,
     frameworkName: slice.frameworkName,
+    isObjCOnly,
     machoInfo,
     linkedDeps,
     headersPresent,
