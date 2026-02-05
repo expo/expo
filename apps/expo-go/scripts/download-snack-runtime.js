@@ -1,19 +1,22 @@
 #!/usr/bin/env node
 
 /**
- * Downloads the production Snack runtime bundle and assets from EAS Updates for iOS.
+ * Downloads or builds the Snack runtime bundle and assets for embedding in Expo Go (iOS).
  *
- * Usage: yarn download-snack-runtime
+ * Usage:
+ *   yarn download-snack-runtime                    # Download from EAS Updates (production)
+ *   yarn download-snack-runtime ~/code/snack/runtime  # Build from local source
  *
- * This downloads:
+ * This produces:
  * - The Hermes bytecode bundle (snack-runtime.hbc)
  * - All assets (fonts, images) into assets/ subdirectory
- * - Generates manifest.json with embedded asset paths
+ * - manifest.json with embedded asset path mappings
  */
 
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const SNACK_PROJECT_ID = '933fd9c0-1666-11e7-afca-d980795c5824';
 const UPDATE_GROUP_ID = 'c9fb9b03-1a02-471e-b0e0-bcce08392ce1';
@@ -21,6 +24,18 @@ const UPDATE_GROUP_ID = 'c9fb9b03-1a02-471e-b0e0-bcce08392ce1';
 const OUTPUT_DIR = path.join(__dirname, '../ios/Exponent/Supporting/SnackRuntime');
 const ASSETS_DIR = path.join(OUTPUT_DIR, 'assets');
 const BUNDLE_NAME = 'snack-runtime.hbc';
+
+const EXT_TO_CONTENT_TYPE = {
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  svg: 'image/svg+xml',
+  ttf: 'font/ttf',
+  otf: 'font/otf',
+  woff: 'font/woff',
+  woff2: 'font/woff2',
+};
 
 function fetch(url, options = {}) {
   return new Promise((resolve, reject) => {
@@ -74,7 +89,9 @@ async function downloadAsset(asset, authHeaders, index, total) {
   // Skip if already exists
   if (fs.existsSync(assetPath)) {
     const stats = fs.statSync(assetPath);
-    console.log(`  [${index + 1}/${total}] Skipping ${filename} (already exists, ${formatSize(stats.size)})`);
+    console.log(
+      `  [${index + 1}/${total}] Skipping ${filename} (already exists, ${formatSize(stats.size)})`
+    );
     return { filename, size: stats.size, skipped: true };
   }
 
@@ -86,7 +103,9 @@ async function downloadAsset(asset, authHeaders, index, total) {
   }
 
   fs.writeFileSync(assetPath, res.body);
-  console.log(`  [${index + 1}/${total}] Downloaded ${filename} (${formatSize(res.body.length)})`);
+  console.log(
+    `  [${index + 1}/${total}] Downloaded ${filename} (${formatSize(res.body.length)})`
+  );
 
   return { filename, size: res.body.length, skipped: false };
 }
@@ -96,6 +115,158 @@ function formatSize(bytes) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 }
+
+// ---------------------------------------------------------------------------
+// Local build: export from a local snack runtime directory
+// ---------------------------------------------------------------------------
+
+async function buildLocalSnackRuntime(runtimeDir) {
+  const resolvedDir = path.resolve(runtimeDir);
+
+  if (!fs.existsSync(resolvedDir)) {
+    throw new Error(`Directory does not exist: ${resolvedDir}`);
+  }
+  if (!fs.existsSync(path.join(resolvedDir, 'package.json'))) {
+    throw new Error(`Not a valid project directory (no package.json): ${resolvedDir}`);
+  }
+
+  const exportDir = path.join(resolvedDir, '.expo-go-export');
+
+  // 1. Install dependencies
+  console.log(`Installing dependencies in ${resolvedDir}...`);
+  execSync('yarn install', { cwd: resolvedDir, stdio: 'inherit' });
+
+  // 2. Export the iOS bundle
+  console.log(`\nExporting iOS bundle...`);
+  execSync(`npx expo export --platform ios --output-dir "${exportDir}"`, {
+    cwd: resolvedDir,
+    stdio: 'inherit',
+    env: { ...process.env, EXPO_PUBLIC_SNACK_ENV: 'production' },
+  });
+
+  // 3. Find the .hbc bundle
+  const jsDir = path.join(exportDir, '_expo/static/js/ios');
+  const hbcFiles = fs.readdirSync(jsDir).filter((f) => f.endsWith('.hbc'));
+  if (hbcFiles.length === 0) {
+    throw new Error(`No .hbc bundle found in ${jsDir}`);
+  }
+  const hbcFile = hbcFiles[0];
+  console.log(`\nFound bundle: ${hbcFile}`);
+
+  // 4. Read export metadata
+  const metadata = JSON.parse(
+    fs.readFileSync(path.join(exportDir, 'metadata.json'), 'utf8')
+  );
+  const assetEntries = metadata.fileMetadata.ios.assets;
+
+  // 5. Read app.json/app.config for manifest metadata
+  let appConfig = {};
+  const appJsonPath = path.join(resolvedDir, 'app.json');
+  if (fs.existsSync(appJsonPath)) {
+    const raw = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'));
+    appConfig = raw.expo || raw;
+  }
+
+  // 6. Clear and recreate output directory
+  console.log(`\nCopying to ${OUTPUT_DIR}...`);
+  if (fs.existsSync(ASSETS_DIR)) {
+    fs.rmSync(ASSETS_DIR, { recursive: true });
+  }
+  fs.mkdirSync(ASSETS_DIR, { recursive: true });
+
+  // 7. Copy the bundle
+  const srcBundle = path.join(jsDir, hbcFile);
+  const dstBundle = path.join(OUTPUT_DIR, BUNDLE_NAME);
+  fs.copyFileSync(srcBundle, dstBundle);
+  const bundleSize = fs.statSync(dstBundle).size;
+  console.log(`  Copied ${BUNDLE_NAME} (${formatSize(bundleSize)})`);
+
+  // 8. Copy assets with extensions
+  const seenFiles = new Set();
+  let totalAssetsSize = 0;
+
+  for (const entry of assetEntries) {
+    const key = path.basename(entry.path);
+    const ext = entry.ext;
+    const filename = `${key}.${ext}`;
+
+    if (seenFiles.has(filename)) continue;
+    seenFiles.add(filename);
+
+    const srcAsset = path.join(exportDir, entry.path);
+    const dstAsset = path.join(ASSETS_DIR, filename);
+
+    if (fs.existsSync(srcAsset)) {
+      fs.copyFileSync(srcAsset, dstAsset);
+      totalAssetsSize += fs.statSync(dstAsset).size;
+    }
+  }
+
+  console.log(`  Copied ${seenFiles.size} assets (${formatSize(totalAssetsSize)})`);
+
+  // 9. Generate manifest
+  const embeddedManifest = {
+    id: `local-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    runtimeVersion: `exposdk:${appConfig.sdkVersion || 'unknown'}`,
+    metadata: {
+      source: 'local-build',
+      sourceDir: resolvedDir,
+    },
+    extra: {
+      expoClient: {
+        name: appConfig.name || 'Snack',
+        slug: appConfig.slug || 'snack',
+        owner: appConfig.owner || 'exponent',
+        sdkVersion: appConfig.sdkVersion,
+        platforms: appConfig.platforms,
+        runtimeVersion: appConfig.runtimeVersion,
+      },
+    },
+    bundleUrl: `file://SnackRuntime/${BUNDLE_NAME}`,
+    launchAsset: {
+      key: 'local-bundle',
+      contentType: 'application/javascript',
+      url: `file://SnackRuntime/${BUNDLE_NAME}`,
+      nsBundleDir: 'SnackRuntime',
+      nsBundleFilename: 'snack-runtime',
+      type: 'hbc',
+    },
+    assets: assetEntries.map((entry) => {
+      const key = path.basename(entry.path);
+      const ext = entry.ext;
+      const contentType = EXT_TO_CONTENT_TYPE[ext] || `application/${ext}`;
+      return {
+        key,
+        contentType,
+        nsBundleDir: 'SnackRuntime/assets',
+        nsBundleFilename: key,
+        type: ext,
+      };
+    }),
+  };
+
+  const manifestPath = path.join(OUTPUT_DIR, 'manifest.json');
+  fs.writeFileSync(manifestPath, JSON.stringify(embeddedManifest, null, 2) + '\n');
+  console.log(`  Saved manifest.json`);
+
+  // 10. Clean up export directory
+  fs.rmSync(exportDir, { recursive: true });
+  console.log(`  Cleaned up export directory`);
+
+  // Summary
+  console.log(`\n${'='.repeat(50)}`);
+  console.log(`Summary (local build):`);
+  console.log(`  Source:  ${resolvedDir}`);
+  console.log(`  Bundle:  ${formatSize(bundleSize)}`);
+  console.log(`  Assets:  ${seenFiles.size} files (${formatSize(totalAssetsSize)})`);
+  console.log(`  Total:   ${formatSize(bundleSize + totalAssetsSize)}`);
+  console.log(`${'='.repeat(50)}`);
+}
+
+// ---------------------------------------------------------------------------
+// Remote download: fetch from EAS Updates
+// ---------------------------------------------------------------------------
 
 async function downloadSnackRuntime() {
   const platform = 'ios';
@@ -248,8 +419,11 @@ This directory contains the pre-embedded Snack runtime for offline/faster loadin
 ## How to Update
 
 \`\`\`bash
-# Re-download everything (skips existing files)
+# Re-download from EAS Updates (skips existing files)
 yarn download-snack-runtime
+
+# Build from local snack runtime source
+yarn download-snack-runtime ~/code/snack/runtime
 
 # Force re-download by removing the directory first
 rm -rf ios/Exponent/Supporting/SnackRuntime
@@ -281,9 +455,20 @@ Set \`USE_EMBEDDED_SNACK_RUNTIME\` to \`true\` in \`EXBuildConstants.plist\`.
   return { manifest: embeddedManifest, bundlePath };
 }
 
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
 async function main() {
+  const localPath = process.argv[2];
+
   try {
-    await downloadSnackRuntime();
+    if (localPath) {
+      console.log(`Building snack runtime from local source: ${localPath}\n`);
+      await buildLocalSnackRuntime(localPath);
+    } else {
+      await downloadSnackRuntime();
+    }
     console.log('\nDone!');
   } catch (error) {
     console.error('Error:', error.message);
