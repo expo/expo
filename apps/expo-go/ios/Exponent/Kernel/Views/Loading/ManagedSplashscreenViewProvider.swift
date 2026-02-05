@@ -66,18 +66,21 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
             ])
           }
         }
-      } else if activityIndicator == nil, let splashScreenView {
-        // Show activity indicator when there's no app icon
-        let indicator = UIActivityIndicatorView(style: .large)
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.color = .gray
-        indicator.startAnimating()
-        splashScreenView.addSubview(indicator)
+      } else if imageViewContainer == nil, let splashScreenView {
+        // Show a very light grey placeholder when there's no app icon
+        let placeholder = UIView()
+        placeholder.translatesAutoresizingMaskIntoConstraints = false
+        placeholder.backgroundColor = UIColor(white: 0.99, alpha: 1.0)
+        placeholder.layer.cornerRadius = 30
+        imageViewContainer = placeholder
+        splashScreenView.addSubview(placeholder)
+
         NSLayoutConstraint.activate([
-          indicator.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
-          indicator.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor)
+          placeholder.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
+          placeholder.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor),
+          placeholder.widthAnchor.constraint(equalToConstant: 200),
+          placeholder.heightAnchor.constraint(equalToConstant: 200)
         ])
-        activityIndicator = indicator
       }
     }
   }

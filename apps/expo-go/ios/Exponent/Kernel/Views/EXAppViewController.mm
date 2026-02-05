@@ -377,6 +377,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideLoadingProgressWindow
 {
   [self.appLoadingProgressWindowController hide];
+  // Hide our loading overlay now that the app is fully loaded
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+  }
   if (self.managedSplashScreenController) {
     [self.managedSplashScreenController startSplashScreenVisibleTimer];
   }
@@ -387,14 +391,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  // Hide loading overlay after splash screen is configured. Dispatched async because
-  // the splash screen provider uses DispatchQueue.main.async internally to set up views.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if ([EXKernel sharedInstance].browserController) {
-      [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
-    }
-  });
   if ([EXKernel sharedInstance].browserController) {
+    // Only hide loading overlay if manifest has an app icon to show.
+    // Otherwise keep it visible until app is fully loaded (hideLoadingProgressWindow).
+    if ([manifest iosAppIconUrl] != nil) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+      });
+    }
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
   [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];

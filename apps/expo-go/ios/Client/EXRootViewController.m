@@ -301,6 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
     _appLoadingOverlay.statusText = statusText;
   }
   [self.view addSubview:_appLoadingOverlay];
+  [self.view bringSubviewToFront:_appLoadingOverlay];
 }
 
 - (void)hideAppLoadingOverlay
@@ -380,6 +381,10 @@ NS_ASSUME_NONNULL_BEGIN
   }
   [self.view addSubview:viewController.view];
   [self addChildViewController:viewController];
+  // Keep loading overlay on top of child view controllers
+  if (_appLoadingOverlay) {
+    [self.view bringSubviewToFront:_appLoadingOverlay];
+  }
 }
 
 - (void)_detachChildViewController:(UIViewController *)viewController isHidingHome:(BOOL)isHidingHome
