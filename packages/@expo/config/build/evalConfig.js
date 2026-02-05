@@ -5,23 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.evalConfig = evalConfig;
 exports.resolveConfigExport = resolveConfigExport;
-function _fs() {
-  const data = require("fs");
-  _fs = function () {
-    return data;
-  };
-  return data;
-}
-function _requireFromString() {
-  const data = _interopRequireDefault(require("require-from-string"));
-  _requireFromString = function () {
-    return data;
-  };
-  return data;
-}
-function _sucrase() {
-  const data = require("sucrase");
-  _sucrase = function () {
+function _requireUtils() {
+  const data = require("@expo/require-utils");
+  _requireUtils = function () {
     return data;
   };
   return data;
@@ -47,7 +33,6 @@ function _environment() {
   };
   return data;
 }
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 /**
  * Transpile and evaluate the dynamic config object.
  * This method is shared between the standard reading method in getConfig, and the headless script.
@@ -56,74 +41,8 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
  * @returns the serialized and evaluated config along with the exported object type (object or function).
  */
 function evalConfig(configFile, request) {
-  const contents = (0, _fs().readFileSync)(configFile, 'utf8');
-  let result;
-  try {
-    const {
-      code
-    } = (0, _sucrase().transform)(contents, {
-      filePath: configFile,
-      transforms: ['typescript', 'imports']
-    });
-    result = (0, _requireFromString().default)(code, configFile);
-  } catch (error) {
-    const location = extractLocationFromSyntaxError(error);
-
-    // Apply a code frame preview to the error if possible, sucrase doesn't do this by default.
-    if (location) {
-      const {
-        codeFrameColumns
-      } = require('@babel/code-frame');
-      const codeFrame = codeFrameColumns(contents, {
-        start: error.loc
-      }, {
-        highlightCode: true
-      });
-      error.codeFrame = codeFrame;
-      error.message += `\n${codeFrame}`;
-    } else {
-      const importantStack = extractImportantStackFromNodeError(error);
-      if (importantStack) {
-        error.message += `\n${importantStack}`;
-      }
-    }
-    throw error;
-  }
-  return resolveConfigExport(result, configFile, request);
-}
-function extractLocationFromSyntaxError(error) {
-  // sucrase provides the `loc` object
-  if (error.loc) {
-    return error.loc;
-  }
-
-  // `SyntaxError`s provide the `lineNumber` and `columnNumber` properties
-  if ('lineNumber' in error && 'columnNumber' in error) {
-    return {
-      line: error.lineNumber,
-      column: error.columnNumber
-    };
-  }
-  return null;
-}
-
-// These kinda errors often come from syntax errors in files that were imported by the main file.
-// An example is a module that includes an import statement.
-function extractImportantStackFromNodeError(error) {
-  if (isSyntaxError(error)) {
-    const traces = error.stack?.split('\n').filter(line => !line.startsWith('    at '));
-    if (!traces) return null;
-
-    // Remove redundant line
-    if (traces[traces.length - 1].startsWith('SyntaxError:')) {
-      traces.pop();
-    }
-    return traces.join('\n');
-  }
-  return null;
-}
-function isSyntaxError(error) {
-  return error instanceof SyntaxError || error.constructor.name === 'SyntaxError';
+  const mod = (0, _requireUtils().loadModuleSync)(configFile);
+  return resolveConfigExport(mod, configFile, request);
 }
 
 /**

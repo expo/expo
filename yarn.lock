@@ -4693,11 +4693,6 @@
   dependencies:
     csstype "^3.2.2"
 
-"@types/require-from-string@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@types/require-from-string/-/require-from-string-1.2.1.tgz#50292d824e2244628c0b961c6a1a583fdc494554"
-  integrity sha512-mIDK7lTHc0uW67SxPIqkwCrxmdKBV5aAET560hyZnT8c6Ekp9Aah3GPqe8Pl1Yzn/i2NMYmYv+HiMLwjGDCIAQ==
-
 "@types/resolve@^1.20.2":
   version "1.20.2"
   resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-1.20.2.tgz#97d26e00cd4a0423b4af620abecf3e6f442b7975"
@@ -15028,7 +15023,7 @@ stylus@^0.62.0:
     sax "~1.3.0"
     source-map "^0.7.3"
 
-sucrase@^3.32.0, sucrase@~3.35.1:
+sucrase@^3.32.0:
   version "3.35.1"
   resolved "https://registry.yarnpkg.com/sucrase/-/sucrase-3.35.1.tgz#4619ea50393fe8bd0ae5071c26abd9b2e346bfe1"
   integrity sha512-DhuTmvZWux4H1UOnWMB3sk0sbaCVOoQZjv8u1rDoTV0HTdGem9hkAZtl4JZy8P2z4Bg0nT+YMeOFyVr4zcG5Tw==
