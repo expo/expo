@@ -10,6 +10,7 @@ enum SnappedEdge {
 
 enum FABConstants {
   static let iconSize: CGFloat = 44
+  static let touchTargetSize: CGFloat = 80 
   static let margin: CGFloat = 10
   static let verticalPadding: CGFloat = 0
   static let dragThreshold: CGFloat = 10
@@ -115,6 +116,7 @@ struct FabPill: View {
           .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
       )
       .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
+      .frame(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize, alignment: .top)
   }
 
   private var classicButton: some View {
@@ -130,6 +132,7 @@ struct FabPill: View {
           .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
       )
       .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
+      .frame(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize, alignment: .top)
   }
 }
 
@@ -147,7 +150,7 @@ struct DevMenuFABView: View {
   let onOpenMenu: () -> Void
   let onFrameChange: (CGRect) -> Void
 
-  private let fabSize = CGSize(width: 72, height: FABConstants.iconSize + 50)
+  private let fabSize = CGSize(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize + 50)
   private let panelHeight: CGFloat = 140  // Height of the larger panel
   private let panelVerticalOffset: CGFloat = 10  // How much panel is shifted down from gear
   private let screenEdgeMargin: CGFloat = 12
@@ -176,11 +179,12 @@ struct DevMenuFABView: View {
 
   @State private var position: CGPoint = .zero
   @State private var isDragging = false
+  @State private var isDraggingPanel = false
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
   @State private var screenWidth: CGFloat = 0
   @State private var screenHeight: CGFloat = 0
-  @State private var currentEdge: SnappedEdge = .left
+  @State private var currentEdge: SnappedEdge = .right
   @State private var isPositioned = false  // Hide until initial position is set
   @State private var hasBeenEdited = false  // Updated via notification since sessionClient isn't observable
   @State private var isLessonCompleted = false  // Updated manually since UserDefaults isn't observable
@@ -203,14 +207,15 @@ struct DevMenuFABView: View {
   /// When panel is visible (lessons or lesson-like snacks), the panel has equal margins on both sides.
   private func hitTestFrame(edge: SnappedEdge) -> CGRect {
     let showingPanel = isSnackSession && !isDragging
+    
+    let touchTargetSize = FABConstants.touchTargetSize
+    let buttonCenterY = position.y + FABConstants.iconSize / 2
+    let touchTargetTop = buttonCenterY - touchTargetSize / 2
 
     if showingPanel {
-      // Gear center Y position
-      let gearCenterY = position.y + fabSize.height / 2
-
       // Panel has equal margins on both sides
       let panelWidth = screenWidth - (screenEdgeMargin * 2)
-      let panelY = gearCenterY - FABConstants.iconSize / 2
+      let panelY = buttonCenterY - FABConstants.iconSize / 2 + panelVerticalOffset
 
       return CGRect(
         x: screenEdgeMargin,
@@ -219,7 +224,12 @@ struct DevMenuFABView: View {
         height: panelHeight
       )
     } else {
-      return CGRect(origin: position, size: fabSize)
+      return CGRect(
+        x: position.x,
+        y: touchTargetTop,
+        width: touchTargetSize,
+        height: touchTargetSize
+      )
     }
   }
 
@@ -247,7 +257,7 @@ struct DevMenuFABView: View {
           // Panel rendered behind the gear (for lessons and lesson-like snacks)
           if isSnackSession {
             SnackActionPanel(
-              isDragging: isDragging,
+              isDragging: isDragging && !isDraggingPanel,
               snackName: snackName,
               snackDescription: snackDescription,
               snappedEdge: currentEdge,
@@ -260,16 +270,27 @@ struct DevMenuFABView: View {
               onComplete: handleComplete,
               onGoBack: handleGoBack
             )
+            .gesture(panelDragGesture(bounds: geometry.size, safeArea: safeArea))
           }
 
-          // The FabPill (gear) renders on top
+          let buttonCenterX = position.x + FABConstants.touchTargetSize / 2
+          let buttonCenterY = position.y + FABConstants.iconSize / 2
+          
+          Color.clear
+            .frame(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize)
+            .contentShape(Circle())
+            .position(x: buttonCenterX, y: buttonCenterY)
+            .zIndex(2)
+            .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
+
           FabPill(isPressed: $isPressed, isDragging: $isDragging, isSnackSession: isSnackSession)
-            .frame(width: fabSize.width, height: fabSize.height, alignment: .top)
+            .frame(width: FABConstants.touchTargetSize, height: fabSize.height, alignment: .top)
             .position(
-              x: position.x + fabSize.width / 2,
+              x: buttonCenterX,
               y: position.y + fabSize.height / 2
             )
-            .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
+            .zIndex(1)
+            .allowsHitTesting(false)
         }
       }
       .onAppear {
@@ -304,10 +325,9 @@ struct DevMenuFABView: View {
         hasBeenEdited = session.hasBeenEdited
         updateLessonCompletedState()
 
-        // Panel sessions (lessons/lesson-like snacks) always use default position (top-left)
         let initialPos: CGPoint
         if isSnackSession {
-          initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea, forPanelSession: true)
+          initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
         } else if let storedPos = Self.loadStoredPosition() {
           // Clamp stored position to valid bounds
           let margin = FABConstants.margin
@@ -421,27 +441,13 @@ struct DevMenuFABView: View {
           dragStartPosition = position
         }
         if isDragging {
-          let margin = FABConstants.margin
-          let minX = margin
-          let maxX = bounds.width - fabSize.width - margin
-          let minY = safeArea.top + FABConstants.verticalPadding
-
-          let maxY: CGFloat
-          if isSnackSession {
-            // Leave room for the panel to fit above the safe area
-            maxY = bounds.height - safeArea.bottom - panelHeight - panelVerticalOffset + FABConstants.iconSize/2 - fabSize.height/2
-          } else {
-            maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-          }
-
           let rawX = dragStartPosition.x + value.translation.width
           let rawY = dragStartPosition.y + value.translation.height
 
-          position = CGPoint(
-            x: rawX.clamped(to: minX...maxX),
-            y: rawY.clamped(to: minY...maxY)
-          )
-          onFrameChange(CGRect(origin: position, size: fabSize))
+          position = CGPoint(x: rawX, y: rawY)
+          let touchTargetSize = FABConstants.touchTargetSize
+          let buttonCenterY = position.y + FABConstants.iconSize / 2
+          onFrameChange(CGRect(x: position.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
         }
       }
       .onEnded { value in
@@ -471,23 +477,55 @@ struct DevMenuFABView: View {
             if !isSnackSession {
               Self.savePosition(newPos)
             }
-            onFrameChange(CGRect(origin: newPos, size: fabSize))
+            let touchTargetSize = FABConstants.touchTargetSize
+            let buttonCenterY = newPos.y + FABConstants.iconSize / 2
+            onFrameChange(CGRect(x: newPos.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
           }
         }
       }
   }
 
-  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets, forPanelSession: Bool? = nil) -> CGPoint {
-    // Use provided value or check current state
-    let isPanelSession = forPanelSession ?? isSnackSession
+  private func panelDragGesture(bounds: CGSize, safeArea: EdgeInsets) -> some Gesture {
+    DragGesture(minimumDistance: FABConstants.dragThreshold)
+      .onChanged { value in
+        if !isDragging {
+          isDragging = true
+          isDraggingPanel = true
+          dragStartPosition = position
+        }
+        let rawY = dragStartPosition.y + value.translation.height
+        position = CGPoint(x: position.x, y: rawY)
+        let touchTargetSize = FABConstants.touchTargetSize
+        let buttonCenterY = position.y + FABConstants.iconSize / 2
+        onFrameChange(CGRect(x: position.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
+      }
+      .onEnded { value in
+        let velocity = CGPoint(
+          x: 0,
+          y: value.predictedEndLocation.y - value.location.y
+        )
 
-    // Panel sessions default to top-left, non-panel sessions default to top-right
-    let xPosition = isPanelSession
-      ? FABConstants.margin / 2
-      : bounds.width - fabSize.width - FABConstants.margin / 2
+        let newPos = snapToEdge(
+          from: position,
+          velocity: velocity,
+          bounds: bounds,
+          safeArea: safeArea
+        )
 
+        DispatchQueue.main.async {
+          isDragging = false
+          isDraggingPanel = false
+          position = newPos
+          let touchTargetSize = FABConstants.touchTargetSize
+          let buttonCenterY = newPos.y + FABConstants.iconSize / 2
+          onFrameChange(CGRect(x: newPos.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
+        }
+      }
+  }
+
+  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
     return CGPoint(
-      x: xPosition,
+      x: bounds.width - fabSize.width - FABConstants.margin / 2,
       y: safeArea.top + FABConstants.verticalPadding
     )
   }

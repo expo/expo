@@ -21,6 +21,7 @@ struct FabGearButton: View {
           .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
       )
       .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
+      .frame(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize, alignment: .top)
       .scaleEffect(isPressed ? 0.9 : 1.0)
       .animation(.easeInOut(duration: 0.1), value: isPressed)
   }
@@ -47,9 +48,9 @@ struct SnackActionPanel: View {
   private let panelHeight: CGFloat = 140
   private let screenEdgeMargin: CGFloat = 12
 
-  // The gearPosition is the top-left of the FAB frame (72x94).
-  // The gear icon (44x44) is aligned to the top of that frame.
-  private let fabFrameWidth: CGFloat = 72
+  // The gearPosition is the top-left of the FAB frame.
+  // The gear icon is aligned to the top of that frame.
+  private let fabFrameWidth: CGFloat = 80
 
   // Gear icon center within the screen
   private var gearCenterX: CGFloat {
@@ -57,7 +58,7 @@ struct SnackActionPanel: View {
   }
 
   private var gearCenterY: CGFloat {
-    // Gear is aligned to top of frame, so its center is at top + iconSize/2
+    // Gear visual (44pt) is at top of frame, so center is at top + iconSize/2
     gearPosition.y + FABConstants.iconSize / 2
   }
 

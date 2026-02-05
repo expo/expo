@@ -109,8 +109,7 @@ class DevMenuFABWindow: UIWindow {
   }
 
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    let hitArea = fabFrame.insetBy(dx: -10, dy: -10)
-    if hitArea.contains(point) {
+    if fabFrame.contains(point) {
       return super.hitTest(point, with: event)
     }
 
