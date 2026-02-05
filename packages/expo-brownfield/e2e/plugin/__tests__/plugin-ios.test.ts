@@ -21,6 +21,7 @@ const PROJECT_SUFFIX = 'pluginios';
 describe('plugin for ios', () => {
   beforeAll(async () => {
     TEMP_DIR = await createTempProject(PROJECT_SUFFIX);
+    await setupPlugin(TEMP_DIR);
   }, 600000);
 
   afterAll(async () => {
@@ -33,7 +34,6 @@ describe('plugin for ios', () => {
    *   added via build properties plugin
    */
   it('modifies the build properties', async () => {
-    await setupPlugin(TEMP_DIR);
     validateBuildProperties(TEMP_DIR);
   });
 
@@ -45,7 +45,6 @@ describe('plugin for ios', () => {
    *   added via podfile plugin
    */
   it('modifies the podfile', async () => {
-    await setupPlugin(TEMP_DIR);
     validatePodfile(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
@@ -57,7 +56,6 @@ describe('plugin for ios', () => {
    *   added via podfile properties plugin
    */
   it('modifies the podfile properties', async () => {
-    await setupPlugin(TEMP_DIR);
     validatePodfileProperties(TEMP_DIR, {
       'ios.useFrameworks': 'static',
       'ios.brownfieldTargetName': 'testapppluginiosbrownfield',
@@ -70,7 +68,6 @@ describe('plugin for ios', () => {
    * - The group should be properly included in the Xcode project
    */
   it('should create a group for the brownfield framework', async () => {
-    await setupPlugin(TEMP_DIR);
     validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
   });
 
@@ -81,8 +78,6 @@ describe('plugin for ios', () => {
    * - The files are correctly included in the sources build phase
    */
   it('should create all brownfield files', async () => {
-    await setupPlugin(TEMP_DIR);
-
     const files = [
       'ExpoAppDelegate.swift',
       'Info.plist',
@@ -106,7 +101,6 @@ describe('plugin for ios', () => {
    * - The app delegate is patched to import Expo with `internal`
    */
   it('should patch the app delegate', async () => {
-    await setupPlugin(TEMP_DIR);
     validateAppDelegatePatch(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
@@ -117,7 +111,6 @@ describe('plugin for ios', () => {
    *   - Referencing app project's bundle phase
    */
   it('should configure the build phases', async () => {
-    await setupPlugin(TEMP_DIR);
     validateBuildPhases(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
   });
 
@@ -126,7 +119,6 @@ describe('plugin for ios', () => {
    * - The build settings are properly set up for the brownfield target
    */
   it('should properly set up build settings', async () => {
-    await setupPlugin(TEMP_DIR);
     validateBuildSettings(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
   });
 
@@ -137,7 +129,6 @@ describe('plugin for ios', () => {
    *   - Bundle identifier
    */
   it('should properly infer values if no props are passed', async () => {
-    await setupPlugin(TEMP_DIR);
     validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield', projectName(PROJECT_SUFFIX));
     validateBundleIdentifier(
       TEMP_DIR,

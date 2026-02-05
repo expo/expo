@@ -19,6 +19,7 @@ let TEMP_DIR: string;
 describe('plugin for android', () => {
   beforeAll(async () => {
     TEMP_DIR = await createTempProject('pluginandroid');
+    await setupPlugin(TEMP_DIR);
   }, 600000);
 
   afterAll(async () => {
@@ -30,8 +31,26 @@ describe('plugin for android', () => {
    * - The brownfield library is created
    */
   it('should create the brownfield library', async () => {
-    await setupPlugin(TEMP_DIR);
     validateBrownfieldLibrary(TEMP_DIR);
+  });
+
+  /**
+   * Expected behavior:
+   * - settings.gradle includes the brownfield library
+   * - settings.gradle includes the brownfield gradle plugins
+   */
+  it('modifies settings.gradle', async () => {
+    validateSettingsGradle(TEMP_DIR);
+  });
+
+  /**
+   * Expected behavior:
+   * - build.gradle includes the brownfield publish plugin
+   * - the plugin is configured correctly with the correct library name
+   *   and publishing (repositories) configuration
+   */
+  it('modifies build.gradle', async () => {
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, [{ type: 'localMaven' }]));
   });
 
   /**
@@ -57,27 +76,6 @@ describe('plugin for android', () => {
     ];
 
     validateBrownfieldFiles(TEMP_DIR, files);
-  });
-
-  /**
-   * Expected behavior:
-   * - settings.gradle includes the brownfield library
-   * - settings.gradle includes the brownfield gradle plugins
-   */
-  it('modifies settings.gradle', async () => {
-    await setupPlugin(TEMP_DIR);
-    validateSettingsGradle(TEMP_DIR);
-  });
-
-  /**
-   * Expected behavior:
-   * - build.gradle includes the brownfield publish plugin
-   * - the plugin is configured correctly with the correct library name
-   *   and publishing (repositories) configuration
-   */
-  it('modifies build.gradle', async () => {
-    await setupPlugin(TEMP_DIR);
-    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, [{ type: 'localMaven' }]));
   });
 
   /**
