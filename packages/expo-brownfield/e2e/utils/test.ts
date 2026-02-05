@@ -151,3 +151,85 @@ export const expectPrebuild = async (projectRoot: string, platform: 'android' | 
   const prebuildFiles = fs.readdirSync(prebuildDir, { recursive: true });
   expect(prebuildFiles.length).toBeGreaterThan(0);
 };
+
+/**
+ * Expects that file exists and contains specified content (optionally)
+ */
+interface ExpectFileOptions {
+  projectRoot: string;
+  fileName?: string;
+  filePath?: string;
+  content?: string[] | string;
+}
+
+export const expectFile = async ({
+  projectRoot,
+  fileName,
+  filePath,
+  content,
+}: ExpectFileOptions) => {
+  let fullFilePath;
+
+  if (fileName) {
+    const files = fs.readdirSync(projectRoot, { recursive: true });
+    const file = files.find(
+      (entry) =>
+        entry.endsWith(fileName) &&
+        !entry.includes('.brownfield-templates') &&
+        !entry.includes('node_modules')
+    );
+    expect(file).toBeDefined();
+
+    fullFilePath = path.join(projectRoot, file);
+    expect(fs.existsSync(fullFilePath)).toBe(true);
+  }
+
+  if (filePath) {
+    fullFilePath = path.join(projectRoot, filePath);
+    expect(fs.existsSync(fullFilePath)).toBe(true);
+  }
+
+  const fileContent = fs.readFileSync(fullFilePath, 'utf-8');
+  if (Array.isArray(content)) {
+    content?.forEach((pattern) => {
+      expect(fileContent).toContain(pattern);
+    });
+  } else {
+    expect(fileContent).toContain(content);
+  }
+};
+
+/**
+ * Wrapper around `expectFile` for cleaner calls
+ */
+interface ExpectedFileName {
+  fileName: string;
+  content: string[] | string;
+}
+
+type ExpectFilesOptions =
+  | {
+      projectRoot: string;
+      fileNames: string[];
+      content: string[] | string;
+    }
+  | {
+      projectRoot: string;
+      expected: ExpectedFileName[];
+    };
+
+export const expectFiles = async (options: ExpectFilesOptions) => {
+  if ('content' in options) {
+    options.fileNames.forEach((fileName) => {
+      expectFile({ projectRoot: options.projectRoot, fileName, content: options.content });
+    });
+  } else if ('expected' in options) {
+    options.expected.forEach((expected) => {
+      expectFile({
+        projectRoot: options.projectRoot,
+        fileName: expected.fileName,
+        content: expected.content,
+      });
+    });
+  }
+};

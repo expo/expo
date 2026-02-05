@@ -1,9 +1,9 @@
 import path from 'path';
 
-import { BUILD, BUILD_IOS, ERROR } from '../utils/output';
-import { executeCommandAsync } from '../utils/process';
-import { cleanUpProject, createTempProject } from '../utils/project';
-import { buildIosTest, expectPrebuild } from '../utils/test';
+import { BUILD, BUILD_IOS, ERROR } from '../../utils/output';
+import { executeCommandAsync } from '../../utils/process';
+import { cleanUpProject, createTempProject } from '../../utils/project';
+import { buildIosTest, expectPrebuild } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -102,7 +102,7 @@ describe('build:ios command', () => {
    */
   describe('with prebuild', () => {
     beforeAll(async () => {
-      TEMP_DIR_PREBUILD = await createTempProject('buildiospb', true);
+      TEMP_DIR_PREBUILD = await createTempProject('buildiospb', true, true);
     }, 600000);
 
     afterAll(async () => {

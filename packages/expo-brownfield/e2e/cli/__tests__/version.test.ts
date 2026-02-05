@@ -1,6 +1,6 @@
-import { VERSION } from '../utils/output';
-import { executeCLIASync } from '../utils/process';
-import { createTempProject, cleanUpProject } from '../utils/project';
+import { VERSION } from '../../utils/output';
+import { executeCLIASync } from '../../utils/process';
+import { createTempProject, cleanUpProject } from '../../utils/project';
 
 let TEMP_DIR: string;
 

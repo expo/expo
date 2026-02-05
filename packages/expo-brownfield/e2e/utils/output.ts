@@ -4,7 +4,7 @@ import path from 'node:path';
  * Help messages
  */
 export const HELP_MESSAGE = {
-  GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`,
+  GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`
 };
 
 /**

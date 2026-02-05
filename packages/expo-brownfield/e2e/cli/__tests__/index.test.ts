@@ -1,6 +1,6 @@
-import { ERROR, HELP_MESSAGE } from '../utils/output';
-import { executeCLIASync } from '../utils/process';
-import { createTempProject, cleanUpProject } from '../utils/project';
+import { ERROR, HELP_MESSAGE } from '../../utils/output';
+import { executeCLIASync } from '../../utils/process';
+import { createTempProject, cleanUpProject } from '../../utils/project';
 
 const TASKS_ANDROID_ERROR = `Error: Value of Android library name: ENOENT: no such file or directory`;
 
