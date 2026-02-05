@@ -33,7 +33,10 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers"',
     ].compact)
   end
-  pod_target_xcconfig['HEADER_SEARCH_PATHS'] = header_search_paths.join(' ')
+
+  if !header_search_paths.empty?
+    pod_target_xcconfig['HEADER_SEARCH_PATHS'] = '$(inherited) ' + header_search_paths.join(' ')
+  end
   s.pod_target_xcconfig = pod_target_xcconfig
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
