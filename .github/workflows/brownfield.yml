@@ -305,7 +305,7 @@ jobs:
       - name: 🍏 Build iOS artifacts
         run: |
           npx expo prebuild --clean --platform ios
-          npx expo-brownfield build-ios --${{ matrix.build-type }} --verbose
+          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose
         working-directory: apps/brownfield-tester/expo-app
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
