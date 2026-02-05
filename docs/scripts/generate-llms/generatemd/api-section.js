@@ -355,6 +355,74 @@ function renderProperty(prop) {
   return parts.join('\n\n');
 }
 
+function renderAccessor(accessor) {
+  const parts = [];
+  const getSig = accessor.getSignature;
+  const setSig = accessor.setSignature;
+
+  // Determine type from getter return type or setter parameter type
+  let typeStr = '';
+  if (getSig?.type) {
+    typeStr = resolveType(getSig.type);
+  } else if (setSig?.parameters?.[0]?.type) {
+    typeStr = resolveType(setSig.parameters[0].type);
+  }
+
+  // Get comment from getter or setter
+  const comment = getSig?.comment || setSig?.comment || accessor.comment;
+  const platforms = getPlatforms(comment);
+  const since = getSince(comment);
+  const deprecatedMsg = getDeprecatedMessage(comment);
+
+  const flags = [];
+  if (getSig && !setSig) {
+    flags.push('Read Only');
+  } else if (setSig && !getSig) {
+    flags.push('Write Only');
+  }
+  if (accessor.flags?.isStatic) {
+    flags.push('Static');
+  }
+
+  let header = `**\`${accessor.name}\`**`;
+  if (typeStr) {
+    header += ` — Type: \`${typeStr}\``;
+  }
+  if (flags.length > 0) {
+    header += ` — *${flags.join(', ')}*`;
+  }
+  if (platforms.length > 0) {
+    header += ` — *${platforms.join(', ')}*`;
+  }
+  if (since) {
+    header += ` — *Since: ${since}*`;
+  }
+  parts.push(header);
+
+  if (deprecatedMsg) {
+    parts.push(`> **Deprecated:** ${deprecatedMsg}`);
+  }
+
+  const desc = getCommentText(comment);
+  if (desc) {
+    parts.push(desc);
+  }
+
+  const seeLinks = getSeeLinks(comment);
+  if (seeLinks.length > 0) {
+    parts.push(`See: ${seeLinks.join(', ')}`);
+  }
+
+  const examples = getExamples(comment);
+  if (examples.length > 0) {
+    for (const example of examples) {
+      parts.push(example);
+    }
+  }
+
+  return parts.join('\n\n');
+}
+
 function renderMethodSignature(methodName, sig) {
   const parts = [];
   const params = (sig.parameters || []).map(p => p.name).join(', ');
@@ -537,6 +605,8 @@ function renderApiChildren(children) {
   const allConstants = children.filter(c => c.kind === 32 && c.name && c.name !== 'default');
   const components = allConstants.filter(isReactComponent);
   const constants = allConstants.filter(c => !isReactComponent(c));
+  const moduleAccessors = children.filter(c => c.kind === 262144 && c.name && c.name !== 'default');
+  const moduleProperties = children.filter(c => c.kind === 1024 && c.name && c.name !== 'default');
 
   // Render Hooks first
   if (hooks.length > 0) {
@@ -568,6 +638,17 @@ function renderApiChildren(children) {
     }
   }
 
+  // Render module-level Properties and Accessors
+  if (moduleProperties.length > 0 || moduleAccessors.length > 0) {
+    lines.push('### Properties');
+    for (const prop of moduleProperties) {
+      lines.push(renderProperty(prop));
+    }
+    for (const accessor of moduleAccessors) {
+      lines.push(renderAccessor(accessor));
+    }
+  }
+
   // Render Classes
   for (const entry of classes) {
     const description = getCommentText(entry.comment);
@@ -586,12 +667,16 @@ function renderApiChildren(children) {
 
     const classChildren = entry.children || [];
     const properties = classChildren.filter(c => c.kind === 1024);
+    const accessors = classChildren.filter(c => c.kind === 262144);
     const classMethods = classChildren.filter(c => c.kind === 2048);
 
-    if (properties.length > 0) {
+    if (properties.length > 0 || accessors.length > 0) {
       lines.push(`#### ${entry.name} Properties`);
       for (const prop of properties) {
         lines.push(renderProperty(prop));
+      }
+      for (const accessor of accessors) {
+        lines.push(renderAccessor(accessor));
       }
     }
 
@@ -682,25 +767,30 @@ function renderApiChildren(children) {
       if (typeStr && typeStr !== 'object') {
         lines.push(`Type: \`${typeStr}\``);
       }
+      // Helper to render children (properties and accessors)
+      const renderChildren = childrenArray => {
+        for (const child of childrenArray) {
+          if (child.kind === 1024) {
+            lines.push(renderProperty(child));
+          } else if (child.kind === 262144) {
+            lines.push(renderAccessor(child));
+          }
+        }
+      };
+
       // If the entry has direct children (properties), render them
       if (entry.children?.length) {
-        for (const prop of entry.children) {
-          lines.push(renderProperty(prop));
-        }
+        renderChildren(entry.children);
       }
       // If the type is a reflection with children (object type), render its properties
       else if (entry.type?.type === 'reflection' && entry.type.declaration?.children?.length) {
-        for (const prop of entry.type.declaration.children) {
-          lines.push(renderProperty(prop));
-        }
+        renderChildren(entry.type.declaration.children);
       }
       // If it's an intersection with a reflection, render the reflection's properties
       else if (entry.type?.type === 'intersection') {
         for (const t of entry.type.types || []) {
           if (t.type === 'reflection' && t.declaration?.children?.length) {
-            for (const prop of t.declaration.children) {
-              lines.push(renderProperty(prop));
-            }
+            renderChildren(t.declaration.children);
           }
         }
       }
@@ -714,6 +804,16 @@ function renderApiChildren(children) {
     lines.push(`### ${entry.name} (*Constant*)${valStr}`);
     if (description) {
       lines.push(description);
+    }
+    // Render nested properties/accessors if the constant has a reflection type
+    if (entry.type?.type === 'reflection' && entry.type.declaration?.children?.length) {
+      for (const child of entry.type.declaration.children) {
+        if (child.kind === 1024) {
+          lines.push(renderProperty(child));
+        } else if (child.kind === 262144) {
+          lines.push(renderAccessor(child));
+        }
+      }
     }
   }
 
