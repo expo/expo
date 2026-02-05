@@ -78,7 +78,7 @@ class CameraSessionManager: NSObject {
     : deviceDiscovery.frontCameraLenses
 
     let selectedDevice = lenses.first {
-      $0.localizedName == delegate.selectedLens
+      $0.deviceType.rawValue == delegate.selectedLens
     }
 
     if let selectedDevice {
