@@ -29,6 +29,13 @@ const inferenceError = (valueName) => {
     return process.exit(1);
 };
 /**
+ * Prints the error message for missing tasks or repositories.
+ */
+const missingTasksOrRepositoriesError = () => {
+    console.error('Error: At least one task or repository must be specified');
+    return process.exit(1);
+};
+/**
  * Prints the error message for failed argument parsing.
  */
 const parseArgsError = () => {
@@ -57,6 +64,7 @@ exports.Errors = {
     additionalCommand: additionalCommandError,
     generic: genericError,
     inference: inferenceError,
+    missingTasksOrRepositories: missingTasksOrRepositoriesError,
     parseArgs: parseArgsError,
     unknownCommand: unknownCommandError,
     unknownOption: unkownOptionError,
