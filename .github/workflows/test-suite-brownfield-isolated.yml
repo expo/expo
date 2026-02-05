@@ -43,8 +43,7 @@ jobs:
             "apps/brownfield-tester/expo-app/**",
             "packages/expo-brownfield/plugin/**",
             "packages/expo-brownfield/src/**",
-            "packages/expo-brownfield/e2e/maestro/**",
-            "packages/expo-brownfield/e2e/scripts/**"
+            "packages/expo-brownfield/e2e/maestro/**"
 
   android-e2e:
     runs-on: ubuntu-24.04
@@ -90,12 +89,6 @@ jobs:
           npx expo prebuild --clean -p android
           npx expo-brownfield build:android --repo MavenLocal --verbose
         working-directory: apps/brownfield-tester/expo-app
-      - name: 📱 Build and install Android app (apps/brownfield-tester/android-integrated)
-        run: |
-          ./gradlew clean
-          ./gradlew installRelease --refresh-dependencies
-          adb shell monkey -p dev.expo.brownfieldintegratedtester 1
-        working-directory: apps/brownfield-tester/android-integrated
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -106,8 +99,11 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
+            cd apps/brownfield-tester/android-integrated
+            ./gradlew clean
+            ./gradlew installRelease --refresh-dependencies
+            cd ../../packages/expo-brownfield/e2e
             maestro test maestro/__tests__/android
-          working-directory: packages/expo-brownfield/e2e
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
