@@ -64,23 +64,36 @@ index 6f3abc3..de4a73b 100644
    end
  end
 diff --git a/node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/VirtualView.java b/node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/VirtualView.java
-index 4d71806..ded4a41 100644
+index 4d71806..771e89e 100644
 --- a/node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/VirtualView.java
 +++ b/node_modules/react-native-svg/android/src/main/java/com/horcrux/svg/VirtualView.java
-@@ -608,7 +608,8 @@ public abstract class VirtualView extends ReactViewGroup {
+@@ -608,17 +608,19 @@ public abstract class VirtualView extends ReactViewGroup {
          setBottom(Math.min(bottom, root.getHeight()));
        }
      }
 -    EventDispatcher eventDispatcher =
+-        UIManagerHelper.getEventDispatcherForReactTag(mContext, getId());
+-    if (eventDispatcher != null) {
+-      eventDispatcher.dispatchEvent(
+-        new SvgOnLayoutEvent(
+-          UIManagerHelper.getSurfaceId(VirtualView.this),
+-          this.getId(),
+-          left,
+-          top,
+-          width,
+-          height));
 +    if (!mContext.isBridgeless()) {
 +      EventDispatcher eventDispatcher =
-         UIManagerHelper.getEventDispatcherForReactTag(mContext, getId());
-     if (eventDispatcher != null) {
-       eventDispatcher.dispatchEvent(
-@@ -619,6 +620,7 @@ public abstract class VirtualView extends ReactViewGroup {
-           top,
-           width,
-           height));
++          UIManagerHelper.getEventDispatcherForReactTag(mContext, getId());
++      if (eventDispatcher != null) {
++        eventDispatcher.dispatchEvent(
++          new SvgOnLayoutEvent(
++            UIManagerHelper.getSurfaceId(VirtualView.this),
++            this.getId(),
++            left,
++            top,
++            width,
++            height));
 +      }
      }
    }
