@@ -36,6 +36,9 @@ import EXDevMenu
       return
     }
 
+    // Show loading overlay immediately
+    EXKernel.sharedInstance().browserController.showAppLoadingOverlay()
+
     // For non-snack apps, open synchronously to avoid timing issues with native module registration.
     // The async Task wrapper was causing race conditions where the app would start before
     // native components were fully registered.
@@ -126,6 +129,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
+          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }
@@ -138,6 +142,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
+          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }

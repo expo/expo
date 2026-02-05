@@ -14,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setIsNuxFinished:(BOOL)isFinished;
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord;
 
+/// Show loading overlay immediately when opening an app
+- (void)showAppLoadingOverlay;
+/// Hide loading overlay (called when app view controller appears or on cancel)
+- (void)hideAppLoadingOverlay;
+
 @end
 
 NS_ASSUME_NONNULL_END

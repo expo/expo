@@ -5,6 +5,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 
 #import "EXAbstractLoader.h"
+#import "EXAppLoadingCancelView.h"
 #import "EXAppViewController.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
@@ -25,13 +26,14 @@ NSString * const kEXIsLocalNetworkAccessGrantedKey = @"EXIsLocalNetworkAccessGra
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXRootViewController () <EXAppBrowserController>
+@interface EXRootViewController () <EXAppBrowserController, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
 @property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
 @property (nonatomic, strong) HomeViewController *homeViewController;
 @property (nonatomic, strong) NSURL *pendingInitialHomeURL;
+@property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingOverlay;
 
 @end
 
@@ -279,6 +281,44 @@ NS_ASSUME_NONNULL_BEGIN
   [self _applySupportedInterfaceOrientations];
 }
 
+- (void)showAppLoadingOverlay
+{
+  if (_appLoadingOverlay) {
+    return;
+  }
+
+  _appLoadingOverlay = [[EXAppLoadingCancelView alloc] init];
+  _appLoadingOverlay.delegate = self;
+  _appLoadingOverlay.frame = self.view.bounds;
+  _appLoadingOverlay.backgroundColor = [UIColor whiteColor];
+  [self.view addSubview:_appLoadingOverlay];
+}
+
+- (void)hideAppLoadingOverlay
+{
+  if (!_appLoadingOverlay) {
+    return;
+  }
+
+  EXAppLoadingCancelView *overlay = _appLoadingOverlay;
+  _appLoadingOverlay = nil;
+
+  [UIView animateWithDuration:0.2 animations:^{
+    overlay.alpha = 0.0;
+  } completion:^(BOOL finished) {
+    [overlay removeFromSuperview];
+  }];
+}
+
+#pragma mark - EXAppLoadingCancelViewDelegate
+
+- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view
+{
+  [self hideAppLoadingOverlay];
+  // Cancel any pending app load by going back to home
+  [self moveHomeToVisible];
+}
+
 #pragma mark - internal
 
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
@@ -363,6 +403,8 @@ NS_ASSUME_NONNULL_BEGIN
 
   if (isShowingApp) {
     [self.view setNeedsLayout];
+    // Hide the loading overlay now that the app is visible
+    [self hideAppLoadingOverlay];
   }
 
   _isAnimatingAppTransition = NO;
