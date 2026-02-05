@@ -1,0 +1,10 @@
+appId: host.exp.exponent.brownfieldtest.android
+---
+- launchApp
+- assertVisible:
+  id: openReactNativeButton
+- tapOn:
+    id: openReactNativeButton
+- assertVisible: "isFabricEnabled: true"
+- assertVisible: "Image from RN core to test TurboModuleDelegate on iOS. If you see the first image but not the second, that's a bug."
+
