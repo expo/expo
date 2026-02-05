@@ -462,6 +462,10 @@ export type CameraViewProps = ViewProps & {
    * @platform ios
    */
   selectedLens?: string;
+   /**
+   * A boolean to enable or disable the torch.
+   * @default false
+   */
   enableTorch?: boolean;
   /**
    * The video stabilization mode used for a video recording. Use one of [`VideoStabilization.<value>`](#videostabilization).
