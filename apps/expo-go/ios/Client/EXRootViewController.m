@@ -281,9 +281,15 @@ NS_ASSUME_NONNULL_BEGIN
   [self _applySupportedInterfaceOrientations];
 }
 
-- (void)showAppLoadingOverlay
+- (void)showAppLoadingOverlayWithStatusText:(nullable NSString *)statusText
 {
   if (_appLoadingOverlay) {
+    // Already visible or animating in - just make sure it stays visible
+    [_appLoadingOverlay.layer removeAllAnimations];
+    _appLoadingOverlay.alpha = 1.0;
+    if (statusText) {
+      _appLoadingOverlay.statusText = statusText;
+    }
     return;
   }
 
@@ -291,6 +297,9 @@ NS_ASSUME_NONNULL_BEGIN
   _appLoadingOverlay.delegate = self;
   _appLoadingOverlay.frame = self.view.bounds;
   _appLoadingOverlay.backgroundColor = [UIColor whiteColor];
+  if (statusText) {
+    _appLoadingOverlay.statusText = statusText;
+  }
   [self.view addSubview:_appLoadingOverlay];
 }
 
@@ -303,6 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXAppLoadingCancelView *overlay = _appLoadingOverlay;
   _appLoadingOverlay = nil;
 
+  [overlay.layer removeAllAnimations];
   [UIView animateWithDuration:0.2 animations:^{
     overlay.alpha = 0.0;
   } completion:^(BOOL finished) {
@@ -403,8 +413,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   if (isShowingApp) {
     [self.view setNeedsLayout];
-    // Hide the loading overlay now that the app is visible
-    [self hideAppLoadingOverlay];
+    // Loading overlay is hidden by EXAppViewController when manifest loads
   }
 
   _isAnimatingAppTransition = NO;

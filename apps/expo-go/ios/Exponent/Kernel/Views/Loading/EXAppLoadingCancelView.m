@@ -37,6 +37,13 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
   }
 }
 
+- (void)setStatusText:(NSString *)statusText
+{
+  _statusText = [statusText copy];
+  _lblStatus.text = statusText;
+  [self setNeedsLayout];
+}
+
 - (void)setFrame:(CGRect)frame
 {
   [super setFrame:frame];

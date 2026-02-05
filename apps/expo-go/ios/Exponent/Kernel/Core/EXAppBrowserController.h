@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord;
 
 /// Show loading overlay immediately when opening an app
-- (void)showAppLoadingOverlay;
+/// @param statusText Optional custom status text (e.g., "Opening lesson..."). Pass nil for default "Opening project..."
+- (void)showAppLoadingOverlayWithStatusText:(nullable NSString *)statusText;
 /// Hide loading overlay (called when app view controller appears or on cancel)
 - (void)hideAppLoadingOverlay;
 

@@ -36,8 +36,12 @@ import EXDevMenu
       return
     }
 
+    // Determine status text based on what we're opening
+    let isLesson = (snackParams?["isLesson"] as? Bool) == true
+    let statusText = isLesson ? "Opening lesson..." : "Opening project..."
+
     // Show loading overlay immediately
-    EXKernel.sharedInstance().browserController.showAppLoadingOverlay()
+    EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: statusText)
 
     // For non-snack apps, open synchronously to avoid timing issues with native module registration.
     // The async Task wrapper was causing race conditions where the app would start before

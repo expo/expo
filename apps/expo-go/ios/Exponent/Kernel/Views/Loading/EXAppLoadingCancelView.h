@@ -17,4 +17,7 @@
 
 - (void)setDelegate:(id<EXAppLoadingCancelViewDelegate>)delegate;
 
+/// The status text shown while loading (default: "Opening project...")
+@property (nonatomic, copy) NSString *statusText;
+
 @end
