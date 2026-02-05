@@ -44,27 +44,28 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
   [self setNeedsLayout];
 }
 
-- (void)setFrame:(CGRect)frame
+- (void)layoutSubviews
 {
-  [super setFrame:frame];
-  
-  CGFloat startingY = CGRectGetMidY(frame) - 54.0f;
-  
-  _lblStatus.frame = CGRectMake(0, 0, self.bounds.size.width - 32.0f, 24.0f);
+  [super layoutSubviews];
+
+  CGFloat centerX = CGRectGetMidX(self.bounds);
+  CGFloat startingY = CGRectGetMidY(self.bounds) - 54.0f;
+
+  // Spinner centered horizontally
+  _loadingIndicator.center = CGPointMake(centerX, startingY);
+
+  // Status label below spinner, with enough width to fit text
+  CGFloat maxLabelWidth = self.bounds.size.width - 32.0f;
+  _lblStatus.frame = CGRectMake(0, 0, maxLabelWidth, CGFLOAT_MAX);
   [_lblStatus sizeToFit];
-  CGFloat statusWidth = _lblStatus.frame.size.width + _loadingIndicator.frame.size.width + 8.0f;
-  
-  _loadingIndicator.center = CGPointMake(CGRectGetMidX(self.bounds) - (statusWidth * 0.5f) + _loadingIndicator.frame.size.width * 0.5f,
-                                         startingY);
-  _lblStatus.center = CGPointMake(CGRectGetMaxX(_loadingIndicator.frame) + 8.0f + CGRectGetMidX(_lblStatus.frame),
-                                  _loadingIndicator.center.y);
+  _lblStatus.center = CGPointMake(centerX, CGRectGetMaxY(_loadingIndicator.frame) + 16.0f + CGRectGetMidY(_lblStatus.frame));
 
   _btnCancel.frame = CGRectMake(0, 0, 84.0f, 36.0f);
-  _btnCancel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_lblStatus.frame) + 48.0f);
+  _btnCancel.center = CGPointMake(centerX, CGRectGetMaxY(_lblStatus.frame) + 48.0f);
 
-  _lblAdvice.frame = CGRectMake(_lblStatus.frame.origin.x, 0, MIN(self.frame.size.width - 32.0f, 300.0f), CGFLOAT_MAX);
+  _lblAdvice.frame = CGRectMake(0, 0, MIN(self.bounds.size.width - 32.0f, 300.0f), CGFLOAT_MAX);
   [_lblAdvice sizeToFit];
-  _lblAdvice.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMaxY(_btnCancel.frame) + CGRectGetMidY(_lblAdvice.frame) + 24.0f);
+  _lblAdvice.center = CGPointMake(centerX, CGRectGetMaxY(_btnCancel.frame) + CGRectGetMidY(_lblAdvice.frame) + 24.0f);
 }
 
 - (void)_setUpViews
@@ -82,6 +83,7 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
   _lblStatus.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:14.0f];
   _lblStatus.textColor = [UIColor blackColor];
   _lblStatus.textAlignment = NSTextAlignmentCenter;
+  _lblStatus.numberOfLines = 0;
   [self addSubview:_lblStatus];
 
   // Fade in animation
