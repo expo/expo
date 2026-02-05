@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 
 @DoNotStrip
 open class SharedObject(runtime: Runtime? = null) {
-  constructor(appContext: AppContext) : this(appContext.hostingRuntimeContext)
+  constructor(appContext: AppContext) : this(appContext.runtime)
 
   /**
    * An identifier of the native shared object that maps to the JavaScript object.
