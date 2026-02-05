@@ -39,14 +39,14 @@ jobs:
               - 'packages/expo-brownfield/cli/**'
               - 'packages/expo-brownfield/e2e/cli/**'
               - 'packages/expo-brownfield/e2e/utils/**'
-              - 'packages/expo-brownfield/package.json
+              - 'packages/expo-brownfield/package.json'
             plugin_e2e:
               - '.github/workflows/brownfield.yml'
               - 'packages/expo-brownfield/plugin/**'
               - 'packages/expo-brownfield/e2e/plugin/**'
               - 'packages/expo-brownfield/e2e/utils/**'
-              - 'packages/expo-brownfield/app.plugin.js
-              - 'packages/expo-brownfield/package.json
+              - 'packages/expo-brownfield/app.plugin.js'
+              - 'packages/expo-brownfield/package.json'
             compilation_test:
               - '.github/workflows/brownfield.yml'
               - 'packages/expo-brownfield/**'
