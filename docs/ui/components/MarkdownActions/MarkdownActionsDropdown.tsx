@@ -23,7 +23,6 @@ export function MarkdownActionsDropdown() {
     if (!pagePath) {
       return null;
     }
-    // Strip trailing slash, then append .md — matches build-time generated files in public/
     const cleanPath = pagePath.replace(/\/$/, '');
     return `${cleanPath}.md`;
   }, [asPath, pathname]);

@@ -18,12 +18,31 @@ function collectPageHrefs(node) {
   return hrefs;
 }
 
+function findIndexFiles(dir, basePath = '') {
+  const hrefs = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const subDir = path.join(dir, entry.name);
+      const subPath = basePath ? `${basePath}/${entry.name}` : `/${entry.name}`;
+      hrefs.push(...findIndexFiles(subDir, subPath));
+    } else if (entry.name === 'index.mdx' && basePath) {
+      hrefs.push(basePath);
+    }
+  }
+
+  return hrefs;
+}
+
 export async function generateGenerateMd() {
   const allReferenceSections = Object.values(reference || {}).flat();
   const allSections = [...home, ...general, ...eas, ...learn, ...allReferenceSections].filter(
     Boolean
   );
-  const hrefs = allSections.flatMap(collectPageHrefs);
+  const navigationHrefs = allSections.flatMap(collectPageHrefs);
+  const indexHrefs = findIndexFiles('pages');
+  const hrefs = [...new Set([...navigationHrefs, ...indexHrefs])];
   let count = 0;
 
   for (const href of hrefs) {
