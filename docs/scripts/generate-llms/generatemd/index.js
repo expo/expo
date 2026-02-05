@@ -35,14 +35,22 @@ export async function generateGenerateMd() {
       }
     }
 
-    const markdown = await processPage(filePath, href);
+    let markdown = await processPage(filePath, href);
     if (!markdown) {
       continue;
     }
 
+    markdown = markdown.replace(/(\n---)+\s*$/, '');
+
+    const sitemap = `---
+
+    ### Sitemap
+
+    [Overview of all docs pages](/llms.txt)`;
+
     const outputPath = path.join(OUTPUT_DIRECTORY_NAME, href + '.md');
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, markdown, 'utf-8');
+    fs.writeFileSync(outputPath, markdown + '\n\n' + sitemap, 'utf-8');
     count++;
   }
 
