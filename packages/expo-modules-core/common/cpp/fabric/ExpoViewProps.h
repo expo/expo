@@ -8,6 +8,17 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+
+// macOS ViewProps doesn't support filterObjectKeys parameter
+#if defined(TARGET_OS_OSX) && TARGET_OS_OSX
+#define EXPO_VIEW_PROPS_SUPPORTS_FILTER_OBJECT_KEYS 0
+#else
+#define EXPO_VIEW_PROPS_SUPPORTS_FILTER_OBJECT_KEYS 1
+#endif
+
 namespace expo {
 
 class ExpoViewProps : public facebook::react::ViewProps {

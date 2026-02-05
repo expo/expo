@@ -32,8 +32,13 @@ ExpoViewProps::ExpoViewProps(
   const react::PropsParserContext &context,
   const ExpoViewProps &sourceProps,
   const react::RawProps &rawProps,
-  const std::function<bool(const std::string &)> &filterObjectKeys
-) : react::ViewProps(context, sourceProps, rawProps, filterObjectKeys),
+  [[maybe_unused]] const std::function<bool(const std::string &)> &filterObjectKeys
+)
+#if EXPO_VIEW_PROPS_SUPPORTS_FILTER_OBJECT_KEYS
+  : react::ViewProps(context, sourceProps, rawProps, filterObjectKeys),
+#else
+  : react::ViewProps(context, sourceProps, rawProps),
+#endif
     propsMap(propsMapFromProps(sourceProps, rawProps)) {}
 
 } // namespace expo
