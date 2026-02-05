@@ -231,7 +231,6 @@ export type CameraRecordingOptions = {
   codec?: VideoCodec;
 };
 
-
 /**
  * Information about an available camera lens.
  */
@@ -248,7 +247,6 @@ export type LensInfo = {
   localizedName: string;
 };
 
-
 /**
  * @hidden
  */
@@ -262,7 +260,7 @@ export type PictureSavedListener = (event: {
 export type AvailableLensesChangedListener = (event: { nativeEvent: AvailableLenses }) => void;
 
 // @docsMissing
-export type AvailableLenses = { lenses: LensInfo[]; };
+export type AvailableLenses = { lenses: LensInfo[] };
 
 /**
  * @hidden
@@ -698,5 +696,3 @@ export declare class CameraNativeModule extends NativeModule<CameraEvents> {
   readonly Type: Record<keyof CameraType, CameraNativeProps['facing']>;
   readonly FlashMode: Record<keyof FlashMode, CameraNativeProps['flashMode']>;
 }
-
-
