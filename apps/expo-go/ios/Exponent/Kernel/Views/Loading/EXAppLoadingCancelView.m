@@ -63,17 +63,24 @@ const NSTimeInterval kEXTimeUntilCancelAppears = 5.0f;
 - (void)_setUpViews
 {
   self.backgroundColor = [UIColor clearColor];
+  self.alpha = 0.0;
+
   _loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
   [_loadingIndicator setColor:[UIColor blackColor]];
   [self addSubview:_loadingIndicator];
   [_loadingIndicator startAnimating];
-  
+
   _lblStatus = [[UILabel alloc] init];
   _lblStatus.text = @"Opening project...";
   _lblStatus.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:14.0f];
   _lblStatus.textColor = [UIColor blackColor];
   _lblStatus.textAlignment = NSTextAlignmentCenter;
   [self addSubview:_lblStatus];
+
+  // Fade in animation
+  [UIView animateWithDuration:0.2 animations:^{
+    self.alpha = 1.0;
+  }];
   
   _lblAdvice = [[UILabel alloc] init];
   _lblAdvice.text = @"This is taking much longer than it should. You might want to check your internet connectivity.";

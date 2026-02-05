@@ -7,6 +7,10 @@ struct ProjectRow: View {
   var isLoading: Bool = false
   let onTap: () -> Void
 
+  private var hasUpdates: Bool {
+    project.firstTwoBranches.contains { !$0.updates.isEmpty }
+  }
+
   var body: some View {
     Button {
       onTap()
@@ -17,6 +21,7 @@ struct ProjectRow: View {
             .font(.body)
             .fontWeight(.semibold)
             .foregroundColor(.primary)
+            .opacity(hasUpdates ? 1 : 0.5)
 
           Text(project.fullName)
             .font(.caption)

@@ -42,13 +42,14 @@ struct ProjectsAndSnacksSection: View {
             .disabled(viewModel.isLoadingApp)
           }
 
-          if viewModel.projects.count > 3 {
+          if viewModel.totalProjectCount > 3 {
             NavigationLink(destination: ProjectsListView(accountName: viewModel.selectedAccount?.name ?? "")) {
-              Text("See all projects")
+              Text("See all")
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.expoSecondarySystemGroupedBackground)
+                .background(Color.expoSecondarySystemBackground)
                 .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+                .contentShape(Rectangle())
             }
           }
 
@@ -73,11 +74,12 @@ struct ProjectsAndSnacksSection: View {
 
           if viewModel.snacks.count > 3 {
             NavigationLink(destination: SnacksListView(accountName: viewModel.selectedAccount?.name ?? "")) {
-              Text("See all snacks")
+              Text("See all")
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.expoSecondarySystemGroupedBackground)
+                .background(Color.expoSecondarySystemBackground)
                 .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+                .contentShape(Rectangle())
             }
           }
         }
@@ -111,13 +113,14 @@ struct ProjectsSection: View {
           .disabled(viewModel.isLoadingApp)
         }
 
-        if viewModel.projects.count > 3 {
+        if viewModel.totalProjectCount > 3 {
           NavigationLink(destination: ProjectsListView(accountName: viewModel.selectedAccount?.name ?? "")) {
-            Text("See all projects")
+            Text("See all")
               .frame(maxWidth: .infinity)
               .padding()
-              .background(Color.expoSecondarySystemGroupedBackground)
+              .background(Color.expoSecondarySystemBackground)
               .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+              .contentShape(Rectangle())
           }
         }
       }
@@ -155,7 +158,19 @@ struct ProjectRowWithNavigation: View {
     }
   }
 
+  private var hasUpdates: Bool {
+    project.firstTwoBranches.contains { !$0.updates.isEmpty }
+  }
+
   private func handleProjectTap() {
+    // If no updates available, navigate to details view
+    guard hasUpdates else {
+      if shouldNavigateToDetails {
+        shouldNavigate = true
+      }
+      return
+    }
+
     if shouldNavigateToDetails {
       if project.firstTwoBranches.count == 1 {
         let branch = project.firstTwoBranches[0]

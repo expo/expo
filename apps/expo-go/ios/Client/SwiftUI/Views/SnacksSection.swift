@@ -23,11 +23,12 @@ struct SnacksSection: View {
 
         if viewModel.snacks.count > 3 {
           NavigationLink(destination: SnacksListView(accountName: viewModel.selectedAccount?.name ?? "")) {
-            Text("See all snacks")
+            Text("See all")
               .frame(maxWidth: .infinity)
               .padding()
-              .background(Color.expoSecondarySystemGroupedBackground)
+              .background(Color.expoSecondarySystemBackground)
               .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+              .contentShape(Rectangle())
           }
         }
       }

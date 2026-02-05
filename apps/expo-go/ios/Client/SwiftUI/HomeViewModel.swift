@@ -24,6 +24,7 @@ class HomeViewModel: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
+  @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
   @Published var isLoadingApp = false
   @Published var dataError: APIError?
@@ -229,6 +230,10 @@ class HomeViewModel: ObservableObject {
 
     dataService.$snacks
       .sink { [weak self] in self?.snacks = $0 }
+      .store(in: &cancellables)
+
+    dataService.$totalProjectCount
+      .sink { [weak self] in self?.totalProjectCount = $0 }
       .store(in: &cancellables)
 
     dataService.$isLoadingData
