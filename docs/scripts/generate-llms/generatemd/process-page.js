@@ -247,11 +247,21 @@ export async function processPage(filePath, href) {
     if (platforms.length > 0) {
       const platformLabels = platforms
         .map(p => {
-          if (p === 'android') return 'Android';
-          if (p === 'ios') return 'iOS';
-          if (p === 'web') return 'Web';
-          if (p === 'expo-go') return 'Expo Go';
-          if (p === 'tvos') return 'tvOS';
+          if (p === 'android') {
+            return 'Android';
+          }
+          if (p === 'ios') {
+            return 'iOS';
+          }
+          if (p === 'web') {
+            return 'Web';
+          }
+          if (p === 'expo-go') {
+            return 'Expo Go';
+          }
+          if (p === 'tvos') {
+            return 'tvOS';
+          }
           return p;
         })
         .filter(p => p !== 'Expo Go');
@@ -279,7 +289,8 @@ export async function processPage(filePath, href) {
     if (sourceCodeUrl) {
       links.push(`[GitHub](${sourceCodeUrl})`);
       // Construct changelog URL from sourceCodeUrl
-      const changelogUrl = sourceCodeUrl.replace(/\/tree\/[^/]+\//, '/blob/main/') + '/CHANGELOG.md';
+      const changelogUrl =
+        sourceCodeUrl.replace(/\/tree\/[^/]+\//, '/blob/main/') + '/CHANGELOG.md';
       links.push(`[Changelog](${changelogUrl})`);
     }
     if (packageName) {

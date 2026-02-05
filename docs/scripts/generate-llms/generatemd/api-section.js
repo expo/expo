@@ -172,9 +172,33 @@ function getReturnComment(comment) {
     .trim();
 }
 
+function getPlatforms(comment) {
+  if (!comment?.blockTags) {
+    return [];
+  }
+  return comment.blockTags
+    .filter(t => t.tag === '@platform')
+    .map(t => {
+      const text = t.content?.map(c => c.text || '').join('') || '';
+      // Capitalize platform names properly
+      if (text.toLowerCase().startsWith('ios')) {
+        return 'iOS' + text.slice(3);
+      }
+      if (text.toLowerCase().startsWith('android')) {
+        return 'Android' + text.slice(7);
+      }
+      if (text.toLowerCase().startsWith('web')) {
+        return 'Web' + text.slice(3);
+      }
+      return text;
+    })
+    .filter(Boolean);
+}
+
 function renderProperty(prop) {
   const parts = [];
   const typeStr = resolveType(prop.type);
+  const platforms = getPlatforms(prop.comment);
   const flags = [];
   if (prop.flags?.isOptional) {
     flags.push('Optional');
@@ -196,6 +220,9 @@ function renderProperty(prop) {
   if (flags.length > 0) {
     header += ` — *${flags.join(', ')}*`;
   }
+  if (platforms.length > 0) {
+    header += ` — *${platforms.join(', ')}*`;
+  }
   parts.push(header);
 
   const desc = getCommentText(prop.comment);
@@ -211,10 +238,14 @@ function renderMethodSignature(methodName, sig) {
   const params = (sig.parameters || []).map(p => p.name).join(', ');
   const returnType = resolveType(sig.type);
   const isStatic = sig.flags?.isStatic;
+  const platforms = getPlatforms(sig.comment);
 
   let header = `**\`${isStatic ? 'static ' : ''}${sig.name || methodName}(${params})\`**`;
   if (returnType) {
     header += ` — Returns: \`${returnType}\``;
+  }
+  if (platforms.length > 0) {
+    header += ` — *${platforms.join(', ')}*`;
   }
   parts.push(header);
 
@@ -337,7 +368,12 @@ function renderApiChildren(children) {
     lines.push('### Types');
     for (const entry of types) {
       const description = getCommentText(entry.comment);
-      lines.push(`#### ${entry.name}`);
+      const platforms = getPlatforms(entry.comment);
+      let typeHeader = `#### ${entry.name}`;
+      if (platforms.length > 0) {
+        typeHeader += ` — *${platforms.join(', ')}*`;
+      }
+      lines.push(typeHeader);
       if (description) {
         lines.push(description);
       }
