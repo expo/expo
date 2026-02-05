@@ -1,4 +1,8 @@
-import { createModifier, createModifierWithEventListener, type ModifierConfig } from './createModifier';
+import {
+  createModifier,
+  createModifierWithEventListener,
+  type ModifierConfig,
+} from './createModifier';
 
 /**
  * Presentation detent type for controlling sheet heights.
