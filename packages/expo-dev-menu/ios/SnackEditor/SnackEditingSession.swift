@@ -189,7 +189,7 @@ public class SnackEditingSession: ObservableObject {
     return "Playground"
   }
 
-  /// Whether this is a lesson-like session (official lesson or snack with "lesson"/"learn" in name)
+  /// Whether this is a lesson-like session (official lesson or snack with "lesson"/"learn"/"playground" in name)
   /// Official lessons don't need to wait for Snackpub connection - the lesson info is set upfront.
   /// For snacks detected by name, we need the session to be ready to have the display name.
   public var isLessonLikeSession: Bool {
@@ -198,7 +198,8 @@ public class SnackEditingSession: ObservableObject {
     // For name-based detection, need session to be ready
     guard isReady else { return false }
     return displayName.localizedCaseInsensitiveContains("lesson") ||
-           displayName.localizedCaseInsensitiveContains("learn")
+           displayName.localizedCaseInsensitiveContains("learn") ||
+           displayName.localizedCaseInsensitiveContains("playground")
   }
 
   /// Resets files to original (discards edits). Call this on app reload.

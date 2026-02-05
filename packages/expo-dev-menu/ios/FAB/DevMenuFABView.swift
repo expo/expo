@@ -305,7 +305,7 @@ struct DevMenuFABView: View {
           config = FABConfiguration(
             showPanel: true,
             snackName: session.displayName,
-            snackDescription: session.lessonDescription ?? "Learn to code on mobile",
+            snackDescription: session.lessonDescription ?? "Your own space to explore and learn",
             isLesson: session.isLesson,
             lessonId: session.lessonId
           )
