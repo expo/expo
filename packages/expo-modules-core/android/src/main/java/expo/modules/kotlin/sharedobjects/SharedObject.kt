@@ -6,7 +6,7 @@ import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.weak
 import kotlin.reflect.KClass
 
@@ -50,7 +50,7 @@ open class SharedObject(runtime: Runtime? = null) {
         jniInterop,
         eventName,
         args
-          .map { JSTypeConverter.convertToJSValue(it) }
+          .map { JSTypeConverterProvider.convertToJSValue(it) }
           .toTypedArray()
       )
     } catch (e: Throwable) {
