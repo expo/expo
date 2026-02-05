@@ -28,3 +28,14 @@ export interface ModifierConfig {
 export function createModifier(type: string, params: Record<string, any> = {}): ModifierConfig {
   return { $type: type, ...params };
 }
+
+/**
+ * Creates a modifier with an event listener.
+ */
+export function createModifierWithEventListener(
+  type: string,
+  eventListener: (args: any) => void,
+  params: Record<string, any> = {}
+): ModifierConfig {
+  return { $type: type, ...params, eventListener };
+}
