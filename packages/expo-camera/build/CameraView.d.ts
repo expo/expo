@@ -2,6 +2,7 @@ import { type EventSubscription } from 'expo-modules-core';
 import { type Ref, Component } from 'react';
 import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec, AvailableLenses } from './Camera.types';
 import { PictureRef } from './PictureRef';
+import { LensInfo } from '../src';
 export default class CameraView extends Component<CameraViewProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
@@ -29,10 +30,10 @@ export default class CameraView extends Component<CameraViewProps> {
     /**
      * Returns the available lenses for the currently selected camera.
      *
-     * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+     * @return An array of `LensInfo` objects containing both the stable `deviceType` identifier and the `localizedName` for display purposes. The `deviceType` can be passed to the `seletedLens` prop.
      * @platform ios
      */
-    getAvailableLensesAsync(): Promise<string[]>;
+    getAvailableLensesAsync(): Promise<LensInfo>;
     /**
      * Returns an object with the supported features of the camera on the current device.
      */
