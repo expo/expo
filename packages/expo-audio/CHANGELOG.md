@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixes `mediaServicesDidReset` not being correctly implemented.
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-03

@@ -22,6 +22,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var samplingEnabled = false
   var keepAudioSessionActive = false
 
+  private var source: AudioSource?
+
   // MARK: Observers
   private var timeToken: Any?
   private var cancellables = Set<AnyCancellable>()
@@ -34,15 +36,18 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var onPlaybackComplete: (() -> Void)?
 
   var duration: Double {
-    ref.currentItem?.duration.seconds ?? 0.0
+    let seconds = ref.currentItem?.duration.seconds ?? 0.0
+    return seconds.isNaN ? 0.0 : seconds
   }
 
   var currentTime: Double {
-    ref.currentItem?.currentTime().seconds ?? 0.0
+    let seconds = ref.currentItem?.currentTime().seconds ?? 0.0
+    return seconds.isNaN ? 0.0 : seconds
   }
 
-  init(_ ref: AVPlayer, interval: Double) {
+  init(_ ref: AVPlayer, interval: Double, source: AudioSource? = nil) {
     self.interval = interval
+    self.source = source
     super.init(ref)
 
     setupPublisher()
@@ -175,14 +180,15 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   func replaceCurrentSource(source: AudioSource) {
+    self.source = source
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
     ref.pause()
 
-    // Remove the audio tap if it is active
     if samplingEnabled {
       uninstallTap()
     }
+
     ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
 
     if wasSamplingEnabled {
@@ -190,7 +196,75 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
 
     if wasPlaying {
-      ref.play()
+      onReady { [weak self] in
+        self?.ref.play()
+      }
+    }
+  }
+
+  func handleMediaServicesReset() {
+    guard let source else {
+      updateStatus(with: ["mediaServicesDidReset": true])
+      return
+    }
+
+    // Store these before we reset
+    let shouldResume = wasPlaying
+    let savedTime = currentTime
+    let savedRate = currentRate > 0 ? currentRate : 1.0
+    let wasSamplingEnabled = samplingEnabled
+
+    replacePlayer(with: source, restoreSampling: wasSamplingEnabled)
+
+    onReady { [weak self] in
+      guard let self else { return }
+      self.restorePlaybackState(time: savedTime, shouldResume: shouldResume, rate: savedRate)
+      self.wasPlaying = false
+      self.updateStatus(with: ["mediaServicesDidReset": true])
+    }
+  }
+
+  private func replacePlayer(with source: AudioSource, restoreSampling: Bool) {
+    teardownPlayer()
+
+    ref = AudioUtils.createAVPlayer(from: source)
+    setupPublisher()
+
+    if restoreSampling {
+      shouldInstallAudioTap = true
+    }
+  }
+
+  private func teardownPlayer() {
+    if samplingEnabled {
+      uninstallTap()
+    }
+    if let timeToken {
+      ref.removeTimeObserver(timeToken)
+      self.timeToken = nil
+    }
+    if let endObserver {
+      NotificationCenter.default.removeObserver(endObserver)
+      self.endObserver = nil
+    }
+    cancellables.removeAll()
+    ref.pause()
+  }
+
+  private func onReady(_ completion: @escaping () -> Void) {
+    ref.publisher(for: \.currentItem?.status)
+      .compactMap { $0 }
+      .filter { $0 == .readyToPlay }
+      .first()
+      .sink { _ in completion() }
+      .store(in: &cancellables)
+  }
+
+  private func restorePlaybackState(time: Double, shouldResume: Bool, rate: Float) {
+    let cmTime = CMTime(seconds: time, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    ref.seek(to: cmTime) { [weak self] _ in
+      guard let self, shouldResume else { return }
+      self.play(at: rate)
     }
   }
 
@@ -310,28 +384,14 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
   public override func sharedObjectWillRelease() {
     owningRegistry?.remove(self)
-    cancellables.removeAll()
-
-    if samplingEnabled {
-      samplingEnabled = false
-      uninstallTap()
-    }
 
     if isActiveForLockScreen {
       MediaController.shared.setActivePlayer(nil)
     }
 
+    teardownPlayer()
+
     audioProcessor?.invalidate()
     audioProcessor = nil
-
-    if let timeToken {
-      ref.removeTimeObserver(timeToken)
-    }
-
-    if let endObserver {
-      NotificationCenter.default.removeObserver(endObserver)
-    }
-
-    ref.pause()
   }
 }
