@@ -20,6 +20,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  analyze-changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      cli_e2e: ${{ steps.filter.outputs.cli_e2e }}
+      plugin_e2e: ${{ steps.filter.outputs.plugin_e2e }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            cli_e2e:
+              - 'packages/expo-brownfield/e2e/cli/**'
+            plugin_e2e:
+              - 'packages/expo-brownfield/e2e/plugin/**'
+
   jest-ubuntu-cli:
     runs-on: ubuntu-24.04
     strategy:
@@ -162,3 +177,5 @@ jobs:
       - name: 🧪 E2E Test Brownfield Config Plugin
         working-directory: packages/expo-brownfield
         run: yarn test:e2e-plugin e2e/plugin/__tests__/plugin-ios.test.ts
+
+  compile
