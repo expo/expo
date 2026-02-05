@@ -387,10 +387,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
+  // Hide loading overlay after splash screen is configured. Dispatched async because
+  // the splash screen provider uses DispatchQueue.main.async internally to set up views.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if ([EXKernel sharedInstance].browserController) {
+      [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+    }
+  });
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   [self _rebuildHost];
 }
 
@@ -403,11 +410,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
-  // Hide the loading overlay now that loading is complete
-  if ([EXKernel sharedInstance].browserController) {
-    [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
-  }
-
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
   BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
