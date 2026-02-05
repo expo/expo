@@ -218,6 +218,8 @@ export async function processPage(filePath, href) {
     .replace(/([^\n])\n(```)/g, '$1\n\n$2')
     .replace(/([^\n|])\n(\|)/g, '$1\n\n$2')
     .replace(/\n{3,}/g, '\n\n')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\*\*Ios\*\*/g, '**iOS**')
     .trim();
 
   /**
