@@ -29,7 +29,7 @@ enum FABConstants {
 struct FabPill: View {
   @Binding var isPressed: Bool
   @Binding var isDragging: Bool
-  let isSnackSession: Bool
+  let showsPanel: Bool
   @State private var showLabel = true
   @State private var isIdle = false
   @State private var idleTask: Task<Void, Never>?
@@ -57,8 +57,8 @@ struct FabPill: View {
           startIdleTimer()
         }
 
-      if showLabel && !isSnackSession {
-        Text("Dev tools")
+      if showLabel && !showsPanel {
+        Text("Tools")
           .font(.system(size: 11, weight: .medium))
           .foregroundStyle(.secondary)
           .fixedSize()
@@ -116,7 +116,6 @@ struct FabPill: View {
           .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
       )
       .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
-      .frame(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize, alignment: .top)
   }
 
   private var classicButton: some View {
@@ -132,7 +131,6 @@ struct FabPill: View {
           .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
       )
       .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
-      .frame(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize, alignment: .top)
   }
 }
 
@@ -194,8 +192,8 @@ struct DevMenuFABView: View {
   private var snackDescription: String { config?.snackDescription ?? "Learn to code on mobile" }
   private var isLesson: Bool { config?.isLesson ?? false }
 
-  /// Whether to show the snack panel (for lessons and lesson-like snacks)
-  private var isSnackSession: Bool { config?.showPanel ?? false }
+  /// Whether the panel is visible (for lessons and lesson-like snacks)
+  private var showsPanel: Bool { config?.showPanel ?? false }
 
   private let dragSpring: Animation = .spring(
     response: 0.25,
@@ -206,7 +204,7 @@ struct DevMenuFABView: View {
   /// Compute the hit test frame based on current state.
   /// When panel is visible (lessons or lesson-like snacks), the panel has equal margins on both sides.
   private func hitTestFrame(edge: SnappedEdge) -> CGRect {
-    let showingPanel = isSnackSession && !isDragging
+    let showingPanel = showsPanel && !isDragging
     
     let touchTargetSize = FABConstants.touchTargetSize
     let buttonCenterY = position.y + FABConstants.iconSize / 2
@@ -255,7 +253,7 @@ struct DevMenuFABView: View {
       ZStack {
         if isPositioned {
           // Panel rendered behind the gear (for lessons and lesson-like snacks)
-          if isSnackSession {
+          if showsPanel {
             SnackActionPanel(
               isDragging: isDragging && !isDraggingPanel,
               snackName: snackName,
@@ -283,7 +281,7 @@ struct DevMenuFABView: View {
             .zIndex(2)
             .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
 
-          FabPill(isPressed: $isPressed, isDragging: $isDragging, isSnackSession: isSnackSession)
+          FabPill(isPressed: $isPressed, isDragging: $isDragging, showsPanel: showsPanel)
             .frame(width: FABConstants.touchTargetSize, height: fabSize.height, alignment: .top)
             .position(
               x: buttonCenterX,
@@ -326,7 +324,7 @@ struct DevMenuFABView: View {
         updateLessonCompletedState()
 
         let initialPos: CGPoint
-        if isSnackSession {
+        if showsPanel {
           initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
         } else if let storedPos = Self.loadStoredPosition() {
           // Clamp stored position to valid bounds
@@ -474,7 +472,7 @@ struct DevMenuFABView: View {
             isDragging = false
             position = newPos
             // Don't persist position changes for panel sessions (lessons/lesson-like snacks)
-            if !isSnackSession {
+            if !showsPanel {
               Self.savePosition(newPos)
             }
             let touchTargetSize = FABConstants.touchTargetSize
@@ -548,9 +546,9 @@ struct DevMenuFABView: View {
 
     let minY = safeArea.top + FABConstants.verticalPadding
     let maxY: CGFloat
-    if isSnackSession {
-      // Leave room for the panel to fit above the safe area
-      maxY = bounds.height - safeArea.bottom - panelHeight - panelVerticalOffset + FABConstants.iconSize/2 - fabSize.height/2
+    if showsPanel {
+      // Panel bottom should sit just above the safe area
+      maxY = bounds.height - safeArea.bottom - panelHeight - panelVerticalOffset
     } else {
       maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
     }
