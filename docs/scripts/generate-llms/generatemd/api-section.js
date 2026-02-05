@@ -100,7 +100,6 @@ function resolveType(type) {
       if (!decl) {
         return 'object';
       }
-      // Function signature
       if (decl.signatures?.length) {
         const sig = decl.signatures[0];
         const params = (sig.parameters || [])
@@ -108,7 +107,6 @@ function resolveType(type) {
           .join(', ');
         return `(${params}) => ${resolveType(sig.type)}`;
       }
-      // Object type
       if (decl.children?.length) {
         const props = decl.children.map(c => `${c.name}: ${resolveType(c.type)}`);
         if (props.length <= 3) {
