@@ -1,11 +1,11 @@
 import { Button } from '@expo/styleguide';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
-import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 
 import { ClaudeLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
+import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
