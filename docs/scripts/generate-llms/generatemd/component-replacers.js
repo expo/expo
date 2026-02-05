@@ -191,8 +191,7 @@ export function replacePlatformTags(content) {
     })
     .replace(/<PlatformTags\s+[^>]*platforms={\[([^\]]+)]}\s*\/>/g, (_m, platforms) => {
       const labels = platforms
-
-        .replace(/['"]/g, '')
+        .replace(/["']/g, '')
         .split(',')
         .map(p => p.trim())
         .filter(Boolean)
