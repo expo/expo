@@ -438,16 +438,32 @@ export type CameraViewProps = ViewProps & {
    */
   pictureSize?: string;
   /**
-   * Available lenses are emitted to the `onAvailableLensesChanged` callback whenever the currently selected camera changes or by calling [`getAvailableLensesAsync`](#getavailablelensesasync).
-   * You can read more about the available lenses in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
+   * The `deviceType` identifier for the lens to use. Retrieve available lenses by calling
+   * [`getAvailableLensesAsync`](#getavailablelensesasync) or listening to the `onAvailableLensesChanged`
+   * callback, then pass the `deviceType` value from the returned `LensInfo` objects.
+   *
+   * Common values include:
+   * - `"AVCaptureDeviceTypeBuiltInWideAngleCamera"` - Standard wide angle camera
+   * - `"AVCaptureDeviceTypeBuiltInUltraWideCamera"` - Ultra wide angle camera
+   * - `"AVCaptureDeviceTypeBuiltInTelephotoCamera"` - Telephoto camera
+   *
+   * If not specified or if the value doesn't match an available lens, the default camera for the
+   * current position (front/back) is used.
+   *
+   * You can read more about device types in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
+   *
+   * @example
+   * ```tsx
+   * const lenses = await cameraRef.current.getAvailableLensesAsync();
+   * const ultraWide = lenses.find(l => l.deviceType === 'AVCaptureDeviceTypeBuiltInUltraWideCamera');
+   * if (ultraWide) {
+   *   setSelectedLens(ultraWide.deviceType);
+   * }
+   * ```
+   *
    * @platform ios
-   * @default 'builtInWideAngleCamera'
    */
   selectedLens?: string;
-  /**
-   * A boolean to enable or disable the torch.
-   * @default false
-   */
   enableTorch?: boolean;
   /**
    * The video stabilization mode used for a video recording. Use one of [`VideoStabilization.<value>`](#videostabilization).
