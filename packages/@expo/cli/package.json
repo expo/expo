@@ -73,7 +73,7 @@
     "dnssd-advertise": "^1.1.1",
     "env-editor": "^0.4.1",
     "expo-server": "^55.0.3",
-    "fetch-nodeshim": "^0.4.4",
+    "fetch-nodeshim": "^0.4.5",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "lan-network": "^0.1.6",

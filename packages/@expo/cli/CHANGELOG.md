@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - delete old expo go artifacts to save disk space ([#42860](https://github.com/expo/expo/pull/42860) by [@vonovak](https://github.com/vonovak))
+- Bump to `fetch-nodeshim@^0.4.5` ([#42896](https://github.com/expo/expo/pull/42896) by [@kitten](https://github.com/kitten))
 
 ## 55.0.6 — 2026-02-03
 
