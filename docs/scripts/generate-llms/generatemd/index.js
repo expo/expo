@@ -19,8 +19,10 @@ function collectPageHrefs(node) {
 }
 
 export async function generateGenerateMd() {
-  const referenceSections = reference?.latest || [];
-  const allSections = [...home, ...general, ...eas, ...learn, ...referenceSections].filter(Boolean);
+  const allReferenceSections = Object.values(reference || {}).flat();
+  const allSections = [...home, ...general, ...eas, ...learn, ...allReferenceSections].filter(
+    Boolean
+  );
   const hrefs = allSections.flatMap(collectPageHrefs);
   let count = 0;
 
