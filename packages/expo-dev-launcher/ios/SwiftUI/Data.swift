@@ -17,12 +17,12 @@ struct DevServer: Hashable {
   let description: String
   let source: String
 
-  var hashValue: Int {
-    return url.hashValue
-  }
-
   static func == (lhs: Self, rhs: Self) -> Bool {
     return lhs.url == rhs.url
+  }
+
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(url)
   }
 
   static func < (lhs: Self, rhs: Self) -> Bool {
