@@ -4,17 +4,27 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    # TODO(pmleczek): Update paths to include paths from filter
     paths:
       - .github/workflows/brownfield.yml
       - packages/expo-brownfield/**
+      - packages/expo/**
+      - packages/expo-router/**
+      - packages/expo-dev-menu/**
+      - packages/expo-manifests/**
+      - packages/expo-updates/**
       - yarn.lock
       - '!**.md'
   pull_request:
     paths:
       - .github/workflows/brownfield.yml
       - packages/expo-brownfield/**
+      - packages/expo/**
+      - packages/expo-router/**
+      - packages/expo-dev-menu/**
+      - packages/expo-manifests/**
+      - packages/expo-updates/**
       - yarn.lock
+      - '!**.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -24,39 +34,43 @@ jobs:
   analyze-changes:
     runs-on: ubuntu-24.04
     outputs:
+      all_tests: ${{ steps.filter.outputs.all_tests }}
       cli_e2e: ${{ steps.filter.outputs.cli_e2e }}
       plugin_e2e: ${{ steps.filter.outputs.plugin_e2e }}
+      compilation_test_android: ${{ steps.filter.outputs.compilation_test_android }}
+      compilation_test_ios: ${{ steps.filter.outputs.compilation_test_ios }}
     steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
       - uses: dorny/paths-filter@v3
         id: filter
-        # TODO(pmleczek): Update paths once we wrap up Maestro tests
+        # TODO(pmleczek): Update paths once we wrap up Maestro tests (remove expo-brownfield/**)
         # TODO(pmleczek): Refine paths like expo/**, expo-router/**, etc. (?)
         # TODO(pmleczek): Add "- 'packages/expo-updates/**'" to the compilation test filters
         with:
           filters: |
-            cli_e2e:
+            all_tests: 
               - '.github/workflows/brownfield.yml'
+              - 'yarn.lock'
+            cli_e2e:
               - 'packages/expo-brownfield/bin/**'
               - 'packages/expo-brownfield/cli/**'
               - 'packages/expo-brownfield/e2e/cli/**'
               - 'packages/expo-brownfield/e2e/utils/**'
               - 'packages/expo-brownfield/package.json'
             plugin_e2e:
-              - '.github/workflows/brownfield.yml'
               - 'packages/expo-brownfield/plugin/**'
               - 'packages/expo-brownfield/e2e/plugin/**'
               - 'packages/expo-brownfield/e2e/utils/**'
               - 'packages/expo-brownfield/app.plugin.js'
               - 'packages/expo-brownfield/package.json'
             compilation_test_android:
-              - '.github/workflows/brownfield.yml'
               - 'packages/expo-brownfield/**'
               - 'packages/expo/**'
               - 'packages/expo-router/**'
               - 'packages/expo-dev-menu/**'
               - 'packages/expo-manifests/**'
             compilation_test_ios:
-              - '.github/workflows/brownfield.yml'
               - 'packages/expo-brownfield/**'
               - 'packages/expo/**'
               - 'packages/expo-router/**'
@@ -66,6 +80,7 @@ jobs:
   jest-ubuntu-cli:
     runs-on: ubuntu-24.04
     needs: analyze-changes
+    if: needs.analyze-changes.outputs.cli_e2e == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -136,6 +151,7 @@ jobs:
   jest-macos-cli:
     runs-on: macos-15
     needs: analyze-changes
+    if: needs.analyze-changes.outputs.cli_e2e == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
     steps:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
@@ -211,13 +227,13 @@ jobs:
   compilation-test-android:
     runs-on: ubuntu-24.04
     needs: analyze-changes
-    if: needs.analyze-changes.outputs.compilation_test_android == 'true'
+    if: needs.analyze-changes.outputs.compilation_test_android == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5  
+        uses: actions/checkout@v5
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -260,14 +276,14 @@ jobs:
   compilation-test-ios:
     runs-on: macos-15
     needs: analyze-changes
-    if: needs.analyze-changes.outputs.compilation_test_ios == 'true'
+    if: needs.analyze-changes.outputs.compilation_test_ios == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
     strategy:
       fail-fast: true
       matrix:
         build-type: [debug, release]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5  
+        uses: actions/checkout@v5
       - name: 🔨 Switch to Xcode 26.0
         run: sudo xcode-select --switch /Applications/Xcode_26.0.app
       - name: ➕ Add `bin` to GITHUB_PATH
@@ -281,8 +297,8 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: "true"
-          yarn-tools: "true"
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -296,5 +312,5 @@ jobs:
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         with:
           webhook: ${{ secrets.slack_webhook_ios }}
-          channel: "#expo-ios"
+          channel: '#expo-ios'
           author_name: expo-brownfield Compilation Test (iOS)
