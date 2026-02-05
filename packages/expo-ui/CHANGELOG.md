@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed missing dependency on RCTFabric in ExpoUI podspec.
+
 ### 💡 Others
 
 ## 55.0.0-preview.4 — 2026-02-03

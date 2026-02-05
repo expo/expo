@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed missing dependencies when building from source
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-03
