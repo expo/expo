@@ -1,21 +1,12 @@
 import SwiftUI
 import UIKit
+import EXDevMenu
 
 struct DevServersSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
-  @State private var showingURLInput = false
-  @State private var urlText = ""
   @State private var showingTroubleshootingAlert = false
   @State private var loadingServerUrl: String?
-
-  /// Hide "Enter URL manually" on physical devices (not useful there since users can't easily type URLs)
-  private var shouldShowEnterUrl: Bool {
-    #if targetEnvironment(simulator)
-    return true
-    #else
-    return false
-    #endif
-  }
+  @State private var isLoadingPlayground = false
   @State private var troubleshootingTitle = ""
   @State private var troubleshootingMessage = ""
 
@@ -45,9 +36,14 @@ struct DevServersSection: View {
           }
         }
 
-        if shouldShowEnterUrl {
-          enterUrl
-        }
+        // Separator
+        Text("•  •  •")
+          .font(.caption)
+          .foregroundColor(.secondary)
+          .frame(maxWidth: .infinity)
+          .padding(.vertical, 4)
+
+        openPlaygroundButton
       }
     }
     .alert(troubleshootingTitle, isPresented: $showingTroubleshootingAlert) {
@@ -58,6 +54,7 @@ struct DevServersSection: View {
     .onChange(of: viewModel.isLoadingApp) { isLoading in
       if !isLoading {
         loadingServerUrl = nil
+        isLoadingPlayground = false
       }
     }
   }
@@ -102,69 +99,6 @@ struct DevServersSection: View {
     .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 
-  private var enterUrl: some View {
-    VStack(spacing: 20) {
-      Button {
-        withAnimation(.easeInOut(duration: 0.3)) {
-          showingURLInput.toggle()
-        }
-      } label: {
-        HStack {
-          Image(systemName: showingURLInput ? "chevron.down" : "chevron.right")
-            .font(.headline)
-          Text("Enter URL manually")
-            .font(.system(size: 14))
-          Spacer()
-        }
-      }
-
-      if showingURLInput {
-        TextField("exp://", text: $urlText)
-          .autocapitalization(.none)
-          .disableAutocorrection(true)
-          .padding(.horizontal, 16)
-          .padding(.vertical, 12)
-          .foregroundColor(.primary)
-          .overlay(
-            RoundedRectangle(cornerRadius: 5)
-              .stroke(Color.expoSystemGray4, lineWidth: 1)
-          )
-          .clipShape(RoundedRectangle(cornerRadius: 5))
-
-        Button {
-          if let url = sanitizeUrlString(urlText) {
-            loadingServerUrl = url
-            viewModel.openApp(url: url)
-            withAnimation(.easeInOut(duration: 0.3)) {
-              showingURLInput = false
-            }
-            urlText = ""
-          }
-        } label: {
-          HStack {
-            if viewModel.isLoadingApp && loadingServerUrl != nil && !viewModel.developmentServers.contains(where: { $0.url == loadingServerUrl }) {
-              ProgressView()
-                .tint(.white)
-            }
-            Text("Connect")
-          }
-          .font(.headline)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(urlText.isEmpty ? Color.gray : Color.black)
-          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
-        }
-        .disabled(urlText.isEmpty || viewModel.isLoadingApp)
-        .buttonStyle(PlainButtonStyle())
-      }
-    }
-    .animation(.easeInOut, value: showingURLInput)
-    .padding()
-    .background(showingURLInput ? Color.expoSecondarySystemBackground : Color.expoSystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
-  }
-
   private func presentTroubleshooting() {
     if !viewModel.isNetworkAvailable {
       troubleshootingTitle = "No network connection available"
@@ -175,7 +109,7 @@ struct DevServersSection: View {
 
     let baseMessage = "Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update."
     #if targetEnvironment(simulator)
-    let message = baseMessage + " If this still doesn't work, press the + icon on the header to type the project URL manually."
+    let message = baseMessage + " Alternatively, tap the + button to enter a URL manually."
     #else
     let message = baseMessage
     #endif
@@ -190,5 +124,157 @@ struct DevServersSection: View {
       return urlString
     }
     return toExpURLString(url)
+  }
+
+  private var openPlaygroundButton: some View {
+    Button {
+      createNewPlayground()
+    } label: {
+      HStack(spacing: 12) {
+        Image(systemName: "book.fill")
+          .font(.system(size: 14))
+          .foregroundColor(.white)
+          .frame(width: 28, height: 28)
+          .background(Color(uiColor: .darkGray), in: RoundedRectangle(cornerRadius: 6))
+
+        VStack(alignment: .leading, spacing: 2) {
+          Text("Open a new playground")
+            .font(.body)
+            .fontWeight(.semibold)
+            .foregroundColor(.primary)
+
+          Text("Your own space to explore and learn.")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+
+        Spacer()
+
+        if isLoadingPlayground {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+    }
+    .buttonStyle(.plain)
+    .disabled(viewModel.isLoadingApp)
+  }
+
+  private func createNewPlayground() {
+    isLoadingPlayground = true
+
+    let service = PlaygroundService.shared
+    let channel = service.generateChannelId()
+
+    let url = service.buildRuntimeUrl(
+      channel: channel,
+      sdkVersion: Versions.sharedInstance.sdkVersion
+    )
+
+    // Convert default code to the format expected by openApp
+    var codeDict: [String: [String: Any]] = [:]
+    for (path, file) in PlaygroundService.defaultCode {
+      codeDict[path] = [
+        "contents": file.contents,
+        "type": file.isAsset ? "ASSET" : "CODE"
+      ]
+    }
+
+    let snackParams: NSDictionary = [
+      "channel": channel,
+      "code": codeDict,
+      "isPlayground": true
+    ]
+
+    viewModel.openApp(url: url, snackParams: snackParams)
+  }
+}
+
+// MARK: - Enter URL Sheet
+
+struct EnterURLSheet: View {
+  @Binding var urlText: String
+  let isLoading: Bool
+  let onConnect: (String) -> Void
+  let onDismiss: () -> Void
+
+  @Environment(\.dismiss) private var dismiss
+  @FocusState private var isURLFieldFocused: Bool
+
+  var body: some View {
+    NavigationView {
+      VStack(spacing: 20) {
+        Text("Enter the URL of your development server or project.")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
+
+        TextField("exp://192.168.1.1:8081", text: $urlText)
+          .autocapitalization(.none)
+          .disableAutocorrection(true)
+          .keyboardType(.URL)
+          .focused($isURLFieldFocused)
+          .padding(.horizontal, 16)
+          .padding(.vertical, 12)
+          .background(Color.expoSecondarySystemBackground)
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
+
+        Button {
+          if let url = sanitizeUrlString(urlText) {
+            onConnect(url)
+            dismiss()
+          }
+        } label: {
+          HStack {
+            if isLoading {
+              ProgressView()
+                .tint(.white)
+            }
+            Text("Connect")
+          }
+          .font(.headline)
+          .foregroundColor(.white)
+          .frame(maxWidth: .infinity)
+          .padding()
+          .background(urlText.isEmpty ? Color.gray : Color.expoBlue)
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
+        }
+        .disabled(urlText.isEmpty || isLoading)
+        .buttonStyle(.plain)
+
+        Spacer()
+      }
+      .padding()
+      .navigationTitle("Enter URL")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .cancellationAction) {
+          Button("Cancel") {
+            onDismiss()
+            dismiss()
+          }
+        }
+      }
+    }
+    .modifier(SheetHeightModifier())
+    .onAppear {
+      isURLFieldFocused = true
+    }
+  }
+}
+
+struct SheetHeightModifier: ViewModifier {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, *) {
+      content.presentationDetents([.medium])
+    } else {
+      content
+    }
   }
 }
