@@ -5,11 +5,13 @@ import { extractAttribute } from './shared-utils.js';
 
 export function generateApiSectionMarkdown(attributeString, pagePath) {
   const packageName = extractAttribute(attributeString, 'packageName');
-  if (!packageName) return '';
+  if (!packageName) {
+    return '';
+  }
 
   const packages = packageName.includes(',')
-    ? packageName.split(',').map(s => s.trim().replace(/['"]/g, ''))
-    : [packageName.replace(/['"]/g, '')];
+    ? packageName.split(',').map(s => s.trim().replace(/["']/g, ''))
+    : [packageName.replace(/["']/g, '')];
 
   const versionsPath = path.join(process.cwd(), 'public/static/constants/versions.json');
   let latestVersion = 'latest';
@@ -17,47 +19,65 @@ export function generateApiSectionMarkdown(attributeString, pagePath) {
     try {
       const v = JSON.parse(fs.readFileSync(versionsPath, 'utf-8'));
       latestVersion = v.LATEST_VERSION || 'latest';
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   let version = latestVersion;
   if (pagePath) {
     const m = pagePath.match(/\/versions\/(v[\d.]+|latest|unversioned)\//);
-    if (m) version = m[1] === 'latest' ? latestVersion : m[1];
+    if (m) {
+      version = m[1] === 'latest' ? latestVersion : m[1];
+    }
   }
 
   const forceVersion = extractAttribute(attributeString, 'forceVersion');
-  if (forceVersion) version = forceVersion === 'latest' ? latestVersion : forceVersion;
+  if (forceVersion) {
+    version = forceVersion === 'latest' ? latestVersion : forceVersion;
+  }
 
   const sections = [];
   for (const pkg of packages) {
     const dataPath = path.join(process.cwd(), `public/static/data/${version}/${pkg}.json`);
-    if (!fs.existsSync(dataPath)) continue;
+    if (!fs.existsSync(dataPath)) {
+      continue;
+    }
     try {
       const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
       const children = data?.children;
-      if (!Array.isArray(children) || children.length === 0) continue;
+      if (!Array.isArray(children) || children.length === 0) {
+        continue;
+      }
       const rendered = renderApiChildren(children);
-      if (rendered) sections.push(rendered);
-    } catch { /* ignore */ }
+      if (rendered) {
+        sections.push(rendered);
+      }
+    } catch {
+      /* ignore */
+    }
   }
 
-  if (sections.length === 0) return '';
+  if (sections.length === 0) {
+    return '';
+  }
   return `## API: ${packageName}\n\n${sections.join('\n\n')}`;
 }
 
-// ---------------------------------------------------------------------------
-// Type resolution — converts TypeDoc type objects to readable strings
-// ---------------------------------------------------------------------------
-
 function resolveType(type) {
-  if (!type) return '';
+  if (!type) {
+    return '';
+  }
   switch (type.type) {
     case 'intrinsic':
     case 'literal':
       if (type.type === 'literal') {
-        if (type.value === null) return 'null';
-        if (typeof type.value === 'string') return `'${type.value}'`;
+        if (type.value === null) {
+          return 'null';
+        }
+        if (typeof type.value === 'string') {
+          return `'${type.value}'`;
+        }
         return String(type.value);
       }
       return type.name || '';
@@ -77,7 +97,9 @@ function resolveType(type) {
       return `[${(type.elements || []).map(resolveType).join(', ')}]`;
     case 'reflection': {
       const decl = type.declaration;
-      if (!decl) return 'object';
+      if (!decl) {
+        return 'object';
+      }
       // Function signature
       if (decl.signatures?.length) {
         const sig = decl.signatures[0];
@@ -89,7 +111,9 @@ function resolveType(type) {
       // Object type
       if (decl.children?.length) {
         const props = decl.children.map(c => `${c.name}: ${resolveType(c.type)}`);
-        if (props.length <= 3) return `{ ${props.join(', ')} }`;
+        if (props.length <= 3) {
+          return `{ ${props.join(', ')} }`;
+        }
         return 'object';
       }
       return 'object';
@@ -107,17 +131,21 @@ function resolveType(type) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Comment extraction
-// ---------------------------------------------------------------------------
-
 function getCommentText(comment) {
-  if (!comment?.summary || !Array.isArray(comment.summary)) return '';
+  if (!comment?.summary || !Array.isArray(comment.summary)) {
+    return '';
+  }
   return comment.summary
     .map(part => {
-      if (part.kind === 'text') return part.text || '';
-      if (part.kind === 'code') return part.text || '';
-      if (part.kind === 'inline-tag' && part.tag === '@link') return part.text || '';
+      if (part.kind === 'text') {
+        return part.text || '';
+      }
+      if (part.kind === 'code') {
+        return part.text || '';
+      }
+      if (part.kind === 'inline-tag' && part.tag === '@link') {
+        return part.text || '';
+      }
       return '';
     })
     .join('')
@@ -125,39 +153,57 @@ function getCommentText(comment) {
 }
 
 function getReturnComment(comment) {
-  if (!comment?.blockTags) return '';
+  if (!comment?.blockTags) {
+    return '';
+  }
   const ret = comment.blockTags.find(t => t.tag === '@returns' || t.tag === '@return');
-  if (!ret?.content) return '';
+  if (!ret?.content) {
+    return '';
+  }
   return ret.content
     .map(part => {
-      if (part.kind === 'text') return part.text || '';
-      if (part.kind === 'code') return part.text || '';
+      if (part.kind === 'text') {
+        return part.text || '';
+      }
+      if (part.kind === 'code') {
+        return part.text || '';
+      }
       return '';
     })
     .join('')
     .trim();
 }
 
-// ---------------------------------------------------------------------------
-// Property/field rendering (used for classes, interfaces, type alias objects)
-// ---------------------------------------------------------------------------
-
 function renderProperty(prop) {
   const parts = [];
   const typeStr = resolveType(prop.type);
   const flags = [];
-  if (prop.flags?.isOptional) flags.push('Optional');
-  if (prop.flags?.isReadonly) flags.push('Read Only');
-  if (prop.flags?.isStatic) flags.push('Static');
+  if (prop.flags?.isOptional) {
+    flags.push('Optional');
+  }
+  if (prop.flags?.isReadonly) {
+    flags.push('Read Only');
+  }
+  if (prop.flags?.isStatic) {
+    flags.push('Static');
+  }
 
   let header = `**\`${prop.name}\`**`;
-  if (typeStr) header += ` — Type: \`${typeStr}\``;
-  if (prop.defaultValue != null) header += ` — Default: \`${prop.defaultValue}\``;
-  if (flags.length) header += ` — *${flags.join(', ')}*`;
+  if (typeStr) {
+    header += ` — Type: \`${typeStr}\``;
+  }
+  if (prop.defaultValue !== null) {
+    header += ` — Default: \`${prop.defaultValue}\``;
+  }
+  if (flags.length > 0) {
+    header += ` — *${flags.join(', ')}*`;
+  }
   parts.push(header);
 
   const desc = getCommentText(prop.comment);
-  if (desc) parts.push(desc);
+  if (desc) {
+    parts.push(desc);
+  }
 
   return parts.join('\n\n');
 }
@@ -169,40 +215,47 @@ function renderMethodSignature(methodName, sig) {
   const isStatic = sig.flags?.isStatic;
 
   let header = `**\`${isStatic ? 'static ' : ''}${sig.name || methodName}(${params})\`**`;
-  if (returnType) header += ` — Returns: \`${returnType}\``;
+  if (returnType) {
+    header += ` — Returns: \`${returnType}\``;
+  }
   parts.push(header);
 
   const desc = getCommentText(sig.comment);
-  if (desc) parts.push(desc);
+  if (desc) {
+    parts.push(desc);
+  }
 
-  // Parameter details
   const sigParams = sig.parameters || [];
   if (sigParams.length > 0) {
     const paramLines = sigParams.map(p => {
       const pType = resolveType(p.type);
       const pDesc = getCommentText(p.comment);
       let line = `- \`${p.name}\``;
-      if (pType) line += ` (\`${pType}\`)`;
-      if (pDesc) line += ` — ${pDesc}`;
+      if (pType) {
+        line += ` (\`${pType}\`)`;
+      }
+      if (pDesc) {
+        line += ` — ${pDesc}`;
+      }
       return line;
     });
     parts.push(paramLines.join('\n'));
   }
 
   const retComment = getReturnComment(sig.comment);
-  if (retComment) parts.push(`Returns: ${retComment}`);
+  if (retComment) {
+    parts.push(`Returns: ${retComment}`);
+  }
 
   return parts.join('\n\n');
 }
 
-// ---------------------------------------------------------------------------
-// Main renderer — iterates top-level TypeDoc children
-// ---------------------------------------------------------------------------
-
 function renderApiChildren(children) {
   const lines = [];
   for (const entry of children) {
-    if (!entry?.name || entry.name === 'default') continue;
+    if (!entry?.name || entry.name === 'default') {
+      continue;
+    }
     const kind = entry.kind;
     const description = getCommentText(entry.comment);
 
@@ -218,7 +271,9 @@ function renderApiChildren(children) {
     // Classes (128)
     if (kind === 128) {
       lines.push(`### ${entry.name} (*Class*)`);
-      if (description) lines.push(description);
+      if (description) {
+        lines.push(description);
+      }
 
       const classChildren = entry.children || [];
       const properties = classChildren.filter(c => c.kind === 1024);
@@ -246,7 +301,9 @@ function renderApiChildren(children) {
     // Enums (8)
     if (kind === 8) {
       lines.push(`### ${entry.name} (*Enum*)`);
-      if (description) lines.push(description);
+      if (description) {
+        lines.push(description);
+      }
       const members = entry.children || [];
       for (const m of members) {
         const val = m.defaultValue ? ` = \`${m.defaultValue}\`` : '';
@@ -259,7 +316,9 @@ function renderApiChildren(children) {
     // Interfaces (256)
     if (kind === 256) {
       lines.push(`### ${entry.name} (*Interface*)`);
-      if (description) lines.push(description);
+      if (description) {
+        lines.push(description);
+      }
       const props = (entry.children || []).filter(c => c.kind === 1024);
       if (props.length > 0) {
         for (const prop of props) {
@@ -272,7 +331,9 @@ function renderApiChildren(children) {
     // Type aliases (2097152 / 4194304)
     if (kind === 2097152 || kind === 4194304) {
       lines.push(`### ${entry.name} (*Type*)`);
-      if (description) lines.push(description);
+      if (description) {
+        lines.push(description);
+      }
       const typeStr = resolveType(entry.type);
       if (typeStr && typeStr !== 'object') {
         lines.push(`Type: \`${typeStr}\``);
@@ -300,7 +361,9 @@ function renderApiChildren(children) {
     if (kind === 32) {
       const valStr = entry.defaultValue ? ` = \`${entry.defaultValue}\`` : '';
       lines.push(`### ${entry.name} (*Constant*)${valStr}`);
-      if (description) lines.push(description);
+      if (description) {
+        lines.push(description);
+      }
       continue;
     }
   }

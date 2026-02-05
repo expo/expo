@@ -18,11 +18,9 @@ function collectPageHrefs(node) {
   return hrefs;
 }
 
-export async function generatePerPageMd() {
+export async function generateGenerateMd() {
   const referenceSections = reference?.latest || [];
-  const allSections = [...home, ...general, ...eas, ...learn, ...referenceSections].filter(
-    Boolean
-  );
+  const allSections = [...home, ...general, ...eas, ...learn, ...referenceSections].filter(Boolean);
   const hrefs = allSections.flatMap(collectPageHrefs);
   let count = 0;
 
@@ -30,11 +28,15 @@ export async function generatePerPageMd() {
     let filePath = path.join('pages', href + '.mdx');
     if (!fs.existsSync(filePath)) {
       filePath = path.join('pages', href, 'index.mdx');
-      if (!fs.existsSync(filePath)) continue;
+      if (!fs.existsSync(filePath)) {
+        continue;
+      }
     }
 
     const markdown = await processPage(filePath, href);
-    if (!markdown) continue;
+    if (!markdown) {
+      continue;
+    }
 
     const outputPath = path.join(OUTPUT_DIRECTORY_NAME, href + '.md');
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
