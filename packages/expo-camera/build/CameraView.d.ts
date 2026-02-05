@@ -30,7 +30,7 @@ export default class CameraView extends Component<CameraViewProps> {
     /**
      * Returns the available lenses for the currently selected camera.
      *
-     * @return An array of `LensInfo` objects containing both the stable `deviceType` identifier and the `localizedName` for display purposes. The `deviceType` can be passed to the `seletedLens` prop.
+     * @return An array of `LensInfo` objects containing both the stable `deviceType` identifier and the `localizedName` for display purposes. The `deviceType` can be passed to the `selectedLens` prop.
      * @platform ios
      */
     getAvailableLensesAsync(): Promise<LensInfo>;
