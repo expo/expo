@@ -1,9 +1,53 @@
+import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
+import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { type PropsWithChildren } from 'react';
 import { StackScreenTitle, StackScreenBackButton } from './screen';
+import type { ScreenProps as BaseScreenProps } from '../../useScreens';
+type StackBaseScreenProps = BaseScreenProps<NativeStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>;
 export interface StackScreenProps extends PropsWithChildren {
-    name?: string;
-    options?: NativeStackNavigationOptions;
+    /** Name is required when used inside a Layout component. */
+    name?: StackBaseScreenProps['name'];
+    /**
+     * Options to configure the screen.
+     *
+     * Accepts an object or a function returning an object.
+     * The function form `options={({ route }) => ({})}` is only supported when used inside a Layout component.
+     * When used inside a page component, pass an options object directly.
+     */
+    options?: StackBaseScreenProps['options'];
+    /**
+     * Redirect to the nearest sibling route.
+     * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
+     *
+     * Only supported when used inside a Layout component.
+     */
+    redirect?: StackBaseScreenProps['redirect'];
+    /**
+     * Initial params to pass to the route.
+     *
+     * Only supported when used inside a Layout component.
+     */
+    initialParams?: StackBaseScreenProps['initialParams'];
+    /**
+     * Listeners for navigation events.
+     *
+     * Only supported when used inside a Layout component.
+     */
+    listeners?: StackBaseScreenProps['listeners'];
+    /**
+     * Function to determine a unique ID for the screen.
+     * @deprecated Use `dangerouslySingular` instead.
+     *
+     * Only supported when used inside a Layout component.
+     */
+    getId?: StackBaseScreenProps['getId'];
+    /**
+     * When enabled, the navigator will reuse an existing screen instead of pushing a new one.
+     *
+     * Only supported when used inside a Layout component.
+     */
+    dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
 }
 /**
  * Component used to define a screen in a native stack navigator.
@@ -52,4 +96,5 @@ export declare const StackScreen: (({ children, options, ...rest }: StackScreenP
 export declare function validateStackPresentation(options: NativeStackNavigationOptions): NativeStackNavigationOptions;
 export declare function validateStackPresentation<F extends (...args: never[]) => NativeStackNavigationOptions>(options: F): F;
 export declare function appendScreenStackPropsToOptions(options: NativeStackNavigationOptions, props: StackScreenProps): NativeStackNavigationOptions;
+export {};
 //# sourceMappingURL=StackScreen.d.ts.map
