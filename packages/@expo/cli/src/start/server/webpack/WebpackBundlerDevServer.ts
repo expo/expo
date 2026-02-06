@@ -160,9 +160,10 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     options.port = await this.getAvailablePortAsync({
       defaultPort: options.port,
     });
+
     const { resetDevServer, https, port, mode } = options;
 
-    this.urlCreator = this.getUrlCreator({
+    await this.initUrlCreator({
       port,
       location: {
         scheme: https ? 'https' : 'http',

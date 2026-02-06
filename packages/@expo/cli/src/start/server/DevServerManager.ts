@@ -160,6 +160,7 @@ export class DevServerManager {
     this.options.devClient = isUsingDevClient;
     for (const devServer of this.devServers) {
       devServer.isDevClient = isUsingDevClient;
+      // TODO(@kitten): Clean up mode switching better
       const urlCreator = devServer.getUrlCreator();
       urlCreator.defaults ??= {};
       urlCreator.defaults.scheme = nextScheme;
