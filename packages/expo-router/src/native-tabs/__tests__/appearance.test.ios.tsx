@@ -90,8 +90,7 @@ describe(createStandardAppearanceFromOptions, () => {
 describe(createScrollEdgeAppearanceFromOptions, () => {
   it('empty options should create empty appearance', () => {
     const options: NativeTabOptions = {};
-    const baseAppearance = {};
-    const result = createScrollEdgeAppearanceFromOptions(options, baseAppearance);
+    const result = createScrollEdgeAppearanceFromOptions(options);
     const expectedItemAppearance: TabsScreenItemAppearance = {
       normal: {},
       selected: {},

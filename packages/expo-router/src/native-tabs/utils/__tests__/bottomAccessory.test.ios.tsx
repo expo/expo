@@ -80,7 +80,8 @@ describe('useBottomAccessoryFunctionFromBottomAccessories', () => {
     expect(result.current).not.toBe(firstResult);
 
     // Rerender with undefined
-    rerender({ acc: undefined });
+    // Intentionally passing undefined to test the hook behavior
+    rerender({ acc: undefined as unknown as typeof accessory });
     expect(result.current).toBeUndefined();
   });
 });

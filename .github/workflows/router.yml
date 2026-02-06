@@ -1,0 +1,49 @@
+name: Router
+
+on:
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/router.yml
+      - packages/expo-router/**
+      - yarn.lock
+      - '!**.md'
+  pull_request:
+    paths:
+      - .github/workflows/router.yml
+      - packages/expo-router/**
+      - yarn.lock
+      - '!**.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  router-test-types:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🧪 Run tests
+        working-directory: packages/expo-router
+        run: yarn test:types
