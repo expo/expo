@@ -56,11 +56,11 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
-  fun openHandle(mode: String?): FileSystemFileHandle {
+  fun openHandle(mode: FileMode?): FileSystemFileHandle {
     val fileImpl = file
     return when (fileImpl) {
-      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, mode ?: "rw")
-      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, mode ?: "r", contentResolver)
+      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, mode ?: FileMode.READ_WRITE)
+      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, mode ?: FileMode.READ, contentResolver)
       else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
     }
   }
