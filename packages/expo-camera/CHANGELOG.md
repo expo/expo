@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Apps currently using `getAvailableLensesAsync()` or `onAvailableLensesChanged` will need to update to handle the new return type. The return type changes from `string[]` to `LensInfo[]`.
+- Apps currently using `getAvailableLensesAsync()` or `onAvailableLensesChanged` will need to update to handle the new return type. The return type changes from `string[]` to `LensInfo[]`. ([#42916](https://github.com/expo/expo/pull/42916) by [@mplumador](https://github.com/mplumador))
 
 **Migration:**
 ```javascript
