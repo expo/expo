@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 
-import { Errors, Help } from '../../constants';
+import { Errors } from '../../constants';
 import {
   BuildConfigIos,
   ensurePrebuild,

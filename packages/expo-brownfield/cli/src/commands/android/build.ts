@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { Errors, Help } from '../../constants';
+import { Errors } from '../../constants';
 import {
   BuildTypeAndroid,
   ensurePrebuild,

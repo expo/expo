@@ -1,12 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Errors = void 0;
-const additionalCommandError = (command) => {
-    console.error(`Error: Command ${command} doesn't support additional commands
-For all available options please use the help command:
-npx expo-brownfield ${command} --help`);
-    return process.exit(1);
-};
 /**
  * Prints a generic error message.
  *
@@ -43,7 +37,6 @@ const parseArgsError = () => {
     return process.exit(1);
 };
 exports.Errors = {
-    additionalCommand: additionalCommandError,
     generic: genericError,
     inference: inferenceError,
     missingTasksOrRepositories: missingTasksOrRepositoriesError,

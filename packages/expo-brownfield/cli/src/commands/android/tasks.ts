@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import path from 'path';
 
-import { Errors, Help } from '../../constants';
+import { Errors } from '../../constants';
 import { getTasksAndroidConfig, runCommand, withSpinner } from '../../utils';
 
 const action = async () => {

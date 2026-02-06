@@ -17,4 +17,3 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./build"), exports);
 __exportStar(require("./commands"), exports);
 __exportStar(require("./config"), exports);
-__exportStar(require("./help"), exports);

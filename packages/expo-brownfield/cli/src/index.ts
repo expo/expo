@@ -15,12 +15,15 @@ program
   .option('-d, --debug', 'build debug variant')
   .option('-r, --release', 'build release variant')
   .option('-a, --all', 'build both debug and release variants')
-  .option('-v, --verbose', 'forward all output to the terminal')
+  .option('--verbose', 'forward all output to the terminal')
   .option('-l, --library <library>', 'name of the brownfield library')
-  .option('-t, --task <task>', 'publishing task to be run (multiple can be passed)')
-  .option('--repo, --repository <repository>', 'repository to publish to (multiple can be passed)')
+  .option('-t, --task <task...>', 'publishing task to be run (multiple can be passed)')
+  .option(
+    '--repo, --repository <repository...>',
+    'repository to publish to (multiple can be passed)'
+  )
   .action(async function () {
-    await buildAndroid(this.opts());
+    await buildAndroid(this);
   });
 
 // build:ios
@@ -29,10 +32,10 @@ program
   .description('Build and publish iOS brownfield artifacts')
   .option('-d, --debug', 'build debug configuration')
   .option('-r, --release', 'build release configuration')
-  .option('-v, --verbose', 'forward all output to the terminal')
+  .option('--verbose', 'forward all output to the terminal')
   .option('-s, --scheme <scheme>', 'name of the iOS scheme')
   .option('-x, --xcworkspace <xcworkspace>', 'path to the Xcode workspace (.xcworkspace)')
-  .option('-a, --artifacts', 'path to the artifacts directory')
+  .option('-a, --artifacts <artifacts>', 'path to the artifacts directory')
   .action(async function () {
     await buildIos(this);
   });
@@ -40,8 +43,8 @@ program
 // tasks:android
 program
   .command('tasks:android')
-  .description('List available tasks for Android brownfield')
-  .option('-v, --verbose', 'forward all output to the terminal')
+  .description('List available publishing tasks and repositories for android')
+  .option('--verbose', 'forward all output to the terminal')
   .option('-l, --library <library>', 'name of the brownfield library')
   .action(async function () {
     await tasksAndroid(this);
