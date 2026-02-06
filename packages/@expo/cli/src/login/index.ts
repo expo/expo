@@ -32,7 +32,7 @@ export const expoLogin: Command = async (argv) => {
         `-p, --password <string>  Password`,
         `--otp <string>           One-time password from your 2FA device`,
         `-s, --sso                Log in with SSO`,
-        // -b, --browser is hidden for soft launch
+        `-b, --browser            Log in with a browser`,
         `-h, --help               Usage info`,
       ].join('\n')
     );
