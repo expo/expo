@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+<<<<<<< HEAD
 - [Android] Implement `exitFullscreen` to fix `MethodUnsupportedException`. ([#41836](https://github.com/expo/expo/pull/41836) by [@mensonones](https://github.com/mensonones))
 
 ### 🐛 Bug fixes
