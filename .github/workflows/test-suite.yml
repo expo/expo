@@ -89,7 +89,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
+          yarn-cache: 'true'
           yarn-tools: 'true'
           bare-expo-pods: 'true'
       - name: 🧶 Install node modules in root dir
@@ -180,17 +180,13 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-      - name: 🔎 Find Yarn Cache
-        id: yarn-cache
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-        shell: bash
-      - name: ♻️ Restore Yarn Cache
-        uses: actions/cache@v4
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          yarn-cache: 'true'
+          yarn-tools: 'true'
+          bare-expo-pods: 'true'
       - name: 🧶 Install node modules in root dir
         run: yarn install --prefer-offline --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
@@ -278,14 +274,11 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          gradle: 'true'
           yarn-cache: 'true'
+          gradle: 'true'
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install workspace node modules
         run: yarn install --frozen-lockfile --prefer-offline
-      # - name: 🧶 Postinstall workspace node modules
-      #   if: steps.expo-caches.outputs.yarn-workspace-hit == 'true'
-      #   run: yarn postinstall
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
@@ -364,7 +357,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
+          yarn-cache: 'true'
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
