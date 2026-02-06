@@ -60,6 +60,7 @@ import EXDevMenu
       MainActor.assumeIsolated {
         SnackEditingSession.shared.clearSession()
       }
+      DevMenuManager.shared.isLessonLikeSession = false
       EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
       completion(true, nil)
       return
@@ -77,6 +78,9 @@ import EXDevMenu
       let lessonId = params["lessonId"] as? Int
       let lessonDescription = params["lessonDescription"] as? String
       let name = params["name"] as? String
+
+      // Tell the dev menu whether this is a lesson-like session so it always shows the FAB
+      DevMenuManager.shared.isLessonLikeSession = isLesson || isPlayground || lessonDescription != nil
 
       if let code = params["code"] as? [String: [String: Any]] {
         // Lesson/playground: code provided directly

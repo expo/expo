@@ -89,6 +89,11 @@ open class DevMenuManager: NSObject {
 
   @objc public var configuration = DevMenuConfiguration()
 
+  /// Whether the current app is a lesson-like session (official lesson, playground, or demo project).
+  /// Set by the host app (Expo Go) when opening an app. When true, the FAB is always shown
+  /// regardless of the user's preference.
+  @objc public var isLessonLikeSession: Bool = false
+
   static public var wasInitilized = false
 
   private var contentDidAppearObserver: NSObjectProtocol?
@@ -418,6 +423,7 @@ open class DevMenuManager: NSObject {
     }
 
     isNavigatingHome = true
+    isLessonLikeSession = false
     pendingMenuOpen = false
 
     #if !os(macOS) && !os(tvOS)
@@ -649,7 +655,7 @@ open class DevMenuManager: NSObject {
         }
       }
 
-      let shouldShow = DevMenuPreferences.showFloatingActionButton
+      let shouldShow = (DevMenuPreferences.showFloatingActionButton || self.isLessonLikeSession)
         && !self.isVisible
         && self.currentBridge != nil
         && !self.isNavigatingHome
