@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- **Android**: Fixed `setSystemBrightnessAsync` to support brightness value 0 by mapping [0,1] range to Android's valid [1,255] range. ([#42470](https://github.com/expo/expo/pull/42470) by [@davidalo](https://github.com/davidalo))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-03
