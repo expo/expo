@@ -172,6 +172,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveHomeToVisible
 {
   [DevMenuManager.shared hideMenu];
+  [self hideAppLoadingOverlay];
+  _homeViewController.initialURL = nil;
   [self _showHomeViewController];
 }
 
@@ -306,19 +308,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)hideAppLoadingOverlay
 {
-  if (!_appLoadingOverlay) {
-    return;
+  if (_appLoadingOverlay) {
+    [_appLoadingOverlay.layer removeAllAnimations];
+    [_appLoadingOverlay removeFromSuperview];
+    _appLoadingOverlay = nil;
   }
-
-  EXAppLoadingCancelView *overlay = _appLoadingOverlay;
-  _appLoadingOverlay = nil;
-
-  [overlay.layer removeAllAnimations];
-  [UIView animateWithDuration:0.2 animations:^{
-    overlay.alpha = 0.0;
-  } completion:^(BOOL finished) {
-    [overlay removeFromSuperview];
-  }];
 }
 
 #pragma mark - EXAppLoadingCancelViewDelegate
