@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix initial state not being set in `Picker`, `Slider`, `Toggle`, and `List` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
+
+- [iOS] Set initial state in `init` instead of `onAppear` in `DatePicker`, `Section`, `DisclosureGroup`, `Popover`, and `ColorPicker` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.0-preview.4 — 2026-02-03
 
