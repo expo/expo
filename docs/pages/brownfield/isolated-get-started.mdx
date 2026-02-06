@@ -1,0 +1,561 @@
+---
+title: How to use the isolated brownfield approach with expo-brownfield
+sidebar_title: Isolated approach
+description: A guide for packaging your Expo app as a native library (XCFramework/AAR) and integrating it into an existing native app.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { BoxLink } from '~/ui/components/BoxLink';
+
+In the isolated approach, your React Native code is developed and maintained separately from your native project. You package it as a native library &mdash; an XCFramework for iOS or an AAR for Android &mdash; and integrate it into your native app like any other dependency.
+
+This approach is ideal when you have separate teams for native and React Native development, or when you want to minimize the impact of React Native on your existing native build process. Native developers don't need Node.js, Yarn, or any React Native build tooling &mdash; they just consume pre-built artifacts.
+
+> **info** Support for integrating Expo modules into existing native projects is in active development. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues).
+
+For an alternative approach where React Native is integrated directly into your native project, see the [integrated approach guide](/brownfield/get-started/).
+
+## Prerequisites
+
+**For the Expo/React Native developer** (builds the library artifacts):
+
+- [Node.js (LTS)](https://nodejs.org/en/): The runtime to execute JavaScript code and Expo CLI.
+- [Yarn](https://yarnpkg.com/): A package manager for installing and managing JavaScript dependencies.
+- Xcode (for building iOS artifacts)
+- Android SDK and JDK 17 (for building Android artifacts)
+- Learn more from the [Set up environment guide](/get-started/set-up-your-environment/).
+
+**For the native app developer** (consumes the artifacts):
+
+- Xcode (iOS) or Android Studio (Android)
+- No Node.js, Yarn, or React Native tooling required
+
+## Part 1: Building the React Native library
+
+This section is for the Expo/React Native developer who builds the library artifacts.
+
+<Step label="1">
+### Create an Expo project
+
+Create a new Expo project. Unlike the [integrated approach](/brownfield/get-started/), this project does not need to live inside your native project &mdash; it can be in a separate repository or a monorepo.
+
+<Terminal cmd={['$ npx create-expo-app@latest my-rn-library']} />
+
+</Step>
+
+<Step label="2">
+### Install expo-brownfield
+
+<Terminal cmd={['$ cd my-rn-library', '$ npx expo install expo-brownfield']} />
+
+</Step>
+
+<Step label="3">
+### Add the config plugin
+
+Add `expo-brownfield` to the `plugins` array in your **app.json**:
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-brownfield"]
+  }
+}
+```
+
+This uses the default configuration, which is sufficient for most projects. The defaults are derived from your app config (for example, target names are based on your app's scheme or slug).
+
+<Collapsible summary="Customizing plugin options">
+
+You can pass options to customize the target names, bundle identifiers, and publishing configuration:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-brownfield",
+        {
+          "ios": {
+            "targetName": "MyBrownfield",
+            "bundleIdentifier": "com.example.mybrownfield"
+          },
+          "android": {
+            "libraryName": "mybrownfield",
+            "group": "com.example",
+            "package": "com.example.mybrownfield",
+            "version": "1.0.0"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+| Option | Platform | Default | Description |
+| --- | --- | --- | --- |
+| `ios.targetName` | iOS | `"<scheme>brownfield"` | Name of the Xcode framework target |
+| `ios.bundleIdentifier` | iOS | Derived from app config | Bundle identifier for the framework |
+| `android.libraryName` | Android | `"brownfield"` | Name of the Android library module |
+| `android.package` | Android | `"<android.package>.brownfield"` | Java/Kotlin package name |
+| `android.group` | Android | Derived from package | Maven group ID |
+| `android.version` | Android | `"1.0.0"` | Library version for Maven publishing |
+| `android.publishing` | Android | `[{ type: "localMaven" }]` | Maven repository configuration |
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+### Generate native targets
+
+Run `npx expo prebuild` to generate the native projects with the brownfield library targets:
+
+<Terminal cmd={['$ npx expo prebuild']} />
+
+This generates:
+
+- **iOS**: A separate Xcode framework target containing `ReactNativeHostManager`, `ReactNativeViewController`, `ReactNativeView` (SwiftUI), `BrownfieldMessaging`, and `ReactNativeDelegate`.
+- **Android**: A separate library module containing `ReactNativeHostManager`, `BrownfieldActivity`, `ReactNativeFragment`, `ReactNativeViewFactory`, and `BrownfieldMessaging`.
+
+</Step>
+
+<Step label="5">
+### Build the native artifacts
+
+<Tabs>
+<Tab label="iOS">
+
+Build the XCFramework artifacts:
+
+<Terminal cmd={['$ npx expo-brownfield build:ios']} />
+
+This compiles the framework target for both device and simulator architectures, packages them into XCFrameworks, and copies the Hermes engine framework. The output is placed in the **./artifacts** directory by default and contains:
+
+- **{TargetName}.xcframework** &mdash; your React Native library
+- **hermes.xcframework** &mdash; the Hermes JavaScript engine
+
+<Collapsible summary="iOS build options">
+
+| Option | Short | Description |
+| --- | --- | --- |
+| `--release` | `-r` | Build in release configuration (default) |
+| `--debug` | `-d` | Build in debug configuration |
+| `--scheme` | `-s` | Xcode scheme to build |
+| `--xcworkspace` | `-x` | Path to Xcode workspace |
+| `--artifacts` | `-a` | Output directory (default: `./artifacts`) |
+| `--verbose` | | Include all logs from subprocesses |
+
+</Collapsible>
+
+</Tab>
+<Tab label="Android">
+
+Build and publish the AAR to a Maven repository:
+
+<Terminal cmd={['$ npx expo-brownfield build:android']} />
+
+By default, this publishes to your local Maven repository (`~/.m2`). The artifact coordinates are determined by your config plugin settings (for example, `com.example:brownfield:1.0.0`).
+
+To see all available publishing tasks and repositories:
+
+<Terminal cmd={['$ npx expo-brownfield tasks:android']} />
+
+<Collapsible summary="Android build options">
+
+| Option | Short | Description |
+| --- | --- | --- |
+| `--all` | `-a` | Build both debug and release (default) |
+| `--release` | `-r` | Build in release configuration only |
+| `--debug` | `-d` | Build in debug configuration only |
+| `--library` | `-l` | Specify brownfield library name |
+| `--repository` | `--repo` | Maven repository to publish to (can be specified multiple times) |
+| `--task` | `-t` | Gradle publish task to run (can be specified multiple times) |
+| `--verbose` | | Include all logs from subprocesses |
+
+</Collapsible>
+
+<Collapsible summary="Publishing to a remote Maven repository">
+
+Configure remote Maven publishing in your **app.json** plugin options:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-brownfield",
+        {
+          "android": {
+            "publishing": [
+              {
+                "type": "remotePrivate",
+                "url": { "variable": "MAVEN_URL" },
+                "username": { "variable": "MAVEN_USERNAME" },
+                "password": { "variable": "MAVEN_PASSWORD" }
+              }
+            ]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The `variable` fields reference environment variables, keeping credentials out of your source code.
+
+</Collapsible>
+
+</Tab>
+</Tabs>
+
+</Step>
+
+## Part 2: Integrating into your native app
+
+This section is for the native developer consuming the pre-built artifacts. No Node.js, Yarn, or React Native tooling is required.
+
+<Tabs tabs={["iOS", "Android"]}>
+<Tab>
+
+<Step label="1">
+### Add XCFrameworks to your project
+
+Drag both XCFramework files ({TargetName}**.xcframework** and **hermes.xcframework**) into your Xcode project navigator. In the dialog that appears:
+
+- Check **Copy items if needed**
+- Add them to your app target
+
+Then, in your target's **General** tab under **Frameworks, Libraries, and Embedded Content**, ensure both frameworks are set to **Embed & Sign**.
+
+</Step>
+
+<Step label="2">
+### Initialize React Native
+
+Call `ReactNativeHostManager.shared.initialize()` early in your app's lifecycle. A good place is your `AppDelegate`:
+
+```swift AppDelegate.swift
+import UIKit
+import MyAppBrownfield // Replace with your target name
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    ReactNativeHostManager.shared.initialize()
+    return true
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+### Present a React Native view
+
+**UIKit:**
+
+```swift ViewController.swift
+import UIKit
+import MyAppBrownfield
+
+class ViewController: UIViewController {
+  @IBAction func openReactNative(_ sender: Any) {
+    let rnViewController = ReactNativeViewController(moduleName: "main")
+    navigationController?.pushViewController(rnViewController, animated: true)
+  }
+}
+```
+
+The `ReactNativeViewController` also accepts optional `initialProps` and `launchOptions` parameters:
+
+```swift
+let rnViewController = ReactNativeViewController(
+  moduleName: "main",
+  initialProps: ["userId": "123"],
+  launchOptions: [:]
+)
+```
+
+**SwiftUI:**
+
+```swift ContentView.swift
+import SwiftUI
+import MyAppBrownfield
+
+struct ContentView: View {
+  @State private var showReactNative = false
+
+  var body: some View {
+    Button("Open React Native") {
+      showReactNative = true
+    }
+    .fullScreenCover(isPresented: $showReactNative) {
+      ReactNativeView(moduleName: "main")
+    }
+  }
+}
+```
+
+</Step>
+
+</Tab>
+<Tab>
+
+<Step label="1">
+### Add the Maven dependency
+
+If the library was published to local Maven (the default), add `mavenLocal()` to your repository configuration:
+
+```kotlin settings.gradle.kts
+dependencyResolutionManagement {
+  repositories {
+    google()
+    mavenCentral()
+    mavenLocal()
+  }
+}
+```
+
+Then add the dependency in your app's **build.gradle.kts**. The group, artifact name, and version match your config plugin settings:
+
+```kotlin app/build.gradle.kts
+dependencies {
+  implementation("com.example:brownfield:1.0.0")
+}
+```
+
+</Step>
+
+<Step label="2">
+### Initialize React Native
+
+Call `ReactNativeHostManager.shared.initialize(this)` in your `Application` class:
+
+```kotlin MyApplication.kt
+import android.app.Application
+import com.example.brownfield.ReactNativeHostManager
+
+class MyApplication : Application() {
+  override fun onCreate() {
+    super.onCreate()
+    ReactNativeHostManager.shared.initialize(this)
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+### Show a React Native screen
+
+Create an activity that extends `BrownfieldActivity` and use the `showReactNativeFragment()` extension:
+
+```kotlin ExpoActivity.kt
+import android.os.Bundle
+import com.example.brownfield.BrownfieldActivity
+import com.example.brownfield.showReactNativeFragment
+
+class ExpoActivity : BrownfieldActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    showReactNativeFragment()
+  }
+}
+```
+
+Add the activity to your **AndroidManifest.xml** with a non-ActionBar theme:
+
+```xml AndroidManifest.xml
+<activity
+  android:name=".ExpoActivity"
+  android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+/>
+```
+
+Then launch it from anywhere in your app:
+
+```kotlin
+startActivity(Intent(this, ExpoActivity::class.java))
+```
+
+`BrownfieldActivity` extends `AppCompatActivity` and handles forwarding configuration changes to Expo modules. The `showReactNativeFragment()` extension also sets up native back button handling automatically.
+
+</Step>
+
+</Tab>
+</Tabs>
+
+## Communication between React Native and native
+
+The `expo-brownfield` library provides a bidirectional messaging API for communication between the native app and React Native.
+
+### Sending messages from React Native to native
+
+**React Native side:**
+
+```tsx
+import * as Brownfield from 'expo-brownfield';
+
+Brownfield.sendMessage({
+  type: 'userLoggedIn',
+  userId: '12345',
+});
+```
+
+**Native side &mdash; receiving messages:**
+
+<Tabs>
+<Tab label="iOS">
+
+```swift
+import MyAppBrownfield
+
+let listenerId = BrownfieldMessaging.addListener { message in
+  if let type = message["type"] as? String, type == "userLoggedIn" {
+    print("User logged in: \(message["userId"] ?? "")")
+  }
+}
+
+// Later, to remove the listener:
+BrownfieldMessaging.removeListener(id: listenerId)
+```
+
+</Tab>
+<Tab label="Android">
+
+```kotlin
+import expo.modules.brownfield.BrownfieldMessaging
+
+val listenerId = BrownfieldMessaging.addListener { message ->
+  val type = message["type"] as? String
+  if (type == "userLoggedIn") {
+    println("User logged in: ${message["userId"]}")
+  }
+}
+
+// Later, to remove the listener:
+BrownfieldMessaging.removeListener(listenerId)
+```
+
+</Tab>
+</Tabs>
+
+### Sending messages from native to React Native
+
+<Tabs>
+<Tab label="iOS">
+
+```swift
+import MyAppBrownfield
+
+BrownfieldMessaging.sendMessage([
+  "type": "nativeEvent",
+  "data": ["key": "value"]
+])
+```
+
+</Tab>
+<Tab label="Android">
+
+```kotlin
+import expo.modules.brownfield.BrownfieldMessaging
+
+BrownfieldMessaging.sendMessage(mapOf(
+  "type" to "nativeEvent",
+  "data" to mapOf("key" to "value")
+))
+```
+
+</Tab>
+</Tabs>
+
+**React Native side &mdash; receiving messages:**
+
+```tsx
+import * as Brownfield from 'expo-brownfield';
+import { useEffect } from 'react';
+
+function MyComponent() {
+  useEffect(() => {
+    const subscription = Brownfield.addMessageListener((event) => {
+      console.log('Received from native:', event);
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  // ...
+}
+```
+
+## Navigation
+
+### Returning to native
+
+Call `popToNative()` from React Native to dismiss the React Native view and return to the native navigation stack:
+
+```tsx
+import * as Brownfield from 'expo-brownfield';
+
+Brownfield.popToNative();
+```
+
+On iOS, you can animate the transition:
+
+```tsx
+Brownfield.popToNative(true);
+```
+
+### Controlling the back button
+
+By default, the hardware back button (Android) and the interactive pop gesture (iOS) navigate back in the native navigation stack. You can override this to let React Navigation handle back navigation within your React Native screens:
+
+```tsx
+import * as Brownfield from 'expo-brownfield';
+
+// Back events go through React Navigation
+Brownfield.setNativeBackEnabled(false);
+
+// Back events return to native (default)
+Brownfield.setNativeBackEnabled(true);
+```
+
+## Test your integration
+
+### Development (debug builds)
+
+Start the Metro bundler in your Expo project directory:
+
+<Terminal cmd={['$ npx expo start']} />
+
+Then build and run the native app from Xcode or Android Studio. When you navigate to the React Native screen, it will load from the Metro dev server with hot reloading support.
+
+### Production (release builds)
+
+In release builds, the JavaScript bundle is embedded in the artifact (XCFramework or AAR), so no Metro server is needed. Build the native app in Release configuration and verify the React Native screen loads correctly.
+
+## Next steps
+
+<BoxLink
+  title="Lifecycle listeners"
+  description="Configure application lifecycle listeners for deeper integration with Expo modules."
+  href="/brownfield/lifecycle-listeners/"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="expo-brownfield API reference"
+  description="Explore the full JavaScript API for communication, navigation, and more."
+  href="/versions/latest/sdk/brownfield/"
+  Icon={BookOpen02Icon}
+/>
