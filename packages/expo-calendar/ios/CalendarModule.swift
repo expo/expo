@@ -583,7 +583,7 @@ public class CalendarModule: Module {
       return firstEvent
     }
 
-    guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
+    if let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame {
       return firstEvent
     }
 

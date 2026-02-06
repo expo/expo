@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `deleteEventAsync` deleting wrong recurring event instance when `instanceStartDate` is provided. ([#40172](https://github.com/expo/expo/pull/40172) by [@marcelogdeandrade](https://github.com/marcelogdeandrade))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-03
