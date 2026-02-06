@@ -276,21 +276,18 @@ diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawa
 new file mode 100644
 index 00000000000..4aeed11d00b
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png differ
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-similarity index 59%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-index 12f2f769806..883b2a080f3 100644
---- a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
+new file mode 100644
+index 00000000000..883b2a080f3
+--- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-@@ -1,4 +1,6 @@
--<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
- <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-   <item android:drawable="@color/splashscreen_background"/>
+@@ -0,0 +1,6 @@
++<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
++  <item android:drawable="@color/splashscreen_background"/>
 +  <item>
 +    <bitmap android:gravity="center" android:src="@drawable/splashscreen_logo"/>
 +  </item>
- </layer-list>
++</layer-list>
 \ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/rn_edit_text_material.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/rn_edit_text_material.xml
 index 73b37e4d996..5c25e728ea2 100644
@@ -306,50 +303,46 @@ index 73b37e4d996..5c25e728ea2 100644
  
      <selector>
          <!--
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png
-deleted file mode 100644
-index cc94f379de3..00000000000
-Binary files a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png and /dev/null differ
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..a2f5908281d
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..1b523998081
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..ff10afd6e18
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..115a4c768a2
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..dcd3cd80833
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..459ca609d3a
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..8ca12fe024b
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..8e19b410a1b
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..b824ebdd48d
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..4c19a13c239
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
 index 90bcc87b8e8..26f3404be26 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
@@ -697,18 +690,6 @@ index a36a6e08d4d..e1cfd572120 100644
 +    "version": "1.0.0"
    }
  }
-diff --git a/templates/expo-template-bare-minimum/babel.config.js b/templates/expo-template-bare-minimum/babel.config.js
-deleted file mode 100644
-index baac9e50ca8..00000000000
---- a/templates/expo-template-bare-minimum/babel.config.js
-+++ /dev/null
-@@ -1,6 +0,0 @@
--module.exports = function(api) {
--  api.cache(true);
--  return {
--    presets: ['babel-preset-expo']
--  };
--};
 diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
 index 05647d55c75..d16e1efbb3f 100644
 --- a/templates/expo-template-bare-minimum/gitignore
@@ -956,117 +937,6 @@ index efbdc6e741d..8a390c764af 100644
  				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
  				MTL_ENABLE_DEBUG_INFO = NO;
  				SDKROOT = iphoneos;
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
-deleted file mode 100644
-index 6a99d7d589a..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
-+++ /dev/null
-@@ -1,10 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<Workspace
--   version = "1.0">
--   <FileRef
--      location = "group:HelloWorld.xcodeproj">
--   </FileRef>
--   <FileRef
--      location = "group:Pods/Pods.xcodeproj">
--   </FileRef>
--</Workspace>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
-deleted file mode 100644
-index 18d981003d6..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
-+++ /dev/null
-@@ -1,8 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
--<plist version="1.0">
--<dict>
--	<key>IDEDidComputeMac32BitWarning</key>
--	<true/>
--</dict>
--</plist>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
-deleted file mode 100644
-index 1658a437eb3..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
-+++ /dev/null
-@@ -1,7 +0,0 @@
--#import <RCTAppDelegate.h>
--#import <UIKit/UIKit.h>
--#import <Expo/Expo.h>
--
--@interface AppDelegate : EXAppDelegateWrapper
--
--@end
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-deleted file mode 100644
-index 37d415b57d9..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-+++ /dev/null
-@@ -1,62 +0,0 @@
--#import "AppDelegate.h"
--
--#import <React/RCTBundleURLProvider.h>
--#import <React/RCTLinkingManager.h>
--
--@implementation AppDelegate
--
--- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
--{
--  self.moduleName = @"main";
--
--  // You can add your custom initial props in the dictionary below.
--  // They will be passed down to the ViewController used by React Native.
--  self.initialProps = @{};
--
--  return [super application:application didFinishLaunchingWithOptions:launchOptions];
--}
--
--- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
--{
--  return [self getBundleURL];
--}
--
--- (NSURL *)getBundleURL
--{
--#if DEBUG
--  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
--#else
--  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
--#endif
--}
--
--// Linking API
--- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
--  return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
--}
--
--// Universal Links
--- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
--  BOOL result = [RCTLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
--  return [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler] || result;
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
--{
--  return [super application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
--{
--  return [super application:application didFailToRegisterForRemoteNotificationsWithError:error];
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
--{
--  return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
--}
--
--@end
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 new file mode 100644
 index 00000000000..9670a1ff07e
@@ -1151,70 +1021,6 @@ index 00000000000..8361941afc2
 +//
 +// Use this file to import your target's public headers that you would like to expose to Swift.
 +//
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
-deleted file mode 100644
-index e67cd6c5e28..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
-+++ /dev/null
-@@ -1,21 +0,0 @@
--{
--  "images": [
--    {
--      "idiom": "universal",
--      "filename": "splashscreen.png",
--      "scale": "1x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "2x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "3x"
--    }
--  ],
--  "info": {
--    "version": 1,
--    "author": "expo"
--  }
--}
-\ No newline at end of file
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png
-deleted file mode 100644
-index cc94f379de3..00000000000
-Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png and /dev/null differ
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
-deleted file mode 100644
-index b5914aac6a8..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
-+++ /dev/null
-@@ -1,21 +0,0 @@
--{
--  "images": [
--    {
--      "idiom": "universal",
--      "filename": "background.png",
--      "scale": "1x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "2x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "3x"
--    }
--  ],
--  "info": {
--    "version": 1,
--    "author": "expo"
--  }
--}
-\ No newline at end of file
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png
-deleted file mode 100644
-index ff3dd16fd70..00000000000
-Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png and /dev/null differ
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
 new file mode 100644
 index 00000000000..255637e0fdb
@@ -1423,22 +1229,6 @@ index 03410dc8b39..6631ffa6f24 100644
 -        <string>YOUR-APP-URL-HERE</string>
  </dict>
  </plist>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m b/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
-deleted file mode 100644
-index 25181b6ccb5..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
-+++ /dev/null
-@@ -1,10 +0,0 @@
--#import <UIKit/UIKit.h>
--
--#import "AppDelegate.h"
--
--int main(int argc, char * argv[]) {
--  @autoreleasepool {
--    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
--  }
--}
--
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
 index b3978b9515d..03484edf156 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
