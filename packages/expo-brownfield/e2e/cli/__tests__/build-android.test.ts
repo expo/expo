@@ -1,5 +1,5 @@
 import { BUILD, BUILD_ANDROID, ERROR } from '../../utils/output';
-import { executeCommandAsync } from '../../utils/process';
+import { CLI_PATH, executeCommandAsync } from '../../utils/process';
 import { cleanUpProject, createTempProject } from '../../utils/project';
 import { buildAndroidTest, expectPrebuild } from '../../utils/test';
 
@@ -69,6 +69,25 @@ describe('build:android command', () => {
 
     /**
      * Command: npx expo-brownfield build:android
+     * Expected behavior: The CLI should fail if prebuild is cancelled
+     */
+    it('should fail if prebuild is cancelled', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes no | node ${CLI_PATH} build:android --repo MavenLocal`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
+    });
+
+    /**
+     * Command: npx expo-brownfield build:android
      * Expected behavior: The CLI should validate and ask for prebuild
      */
     it('should validate and ask for prebuild', async () => {
@@ -77,21 +96,17 @@ describe('build:android command', () => {
       const { exitCode, stdout, stderr } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', 'yes | npx expo-brownfield build:android'],
+        ['-c', `yes | node ${CLI_PATH} build:android --repo MavenLocal`],
         { ignoreErrors: true }
       );
       expect(exitCode).not.toBe(0);
       expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
       expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
-      // TODO(pmleczek): Refactor CLI error handling
-      expect(stderr).toContain(`Error: Value of Android library name`);
-      expect(stderr).toContain(`could not be inferred from the project`);
+      expect(stderr).toContain('Could not find brownfield library in the project');
 
       // The android directory should be created and not empty
       await expectPrebuild(TEMP_DIR, 'android');
     });
-
-    // TODO(pmleczek): Verify failure if prebuild is not done
   });
 
   /**
@@ -126,7 +141,7 @@ describe('build:android command', () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--task', 'someGradleTask', '--dry-run'],
-        stdout: [BUILD_ANDROID.CONFIGURATION],
+        useSnapshot: true,
       });
     });
 
@@ -150,17 +165,26 @@ describe('build:android command', () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--debug'],
-        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+        stdout: [
+          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ],
       });
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--debug'],
-        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+        stdout: [
+          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ],
       });
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-d'],
-        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+        stdout: [
+          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ],
       });
     });
 
@@ -174,7 +198,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--release'],
         stdout: [
-          BUILD.BUILD_TYPE_RELEASE,
+          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
         ],
       });
@@ -182,7 +206,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-r'],
         stdout: [
-          BUILD.BUILD_TYPE_RELEASE,
+          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
         ],
       });
@@ -191,7 +215,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-r'],
         stdout: [
-          BUILD.BUILD_TYPE_RELEASE,
+          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
         ],
       });
@@ -207,21 +231,30 @@ describe('build:android command', () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--all'],
-        stdout: [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+        stdout: [
+          BUILD_ANDROID.BUILLD_VARIANT_ALL,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ],
       });
 
       // Short version: -a
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-a'],
-        stdout: [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+        stdout: [
+          BUILD_ANDROID.BUILLD_VARIANT_ALL,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ],
       });
 
       // Combination of the two flags: --release/-r + --debug/-d
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--release', '-d'],
-        stdout: [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+        stdout: [
+          BUILD_ANDROID.BUILLD_VARIANT_ALL,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ],
       });
     });
 
@@ -253,7 +286,7 @@ describe('build:android command', () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--task', 'task1', '-t', 'task2', '--task', 'task3', '--dry-run'],
-        stdout: [BUILD_ANDROID.TASKS, `./gradlew task1`, `./gradlew task2`, `./gradlew task3`],
+        stdout: [...BUILD_ANDROID.TASKS, `./gradlew task1`, `./gradlew task2`, `./gradlew task3`],
       });
     });
 
@@ -266,7 +299,6 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--repository', 'CustomLocal', '--dry-run'],
         stdout: [
-          BUILD_ANDROID.REPOSTORIES,
           `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
           `./gradlew publishBrownfieldAllPublicationToCustomLocalRepository`,
         ],
@@ -281,7 +313,7 @@ describe('build:android command', () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--task', 'task1', '--dry-run'],
-        stdout: [BUILD_ANDROID.TASK, `./gradlew task1`],
+        stdout: [...BUILD_ANDROID.TASK, `./gradlew task1`],
       });
     });
 
@@ -293,13 +325,16 @@ describe('build:android command', () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--debug', '--dry-run'],
-        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+        stdout: [
+          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ],
       });
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'CustomDir', '--repository', 'CustomLocal', '--release', '--dry-run'],
         stdout: [
-          BUILD.BUILD_TYPE_RELEASE,
+          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToCustomDirRepository`,
           `./gradlew publishBrownfieldReleasePublicationToCustomLocalRepository`,
         ],

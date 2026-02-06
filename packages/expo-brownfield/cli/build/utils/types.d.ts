@@ -1,26 +1,4 @@
-export type BuildTypeCommon = 'debug' | 'release';
-export type BuildTypeAndroid = BuildTypeCommon | 'all';
-export interface BuildConfigCommon {
-    dryRun: boolean;
-    help: boolean;
-    verbose: boolean;
-}
-export interface BuildConfigAndroid extends BuildConfigCommon {
-    buildType: BuildTypeAndroid;
-    libraryName: string;
-    repositories: string[];
-    tasks: string[];
-}
-export interface BuildConfigIos extends BuildConfigCommon {
-    artifacts: string;
-    buildType: BuildTypeCommon;
-    derivedDataPath: string;
-    device: string;
-    hermesFrameworkPath: string;
-    scheme: string;
-    simulator: string;
-    workspace: string;
-}
+export type Platform = 'android' | 'ios';
 export interface RunCommandOptions {
     cwd?: string;
     env?: Record<string, string>;
@@ -36,4 +14,19 @@ export interface WithSpinnerParams<T> {
     errorMessage?: string;
     onError?: 'error' | 'warn';
     verbose?: boolean;
+}
+export interface CommonConfig {
+    dryRun: boolean;
+    verbose: boolean;
+}
+export type BuildVariant = 'All' | 'Debug' | 'Release';
+export interface AndroidConfig extends CommonConfig {
+    library: string;
+    tasks: string[];
+    variant: BuildVariant;
+}
+export interface IosConfig extends CommonConfig {
+}
+export interface TasksConfigAndroid extends CommonConfig {
+    library: string;
 }

@@ -17,6 +17,7 @@ program
     .option('-l, --library <library>', 'name of the brownfield library')
     .option('-t, --task <task...>', 'publishing task to be run (multiple can be passed)')
     .option('--repo, --repository <repository...>', 'repository to publish to (multiple can be passed)')
+    .option('--dry-run', 'only print the commands without executing them')
     .action(async function () {
     await (0, commands_1.buildAndroid)(this);
 });
@@ -30,6 +31,7 @@ program
     .option('-s, --scheme <scheme>', 'name of the iOS scheme')
     .option('-x, --xcworkspace <xcworkspace>', 'path to the Xcode workspace (.xcworkspace)')
     .option('-a, --artifacts <artifacts>', 'path to the artifacts directory')
+    .option('--dry-run', 'only print the commands without executing them')
     .action(async function () {
     await (0, commands_1.buildIos)(this);
 });
@@ -39,6 +41,7 @@ program
     .description('List available publishing tasks and repositories for android')
     .option('--verbose', 'forward all output to the terminal')
     .option('-l, --library <library>', 'name of the brownfield library')
+    .option('--dry-run', 'only print the commands without executing them')
     .action(async function () {
     await (0, commands_1.tasksAndroid)(this);
 });
