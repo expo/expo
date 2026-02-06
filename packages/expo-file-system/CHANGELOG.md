@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add `append` option to write methods. ([#42778](https://github.com/expo/expo/pull/42778) by [@aleqsio](https://github.com/aleqsio))
+- Add `overwrite` option to copy and move methods.
 
 ### 🐛 Bug fixes
 

@@ -145,23 +145,23 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
   }
 
-  fun copy(to: FileSystemPath) {
+  fun copy(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
     validatePermission(Permission.READ)
     to.validatePermission(Permission.WRITE)
 
-    file.copyTo(to.asCopyOrMoveDestination())
+    file.copyTo(to.asCopyOrMoveDestination(options.overwrite))
   }
 
-  fun move(to: FileSystemPath) {
+  fun move(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
     validatePermission(Permission.WRITE)
     to.validatePermission(Permission.WRITE)
 
     // moveTo returns the URI of where the file was actually moved to
-    val finalUri = file.moveTo(to.asCopyOrMoveDestination())
+    val finalUri = file.moveTo(to.asCopyOrMoveDestination(options.overwrite))
 
     // Update URI to reflect the new location
     uri = finalUri

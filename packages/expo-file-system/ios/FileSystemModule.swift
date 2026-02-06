@@ -251,12 +251,12 @@ public final class FileSystemModule: Module {
         try file.create(options ?? CreateOptions())
       }
 
-      Function("copy") { (file, to: FileSystemPath) in
-        try file.copy(to: to)
+      Function("copy") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.copy(to: to, options: options ?? RelocationOptions())
       }
 
-      Function("move") { (file, to: FileSystemPath) in
-        try file.move(to: to)
+      Function("move") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.move(to: to, options: options ?? RelocationOptions())
       }
 
       Function("rename") { (file, newName: String) in
@@ -319,12 +319,12 @@ public final class FileSystemModule: Module {
         try directory.create(options ?? CreateOptions())
       }
 
-      Function("copy") { (directory, to: FileSystemPath) in
-        try directory.copy(to: to)
+      Function("copy") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.copy(to: to, options: options ?? RelocationOptions())
       }
 
-      Function("move") { (directory, to: FileSystemPath) in
-        try directory.move(to: to)
+      Function("move") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.move(to: to, options: options ?? RelocationOptions())
       }
 
       Function("rename") { (directory, newName: String) in
