@@ -147,7 +147,7 @@ export const useTrackingPermissions = createPermissionHook({
  * the get and request permissions methods will always resolve to `granted`.
  */
 export function isAvailable(): boolean {
-  return Boolean(ExpoTrackingTransparency);
+  return Platform.OS !== 'web';
 }
 
 export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

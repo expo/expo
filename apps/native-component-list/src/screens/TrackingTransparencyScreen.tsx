@@ -1,7 +1,8 @@
 import {
-  requestTrackingPermissionsAsync,
-  getTrackingPermissionsAsync,
   isAvailable,
+  getTrackingPermissionsAsync,
+  requestTrackingPermissionsAsync,
+  getAdvertisingId,
 } from 'expo-tracking-transparency';
 import React from 'react';
 import { View } from 'react-native';
@@ -17,17 +18,18 @@ export default class TrackingTransparencyScreen extends React.Component {
     return (
       <View style={{ padding: 10 }}>
         <SimpleActionDemo
-          title="is Tracking Transparency available?"
-          action={() => !!isAvailable()}
+          title="Is Tracking Transparency available?"
+          action={() => isAvailable()}
         />
         <SimpleActionDemo
-          title="get tracking permissions"
+          title="Get tracking permissions"
           action={async () => await getTrackingPermissionsAsync()}
         />
         <SimpleActionDemo
-          title="request tracking permissions"
+          title="Request tracking permissions"
           action={async () => await requestTrackingPermissionsAsync()}
         />
+        <SimpleActionDemo title="Get advertising ID" action={() => getAdvertisingId()} />
       </View>
     );
   }
