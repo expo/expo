@@ -1,7 +1,7 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = void 0;
+exports.sortRoutes = exports.sortRoutesWithInitial = exports.RoutePathnameContext = exports.LocalRouteParamsContext = void 0;
 exports.useRouteNode = useRouteNode;
 exports.useContextKey = useContextKey;
 exports.Route = Route;
@@ -12,8 +12,10 @@ Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get:
 Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
 const CurrentRouteContext = (0, react_1.createContext)(null);
 exports.LocalRouteParamsContext = (0, react_1.createContext)({});
+exports.RoutePathnameContext = (0, react_1.createContext)(undefined);
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';
+    exports.RoutePathnameContext.displayName = 'RoutePathname';
 }
 /** Return the RouteNode at the current contextual boundary. */
 function useRouteNode() {
