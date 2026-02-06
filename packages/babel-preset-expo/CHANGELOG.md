@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add babel plugin for `expo-widgets`.
+- Add babel plugin for `expo-widgets`. ([#42941](https://github.com/expo/expo/pull/42941) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

@@ -80,6 +80,20 @@ describe('widgets-plugin', () => {
       expect(result.code).toContain('jsx(');
     });
 
+    it('stringifies widget arrow function after JSX transform', () => {
+      const backtick = '`';
+      const result = transformTest(`
+        const MyComponent = ({ name }) => {
+          'widget';
+          return <Text><Text>{name + \`sadaas\`}</Text></Text>;
+        }
+      `);
+
+      expect(result.code).not.toContain("'widget'");
+      expect(result.code).toContain('var MyComponent = `function');
+      expect(result.code).toContain('jsx(');
+    });
+
     it('handles fragments', () => {
       const result = transformTest(`
         function MyComponent({ name }) {

@@ -43,60 +43,72 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.widgetsPlugin = widgetsPlugin;
 const generator = __importStar(require("@babel/generator"));
-const WidgetizableFunction = 'FunctionDeclaration|FunctionExpression|ArrowFunctionExpression|ObjectMethod';
 function widgetsPlugin(api) {
     const { types: t } = api;
     return {
         name: 'expo-widgets',
         visitor: {
-            [WidgetizableFunction]: {
+            ['FunctionDeclaration|FunctionExpression']: {
                 exit(path) {
-                    if (!t.isBlockStatement(path.node.body)) {
+                    if (!isWidgetFunction(path)) {
                         return;
                     }
-                    // Skip if no 'widget' directive
-                    if (!path.node.body.directives.some((directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget')) {
-                        return;
-                    }
-                    // Remove the 'widget' directive to avoid runtime overhead
-                    path.traverse({
-                        DirectiveLiteral(nodePath) {
-                            if (nodePath.node.value === 'widget' && nodePath.getFunctionParent() === path) {
-                                nodePath.parentPath.remove();
-                            }
-                        },
-                    });
+                    removeWidgetDirective(path);
                     const code = generateWidgetFunctionString(t, path.node);
-                    replaceWidgetFunction(t, path, code);
+                    const literal = buildTemplateLiteral(t, code);
+                    if (path.parentPath.isExportDefaultDeclaration()) {
+                        path.parentPath.replaceWith(t.exportDefaultDeclaration(literal));
+                        return;
+                    }
+                    if (path.node.id) {
+                        path.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(path.node.id, literal)]));
+                    }
+                    else {
+                        path.replaceWith(literal);
+                    }
+                },
+            },
+            ArrowFunctionExpression: {
+                exit(path) {
+                    if (!isWidgetFunction(path)) {
+                        return;
+                    }
+                    removeWidgetDirective(path);
+                    const code = generateWidgetFunctionString(t, path.node);
+                    const literal = buildTemplateLiteral(t, code);
+                    path.replaceWith(literal);
+                },
+            },
+            ObjectMethod: {
+                exit(path) {
+                    if (!isWidgetFunction(path)) {
+                        return;
+                    }
+                    removeWidgetDirective(path);
+                    const code = generateWidgetFunctionString(t, path.node);
+                    const literal = buildTemplateLiteral(t, code);
+                    path.replaceWith(t.objectProperty(path.node.key, literal, path.node.computed));
                 },
             },
         },
     };
+    function isWidgetFunction(path) {
+        if (!t.isBlockStatement(path.node.body)) {
+            return false;
+        }
+        return path.node.body.directives.some((directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget');
+    }
+    function removeWidgetDirective(path) {
+        const body = path.node.body;
+        const widgetDirectiveIndex = body.directives.findIndex((directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget');
+        if (widgetDirectiveIndex !== -1) {
+            body.directives.splice(widgetDirectiveIndex, 1);
+        }
+    }
 }
 function generateWidgetFunctionString(t, node) {
     const expression = t.functionExpression(null, node.params, node.body, node.generator, node.async);
     return generator.generate(expression, { compact: false }).code;
-}
-function replaceWidgetFunction(t, path, code) {
-    const literal = buildTemplateLiteral(t, code);
-    if (path.isObjectMethod()) {
-        path.replaceWith(t.objectProperty(path.node.key, literal, path.node.computed));
-        return;
-    }
-    if (path.isFunctionDeclaration()) {
-        if (path.parentPath.isExportDefaultDeclaration()) {
-            path.parentPath.replaceWith(t.exportDefaultDeclaration(literal));
-            return;
-        }
-        if (path.node.id) {
-            path.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(path.node.id, literal)]));
-        }
-        else {
-            path.replaceWith(literal);
-        }
-        return;
-    }
-    path.replaceWith(literal);
 }
 function buildTemplateLiteral(t, code) {
     const raw = escapeTemplateLiteral(code);

@@ -10,9 +10,6 @@
 import type { ConfigAPI, NodePath, PluginObj, PluginPass, types as t } from '@babel/core';
 import * as generator from '@babel/generator';
 
-const WidgetizableFunction =
-  'FunctionDeclaration|FunctionExpression|ArrowFunctionExpression|ObjectMethod';
-
 export function widgetsPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj<
   PluginPass & {
     widgetComponents?: Map<
@@ -25,35 +22,72 @@ export function widgetsPlugin(api: ConfigAPI & typeof import('@babel/core')): Pl
   return {
     name: 'expo-widgets',
     visitor: {
-      [WidgetizableFunction as 'FunctionDeclaration']: {
-        exit(path) {
-          if (!t.isBlockStatement(path.node.body)) {
+      ['FunctionDeclaration|FunctionExpression' as 'FunctionDeclaration']: {
+        exit(path: NodePath<t.FunctionDeclaration | t.FunctionExpression>) {
+          if (!isWidgetFunction(path)) {
             return;
           }
-          // Skip if no 'widget' directive
-          if (
-            !path.node.body.directives.some(
-              (directive) =>
-                t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget'
-            )
-          ) {
-            return;
-          }
-          // Remove the 'widget' directive to avoid runtime overhead
-          path.traverse({
-            DirectiveLiteral(nodePath) {
-              if (nodePath.node.value === 'widget' && nodePath.getFunctionParent() === path) {
-                nodePath.parentPath.remove();
-              }
-            },
-          });
-
+          removeWidgetDirective(path);
           const code = generateWidgetFunctionString(t, path.node);
-          replaceWidgetFunction(t, path, code);
+          const literal = buildTemplateLiteral(t, code);
+
+          if (path.parentPath.isExportDefaultDeclaration()) {
+            path.parentPath.replaceWith(t.exportDefaultDeclaration(literal));
+            return;
+          }
+
+          if (path.node.id) {
+            path.replaceWith(
+              t.variableDeclaration('var', [t.variableDeclarator(path.node.id, literal)])
+            );
+          } else {
+            path.replaceWith(literal);
+          }
+        },
+      },
+      ArrowFunctionExpression: {
+        exit(path) {
+          if (!isWidgetFunction(path)) {
+            return;
+          }
+          removeWidgetDirective(path);
+          const code = generateWidgetFunctionString(t, path.node);
+          const literal = buildTemplateLiteral(t, code);
+          path.replaceWith(literal);
+        },
+      },
+      ObjectMethod: {
+        exit(path) {
+          if (!isWidgetFunction(path)) {
+            return;
+          }
+          removeWidgetDirective(path);
+          const code = generateWidgetFunctionString(t, path.node);
+          const literal = buildTemplateLiteral(t, code);
+          path.replaceWith(t.objectProperty(path.node.key, literal, path.node.computed));
         },
       },
     },
   };
+
+  function isWidgetFunction(path: NodePath<t.Function>) {
+    if (!t.isBlockStatement(path.node.body)) {
+      return false;
+    }
+    return path.node.body.directives.some(
+      (directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget'
+    );
+  }
+
+  function removeWidgetDirective(path: NodePath<t.Function>) {
+    const body = path.node.body as t.BlockStatement;
+    const widgetDirectiveIndex = body.directives.findIndex(
+      (directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget'
+    );
+    if (widgetDirectiveIndex !== -1) {
+      body.directives.splice(widgetDirectiveIndex, 1);
+    }
+  }
 }
 
 function generateWidgetFunctionString(
@@ -68,35 +102,6 @@ function generateWidgetFunctionString(
     node.async
   );
   return generator.generate(expression, { compact: false }).code;
-}
-
-function replaceWidgetFunction(
-  t: typeof import('@babel/core').types,
-  path: NodePath<t.Function>,
-  code: string
-) {
-  const literal = buildTemplateLiteral(t, code);
-
-  if (path.isObjectMethod()) {
-    path.replaceWith(t.objectProperty(path.node.key, literal, path.node.computed));
-    return;
-  }
-
-  if (path.isFunctionDeclaration()) {
-    if (path.parentPath.isExportDefaultDeclaration()) {
-      path.parentPath.replaceWith(t.exportDefaultDeclaration(literal));
-      return;
-    }
-
-    if (path.node.id) {
-      path.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(path.node.id, literal)]));
-    } else {
-      path.replaceWith(literal);
-    }
-    return;
-  }
-
-  path.replaceWith(literal);
 }
 
 function buildTemplateLiteral(t: typeof import('@babel/core').types, code: string) {

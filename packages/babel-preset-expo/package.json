@@ -43,13 +43,17 @@
   "peerDependencies": {
     "@babel/runtime": "^7.20.0",
     "react-refresh": ">=0.14.0 <1.0.0",
-    "expo": "*"
+    "expo": "*",
+    "expo-widgets": "^55.0.0"
   },
   "peerDependenciesMeta": {
     "@babel/runtime": {
       "optional": true
     },
     "expo": {
+      "optional": true
+    },
+    "expo-widgets": {
       "optional": true
     }
   },
