@@ -75,13 +75,9 @@ async function executeDiffCommand(
 
   await Git.fetchAsync();
 
-  const diff = await spawnAsync(
-    'git',
-    ['diff', diffCommand, '--', ...pathspecs],
-    {
-      cwd: EXPO_DIR,
-    }
-  );
+  const diff = await spawnAsync('git', ['diff', diffCommand, '--', ...pathspecs], {
+    cwd: EXPO_DIR,
+  });
 
   // write raw diff for later comparison to see if templates changed.
   await fs.writeFile(diffPath, diff.stdout);
