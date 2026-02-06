@@ -7,15 +7,6 @@ export interface GatewayInfo {
   internal: boolean;
 }
 
-export function getIpAddress(): string {
-  try {
-    const lan = lanNetworkSync();
-    return lan.address;
-  } catch {
-    return '127.0.0.1';
-  }
-}
-
 export function getGateway(): GatewayInfo {
   try {
     return lanNetworkSync();
