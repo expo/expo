@@ -32,7 +32,7 @@ fun Record.toJSValueExperimental(): Map<String, Any?> {
       property.isAccessible = true
 
       val value = property.get(this)
-      val convertedValue = JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
+      val convertedValue = JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
       result[jsKey] = convertedValue
     }
 
@@ -66,14 +66,14 @@ fun FormattedRecord<*>.toJSValueExperimental(): Map<String, Any?> {
         value
       }
 
-      val convertedValue = JSTypeConverter.convertToJSValue(unwrappedValue, useExperimentalConverter = true)
+      val convertedValue = JSTypeConverterProvider.convertToJSValue(unwrappedValue, useExperimentalConverter = true)
       result[jsKey] = convertedValue
     }
 
   return result
 }
 
-fun Record.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableMap {
+fun Record.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableMap {
   val result = containerProvider.createMap()
 
   javaClass
@@ -85,7 +85,7 @@ fun Record.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): Writ
       property.isAccessible = true
 
       val value = property.get(this)
-      val convertedValue = JSTypeConverter.legacyConvertToJSValue(value, containerProvider)
+      val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
       result.putGeneric(jsKey, convertedValue)
     }
 
@@ -98,20 +98,20 @@ fun Bundle.toJSValueExperimental(): Map<String, Any?> {
   for (key in keySet()) {
     @Suppress("DEPRECATION")
     val value = get(key)
-    val convertedValue = JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
+    val convertedValue = JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
     result[key] = convertedValue
   }
 
   return result
 }
 
-fun Bundle.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableMap {
+fun Bundle.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableMap {
   val result = containerProvider.createMap()
 
   for (key in keySet()) {
     @Suppress("DEPRECATION")
     val value = get(key)
-    val convertedValue = JSTypeConverter.legacyConvertToJSValue(value, containerProvider)
+    val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
     result.putGeneric(key, convertedValue)
   }
 
@@ -120,15 +120,15 @@ fun Bundle.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): Writ
 
 fun <K, V> Map<K, V>.toJSValueExperimental(): Map<String, Any?> {
   return this.map { (key, value) ->
-    key.toString() to JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
+    key.toString() to JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
   }.toMap()
 }
 
-fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableMap {
+fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableMap {
   val result = containerProvider.createMap()
 
   for ((key, value) in entries) {
-    val convertedValue = JSTypeConverter.legacyConvertToJSValue(value, containerProvider)
+    val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
     result.putGeneric(key.toString(), convertedValue)
   }
 
@@ -136,32 +136,32 @@ fun <K, V> Map<K, V>.toJSValue(containerProvider: JSTypeConverter.ContainerProvi
 }
 
 fun <T> Collection<T>.toJSValueExperimental(): Collection<Any?> {
-  return this.map { JSTypeConverter.convertToJSValue(it, useExperimentalConverter = true) }
+  return this.map { JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true) }
 }
 
-fun <T> Collection<T>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun <T> Collection<T>.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   val result = containerProvider.createArray()
 
   for (value in this) {
-    val convertedValue = JSTypeConverter.legacyConvertToJSValue(value, containerProvider)
+    val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
     result.putGeneric(convertedValue)
   }
 
   return result
 }
 
-fun <T> Array<T>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun <T> Array<T>.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   val result = containerProvider.createArray()
 
   for (value in this) {
-    val convertedValue = JSTypeConverter.legacyConvertToJSValue(value, containerProvider)
+    val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
     result.putGeneric(convertedValue)
   }
 
   return result
 }
 
-fun IntArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun IntArray.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   return containerProvider.createArray().also {
     for (value in this) {
       it.pushInt(value)
@@ -169,7 +169,7 @@ fun IntArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): Wr
   }
 }
 
-fun LongArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun LongArray.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   return containerProvider.createArray().also {
     for (value in this) {
       it.pushLong(value)
@@ -177,7 +177,7 @@ fun LongArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): W
   }
 }
 
-fun FloatArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun FloatArray.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   return containerProvider.createArray().also {
     for (value in this) {
       it.pushDouble(value.toDouble())
@@ -185,7 +185,7 @@ fun FloatArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): 
   }
 }
 
-fun DoubleArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun DoubleArray.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   return containerProvider.createArray().also {
     for (value in this) {
       it.pushDouble(value)
@@ -193,7 +193,7 @@ fun DoubleArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider):
   }
 }
 
-fun BooleanArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun BooleanArray.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   return containerProvider.createArray().also {
     for (value in this) {
       it.pushBoolean(value)
@@ -237,10 +237,10 @@ fun File.toJSValue(): String {
   return absolutePath
 }
 
-fun Pair<*, *>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+fun Pair<*, *>.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableArray {
   return containerProvider.createArray().also {
-    val convertedFirst = JSTypeConverter.legacyConvertToJSValue(first, containerProvider)
-    val convertedSecond = JSTypeConverter.legacyConvertToJSValue(second, containerProvider)
+    val convertedFirst = JSTypeConverterProvider.legacyConvertToJSValue(first, containerProvider)
+    val convertedSecond = JSTypeConverterProvider.legacyConvertToJSValue(second, containerProvider)
     it.putGeneric(convertedFirst)
     it.putGeneric(convertedSecond)
   }

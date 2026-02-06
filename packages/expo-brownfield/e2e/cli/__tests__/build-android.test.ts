@@ -305,5 +305,17 @@ describe('build:android command', () => {
         ],
       });
     });
+
+    /**
+     * Command: npx expo-brownfield build:android
+     * Expected behavior: The CLI should print an error message and exit
+     */
+    it('should print an error message and exit if no tasks or repositories are specified', async () => {
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        successExit: false,
+        stderr: [ERROR.MISSING_TASKS_OR_REPOSITORIES()],
+      });
+    });
   });
 });
