@@ -51,6 +51,7 @@ class AudioModule : Module() {
 
   private val players = ConcurrentHashMap<String, AudioPlayer>()
   private val recorders = ConcurrentHashMap<String, AudioRecorder>()
+  private val playlists = ConcurrentHashMap<String, AudioPlaylist>()
   private var shouldPlayInBackground = false
   private var audioEnabled = true
   private var shouldRouteThroughEarpiece = false
@@ -67,6 +68,9 @@ class AudioModule : Module() {
           players.values.forEach { player ->
             player.ref.pause()
           }
+          playlists.values.forEach { playlist ->
+            playlist.ref.pause()
+          }
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
@@ -75,6 +79,12 @@ class AudioModule : Module() {
             if (player.ref.isPlaying) {
               player.isPaused = true
               player.ref.pause()
+            }
+          }
+          playlists.values.forEach { playlist ->
+            if (playlist.ref.isPlaying) {
+              playlist.isPaused = true
+              playlist.ref.pause()
             }
           }
         }
@@ -87,11 +97,23 @@ class AudioModule : Module() {
               }
               player.ref.volume = player.previousVolume * 0.5f
             }
+            playlists.values.forEach { playlist ->
+              if (playlist.previousVolume != playlist.ref.volume) {
+                playlist.previousVolume = playlist.ref.volume
+              }
+              playlist.ref.volume = playlist.previousVolume * 0.5f
+            }
           } else {
             players.values.forEach { player ->
               if (player.ref.isPlaying) {
                 player.isPaused = true
                 player.ref.pause()
+              }
+            }
+            playlists.values.forEach { playlist ->
+              if (playlist.ref.isPlaying) {
+                playlist.isPaused = true
+                playlist.ref.pause()
               }
             }
           }
@@ -106,13 +128,21 @@ class AudioModule : Module() {
               player.ref.play()
             }
           }
+          playlists.values.forEach { playlist ->
+            playlist.setVolume(playlist.previousVolume)
+            if (playlist.isPaused) {
+              playlist.isPaused = false
+              playlist.ref.play()
+            }
+          }
         }
       }
     }
   }
 
   private fun shouldReleaseFocus(): Boolean {
-    return players.values.none { it.ref.isPlaying }
+    return players.values.none { it.ref.isPlaying } &&
+      playlists.values.none { it.ref.isPlaying }
   }
 
   private fun requestAudioFocus() {
@@ -202,6 +232,11 @@ class AudioModule : Module() {
               it.ref.pause()
             }
           }
+          playlists.values.forEach {
+            if (it.ref.isPlaying) {
+              it.ref.pause()
+            }
+          }
         }
       }
     }
@@ -223,6 +258,12 @@ class AudioModule : Module() {
             player.ref.pause()
           }
         }
+        playlists.values.forEach { playlist ->
+          if (playlist.ref.isPlaying) {
+            playlist.isPaused = true
+            playlist.ref.pause()
+          }
+        }
       }
       if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
@@ -236,7 +277,8 @@ class AudioModule : Module() {
     OnActivityEntersForeground {
       if (!shouldPlayInBackground) {
         val hasPlayersToResume = players.values.any { it.isPaused }
-        if (hasPlayersToResume) {
+        val hasPlaylistsToResume = playlists.values.any { it.isPaused }
+        if (hasPlayersToResume || hasPlaylistsToResume) {
           requestAudioFocus()
         }
 
@@ -244,6 +286,12 @@ class AudioModule : Module() {
           if (player.isPaused) {
             player.isPaused = false
             player.ref.play()
+          }
+        }
+        playlists.values.forEach { playlist ->
+          if (playlist.isPaused) {
+            playlist.isPaused = false
+            playlist.ref.play()
           }
         }
       }
@@ -263,6 +311,10 @@ class AudioModule : Module() {
       appContext.mainQueue.launch {
         releaseAudioFocus()
         players.values.forEach {
+          it.ref.stop()
+        }
+
+        playlists.values.forEach {
           it.ref.stop()
         }
 
@@ -548,6 +600,204 @@ class AudioModule : Module() {
         if (recorder.isPrepared) {
           recorder.startRecordingAtTime(seconds)
         }
+      }
+    }
+
+    Class(AudioPlaylist::class) {
+      Constructor { sources: List<AudioSource>, updateInterval: Double, loop: LoopMode ->
+        runOnMain {
+          val playlist = AudioPlaylist(
+            context,
+            appContext,
+            sources,
+            updateInterval,
+            DefaultDataSource.Factory(context)
+          )
+          playlist.loopMode = loop
+          playlist.setMediaItemCreator { source ->
+            source.uri?.let { uriString ->
+              val uri = uriString.toUri()
+              when {
+                isRawResource(uri) -> {
+                  val file = getResourceName(uri, uriString)
+                  MediaItem.fromUri(getRawResourceURI(file))
+                }
+                else -> MediaItem.fromUri(uri)
+              }
+            }
+          }
+          playlist.loadInitialPlaylist()
+          playlist.onPlaybackStateChange = { isPlaying ->
+            if (!isPlaying && shouldReleaseFocus()) {
+              releaseAudioFocus()
+            }
+          }
+          playlists[playlist.id] = playlist
+          playlist
+        }
+      }
+
+      Property("id") { playlist ->
+        playlist.id
+      }
+
+      Property("currentIndex") { playlist ->
+        runOnMain {
+          playlist.currentTrackIndex
+        }
+      }
+
+      Property("trackCount") { playlist ->
+        runOnMain {
+          playlist.trackCount
+        }
+      }
+
+      Property("sources") { playlist ->
+        playlist.getSources()
+      }
+
+      Property("playing") { playlist ->
+        runOnMain {
+          playlist.ref.isPlaying
+        }
+      }
+
+      Property("muted") { playlist ->
+        playlist.isMuted
+      }.set { playlist, muted: Boolean? ->
+        val newMuted = muted ?: false
+        playlist.isMuted = newMuted
+        playlist.setVolume(if (newMuted) 0f else playlist.previousVolume)
+      }
+
+      Property("isLoaded") { playlist ->
+        runOnMain {
+          playlist.ref.playbackState == Player.STATE_READY
+        }
+      }
+
+      Property("isBuffering") { playlist ->
+        runOnMain {
+          playlist.ref.playbackState == Player.STATE_BUFFERING
+        }
+      }
+
+      Property("currentTime") { playlist ->
+        runOnMain {
+          playlist.currentTime
+        }
+      }
+
+      Property("duration") { playlist ->
+        runOnMain {
+          playlist.duration
+        }
+      }
+
+      Property("volume") { playlist ->
+        runOnMain {
+          playlist.ref.volume
+        }
+      }.set { playlist, volume: Float? ->
+        playlist.setVolume(volume)
+      }
+
+      Property("playbackRate") { playlist ->
+        runOnMain {
+          playlist.ref.playbackParameters.speed
+        }
+      }
+
+      Property("loop") { playlist ->
+        playlist.loopMode.value
+      }
+
+      Property("currentStatus") { playlist ->
+        runOnMain {
+          playlist.currentStatus()
+        }
+      }
+
+      Function("play") { playlist: AudioPlaylist ->
+        if (!audioEnabled) {
+          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+          return@Function
+        }
+        runOnMain {
+          if (!focusAcquired) {
+            requestAudioFocus()
+          }
+          playlist.ref.play()
+        }
+      }
+
+      Function("pause") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.ref.pause()
+        }
+      }
+
+      Function("next") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.next()
+        }
+      }
+
+      Function("previous") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.previous()
+        }
+      }
+
+      Function("skipTo") { playlist: AudioPlaylist, index: Int ->
+        runOnMain {
+          playlist.skipTo(index)
+        }
+      }
+
+      AsyncFunction("seekTo") { playlist: AudioPlaylist, seconds: Double ->
+        playlist.seekTo(seconds)
+      }.runOnQueue(Queues.MAIN)
+
+      Function("add") { playlist: AudioPlaylist, source: AudioSource ->
+        runOnMain {
+          playlist.add(source)
+        }
+      }
+
+      Function("insert") { playlist: AudioPlaylist, source: AudioSource, index: Int ->
+        runOnMain {
+          playlist.insert(source, index)
+        }
+      }
+
+      Function("remove") { playlist: AudioPlaylist, index: Int ->
+        runOnMain {
+          playlist.remove(index)
+        }
+      }
+
+      Function("clear") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.clear()
+        }
+      }
+
+      Function("setPlaybackRate") { playlist: AudioPlaylist, rate: Float ->
+        appContext.mainQueue.launch {
+          playlist.setPlaybackRate(rate)
+        }
+      }
+
+      Function("setLoopMode") { playlist: AudioPlaylist, mode: LoopMode ->
+        runOnMain {
+          playlist.loopMode = mode
+        }
+      }
+
+      Function("release") { playlist: AudioPlaylist ->
+        playlists.remove(playlist.id)
       }
     }
   }

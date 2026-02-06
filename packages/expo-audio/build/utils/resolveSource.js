@@ -26,6 +26,9 @@ function getAssetFromSource(source) {
 function createSourceFromAsset(asset, extras = {}) {
     const uri = asset.localUri ?? asset.uri;
     const result = { uri };
+    if (asset.name) {
+        result.name = asset.name;
+    }
     if (extras.assetId != null) {
         result.assetId = extras.assetId;
     }
