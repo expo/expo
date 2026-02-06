@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add babel plugin for `expo-widgets`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
