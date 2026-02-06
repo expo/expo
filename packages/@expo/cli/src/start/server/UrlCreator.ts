@@ -20,10 +20,16 @@ interface UrlComponents {
   hostname: string;
   protocol: string;
 }
+
+interface BundlerInfo {
+  port: number;
+  getTunnelUrl?(): string | null;
+}
+
 export class UrlCreator {
   constructor(
     public defaults: CreateURLOptions | undefined,
-    private bundlerInfo: { port: number; getTunnelUrl?: () => string | null }
+    private bundlerInfo: BundlerInfo
   ) {}
 
   /**
