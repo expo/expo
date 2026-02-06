@@ -1,7 +1,7 @@
 package expo.modules.kotlin.jni.worklets
 
 import expo.modules.kotlin.runtime.WorkletRuntime
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 
 class Worklet internal constructor(
   private val serializable: Serializable
@@ -24,7 +24,7 @@ class Worklet internal constructor(
     val runtimeHolder = runtime.enforceHolder
 
     val convertedArgs = arguments.map {
-      JSTypeConverter.convertToJSValue(it, useExperimentalConverter = true)
+      JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true)
     }.toTypedArray()
 
     schedule(runtimeHolder, serializable, convertedArgs)
@@ -34,7 +34,7 @@ class Worklet internal constructor(
     val runtimeHolder = runtime.enforceHolder
 
     val convertedArgs = arguments.map {
-      JSTypeConverter.convertToJSValue(it, useExperimentalConverter = true)
+      JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true)
     }.toTypedArray()
 
     execute(runtimeHolder, serializable, convertedArgs)

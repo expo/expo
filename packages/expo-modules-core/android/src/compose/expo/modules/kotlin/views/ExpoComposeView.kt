@@ -1,5 +1,6 @@
 package expo.modules.kotlin.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
@@ -173,6 +174,7 @@ class FunctionalComposableScope(
   }
 }
 
+@SuppressLint("ViewConstructor")
 class ComposeFunctionHolder<Props : ComposeProps>(
   context: Context,
   appContext: AppContext,

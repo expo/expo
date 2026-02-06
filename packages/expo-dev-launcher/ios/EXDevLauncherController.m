@@ -172,7 +172,6 @@
   if (lastOpenedApp != nil) {
     _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
   }
-  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
@@ -187,14 +186,25 @@
     });
   };
 
+#if TARGET_OS_SIMULATOR
+  BOOL hasCompletedPermissionFlow = YES;
+#else
+  BOOL hasCompletedPermissionFlow = [[NSUserDefaults standardUserDefaults] boolForKey:@"expo.devlauncher.hasCompletedNetworkPermissionFlow"];
+#endif
+
   NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
-  if (initialUrl) {
+  if (initialUrl && hasCompletedPermissionFlow) {
     [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
     return;
   }
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
+
+  if (!hasCompletedPermissionFlow) {
+    shouldTryToLaunchLastOpenedBundle = NO;
+  }
+  
   if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
     // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.

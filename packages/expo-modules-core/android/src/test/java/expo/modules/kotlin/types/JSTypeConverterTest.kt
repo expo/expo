@@ -18,7 +18,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [30])
 class JSTypeConverterTest {
-  private object TestContainerProvider : JSTypeConverter.ContainerProvider {
+  private object TestContainerProvider : JSTypeConverterProvider.ContainerProvider {
     override fun createMap(): WritableMap = JavaOnlyMap()
     override fun createArray(): WritableArray = JavaOnlyArray()
   }
@@ -33,7 +33,7 @@ class JSTypeConverterTest {
       putLongArray("longArray", longArrayOf(1, 2))
     }
 
-    val converted = JSTypeConverter.legacyConvertToJSValue(bundle, TestContainerProvider)
+    val converted = JSTypeConverterProvider.legacyConvertToJSValue(bundle, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val map = converted as WritableMap
@@ -60,7 +60,7 @@ class JSTypeConverterTest {
     val collections = listOf(list, set, linkedList)
 
     for (collection in collections) {
-      val converted = JSTypeConverter.legacyConvertToJSValue(collection, TestContainerProvider)
+      val converted = JSTypeConverterProvider.legacyConvertToJSValue(collection, TestContainerProvider)
       Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
       val array = converted as WritableArray
       Truth.assertThat(array.getInt(0)).isEqualTo(1)
@@ -73,7 +73,7 @@ class JSTypeConverterTest {
   fun `should convert Array`() {
     val array = arrayOf("s1", "s2", "s3")
 
-    val converted = JSTypeConverter.legacyConvertToJSValue(array, TestContainerProvider)
+    val converted = JSTypeConverterProvider.legacyConvertToJSValue(array, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
     val convertedArray = converted as WritableArray
@@ -86,7 +86,7 @@ class JSTypeConverterTest {
   fun `should convert IntArray`() {
     val array = IntArray(3) { it }
 
-    val converted = JSTypeConverter.legacyConvertToJSValue(array, TestContainerProvider)
+    val converted = JSTypeConverterProvider.legacyConvertToJSValue(array, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
     val convertedArray = converted as WritableArray
@@ -99,7 +99,7 @@ class JSTypeConverterTest {
   fun `should convert DoubleArray`() {
     val array = DoubleArray(3) { it.toDouble() }
 
-    val converted = JSTypeConverter.legacyConvertToJSValue(array, TestContainerProvider)
+    val converted = JSTypeConverterProvider.legacyConvertToJSValue(array, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableArray::class.java)
     val convertedArray = converted as WritableArray
@@ -115,7 +115,7 @@ class JSTypeConverterTest {
       "k2" to 1L
     )
 
-    val converted = JSTypeConverter.legacyConvertToJSValue(map, TestContainerProvider)
+    val converted = JSTypeConverterProvider.legacyConvertToJSValue(map, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val convertedMap = converted as WritableMap
@@ -136,7 +136,7 @@ class JSTypeConverterTest {
 
     val record = MyRecord()
 
-    val converted = JSTypeConverter.legacyConvertToJSValue(record, TestContainerProvider)
+    val converted = JSTypeConverterProvider.legacyConvertToJSValue(record, TestContainerProvider)
 
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val convertedRecord = converted as WritableMap
@@ -174,7 +174,7 @@ class JSTypeConverterTest {
 
     val record = MyRecord()
 
-    val converted = JSTypeConverter.legacyConvertToJSValue(record, TestContainerProvider)
+    val converted = JSTypeConverterProvider.legacyConvertToJSValue(record, TestContainerProvider)
     Truth.assertThat(converted).isInstanceOf(WritableMap::class.java)
     val convertedRecord = converted as WritableMap
 
