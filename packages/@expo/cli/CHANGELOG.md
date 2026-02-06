@@ -18,6 +18,7 @@
 - Collapse usage guide on `expo start` if space is insufficient ([#42835](https://github.com/expo/expo/pull/42835) by [@kitten](https://gthub.com/kitten))
 - Drop obsolete `rawBody` parsing from Metro middleware stack ([#43074](https://github.com/expo/expo/pull/43074) by [@kitten](https://github.com/kitten))
 - Add minimum Node.js version check and warning to CLI startup ([#43076](https://github.com/expo/expo/pull/43076) by [@kitten](https://github.com/kitten))
+- Retrieve default route's IP address concurrently ([#42923](https://github.com/expo/expo/pull/42923) by [@kitten](https://github.com/kitten))
 
 ## 55.0.7 — 2026-02-08
 
