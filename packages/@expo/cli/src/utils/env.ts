@@ -297,7 +297,7 @@ class Env {
    * Enable Bonjour advertising of the Expo CLI on local networks
    */
   get EXPO_UNSTABLE_BONJOUR(): boolean {
-    return boolish('EXPO_UNSTABLE_BONJOUR', false);
+    return boolish('EXPO_UNSTABLE_BONJOUR', !envIsHeadless());
   }
 
   /** @internal Configure other environment variables for headless operations */
