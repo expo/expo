@@ -12,7 +12,7 @@ struct DevServerRow: View {
       onTap()
     }
     label: {
-      HStack {
+      HStack(spacing: 12) {
         DevServerIcon(source: server.source, iconUrl: server.iconUrl)
 
         VStack(alignment: .leading, spacing: 2) {
@@ -49,74 +49,57 @@ struct DevServerRow: View {
 private struct DevServerIcon: View {
   let source: String
   let iconUrl: String?
-  @Environment(\.colorScheme) private var colorScheme
-
-  var body: some View {
-    let background = colorScheme == .dark ? Color.expoSecondarySystemGroupedBackground : Color.white
-    let imageName = source == "snack" ? "snack" : "cli"
-
-    RemoteIconView(iconUrl: iconUrl, fallbackImageName: imageName)
-      .frame(width: 28, height: 28)
-      .padding(10)
-      .background(background)
-      .clipShape(RoundedRectangle(cornerRadius: 8))
-      .overlay(
-        RoundedRectangle(cornerRadius: 8)
-          .stroke(Color.expoSystemGray4.opacity(0.6), lineWidth: 1)
-      )
-  }
-}
-
-private struct RemoteIconView: View {
-  let iconUrl: String?
-  let fallbackImageName: String
+  private let size: CGFloat = 40
   @State private var image: UIImage?
   @State private var isLoading = false
+  @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
     Group {
       if let image {
         Image(uiImage: image)
           .resizable()
-          .frame(width: 40, height: 40)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .scaledToFill()
+          .frame(width: size, height: size)
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
       } else {
-        Image(fallbackImageName)
+        let imageName = source == "snack" ? "snack" : "cli"
+        Image(imageName)
           .resizable()
-          .frame(width: 40, height: 40)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .scaledToFill()
+          .frame(width: size, height: size)
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
       }
     }
     .task {
-      await loadImageIfNeeded()
+      await loadImage()
     }
   }
 
-  private func loadImageIfNeeded() async {
-    guard let iconUrl, let url = URL(string: iconUrl), !isLoading else {
-      return
-    }
+  private func loadImage() async {
+    guard let iconUrl, let url = URL(string: iconUrl), !isLoading else { return }
     isLoading = true
 
     do {
       let config = URLSessionConfiguration.ephemeral
       config.protocolClasses = []
       let session = URLSession(configuration: config)
-      let (data, _) = try await session.data(from: url)
-      if let uiImage = UIImage(data: data) {
-        await MainActor.run {
-          self.image = uiImage
-          self.isLoading = false
-        }
-      } else {
-        await MainActor.run {
-          self.isLoading = false
-        }
+      let (data, response) = try await session.data(from: url)
+
+      guard let httpResponse = response as? HTTPURLResponse,
+            (200..<300).contains(httpResponse.statusCode),
+            !data.isEmpty,
+            let uiImage = UIImage(data: data) else {
+        await MainActor.run { self.isLoading = false }
+        return
       }
-    } catch {
+
       await MainActor.run {
+        self.image = uiImage
         self.isLoading = false
       }
+    } catch {
+      await MainActor.run { self.isLoading = false }
     }
   }
 }

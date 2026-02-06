@@ -31,10 +31,10 @@ struct ProjectsAndSnacksSection: View {
         } label: {
           HStack(spacing: 12) {
             Image(systemName: "sparkles")
-              .font(.system(size: 14))
+              .font(.system(size: 18))
               .foregroundColor(.white)
-              .frame(width: 28, height: 28)
-              .background(Color.blue, in: RoundedRectangle(cornerRadius: 6))
+              .frame(width: 40, height: 40)
+              .background(Color.blue, in: RoundedRectangle(cornerRadius: BorderRadius.medium))
 
             VStack(alignment: .leading, spacing: 2) {
               HStack(spacing: 6) {

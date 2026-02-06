@@ -132,10 +132,10 @@ struct DevServersSection: View {
     } label: {
       HStack(spacing: 12) {
         Image(systemName: "book.fill")
-          .font(.system(size: 14))
+          .font(.system(size: 18))
           .foregroundColor(.white)
-          .frame(width: 28, height: 28)
-          .background(Color(uiColor: .darkGray), in: RoundedRectangle(cornerRadius: 6))
+          .frame(width: 40, height: 40)
+          .background(Color(uiColor: .darkGray), in: RoundedRectangle(cornerRadius: BorderRadius.medium))
 
         VStack(alignment: .leading, spacing: 2) {
           Text("Open a new playground")

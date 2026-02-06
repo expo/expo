@@ -71,6 +71,7 @@ struct AccountSheet: View {
             .cornerRadius(12)
           }
         }
+        .padding(.top, 8)
       }
       .frame(maxHeight: .infinity)
 
