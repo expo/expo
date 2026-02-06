@@ -19,7 +19,7 @@ struct RecentlyOpenedSection: View {
         .font(.system(size: 12))
       }
 
-      LazyVStack(spacing: 6) {
+      VStack(spacing: 6) {
         ForEach(viewModel.recentlyOpenedApps) { app in
           RecentlyOpenedAppRow(app: app, isLoading: loadingAppUrl == app.url) {
             loadingAppUrl = app.url

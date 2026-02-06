@@ -14,7 +14,7 @@ struct DevServersSection: View {
     VStack(alignment: .leading, spacing: 12) {
       header
 
-      LazyVStack(alignment: .leading, spacing: 6) {
+      VStack(alignment: .leading, spacing: 6) {
         if viewModel.developmentServers.isEmpty {
           instructionsCard
         }

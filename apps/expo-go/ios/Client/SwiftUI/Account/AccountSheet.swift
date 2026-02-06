@@ -11,7 +11,10 @@ struct AccountSheet: View {
     VStack(spacing: 0) {
       accountScreenHeader
 
-      if !viewModel.isAuthenticated {
+      if viewModel.isAuthenticated {
+        userAccountSelector
+          .padding(.horizontal, 16)
+      } else {
         Spacer()
         Image("expo-go-logo")
           .resizable()
@@ -19,16 +22,10 @@ struct AccountSheet: View {
           .frame(width: 180)
           .foregroundColor(.expoBlue)
         Spacer()
-      }
 
-      VStack(spacing: 0) {
-        if viewModel.isAuthenticated {
-          userAccountSelector
-        } else {
-          loginSignupCard
-        }
+        loginSignupCard
+          .padding(.horizontal, 16)
       }
-      .padding(.horizontal, 16)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.expoSystemBackground)
@@ -75,6 +72,7 @@ struct AccountSheet: View {
           }
         }
       }
+      .frame(maxHeight: .infinity)
 
     Button {
       UIImpactFeedbackGenerator(style: .light).impactOccurred()
