@@ -1,5 +1,12 @@
 import { lanNetworkSync, lanNetwork } from 'lan-network';
 
+export interface GatewayInfo {
+  iname: string | null;
+  address: string;
+  gateway: string | null;
+  internal: boolean;
+}
+
 export function getIpAddress(): string {
   try {
     const lan = lanNetworkSync();
@@ -9,11 +16,32 @@ export function getIpAddress(): string {
   }
 }
 
-export async function getIpAddressAsync(): Promise<string> {
+export function getGateway(): GatewayInfo {
   try {
-    const lan = await lanNetwork();
-    return lan.address;
+    return lanNetworkSync();
   } catch {
-    return '127.0.0.1';
+    return {
+      iname: null,
+      address: '127.0.0.1',
+      gateway: null,
+      internal: true,
+    };
   }
+}
+
+export async function getGatewayAsync(): Promise<GatewayInfo> {
+  try {
+    return await lanNetwork();
+  } catch {
+    return {
+      iname: null,
+      address: '127.0.0.1',
+      gateway: null,
+      internal: true,
+    };
+  }
+}
+
+export async function getIpAddressAsync(): Promise<string> {
+  return (await getGatewayAsync()).address;
 }
