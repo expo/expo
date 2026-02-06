@@ -53,7 +53,7 @@ function widgetsPlugin(api) {
                     if (!isWidgetFunction(path)) {
                         return;
                     }
-                    removeWidgetDirective(path);
+                    removeWidgetDirective(path.node.body);
                     const code = generateWidgetFunctionString(t, path.node);
                     const literal = buildTemplateLiteral(t, code);
                     if (path.parentPath.isExportDefaultDeclaration()) {
@@ -73,7 +73,8 @@ function widgetsPlugin(api) {
                     if (!isWidgetFunction(path)) {
                         return;
                     }
-                    removeWidgetDirective(path);
+                    // Check above will guarantee body is a BlockStatement
+                    removeWidgetDirective(path.node.body);
                     const code = generateWidgetFunctionString(t, path.node);
                     const literal = buildTemplateLiteral(t, code);
                     path.replaceWith(literal);
@@ -84,7 +85,7 @@ function widgetsPlugin(api) {
                     if (!isWidgetFunction(path)) {
                         return;
                     }
-                    removeWidgetDirective(path);
+                    removeWidgetDirective(path.node.body);
                     const code = generateWidgetFunctionString(t, path.node);
                     const literal = buildTemplateLiteral(t, code);
                     path.replaceWith(t.objectProperty(path.node.key, literal, path.node.computed));
@@ -98,8 +99,7 @@ function widgetsPlugin(api) {
         }
         return path.node.body.directives.some((directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget');
     }
-    function removeWidgetDirective(path) {
-        const body = path.node.body;
+    function removeWidgetDirective(body) {
         const widgetDirectiveIndex = body.directives.findIndex((directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget');
         if (widgetDirectiveIndex !== -1) {
             body.directives.splice(widgetDirectiveIndex, 1);

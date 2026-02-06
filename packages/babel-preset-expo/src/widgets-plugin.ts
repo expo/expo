@@ -27,7 +27,7 @@ export function widgetsPlugin(api: ConfigAPI & typeof import('@babel/core')): Pl
           if (!isWidgetFunction(path)) {
             return;
           }
-          removeWidgetDirective(path);
+          removeWidgetDirective(path.node.body);
           const code = generateWidgetFunctionString(t, path.node);
           const literal = buildTemplateLiteral(t, code);
 
@@ -50,7 +50,8 @@ export function widgetsPlugin(api: ConfigAPI & typeof import('@babel/core')): Pl
           if (!isWidgetFunction(path)) {
             return;
           }
-          removeWidgetDirective(path);
+          // Check above will guarantee body is a BlockStatement
+          removeWidgetDirective(path.node.body as t.BlockStatement);
           const code = generateWidgetFunctionString(t, path.node);
           const literal = buildTemplateLiteral(t, code);
           path.replaceWith(literal);
@@ -61,7 +62,7 @@ export function widgetsPlugin(api: ConfigAPI & typeof import('@babel/core')): Pl
           if (!isWidgetFunction(path)) {
             return;
           }
-          removeWidgetDirective(path);
+          removeWidgetDirective(path.node.body);
           const code = generateWidgetFunctionString(t, path.node);
           const literal = buildTemplateLiteral(t, code);
           path.replaceWith(t.objectProperty(path.node.key, literal, path.node.computed));
@@ -79,8 +80,7 @@ export function widgetsPlugin(api: ConfigAPI & typeof import('@babel/core')): Pl
     );
   }
 
-  function removeWidgetDirective(path: NodePath<t.Function>) {
-    const body = path.node.body as t.BlockStatement;
+  function removeWidgetDirective(body: t.BlockStatement) {
     const widgetDirectiveIndex = body.directives.findIndex(
       (directive) => t.isDirectiveLiteral(directive.value) && directive.value.value === 'widget'
     );
