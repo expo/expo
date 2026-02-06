@@ -18,10 +18,10 @@ export async function getSessionUsingBrowserAuthFlowAsync({
   const path = '/auth/callback';
 
   const buildExpoLoginUrl = (port: number, sso: boolean): string => {
-    const data = {
+    const params = querystring.stringify({
+      confirm_account: 'true',
       app_redirect_uri: `${scheme}://${hostname}:${port}${path}`,
-    };
-    const params = querystring.stringify(data);
+    });
     return `${expoWebsiteUrl}${sso ? '/sso-login' : '/login'}?${params}`;
   };
 
