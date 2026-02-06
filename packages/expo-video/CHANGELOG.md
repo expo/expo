@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Implement `exitFullscreen` to fix `MethodUnsupportedException`. ([#41833](https://github.com/expo/expo/issues/41833) by [@mensonones](https://github.com/mensonones))
+- [Android] Implement `exitFullscreen` to fix `MethodUnsupportedException`. ([#41836](https://github.com/expo/expo/pull/41836) by [@mensonones](https://github.com/mensonones))
 ### 🐛 Bug fixes
 
 - [iOS] Prevents blocking main thread when loading asset tracks for non-HSL tracks ([#42037](https://github.com/expo/expo/pull/42037) by [@santitopo](https://github.com/santitopo))
