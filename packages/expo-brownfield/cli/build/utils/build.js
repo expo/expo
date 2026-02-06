@@ -21,7 +21,7 @@ const withSpinner = async ({ operation, loaderMessage, successMessage, errorMess
         if (!verbose) {
             onError === 'error' ? spinner?.fail(errorMessage) : spinner?.warn(errorMessage);
         }
-        // return Errors.generic(error);
+        throw new Error(errorMessage);
     }
     finally {
         if (!verbose && spinner?.isSpinning) {

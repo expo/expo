@@ -54,6 +54,30 @@ export const printAndroidConfig = (config: AndroidConfig) => {
   console.log();
 };
 
+export const processRepositories = (tasks: string[]): string[] => {
+  const splitRegex = /^publishBrownfield(?:All|Debug|Release)PublicationTo(.+?)(?:Repository)?$/;
+  return Array.from(
+    new Set(
+      tasks
+        .map((task) => {
+          return splitRegex.exec(task)?.[1];
+        })
+        .filter((repo) => repo)
+    )
+  ) as string[];
+};
+
+export const processTasks = (stdout: string): string[] => {
+  const regex = /^publishBrownfield[a-zA-Z0-9_-]*/i;
+  return (
+    stdout
+      .split('\n')
+      .map((line) => regex.exec(line)?.[0])
+      // Remove duplicate maven local tasks
+      .filter((task) => task && !task.includes('MavenLocalRepository')) as string[]
+  );
+};
+
 export const runTask = async (task: string, verbose: boolean, dryRun: boolean) => {
   if (dryRun) {
     console.log(`./gradlew ${task}`);

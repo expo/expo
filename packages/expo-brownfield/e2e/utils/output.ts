@@ -67,11 +67,11 @@ export const BUILD_IOS = {
  */
 export const TASKS_ANDROID = {
   RESULT: [
-    `Publish tasks:`,
+    `Publishing tasks`,
     '- publishBrownfieldAllPublicationToMavenLocal',
     '- publishBrownfieldDebugPublicationToMavenLocal',
     '- publishBrownfieldReleasePublicationToMavenLocal',
-    'Repositories:',
+    'Repositories',
     '- MavenLocal',
   ],
   VERBOSE: [`> Configure project`, `Publishing tasks\n----------------`, `BUILD SUCCESSFUL in`],

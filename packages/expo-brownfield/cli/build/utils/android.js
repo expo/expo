@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runTask = exports.printAndroidConfig = exports.findBrownfieldLibrary = exports.buildPublishingTask = void 0;
+exports.runTask = exports.processTasks = exports.processRepositories = exports.printAndroidConfig = exports.findBrownfieldLibrary = exports.buildPublishingTask = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -53,6 +53,24 @@ const printAndroidConfig = (config) => {
     console.log();
 };
 exports.printAndroidConfig = printAndroidConfig;
+const processRepositories = (tasks) => {
+    const splitRegex = /^publishBrownfield(?:All|Debug|Release)PublicationTo(.+?)(?:Repository)?$/;
+    return Array.from(new Set(tasks
+        .map((task) => {
+        return splitRegex.exec(task)?.[1];
+    })
+        .filter((repo) => repo)));
+};
+exports.processRepositories = processRepositories;
+const processTasks = (stdout) => {
+    const regex = /^publishBrownfield[a-zA-Z0-9_-]*/i;
+    return stdout
+        .split('\n')
+        .map((line) => regex.exec(line)?.[0])
+        // Remove duplicate maven local tasks
+        .filter((task) => task && !task.includes('MavenLocalRepository'));
+};
+exports.processTasks = processTasks;
 const runTask = async (task, verbose, dryRun) => {
     if (dryRun) {
         console.log(`./gradlew ${task}`);
