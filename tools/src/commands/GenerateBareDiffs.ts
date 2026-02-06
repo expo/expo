@@ -3,6 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
+import npmPacklist from 'npm-packlist';
 import os from 'os';
 import path from 'path';
 import semver from 'semver';
@@ -57,72 +58,26 @@ function sdkToBranch(sdkVersion: string) {
 }
 
 const TEMPLATE_PATH = 'templates/expo-template-bare-minimum';
-const STATIC_EXCLUDES = [`:(exclude,glob)${TEMPLATE_PATH}/.npmignore`];
 
-async function getExcludePathspecs(
-  branch: string,
-  gitignorePath: string,
-  scope: string
-): Promise<string[]> {
-  let content: string;
-  try {
-    const result = await spawnAsync('git', ['show', `${branch}:${gitignorePath}`], {
-      cwd: EXPO_DIR,
-    });
-    content = result.stdout;
-  } catch {
-    return [];
-  }
-
-  const excludes: string[] = [];
-  let hasNegation = false;
-  for (const rawLine of content.split('\n')) {
-    let line = rawLine.trim();
-    if (!line) continue;
-    if (line.startsWith('\\#') || line.startsWith('\\!')) {
-      line = line.slice(1);
-    } else {
-      if (line.startsWith('#')) continue;
-      if (line.startsWith('!')) {
-        hasNegation = true;
-        continue;
-      }
-    }
-
-    const isDir = line.endsWith('/');
-    let pattern = isDir ? line.slice(0, -1) : line;
-    const isRooted = pattern.startsWith('/');
-    if (isRooted) pattern = pattern.slice(1);
-
-    const prefix = `${TEMPLATE_PATH}/${scope}`;
-    if (isRooted) {
-      excludes.push(`:(exclude,glob)${prefix}${pattern}${isDir ? '/**' : ''}`);
-    } else {
-      excludes.push(`:(exclude,glob)${prefix}**/${pattern}${isDir ? '/**' : ''}`);
-    }
-  }
-  if (hasNegation) return [];
-  return excludes;
+async function getTemplatePathspecs(): Promise<string[]> {
+  const packlist = await npmPacklist({ path: path.join(EXPO_DIR, TEMPLATE_PATH) });
+  return packlist.map((f) => `${TEMPLATE_PATH}/${f}`);
 }
 
-async function executeDiffCommand(diffDirPathRaw, sdkFrom: string, sdkTo: string) {
+async function executeDiffCommand(
+  diffDirPathRaw,
+  sdkFrom: string,
+  sdkTo: string,
+  pathspecs: string[]
+) {
   const diffCommand = `origin/${sdkToBranch(sdkFrom)}..origin/${sdkToBranch(sdkTo)}`;
   const diffPath = path.join(diffDirPathRaw, `${sdkFrom}..${sdkTo}.diff`);
-  const branch = `origin/${sdkToBranch(sdkTo)}`;
 
   await Git.fetchAsync();
 
-  const excludes = (
-    await Promise.all([
-      getExcludePathspecs(branch, `${TEMPLATE_PATH}/gitignore`, ''),
-      getExcludePathspecs(branch, `${TEMPLATE_PATH}/android/gitignore`, 'android/'),
-      getExcludePathspecs(branch, `${TEMPLATE_PATH}/ios/gitignore`, 'ios/'),
-    ])
-  ).flat();
-
   const diff = await spawnAsync(
     'git',
-    ['diff', diffCommand, '--', TEMPLATE_PATH, ...STATIC_EXCLUDES, ...excludes],
+    ['diff', diffCommand, '--', ...pathspecs],
     {
       cwd: EXPO_DIR,
     }
@@ -170,7 +125,7 @@ async function action({ check = false }: ActionOptions) {
     await fs.remove(diffDirPathRaw);
     await fs.ensureDir(diffDirPathRaw);
 
-    //const diffPairs: string[] = [];
+    const pathspecs = await getTemplatePathspecs();
 
     // start with the lowest SDK version and diff it with all other SDK versions equal to or lower than it
     sdkVersionsToDiff.forEach((toSdkVersion) => {
@@ -180,7 +135,9 @@ async function action({ check = false }: ActionOptions) {
           : sdkVersionsToDiff.filter((s) => s <= toSdkVersion);
       sdkVersionsLowerThenOrEqualTo.forEach((fromSdkVersion) => {
         diffJobs.push(
-          taskQueue.add(() => executeDiffCommand(diffDirPathRaw, fromSdkVersion, toSdkVersion))
+          taskQueue.add(() =>
+            executeDiffCommand(diffDirPathRaw, fromSdkVersion, toSdkVersion, pathspecs)
+          )
         );
       });
     });
