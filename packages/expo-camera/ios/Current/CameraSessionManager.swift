@@ -24,7 +24,7 @@ protocol CameraSessionManagerDelegate: AnyObject {
   func changePreviewOrientation()
 }
 
-class CameraSessionManager: NSObject {
+class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
   weak var delegate: CameraSessionManagerDelegate?
 
   let session = AVCaptureSession()
@@ -33,10 +33,12 @@ class CameraSessionManager: NSObject {
   private var captureDeviceInput: AVCaptureDeviceInput?
   private var photoOutput: AVCapturePhotoOutput?
   private var videoFileOutput: AVCaptureMovieFileOutput?
+  private var runtimeErrorTask: Task<Void, Never>?
 
   init(delegate: CameraSessionManagerDelegate) {
     self.delegate = delegate
     super.init()
+    deviceDiscovery.delegate = self
   }
 
   func initializeCaptureSessionInput() {
@@ -49,20 +51,28 @@ class CameraSessionManager: NSObject {
     }
   }
 
-  func updateSessionPreset(preset: AVCaptureSession.Preset) {
+  func updateSessionPreset(preset: AVCaptureSession.Preset, withSessionConfiguration: Bool = true) {
 #if !targetEnvironment(simulator)
     if session.canSetSessionPreset(preset) {
       if session.sessionPreset != preset {
-        session.beginConfiguration()
-        defer { session.commitConfiguration() }
+        if withSessionConfiguration {
+          session.beginConfiguration()
+        }
         session.sessionPreset = preset
+        if withSessionConfiguration {
+          session.commitConfiguration()
+        }
       }
     } else {
       // The selected preset cannot be used on the current device so we fall back to the highest available.
       if session.sessionPreset != .high {
-        session.beginConfiguration()
-        defer { session.commitConfiguration() }
+        if withSessionConfiguration {
+          session.beginConfiguration()
+        }
         session.sessionPreset = .high
+        if withSessionConfiguration {
+          session.commitConfiguration()
+        }
       }
     }
 #endif
@@ -98,14 +108,12 @@ class CameraSessionManager: NSObject {
     guard let delegate else {
       return
     }
-    delegate.sessionQueue.async {
-      if delegate.active {
-        if !self.session.isRunning {
-          self.session.startRunning()
-        }
-      } else {
-        self.session.stopRunning()
+    if delegate.active {
+      if !self.session.isRunning {
+        self.session.startRunning()
       }
+    } else {
+      self.session.stopRunning()
     }
   }
 
@@ -113,24 +121,33 @@ class CameraSessionManager: NSObject {
     guard let delegate else {
       return
     }
-
+    self.session.beginConfiguration()
+    defer { self.session.commitConfiguration() }
     if delegate.mode == .video {
-      if videoFileOutput == nil {
-        setupMovieFileCapture()
+      if self.videoFileOutput == nil {
+        self.setupMovieFileCapture(withSessionConfiguration: false)
       }
-      updateSessionAudioIsMuted()
+      self.updateSessionAudioIsMuted(withSessionConfiguration: false)
+      self.updateSessionPreset(preset: delegate.videoQuality.toPreset(), withSessionConfiguration: false)
     } else {
-      cleanupMovieFileCapture()
+      self.cleanupMovieFileCapture(withSessionConfiguration: false)
+      self.updateSessionPreset(preset: delegate.pictureSize.toCapturePreset(), withSessionConfiguration: false)
     }
   }
 
-  func updateSessionAudioIsMuted() {
+  func updateSessionAudioIsMuted(withSessionConfiguration: Bool = true) {
     guard let delegate else {
       return
     }
 
-    session.beginConfiguration()
-    defer { session.commitConfiguration() }
+    if withSessionConfiguration {
+      session.beginConfiguration()
+    }
+    defer {
+      if withSessionConfiguration {
+        session.commitConfiguration()
+      }
+    }
 
     if delegate.isMuted {
       for input in session.inputs {
@@ -164,13 +181,13 @@ class CameraSessionManager: NSObject {
 
     do {
       try device.lockForConfiguration()
+      defer { device.unlockForConfiguration() }
       if device.hasTorch && device.isTorchModeSupported(.on) {
         device.torchMode = delegate.torchEnabled ? .on : .off
       }
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
-    device.unlockForConfiguration()
   }
 
   func setFocusMode() {
@@ -180,14 +197,13 @@ class CameraSessionManager: NSObject {
 
     do {
       try device.lockForConfiguration()
+      defer { device.unlockForConfiguration() }
       if device.isFocusModeSupported(delegate.autoFocus), device.focusMode != delegate.autoFocus {
         device.focusMode = delegate.autoFocus
       }
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
-      return
     }
-    device.unlockForConfiguration()
   }
 
   func updateZoom() {
@@ -197,13 +213,12 @@ class CameraSessionManager: NSObject {
 
     do {
       try device.lockForConfiguration()
+      defer { device.unlockForConfiguration() }
       let minZoom = 1.0
       device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, delegate.zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
-
-    device.unlockForConfiguration()
   }
 
   func getAvailableLenses() -> [String] {
@@ -222,20 +237,37 @@ class CameraSessionManager: NSObject {
     }
   }
 
-  func setupMovieFileCapture() {
+  func setupMovieFileCapture(withSessionConfiguration: Bool = true) {
     let output = AVCaptureMovieFileOutput()
+    if withSessionConfiguration {
+      session.beginConfiguration()
+    }
+    defer {
+      if withSessionConfiguration {
+        session.commitConfiguration()
+      }
+    }
     if session.canAddOutput(output) {
       session.addOutput(output)
       videoFileOutput = output
     }
   }
 
-  func cleanupMovieFileCapture() {
-    if let videoFileOutput {
-      if session.outputs.contains(videoFileOutput) {
-        session.removeOutput(videoFileOutput)
-        self.videoFileOutput = nil
+  func cleanupMovieFileCapture(withSessionConfiguration: Bool = true) {
+    guard let videoFileOutput else {
+      return
+    }
+    if withSessionConfiguration {
+      session.beginConfiguration()
+    }
+    defer {
+      if withSessionConfiguration {
+        session.commitConfiguration()
       }
+    }
+    if session.outputs.contains(videoFileOutput) {
+      session.removeOutput(videoFileOutput)
+      self.videoFileOutput = nil
     }
   }
 
@@ -243,6 +275,8 @@ class CameraSessionManager: NSObject {
 #if targetEnvironment(simulator)
     return
 #else
+    runtimeErrorTask?.cancel()
+    runtimeErrorTask = nil
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -264,19 +298,24 @@ class CameraSessionManager: NSObject {
       return
     }
 
-    Task {
+    runtimeErrorTask?.cancel()
+    runtimeErrorTask = Task {
       let errors = NotificationCenter.default.notifications(named: .AVCaptureSessionRuntimeError, object: self.session)
         .compactMap({ $0.userInfo?[AVCaptureSessionErrorKey] as? AVError })
       for await error in errors where error.code == .mediaServicesWereReset {
-        if !session.isRunning {
-          session.startRunning()
-        }
         delegate.sessionQueue.async {
+          if !self.session.isRunning {
+            self.session.startRunning()
+          }
           self.updateSessionAudioIsMuted()
         }
         delegate.onMountError(["message": "Camera session was reset"])
       }
     }
+  }
+
+  deinit {
+    runtimeErrorTask?.cancel()
   }
 
   var currentPhotoOutput: AVCapturePhotoOutput? {
@@ -316,6 +355,12 @@ class CameraSessionManager: NSObject {
       delegate.onMountError(["message": "Camera could not be started - \(error.localizedDescription)"])
     }
   }
+  
+  func deviceDiscovery(_ discovery: DeviceDiscovery, didUpdateDevices devices: [AVCaptureDevice]) {
+    DispatchQueue.main.async { [weak self] in
+      self?.delegate?.emitAvailableLenses()
+    }
+  }
 
   private func startSession() {
 #if targetEnvironment(simulator)
@@ -341,9 +386,10 @@ class CameraSessionManager: NSObject {
       self.photoOutput = photoOutput
     }
 
-    session.sessionPreset = delegate.mode == .video
+    let preset = delegate.mode == .video
     ? delegate.videoQuality.toPreset()
     : delegate.pictureSize.toCapturePreset()
+    updateSessionPreset(preset: preset, withSessionConfiguration: false)
 
     session.commitConfiguration()
     addErrorNotification()

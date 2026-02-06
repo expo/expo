@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a number of configuration issues and error inconsistencies.
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27
