@@ -43,7 +43,7 @@ struct DevMenuMainView: View {
     }
     .environmentObject(viewModel)
     .navigationTitle("Dev Menu")
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarHidden(true)
     .navigationBarTitleDisplayMode(.inline)
 #endif

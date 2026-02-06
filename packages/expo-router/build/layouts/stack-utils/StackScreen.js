@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackScreen = void 0;
+exports.validateStackPresentation = validateStackPresentation;
 exports.appendScreenStackPropsToOptions = appendScreenStackPropsToOptions;
 const react_1 = require("react");
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
@@ -54,7 +55,10 @@ function extractBottomToolbars(children) {
  */
 exports.StackScreen = Object.assign(function StackScreen({ children, options, ...rest }) {
     // This component will only render when used inside a page.
-    const updatedOptions = (0, react_1.useMemo)(() => appendScreenStackPropsToOptions(options ?? {}, {
+    if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
+        console.warn('Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.');
+    }
+    const updatedOptions = (0, react_1.useMemo)(() => appendScreenStackPropsToOptions(typeof options === 'function' ? {} : (options ?? {}), {
         children,
     }), [options, children]);
     const bottomToolbars = (0, react_1.useMemo)(() => extractBottomToolbars(children), [children]);
@@ -67,8 +71,34 @@ exports.StackScreen = Object.assign(function StackScreen({ children, options, ..
     Title: screen_1.StackScreenTitle,
     BackButton: screen_1.StackScreenBackButton,
 });
+const VALID_PRESENTATIONS = [
+    'card',
+    'modal',
+    'transparentModal',
+    'containedModal',
+    'containedTransparentModal',
+    'fullScreenModal',
+    'formSheet',
+    'pageSheet',
+];
+function validateStackPresentation(options) {
+    if (typeof options === 'function') {
+        return (...args) => {
+            const resolved = options(...args);
+            validateStackPresentation(resolved);
+            return resolved;
+        };
+    }
+    const presentation = options.presentation;
+    if (presentation &&
+        !VALID_PRESENTATIONS.includes(presentation)) {
+        throw new Error(`Invalid presentation value "${presentation}" passed to Stack.Screen. Valid values are: ${VALID_PRESENTATIONS.map((v) => `"${v}"`).join(', ')}.`);
+    }
+    return options;
+}
 function appendScreenStackPropsToOptions(options, props) {
     let updatedOptions = { ...options, ...props.options };
+    validateStackPresentation(updatedOptions);
     function appendChildOptions(child, opts) {
         if ((0, children_1.isChildOfType)(child, StackHeaderComponent_1.StackHeaderComponent)) {
             return (0, StackHeaderComponent_1.appendStackHeaderPropsToOptions)(opts, child.props);
@@ -82,7 +112,7 @@ function appendScreenStackPropsToOptions(options, props) {
         if ((0, children_1.isChildOfType)(child, toolbar_1.StackToolbar)) {
             const placement = child.props.placement ?? 'bottom';
             if (placement === 'bottom') {
-                throw new Error(`Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen in _layout.tsx. Please move it to the page component.`);
+                throw new Error(`Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen.`);
             }
             return (0, toolbar_1.appendStackToolbarPropsToOptions)(opts, child.props);
         }

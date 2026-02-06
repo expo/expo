@@ -1,6 +1,6 @@
+import { FormData } from 'fetch-nodeshim';
 import { vol } from 'memfs';
 import nock from 'nock';
-import { FormData } from 'undici';
 
 import type { FetchLike } from '../../client.types';
 import { FileSystemResponseCache } from '../FileSystemResponseCache';

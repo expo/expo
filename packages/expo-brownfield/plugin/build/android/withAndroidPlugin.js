@@ -7,6 +7,7 @@ const withAndroidPlugin = (config, props) => {
     config = (0, plugins_1.withProjectFilesPlugin)(config, pluginConfig);
     config = (0, plugins_1.withSettingsGradlePlugin)(config, pluginConfig);
     config = (0, plugins_1.withProjectBuildGradlePlugin)(config, pluginConfig);
+    config = (0, plugins_1.withGradlePropertiesPlugin)(config);
     return config;
 };
 exports.default = withAndroidPlugin;

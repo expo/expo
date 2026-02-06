@@ -37,8 +37,6 @@ const Screen_1 = require("../../../views/Screen");
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 function StackScreenBackButton(props) {
     const updatedOptions = (0, react_1.useMemo)(() => appendStackScreenBackButtonPropsToOptions({}, props), [props]);

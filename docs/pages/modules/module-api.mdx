@@ -533,6 +533,22 @@ View(MyView::class) {
 
 </PaddedAPIBox>
 
+<PaddedAPIBox header="OnViewDestroys" platforms={["android"]}>
+
+Creates a view's lifecycle listener that is called right after the view is no longer used by React Native.
+
+```kotlin
+View(MyView::class) {
+  OnViewDestroys { view: MyView ->
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+> **Note:** This function is not available on iOS. You may want to use the destructor of the native view to achieve similar results.
+
+</PaddedAPIBox>
+
 <PaddedAPIBox header="(View) AsyncFunction">
 
 Similarly to the [`AsyncFunction`](#asyncfunction) inside the module definition, you can define functions attached to the view ref to allow direct modification of the native view.

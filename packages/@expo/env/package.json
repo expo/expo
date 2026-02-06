@@ -29,9 +29,10 @@
   "dependencies": {
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "dotenv": "~16.4.5",
-    "dotenv-expand": "~11.0.6",
     "getenv": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

@@ -1,5 +1,5 @@
-@_implementationOnly import Expo
-@_implementationOnly import React
+internal import Expo
+internal import React
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   // Extension point for config-plugins

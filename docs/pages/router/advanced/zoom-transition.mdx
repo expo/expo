@@ -17,7 +17,7 @@ Zoom transitions provide a fluid animation effect when navigating between screen
 
 ## Get started
 
-To implement zoom transitions, you need to use the `Link.AppleZoom` component to mark the source element and optionally `Link.AppleZoom.Target` to specify the target alignment on the destination screen.
+To implement zoom transitions, you need to use the `Link.AppleZoom` component to mark the source element and optionally `Link.AppleZoomTarget` to specify the target alignment on the destination screen.
 
 ### Basic example
 
@@ -76,21 +76,21 @@ The `Link.AppleZoom` component wraps the element you want to zoom from. It is us
 
 ### Customizing alignment
 
-You can specify the alignment of the zoomed element on the destination screen by using `Link.AppleZoom.Target` element.
+You can specify the alignment of the zoomed element on the destination screen by using `Link.AppleZoomTarget` element.
 
 ```tsx app/image.tsx
 export default function ImageScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Link.AppleZoom.Target>
+      <Link.AppleZoomTarget>
         <Image source={{ uri: 'https://example.com/image-1.jpg' }} style={{ width: '100%' }} />
-      </Link.AppleZoom.Target>
+      </Link.AppleZoomTarget>
     </View>
   );
 }
 ```
 
-If you need more control over the alignment rectangle, you can pass an `alignmentRect` prop to `Link.AppleZoom`. However, this is normally not necessary if you use `Link.AppleZoom.Target`.
+If you need more control over the alignment rectangle, you can pass an `alignmentRect` prop to `Link.AppleZoom`. However, this is normally not necessary if you use `Link.AppleZoomTarget`.
 
 > **info** The `alignmentRect` prop internally relies on [`alignmentRectProvider`](https://developer.apple.com/documentation/uikit/uiviewcontroller/transition/zoomoptions/alignmentrectprovider) API.
 
@@ -311,7 +311,7 @@ We recommend avoiding the use of zoom transitions when navigating between screen
 
 <Collapsible summary="Single child requirement">
 
-Both `Link.AppleZoom` and `Link.AppleZoom.Target` only accept a single child component. If you attempt to pass multiple children, a warning will be logged and the component will not render properly.
+Both `Link.AppleZoom` and `Link.AppleZoomTarget` only accept a single child component. If you attempt to pass multiple children, a warning will be logged and the component will not render properly.
 
 **Incorrect:**
 
@@ -351,39 +351,5 @@ If you attempt to use Link with zoom transition to a screen that is not part of 
 <Collapsible summary="iOS 18+ only">
 
 The zoom transition feature requires iOS 18 or later. While the components will render on older versions, the zoom animation will not be applied.
-
-</Collapsible>
-
-<Collapsible summary="Using zoom transition with ScrollView">
-
-When using zoom transitions on screens with a `ScrollView`, the swipe-to-dismiss gesture may conflict with scrolling. To prevent accidental dismissal while scrolling, use the `usePreventZoomTransitionDismissal` hook with `unstable_dismissalBoundsRect`:
-
-```tsx app/image.tsx
-import { Link, usePreventZoomTransitionDismissal } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView } from 'react-native';
-
-export default function Screen() {
-  const [shouldPrevent, setShouldPrevent] = useState(false);
-  usePreventZoomTransitionDismissal(
-    shouldPrevent
-      ? undefined
-      : {
-          unstable_dismissalBoundsRect: { minX: 0, minY: 0 },
-        }
-  );
-  return (
-    <ScrollView
-      style={{ flex: 1 }}
-      onScroll={event => {
-        setShouldPrevent(event.nativeEvent.contentOffset.y > 1);
-      }}>
-      {/* Content */}
-    </ScrollView>
-  );
-}
-```
-
-This approach disables the swipe-to-dismiss gesture when the scroll position is at the top, allowing users to scroll down without accidentally triggering the dismissal animation. Once scrolled, the gesture is re-enabled.
 
 </Collapsible>

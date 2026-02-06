@@ -38,6 +38,7 @@ import {
   StackSearchBar,
   StackToolbar,
   appendScreenStackPropsToOptions,
+  validateStackPresentation,
 } from './stack-utils';
 import { isChildOfType } from '../utils/children';
 import { Protected, type ProtectedProps } from '../views/Protected';
@@ -549,9 +550,13 @@ function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
     children: Children.toArray(props.children)
       .map((child, index) => {
         if (isChildOfType(child, StackScreen)) {
-          const options = appendScreenStackPropsToOptions({}, child.props);
-          const { children, ...rest } = child.props;
-          return <Screen key={child.props.name} {...rest} options={options} />;
+          const { children, options: childOptions, ...rest } = child.props;
+          const options =
+            typeof childOptions === 'function'
+              ? (...params: Parameters<typeof childOptions>) =>
+                  appendScreenStackPropsToOptions(childOptions(...params), { children })
+              : appendScreenStackPropsToOptions(childOptions ?? {}, { children });
+          return <Screen key={rest.name} {...rest} options={options} />;
         } else if (isChildOfType(child, Protected)) {
           return <Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)} />;
         } else if (isChildOfType(child, StackHeader)) {
@@ -598,9 +603,14 @@ const Stack = Object.assign(
         } else {
           return appendScreenStackPropsToOptions({}, screenStackProps);
         }
-      } else {
-        return props.screenOptions;
+      } else if (props.screenOptions) {
+        const screenOptions = props.screenOptions;
+        if (typeof screenOptions === 'function') {
+          return validateStackPresentation(screenOptions);
+        }
+        return validateStackPresentation(screenOptions);
       }
+      return props.screenOptions;
     }, [props.screenOptions, props.children]);
 
     const screenOptions = useMemo(() => {

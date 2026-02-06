@@ -34,9 +34,10 @@ File-based routing library for React Native and web applications. Built on top o
 │   │   ├── Drawer.tsx         # Drawer navigator
 │   │   ├── withLayoutContext.tsx  # Layout context HOC
 │   │   └── stack-utils/       # Stack utilities
+│   │       ├── Agents.md  # Read this file before modifying components in this directory
 │   │       ├── StackScreen.tsx, StackSearchBar.tsx  # Screen and search bar components
 │   │       ├── screen/        # Title (StackScreenTitle) and BackButton (StackScreenBackButton)
-│   │       └── toolbar/       # StackToolbar* components, with native bridge in bottom-toolbar-native-elements
+│   │       └── toolbar/       # StackToolbar* components
 │   │
 │   ├── native-tabs/           # Native bottom tabs (iOS UITabBar, Android BottomNav)
 │   │   ├── NativeTabs.tsx            # Assignment of Trigger and BottomAccessory to NativeTabs component
@@ -165,6 +166,36 @@ it('can navigate between routes', () => {
 
 **RSC tests:** When adding new components, add RSC tests in `__rsc_tests__/` directories to verify they render correctly in React Server Components environment.
 
+When testing native primitives, mock them in tests using `jest.mock()`. When adding mocks use `typeof import('module-name')` to preserve types and ensure path correctness. Example:
+
+```ts
+jest.mock('react-native-screens', () => {
+  const actualScreens = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
+  return {
+    ...actualScreens,
+    ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
+  };
+});
+```
+
+**Spies and console mocks:** Use `beforeEach`/`afterEach` with `mockRestore()`:
+
+```ts
+let spy: jest.SpyInstance;
+beforeEach(() => { spy = jest.spyOn(Module, 'fn'); }); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
+afterEach(() => { spy.mockRestore(); });
+```
+
+**Mock call assertions:** Use array index access. Comment non-zero indices:
+
+```ts
+const props = MockedComponent.mock.calls[0][0];
+// [1] because first call is layout, second is screen
+const screenProps = MockedComponent.mock.calls[1][0];
+```
+
 ## Key Concepts
 
 ### File-Based Routing Conventions
@@ -228,10 +259,40 @@ The `apps/router-e2e` app contains end-to-end tests and examples for Expo Router
 After developing a feature, run these commands in `packages/expo-router`:
 
 1. `CI=1 yarn test` - Run all tests. During development use `yarn test [test file]` for efficiency. For RSC tests: `yarn test:rsc`
-2. `yarn build` - Build and verify TypeScript correctness
+2. `yarn build` - Build and verify TypeScript correctness. If you moved or deleted files, run `yarn clean` first.
 3. `yarn lint` - Run last to find linting issues
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
+
+## Documentation
+
+There are two types of documentation for Expo Router:
+
+- **Guides** - mdx files in the `docs/` directory of the monorepo, covering concepts, tutorials, and how-tos.
+- **API Reference** - Generated from TypeScript types using `typedoc`
+
+When developing new features, make sure that both guides and API reference are updated accordingly.
+
+To update API reference, run:
+
+```bash
+et generate-docs-api-data --packageName expo-router
+```
+
+You can run this command for specific sdk if asked:
+
+```bash
+et generate-docs-api-data --packageName expo-router --sdk <VERSION>
+```
+
+### Testing docs changes
+
+To run the docs site locally run `yarn dev` in the `docs/` directory of the monorepo. The reference will be available at:
+
+- http://localhost:3002/versions/unversioned/sdk/router/ for main router
+- http://localhost:3002/versions/unversioned/sdk/router-native-tabs/ for native tabs
+- http://localhost:3002/versions/unversioned/sdk/router-split-view/ for split view
+- http://localhost:3002/versions/unversioned/sdk/router-ui/ for headless tabs
 
 ## Maintaining This Document
 

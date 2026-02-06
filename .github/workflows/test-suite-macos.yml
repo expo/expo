@@ -28,6 +28,18 @@ on:
       - packages/expo-updates/**
       - packages/expo-updates-interface/**
       - packages/expo-web-browser/**
+      - '!packages/**/android/**'
+      # Common ignores from detect-platform-change action
+      - '!**/*.md'
+      - '!**/LICENSE*'
+      - '!**/.gitignore'
+      - '!**/CHANGELOG*'
+      - '!**/.npmignore'
+      - '!**/.eslintrc*'
+      - '!**/.prettierrc*'
+      - '!**/.gitattributes'
+      - '!**/.watchmanconfig'
+      - '!**/.fingerprintignore'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -41,8 +53,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true

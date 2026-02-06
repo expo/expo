@@ -70,14 +70,15 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
     return null
   }
 
-  override fun outputStream(): OutputStream {
-    return context.contentResolver.openOutputStream(uri)
+  override fun outputStream(append: Boolean): OutputStream {
+    val mode = if (append) "wa" else "w"
+    return context.contentResolver.openOutputStream(uri, mode)
       ?: throw IllegalStateException("Unable to open output stream for URI: $uri")
   }
 
   override fun inputStream(): InputStream {
     return context.contentResolver.openInputStream(uri)
-      ?: throw IllegalStateException("Unable to open output stream for URI: $uri")
+      ?: throw IllegalStateException("Unable to open input stream for URI: $uri")
   }
 
   override fun length(): Long {

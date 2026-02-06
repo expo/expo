@@ -5,23 +5,29 @@ import type {
   NativeStackHeaderItemMenuSubmenu,
 } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
-import { Children, useMemo, type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
+import { Children, useId, useMemo, type ReactNode } from 'react';
+import {
+  StyleSheet,
+  type ColorValue,
+  type ImageSourcePropType,
+  type StyleProp,
+  type TextStyle,
+} from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { NativeToolbarMenu, NativeToolbarMenuAction } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
-import { MenuAction } from '../../../primitives/menu';
+import {
+  convertStackHeaderSharedPropsToRNSharedHeaderItem,
+  type StackHeaderItemSharedProps,
+} from './shared';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
+import { LinkMenuAction } from '../../../link/elements';
+import { NativeLinkPreviewAction } from '../../../link/preview/native';
 import {
   filterAllowedChildrenElements,
   getFirstChildOfType,
   isChildOfType,
 } from '../../../utils/children';
-import { StackToolbarLabel } from '../common-primitives';
-import {
-  convertStackHeaderSharedPropsToRNSharedHeaderItem,
-  type StackHeaderItemSharedProps,
-} from '../shared';
 
 /**
  * Computes the label and menu title from children and title prop.
@@ -94,6 +100,23 @@ export interface StackToolbarMenuProps {
    * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
    */
   icon?: StackHeaderItemSharedProps['icon'];
+  /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
   /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
@@ -180,7 +203,7 @@ export interface StackToolbarMenuProps {
  *
  * @platform ios
  */
-export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ...props }) => {
+export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
   const placement = useToolbarPlacement();
 
   if (placement !== 'bottom') {
@@ -190,32 +213,31 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
     throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
   }
 
-  const allowedChildren = useMemo(
-    () => [
-      StackToolbarMenu,
-      StackToolbarMenuAction,
-      NativeToolbarMenu,
-      NativeToolbarMenuAction,
-      StackToolbarLabel,
-    ],
-    [placement]
-  );
-
   const validChildren = useMemo(
-    () => filterAllowedChildrenElements(children, allowedChildren),
-    [children, allowedChildren]
+    () => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN),
+    [props.children]
   );
 
-  const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(
-    children,
-    props.title
-  );
+  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+
+  const computedLabel = sharedProps?.label;
+  const computedMenuTitle = sharedProps?.menu?.title;
+  const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
 
   if (process.env.NODE_ENV !== 'production') {
-    const allChildren = Children.toArray(children);
+    const allChildren = Children.toArray(props.children);
     if (allChildren.length !== validChildren.length) {
       throw new Error(
-        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`
+        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
+      );
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
+    if (hasBadge) {
+      console.warn(
+        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
       );
     }
   }
@@ -224,7 +246,9 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
   return (
     <NativeToolbarMenu
       {...props}
+      icon={icon}
       image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
       label={computedLabel}
       title={computedMenuTitle}
       children={validChildren}
@@ -346,6 +370,23 @@ export interface StackToolbarMenuActionProps {
    */
   image?: ImageRef;
   /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
+  /**
    * If `true`, the menu item will be displayed as destructive.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
@@ -406,13 +447,20 @@ export interface StackToolbarMenuActionProps {
 export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement === 'bottom') {
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    const icon = typeof props.icon === 'string' ? props.icon : undefined;
-    return <NativeToolbarMenuAction {...props} icon={icon} image={props.image} />;
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
   }
 
-  return <MenuAction {...props} />;
+  // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+  const icon = typeof props.icon === 'string' ? props.icon : undefined;
+  return (
+    <NativeToolbarMenuAction
+      {...props}
+      icon={icon}
+      image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
+    />
+  );
 };
 
 export function convertStackToolbarMenuActionPropsToRNHeaderItem(
@@ -443,3 +491,110 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   }
   return item;
 }
+
+// #region NativeToolbarMenu
+
+interface NativeToolbarMenuProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  children?: ReactNode;
+  subtitle?: string;
+  destructive?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
+  hidesSharedBackground?: boolean;
+  icon?: SFSymbol;
+  // TODO(@ubax): Add useImage support in a follow-up PR.
+  /**
+   * Image to display for the menu item.
+   */
+  image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
+  inline?: boolean;
+  label?: string;
+  palette?: boolean;
+  separateBackground?: boolean;
+  style?: StyleProp<TextStyle>;
+  title?: string;
+  tintColor?: ColorValue;
+  variant?: 'plain' | 'done' | 'prominent';
+  elementSize?: 'auto' | 'small' | 'medium' | 'large';
+}
+
+/**
+ * Native toolbar menu component for bottom toolbar.
+ * Renders as NativeLinkPreviewAction.
+ */
+const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
+  accessibilityHint,
+  accessibilityLabel,
+  separateBackground,
+  hidesSharedBackground,
+  palette,
+  inline,
+  hidden,
+  subtitle,
+  title,
+  label,
+  destructive,
+  children,
+  icon,
+  image,
+  imageRenderingMode,
+  tintColor,
+  variant,
+  style,
+  elementSize,
+}) => {
+  const identifier = useId();
+
+  const titleStyle = StyleSheet.flatten(style);
+  const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
+  return (
+    <NativeLinkPreviewAction
+      sharesBackground={!separateBackground}
+      hidesSharedBackground={hidesSharedBackground}
+      hidden={hidden}
+      icon={icon}
+      // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+      image={image}
+      imageRenderingMode={renderingMode}
+      destructive={destructive}
+      subtitle={subtitle}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      displayAsPalette={palette}
+      displayInline={inline}
+      preferredElementSize={elementSize}
+      tintColor={tintColor}
+      titleStyle={titleStyle}
+      barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
+      title={title ?? ''}
+      label={label}
+      onSelected={() => {}}
+      children={children}
+      identifier={identifier}
+    />
+  );
+};
+
+// #endregion
+
+// #region NativeToolbarMenuAction
+
+/**
+ * Native toolbar menu action - reuses LinkMenuAction.
+ */
+const NativeToolbarMenuAction = LinkMenuAction;
+
+// #endregion
+
+const ALLOWED_CHILDREN = [
+  StackToolbarMenu,
+  StackToolbarMenuAction,
+  NativeToolbarMenu,
+  NativeToolbarMenuAction,
+  StackToolbarLabel,
+  StackToolbarIcon,
+  StackToolbarBadge,
+];

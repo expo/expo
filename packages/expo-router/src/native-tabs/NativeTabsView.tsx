@@ -1,6 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import React, { useDeferredValue, useMemo } from 'react';
 import { View, type ColorValue } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearance } from 'react-native-screens';
 import { SafeAreaView } from 'react-native-screens/experimental';
 
@@ -186,18 +187,23 @@ function Screen(props: {
       {contentRenderer()}
     </View>
   );
-  const wrappedContent =
-    process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (
-      <SafeAreaView
-        // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
-        collapsable={false}
-        style={{ flex: 1 }}
-        edges={{ bottom: true }}>
-        {content}
-      </SafeAreaView>
-    ) : (
-      content
-    );
+  const wrappedContent = useMemo(() => {
+    if (process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets) {
+      return (
+        <SafeAreaView
+          // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+          collapsable={false}
+          style={{ flex: 1 }}
+          edges={{ bottom: true }}>
+          {content}
+        </SafeAreaView>
+      );
+    } else if (process.env.EXPO_OS === 'ios') {
+      return <SafeAreaProvider>{content}</SafeAreaProvider>;
+    } else {
+      return content;
+    }
+  }, [content, options.disableAutomaticContentInsets]);
 
   return (
     <Tabs.Screen
@@ -209,8 +215,14 @@ function Screen(props: {
       tabBarItemBadgeTextColor={badgeTextColor}
       standardAppearance={standardAppearance}
       scrollEdgeAppearance={scrollEdgeAppearance}
-      icon={convertOptionsIconToRNScreensPropsIcon(icon)}
-      selectedIcon={convertOptionsIconToIOSPropsIcon(selectedIcon)}
+      icon={convertOptionsIconToRNScreensPropsIcon(
+        icon,
+        standardAppearance?.stacked?.normal?.tabBarItemIconColor
+      )}
+      selectedIcon={convertOptionsIconToIOSPropsIcon(
+        selectedIcon,
+        standardAppearance?.stacked?.selected?.tabBarItemIconColor
+      )}
       title={title}
       freezeContents={false}
       systemItem={options.role}

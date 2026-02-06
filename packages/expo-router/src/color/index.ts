@@ -71,9 +71,6 @@ const iosColor = new Proxy({} as ColorType['ios'], {
     if (process.env.EXPO_OS === 'ios') {
       return PlatformColor(prop);
     }
-    console.warn(
-      `Color.ios.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
-    );
     return null;
   },
 });
@@ -83,9 +80,6 @@ const androidAttrColor = new Proxy({} as ColorType['android']['attr'], {
     if (process.env.EXPO_OS === 'android') {
       return PlatformColor('?attr/' + prop);
     }
-    console.warn(
-      `Color.android.attr.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
-    );
     return null;
   },
 });
@@ -95,9 +89,6 @@ const androidMaterialColor = new Proxy({} as ColorType['android']['material'], {
     if (process.env.EXPO_OS === 'android') {
       return Material3Color(prop);
     }
-    console.warn(
-      `Color.android.material.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
-    );
     return null;
   },
 });
@@ -107,9 +98,6 @@ const androidDynamicColor = new Proxy({} as ColorType['android']['dynamic'], {
     if (process.env.EXPO_OS === 'android') {
       return Material3DynamicColor(prop);
     }
-    console.warn(
-      `Color.android.dynamic.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
-    );
     return null;
   },
 });
@@ -134,9 +122,6 @@ const androidColor = new Proxy(
       if (process.env.EXPO_OS === 'android') {
         return PlatformColor('@android:color/' + prop);
       }
-      console.warn(
-        `Color.android.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
-      );
       return null;
     },
   }

@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed Double to Long conversion for intent extras to support calendar timestamps and other large numeric values. ([#42386](https://github.com/expo/expo/pull/42386) by [@brianomchugh](https://github.com/brianomchugh))
+
 ### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.3 — 2026-01-27
 

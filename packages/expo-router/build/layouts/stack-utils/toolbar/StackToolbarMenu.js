@@ -5,12 +5,13 @@ exports.StackToolbarMenuAction = exports.StackToolbarMenu = void 0;
 exports.convertStackToolbarMenuPropsToRNHeaderItem = convertStackToolbarMenuPropsToRNHeaderItem;
 exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMenuActionPropsToRNHeaderItem;
 const react_1 = require("react");
-const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
+const react_native_1 = require("react-native");
 const context_1 = require("./context");
-const menu_1 = require("../../../primitives/menu");
+const shared_1 = require("./shared");
+const toolbar_primitives_1 = require("./toolbar-primitives");
+const elements_1 = require("../../../link/elements");
+const native_1 = require("../../../link/preview/native");
 const children_1 = require("../../../utils/children");
-const common_primitives_1 = require("../common-primitives");
-const shared_1 = require("../shared");
 /**
  * Computes the label and menu title from children and title prop.
  *
@@ -19,7 +20,7 @@ const shared_1 = require("../shared");
  * - If both `.Label` child and `title` prop are provided. `.Label` is used for the label, and `title` is used for the menu title
  */
 function computeMenuLabelAndTitle(children, title) {
-    const labelChild = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackToolbarLabel);
+    const labelChild = (0, children_1.getFirstChildOfType)(children, toolbar_primitives_1.StackToolbarLabel);
     const labelFromChild = labelChild?.props.children;
     return {
         label: labelFromChild ?? title ?? '',
@@ -57,7 +58,7 @@ function computeMenuLabelAndTitle(children, title) {
  *
  * @platform ios
  */
-const StackToolbarMenu = ({ children, ...props }) => {
+const StackToolbarMenu = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
     if (placement !== 'bottom') {
         // For placement other than bottom, this component will not render, and should be
@@ -65,23 +66,25 @@ const StackToolbarMenu = ({ children, ...props }) => {
         // So if we reach here, it means we're not inside a toolbar or something else is wrong.
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
-    const allowedChildren = (0, react_1.useMemo)(() => [
-        exports.StackToolbarMenu,
-        exports.StackToolbarMenuAction,
-        bottom_toolbar_native_elements_1.NativeToolbarMenu,
-        bottom_toolbar_native_elements_1.NativeToolbarMenuAction,
-        common_primitives_1.StackToolbarLabel,
-    ], [placement]);
-    const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(children, allowedChildren), [children, allowedChildren]);
-    const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(children, props.title);
+    const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
+    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+    const computedLabel = sharedProps?.label;
+    const computedMenuTitle = sharedProps?.menu?.title;
+    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
     if (process.env.NODE_ENV !== 'production') {
-        const allChildren = react_1.Children.toArray(children);
+        const allChildren = react_1.Children.toArray(props.children);
         if (allChildren.length !== validChildren.length) {
-            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`);
+            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`);
+        }
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        const hasBadge = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarBadge);
+        if (hasBadge) {
+            console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} image={props.image} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
+    return (<NativeToolbarMenu {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props) {
@@ -181,12 +184,12 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  */
 const StackToolbarMenuAction = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement === 'bottom') {
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        const icon = typeof props.icon === 'string' ? props.icon : undefined;
-        return <bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image}/>;
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
     }
-    return <menu_1.MenuAction {...props}/>;
+    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+    const icon = typeof props.icon === 'string' ? props.icon : undefined;
+    return (<NativeToolbarMenuAction {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
 };
 exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
@@ -214,4 +217,32 @@ function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
     }
     return item;
 }
+/**
+ * Native toolbar menu component for bottom toolbar.
+ * Renders as NativeLinkPreviewAction.
+ */
+const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, label, destructive, children, icon, image, imageRenderingMode, tintColor, variant, style, elementSize, }) => {
+    const identifier = (0, react_1.useId)();
+    const titleStyle = react_native_1.StyleSheet.flatten(style);
+    const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
+    return (<native_1.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={icon} 
+    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+    image={image} imageRenderingMode={renderingMode} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={title ?? ''} label={label} onSelected={() => { }} children={children} identifier={identifier}/>);
+};
+// #endregion
+// #region NativeToolbarMenuAction
+/**
+ * Native toolbar menu action - reuses LinkMenuAction.
+ */
+const NativeToolbarMenuAction = elements_1.LinkMenuAction;
+// #endregion
+const ALLOWED_CHILDREN = [
+    exports.StackToolbarMenu,
+    exports.StackToolbarMenuAction,
+    NativeToolbarMenu,
+    NativeToolbarMenuAction,
+    toolbar_primitives_1.StackToolbarLabel,
+    toolbar_primitives_1.StackToolbarIcon,
+    toolbar_primitives_1.StackToolbarBadge,
+];
 //# sourceMappingURL=StackToolbarMenu.js.map

@@ -29,6 +29,9 @@ public class RouterToolbarModule: Module {
       Prop("tintColor") { (view: RouterToolbarItemView, tintColor: UIColor?) in
         view.customTintColor = tintColor
       }
+      Prop("imageRenderingMode") { (view: RouterToolbarItemView, mode: ImageRenderingMode?) in
+        view.imageRenderingMode = mode
+      }
       Prop("hidesSharedBackground") { (view: RouterToolbarItemView, hidesSharedBackground: Bool) in
         view.hidesSharedBackground = hidesSharedBackground
       }
@@ -95,6 +98,11 @@ enum BarItemStyle: String, Enumerable {
       }
     }
   }
+}
+
+enum ImageRenderingMode: String, Enumerable {
+  case template
+  case original
 }
 
 struct BadgeConfigurationRecord: Record {

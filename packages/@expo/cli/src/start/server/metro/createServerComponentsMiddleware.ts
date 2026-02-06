@@ -20,7 +20,6 @@ import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
 import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
-import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import {
   createBundleUrlSearchParams,
   type ExpoMetroOptions,
@@ -42,6 +41,7 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
 
 const getMetroServerRootMemo = memoize(getMetroServerRoot);
 
+// TODO(@hassankhan): Rename this to `createRscRenderer()`
 export function createServerComponentsMiddleware(
   projectRoot: string,
   {
@@ -571,6 +571,9 @@ export function createServerComponentsMiddleware(
     getExpoRouterClientReferencesAsync,
     exportServerActionsAsync,
 
+    // Expose the RSC handler directly for use with `createRouteHandlerMiddleware()`
+    handler: rscMiddleware,
+
     async exportRoutesAsync(
       {
         platform,
@@ -628,13 +631,6 @@ export function createServerComponentsMiddleware(
       );
     },
 
-    middleware: createBuiltinAPIRequestHandler(
-      // Match `/_flight/[platform]/[...path]`
-      (req) => {
-        return getFullUrl(req.url).pathname.startsWith(rscPathPrefix);
-      },
-      rscMiddleware
-    ),
     onReloadRscEvent: (platform: string) => {
       // NOTE: We cannot clear the renderer context because it would break the mounted context state.
 
@@ -643,14 +639,6 @@ export function createServerComponentsMiddleware(
     },
   };
 }
-
-const getFullUrl = (url: string) => {
-  try {
-    return new URL(url);
-  } catch {
-    return new URL(url, 'http://localhost:0');
-  }
-};
 
 export const fileURLToFilePath = (fileURL: string) => {
   try {

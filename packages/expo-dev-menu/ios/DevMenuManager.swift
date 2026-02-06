@@ -189,6 +189,11 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public func setShowFloatingActionButton(_ enabled: Bool) {
+    DevMenuPreferences.showFloatingActionButton = enabled
+  }
+
+  @objc
   public func updateCurrentBridge(_ bridge: RCTBridge?) {
     currentBridge = bridge
     if bridge != nil {
@@ -441,6 +446,8 @@ open class DevMenuManager: NSObject {
       DispatchQueue.main.async {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
+#elseif os(tvOS)
+        self.window?.makeKeyAndVisible()
 #else
         self.updateFABVisibility()
 
@@ -540,8 +547,7 @@ open class DevMenuManager: NSObject {
     fabWindow = DevMenuFABWindow(manager: self, windowScene: windowScene)
   }
 
-  @objc
-  public func updateFABVisibility() {
+  public func updateFABVisibility(menuDismissing: Bool = false) {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
 
@@ -552,13 +558,16 @@ open class DevMenuManager: NSObject {
         }
       }
 
-      let shouldShow = DevMenuPreferences.showFloatingActionButton && !self.isVisible && self.currentBridge != nil && !self.isNavigatingHome
+      let shouldShow = DevMenuPreferences.showFloatingActionButton
+        && (menuDismissing || !self.isVisible)
+        && self.currentBridge != nil
+        && !self.isNavigatingHome
+        && DevMenuPreferences.isOnboardingFinished
       self.fabWindow?.setVisible(shouldShow, animated: true)
     }
   }
   #else
-  @objc
-  public func updateFABVisibility() {
+  public func updateFABVisibility(menuDismissing: Bool = false) {
     // FAB not available on macOS/tvOS
   }
   #endif

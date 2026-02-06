@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed missing dependencies when building from source ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed a crash caused by the missing module registry. ([#42653](https://github.com/expo/expo/pull/42653) by [@tsapeta](https://github.com/tsapeta))
 
 ## 55.0.3 — 2026-01-27
 

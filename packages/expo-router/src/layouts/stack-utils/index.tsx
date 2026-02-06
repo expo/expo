@@ -1,17 +1,15 @@
-import { StackHeaderComponent, type StackHeaderProps } from './StackHeaderComponent';
-import { StackSearchBar, type StackSearchBarProps } from './StackSearchBar';
-import type { StackHeaderItemSharedProps } from './shared';
-
+import { StackHeaderComponent } from './StackHeaderComponent';
 export const StackHeader = StackHeaderComponent;
 
-export {
-  type StackHeaderProps,
-  StackSearchBar,
-  type StackSearchBarProps,
-  type StackHeaderItemSharedProps,
-};
+export type { StackHeaderProps } from './StackHeaderComponent';
+export { StackSearchBar, type StackSearchBarProps } from './StackSearchBar';
 
 export * from './toolbar';
 export * from './screen';
 
-export { StackScreen, appendScreenStackPropsToOptions, type StackScreenProps } from './StackScreen';
+export {
+  StackScreen,
+  appendScreenStackPropsToOptions,
+  validateStackPresentation,
+  type StackScreenProps,
+} from './StackScreen';

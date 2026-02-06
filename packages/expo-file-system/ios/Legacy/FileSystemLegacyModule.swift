@@ -75,12 +75,32 @@ public final class FileSystemLegacyModule: Module {
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
       try ensurePathPermission(appContext, path: url.path, flag: .write)
 
+      let data: Data?
       if options.encoding == .base64 {
-        try writeFileAsBase64(path: url.path, string: string)
-        return
+        data = Data(base64Encoded: string, options: .ignoreUnknownCharacters)
+      } else {
+        data = string.data(using: options.encoding.toStringEncoding() ?? .utf8)
       }
+
+      guard let data else {
+        throw FileNotWritableException(url.path)
+      }
+
       do {
-        try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
+        if options.append {
+          if !FileManager.default.fileExists(atPath: url.path) {
+            try data.write(to: url, options: .atomic)
+          } else {
+            let fileHandle = try FileHandle(forWritingTo: url)
+            defer {
+              fileHandle.closeFile()
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(data)
+          }
+        } else {
+          try data.write(to: url, options: .atomic)
+        }
       } catch {
         throw FileNotWritableException(url.path)
           .causedBy(error)

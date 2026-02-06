@@ -2,7 +2,7 @@ import type { NextHandleFunction } from 'connect';
 import { WebSocketServer } from 'ws';
 
 import { createHandlersFactory } from './createHandlersFactory';
-import { env } from '../../../../utils/env';
+import { env, envIsHeadless } from '../../../../utils/env';
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 import { TerminalReporter } from '../TerminalReporter';
 import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
@@ -47,6 +47,10 @@ export function createDebugMiddleware({
       // Only enable opening the browser version of React Native DevTools when debugging.
       // This is useful when debugging the React Native DevTools by going to `/open-debugger` in the browser.
       enableOpenDebuggerRedirect: env.EXPO_DEBUG,
+      // The standalone fusebox shell (@react-native/debugger-shell) starts installing almost
+      // immediately in the background when the dev middleware is created, which we don't
+      // always want to happen
+      enableStandaloneFuseboxShell: !envIsHeadless(),
     },
   });
 

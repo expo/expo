@@ -33,7 +33,7 @@ public class DevMenuPreferences: Module {
       keyCommandsEnabledKey: true,
       showsAtLaunchKey: false,
       isOnboardingFinishedKey: true,
-      showFloatingActionButtonKey: true
+      showFloatingActionButtonKey: false
     ])
     #else
     UserDefaults.standard.register(defaults: [
@@ -42,7 +42,7 @@ public class DevMenuPreferences: Module {
       keyCommandsEnabledKey: true,
       showsAtLaunchKey: false,
       isOnboardingFinishedKey: false,
-      showFloatingActionButtonKey: true
+      showFloatingActionButtonKey: false
     ])
     #endif
 

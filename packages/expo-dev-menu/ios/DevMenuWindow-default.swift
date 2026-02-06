@@ -26,7 +26,7 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
     self.rootViewController = UIViewController()
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
     #if os(tvOS)
-    self.windowLevel = .normal
+    self.windowLevel = .normal + 1
     #else
     self.windowLevel = .statusBar
     #endif
@@ -103,11 +103,12 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
       self.backgroundColor = .clear
     }
 
+    DevMenuManager.shared.updateFABVisibility(menuDismissing: true)
+
     devMenuViewController.dismiss(animated: true) {
       self.isDismissing = false
       self.isHidden = true
       self.backgroundColor = UIColor(white: 0, alpha: 0.4)
-      DevMenuManager.shared.updateFABVisibility()
       completion?()
     }
   }

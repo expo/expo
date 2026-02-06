@@ -1,11 +1,4 @@
-/// <reference types="node" />
-
-// Extend the NodeJS namespace
-declare namespace NodeJS {
-  interface ProcessEnv {
-    readonly NODE_ENV: 'development' | 'production' | 'test';
-  }
-}
+/* eslint-disable */
 
 // Create types for CSS modules
 declare module '*.module.css' {

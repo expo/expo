@@ -6,13 +6,13 @@ import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.weak
 import kotlin.reflect.KClass
 
 @DoNotStrip
 open class SharedObject(runtime: Runtime? = null) {
-  constructor(appContext: AppContext) : this(appContext.hostingRuntimeContext)
+  constructor(appContext: AppContext) : this(appContext.runtime)
 
   /**
    * An identifier of the native shared object that maps to the JavaScript object.
@@ -50,7 +50,7 @@ open class SharedObject(runtime: Runtime? = null) {
         jniInterop,
         eventName,
         args
-          .map { JSTypeConverter.convertToJSValue(it) }
+          .map { JSTypeConverterProvider.convertToJSValue(it) }
           .toTypedArray()
       )
     } catch (e: Throwable) {

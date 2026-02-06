@@ -3,10 +3,10 @@ import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
 import resolveFrom from 'resolve-from';
-import resolveGlobal from 'resolve-global';
 import semver from 'semver';
 
 import { env } from './env';
+import { resolveGlobal } from './resolveGlobal';
 import { Options, SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
 
 const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
@@ -118,11 +118,12 @@ async function findSharpBinAsync(): Promise<string> {
   if (_sharpBin) return _sharpBin;
 
   try {
-    const sharpCliPackagePath =
-      resolveGlobal.silent('sharp-cli/package.json') ??
-      require.resolve('sharp-cli/package.json', {
-        paths: require.resolve.paths('sharp-cli') ?? undefined,
-      });
+    let sharpCliPackagePath: string;
+    try {
+      sharpCliPackagePath = resolveGlobal('sharp-cli/package.json');
+    } catch {
+      sharpCliPackagePath = require.resolve('sharp-cli/package.json');
+    }
 
     const sharpCliPackage = require(sharpCliPackagePath);
     const sharpInstance = sharpCliPackagePath

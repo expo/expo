@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`build:ios command without prebuild should display help message for --help/-h option 1`] = `
+"Usage: expo-brownfield build:ios [<options>]
+
+Options:
+  --help, -h                    display help for 'build:ios'
+  --debug, -d                   build in debug configuration
+  --release, -r                 build in release configuration
+  --verbose                     forward all output to the terminal
+  --artifacts, -a               path to artifacts directory
+  --scheme, -s                  scheme to be built
+  --xcworkspace, -x             path to Xcode workspace (.xcworkspace)"
+`;
+
+exports[`build:ios command without prebuild should display help message for --help/-h option 2`] = `
+"Usage: expo-brownfield build:ios [<options>]
+
+Options:
+  --help, -h                    display help for 'build:ios'
+  --debug, -d                   build in debug configuration
+  --release, -r                 build in release configuration
+  --verbose                     forward all output to the terminal
+  --artifacts, -a               path to artifacts directory
+  --scheme, -s                  scheme to be built
+  --xcworkspace, -x             path to Xcode workspace (.xcworkspace)"
+`;

@@ -37,6 +37,7 @@ export type BuildTypeCommon = 'debug' | 'release';
 export type BuildTypeAndroid = BuildTypeCommon | 'all';
 
 export interface BuildConfigCommon {
+  dryRun: boolean;
   help: boolean;
   verbose: boolean;
 }

@@ -41,6 +41,19 @@ jest.mock('../NativeTabsView', () => {
   };
 });
 
+jest.mock('react-native-safe-area-context', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actualModule = jest.requireActual(
+    'react-native-safe-area-context'
+  ) as typeof import('react-native-safe-area-context');
+  return {
+    ...actualModule,
+    SafeAreaProvider: jest.fn(({ ...props }) => (
+      <actualModule.SafeAreaProvider {...props} testID="SafeAreaProvider" />
+    )),
+  };
+});
+
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 
@@ -985,5 +998,25 @@ describe('Misc', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(expected);
+  });
+});
+
+describe('SafeAreaProvider', () => {
+  it('wraps tab content with SafeAreaProvider on iOS', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    const providers = screen.getAllByTestId('SafeAreaProvider');
+    // Root SAP + Tab SAP
+    expect(providers.length).toBe(2);
+    expect(providers[0]).toBeVisible();
+    expect(providers[1]).toBeVisible();
   });
 });

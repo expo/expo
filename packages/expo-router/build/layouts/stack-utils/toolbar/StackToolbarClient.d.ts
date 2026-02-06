@@ -95,9 +95,9 @@ export declare const StackToolbar: {
     SearchBarSlot: React.FC<import("./StackToolbarSearchBarSlot").StackToolbarSearchBarSlotProps>;
     Spacer: React.FC<import("./StackToolbarSpacer").StackToolbarSpacerProps>;
     View: React.FC<import("./StackToolbarView").StackToolbarViewProps>;
-    Label: React.FC<import("../common-primitives").StackToolbarLabelProps>;
-    Icon: React.FC<import("../common-primitives").StackToolbarIconProps>;
-    Badge: React.FC<import("../common-primitives").StackToolbarBadgeProps>;
+    Label: React.FC<import("./toolbar-primitives").StackToolbarLabelProps>;
+    Icon: React.FC<import("./toolbar-primitives").StackToolbarIconProps>;
+    Badge: React.FC<import("./toolbar-primitives").StackToolbarBadgeProps>;
 };
 export declare function appendStackToolbarPropsToOptions(options: NativeStackNavigationOptions, props: StackToolbarProps): NativeStackNavigationOptions;
 export default StackToolbar;

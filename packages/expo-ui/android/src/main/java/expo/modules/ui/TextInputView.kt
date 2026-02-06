@@ -24,7 +24,7 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
-  val modifiers: MutableState<List<ModifierConfig>> = mutableStateOf(emptyList())
+  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -83,7 +83,7 @@ class TextInputView(context: Context, appContext: AppContext) :
         autoCorrectEnabled = props.autocorrection.value,
         capitalization = props.autoCapitalize.value.autoCapitalize()
       ),
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, scope = this@Content)
+      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content)
     )
   }
 }

@@ -7,7 +7,7 @@ import {
   LabeledContent,
   Picker,
   Section,
-  Switch,
+  Toggle,
   Text,
 } from '@expo/ui/swift-ui';
 import {
@@ -102,7 +102,7 @@ export default function DatePickerScreen() {
               </Text>
             ))}
           </Picker>
-          <Switch value={useRange} label="Limit to next 30 days" onValueChange={setUseRange} />
+          <Toggle isOn={useRange} label="Limit to next 30 days" onIsOnChange={setUseRange} />
           <ColorPicker label="Tint Color" selection={tintColor} onSelectionChange={setTintColor} />
         </Section>
         <Section title="Date Picker with custom label">

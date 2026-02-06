@@ -67,7 +67,9 @@ struct SourceMapExplorerView: View {
     }
     .navigationTitle(showNavigationBar ? "Source code explorer" : "")
     .inlineNavigationBar()
+#if !os(macOS)
     .navigationBarHidden(!showNavigationBar)
+#endif
     .modifier(ConditionalSearchable(isEnabled: showContent, text: $viewModel.searchText))
   }
 
@@ -88,7 +90,13 @@ struct SourceMapExplorerView: View {
         .foregroundColor(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    #if os(tvOS)
+    .background(Color(uiColor: .systemGray))
+    #elseif os(macOS)
+    .background(Color(uiColor: .windowBackgroundColor))
+    #else
     .background(Color(uiColor: .systemGroupedBackground))
+    #endif
     .ignoresSafeArea()
   }
 
@@ -266,6 +274,9 @@ struct CodeFileView: View {
 
   private var codeToolbar: some View {
     HStack(spacing: 0) {
+      #if os(tvOS)
+      Spacer()
+      #else
       // Copy button
       Button {
         UIPasteboard.general.string = displayContent
@@ -278,6 +289,7 @@ struct CodeFileView: View {
           .font(.system(size: 14))
           .frame(maxWidth: .infinity)
       }
+      #endif
 
       Divider().frame(height: 24)
 
@@ -326,7 +338,13 @@ struct CodeFileView: View {
     }
     .foregroundColor(Color(uiColor: .label))
     .padding(.vertical, 10)
+    #if os(tvOS)
+    .background(Color(uiColor: .systemGray))
+    #elseif os(macOS)
+    .background(Color(uiColor: .controlBackgroundColor))
+    #else
     .background(Color(uiColor: .secondarySystemBackground))
+    #endif
   }
 
   var body: some View {
@@ -345,7 +363,13 @@ struct CodeFileView: View {
         }
       }
     }
+    #if os(tvOS)
+    .background(theme.background)
+    #elseif os(macOS)
+    .background(isImageFile ? Color(uiColor: .windowBackgroundColor) : theme.background)
+    #else
     .background(isImageFile ? Color(uiColor: .systemGroupedBackground) : theme.background)
+    #endif
     .navigationTitle(node.name)
     .inlineNavigationBar()
     .toolbar {
@@ -428,6 +452,9 @@ struct CodeFileView: View {
   }
 
   private func editingView() -> some View {
+    #if os(tvOS)
+    readOnlyView()
+    #else
     TextEditor(text: $displayContent)
       .font(.system(size: fontSize, weight: .regular, design: .monospaced))
       #if os(iOS) || os(tvOS)
@@ -437,16 +464,21 @@ struct CodeFileView: View {
       .modifier(ScrollContentBackgroundModifier())
       .background(theme.background)
       .foregroundColor(theme.plain)
+    #endif
   }
 }
 
 private struct ScrollContentBackgroundModifier: ViewModifier {
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+    #if os(tvOS)
+    content
+    #else
+    if #available(iOS 16.0, macOS 13.0, *) {
       content.scrollContentBackground(.hidden)
     } else {
       content
     }
+    #endif
   }
 }
 

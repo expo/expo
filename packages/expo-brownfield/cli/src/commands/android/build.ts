@@ -1,10 +1,12 @@
 import path from 'path';
 
-import { Args, Help } from '../../constants';
+import { Args, Errors, Help } from '../../constants';
 import {
   BuildTypeAndroid,
   ensurePrebuild,
   getAndroidConfig,
+  getCommand,
+  getCommonConfig,
   parseArgs,
   printConfig,
   runCommand,
@@ -12,30 +14,48 @@ import {
 } from '../../utils';
 
 const action = async () => {
-  const args = parseArgs({ spec: Args.Android, argv: process.argv.slice(2) });
+  const args = parseArgs({
+    spec: Args.Android,
+    // Skip first three args:
+    // <node-path> expo-brownfield build:android
+    argv: process.argv.slice(3),
+    stopAtPositional: true,
+  });
 
-  await ensurePrebuild('android');
+  if (getCommand(args)) {
+    return Errors.additionalCommand('build:android');
+  }
 
-  const config = await getAndroidConfig(args);
-  if (config.help) {
+  // Only resolve --help and --verbose options
+  const basicConfig = getCommonConfig(args);
+  if (basicConfig.help) {
     console.log(Help.Android);
     return process.exit(0);
   }
 
+  await ensurePrebuild('android');
+
+  const config = await getAndroidConfig(args);
   printConfig(config);
 
   let tasks = [];
   if (config.tasks.length > 0) {
     tasks = config.tasks;
-  } else {
+  } else if (config.repositories.length > 0) {
     for (const repository of config.repositories) {
       const task = constructTask(config.buildType, repository);
       tasks.push(task);
     }
+  } else {
+    Errors.missingTasksOrRepositories();
   }
 
   for (const task of tasks) {
-    await runTask(task, config.verbose);
+    if (!config.dryRun) {
+      await runTask(task, config.verbose);
+    } else {
+      console.log(`./gradlew ${task}`);
+    }
   }
 };
 

@@ -26,7 +26,6 @@ export * from './ShareLink';
 export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
-export * from './Switch';
 export * from './Text';
 export * from './Toggle';
 export * from './TextField';
@@ -37,4 +36,5 @@ export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';
+export { type CommonViewModifierProps } from './types';
 //# sourceMappingURL=index.d.ts.map

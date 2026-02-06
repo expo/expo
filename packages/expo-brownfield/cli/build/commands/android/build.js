@@ -7,26 +7,45 @@ const path_1 = __importDefault(require("path"));
 const constants_1 = require("../../constants");
 const utils_1 = require("../../utils");
 const action = async () => {
-    const args = (0, utils_1.parseArgs)({ spec: constants_1.Args.Android, argv: process.argv.slice(2) });
-    await (0, utils_1.ensurePrebuild)('android');
-    const config = await (0, utils_1.getAndroidConfig)(args);
-    if (config.help) {
+    const args = (0, utils_1.parseArgs)({
+        spec: constants_1.Args.Android,
+        // Skip first three args:
+        // <node-path> expo-brownfield build:android
+        argv: process.argv.slice(3),
+        stopAtPositional: true,
+    });
+    if ((0, utils_1.getCommand)(args)) {
+        return constants_1.Errors.additionalCommand('build:android');
+    }
+    // Only resolve --help and --verbose options
+    const basicConfig = (0, utils_1.getCommonConfig)(args);
+    if (basicConfig.help) {
         console.log(constants_1.Help.Android);
         return process.exit(0);
     }
+    await (0, utils_1.ensurePrebuild)('android');
+    const config = await (0, utils_1.getAndroidConfig)(args);
     (0, utils_1.printConfig)(config);
     let tasks = [];
     if (config.tasks.length > 0) {
         tasks = config.tasks;
     }
-    else {
+    else if (config.repositories.length > 0) {
         for (const repository of config.repositories) {
             const task = constructTask(config.buildType, repository);
             tasks.push(task);
         }
     }
+    else {
+        constants_1.Errors.missingTasksOrRepositories();
+    }
     for (const task of tasks) {
-        await runTask(task, config.verbose);
+        if (!config.dryRun) {
+            await runTask(task, config.verbose);
+        }
+        else {
+            console.log(`./gradlew ${task}`);
+        }
     }
 };
 exports.default = action;

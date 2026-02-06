@@ -10,12 +10,11 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 
 enum class ProgressVariant(val value: String) : Enumerable {
   CIRCULAR("circular"),
@@ -34,15 +33,15 @@ data class ProgressProps(
   val progress: Float? = null,
   val color: Color? = null,
   val elementColors: ProgressColors = ProgressColors(),
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun ExpoViewComposableScope.ProgressContent(props: ProgressProps) {
+fun FunctionalComposableScope.ProgressContent(props: ProgressProps) {
   val progress = props.progress
   val color = props.color
   val colors = props.elementColors
-  val modifier = ModifierRegistry.applyModifiers(props.modifiers)
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
 
   when (props.variant) {
     ProgressVariant.LINEAR -> {
