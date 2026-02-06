@@ -17,7 +17,6 @@ import { ensureEnvironmentSupportsTLSAsync } from './tls';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { getIpAddress } from '../../../utils/ip';
 import { setNodeEnv } from '../../../utils/nodeEnv';
 import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
@@ -163,7 +162,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const { resetDevServer, https, port, mode } = options;
 
-    await this.initUrlCreator({
+    const urlCreator = await this.initUrlCreator({
       port,
       location: {
         scheme: https ? 'https' : 'http',
@@ -211,13 +210,14 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    const _host = getIpAddress();
+    const _host = urlCreator.getDefaultRouteAddress();
     const protocol = https ? 'https' : 'http';
 
     return {
       // Server instance
       server,
       // URL Info
+      // TODO(@kitten): Why is this not using the URL creator?
       location: {
         url: `${protocol}://${_host}:${port}`,
         port,

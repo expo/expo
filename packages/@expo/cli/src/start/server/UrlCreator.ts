@@ -95,6 +95,10 @@ export class UrlCreator {
     return url;
   }
 
+  public getDefaultRouteAddress(): string {
+    return this.gatewayInfo.address;
+  }
+
   /** Get the URL components from the Ngrok server URL. */
   private getTunnelUrlComponents(options: Pick<CreateURLOptions, 'scheme'>): UrlComponents | null {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl?.();
