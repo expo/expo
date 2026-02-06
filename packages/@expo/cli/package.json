@@ -76,7 +76,7 @@
     "fetch-nodeshim": "^0.4.5",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
-    "lan-network": "^0.1.6",
+    "lan-network": "^0.2.0",
     "minimatch": "^9.0.0",
     "multitars": "^0.2.3",
     "node-forge": "^1.3.3",

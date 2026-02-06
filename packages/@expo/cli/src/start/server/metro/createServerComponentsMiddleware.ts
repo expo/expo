@@ -18,7 +18,7 @@ import type { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
 import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
-import { getIpAddress } from '../../../utils/ip';
+import { getIpAddressAsync } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
 import {
   createBundleUrlSearchParams,
@@ -78,7 +78,7 @@ export function createServerComponentsMiddleware(
     renderRsc: async (args) => {
       // In development we should add simulated versions of common production headers.
       if (args.headers['x-real-ip'] == null) {
-        args.headers['x-real-ip'] = getIpAddress();
+        args.headers['x-real-ip'] = await getIpAddressAsync();
       }
       if (args.headers['x-forwarded-for'] == null) {
         args.headers['x-forwarded-for'] = args.headers['x-real-ip'];
