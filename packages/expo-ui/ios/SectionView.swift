@@ -13,12 +13,14 @@ internal struct SectionView: ExpoSwiftUI.View {
   @ObservedObject var props: SectionProps
   @State private var isExpanded: Bool = true
 
+  init(props: SectionProps) {
+    self.props = props
+    _isExpanded = State(initialValue: props.isExpanded ?? true)
+  }
+
   var body: some View {
     if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *), let propIsExpanded = props.isExpanded {
       collapsibleSection
-        .onAppear {
-          isExpanded = propIsExpanded
-        }
         .onChange(of: props.isExpanded) { newValue in
           if let newValue {
             isExpanded = newValue

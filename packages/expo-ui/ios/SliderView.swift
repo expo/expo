@@ -9,6 +9,14 @@ struct SliderView: ExpoSwiftUI.View {
 
   init(props: SliderProps) {
     self.props = props
+    var initialValue = props.value ?? 0.0
+    if let min = props.min {
+      initialValue = max(initialValue, min)
+    }
+    if let max = props.max {
+      initialValue = min(initialValue, max)
+    }
+    _value = State(initialValue: initialValue)
   }
 
   var body: some View {
