@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed a number of configuration issues and error inconsistencies.
+- [iOS] Fixed a number of configuration issues and error inconsistencies. ([#42926](https://github.com/expo/expo/pull/42926) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

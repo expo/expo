@@ -343,8 +343,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
           scannerContext = ScannerContext(delegate: delegate)
           launchScanner(with: options)
         }
-      } else {
-        throw CameraScannerUnavailableException()
       }
     }
 
