@@ -26,6 +26,10 @@ it(`renders Icon drawable`, async () => {
   await expect(<Icon drawable="0.circle" />).toMatchFlightSnapshot();
 });
 
+it(`renders Icon xcasset`, async () => {
+  await expect(<Icon xcasset="custom-icon" />).toMatchFlightSnapshot();
+});
+
 it(`renders Badge`, async () => {
   await expect(<Badge>Test</Badge>).toMatchFlightSnapshot();
 });

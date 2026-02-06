@@ -158,6 +158,18 @@ function appendIconOptions(options, props) {
                 : undefined;
         }
     }
+    else if ('xcasset' in props && props.xcasset && process.env.EXPO_OS === 'ios') {
+        if (typeof props.xcasset === 'string') {
+            options.icon = { xcasset: props.xcasset };
+            options.selectedIcon = undefined;
+        }
+        else {
+            options.icon = props.xcasset.default ? { xcasset: props.xcasset.default } : undefined;
+            options.selectedIcon = props.xcasset.selected
+                ? { xcasset: props.xcasset.selected }
+                : undefined;
+        }
+    }
     else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
         if ('md' in props) {
             console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
