@@ -24,7 +24,8 @@ android {
                 "lib/arm64-v8a/libc++_shared.so",
                 "lib/armeabi-v7a/libc++_shared.so",
                 "lib/x86/libc++_shared.so",
-                "lib/x86_64/libc++_shared.so"
+                "lib/x86_64/libc++_shared.so",
+                "**/libworklets.so"
             )
         )
     }
@@ -61,7 +62,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.expobrownfieldtargetexample.local)
+    implementation(libs.brownfield)
+    implementation(libs.expo.brownfield)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
