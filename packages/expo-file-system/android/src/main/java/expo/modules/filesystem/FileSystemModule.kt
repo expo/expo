@@ -245,14 +245,14 @@ class FileSystemModule : Module() {
         file.type
       }
 
-      Function("open") { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+      Function("open") { file: FileSystemFile, mode: String? ->
+        file.openHandle(mode)
       }
     }
 
     Class(FileSystemFileHandle::class) {
       Constructor { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+        FileSystemFileHandle.forJavaFile(file.javaFile)
       }
       Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
