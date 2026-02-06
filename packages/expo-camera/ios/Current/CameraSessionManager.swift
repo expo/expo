@@ -355,7 +355,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       delegate.onMountError(["message": "Camera could not be started - \(error.localizedDescription)"])
     }
   }
-  
+
   func deviceDiscovery(_ discovery: DeviceDiscovery, didUpdateDevices devices: [AVCaptureDevice]) {
     DispatchQueue.main.async { [weak self] in
       self?.delegate?.emitAvailableLenses()
