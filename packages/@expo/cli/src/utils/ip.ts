@@ -1,5 +1,13 @@
 import { lanNetworkSync, lanNetwork } from 'lan-network';
 
+import { envIsHeadless } from './env';
+
+// NOTE(@kitten): In headless mode, there's no point in trying to run DHCP, since
+// we assume we're online and probing is going to be enough
+const options = {
+  noDhcp: envIsHeadless(),
+};
+
 export interface GatewayInfo {
   iname: string | null;
   address: string;
@@ -9,7 +17,7 @@ export interface GatewayInfo {
 
 export function getGateway(): GatewayInfo {
   try {
-    return lanNetworkSync();
+    return lanNetworkSync(options);
   } catch {
     return {
       iname: null,
@@ -22,7 +30,7 @@ export function getGateway(): GatewayInfo {
 
 export async function getGatewayAsync(): Promise<GatewayInfo> {
   try {
-    return await lanNetwork();
+    return await lanNetwork(options);
   } catch {
     return {
       iname: null,
