@@ -359,7 +359,7 @@ async function createSQLiteExecuteAsyncResult<T>(
   const instance = new SQLiteExecuteAsyncResultImpl<T>(
     database,
     statement,
-    firstRowValues,
+    firstRowValues ? processNativeRow(firstRowValues) : null,
     options
   );
   const generator = instance.generatorAsync();
@@ -403,7 +403,12 @@ function createSQLiteExecuteSyncResult<T>(
   firstRowValues: SQLiteColumnValues | null,
   options: SQLiteExecuteResultOptions
 ): SQLiteExecuteSyncResult<T> {
-  const instance = new SQLiteExecuteSyncResultImpl<T>(database, statement, firstRowValues, options);
+  const instance = new SQLiteExecuteSyncResultImpl<T>(
+    database,
+    statement,
+    firstRowValues ? processNativeRow(firstRowValues) : firstRowValues,
+    options
+  );
   const generator = instance.generatorSync();
   Object.defineProperties(generator, {
     lastInsertRowId: {
@@ -461,7 +466,7 @@ class SQLiteExecuteAsyncResultImpl<T> {
     }
     const firstRow = await this.statement.stepAsync(this.database);
     return firstRow != null
-      ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRow)
+      ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(firstRow))
       : null;
   }
 
@@ -478,7 +483,8 @@ class SQLiteExecuteAsyncResultImpl<T> {
       return [];
     }
     const columnNames = await this.getColumnNamesAsync();
-    const allRows = await this.statement.getAllAsync(this.database);
+    const nativeRows = await this.statement.getAllAsync(this.database);
+    const allRows = processNativeRows(nativeRows);
     if (firstRowValues != null && firstRowValues.length > 0) {
       return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, [
         firstRowValues,
@@ -500,7 +506,7 @@ class SQLiteExecuteAsyncResultImpl<T> {
     do {
       result = await this.statement.stepAsync(this.database);
       if (result != null) {
-        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, result);
+        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(result));
       }
     } while (result != null);
   }
@@ -552,7 +558,7 @@ class SQLiteExecuteSyncResultImpl<T> {
     }
     const firstRow = this.statement.stepSync(this.database);
     return firstRow != null
-      ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRow)
+      ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(firstRow))
       : null;
   }
 
@@ -568,7 +574,8 @@ class SQLiteExecuteSyncResultImpl<T> {
       return [];
     }
     const columnNames = this.getColumnNamesSync();
-    const allRows = this.statement.getAllSync(this.database);
+    const nativeRows = this.statement.getAllSync(this.database);
+    const allRows = processNativeRows(nativeRows);
     if (firstRowValues != null && firstRowValues.length > 0) {
       return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, [
         firstRowValues,
@@ -588,7 +595,7 @@ class SQLiteExecuteSyncResultImpl<T> {
     do {
       result = this.statement.stepSync(this.database);
       if (result != null) {
-        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, result);
+        yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(result));
       }
     } while (result != null);
   }
@@ -634,6 +641,16 @@ function composeRowsIfNeeded<T>(
   return rawResult
     ? (columnValuesList as T[]) // T[] would be a ValuesOf<>[] from caller
     : composeRows<T>(columnNames, columnValuesList);
+}
+
+function processNativeRow(nativeRow: SQLiteColumnValues): SQLiteColumnValues {
+  return nativeRow?.map((column) =>
+    column instanceof ArrayBuffer ? new Uint8Array(column) : column
+  );
+}
+
+function processNativeRows(nativeRows: SQLiteColumnValues[]): SQLiteColumnValues[] {
+  return nativeRows.map(processNativeRow);
 }
 
 //#endregion
