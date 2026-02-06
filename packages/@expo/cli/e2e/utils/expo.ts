@@ -32,6 +32,10 @@ export function createExpoServe(options: Partial<BackgroundServerOptions> = {}) 
     command: (port) => [EXPO_CLI_BIN, 'serve', `--port=${port}`],
     host: (chunk) => processFindPrefixedValue(chunk, 'Server running at'),
     ...options,
+    env: {
+      EXPO_UNSTABLE_HEADLESS: '1',
+      ...options.env,
+    },
   });
 }
 
