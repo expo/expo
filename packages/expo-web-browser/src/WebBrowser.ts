@@ -74,7 +74,7 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<WebBrowser
 
 // @needsAudit
 /**
- * This method calls `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long))
+ * This method calls `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/androidx/browser/customtabs/CustomTabsClient#warmup(long))
  * for specified package.
  *
  * @param browserPackage Package of browser to be warmed up. If not set, preferred browser will be warmed.
@@ -95,7 +95,7 @@ export async function warmUpAsync(browserPackage?: string): Promise<WebBrowserWa
 
 // @needsAudit
 /**
- * This method initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl)
+ * This method initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/androidx/browser/customtabs/CustomTabsSession#mayLaunchUrl)
  * and calls its `mayLaunchUrl` method for browser specified by the package.
  *
  * @param url The url of page that is likely to be loaded first when opening browser.
