@@ -430,14 +430,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didFailWithError:(NSError *)error
 {
-  // Hide the loading overlay on error
-  if ([EXKernel sharedInstance].browserController) {
-    [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
-  }
-  if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
-    [_appRecord.appManager appLoaderFailedWithError:error];
-  }
-  [self maybeShowError:error];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Hide the loading overlay on error
+    if ([EXKernel sharedInstance].browserController) {
+      [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+    }
+    if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
+      [self->_appRecord.appManager appLoaderFailedWithError:error];
+    }
+    [self maybeShowError:error];
+  });
 }
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
