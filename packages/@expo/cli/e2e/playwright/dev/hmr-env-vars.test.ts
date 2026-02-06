@@ -81,7 +81,7 @@ test.describe('router-e2e with spaces', () => {
     await expect(page.locator('[data-testid="env-var-inline"]')).toHaveText('inlined');
 
     // Ensure the initial hash is correct
-    await expect(page.locator('[data-testid="env-var"]')).toHaveText('ROUTE_VALUE');
+    await expect(page.locator('[data-testid="env-var"]')).toHaveText(/ROUTE_VALUE/);
     const envFile = path.join(projectRoot, '.env');
     // Use a changing value to prevent caching.
     const nextValue = 'ROUTE_VALUE_' + Date.now();
@@ -92,7 +92,7 @@ test.describe('router-e2e with spaces', () => {
         throw new Error(`Expected to find 'ROUTE_VALUE' in the file`);
       }
       console.log('Emulate writing to a file');
-      return contents.replace(/ROUTE_VALUE/g, nextValue);
+      return contents.replace(/ROUTE_VALUE(_\w+)?/g, nextValue);
     });
 
     await waitForFashRefresh();
