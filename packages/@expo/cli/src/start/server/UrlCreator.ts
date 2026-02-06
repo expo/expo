@@ -2,7 +2,7 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
-import { getIpAddress } from '../../utils/ip';
+import { GatewayInfo, getGateway, getGatewayAsync } from '../../utils/ip';
 
 const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
 
@@ -28,9 +28,15 @@ interface BundlerInfo {
 
 export class UrlCreator {
   constructor(
-    public defaults: CreateURLOptions | undefined,
-    private bundlerInfo: BundlerInfo
+    public defaults: CreateURLOptions,
+    private bundlerInfo: BundlerInfo,
+    private gatewayInfo: GatewayInfo = getGateway()
   ) {}
+
+  static async init(defaults: CreateURLOptions | undefined | null, bundlerInfo: BundlerInfo) {
+    const gatewayInfo = await getGatewayAsync();
+    return new UrlCreator(defaults || {}, bundlerInfo, gatewayInfo);
+  }
 
   /**
    * Return a URL for the "loading" interstitial page that is used to disambiguate which
@@ -122,7 +128,7 @@ export class UrlCreator {
     }
 
     return {
-      hostname: getDefaultHostname(options),
+      hostname: getDefaultHostname(options, this.gatewayInfo),
       port: this.bundlerInfo.port.toString(),
       protocol: options.scheme ?? 'http',
     };
@@ -150,18 +156,19 @@ function getUrlComponentsFromProxyUrl(
   };
 }
 
-function getDefaultHostname(options: Pick<CreateURLOptions, 'hostname'>) {
+const getDefaultHostname = (options: CreateURLOptions, gateway: GatewayInfo) => {
   // TODO: Drop REACT_NATIVE_PACKAGER_HOSTNAME
   if (process.env.REACT_NATIVE_PACKAGER_HOSTNAME) {
     return process.env.REACT_NATIVE_PACKAGER_HOSTNAME.trim();
   } else if (options.hostname === 'localhost') {
-    // Restrict the use of `localhost`
-    // TODO: Note why we do this.
+    // NOTE: We always convert "localhost" as a request to 127.0.0.1,
+    // to normalize to an address that's consistent
     return '127.0.0.1';
+  } else {
+    // Fall back to local address
+    return options.hostname || gateway.address;
   }
-
-  return options.hostname || getIpAddress();
-}
+};
 
 function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>): string {
   assert(hostname, 'hostname cannot be inferred.');
