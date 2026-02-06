@@ -1,6 +1,6 @@
 {
   "name": "expo-location",
-  "version": "19.0.7",
+  "version": "55.0.5",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,8 +38,11 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
+  "dependencies": {
+    "@expo/image-utils": "^0.8.12"
+  },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*"

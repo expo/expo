@@ -26,6 +26,11 @@ export type FileWriteOptions = {
      * @default FileSystem.EncodingType.UTF8
      */
     encoding?: EncodingType | 'utf8' | 'base64';
+    /**
+     * Whether to append the contents to the end of the file or overwrite the existing file.
+     * @default false
+     */
+    append?: boolean;
 };
 export type DirectoryCreateOptions = {
     /**
@@ -316,7 +321,8 @@ export type FileInfo = {
      */
     exists: boolean;
     /**
-     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     * A URI pointing to the file. This is the same as the `fileUri` input parameter
+     * and preserves its scheme (for example, `file://` or `content://`).
      */
     uri?: string;
     /**

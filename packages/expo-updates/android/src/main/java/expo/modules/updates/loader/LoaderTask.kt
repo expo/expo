@@ -135,6 +135,7 @@ class LoaderTask(
     fun onRemoteCheckForUpdateFinished(result: RemoteCheckResult) {}
     fun onRemoteUpdateLoadStarted() {}
     fun onRemoteUpdateAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) {}
+    fun onRemoteUpdateProgressChanged(progress: Double) {}
     fun onRemoteUpdateFinished(
       status: RemoteUpdateStatus,
       update: UpdateEntity?,
@@ -315,6 +316,10 @@ class LoaderTask(
     val database = databaseHolder.database
     callback.onRemoteCheckForUpdateStarted()
     val remoteLoader = RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
+
+    remoteLoader.assetLoadProgressBlock = { progress ->
+      callback.onRemoteUpdateProgressChanged(progress)
+    }
 
     // Set up progress flow collection in a separate coroutine
     val progressJob = scope.launch {

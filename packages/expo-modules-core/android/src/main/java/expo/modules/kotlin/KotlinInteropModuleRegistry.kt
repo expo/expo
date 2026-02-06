@@ -7,7 +7,6 @@ import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.modules.DEFAULT_MODULE_VIEW
-import expo.modules.kotlin.services.ServicesProvider
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.views.GroupViewManagerWrapper
 import expo.modules.kotlin.views.SimpleViewManagerWrapper
@@ -19,14 +18,12 @@ import java.lang.ref.WeakReference
 class KotlinInteropModuleRegistry(
   modulesProvider: ModulesProvider,
   legacyModuleRegistry: expo.modules.core.ModuleRegistry,
-  reactContext: WeakReference<ReactApplicationContext>,
-  servicesProvider: ServicesProvider
+  reactContext: WeakReference<ReactApplicationContext>
 ) {
   val appContext = AppContext(
     modulesProvider,
     legacyModuleRegistry,
-    reactContext,
-    servicesProvider
+    reactContext
   )
 
   private val registry: ModuleRegistry

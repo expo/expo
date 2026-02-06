@@ -2,6 +2,7 @@ import { render } from '@testing-library/react-native';
 import React from 'react';
 
 import { InternalLinkPreviewContext } from '../../InternalLinkPreviewContext';
+import { NativeMenuContext } from '../../NativeMenuContext';
 import { LinkMenu, LinkMenuAction } from '../../elements';
 import { NativeLinkPreviewAction } from '../native';
 
@@ -33,7 +34,9 @@ describe('LinkMenu', () => {
   };
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <InternalLinkPreviewContext value={mockContext}>{children}</InternalLinkPreviewContext>
+    <NativeMenuContext value>
+      <InternalLinkPreviewContext value={mockContext}>{children}</InternalLinkPreviewContext>
+    </NativeMenuContext>
   );
 
   describe('inline and palette prop combinations', () => {

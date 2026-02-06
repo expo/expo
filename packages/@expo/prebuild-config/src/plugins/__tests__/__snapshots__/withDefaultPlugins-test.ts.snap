@@ -440,13 +440,6 @@ exports[`built-in plugins compiles mods 1`] = `
     },
   },
   "name": "my cool app",
-  "notification": {
-    "androidCollapsedTitle": "#{unread_notifications} new interactions",
-    "androidMode": "collapse",
-    "color": "green",
-    "icon": "./icons/notification-icon.png",
-    "iosDisplayInForeground": true,
-  },
   "orientation": "default",
   "packagerOpts": {
     "extraThing": true,
@@ -510,12 +503,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "name": "activityBackground",
                 },
                 "_": "#ff0000",
-              },
-              {
-                "$": {
-                  "name": "notification_icon_color",
-                },
-                "_": "green",
               },
             ],
           },
@@ -780,17 +767,6 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
-          {
-            "type": "comment",
-            "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
-# WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
-          },
-          {
-            "key": "expo.edgeToEdgeEnabled",
-            "type": "property",
-            "value": "true
-",
-          },
         ],
         "manifest": {
           "manifest": {
@@ -813,7 +789,7 @@ exports[`built-in plugins introspects mods 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
                       "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
@@ -929,18 +905,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
-                      "android:name": "expo.modules.notifications.default_notification_icon",
-                      "android:resource": "@drawable/notification_icon",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_color",
-                      "android:resource": "@color/notification_icon_color",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "com.google.android.gms.ads.APPLICATION_ID",
                       "android:value": "MY_GOOGLE_MOBILE_ADS_APP_ID",
                     },
@@ -1015,11 +979,13 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
                 },
               },
@@ -1668,13 +1634,6 @@ exports[`built-in plugins introspects mods 1`] = `
     },
   },
   "name": "my cool app",
-  "notification": {
-    "androidCollapsedTitle": "#{unread_notifications} new interactions",
-    "androidMode": "collapse",
-    "color": "green",
-    "icon": "./icons/notification-icon.png",
-    "iosDisplayInForeground": true,
-  },
   "orientation": "default",
   "packagerOpts": {
     "extraThing": true,
@@ -1739,12 +1698,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "#ff0000",
               },
-              {
-                "$": {
-                  "name": "notification_icon_color",
-                },
-                "_": "green",
-              },
             ],
           },
         },
@@ -1761,29 +1714,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "gradleProperties": [
-          {
-            "type": "comment",
-            "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
-# WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
-          },
-          {
-            "key": "expo.edgeToEdgeEnabled",
-            "type": "property",
-            "value": "true
-",
-          },
-          {
-            "type": "comment",
-            "value": "Use this property to enable edge-to-edge display support.
-# This allows your app to draw behind system bars for an immersive UI.
-# Note: Only works with ReactActivity and should not be used with custom Activity.",
-          },
-          {
-            "key": "edgeToEdgeEnabled",
-            "type": "property",
-            "value": "true
-",
-          },
           {
             "key": "hermesEnabled",
             "type": "property",
@@ -1812,7 +1742,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
                       "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
@@ -1928,18 +1858,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   },
                   {
                     "$": {
-                      "android:name": "expo.modules.notifications.default_notification_icon",
-                      "android:resource": "@drawable/notification_icon",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_color",
-                      "android:resource": "@color/notification_icon_color",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "com.google.android.gms.ads.APPLICATION_ID",
                       "android:value": "MY_GOOGLE_MOBILE_ADS_APP_ID",
                     },
@@ -2014,11 +1932,13 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
                 },
               },
@@ -2651,13 +2571,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     },
   },
   "name": "my cool app",
-  "notification": {
-    "androidCollapsedTitle": "#{unread_notifications} new interactions",
-    "androidMode": "collapse",
-    "color": "green",
-    "icon": "./icons/notification-icon.png",
-    "iosDisplayInForeground": true,
-  },
   "orientation": "default",
   "packagerOpts": {
     "extraThing": true,

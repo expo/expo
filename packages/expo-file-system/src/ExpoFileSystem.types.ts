@@ -28,6 +28,11 @@ export type FileWriteOptions = {
    * @default FileSystem.EncodingType.UTF8
    */
   encoding?: EncodingType | 'utf8' | 'base64';
+  /**
+   * Whether to append the contents to the end of the file or overwrite the existing file.
+   * @default false
+   */
+  append?: boolean;
 };
 
 export type DirectoryCreateOptions = {
@@ -356,7 +361,7 @@ export declare class FileHandle {
    */
   close(): void;
   /*
-   * Reads the specified amount of bytes from the file at the current offset.
+   * Reads the specified amount of bytes from the file at the current offset. Max amount of bytes read at once is capped by ArrayBuffer max size (32 bit signed MAX_INT on Android and 64 bit on iOS), but you can read from a FileHandle multiple times.
    * @param length The number of bytes to read.
    */
   readBytes(length: number): Uint8Array<ArrayBuffer>;
@@ -383,7 +388,8 @@ export type FileInfo = {
    */
   exists: boolean;
   /**
-   * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+   * A URI pointing to the file. This is the same as the `fileUri` input parameter
+   * and preserves its scheme (for example, `file://` or `content://`).
    */
   uri?: string;
   /**

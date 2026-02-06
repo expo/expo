@@ -4,13 +4,35 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `useSystemBrightnessAsync` ([#40168](https://github.com/expo/expo/pull/40168) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- **Android**: Fixed `setSystemBrightnessAsync` to support brightness value 0 by mapping [0,1] range to Android's valid [1,255] range. ([#42470](https://github.com/expo/expo/pull/42470) by [@davidalo](https://github.com/davidalo))
+
 ### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- Remove deprecated `useSystemBrightnessAsync` ([#40168](https://github.com/expo/expo/pull/40168) by [@vonovak](https://github.com/vonovak))
 
 ## 14.0.8 - 2025-12-05
 

@@ -1,19 +1,47 @@
 ---
 title: Top-level src directory
 description: Learn how to use a top-level src directory in your Expo Router project.
-hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 As your project grows, it can be helpful to move all the directories containing application code into a single **src** directory. Expo Router supports this out of the box.
+
+## Using a top-level src directory
+
+<Step label="1">
+
+Move your **app** directory to **src/app**.
 
 <FileTree
   files={['src/app/_layout.tsx', 'src/app/index.tsx', 'src/components/button.tsx', 'package.json']}
 />
 
-Simply move your **app** directory to **src/app** and restart the development server.
+</Step>
+
+<Step label="2">
+
+Update [TypeScript path aliases](/guides/typescript#path-aliases) in the **tsconfig.json** file to point to the **src** directory instead of the root directory. If you use the default `@/*` alias, set it to **./src/\***:
+
+```json tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+This keeps `@/` imports working after moving your app directory into **src**.
+
+</Step>
+
+<Step label="3">
+
+Restart your development server.
 
 {/* prettier-ignore */}
 <Terminal cmd={[
@@ -23,7 +51,9 @@ Simply move your **app** directory to **src/app** and restart the development se
   '$ npx expo export'
 ]} />
 
-**Notes**:
+</Step>
+
+### Notes
 
 - The config files (**app.config.ts**, **app.json**, **package.json**, **metro.config.js**, **tsconfig.json**) should remain in the root directory.
 - The **src/app** directory takes higher precedence than the root **app** directory. Only the **src/app** directory will be used if you have both.

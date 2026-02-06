@@ -6,7 +6,7 @@ import com.facebook.react.bridge.WritableMap
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.getUnimoduleProxy
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.putGeneric
 import expo.modules.kotlin.views.ViewFunctionHolder
 
@@ -62,10 +62,10 @@ open class ViewEvent<T>(
   }
 
   private fun convertEventBody(arg: T): WritableMap? {
-    return when (val converted = JSTypeConverter.convertToJSValue(arg)) {
+    return when (val converted = JSTypeConverterProvider.convertToJSValue(arg)) {
       is Unit, null -> null
       is WritableMap -> converted
-      else -> JSTypeConverter.DefaultContainerProvider.createMap().apply {
+      else -> JSTypeConverterProvider.DefaultContainerProvider.createMap().apply {
         putGeneric("payload", converted)
       }
     }

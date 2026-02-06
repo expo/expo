@@ -13,12 +13,13 @@ export default function MapsCameraControlsScreen() {
           },
           zoom: 7,
         }}
+        colorScheme={AppleMaps.MapColorScheme.DARK}
         markers={[
           {
             coordinates: { latitude: 50, longitude: 10 },
             title: 'Marker #1',
+            monogram: '1',
             tintColor: 'blue',
-            systemImage: 'pin',
           },
           {
             coordinates: { latitude: 51, longitude: 9 },

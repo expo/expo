@@ -1,13 +1,13 @@
 package versioned.host.exp.exponent.modules.universal
 
-import android.content.Context
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.ModulesProvider
-import expo.modules.kotlin.services.ServicesProvider
+import expo.modules.kotlin.services.AppDirectoriesService
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExperienceKey
@@ -16,7 +16,6 @@ import versioned.host.exp.exponent.core.modules.ExpoGoModule
 import versioned.host.exp.exponent.core.modules.ExpoGoUpdatesModule
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
-import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler
@@ -29,7 +28,6 @@ open class ExpoModuleRegistryAdapter(
   modulesProvider: ModulesProvider? = null
 ) :
   ModuleRegistryAdapter(moduleRegistryProvider, modulesProvider), ScopedModuleRegistryAdapter {
-  private var servicesProvider: ServicesProvider? = null
 
   override fun createNativeModules(
     scopedContext: ScopedContext,
@@ -38,24 +36,7 @@ open class ExpoModuleRegistryAdapter(
     manifest: Manifest,
     otherModules: List<NativeModule>
   ): List<NativeModule> {
-    servicesProvider = object : ServicesProvider(scopedContext) {
-      override fun filePermission(): FilePermissionService {
-        return ScopedFilePermissionService(scopedContext)
-      }
-    }
-
     val moduleRegistry = mModuleRegistryProvider[scopedContext]
-
-    moduleRegistry.registerInternalModule(SharedCookiesDataSourceFactoryProvider())
-
-    // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
-    moduleRegistry.registerInternalModule(
-      ConstantsBinding(
-        scopedContext,
-        experienceProperties,
-        manifest
-      )
-    )
 
     // Overriding expo-notifications classes
     moduleRegistry.registerInternalModule(
@@ -86,6 +67,19 @@ open class ExpoModuleRegistryAdapter(
       reactContext,
       moduleRegistry
     ) { appContext ->
+      with(appContext.services) {
+        register(FilePermissionService::class.java, ScopedFilePermissionService(scopedContext))
+        register(AppDirectoriesService::class.java, AppDirectoriesService(scopedContext))
+        register(
+          ConstantsInterface::class.java,
+          ConstantsBinding(
+            scopedContext,
+            experienceProperties,
+            manifest
+          )
+        )
+      }
+
       with(appContext.registry) {
         register(
           ExpoGoModule(manifest),
@@ -113,9 +107,5 @@ open class ExpoModuleRegistryAdapter(
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     throw RuntimeException("Use other implementation of createNativeModules to get a list of native modules.")
-  }
-
-  override fun getServicesProvider(context: Context): ServicesProvider {
-    return requireNotNull(servicesProvider)
   }
 }

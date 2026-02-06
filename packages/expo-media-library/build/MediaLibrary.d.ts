@@ -471,6 +471,9 @@ export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<P
  * like to unsubscribe the listener.
  */
 export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): EventSubscription;
+/**
+ * @deprecated use subscription.remove() instead.
+ */
 export declare function removeSubscription(subscription: EventSubscription): void;
 /**
  * Removes all listeners.

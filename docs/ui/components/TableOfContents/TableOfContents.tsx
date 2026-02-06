@@ -27,6 +27,7 @@ import { TableOfContentsLink } from './TableOfContentsLink';
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
+const TARGET_IN_VIEW_BUFFER = 48;
 
 export type TableOfContentsProps = PropsWithChildren<{
   maxNestingDepth?: number;
@@ -73,6 +74,23 @@ export const TableOfContents = forwardRef<
 
   useImperativeHandle(ref, () => ({ handleContentScroll }), []);
 
+  function getContentScrollElement() {
+    return contentRef?.current?.getScrollRef().current;
+  }
+
+  function getViewportHeight() {
+    return getContentScrollElement()?.clientHeight ?? window.innerHeight;
+  }
+
+  function getScrollMetrics() {
+    const scrollElement = getContentScrollElement();
+    const viewportHeight = getViewportHeight();
+    const scrollHeight = scrollElement?.scrollHeight ?? 0;
+    const activationOffset = viewportHeight * ACTIVE_ITEM_OFFSET_FACTOR;
+
+    return { scrollElement, viewportHeight, scrollHeight, activationOffset };
+  }
+
   function handleContentScroll(contentScrollPosition: number) {
     const showScrollTopValue = contentScrollPosition > 120;
 
@@ -80,16 +98,18 @@ export const TableOfContents = forwardRef<
       setShowScrollTop(showScrollTopValue);
     }
 
-    const viewportMiddle = contentScrollPosition + window.innerHeight / 2;
-    const viewportActiveOffset =
-      contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR;
+    const { scrollElement, viewportHeight, scrollHeight, activationOffset } = getScrollMetrics();
+    const activationLine = contentScrollPosition + activationOffset;
+    const bottomThreshold = Math.min(200, viewportHeight * 0.1);
 
     if (slugScrollingTo.current) {
       const targetHeading = headings.find(h => h.slug === slugScrollingTo.current);
       const targetTop = targetHeading?.ref?.current?.offsetTop;
 
       if (targetTop != null) {
-        const targetInView = targetTop >= viewportActiveOffset && targetTop <= viewportMiddle;
+        const targetInView =
+          targetTop >= activationLine - TARGET_IN_VIEW_BUFFER &&
+          targetTop <= activationLine + TARGET_IN_VIEW_BUFFER;
 
         if (!targetInView) {
           return;
@@ -101,43 +121,85 @@ export const TableOfContents = forwardRef<
       slugScrollingTo.current = null;
     }
 
-    for (const { ref, slug, level } of headings) {
-      if (!ref?.current) {
+    let nextActive: Heading | null = null;
+
+    for (const heading of headings) {
+      if (!heading.ref?.current) {
         continue;
       }
 
-      const headingTop = ref.current.offsetTop;
+      const headingTop = heading.ref.current.offsetTop;
 
-      if (headingTop > viewportMiddle) {
+      if (headingTop <= activationLine) {
+        nextActive = heading;
+      } else {
         break;
       }
+    }
 
-      const isInView = headingTop >= viewportActiveOffset && headingTop <= viewportMiddle;
+    const isNearBottom =
+      scrollElement && scrollHeight
+        ? contentScrollPosition + viewportHeight >= scrollHeight - bottomThreshold
+        : false;
 
-      if (isInView) {
-        if (slug === activeSlug) {
-          return;
+    if (isNearBottom && headings.length > 0) {
+      const viewportTop = contentScrollPosition;
+      const viewportBottom = contentScrollPosition + viewportHeight;
+
+      let bestHeading: Heading | null = null;
+      let bestVisibleArea = 0;
+
+      for (let i = 0; i < headings.length; i++) {
+        const heading = headings[i];
+        if (!heading.ref?.current) {
+          continue;
         }
 
-        if (level > BASE_HEADING_LEVEL + 1 && isVersioned) {
-          const currentIndex = headings.findIndex(h => h.slug === slug);
-          for (let i = currentIndex; i >= 0; i--) {
-            const h = headings[i];
-            if (h.level === BASE_HEADING_LEVEL + 1) {
-              setActiveParentSlug(h.slug);
-              setActiveSlug(slug);
-              updateSelfScroll();
-              return;
-            }
-          }
-        }
+        const sectionStart = heading.ref.current.offsetTop;
+        const nextHeading = headings[i + 1];
+        const sectionEnd = nextHeading?.ref?.current?.offsetTop ?? scrollHeight;
 
-        setActiveParentSlug(null);
-        setActiveSlug(slug);
-        updateSelfScroll();
-        return;
+        const visibleStart = Math.max(sectionStart, viewportTop);
+        const visibleEnd = Math.min(sectionEnd, viewportBottom);
+        const visibleArea = Math.max(0, visibleEnd - visibleStart);
+
+        if (visibleArea >= bestVisibleArea) {
+          bestVisibleArea = visibleArea;
+          bestHeading = heading;
+        }
+      }
+
+      if (bestHeading && bestVisibleArea > 0) {
+        nextActive = bestHeading;
       }
     }
+
+    const activeHeading = nextActive ?? headings[0] ?? null;
+
+    if (!activeHeading) {
+      return;
+    }
+
+    if (activeHeading.slug === activeSlug) {
+      return;
+    }
+
+    if (activeHeading.level > BASE_HEADING_LEVEL + 1 && isVersioned) {
+      const currentIndex = headings.findIndex(h => h.slug === activeHeading.slug);
+      for (let i = currentIndex; i >= 0; i--) {
+        const h = headings[i];
+        if (h.level === BASE_HEADING_LEVEL + 1) {
+          setActiveParentSlug(h.slug);
+          setActiveSlug(activeHeading.slug);
+          updateSelfScroll();
+          return;
+        }
+      }
+    }
+
+    setActiveParentSlug(null);
+    setActiveSlug(activeHeading.slug);
+    updateSelfScroll();
   }
 
   function updateSelfScroll() {
@@ -224,11 +286,12 @@ export const TableOfContents = forwardRef<
 
     slugScrollingTo.current = slug;
 
+    const { activationOffset } = getScrollMetrics();
     const scrollOffset = type === 'inlineCode' ? 35 : 21;
 
     contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: reducedMotion ? 'instant' : 'smooth',
-      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - scrollOffset,
+      top: Math.max(0, (ref.current?.offsetTop ?? 0) - activationOffset + scrollOffset),
     });
 
     if (history?.replaceState) {

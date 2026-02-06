@@ -52,11 +52,20 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
+      Prop("label") { (view: LinkPreviewNativeActionView, label: String?) in
+        view.label = label
+      }
       Prop("identifier") { (view: LinkPreviewNativeActionView, identifier: String) in
         view.identifier = identifier
       }
       Prop("icon") { (view: LinkPreviewNativeActionView, icon: String?) in
         view.icon = icon
+      }
+      Prop("image") { (view: LinkPreviewNativeActionView, image: SharedRef<UIImage>?) in
+        view.customImage = image
+      }
+      Prop("imageRenderingMode") { (view: LinkPreviewNativeActionView, mode: ImageRenderingMode?) in
+        view.imageRenderingMode = mode
       }
       Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
         view.disabled = disabled ?? false
@@ -106,7 +115,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("barButtonItemStyle") { (view: LinkPreviewNativeActionView, style: BarItemStyle?) in
         view.barButtonItemStyle = style?.toUIBarButtonItemStyle()
       }
-
+      Prop("preferredElementSize") { (view: LinkPreviewNativeActionView, preferredElementSize: MenuElementSize?) in
+        view.preferredElementSize = preferredElementSize
+      }
       Events("onSelected")
     }
 
@@ -143,8 +154,8 @@ public class LinkPreviewNativeModule: Module {
         // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
 
-      Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
-        view.isPreventingInteractiveDismissal = prevent
+      Prop("dismissalBoundsRect") { (view: LinkZoomTransitionEnabler, rect: DismissalBoundsRect?) in
+        view.dismissalBoundsRect = rect
       }
     }
 
@@ -174,4 +185,36 @@ struct LinkSourceAlignmentRect: Record {
   @Field var y: Double
   @Field var width: Double
   @Field var height: Double
+}
+
+enum MenuElementSize: String, Enumerable {
+  case small
+  case medium
+  case large
+  case auto
+
+  @available(iOS 16.0, *)
+  func toUIMenuElementSize() -> UIMenu.ElementSize {
+    switch self {
+    case .small:
+      return .small
+    case .medium:
+      return .medium
+    case .large:
+      return .large
+    case .auto:
+      if #available(iOS 17.0, *) {
+        return .automatic
+      } else {
+        return .medium
+      }
+    }
+  }
+}
+
+struct DismissalBoundsRect: Record {
+  @Field var minX: Double?
+  @Field var maxX: Double?
+  @Field var minY: Double?
+  @Field var maxY: Double?
 }

@@ -20,7 +20,6 @@ import expo.modules.kotlin.ExpoModulesHelper;
 import expo.modules.kotlin.KPromiseWrapper;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.ModulesProvider;
-import expo.modules.kotlin.services.ServicesProvider;
 
 /**
  * A wrapper/proxy for all {@link expo.modules.kotlin.modules.Module}s, gets exposed as {@link com.facebook.react.bridge.NativeModule},
@@ -38,27 +37,25 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private KotlinInteropModuleRegistry mKotlinInteropModuleRegistry;
   private Map<String, Object> cachedConstants;
 
-  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry, ServicesProvider servicesProvider) {
+  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry) {
     super(context);
     mModuleRegistry = moduleRegistry;
 
     mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
       Objects.requireNonNull(ExpoModulesHelper.Companion.getModulesProvider()),
       moduleRegistry,
-      new WeakReference<>(context),
-      servicesProvider
+      new WeakReference<>(context)
     );
   }
 
-  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModulesProvider modulesProvider, ServicesProvider servicesProvider) {
+  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModulesProvider modulesProvider) {
     super(context);
     mModuleRegistry = moduleRegistry;
 
     mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
       Objects.requireNonNull(modulesProvider),
       moduleRegistry,
-      new WeakReference<>(context),
-      servicesProvider
+      new WeakReference<>(context)
     );
   }
 

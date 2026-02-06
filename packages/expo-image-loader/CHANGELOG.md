@@ -4,13 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- iOS implementation has been moved to `expo-modules-core`. ([#41395](https://github.com/expo/expo/pull/41395) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- iOS implementation has been moved to `expo-modules-core`. ([#41395](https://github.com/expo/expo/pull/41395) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [Android] Removed references to legacy native modules API. ([#41858](https://github.com/expo/expo/pull/41858) by [@lukmccall](https://github.com/lukmccall))
 
 ## 6.0.0 — 2025-08-13
 

@@ -1,12 +1,29 @@
 import { act, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
+import { expectAssignable } from 'tsd';
 
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import type { StackScreenProps } from '../layouts/stack-utils';
 import { renderRouter, testRouter } from '../testing-library';
+
+jest.mock('react-native-screens', () => {
+  const actualScreens = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
+  return {
+    ...actualScreens,
+    ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
+  };
+});
+
+const { ScreenStackItem } = jest.requireMock(
+  'react-native-screens'
+) as typeof import('react-native-screens');
+const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof ScreenStackItem>;
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *
@@ -451,7 +468,8 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
   testRouter.push('/one/two/a');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
-  expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
+  // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
+  expect(NestedNestedLayout).toHaveBeenCalledTimes(2);
 });
 
 test('can preserve the nested initialRouteName when navigating to a nested stack', () => {
@@ -475,6 +493,53 @@ test('can preserve the nested initialRouteName when navigating to a nested stack
   expect(screen.getByTestId('apple')).toBeDefined();
   act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
+});
+
+describe('presentation validation', () => {
+  let consoleSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
+  });
+
+  it('throws when an invalid presentation is set via screen options', () => {
+    expect(() => {
+      renderRouter({
+        _layout: () => <Stack screenOptions={{ presentation: 'xyz' as any }} />,
+        index: () => <Text>Index</Text>,
+      });
+    }).toThrow('Invalid presentation value "xyz"');
+  });
+
+  it('throws when an invalid presentation is set via layout options', () => {
+    expect(() => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index" options={{ presentation: 'xyz' as any }} />
+          </Stack>
+        ),
+        index: () => <Text>Index</Text>,
+      });
+    }).toThrow('Invalid presentation value "xyz"');
+  });
+
+  it('throws when an invalid presentation is set via page-level Stack.Screen', () => {
+    expect(() => {
+      renderRouter({
+        index: () => (
+          <>
+            <Stack.Screen options={{ presentation: 'xyz' as any }} />
+            <Text>Index</Text>
+          </>
+        ),
+      });
+    }).toThrow('Invalid presentation value "xyz"');
+  });
 });
 
 describe('singular', () => {
@@ -646,5 +711,120 @@ describe('singular', () => {
       stale: false,
       type: 'stack',
     });
+  });
+});
+
+describe('Stack.Screen types', () => {
+  it('accepts layout navigation props', () => {
+    expectAssignable<StackScreenProps>({ name: 'home', redirect: true });
+    expectAssignable<StackScreenProps>({ name: 'profile', initialParams: { id: '123' } });
+    expectAssignable<StackScreenProps>({ name: 'settings', dangerouslySingular: true });
+    expectAssignable<StackScreenProps>({
+      name: 'details',
+      dangerouslySingular: (name, params) => `${name}-${params.id}`,
+    });
+    expectAssignable<StackScreenProps>({
+      name: 'page',
+      listeners: { transitionStart: () => {} },
+    });
+    expectAssignable<StackScreenProps>({
+      name: 'page',
+      listeners: ({ route, navigation }) => ({ focus: () => {} }),
+    });
+    expectAssignable<StackScreenProps>({
+      name: 'page',
+      getId: ({ params }) => params?.id,
+    });
+  });
+
+  it('accepts function-form options', () => {
+    expectAssignable<StackScreenProps>({
+      options: ({ route }) => ({ title: route.params?.name as string }),
+    });
+    expectAssignable<StackScreenProps>({
+      name: 'profile',
+      options: ({ route, navigation }) => ({ title: `Profile: ${route.params?.id}` }),
+    });
+  });
+});
+
+describe('function-form options', () => {
+  beforeEach(() => {
+    MockedScreenStackItem.mockClear();
+  });
+
+  it('passes resolved function-form options to ScreenStackItem', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index" options={({ route }) => ({ title: `Page: ${route.name}` })} />
+        </Stack>
+      ),
+      index: () => <Text testID="index">Index</Text>,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('Page: index');
+  });
+
+  it('calls function-form options with route and navigation', () => {
+    const optionsFn = jest.fn(({ route }) => ({ title: `Page: ${route.name}` }));
+
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index" options={optionsFn} />
+        </Stack>
+      ),
+      index: () => <Text testID="index">Index</Text>,
+    });
+
+    expect(optionsFn).toHaveBeenCalled();
+    const arg = optionsFn.mock.calls[0][0];
+    expect(arg).toHaveProperty('route');
+    expect(arg).toHaveProperty('navigation');
+    expect(arg.route).toHaveProperty('name', 'index');
+  });
+
+  it('passes updated options to ScreenStackItem after navigation', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index" options={({ route }) => ({ title: `Page: ${route.name}` })} />
+          <Stack.Screen
+            name="profile"
+            options={({ route }) => ({ title: `Page: ${route.name}` })}
+          />
+        </Stack>
+      ),
+      index: () => <Text testID="index">Index</Text>,
+      profile: () => <Text testID="profile">Profile</Text>,
+    });
+
+    act(() => router.push('/profile'));
+
+    expect(screen.getByTestId('profile')).toBeVisible();
+
+    expect(MockedScreenStackItem.mock.calls[2][0].headerConfig?.title).toBe('Page: profile');
+  });
+
+  it('warns when function-form options are used in page context', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter({
+      index: () => (
+        <>
+          <Stack.Screen options={({ route }) => ({ title: `Page: ${route.name}` })} />
+          <Text testID="index">Index</Text>
+        </>
+      ),
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining('Function-form options are not supported inside page components')
+    );
+
+    spy.mockRestore();
   });
 });

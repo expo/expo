@@ -53,7 +53,7 @@ struct DevServersView: View {
             .padding()
           Divider()
         } else {
-          ForEach(viewModel.devServers, id: \.url) { server in
+          ForEach(viewModel.devServers, id: \.self) { server in
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }
@@ -91,7 +91,7 @@ struct DevServersView: View {
       }
 
       if showingURLInput {
-        TextField("http://10.0.0.25:8081", text: $urlText)
+        TextField("exp://", text: $urlText)
         #if !os(macOS)
           .autocapitalization(.none)
         #endif
@@ -99,7 +99,6 @@ struct DevServersView: View {
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
           .foregroundColor(.primary)
-          .onSubmit(connectToURL)
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
@@ -143,7 +142,9 @@ struct DevServersView: View {
   }
 
   private var connectButton: some View {
-    Button(action: connectToURL) {
+    Button {
+      connectToURL()
+    } label: {
       Text("Connect")
         .font(.headline)
         .foregroundColor(.white)
@@ -153,7 +154,7 @@ struct DevServersView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .disabled(urlText.isEmpty)
-    .buttonStyle(PlainButtonStyle())
+    .buttonStyle(.plain)
   }
 }
 
@@ -172,8 +173,22 @@ struct DevServerRow: View {
           .fill(Color.green)
           .frame(width: 12, height: 12)
 
-        Text(server.description)
-          .foregroundColor(.primary)
+        if server.description == server.url {
+          Text(server.description)
+            .foregroundColor(.primary)
+            .lineLimit(1)
+        } else {
+          VStack(alignment: .leading) {
+            Text(server.description)
+              .font(.headline)
+              .foregroundColor(.primary)
+              .lineLimit(1)
+            Text(server.url)
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .lineLimit(1)
+          }
+        }
 
         Spacer()
 

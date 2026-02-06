@@ -45,6 +45,21 @@ export interface SrcIcon {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
     };
+    /**
+     * Controls how the image icon is rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon (selected/unselected states)
+     * - `'original'`: Preserves original icon colors
+     *
+     * **Default behavior:**
+     * - If tab bar icon color is configured, defaults to `'template'`
+     * - If no icon color is set, defaults to `'original'`
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+     *
+     * @platform ios
+     */
+    renderingMode?: 'template' | 'original';
 }
 export interface SFSymbolIcon {
     /**
@@ -78,7 +93,15 @@ export interface DrawableIcon {
      */
     drawable?: string;
 }
+/**
+ * Material icon name for Android native tabs.
+ *
+ * @platform android
+ */
 export interface MaterialIcon {
+    /**
+     * Material icon glyph name. See the [Material icons for the complete catalog](https://fonts.google.com/icons).
+     */
     md: AndroidSymbol;
 }
 export type BaseNativeTabsTriggerIconProps = {

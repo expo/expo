@@ -56,7 +56,7 @@ The complete table of [MCP capabilities](#available-mcp-capabilities) documents 
 Before using Expo MCP Server, ensure you have:
 
 - An Expo account with an EAS paid plan
-- An Expo project with Expo SDK 54 and the latest `expo` package version
+- An Expo project created either with `npx create-expo-app@latest` or has the latest `expo` package version installed
 - AI-assisted tools with remote MCP server support (Claude Code, Cursor, VS Code, and so on)
 
 ## Installation and setup
@@ -109,6 +109,14 @@ Click the following link to install the MCP server for Cursor:
 
 </Collapsible>
 
+<Collapsible summary="Codex setup">
+
+<Terminal cmd={['$ codex mcp add expo-mcp --url https://mcp.expo.dev/mcp']} />
+
+The above command adds the MCP server to your Codex configuration file and prompts you to authenticate with your Expo account.
+
+</Collapsible>
+
 </Step>
 
 <Step label="2">
@@ -121,7 +129,8 @@ After installing the MCP server, you'll need to authenticate using one of two me
 
 Generate a **Personal access token** from your Expo account and use it during the OAuth flow.
 
-To generate an access token, open your EAS dashboard, navigate to **Credentials** > **Access tokens** > **Personal access tokens**, and then click **Create token**.
+- To generate an access token, open [Access tokens](https://expo.dev/accounts/[account]/settings/access-tokens) settings page in EAS dashboard.
+- Under **Personal access tokens**, click **Create token**. Copy the token and use it during the OAuth flow.
 
 #### Credentials
 
@@ -181,20 +190,33 @@ These capabilities enable more sophisticated workflows like automated testing, v
 
 ### Tools
 
-| Tool                                   | Description                                                          | Example Prompt                                      | Availability                           |
-| -------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------- |
-| `learn`                                | Learn Expo how-to for a specific topic                               | "learn how to use expo-router"                      | Server                                 |
-| `search_documentation`                 | Search from Expo documentation using natural language                | "search documentation for CNG"                      | Server                                 |
-| `add_library`                          | Install Expo packages with `npx expo install` and show documentation | "add sqlite and basic CRUD to the app"              | Server                                 |
-| `generate_claude_md`                   | Generate **CLAUDE.md** configuration files                           | "generate a CLAUDE.md for the project"              | Server (Claude Code only)              |
-| `generate_agents_md`                   | Generate **AGENTS.md** files                                         | "generate an AGENTS.md file for the project"        | Server                                 |
-| `expo_router_sitemap`                  | Execute and display expo-router-sitemap output                       | "check the expo-router-sitemap output"              | Local (requires `expo-router` library) |
-| `open_devtools`                        | Open React Native DevTools                                           | "open devtools"                                     | Local                                  |
-| `automation_tap`                       | Tap at specific screen coordinates                                   | "tap the screen at x=12, y=22"                      | Local                                  |
-| `automation_take_screenshot`           | Take full device screenshots                                         | "take a screenshot and verify the blue circle view" | Local                                  |
-| `automation_find_view_by_testid`       | Find and analyze views by testID                                     | "dump properties for testID 'button-123'"           | Local                                  |
-| `automation_tap_by_testid`             | Tap views by testID                                                  | "click the view with testID 'button-123'"           | Local                                  |
-| `automation_take_screenshot_by_testid` | Screenshot specific views by testID                                  | "screenshot the view with testID 'button-123'"      | Local                                  |
+| Tool                                   | Description                                                          | Example Prompt                                       | Availability                           |
+| -------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------- | -------------------------------------- |
+| `learn`                                | Learn Expo how-to for a specific topic                               | "learn how to use expo-router"                       | Server                                 |
+| `search_documentation`                 | Search from Expo documentation using natural language                | "search documentation for CNG"                       | Server                                 |
+| `add_library`                          | Install Expo packages with `npx expo install` and show documentation | "add sqlite and basic CRUD to the app"               | Server                                 |
+| `generate_claude_md`                   | Generate **CLAUDE.md** configuration files                           | "generate a CLAUDE.md for the project"               | Server (Claude Code only)              |
+| `generate_agents_md`                   | Generate **AGENTS.md** files                                         | "generate an AGENTS.md file for the project"         | Server                                 |
+| `build_info`                           | Get details of a specific build                                      | "get the status of my latest iOS build"              | Server                                 |
+| `build_list`                           | List builds for a project                                            | "list the recent builds for this project"            | Server                                 |
+| `build_logs`                           | Fetch logs for a completed build                                     | "show me the logs for the failed build"              | Server                                 |
+| `build_run`                            | Trigger a new build from a git reference                             | "run a production build for iOS"                     | Server                                 |
+| `build_cancel`                         | Cancel a build that is queued or in progress                         | "cancel the build that is currently in progress"     | Server                                 |
+| `build_submit`                         | Submit a build to app stores                                         | "submit the latest build to the App Store"           | Server                                 |
+| `workflow_create`                      | Create a new workflow YAML file and learn workflow syntax            | "create a CI/CD workflow for building and deploying" | Server                                 |
+| `workflow_info`                        | Get details of a specific workflow run                               | "get the status of the latest workflow run"          | Server                                 |
+| `workflow_list`                        | List recent workflow runs for a project                              | "list the recent workflow runs"                      | Server                                 |
+| `workflow_logs`                        | Fetch logs for a specific job in an workflow run                     | "show me the logs for the build job in the workflow" | Server                                 |
+| `workflow_run`                         | Trigger a workflow run from a git reference                          | "run the build-and-deploy workflow"                  | Server                                 |
+| `workflow_cancel`                      | Cancel a running workflow                                            | "cancel the running workflow"                        | Server                                 |
+| `workflow_validate`                    | Validate workflow YAML syntax and configuration                      | "validate my workflow file"                          | Server                                 |
+| `expo_router_sitemap`                  | Execute and display expo-router-sitemap output                       | "check the expo-router-sitemap output"               | Local (requires `expo-router` library) |
+| `open_devtools`                        | Open React Native DevTools                                           | "open devtools"                                      | Local                                  |
+| `automation_tap`                       | Tap at specific screen coordinates                                   | "tap the screen at x=12, y=22"                       | Local                                  |
+| `automation_take_screenshot`           | Take full device screenshots                                         | "take a screenshot and verify the blue circle view"  | Local                                  |
+| `automation_find_view_by_testid`       | Find and analyze views by testID                                     | "dump properties for testID 'button-123'"            | Local                                  |
+| `automation_tap_by_testid`             | Tap views by testID                                                  | "click the view with testID 'button-123'"            | Local                                  |
+| `automation_take_screenshot_by_testid` | Screenshot specific views by testID                                  | "screenshot the view with testID 'button-123'"       | Local                                  |
 
 ### Prompts
 

@@ -533,6 +533,22 @@ View(MyView::class) {
 
 </PaddedAPIBox>
 
+<PaddedAPIBox header="OnViewDestroys" platforms={["android"]}>
+
+Creates a view's lifecycle listener that is called right after the view is no longer used by React Native.
+
+```kotlin
+View(MyView::class) {
+  OnViewDestroys { view: MyView ->
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+> **Note:** This function is not available on iOS. You may want to use the destructor of the native view to achieve similar results.
+
+</PaddedAPIBox>
+
 <PaddedAPIBox header="(View) AsyncFunction">
 
 Similarly to the [`AsyncFunction`](#asyncfunction) inside the module definition, you can define functions attached to the view ref to allow direct modification of the native view.
@@ -826,6 +842,196 @@ Function("readFile") { path: String, options: FileReadOptions ->
 
 </CodeBlocksTable>
 </PaddedAPIBox>
+
+<PaddedAPIBox header="Formatter">
+
+> **important** **This feature is experimental.**
+
+The Formatter API allows you to customize how a Record is serialized when returned from a native function. This is useful when you need to transform property values before sending them to JavaScript, or conditionally exclude certain properties from the output.
+
+#### Operations
+
+- **map**: Transform a property's value before serialization.
+- **skip**: Exclude a property from the output entirely.
+
+#### Basic usage
+
+<CodeBlocksTable>
+
+```swift
+struct UserInfo: Record {
+  @Field var id: Int = 0
+  @Field var email: String = ""
+  @Field var password: String = ""
+}
+
+Function("getUser") {
+  let user = UserInfo(id: 1, email: "user@example.com", password: "secret123")
+
+  // Return user without exposing the password
+  return user.format { formatter in
+    formatter.property("password", keyPath: \.password).skip()
+  }
+}
+```
+
+```kotlin
+class UserInfo(
+  @Field val id: Int = 0,
+  @Field val email: String = "",
+  @Field val password: String = ""
+) : Record
+
+Function("getUser") {
+  val user = UserInfo(id = 1, email = "user@example.com", password = "secret123")
+
+  // Return user without exposing the password
+  formatter {
+    property(UserInfo::password).skip()
+  }.format(user)
+}
+```
+
+</CodeBlocksTable>
+
+```js JavaScript
+const user = MyModule.getUser();
+console.log(user);
+// Output: { id: 1, email: "user@example.com" }
+// Note: password is not present in the object
+```
+
+#### Transforming values with `map`
+
+Use `map` to transform property values before they are sent to JavaScript:
+
+<CodeBlocksTable>
+
+```swift
+struct Product: Record {
+  @Field var name: String = ""
+  @Field var price: Double = 0.0
+}
+
+Function("getProduct") {
+  let product = Product(name: "Widget", price: 19.99)
+
+  return product.format { formatter in
+    // Transform price to include currency symbol
+    formatter.property("price", keyPath: \.price).map { value in
+      "$\(String(format: "%.2f", value))"
+    }
+  }
+}
+```
+
+```kotlin
+class Product(
+  @Field val name: String = "",
+  @Field val price: Double = 0.0
+) : Record
+
+Function("getProduct") {
+  val product = Product(name = "Widget", price = 19.99)
+
+  formatter {
+    // Transform price to include currency symbol
+    property(Product::price).map { value ->
+      "${"$"}${String.format("%.2f", value)}"
+    }
+  }.format(product)
+}
+```
+
+</CodeBlocksTable>
+
+#### Conditional skipping
+
+You can conditionally skip properties based on their values or the record's state:
+
+<CodeBlocksTable>
+
+```swift
+struct Settings: Record {
+  @Field var theme: String = "light"
+  @Field var debugMode: Bool = false
+  @Field var apiKey: String? = nil
+}
+
+Function("getSettings") {
+  let settings = Settings(theme: "dark", debugMode: true, apiKey: "secret")
+
+  return settings.format { formatter in
+    // Skip apiKey if nil
+    formatter.property("apiKey", keyPath: \.apiKey).skip { value in
+      value == nil
+    }
+  }
+}
+```
+
+```kotlin
+class Settings(
+  @Field val theme: String = "light",
+  @Field val debugMode: Boolean = false,
+  @Field val apiKey: String? = null
+) : Record
+
+Function("getSettings") {
+  val settings = Settings(theme = "dark", debugMode = true, apiKey = "secret")
+
+  formatter {
+    // Skip apiKey if null
+    property(Settings::apiKey).skip { value ->
+      value == null
+    }
+  }.format(settings)
+}
+```
+
+</CodeBlocksTable>
+
+#### Chaining operations
+
+You can chain multiple operations on the same property:
+
+<CodeBlocksTable>
+
+```swift
+struct Data: Record {
+  @Field var value: Int? = nil
+}
+
+Function("getData") {
+  let data = Data(value: nil)
+
+  return data.format { formatter in
+    formatter.property("value", keyPath: \.value)
+      .map { $0 ?? 0 }  // Default to 0 if nil
+      .map { $0 * 2 }   // Double the value
+  }
+}
+```
+
+```kotlin
+class Data(
+  @Field val value: Int? = null
+) : Record
+
+Function("getData") {
+  val data = Data(value = null)
+
+  formatter {
+    property(Data::value)
+      .map { it ?: 0 }  // Default to 0 if null
+      .map { it * 2 }   // Double the value
+  }.format(data)
+}
+```
+
+</CodeBlocksTable>
+</PaddedAPIBox>
+
 <PaddedAPIBox header="Enums">
 
 With enums, we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (for example, `String`, `Int`) and conform to `Enumerable`.
@@ -897,6 +1103,109 @@ The implementation for three Either types is currently provided out of the box, 
 - `Either<FirstType, SecondType>` — A container for one of two types.
 - `EitherOfThree<FirstType, SecondType, ThirdType>` — A container for one of three types.
 - `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="ValueOrUndefined">
+
+> **important** **This feature is experimental.**
+
+`ValueOrUndefined` is a wrapper type that allows you to distinguish between a JavaScript `undefined` value and an actual value.
+
+With regular optional types, both `undefined` and `null` from JavaScript are converted to `null` on the native side, making it impossible to tell them apart. `ValueOrUndefined` solves this by preserving the distinction.
+
+#### Properties
+
+<APIMethod
+  name="isUndefined"
+  comment="Returns `true` if the JavaScript value was `undefined`, `false` otherwise."
+  returnTypeName="Bool"
+  isProperty
+/>
+
+<APIMethod
+  name="optional"
+  comment="Returns the unwrapped value if present, or `null` if the value was `undefined`."
+  returnTypeName="InnerType?"
+  isProperty
+/>
+
+<CodeBlocksTable>
+
+```swift
+Function("configure") { (timeout: ValueOrUndefined<Int>) in
+  if timeout.isUndefined {
+    // Argument was not provided, use default behavior
+  } else if let value = timeout.optional {
+    // Argument was provided with a value
+  }
+}
+```
+
+```kotlin
+Function("configure") { timeout: ValueOrUndefined<Int> ->
+  if (timeout.isUndefined) {
+    // Argument was not provided, use default behavior
+  } else {
+    timeout.optional?.let { value ->
+      // Argument was provided with a value
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+#### Distinguishing `undefined` from `null`
+
+When using `ValueOrUndefined` with an optional inner type, you can distinguish between three states:
+
+<CodeBlocksTable>
+
+```swift
+Function("setName") { (name: ValueOrUndefined<String?>) in
+  switch name {
+  case .undefined:
+    // name argument was not provided
+    break
+  case .value(let unwrapped) where unwrapped == nil:
+    // name was explicitly set to null
+    break
+  case .value(let unwrapped):
+    // name was set to a string value
+    print("Name: \(unwrapped!)")
+  }
+}
+```
+
+```kotlin
+Function("setName") { name: ValueOrUndefined<String?> ->
+  when {
+    name.isUndefined -> {
+      // name argument was not provided
+    }
+    name.optional == null -> {
+      // name was explicitly set to null
+    }
+    else -> {
+      // name was set to a string value
+      println("Name: ${name.optional}")
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+```js JavaScript
+import { requireNativeModule } from 'expo-modules-core';
+
+const MyModule = requireNativeModule('MyModule');
+
+MyModule.setName('Alice'); // name is a value
+MyModule.setName(null); // name is null (but not undefined)
+MyModule.setName(undefined); // name is undefined
+```
 
 </PaddedAPIBox>
 <PaddedAPIBox header="JavaScript values">

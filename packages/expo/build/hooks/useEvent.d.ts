@@ -15,7 +15,7 @@ type InferEventParameter<TEventListener extends AnyEventListener, TInitialValue>
 /**
  * React hook that listens to events emitted by the given object. The returned value is an event parameter
  * that gets updated whenever a new event is dispatched.
- * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
+ * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemittertype).
  * @param eventName Name of the event to listen to.
  * @param initialValue An event parameter to use until the event is called for the first time.
  * @returns A parameter of the event listener.
@@ -35,7 +35,7 @@ export declare function useEvent<TEventsMap extends Record<string, AnyEventListe
 /**
  * React hook that listens to events emitted by the given object and calls the listener function whenever a new event is dispatched.
  * The event listener is automatically added during the first render and removed when the component unmounts.
- * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemitter).
+ * @param eventEmitter An object that emits events. For example, a native module or shared object or an instance of [`EventEmitter`](#eventemittertype).
  * @param eventName Name of the event to listen to.
  * @param listener A function to call when the event is dispatched.
  * @example

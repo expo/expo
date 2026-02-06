@@ -8,7 +8,6 @@ import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.services.ServicesProvider
 import io.mockk.MockK
 import io.mockk.MockKGateway
 import io.mockk.every
@@ -124,8 +123,7 @@ private fun prepareMockAppContext(customAppContext: AppContext?): AppContext {
   val appContext = customAppContext ?: AppContext(
     modulesProvider = mockk(relaxed = true),
     legacyModuleRegistry = mockk(relaxed = true),
-    reactContextHolder = WeakReference(reactContext),
-    ServicesProvider(reactContext)
+    reactContextHolder = WeakReference(reactContext)
   )
 
   // as AppContext holds only weak reference to Android Context which can be destroyed too early

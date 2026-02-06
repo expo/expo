@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 34b96c71c33..a958e6ba07e 100644
+index 34b96c71c33..3f1c571b679 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -64,9 +64,9 @@ react {
@@ -23,17 +23,44 @@ index 34b96c71c33..a958e6ba07e 100644
      }
      signingConfigs {
          debug {
-@@ -112,7 +114,7 @@ android {
+@@ -111,15 +113,18 @@ android {
+             // Caution! In production, you need to generate your own keystore file.
              // see https://reactnative.dev/docs/signed-apk-android.
              signingConfig signingConfigs.debug
-             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
+-            shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
 -            minifyEnabled enableProguardInReleaseBuilds
++            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
++            shrinkResources enableShrinkResources.toBoolean()
 +            minifyEnabled enableMinifyInReleaseBuilds
              proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-             crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
+-            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
++            def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
++            crunchPngs enablePngCrunchInRelease.toBoolean()
          }
+     }
+     packagingOptions {
+         jniLibs {
+-            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
++            def enableLegacyPackaging = findProperty('expo.useLegacyPackaging') ?: 'false'
++            useLegacyPackaging enableLegacyPackaging.toBoolean()
+         }
+     }
+     androidResources {
+diff --git a/templates/expo-template-bare-minimum/android/app/src/debugOptimized/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/debugOptimized/AndroidManifest.xml
+new file mode 100644
+index 00000000000..3ec2507bab7
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/android/app/src/debugOptimized/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools">
++
++    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
++
++    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
++</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-index 267e20c30e5..7dae736db44 100644
+index 267e20c30e5..5abad96fa00 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 @@ -5,13 +5,13 @@ import android.content.res.Configuration
@@ -90,15 +117,41 @@ index 267e20c30e5..7dae736db44 100644
 -    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 -      // If you opted-in for the New Architecture, we load the native entry point for this app.
 -      load()
-+    try {
-+      DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
++    DefaultNewArchitectureEntryPoint.releaseLevel = try {
++      ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
 +    } catch (e: IllegalArgumentException) {
-+      DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.STABLE
++      ReleaseLevel.STABLE
      }
 +    loadReactNative(this)
      ApplicationLifecycleDispatcher.onApplicationCreate(this)
    }
  
+diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
+index fa7b11e23c1..0554dd156c1 100644
+--- a/templates/expo-template-bare-minimum/android/build.gradle
++++ b/templates/expo-template-bare-minimum/android/build.gradle
+@@ -12,21 +12,8 @@ buildscript {
+   }
+ }
+ 
+-def reactNativeAndroidDir = new File(
+-  providers.exec {
+-    workingDir(rootDir)
+-    commandLine("node", "--print", "require.resolve('react-native/package.json')")
+-  }.standardOutput.asText.get().trim(),
+-  "../android"
+-)
+-
+ allprojects {
+   repositories {
+-    maven {
+-      // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+-      url(reactNativeAndroidDir)
+-    }
+-
+     google()
+     mavenCentral()
+     maven { url 'https://www.jitpack.io' }
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
 index 7531e9eb23c..97271b9456f 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
@@ -223,26 +276,88 @@ diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets
 new file mode 100644
 index 00000000000..bbf8e9e6016
 Binary files /dev/null and b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/SplashScreenLegacy.png differ
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
+index 447b4188985..58d21796e1d 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
+@@ -1,11 +1,12 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EXPO-VIEWCONTROLLER-1">
++<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24093.7" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EXPO-VIEWCONTROLLER-1">
+     <device id="retina6_12" orientation="portrait" appearance="light"/>
+     <dependencies>
+         <deployment identifier="iOS"/>
+-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
++        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24053.1"/>
+         <capability name="Named colors" minToolsVersion="9.0"/>
+         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
++        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+     </dependencies>
+     <scenes>
+@@ -29,6 +30,7 @@
+                             <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerY" secondItem="EXPO-ContainerView" secondAttribute="centerY" id="0VC-Wk-OaO"/>
+                             <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerX" secondItem="EXPO-ContainerView" secondAttribute="centerX" id="zR4-NK-mVN"/>
+                         </constraints>
++                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                     </view>
+                 </viewController>
+                 <placeholder placeholderIdentifier="IBFirstResponder" id="EXPO-PLACEHOLDER-1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+@@ -38,5 +40,8 @@
+     </scenes>
+     <resources>
+         <image name="SplashScreenLogo" width="100" height="90.333335876464844"/>
++        <systemColor name="systemBackgroundColor">
++            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
++        </systemColor>
+     </resources>
+ </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 29503ff0cc1..84aaf231d62 100644
+index 29503ff0cc1..9743535e7ad 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -6,10 +6,9 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
+@@ -4,12 +4,19 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
+ require 'json'
+ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
  
- ENV['RCT_NEW_ARCH_ENABLED'] = '0' if podfile_properties['newArchEnabled'] == 'false'
- ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
--
-+ENV['RCT_USE_RN_DEP'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
-+ENV['RCT_USE_PREBUILT_RNCORE'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
+-ENV['RCT_NEW_ARCH_ENABLED'] = '0' if podfile_properties['newArchEnabled'] == 'false'
+-ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
++def ccache_enabled?(podfile_properties)
++  # Environment variable takes precedence
++  return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
++  
++  # Fall back to Podfile properties
++  podfile_properties['apple.ccacheEnabled'] == 'true'
++end
+ 
++ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == 'false'
++ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
++ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
++ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
  platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 -install! 'cocoapods',
 -  :deterministic_uuids => false
  
  prepare_react_native_project!
  
-@@ -49,16 +48,5 @@ target 'HelloWorld' do
+@@ -20,7 +27,10 @@ target 'HelloWorld' do
+     config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
+   else
+     config_command = [
+-      'npx',
++      'node',
++      '--no-warnings',
++      '--eval',
++      'require(\'expo/bin/autolinking\')',
+       'expo-modules-autolinking',
+       'react-native-config',
+       '--json',
+@@ -47,18 +57,7 @@ target 'HelloWorld' do
+       installer,
+       config[:reactNativePath],
        :mac_catalyst_enabled => false,
-       :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+-      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
++      :ccache_enabled => ccache_enabled?(podfile_properties),
      )
 -
 -    # This is necessary for Xcode 14, because it signs resource bundles by default
@@ -258,15 +373,15 @@ index 29503ff0cc1..84aaf231d62 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index e19171a3085..69919e762b1 100644
+index 911f7ee9a53..0d90c6e603d 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "53.0.38",
-+  "version": "54.0.1",
+-  "version": "53.0.41",
++  "version": "54.0.50",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -274,16 +389,16 @@ index e19171a3085..69919e762b1 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~53.0.20",
+-    "expo": "~53.0.26",
 -    "expo-status-bar": "~2.2.3",
 -    "react": "19.0.0",
 -    "react-native": "0.79.6"
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~54.0.0-preview.1",
-+    "expo-status-bar": "~3.0.1",
++    "expo": "~54.0.33",
++    "expo-status-bar": "~3.0.9",
 +    "react": "19.1.0",
-+    "react-native": "0.81.0"
++    "react-native": "0.81.5"
    }
  }

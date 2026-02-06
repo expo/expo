@@ -4,7 +4,6 @@
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
-#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 
 @interface EXModuleRegistryAdapter ()
 
@@ -33,11 +32,6 @@
 
   EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
   [extraModules addObject:nativeModulesProxy];
-
-  // Event emitter is not automatically registered — we add it to the module registry here.
-  // It will be added to the bridge later in this method, as it conforms to `RCTBridgeModule`.
-  EXReactNativeEventEmitter *eventEmitter = [EXReactNativeEventEmitter new];
-  [moduleRegistry registerInternalModule:eventEmitter];
 
   // It is possible that among internal modules there are some RCTBridgeModules --
   // let's add them to extraModules here.

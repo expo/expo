@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index a4b08330359..a958e6ba07e 100644
+index a4b08330359..3f1c571b679 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -4,27 +4,6 @@ apply plugin: "com.facebook.react"
@@ -95,17 +95,26 @@ index a4b08330359..a958e6ba07e 100644
      }
      signingConfigs {
          debug {
-@@ -134,7 +114,7 @@ android {
+@@ -133,17 +113,23 @@ android {
+             // Caution! In production, you need to generate your own keystore file.
              // see https://reactnative.dev/docs/signed-apk-android.
              signingConfig signingConfigs.debug
-             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
+-            shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
 -            minifyEnabled enableProguardInReleaseBuilds
++            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
++            shrinkResources enableShrinkResources.toBoolean()
 +            minifyEnabled enableMinifyInReleaseBuilds
              proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-             crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
+-            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
++            def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
++            crunchPngs enablePngCrunchInRelease.toBoolean()
          }
-@@ -144,6 +124,9 @@ android {
-             useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
+     }
+     packagingOptions {
+         jniLibs {
+-            useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
++            def enableLegacyPackaging = findProperty('expo.useLegacyPackaging') ?: 'false'
++            useLegacyPackaging enableLegacyPackaging.toBoolean()
          }
      }
 +    androidResources {
@@ -114,7 +123,7 @@ index a4b08330359..a958e6ba07e 100644
  }
  
  // Apply static values from `gradle.properties` to the `android.packagingOptions`
-@@ -176,15 +159,15 @@ dependencies {
+@@ -176,15 +162,15 @@ dependencies {
  
      if (isGifEnabled) {
          // For animated gif support
@@ -133,7 +142,7 @@ index a4b08330359..a958e6ba07e 100644
          }
      }
  
-@@ -194,8 +177,3 @@ dependencies {
+@@ -194,8 +180,3 @@ dependencies {
          implementation jscFlavor
      }
  }
@@ -142,6 +151,19 @@ index a4b08330359..a958e6ba07e 100644
 -    apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
 -    applyNativeModulesAppBuildGradle(project)
 -}
+diff --git a/templates/expo-template-bare-minimum/android/app/src/debugOptimized/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/debugOptimized/AndroidManifest.xml
+new file mode 100644
+index 00000000000..3ec2507bab7
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/android/app/src/debugOptimized/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools">
++
++    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
++
++    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
++</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 index 52175508263..150248b6b3c 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
@@ -162,7 +184,7 @@ index 52175508263..150248b6b3c 100644
    </application>
  </manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-index 5f6e05ce071..7dae736db44 100644
+index 5f6e05ce071..5abad96fa00 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 @@ -5,12 +5,13 @@ import android.content.res.Configuration
@@ -217,10 +239,10 @@ index 5f6e05ce071..7dae736db44 100644
 -    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
 -      // If you opted-in for the New Architecture, we load the native entry point for this app.
 -      load()
-+    try {
-+      DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
++    DefaultNewArchitectureEntryPoint.releaseLevel = try {
++      ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
 +    } catch (e: IllegalArgumentException) {
-+      DefaultNewArchitectureEntryPoint.releaseLevel = ReleaseLevel.STABLE
++      ReleaseLevel.STABLE
      }
 +    loadReactNative(this)
      ApplicationLifecycleDispatcher.onApplicationCreate(this)
@@ -246,66 +268,59 @@ diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawa
 new file mode 100644
 index 00000000000..4aeed11d00b
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png differ
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-similarity index 53%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-index 12f2f769806..883b2a080f3 100644
---- a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
+new file mode 100644
+index 00000000000..883b2a080f3
+--- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-@@ -1,4 +1,6 @@
--<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
- <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-   <item android:drawable="@color/splashscreen_background"/>
+@@ -0,0 +1,6 @@
++<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
++  <item android:drawable="@color/splashscreen_background"/>
 +  <item>
 +    <bitmap android:gravity="center" android:src="@drawable/splashscreen_logo"/>
 +  </item>
- </layer-list>
++</layer-list>
 \ No newline at end of file
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png
-deleted file mode 100644
-index cc94f379de3..00000000000
-Binary files a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png and /dev/null differ
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
-diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
-similarity index 100%
-rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..a2f5908281d
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..1b523998081
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..ff10afd6e18
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..115a4c768a2
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..dcd3cd80833
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..459ca609d3a
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..8ca12fe024b
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..8e19b410a1b
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
+new file mode 100644
+index 00000000000..b824ebdd48d
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp differ
+diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+new file mode 100644
+index 00000000000..4c19a13c239
+Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
 index 90bcc87b8e8..26f3404be26 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
@@ -329,10 +344,10 @@ index 90bcc87b8e8..26f3404be26 100644
    </style>
  </resources>
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 932bf7b34ba..fa7b11e23c1 100644
+index 932bf7b34ba..0554dd156c1 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
-@@ -1,41 +1,37 @@
+@@ -1,41 +1,24 @@
  // Top-level build file where you can add configuration options common to all sub-projects/modules.
  
  buildscript {
@@ -366,14 +381,7 @@ index 932bf7b34ba..fa7b11e23c1 100644
  }
  
 -apply plugin: "com.facebook.react.rootproject"
-+def reactNativeAndroidDir = new File(
-+  providers.exec {
-+    workingDir(rootDir)
-+    commandLine("node", "--print", "require.resolve('react-native/package.json')")
-+  }.standardOutput.asText.get().trim(),
-+  "../android"
-+)
- 
+-
  allprojects {
 -    repositories {
 -        maven {
@@ -388,12 +396,8 @@ index 932bf7b34ba..fa7b11e23c1 100644
 -        google()
 -        mavenCentral()
 -        maven { url 'https://www.jitpack.io' }
+-    }
 +  repositories {
-+    maven {
-+      // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-+      url(reactNativeAndroidDir)
-     }
-+
 +    google()
 +    mavenCentral()
 +    maven { url 'https://www.jitpack.io' }
@@ -534,47 +538,6 @@ index 7101f8e4676..5eed7ee8452 100644
  
  :end
  @rem End local scope for the variables with windows NT shell
-diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts b/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
-deleted file mode 100644
-index b4f6668e9eb..00000000000
---- a/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
-+++ /dev/null
-@@ -1,19 +0,0 @@
--import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
--
--plugins {
--    kotlin("jvm") version "1.9.24"
--    id("java-gradle-plugin")
--}
--
--repositories {
--    mavenCentral()
--}
--
--gradlePlugin {
--    plugins {
--        create("reactSettingsPlugin") {
--            id = "com.facebook.react.settings"
--            implementationClass = "expo.plugins.ReactSettingsPlugin"
--        }
--    }
--}
-diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt b/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
-deleted file mode 100644
-index c54f6c7a6ad..00000000000
---- a/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
-+++ /dev/null
-@@ -1,10 +0,0 @@
--package expo.plugins
--
--import org.gradle.api.Plugin
--import org.gradle.api.initialization.Settings
--
--class ReactSettingsPlugin : Plugin<Settings> {
--  override fun apply(settings: Settings) {
--    // Do nothing, just register the plugin.
--  }
--}
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
 index 80b1bc3267b..7fe91512213 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
@@ -673,18 +636,6 @@ index 80b1bc3267b..7fe91512213 100644
  include ':app'
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(expoAutolinking.reactNativeGradlePlugin)
-diff --git a/templates/expo-template-bare-minimum/babel.config.js b/templates/expo-template-bare-minimum/babel.config.js
-deleted file mode 100644
-index baac9e50ca8..00000000000
---- a/templates/expo-template-bare-minimum/babel.config.js
-+++ /dev/null
-@@ -1,6 +0,0 @@
--module.exports = function(api) {
--  api.cache(true);
--  return {
--    presets: ['babel-preset-expo']
--  };
--};
 diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
 index 05647d55c75..d16e1efbb3f 100644
 --- a/templates/expo-template-bare-minimum/gitignore
@@ -924,117 +875,6 @@ index f945940c256..8a390c764af 100644
  				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
  				MTL_ENABLE_DEBUG_INFO = NO;
  				SDKROOT = iphoneos;
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
-deleted file mode 100644
-index 6a99d7d589a..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
-+++ /dev/null
-@@ -1,10 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<Workspace
--   version = "1.0">
--   <FileRef
--      location = "group:HelloWorld.xcodeproj">
--   </FileRef>
--   <FileRef
--      location = "group:Pods/Pods.xcodeproj">
--   </FileRef>
--</Workspace>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
-deleted file mode 100644
-index 18d981003d6..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
-+++ /dev/null
-@@ -1,8 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
--<plist version="1.0">
--<dict>
--	<key>IDEDidComputeMac32BitWarning</key>
--	<true/>
--</dict>
--</plist>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
-deleted file mode 100644
-index 1658a437eb3..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
-+++ /dev/null
-@@ -1,7 +0,0 @@
--#import <RCTAppDelegate.h>
--#import <UIKit/UIKit.h>
--#import <Expo/Expo.h>
--
--@interface AppDelegate : EXAppDelegateWrapper
--
--@end
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-deleted file mode 100644
-index b27f83286d2..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-+++ /dev/null
-@@ -1,62 +0,0 @@
--#import "AppDelegate.h"
--
--#import <React/RCTBundleURLProvider.h>
--#import <React/RCTLinkingManager.h>
--
--@implementation AppDelegate
--
--- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
--{
--  self.moduleName = @"main";
--
--  // You can add your custom initial props in the dictionary below.
--  // They will be passed down to the ViewController used by React Native.
--  self.initialProps = @{};
--
--  return [super application:application didFinishLaunchingWithOptions:launchOptions];
--}
--
--- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
--{
--  return [self bundleURL];
--}
--
--- (NSURL *)bundleURL
--{
--#if DEBUG
--  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
--#else
--  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
--#endif
--}
--
--// Linking API
--- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
--  return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
--}
--
--// Universal Links
--- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
--  BOOL result = [RCTLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
--  return [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler] || result;
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
--{
--  return [super application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
--{
--  return [super application:application didFailToRegisterForRemoteNotificationsWithError:error];
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
--{
--  return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
--}
--
--@end
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 new file mode 100644
 index 00000000000..a7887e1e5b1
@@ -1120,70 +960,6 @@ index 00000000000..8361941afc2
 +//
 +// Use this file to import your target's public headers that you would like to expose to Swift.
 +//
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
-deleted file mode 100644
-index e67cd6c5e28..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
-+++ /dev/null
-@@ -1,21 +0,0 @@
--{
--  "images": [
--    {
--      "idiom": "universal",
--      "filename": "splashscreen.png",
--      "scale": "1x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "2x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "3x"
--    }
--  ],
--  "info": {
--    "version": 1,
--    "author": "expo"
--  }
--}
-\ No newline at end of file
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png
-deleted file mode 100644
-index cc94f379de3..00000000000
-Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png and /dev/null differ
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
-deleted file mode 100644
-index b5914aac6a8..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
-+++ /dev/null
-@@ -1,21 +0,0 @@
--{
--  "images": [
--    {
--      "idiom": "universal",
--      "filename": "background.png",
--      "scale": "1x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "2x"
--    },
--    {
--      "idiom": "universal",
--      "scale": "3x"
--    }
--  ],
--  "info": {
--    "version": 1,
--    "author": "expo"
--  }
--}
-\ No newline at end of file
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png
-deleted file mode 100644
-index ff3dd16fd70..00000000000
-Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png and /dev/null differ
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json
 new file mode 100644
 index 00000000000..255637e0fdb
@@ -1229,10 +1005,10 @@ index 53d78e89033..596dc7ce6b5 100644
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
-index 24eec3df5cb..447b4188985 100644
+index 24eec3df5cb..58d21796e1d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
-@@ -1,91 +1,42 @@
+@@ -1,91 +1,47 @@
  <?xml version="1.0" encoding="UTF-8"?>
 -<document
 -  type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB"
@@ -1323,13 +1099,14 @@ index 24eec3df5cb..447b4188985 100644
 -    <image name="SplashScreen" width="414" height="736"/>
 -    <image name="SplashScreenBackground" width="1" height="1"/>
 -  </resources>
-+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EXPO-VIEWCONTROLLER-1">
++<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24093.7" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EXPO-VIEWCONTROLLER-1">
 +    <device id="retina6_12" orientation="portrait" appearance="light"/>
 +    <dependencies>
 +        <deployment identifier="iOS"/>
-+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
++        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24053.1"/>
 +        <capability name="Named colors" minToolsVersion="9.0"/>
 +        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
++        <capability name="System colors in document resources" minToolsVersion="11.0"/>
 +        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
 +    </dependencies>
 +    <scenes>
@@ -1353,6 +1130,7 @@ index 24eec3df5cb..447b4188985 100644
 +                            <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerY" secondItem="EXPO-ContainerView" secondAttribute="centerY" id="0VC-Wk-OaO"/>
 +                            <constraint firstItem="EXPO-SplashScreen" firstAttribute="centerX" secondItem="EXPO-ContainerView" secondAttribute="centerX" id="zR4-NK-mVN"/>
 +                        </constraints>
++                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
 +                    </view>
 +                </viewController>
 +                <placeholder placeholderIdentifier="IBFirstResponder" id="EXPO-PLACEHOLDER-1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1362,37 +1140,33 @@ index 24eec3df5cb..447b4188985 100644
 +    </scenes>
 +    <resources>
 +        <image name="SplashScreenLogo" width="100" height="90.333335876464844"/>
++        <systemColor name="systemBackgroundColor">
++            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
++        </systemColor>
 +    </resources>
  </document>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m b/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
-deleted file mode 100644
-index 25181b6ccb5..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
-+++ /dev/null
-@@ -1,10 +0,0 @@
--#import <UIKit/UIKit.h>
--
--#import "AppDelegate.h"
--
--int main(int argc, char * argv[]) {
--  @autoreleasepool {
--    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
--  }
--}
--
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 57c1dd38343..84aaf231d62 100644
+index 57c1dd38343..9743535e7ad 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -4,39 +4,31 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
+@@ -4,39 +4,42 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
  require 'json'
  podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
  
 -ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
-+ENV['RCT_NEW_ARCH_ENABLED'] = '0' if podfile_properties['newArchEnabled'] == 'false'
- ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
-+ENV['RCT_USE_RN_DEP'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
-+ENV['RCT_USE_PREBUILT_RNCORE'] = '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
+-ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
++def ccache_enabled?(podfile_properties)
++  # Environment variable takes precedence
++  return ENV['USE_CCACHE'] == '1' if ENV['USE_CCACHE']
++  
++  # Fall back to Podfile properties
++  podfile_properties['apple.ccacheEnabled'] == 'true'
++end
++
++ENV['RCT_NEW_ARCH_ENABLED'] ||= '0' if podfile_properties['newArchEnabled'] == 'false'
++ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
++ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
++ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
  
 -use_autolinking_method_symbol = ('use' + '_native' + '_modules!').to_sym
@@ -1409,11 +1183,11 @@ index 57c1dd38343..84aaf231d62 100644
 +    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
 +  else
      config_command = [
--      'node',
--      '--no-warnings',
--      '--eval',
+       'node',
+       '--no-warnings',
+       '--eval',
 -      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
-+      'npx',
++      'require(\'expo/bin/autolinking\')',
 +      'expo-modules-autolinking',
        'react-native-config',
        '--json',
@@ -1425,11 +1199,11 @@ index 57c1dd38343..84aaf231d62 100644
 -    origin_autolinking_method.call()
    end
 -end
- 
+-
 -platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
 -install! 'cocoapods',
 -  :deterministic_uuids => false
--
+ 
 -prepare_react_native_project!
 -
 -target 'HelloWorld' do
@@ -1439,9 +1213,12 @@ index 57c1dd38343..84aaf231d62 100644
  
    use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
    use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
-@@ -56,24 +48,5 @@ target 'HelloWorld' do
+@@ -54,26 +57,7 @@ target 'HelloWorld' do
+       installer,
+       config[:reactNativePath],
        :mac_catalyst_enabled => false,
-       :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+-      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
++      :ccache_enabled => ccache_enabled?(podfile_properties),
      )
 -
 -    # This is necessary for Xcode 14, because it signs resource bundles by default
@@ -1465,7 +1242,7 @@ index 57c1dd38343..84aaf231d62 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 563853071f0..69919e762b1 100644
+index 563853071f0..0d90c6e603d 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -1474,7 +1251,7 @@ index 563853071f0..69919e762b1 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "51.0.56",
 +  "license": "0BSD",
-+  "version": "54.0.1",
++  "version": "54.0.50",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1489,9 +1266,9 @@ index 563853071f0..69919e762b1 100644
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~54.0.0-preview.1",
-+    "expo-status-bar": "~3.0.1",
++    "expo": "~54.0.33",
++    "expo-status-bar": "~3.0.9",
 +    "react": "19.1.0",
-+    "react-native": "0.81.0"
++    "react-native": "0.81.5"
    }
  }

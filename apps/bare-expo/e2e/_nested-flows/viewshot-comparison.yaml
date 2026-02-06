@@ -14,6 +14,11 @@
 
 appId: dev.expo.Payments
 ---
+- extendedWaitUntil:
+    visible:
+      id: ${testID}
+    timeout: 10000
+
 - runScript:
     file: ./compare-images-http.js
     env:

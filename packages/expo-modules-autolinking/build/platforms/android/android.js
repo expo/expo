@@ -86,6 +86,7 @@ async function resolveModuleAsync(packageName, revision) {
             name: project.name,
             sourceDir: projectPath,
             modules: project.modules ?? [],
+            services: project.services ?? [],
             packages: [...packages].sort((a, b) => a.localeCompare(b)),
             ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
             ...(publication ? { publication } : {}),

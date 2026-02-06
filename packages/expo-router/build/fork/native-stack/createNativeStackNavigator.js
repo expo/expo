@@ -36,9 +36,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNativeStackNavigator = createNativeStackNavigator;
 const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
+const expo_glass_effect_1 = require("expo-glass-effect");
 const React = __importStar(require("react"));
 const descriptors_context_1 = require("./descriptors-context");
 const LinkPreviewContext_1 = require("../../link/preview/LinkPreviewContext");
+const navigationParams_1 = require("../../navigationParams");
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         id,
@@ -141,6 +143,23 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
                 };
             }
         }
+        // Map internal gesture option to React Navigation's gestureEnabled option
+        // This allows Expo Router to override gesture behavior without affecting user settings
+        const GLASS = (0, expo_glass_effect_1.isLiquidGlassAvailable)();
+        Object.keys(descriptors).forEach((key) => {
+            const options = descriptors[key].options;
+            const internalGestureEnabled = options?.[navigationParams_1.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
+            if (internalGestureEnabled !== undefined) {
+                options.gestureEnabled = internalGestureEnabled;
+            }
+            // Apply transparent defaults for formSheet presentation on iOS 26 with liquid glass
+            if (GLASS && options?.presentation === 'formSheet') {
+                options.headerTransparent ??= true;
+                options.contentStyle ??= { backgroundColor: 'transparent' };
+                options.headerShadowVisible ??= false;
+                options.headerLargeTitleShadowVisible ??= false;
+            }
+        });
         return {
             computedState: state,
             computedDescriptors: descriptors,

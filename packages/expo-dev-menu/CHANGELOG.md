@@ -6,16 +6,65 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- [Android] Fix `null cannot be cast to non-null type expo.modules.devmenu.DevMenuFragment`. ([#42660](https://github.com/expo/expo/pull/42660) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix null current bridge in standalone mode ([#42666](https://github.com/expo/expo/pull/42666) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix `cmd + m` not opening the dev menu. ([#42701](https://github.com/expo/expo/pull/42701) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Restore dev menu on tvOS. ([#42737](https://github.com/expo/expo/pull/42737) by [@douglowder](https://github.com/douglowder))
+
+## 55.0.3 — 2026-01-27
+
+### 🎉 New features
+
+- [iOS] Add delegate method to control visibility of "Open React Native dev menu" option. ([#42541](https://github.com/expo/expo/pull/42541) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add action button. ([#42587](https://github.com/expo/expo/pull/42587) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compilation errors in Source Map Explorer by excluding tvOS from unavailable SwiftUI APIs (`navigationBarTitleDisplayMode`, `listStyle(.insetGrouped)`, `Menu`) and adding proper availability checks. Refactored platform-specific modifiers to use `@ViewBuilder` instead of `AnyView` for better type preservation and performance. ([#42574](https://github.com/expo/expo/pull/42574) by [@OtavioStasiak](https://github.com/OtavioStasiak))
+- [Android] Fix dev menu not opening when pressing m key in CLI. ([#42566](https://github.com/expo/expo/pull/42566) by [@lukmccall](https://github.com/lukmccall))
+- [Quest] Fix Floating action button not responding to presses. ([#42563](https://github.com/expo/expo/pull/42563) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Make the Action Button always enabled on Quest. ([#42562](https://github.com/expo/expo/pull/42562) by [@behenate](https://github.com/behenate))
+- Moves connection info lower in the menu. ([#42568](https://github.com/expo/expo/pull/42568) and [#42569](https://github.com/expo/expo/pull/42569) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.2 — 2026-01-26
+
+### 🎉 New features
+
+- Add "Source Code Explorer" screen to iOS dev menu ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS] Add support to SwiftUI apps ([#40542](https://github.com/expo/expo/pull/40542) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Decouple dev menu from dev launcher. ([#40669](https://github.com/expo/expo/pull/40669) by [@alanjhughes](https://github.com/alanjhughes))
 - Add initial macOS support ([#41330](https://github.com/expo/expo/pull/41330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
+- Fixed reload when used in Expo Go. ([#42295](https://github.com/expo/expo/pull/42295) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Hide Action button in PiP mode to prevent crash ([#40792](https://github.com/expo/expo/pull/40792) by [@kosmydel](https://github.com/kosmydel))
 - [iOS] remove unnecessary `unregisterKeyCommand` for cmd+r ([#41449](https://github.com/expo/expo/pull/41449) by [@vonovak](https://github.com/vonovak))
 - [Android] Prevent some debug only artifacts from being included in release builds. ([#41378](https://github.com/expo/expo/pull/41378) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix menu is not showing on launch when `ReactContext` was initialized. ([#42123](https://github.com/expo/expo/pull/42123) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix bottom sheet expanding to full height when closing onboarding. ([#42173](https://github.com/expo/expo/pull/42173) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix three finger long press gesture not opening the dev menu. ([#42179](https://github.com/expo/expo/pull/42179) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
@@ -24,6 +73,7 @@
 - [android] Make reactNativeHost optional in ReactHostWrapper ([#40085](https://github.com/expo/expo/pull/40085) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Remove `ReactHostWrapper` ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+- [Android] Temporarily disabled the fast refresh toggle in the dev menu as it's causing the app to crash due to a React Native issue. ([#42146](https://github.com/expo/expo/pull/42146) by [@lukmccall](https://github.com/lukmccall))
 
 ### ⚠️ Notices
 

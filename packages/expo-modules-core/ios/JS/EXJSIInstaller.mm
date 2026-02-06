@@ -85,17 +85,17 @@ static NSString *modulesHostObjectPropertyName = @"modules";
   });
 }
 
-+ (void)installSharedRefClass:(nonnull EXRuntime *)runtime
++ (void)installSharedRefClass:(nonnull EXJavaScriptRuntime *)runtime
 {
   expo::SharedRef::installBaseClass(*[runtime get]);
 }
 
-+ (void)installEventEmitterClass:(nonnull EXRuntime *)runtime
++ (void)installEventEmitterClass:(nonnull EXJavaScriptRuntime *)runtime
 {
   expo::EventEmitter::installClass(*[runtime get]);
 }
 
-+ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime
++ (void)installNativeModuleClass:(nonnull EXJavaScriptRuntime *)runtime
 {
   expo::NativeModule::installClass(*[runtime get]);
 }
