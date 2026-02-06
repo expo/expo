@@ -39,6 +39,7 @@ test.describe('router-e2e with spaces', () => {
         // TODO(@hassankhan): remove @expo/router-server after publishing
         linkExpoPackagesDev: [
           '@expo/cli',
+          '@expo/env',
           '@expo/router-server',
           'babel-preset-expo',
           '@expo/metro-config',
