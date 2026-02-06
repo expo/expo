@@ -53,12 +53,23 @@ static SEL whenInUseAuthorizationSelector;
       break;
     }
   }
-  NSString* scope = @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none");
+  NSString *scope = @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none");
+
+  NSString *accuracy = @"full";
+  if (@available(iOS 14, *)) {
+    CLLocationManager *manager = [[CLLocationManager alloc] init];
+    if (manager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy) {
+      accuracy = @"reduced";
+    }
+  }
+
   return @{ @"status": @(status),
             @"ios": @{
-              @"scope": scope
+              @"scope": scope,
+              @"accuracy": accuracy
             },
             @"scope": scope, // Incorrect according to https://docs.expo.dev/versions/latest/sdk/location/#locationpermissionresponse but long-present. TODO remove for SDK 56 or later
+            @"accuracy": accuracy
          };
 }
 
