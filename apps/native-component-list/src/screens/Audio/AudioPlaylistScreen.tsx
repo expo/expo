@@ -59,7 +59,6 @@ export default function AudioPlaylistScreen() {
   const playlist = useAudioPlaylist({
     sources: INITIAL_SOURCES,
     loop: 'none',
-    updateInterval: 250,
   });
 
   const status = useAudioPlaylistStatus(playlist);

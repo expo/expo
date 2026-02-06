@@ -1,6 +1,6 @@
 import { useEvent } from 'expo';
 import { useEffect, useState, useMemo } from 'react';
-import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE, } from './AudioEventKeys';
+import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, PLAYLIST_STATUS_UPDATE, RECORDING_STATUS_UPDATE, } from './AudioEventKeys';
 import * as AudioModule from './AudioModule.web';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource, resolveSourceWithDownload } from './utils/resolveSource';
@@ -159,6 +159,30 @@ export async function requestRecordingPermissionsAsync() {
 }
 export async function getRecordingPermissionsAsync() {
     return await AudioModule.getRecordingPermissionsAsync();
+}
+export function useAudioPlaylist(options = {}) {
+    const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+    const resolvedSources = useMemo(() => {
+        return sources
+            .map((source) => resolveSource(source))
+            .filter((source) => source != null);
+    }, [JSON.stringify(sources)]);
+    const playlist = useMemo(() => new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin), [JSON.stringify(resolvedSources), updateInterval, loop, crossOrigin]);
+    useEffect(() => {
+        return () => playlist.destroy();
+    }, [playlist]);
+    return playlist;
+}
+export function useAudioPlaylistStatus(playlist) {
+    const currentStatus = useMemo(() => playlist.currentStatus, [playlist.id]);
+    return useEvent(playlist, PLAYLIST_STATUS_UPDATE, currentStatus);
+}
+export function createAudioPlaylist(options = {}) {
+    const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+    const resolvedSources = sources
+        .map((source) => resolveSource(source))
+        .filter((source) => source != null);
+    return new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin);
 }
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.web.js.map

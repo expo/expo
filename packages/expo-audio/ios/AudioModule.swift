@@ -360,7 +360,7 @@ public class AudioModule: Module {
         playlist.setLoopMode(mode)
       }
 
-      Function("release") { playlist in
+      Function("destroy") { playlist in
         self.registry.remove(playlist)
       }
     }

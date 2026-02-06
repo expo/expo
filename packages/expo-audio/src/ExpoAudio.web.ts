@@ -5,6 +5,8 @@ import { useEffect, useState, useMemo } from 'react';
 import {
   AudioMode,
   AudioPlayerOptions,
+  AudioPlaylistOptions,
+  AudioPlaylistStatus,
   AudioSource,
   AudioStatus,
   RecorderState,
@@ -14,6 +16,7 @@ import {
 import {
   AUDIO_SAMPLE_UPDATE,
   PLAYBACK_STATUS_UPDATE,
+  PLAYLIST_STATUS_UPDATE,
   RECORDING_STATUS_UPDATE,
 } from './AudioEventKeys';
 import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
@@ -227,6 +230,44 @@ export async function requestRecordingPermissionsAsync(): Promise<PermissionResp
 
 export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
   return await AudioModule.getRecordingPermissionsAsync();
+}
+
+export function useAudioPlaylist(options: AudioPlaylistOptions = {}): AudioModule.AudioPlaylistWeb {
+  const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+
+  const resolvedSources = useMemo(() => {
+    return sources
+      .map((source) => resolveSource(source))
+      .filter((source): source is NonNullable<AudioSource> => source != null);
+  }, [JSON.stringify(sources)]);
+
+  const playlist = useMemo(
+    () => new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin),
+    [JSON.stringify(resolvedSources), updateInterval, loop, crossOrigin]
+  );
+
+  useEffect(() => {
+    return () => playlist.destroy();
+  }, [playlist]);
+
+  return playlist;
+}
+
+export function useAudioPlaylistStatus(
+  playlist: AudioModule.AudioPlaylistWeb
+): AudioPlaylistStatus {
+  const currentStatus = useMemo(() => playlist.currentStatus, [playlist.id]);
+  return useEvent(playlist, PLAYLIST_STATUS_UPDATE, currentStatus);
+}
+
+export function createAudioPlaylist(
+  options: AudioPlaylistOptions = {}
+): AudioModule.AudioPlaylistWeb {
+  const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+  const resolvedSources = sources
+    .map((source) => resolveSource(source))
+    .filter((source): source is NonNullable<AudioSource> => source != null);
+  return new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin);
 }
 
 export { AudioModule };

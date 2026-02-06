@@ -563,6 +563,13 @@ export type AudioPlaylistOptions = {
      * @default 'none'
      */
     loop?: AudioPlaylistLoopMode;
+    /**
+     * Sets the `crossOrigin` attribute on the `<audio>` elements used for playback.
+     * Required for CORS-enabled audio files when you need to access audio data.
+     * @platform web
+     * @default undefined
+     */
+    crossOrigin?: 'anonymous' | 'use-credentials';
 };
 /**
  * Status information for an audio playlist.
