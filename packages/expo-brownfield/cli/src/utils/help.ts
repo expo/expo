@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 
 import type { HelpMessageParams, HelpMessageSectionParams } from './types';
-import { Output } from '../constants/output';
 
 export const helpMessage = ({
   commands,
@@ -41,7 +40,7 @@ export const helpMessageSection = <T>({
   const content = items.reduce<string>((acc, item) => {
     const ls = left(item);
     const rs = right(item);
-    const spacing = ' '.repeat(Output.HelpSpacing - ls.length);
+    const spacing = ' '.repeat(30 - ls.length);
     return `${acc}\n  ${ls}${spacing}${rs}`;
   }, '');
 

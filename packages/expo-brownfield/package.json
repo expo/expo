@@ -49,7 +49,6 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "arg": "^5.0.2",
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "diff": "^5.2.0",

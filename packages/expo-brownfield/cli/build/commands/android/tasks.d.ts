@@ -1,2 +1,2 @@
-declare const action: () => Promise<undefined>;
+declare const action: () => Promise<void>;
 export default action;

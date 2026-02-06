@@ -4,32 +4,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const promises_1 = __importDefault(require("node:fs/promises"));
-const constants_1 = require("../../constants");
 const utils_1 = require("../../utils");
 const action = async () => {
-    const args = (0, utils_1.parseArgs)({
-        spec: constants_1.Args.IOS,
-        // Skip first three args:
-        // <node-path> expo-brownfield build:ios
-        argv: process.argv.slice(3),
-        stopAtPositional: true,
-    });
-    if ((0, utils_1.getCommand)(args)) {
-        return constants_1.Errors.additionalCommand('build:ios');
-    }
-    // Only resolve --help and --verbose options
-    const basicConfig = (0, utils_1.getCommonConfig)(args);
-    if (basicConfig.help) {
-        console.log(constants_1.Help.IOS);
-        return process.exit(0);
-    }
-    await (0, utils_1.ensurePrebuild)('ios');
-    const config = await (0, utils_1.getIosConfig)(args);
-    (0, utils_1.printConfig)(config);
-    await cleanUpArtifacts(config);
-    await runBuild(config);
-    await packageFrameworks(config);
-    await copyHermesFramework(config);
+    // const args = parseArgs({
+    //   spec: Args.IOS,
+    //   // Skip first three args:
+    //   // <node-path> expo-brownfield build:ios
+    //   argv: process.argv.slice(3),
+    //   stopAtPositional: true,
+    // });
+    // if (getCommand(args)) {
+    //   return Errors.additionalCommand('build:ios');
+    // }
+    // // Only resolve --help and --verbose options
+    // const basicConfig = getCommonConfig(args);
+    // if (basicConfig.help) {
+    //   console.log(Help.IOS);
+    //   return process.exit(0);
+    // }
+    // await ensurePrebuild('ios');
+    // const config = await getIosConfig(args);
+    // printConfig(config);
+    // await cleanUpArtifacts(config);
+    // await runBuild(config);
+    // await packageFrameworks(config);
+    // await copyHermesFramework(config);
+    console.log('build:ios');
 };
 exports.default = action;
 const cleanUpArtifacts = async (config) => {

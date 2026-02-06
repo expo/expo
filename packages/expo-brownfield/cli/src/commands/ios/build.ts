@@ -1,47 +1,46 @@
 import fs from 'node:fs/promises';
 
-import { Args, Errors, Help } from '../../constants';
+import { Errors, Help } from '../../constants';
 import {
   BuildConfigIos,
   ensurePrebuild,
-  getCommand,
   getCommonConfig,
   getIosConfig,
-  parseArgs,
   printConfig,
   runCommand,
   withSpinner,
 } from '../../utils';
 
 const action = async () => {
-  const args = parseArgs({
-    spec: Args.IOS,
-    // Skip first three args:
-    // <node-path> expo-brownfield build:ios
-    argv: process.argv.slice(3),
-    stopAtPositional: true,
-  });
+  // const args = parseArgs({
+  //   spec: Args.IOS,
+  //   // Skip first three args:
+  //   // <node-path> expo-brownfield build:ios
+  //   argv: process.argv.slice(3),
+  //   stopAtPositional: true,
+  // });
 
-  if (getCommand(args)) {
-    return Errors.additionalCommand('build:ios');
-  }
+  // if (getCommand(args)) {
+  //   return Errors.additionalCommand('build:ios');
+  // }
 
-  // Only resolve --help and --verbose options
-  const basicConfig = getCommonConfig(args);
-  if (basicConfig.help) {
-    console.log(Help.IOS);
-    return process.exit(0);
-  }
+  // // Only resolve --help and --verbose options
+  // const basicConfig = getCommonConfig(args);
+  // if (basicConfig.help) {
+  //   console.log(Help.IOS);
+  //   return process.exit(0);
+  // }
 
-  await ensurePrebuild('ios');
+  // await ensurePrebuild('ios');
 
-  const config = await getIosConfig(args);
-  printConfig(config);
+  // const config = await getIosConfig(args);
+  // printConfig(config);
 
-  await cleanUpArtifacts(config);
-  await runBuild(config);
-  await packageFrameworks(config);
-  await copyHermesFramework(config);
+  // await cleanUpArtifacts(config);
+  // await runBuild(config);
+  // await packageFrameworks(config);
+  // await copyHermesFramework(config);
+  console.log('build:ios');
 };
 
 export default action;

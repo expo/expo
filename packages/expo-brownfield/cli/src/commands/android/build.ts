@@ -1,62 +1,61 @@
 import path from 'path';
 
-import { Args, Errors, Help } from '../../constants';
+import { Errors, Help } from '../../constants';
 import {
   BuildTypeAndroid,
   ensurePrebuild,
   getAndroidConfig,
-  getCommand,
   getCommonConfig,
-  parseArgs,
   printConfig,
   runCommand,
   withSpinner,
 } from '../../utils';
 
 const action = async () => {
-  const args = parseArgs({
-    spec: Args.Android,
-    // Skip first three args:
-    // <node-path> expo-brownfield build:android
-    argv: process.argv.slice(3),
-    stopAtPositional: true,
-  });
+  // const args = parseArgs({
+  //   spec: Args.Android,
+  //   // Skip first three args:
+  //   // <node-path> expo-brownfield build:android
+  //   argv: process.argv.slice(3),
+  //   stopAtPositional: true,
+  // });
 
-  if (getCommand(args)) {
-    return Errors.additionalCommand('build:android');
-  }
+  // if (getCommand(args)) {
+  //   return Errors.additionalCommand('build:android');
+  // }
 
-  // Only resolve --help and --verbose options
-  const basicConfig = getCommonConfig(args);
-  if (basicConfig.help) {
-    console.log(Help.Android);
-    return process.exit(0);
-  }
+  // // Only resolve --help and --verbose options
+  // const basicConfig = getCommonConfig(args);
+  // if (basicConfig.help) {
+  //   console.log(Help.Android);
+  //   return process.exit(0);
+  // }
 
-  await ensurePrebuild('android');
+  // await ensurePrebuild('android');
 
-  const config = await getAndroidConfig(args);
-  printConfig(config);
+  // const config = await getAndroidConfig(args);
+  // printConfig(config);
 
-  let tasks = [];
-  if (config.tasks.length > 0) {
-    tasks = config.tasks;
-  } else if (config.repositories.length > 0) {
-    for (const repository of config.repositories) {
-      const task = constructTask(config.buildType, repository);
-      tasks.push(task);
-    }
-  } else {
-    Errors.missingTasksOrRepositories();
-  }
+  // let tasks = [];
+  // if (config.tasks.length > 0) {
+  //   tasks = config.tasks;
+  // } else if (config.repositories.length > 0) {
+  //   for (const repository of config.repositories) {
+  //     const task = constructTask(config.buildType, repository);
+  //     tasks.push(task);
+  //   }
+  // } else {
+  //   Errors.missingTasksOrRepositories();
+  // }
 
-  for (const task of tasks) {
-    if (!config.dryRun) {
-      await runTask(task, config.verbose);
-    } else {
-      console.log(`./gradlew ${task}`);
-    }
-  }
+  // for (const task of tasks) {
+  //   if (!config.dryRun) {
+  //     await runTask(task, config.verbose);
+  //   } else {
+  //     console.log(`./gradlew ${task}`);
+  //   }
+  // }
+  console.log('build:android');
 };
 
 export default action;

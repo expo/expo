@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.helpMessageSection = exports.helpMessage = void 0;
 const chalk_1 = __importDefault(require("chalk"));
-const output_1 = require("../constants/output");
 const helpMessage = ({ commands, options, promptCommand = '<command>', promptOptions = '<options>', }) => {
     const optionsSection = (0, exports.helpMessageSection)({
         items: options,
@@ -30,7 +29,7 @@ const helpMessageSection = ({ items, left, right, title, }) => {
     const content = items.reduce((acc, item) => {
         const ls = left(item);
         const rs = right(item);
-        const spacing = ' '.repeat(output_1.Output.HelpSpacing - ls.length);
+        const spacing = ' '.repeat(30 - ls.length);
         return `${acc}\n  ${ls}${spacing}${rs}`;
     }, '');
     return `\n\n${chalk_1.default.bold(title)}${content}`;
