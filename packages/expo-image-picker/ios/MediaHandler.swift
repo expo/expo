@@ -297,7 +297,7 @@ internal struct MediaHandler {
 
   private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {
     let utType: UTType? = if #available(iOS 26.0, *) {
-      asset?.contentType
+      asset?.contentType ?? UTType(filenameExtension: fileExtension)
     } else {
       UTType(filenameExtension: fileExtension)
     }
