@@ -90,7 +90,6 @@ jobs:
         id: expo-caches
         with:
           yarn-cache: 'true'
-          yarn-tools: 'true'
           bare-expo-pods: 'true'
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
@@ -185,7 +184,6 @@ jobs:
         id: expo-caches
         with:
           yarn-cache: 'true'
-          yarn-tools: 'true'
           bare-expo-pods: 'true'
       - name: 🧶 Install node modules in root dir
         run: yarn install --prefer-offline --frozen-lockfile
