@@ -3,6 +3,8 @@ package expo.modules.trackingtransparency
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
+import com.google.android.gms.common.GoogleApiAvailabilityLight
+import com.google.android.gms.common.ConnectionResult
 import android.content.Context
 import expo.modules.kotlin.exception.Exceptions
 
@@ -14,12 +16,14 @@ class TrackingTransparencyModule : Module() {
     // TODO: Rename the package to 'ExpoTracking'
     Name("ExpoTrackingTransparency")
 
-    Function("getAdvertisingId") {
-      return@Function getAdvertisingId()
+    Function<Boolean>("isAvailable") {
+      val apiAvailability = GoogleApiAvailabilityLight.getInstance()
+      val resultCode = apiAvailability.isGooglePlayServicesAvailable(context)
+      return@Function resultCode == ConnectionResult.SUCCESS
     }
-  }
 
-  private fun getAdvertisingId(): String? {
-    return AdvertisingIdClient.getAdvertisingIdInfo(context).id
+    Function<String?>("getAdvertisingId") {
+      return@Function AdvertisingIdClient.getAdvertisingIdInfo(context).id
+    }
   }
 }
