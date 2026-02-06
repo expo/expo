@@ -38,7 +38,7 @@ class Contact(var contactId: String, var appContext: AppContext) {
   var hasPhoto = false
   var photoUri: String? = null
   private var rawPhotoUri: String? = null
-  private var contactType = "personHELLOWORLD"
+  private var contactType = "person"
   var firstName: String? = ""
   var middleName: String? = ""
   var lastName: String? = ""
