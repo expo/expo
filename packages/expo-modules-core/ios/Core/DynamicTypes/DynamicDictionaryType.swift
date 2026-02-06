@@ -43,7 +43,7 @@ internal struct DynamicDictionaryType: AnyDynamicType {
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     if let result = result as? [AnyHashable: Any] {
-      return result.mapValues({ Conversions.convertFunctionResult($0, appContext: appContext) })
+      return result.mapValues { Conversions.convertFunctionResult($0, appContext: appContext) }
     }
     return result
   }
