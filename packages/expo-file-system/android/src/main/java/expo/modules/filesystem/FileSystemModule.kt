@@ -205,12 +205,12 @@ class FileSystemModule : Module() {
         file.creationTime
       }
 
-      Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
-        file.copy(destination)
+      Function("copy") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions ->
+        file.copy(destination, options)
       }
 
-      Function("move") { file: FileSystemFile, destination: FileSystemPath ->
-        file.move(destination)
+      Function("move") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions ->
+        file.move(destination, options)
       }
 
       Function("rename") { file: FileSystemFile, newName: String ->
@@ -306,12 +306,12 @@ class FileSystemModule : Module() {
         directory.validatePath()
       }
 
-      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.copy(destination)
+      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.move(destination)
+      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { directory: FileSystemDirectory, newName: String ->
