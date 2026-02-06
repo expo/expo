@@ -108,7 +108,7 @@ function widgetsPlugin(api) {
 }
 function generateWidgetFunctionString(t, node) {
     const expression = t.functionExpression(null, node.params, node.body, node.generator, node.async);
-    return generator.generate(expression, { compact: false }).code;
+    return generator.generate(expression, { compact: true }).code;
 }
 function buildTemplateLiteral(t, code) {
     const raw = escapeTemplateLiteral(code);

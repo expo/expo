@@ -101,7 +101,7 @@ function generateWidgetFunctionString(
     node.generator,
     node.async
   );
-  return generator.generate(expression, { compact: false }).code;
+  return generator.generate(expression, { compact: true }).code;
 }
 
 function buildTemplateLiteral(t: typeof import('@babel/core').types, code: string) {
