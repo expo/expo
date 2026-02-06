@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Improved MIME type resolution.
+- [iOS] Improved MIME type resolution. ([#42889](https://github.com/expo/expo/pull/42889) by [@barthap](https://github.com/barthap))
 
 ## 55.0.4 — 2026-02-03
 
