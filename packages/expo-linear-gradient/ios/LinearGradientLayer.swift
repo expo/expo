@@ -59,22 +59,18 @@ final class LinearGradientLayer: CALayer {
       return result || color.cgColor.alpha < 1.0
     }
 
-    UIGraphicsBeginImageContextWithOptions(bounds.size, !hasAlpha, 0.0)
-
-    guard let contextRef = UIGraphicsGetCurrentContext() else {
-      return
-    }
-
-    draw(in: contextRef)
-
-    guard let image = UIGraphicsGetImageFromCurrentImageContext() else {
-      return
+    let format = UIGraphicsImageRendererFormat()
+    format.opaque = !hasAlpha
+    format.scale = 0.0 // Use main screen scale
+    
+    let renderer = UIGraphicsImageRenderer(size: bounds.size, format: format)
+    
+    let image = renderer.image { context in
+      draw(in: context.cgContext)
     }
 
     self.contents = image.cgImage
     self.contentsScale = image.scale
-
-    UIGraphicsEndImageContext()
   }
 
   override func draw(in ctx: CGContext) {
