@@ -76,10 +76,13 @@ describe(resolveGradlePropsAsync, () => {
   });
 
   it('returns with highly custom variant "firstSecondThird"', async () => {
+    // See: https://android.googlesource.com/platform/tools/base/+/e3b89c93d5e8238d6163f4e606d4ae9c4d229ee4/build-system/gradle-core/src/main/java/com/android/build/gradle/internal/variant/VariantPathHelper.kt?autodive=0%2F%2F%2F%2F%2F#137
+    // See: https://github.com/zawn/android-gradle-plugin/blob/c5d0ab91fac5a4acbe1845d3743b5ea0f896983d/builder/src/com/android/builder/core/VariantConfiguration.java#L402-L409
+    // The flavor should only be one directory, rather than multiple
     expect(
       await resolveGradlePropsAsync('/', { variant: 'firstSecondThird', allArch: true }, testDevice)
     ).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/first/second/third',
+      apkVariantDirectory: '/android/app/build/outputs/apk/firstSecond/third',
       appName: 'app',
       buildType: 'third',
       flavors: ['first', 'second'],
