@@ -6,7 +6,7 @@ import type {
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import { scanFilesRecursively, fileExistsAsync } from '../utils';
+import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
@@ -61,7 +61,7 @@ export async function resolveDependencyConfigImplAndroidAsync(
     packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
   }
 
-  const packageJson = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf8'));
+  const packageJson = await loadPackageJson(fastJoin(packageRoot, 'package.json'));
   const buildTypes = reactNativeConfig?.buildTypes || [];
   const dependencyConfiguration = reactNativeConfig?.dependencyConfiguration;
   const libraryName =
