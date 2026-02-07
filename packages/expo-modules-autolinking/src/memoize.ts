@@ -15,6 +15,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 const memoizeContext = new AsyncLocalStorage<Memoizer>();
+const MAX_SIZE = 5_000;
 
 export interface Memoizer {
   /** Calls a function with a memoizer cache, caching its return value */
@@ -76,6 +77,9 @@ export function createMemoizer(): Memoizer {
           currentMemoizer = undefined;
         }
         const value = await promise;
+        if (cache.size > MAX_SIZE) {
+          cache.clear();
+        }
         cache.set(input, value);
         return value;
       }
