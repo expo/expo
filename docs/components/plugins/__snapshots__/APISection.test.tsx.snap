@@ -241,6 +241,7 @@ not appear on the screen.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -1337,6 +1338,7 @@ This should come from the user field of an
 
       <blockquote
         class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -3044,6 +3046,7 @@ which contains all of the pertinent user and credential information.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -3975,6 +3978,7 @@ may be
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -4165,6 +4169,7 @@ You must include the ID string of the user whose credentials you'd like to refre
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -4496,6 +4501,7 @@ None of these options are required.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -4847,6 +4853,7 @@ You must include the ID string of the user to sign out.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -5622,6 +5629,7 @@ OAuth 2.0 protocol
           >
             <div
               class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+              data-md="platform-badge"
             >
               <svg
                 class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
@@ -5741,6 +5749,7 @@ OAuth 2.0 protocol
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -6434,6 +6443,7 @@ for more details.
 
       <blockquote
         class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -6479,6 +6489,7 @@ You will still need to handle null values for any fields you request.
       </blockquote>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -6723,6 +6734,7 @@ for more details.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -7213,6 +7225,7 @@ exports[`APISection expo-pedometer 1`] = `
         >
           <div
             class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+            data-md="platform-badge"
           >
             <svg
               class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
@@ -7480,6 +7493,7 @@ exports[`APISection expo-pedometer 1`] = `
 
           <blockquote
             class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-md="callout"
             data-testid="callout-container"
           >
             <svg
@@ -8016,6 +8030,7 @@ provided with a single argument that is
 
           <blockquote
             class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-md="callout"
             data-testid="callout-container"
           >
             <svg

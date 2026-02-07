@@ -29,6 +29,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
       >
         <div
           class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+          data-md="platform-badge"
         >
           <svg
             class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-green12 opacity-80"
