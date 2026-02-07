@@ -1,6 +1,8 @@
 package expo.modules.filesystem.unifiedfile
 
 import android.net.Uri
+import expo.modules.filesystem.fsops.DestinationSpec
+import expo.modules.filesystem.fsops.CopyMoveStrategy
 import expo.modules.kotlin.AppContext
 
 interface UnifiedFileInterface {
@@ -23,4 +25,8 @@ interface UnifiedFileInterface {
   fun inputStream(): java.io.InputStream
   fun length(): Long
   fun walkTopDown(): Sequence<UnifiedFileInterface>
+
+  val copyMoveStrategy: CopyMoveStrategy
+  fun copyTo(dest: DestinationSpec) = copyMoveStrategy.copyTo(dest)
+  fun moveTo(dest: DestinationSpec): Uri = copyMoveStrategy.moveTo(dest)
 }

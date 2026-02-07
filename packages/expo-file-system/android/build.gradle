@@ -11,6 +11,10 @@ android {
   defaultConfig {
     versionCode 30
     versionName "55.0.4"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  testOptions {
+    unitTests.includeAndroidResources = true
   }
 }
 
@@ -22,4 +26,8 @@ dependencies {
   api 'com.squareup.okio:okio:2.9.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.documentfile:documentfile:1.1.0"
+
+  if (project.findProject(':expo-modules-test-core')) {
+    androidTestImplementation project(':expo-modules-test-core')
+  }
 }
