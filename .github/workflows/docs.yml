@@ -71,6 +71,12 @@ jobs:
           fail_on_error: true
           # Override bundled reviewdog (0.17.0) to avoid 300-file diff limit
           reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
+      - name: ♻️ Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: docs/.next/cache
+          key: nextjs-docs-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/**/*.ts', 'docs/**/*.tsx', 'docs/**/*.js', 'docs/**/*.jsx', 'docs/**/*.mdx', 'docs/**/*.md', 'docs/**/*.cjs') }}
+          restore-keys: nextjs-docs-${{ hashFiles('docs/yarn.lock') }}-
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
         run: yarn export

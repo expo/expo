@@ -58,6 +58,13 @@ jobs:
           reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
       - name: 🔗 Lint pages links
         run: yarn lint-links --quiet
+      - name: ♻️ Restore Next.js build cache
+        if: contains(github.event.pull_request.labels.*.name, 'preview')
+        uses: actions/cache@v4
+        with:
+          path: docs/.next/cache
+          key: nextjs-docs-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/**/*.ts', 'docs/**/*.tsx', 'docs/**/*.js', 'docs/**/*.jsx', 'docs/**/*.mdx', 'docs/**/*.md', 'docs/**/*.cjs') }}
+          restore-keys: nextjs-docs-${{ hashFiles('docs/yarn.lock') }}-
       - name: 🏗️ Build Docs website
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         run: yarn export
