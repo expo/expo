@@ -1,8 +1,9 @@
 import path from 'path';
 
 import { DependencyResolutionSource, type ResolutionResult } from './types';
-import { defaultShouldIncludeDependency, maybeRealpath } from './utils';
+import { defaultShouldIncludeDependency } from './utils';
 import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
+import { maybeRealpath } from '../utils';
 
 interface ResolutionOptions {
   shouldIncludeDependency?(name: string): boolean;
