@@ -16,6 +16,7 @@ export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
     return (
       <div
         ref={ref}
+        data-md={alwaysDark ? 'code-block' : undefined}
         className={mergeClasses(
           preferredTheme === Themes.DARK && 'dark-theme',
           wordWrap && '!break-words !whitespace-pre-wrap',

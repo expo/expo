@@ -20,7 +20,8 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
   const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
 
   return (
-    <>
+    // data-md="skip": excluded from markdown page generation (scripts/generate-markdown-pages-utils.js)
+    <span data-md="skip">
       {showEditButton && (
         <Button
           theme="quaternary"
@@ -76,6 +77,6 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
           )}
         </span>
       )}
-    </>
+    </span>
   );
 }

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "yarn generate-static-resources && next dev -p 3002 --webpack",
-    "build": "yarn copy-latest && yarn generate-llms && next build --webpack",
+    "build": "yarn copy-latest && yarn generate-llms && next build --webpack && yarn generate-markdown-pages && yarn check-markdown-pages",
     "export": "yarn generate-static-resources production && yarn versions-schema-sync && yarn append-last-modified-dates && yarn run build",
     "export-preview": "yarn generate-static-resources preview && yarn versions-schema-sync && yarn append-last-modified-dates && yarn run build",
     "export-server": "wrangler pages dev --port 8000",
@@ -18,6 +18,8 @@
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "copy-latest": "node ./scripts/copy-latest.js",
     "generate-llms": "node ./scripts/generate-llms/index.js",
+    "generate-markdown-pages": "node ./scripts/generate-markdown-pages.js",
+    "check-markdown-pages": "node ./scripts/check-markdown-pages.js",
     "generate-static-resources": "node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
     "append-last-modified-dates": "node --unhandled-rejections=strict ./scripts/append-dates.js",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
