@@ -9,7 +9,7 @@ jest.mock('resolve-from');
 
 const EXPO_MONOREPO_ROOT = path.resolve(__dirname, '../../../../..');
 
-describe(loadConfigAsync, () => {
+describe('loadConfigAsync', () => {
   afterEach(() => {
     vol.reset();
   });

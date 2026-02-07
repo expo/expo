@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { memoize } from '../utils';
+import { memoize } from '../memoize';
 import {
   DependencyResolutionSource,
   type DependencyResolution,
@@ -65,7 +65,7 @@ export const maybeRealpath = async (target: string): Promise<string | null> => {
   }
 };
 
-export type PackageJson = Record<string, unknown> & { version?: string };
+export type PackageJson = Record<string, unknown> & { name?: string; version?: string };
 
 export const loadPackageJson = memoize(async function loadPackageJson(
   jsonPath: string
