@@ -315,11 +315,15 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
         hasBlocks = true;
       });
     }
-    // Collapse ". ." / ".." from nested unwrapping and trim leading ". " at cell start.
+    // Clean up artifacts from block flattening:
+    // - Collapse ". ." / ".." from nested unwrapping
+    // - Trim leading ". " at cell start
+    // - Remove orphan "-" after periods (upstream renders a bare dash for empty descriptions)
     const cellHtml = $cell
       .html()!
       .replace(/\.\s*\.\s*/g, '. ')
-      .replace(/^\s*\.\s*/, '');
+      .replace(/^\s*\.\s*/, '')
+      .replace(/\.\s*-\s*$/, '.');
     $cell.html(cellHtml);
   });
 
