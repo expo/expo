@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import { createMemoizer } from '../../memoize';
 import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
 import { loadConfigAsync } from '../config';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
@@ -31,6 +32,9 @@ const BASE_AUTOLINKING_OPTIONS: AutolinkingOptions = {
   exclude: [],
 };
 
+const itWithMemoize = (name: string, fn: () => Promise<void>) =>
+  it(name, () => createMemoizer().withMemoizer(fn));
+
 describe(createReactNativeConfigAsync, () => {
   const mockPlatformResolverIos = resolveDependencyConfigImplIosAsync as jest.MockedFunction<
     typeof resolveDependencyConfigImplIosAsync
@@ -40,7 +44,7 @@ describe(createReactNativeConfigAsync, () => {
     vol.reset();
   });
 
-  it('should return config', async () => {
+  itWithMemoize('should return config', async () => {
     const packageJson = {
       name: 'test',
       version: '1.0.0',
@@ -120,7 +124,7 @@ describe(createReactNativeConfigAsync, () => {
     `);
   });
 
-  it('should return config with local dependencies', async () => {
+  itWithMemoize('should return config with local dependencies', async () => {
     const packageJson = {
       name: 'test',
       version: '1.0.0',
@@ -171,7 +175,7 @@ describe(createReactNativeConfigAsync, () => {
     expect(result.dependencies['react-native-test'].root).toBe('/app/modules/react-native-test');
   });
 
-  it('should return config if local dependencies are not specified', async () => {
+  itWithMemoize('should return config if local dependencies are not specified', async () => {
     const packageJson = {
       name: 'test',
       version: '1.0.0',
@@ -203,7 +207,7 @@ describe(createReactNativeConfigAsync, () => {
 });
 
 describe(resolveAppProjectConfigAsync, () => {
-  it('should return app project config for android', async () => {
+  itWithMemoize('should return app project config for android', async () => {
     const androidResolver = require('../androidResolver');
     const mockFindGradleAndManifestAsync = jest.spyOn(
       androidResolver,
@@ -231,7 +235,7 @@ describe(resolveAppProjectConfigAsync, () => {
     `);
   });
 
-  it('should return app project config for android with custom sourceDir', async () => {
+  itWithMemoize('should return app project config for android with custom sourceDir', async () => {
     vol.fromJSON({
       '/brownfield/app/src/main/AndroidManifest.xml': `\
         <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.test">
@@ -254,7 +258,7 @@ describe(resolveAppProjectConfigAsync, () => {
     `);
   });
 
-  it('should return empty project config for android if no gradle files or manifest files', async () => {
+  itWithMemoize('should return empty project config for android if no gradle files or manifest files', async () => {
     const androidResolver = require('../androidResolver');
     const mockFindGradleAndManifestAsync = jest.spyOn(
       androidResolver,
@@ -273,7 +277,7 @@ describe(resolveAppProjectConfigAsync, () => {
     expect(config).toEqual({});
   });
 
-  it('should return app project config for ios', async () => {
+  itWithMemoize('should return app project config for ios', async () => {
     const config = await resolveAppProjectConfigAsync('/app', 'ios');
     expect(config).toMatchInlineSnapshot(`
       {
@@ -284,7 +288,7 @@ describe(resolveAppProjectConfigAsync, () => {
     `);
   });
 
-  it('should return app project config with custom sourceDir', async () => {
+  itWithMemoize('should return app project config with custom sourceDir', async () => {
     const androidResolver = require('../androidResolver');
     const mockFindGradleAndManifestAsync = jest.spyOn(
       androidResolver,
@@ -328,7 +332,7 @@ describe(resolveReactNativeModule, () => {
     typeof resolveDependencyConfigImplIosAsync
   >;
 
-  it('should return config with platform config', async () => {
+  itWithMemoize('should return config with platform config', async () => {
     mockPlatformResolverIos.mockResolvedValueOnce({
       podspecPath: '/app/node_modules/react-native-test/RNTest.podspec',
       version: '1.0.0',
@@ -365,7 +369,7 @@ describe(resolveReactNativeModule, () => {
     `);
   });
 
-  it('should call the platform resolver', async () => {
+  itWithMemoize('should call the platform resolver', async () => {
     await resolveReactNativeModule(
       {
         name: 'react-native-test',
@@ -386,7 +390,7 @@ describe(resolveReactNativeModule, () => {
     );
   });
 
-  it('should call platform resolver with config from library', async () => {
+  itWithMemoize('should call platform resolver with config from library', async () => {
     const libraryConfig: RNConfigReactNativeLibraryConfig = {
       dependency: {
         platforms: {
@@ -422,7 +426,7 @@ describe(resolveReactNativeModule, () => {
     );
   });
 
-  it('should call platform resolver with merged config and project config will override library config', async () => {
+  itWithMemoize('should call platform resolver with merged config and project config will override library config', async () => {
     const projectConfig: RNConfigReactNativeProjectConfig = {
       dependencies: {
         'react-native-test': {
@@ -465,7 +469,7 @@ describe(resolveReactNativeModule, () => {
     );
   });
 
-  it(`should return null for the react-native because it's a platform package`, async () => {
+  itWithMemoize(`should return null for the react-native because it's a platform package`, async () => {
     const result = await resolveReactNativeModule(
       {
         name: 'react-native',
