@@ -166,6 +166,7 @@ const nextConfigWithSentry = withSentryConfig(nextConfig, {
   org: 'expoio',
   project: 'docs',
   authToken: process.env.SENTRY_AUTH_TOKEN,
+  telemetry: false,
   debug: false, // Set to `true` to enable debug logging if having issues with missing source maps
   widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
   sourcemaps: {
