@@ -21,7 +21,7 @@ async function resolveDependency(
   if (packageJson) {
     return {
       source: DependencyResolutionSource.SEARCH_PATH,
-      name: packageJson.name,
+      name: packageJson.name || '',
       version: packageJson.version || '',
       path: realPath || originPath,
       originPath,
