@@ -88,13 +88,36 @@ runs:
         # which node_modules are affected by the root yarn.lock
         path: |
           node_modules
-          apps/*/node_modules
+          apps/*/node_modules/
           apps/*/__generated__/AppEntry.js
-          packages/*/node_modules
+          packages/*/node_modules/*.
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
         key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-
+    - name: Upload cache
+      if: inputs.yarn-workspace == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: workspace-modules-cache
+        include-hidden-files: true
+        path: |
+          node_modules
+          apps/*/node_modules/
+          apps/*/__generated__/AppEntry.js
+          packages/*/node_modules/*.
+          packages/@expo/*/node_modules
+          react-native-lab/react-native/node_modules
+    - name: Upload .yarn-integrity
+      uses: actions/upload-artifact@v4
+      with:
+        name: yarn-integrity
+        include-hidden-files: true
+        path: |
+          node_modules/.yarn-integrity
+          apps/*/node_modules/.yarn-integrity
+          packages/*/node_modules/.yarn-integrity
+          packages/@expo/*/node_modules/.yarn-integrity
+          react-native-lab/react-native/node_modules/.yarn-integrity
     - name: ♻️ Restore /tools node modules and bins
       if: inputs.yarn-tools == 'true'
       uses: actions/cache@v4

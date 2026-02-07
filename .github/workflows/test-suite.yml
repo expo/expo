@@ -255,14 +255,16 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-      - name: 🧹 Cleanup GitHub Linux runner disk space
-        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: 'package.json'
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
@@ -281,6 +283,21 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Debug yarn integrity
+        shell: bash
+        run: |
+          ls -la node_modules
+      - name: Upload .yarn-integrity
+        uses: actions/upload-artifact@v4
+        with:
+          name: yarn-integrity-2
+          include-hidden-files: true
+          path: |
+            node_modules/.yarn-integrity
+            apps/*/node_modules/.yarn-integrity
+            packages/*/node_modules/.yarn-integrity
+            packages/@expo/*/node_modules/.yarn-integrity
+            react-native-lab/react-native/node_modules/.yarn-integrity
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
