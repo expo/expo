@@ -1038,6 +1038,7 @@ properties.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 fullName
@@ -1081,6 +1082,7 @@ properties.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 formatStyle
@@ -1136,6 +1138,7 @@ properties.
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1278,6 +1281,7 @@ properties.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 user
@@ -1389,6 +1393,7 @@ This should come from the user field of an
       </blockquote>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1542,6 +1547,7 @@ value depending on the state of the credential.
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1718,6 +1724,7 @@ value depending on the state of the credential.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 options
@@ -1781,6 +1788,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1969,6 +1977,7 @@ refresh operation.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 options
@@ -2078,6 +2087,7 @@ the user, since this remains the same for apps released by the same developer.
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -2266,6 +2276,7 @@ sign-in operation.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 options
@@ -2363,6 +2374,7 @@ from using
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -2586,6 +2598,7 @@ sign-out operation.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 listener
@@ -2617,6 +2630,7 @@ sign-out operation.
     >
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -2866,6 +2880,7 @@ After calling this function, the listener will no longer receive any events from
         </p>
         <div
           class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+          data-md="api-returns"
         >
           <div
             class="flex flex-row items-center gap-2"
@@ -5622,6 +5637,7 @@ OAuth 2.0 protocol
         </h4>
         <div
           class="flex flex-row items-start [table_&]:mb-2.5 mb-1"
+          data-md="api-platforms"
         >
           <span
             class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -7107,6 +7123,7 @@ exports[`APISection expo-pedometer 1`] = `
       </p>
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7218,6 +7235,7 @@ exports[`APISection expo-pedometer 1`] = `
       </h3>
       <div
         class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+        data-md="api-platforms"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -7290,6 +7308,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 start
@@ -7335,6 +7354,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 end
@@ -7387,6 +7407,7 @@ exports[`APISection expo-pedometer 1`] = `
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7604,6 +7625,7 @@ a start date that is more than seven days in the past returns only the available
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7747,6 +7769,7 @@ available on this device.
       </p>
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7895,6 +7918,7 @@ available on this device.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 callback
@@ -7958,6 +7982,7 @@ provided with a single argument that is
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -8311,6 +8336,7 @@ After calling this function, the listener will no longer receive any events from
         </p>
         <div
           class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+          data-md="api-returns"
         >
           <div
             class="flex flex-row items-center gap-2"
@@ -8619,6 +8645,7 @@ After calling this function, the listener will no longer receive any events from
               >
                 <span
                   class="leading-[1.6154] text-default font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
                   result

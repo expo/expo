@@ -22,6 +22,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
   >
     <div
       class="mb-3 flex flex-row items-start [table_&]:mb-2.5"
+      data-md="api-platforms"
     >
       <span
         class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
