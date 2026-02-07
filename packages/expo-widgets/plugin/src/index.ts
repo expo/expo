@@ -3,6 +3,7 @@ import { ConfigPlugin, createRunOncePlugin, withPlugins } from 'expo/config-plug
 import { WidgetConfig } from './types/WidgetConfig.type';
 import withAppGroupEntitlements from './withAppGroupEntitlements';
 import withAppInfoPlist from './withAppInfoPlist';
+import withEasConfig from './withEasConfig';
 import withPodsLinking from './withPodsLinking';
 import withPushNotifications from './withPushNotifications';
 import withWidgetSourceFiles from './withWidgetSourceFiles';
@@ -54,12 +55,22 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) 
   const getFileUris = () => sharedFiles;
 
   return withPlugins(config, [
+    [withEasConfig, { targetName, bundleIdentifier, groupIdentifier }],
     [withPodsLinking, { targetName }],
     [withWidgetSourceFiles, { targetName, widgets, groupIdentifier, onFilesGenerated: setFiles }],
     [withAppInfoPlist, { frequentUpdates, groupIdentifier }],
     [withPushNotifications, { enablePushNotifications }],
     [withAppGroupEntitlements, { groupIdentifier }],
-    [withTargetXcodeProject, { targetName, bundleIdentifier, deploymentTarget, getFileUris }],
+    [
+      withTargetXcodeProject,
+      {
+        targetName,
+        bundleIdentifier,
+        deploymentTarget,
+        appleTeamId: config.ios?.appleTeamId,
+        getFileUris,
+      },
+    ],
   ]);
 };
 
