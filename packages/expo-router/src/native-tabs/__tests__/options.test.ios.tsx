@@ -8,13 +8,7 @@ import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../NativeTabsView';
-import {
-  type DrawableIcon,
-  type MaterialIcon,
-  type NativeTabsTriggerIconProps,
-  type SFSymbolIcon,
-  type SrcIcon,
-} from '../common/elements';
+import { type NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {

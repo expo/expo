@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- add `yarn test:types` for checking types in jest tests ([#42935](https://github.com/expo/expo/pull/42935) by [@Ubax](https://github.com/Ubax))
+
 ## 55.0.0-preview.6 — 2026-02-03
 
 ### 🎉 New features
