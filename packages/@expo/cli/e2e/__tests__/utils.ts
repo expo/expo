@@ -116,23 +116,30 @@ export async function createFromFixtureAsync(
       const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
       const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
 
+      const linkTasks = [];
       if (linkExpoPackages) {
-        for (const pkg of linkExpoPackages) {
+        const promises = linkExpoPackages.map(async (pkg) => {
           const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
           log('Created and linked tarball for dependencies', tarball);
           dependencies[pkg] = tarball.packageReference;
           resolutions[pkg] = tarball.packageReference;
-        }
+        });
+
+        linkTasks.push(...promises);
       }
 
       if (linkExpoPackagesDev) {
-        for (const pkg of linkExpoPackagesDev) {
+        const promises = linkExpoPackagesDev.map(async (pkg) => {
           const tarball = await createPackageTarball(projectRoot, `packages/${pkg}`);
           log('Created and linked tarball for devDependencies', tarball);
           devDependencies[pkg] = tarball.packageReference;
           resolutions[pkg] = tarball.packageReference;
-        }
+        });
+
+        linkTasks.push(...promises);
       }
+
+      await Promise.all(linkTasks);
 
       // TODO(@kitten): Temporary addition until we have at least one publish with the `@expo/metro` dependency
       devDependencies['@expo/metro'] = '~0.1.0';
