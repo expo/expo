@@ -50,6 +50,18 @@ public class SnackEditingSession: ObservableObject {
   /// Error if session setup failed
   public private(set) var setupError: Error?
 
+  /// Whether this is an embedded session (lessons, playground, demo) that uses direct native transport
+  public private(set) var isEmbeddedSession: Bool = false
+
+  /// Files stored locally for embedded sessions (no SnackSessionClient)
+  private var embeddedFiles: [String: SnackSessionClient.SnackFile]?
+
+  /// Original files for embedded sessions (for reset-to-original support)
+  private var originalEmbeddedFiles: [String: SnackSessionClient.SnackFile]?
+
+  /// Dependencies stored locally for embedded sessions
+  private var embeddedDependencies: [String: [String: Any]] = [:]
+
   private init() {}
 
   // MARK: - Public Methods
@@ -104,6 +116,7 @@ public class SnackEditingSession: ObservableObject {
   ///   - clearFirst: Whether to clear existing session (false when called from setupSession which already cleared)
   ///   - isLesson: Whether this is a lesson session from Expo Go Learn tab
   ///   - lessonId: The lesson ID if this is a lesson session
+  ///   - isEmbedded: Whether to use direct native transport instead of Snackpub WebSocket
   public func setupSessionWithCode(
     snackId: String = "new",
     code: [String: SnackSessionClient.SnackFile],
@@ -113,7 +126,8 @@ public class SnackEditingSession: ObservableObject {
     clearFirst: Bool = true,
     isLesson: Bool = false,
     lessonId: Int? = nil,
-    lessonDescription: String? = nil
+    lessonDescription: String? = nil,
+    isEmbedded: Bool = false
   ) async {
     // Clear any existing session (unless caller already did)
     if clearFirst {
@@ -126,6 +140,20 @@ public class SnackEditingSession: ObservableObject {
     self.isLesson = isLesson
     self.lessonId = lessonId
     self.lessonDescription = lessonDescription
+
+    if isEmbedded {
+      // Embedded session: store files locally, skip Snackpub WebSocket entirely.
+      // The snack runtime will communicate via SnackDirectTransport native module.
+      self.isEmbeddedSession = true
+      self.originalEmbeddedFiles = code
+      self.embeddedFiles = code
+      self.embeddedDependencies = dependencies
+      self.isReady = true
+      // Set the static flag before createNewApp() starts React Native,
+      // so the SnackDirectTransport module reads it as true during init.
+      SnackDirectTransport.isEmbeddedSessionAvailable = true
+      return
+    }
 
     // Create session client in host mode with provided code
     let client = SnackSessionClient(
@@ -162,13 +190,21 @@ public class SnackEditingSession: ObservableObject {
 
   /// Gets the current files in the session
   public var currentFiles: [String: SnackSessionClient.SnackFile]? {
+    if isEmbeddedSession {
+      return embeddedFiles
+    }
     return sessionClient?.currentFiles
   }
 
   /// Whether the code has been edited since session started
   public var hasBeenEdited: Bool {
+    if isEmbeddedSession {
+      return embeddedHasBeenEdited
+    }
     return sessionClient?.hasBeenEdited ?? false
   }
+
+  private var embeddedHasBeenEdited: Bool = false
 
   /// The display name for this snack, extracted from snackName or snackId
   public var displayName: String {
@@ -204,11 +240,29 @@ public class SnackEditingSession: ObservableObject {
 
   /// Resets files to original (discards edits). Call this on app reload.
   public func resetFiles() {
+    if isEmbeddedSession {
+      if let originals = originalEmbeddedFiles {
+        embeddedFiles = originals
+      }
+      embeddedHasBeenEdited = false
+      return
+    }
     sessionClient?.resetToOriginalFiles()
   }
 
   /// Resets files to original and broadcasts to the runtime (no reload needed)
   public func resetAndBroadcast() {
+    if isEmbeddedSession {
+      if let originals = originalEmbeddedFiles {
+        embeddedFiles = originals
+      }
+      embeddedHasBeenEdited = false
+      if let codeMessage = buildCodeMessage() {
+        SnackDirectTransport.shared?.sendCodeUpdate(codeMessage)
+      }
+      NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+      return
+    }
     sessionClient?.resetAndBroadcast()
   }
 
@@ -220,6 +274,14 @@ public class SnackEditingSession: ObservableObject {
     channel = nil
     snackId = nil
     setupError = nil
+
+    // Clear embedded session state
+    isEmbeddedSession = false
+    SnackDirectTransport.isEmbeddedSessionAvailable = false
+    embeddedFiles = nil
+    originalEmbeddedFiles = nil
+    embeddedDependencies = [:]
+    embeddedHasBeenEdited = false
 
     // Clear @Published properties - SwiftUI will batch these updates
     snackName = nil
@@ -234,7 +296,56 @@ public class SnackEditingSession: ObservableObject {
 
   /// Checks if there's an active session for the given channel
   func hasActiveSession(forChannel channel: String) -> Bool {
-    return self.channel == channel && isReady && sessionClient != nil
+    return self.channel == channel && isReady && (sessionClient != nil || isEmbeddedSession)
+  }
+
+  // MARK: - Embedded Session Methods
+
+  /// Builds a CODE message from the stored embedded files and dependencies.
+  /// Returns nil if this isn't an embedded session or has no files.
+  func buildCodeMessage() -> [String: Any]? {
+    guard let files = embeddedFiles else { return nil }
+
+    var allDiffs: [String: String] = [:]
+    var s3urls: [String: String] = [:]
+
+    for (path, file) in files {
+      let isS3Url = file.contents.hasPrefix("https://snack-code-uploads.s3")
+
+      if file.isAsset || isS3Url {
+        allDiffs[path] = ""
+        s3urls[path] = file.contents
+      } else {
+        allDiffs[path] = SnackSessionClient.generateUnifiedDiff(oldContents: "", newContents: file.contents)
+      }
+    }
+
+    return [
+      "type": "CODE",
+      "diff": allDiffs,
+      "s3url": s3urls,
+      "dependencies": embeddedDependencies,
+      "metadata": [:] as [String: Any]
+    ]
+  }
+
+  /// Updates a file in an embedded session and broadcasts the change via direct transport.
+  func updateEmbeddedFile(path: String, oldContents: String, newContents: String) {
+    guard isEmbeddedSession, embeddedFiles != nil else { return }
+
+    // Update the stored file
+    embeddedFiles?[path] = SnackSessionClient.SnackFile(path: path, contents: newContents, isAsset: false)
+
+    // Build and send updated CODE message via direct transport
+    if let codeMessage = buildCodeMessage() {
+      SnackDirectTransport.shared?.sendCodeUpdate(codeMessage)
+    }
+
+    // Mark as edited and notify observers
+    if !embeddedHasBeenEdited {
+      embeddedHasBeenEdited = true
+      NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+    }
   }
 
   // MARK: - Private Methods

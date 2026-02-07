@@ -176,7 +176,7 @@ public class SnackSessionClient {
     }
 
     // Generate unified diff in the format expected by the 'diff' npm package
-    let diff = generateUnifiedDiff(oldContents: oldContents, newContents: newContents)
+    let diff = Self.generateUnifiedDiff(oldContents: oldContents, newContents: newContents)
 
 
     // Create CODE message with diffs for ALL files
@@ -197,7 +197,7 @@ public class SnackSessionClient {
         allDiffs[filePath] = diff
       } else {
         // For unchanged code files, generate diff from empty to current content
-        allDiffs[filePath] = generateUnifiedDiff(oldContents: "", newContents: file.contents)
+        allDiffs[filePath] = Self.generateUnifiedDiff(oldContents: "", newContents: file.contents)
       }
     }
 
@@ -237,7 +237,7 @@ public class SnackSessionClient {
   /// Generates a unified diff in the format used by the 'diff' npm package
   /// Since we're doing a full replacement, we generate a diff that adds all new lines
   /// This is applied to empty string on the receiving end (no s3url = apply to "")
-  private func generateUnifiedDiff(oldContents: String, newContents: String) -> String {
+  static func generateUnifiedDiff(oldContents: String, newContents: String) -> String {
     if newContents.isEmpty {
       return ""
     }
@@ -420,7 +420,7 @@ public class SnackSessionClient {
         s3urls[path] = file.contents
       } else {
         // For inline code files, generate diff from empty to full content
-        allDiffs[path] = generateUnifiedDiff(oldContents: "", newContents: file.contents)
+        allDiffs[path] = Self.generateUnifiedDiff(oldContents: "", newContents: file.contents)
       }
     }
 

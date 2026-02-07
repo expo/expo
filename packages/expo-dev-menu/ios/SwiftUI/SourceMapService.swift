@@ -192,11 +192,18 @@ class SourceMapService {
 
     // First try the SnackEditingSession (for published snacks opened from Expo Go)
     // Only use if the channel matches the current snack
-    if let session = SnackEditingSession.shared.sessionClient,
-       let editingChannel = SnackEditingSession.shared.channel,
+    if let editingChannel = SnackEditingSession.shared.channel,
        editingChannel == currentChannel {
-      session.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents)
-      return true
+      // For embedded sessions, use direct transport instead of WebSocket
+      if SnackEditingSession.shared.isEmbeddedSession {
+        SnackEditingSession.shared.updateEmbeddedFile(path: path, oldContents: oldContents, newContents: newContents)
+        return true
+      }
+
+      if let session = SnackEditingSession.shared.sessionClient {
+        session.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents)
+        return true
+      }
     }
 
     // Fall back to cached session (for snacks opened from snack.expo.dev)
@@ -216,9 +223,9 @@ class SourceMapService {
   static var hasActiveSnackSession: Bool {
     let currentChannel = getCurrentChannel()
 
-    // Check SnackEditingSession first (for published snacks)
+    // Check SnackEditingSession first (for snacks opened from Expo Go)
     if SnackEditingSession.shared.isReady,
-       SnackEditingSession.shared.sessionClient != nil,
+       (SnackEditingSession.shared.sessionClient != nil || SnackEditingSession.shared.isEmbeddedSession),
        let editingChannel = SnackEditingSession.shared.channel,
        editingChannel == currentChannel {
       return true

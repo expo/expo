@@ -103,7 +103,8 @@ import EXDevMenu
           clearFirst: false,  // We already cleared above
           isLesson: isLesson,
           lessonId: lessonId,
-          lessonDescription: lessonDescription
+          lessonDescription: lessonDescription,
+          isEmbedded: true  // Use direct native transport, skip Snackpub WebSocket
         )
       } else if let snackId = params["snackId"] as? String {
         // Published snack: fetch code from API
