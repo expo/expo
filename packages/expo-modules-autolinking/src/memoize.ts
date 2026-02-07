@@ -97,3 +97,8 @@ export function createMemoizer(): Memoizer {
   };
   return memoizer;
 }
+
+/** @internal Used in tests to verify the memoizer was freed */
+export function _verifyMemoizerFreed() {
+  return currentMemoizer === undefined && currentContexts === 0;
+}

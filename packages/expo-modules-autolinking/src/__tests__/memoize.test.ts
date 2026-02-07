@@ -1,4 +1,4 @@
-import { createMemoizer, memoize } from '../memoize';
+import { createMemoizer, memoize, _verifyMemoizerFreed } from '../memoize';
 
 it('provides cached value for memoizer', async () => {
   const memoizer = createMemoizer();
@@ -15,6 +15,8 @@ it('provides cached value for memoizer', async () => {
     expect(await fn('test-2')).toBe(2);
     expect(num).toBe(2);
   });
+
+  expect(_verifyMemoizerFreed()).toBe(true);
 });
 
 it('allows uncached calls', async () => {
@@ -27,6 +29,8 @@ it('allows uncached calls', async () => {
   expect(await fn('test')).toBe(1);
   expect(await fn('test')).toBe(2);
   expect(num).toBe(2);
+
+  expect(_verifyMemoizerFreed()).toBe(true);
 });
 
 it('allows direct calls without async context', async () => {
@@ -38,4 +42,6 @@ it('allows direct calls without async context', async () => {
   expect(await memoizer.call(fn, 'test')).toBe(1);
   expect(await memoizer.call(fn, 'test')).toBe(1);
   expect(num).toBe(1);
+
+  expect(_verifyMemoizerFreed()).toBe(true);
 });
