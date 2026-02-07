@@ -31,17 +31,22 @@ describe('loadConfigAsync', () => {
   // This test case should be the first of react-native.config.ts test cases.
   // Because we cache the resolved typescript module, as long as typescript is resolved,
   // we have no longer to resolve typescript as mocked undefined result.
-  itWithMemoize('should return null for react-native.config.ts if typescript is not found', async () => {
-    await jest.isolateModulesAsync(async () => {
-      vol.fromJSON({
-        '/app/react-native.config.ts': 'module.exports = { version: "1.0.0" };',
+  itWithMemoize(
+    'should return null for react-native.config.ts if typescript is not found',
+    async () => {
+      await jest.isolateModulesAsync(async () => {
+        vol.fromJSON({
+          '/app/react-native.config.ts': 'module.exports = { version: "1.0.0" };',
+        });
+        const mockResolveFrom = resolveFrom.silent as jest.MockedFunction<
+          typeof resolveFrom.silent
+        >;
+        mockResolveFrom.mockReturnValueOnce(undefined);
+        const result = await loadConfigAsync('/app');
+        expect(result).toBe(null);
       });
-      const mockResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
-      mockResolveFrom.mockReturnValueOnce(undefined);
-      const result = await loadConfigAsync('/app');
-      expect(result).toBe(null);
-    });
-  });
+    }
+  );
 
   itWithMemoize('should load react-native.config.ts', async () => {
     await jest.isolateModulesAsync(async () => {
