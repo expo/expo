@@ -3,14 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loadPackageJson = exports.maybeRealpath = exports.fastJoin = void 0;
 exports.defaultShouldIncludeDependency = defaultShouldIncludeDependency;
 exports.mergeWithDuplicate = mergeWithDuplicate;
 exports.filterMapResolutionResult = filterMapResolutionResult;
 exports.mergeResolutionResults = mergeResolutionResults;
-const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const utils_1 = require("../utils");
 const NODE_MODULES_PATTERN = `${path_1.default.sep}node_modules${path_1.default.sep}`;
 // The default dependencies we exclude don't contain dependency chains leading to autolinked modules
 function defaultShouldIncludeDependency(dependencyName) {
@@ -49,31 +46,6 @@ function defaultShouldIncludeDependency(dependencyName) {
             return true;
     }
 }
-exports.fastJoin = path_1.default.sep === '/'
-    ? (from, append) => `${from}${path_1.default.sep}${append}`
-    : (from, append) => `${from}${path_1.default.sep}${append[0] === '@' ? append.replace('/', path_1.default.sep) : append}`;
-const maybeRealpath = async (target) => {
-    try {
-        return await fs_1.default.promises.realpath(target);
-    }
-    catch {
-        return null;
-    }
-};
-exports.maybeRealpath = maybeRealpath;
-exports.loadPackageJson = (0, utils_1.memoize)(async function loadPackageJson(jsonPath) {
-    try {
-        const packageJsonText = await fs_1.default.promises.readFile(jsonPath, 'utf8');
-        const json = JSON.parse(packageJsonText);
-        if (typeof json !== 'object' || json == null) {
-            return null;
-        }
-        return json;
-    }
-    catch {
-        return null;
-    }
-});
 function mergeWithDuplicate(a, b) {
     let target;
     let duplicate;
