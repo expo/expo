@@ -74,9 +74,8 @@ export async function generateLlmsTxt() {
     );
 
     console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully generated ${OUTPUT_FILENAME_LLMS_TXT}`);
-    process.exit(0);
   } catch (error) {
     console.error('Error generating llms.txt:', error);
-    process.exit(1);
+    throw error;
   }
 }

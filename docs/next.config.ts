@@ -74,7 +74,7 @@ const nextConfig: NextConfig = {
   webpack: (config, { defaultLoaders }) => {
     // Add support for MDX with our custom loader
     config.module.rules.push({
-      test: /.mdx?$/,
+      test: /\.mdx?$/,
       use: [
         defaultLoaders.babel,
         {
@@ -135,7 +135,7 @@ const nextConfig: NextConfig = {
           }
         }
 
-        return { [page.page]: page };
+        return { [pathname]: page };
       })
     );
 
