@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const withAppGroupEntitlements_1 = __importDefault(require("./withAppGroupEntitlements"));
 const withAppInfoPlist_1 = __importDefault(require("./withAppInfoPlist"));
+const withEasConfig_1 = __importDefault(require("./withEasConfig"));
 const withPodsLinking_1 = __importDefault(require("./withPodsLinking"));
 const withPushNotifications_1 = __importDefault(require("./withPushNotifications"));
 const withWidgetSourceFiles_1 = __importDefault(require("./withWidgetSourceFiles"));
@@ -36,12 +37,22 @@ const withWidgets = (config, props) => {
     };
     const getFileUris = () => sharedFiles;
     return (0, config_plugins_1.withPlugins)(config, [
+        [withEasConfig_1.default, { targetName, bundleIdentifier, groupIdentifier }],
         [withPodsLinking_1.default, { targetName }],
         [withWidgetSourceFiles_1.default, { targetName, widgets, groupIdentifier, onFilesGenerated: setFiles }],
         [withAppInfoPlist_1.default, { frequentUpdates, groupIdentifier }],
         [withPushNotifications_1.default, { enablePushNotifications }],
         [withAppGroupEntitlements_1.default, { groupIdentifier }],
-        [withTargetXcodeProject_1.default, { targetName, bundleIdentifier, deploymentTarget, getFileUris }],
+        [
+            withTargetXcodeProject_1.default,
+            {
+                targetName,
+                bundleIdentifier,
+                deploymentTarget,
+                appleTeamId: config.ios?.appleTeamId,
+                getFileUris,
+            },
+        ],
     ]);
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withWidgets, pkg.name, pkg.version);
