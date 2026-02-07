@@ -201,11 +201,13 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   });
 
   // Flatten block elements inside table cells to prevent newlines breaking markdown tables.
-  // Turndown converts <p> and <div> to blocks with newlines, which breaks GFM table syntax.
+  // Turndown converts <p>, <div>, and <blockquote> to blocks with newlines, which breaks
+  // GFM table syntax. Flatten innermost elements first (p, blockquote, span) then outer (div).
   main.find('td, th').each((_, cell) => {
     const $cell = $(cell);
-    $cell.find('div').each((_, el) => { $(el).replaceWith($(el).html() || ''); });
+    $cell.find('blockquote').each((_, el) => { $(el).replaceWith($(el).text().trim()); });
     $cell.find('p').each((_, el) => { $(el).replaceWith($(el).html() || ''); });
+    $cell.find('div').each((_, el) => { $(el).replaceWith($(el).html() || ''); });
   });
 
   // Convert diff tables to fenced diff code blocks.
@@ -275,6 +277,9 @@ export function cleanMarkdown(markdown: string): string {
       .replace(/\\-/g, '-')
       // Unescape underscores that turndown escapes to prevent italic interpretation
       .replace(/\\_/g, '_')
+      // Unescape square brackets that turndown escapes to prevent link interpretation.
+      // Only unescape \[...\] sequences that are NOT followed by (...) link targets.
+      .replace(/\\\[([^\]]*?)\\\](?!\()/g, '[$1]')
       // Remove orphaned bullet markers (from platform tag separators)
       .replace(/^\s*•\s*$/gm, '')
       // Replace fullwidth equals sign with regular equals

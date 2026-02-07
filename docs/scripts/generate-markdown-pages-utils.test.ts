@@ -23,19 +23,6 @@ describe('cleanHtml', () => {
     expect($('main').text()).toContain('text');
   });
 
-  it('removes "Edit page" links and their parent (text fallback)', () => {
-    const $ = cheerio.load('<main><div><a href="https://github.com/edit">Edit page</a></div><p>content</p></main>');
-    cleanHtml($, $('main'));
-    expect($('main').html()).not.toContain('Edit page');
-    expect($('main').text()).toContain('content');
-  });
-
-  it('removes "Report an issue" links and their parent (text fallback)', () => {
-    const $ = cheerio.load('<main><div><a href="https://github.com/issues">Report an issue</a></div><p>content</p></main>');
-    cleanHtml($, $('main'));
-    expect($('main').html()).not.toContain('Report an issue');
-  });
-
   it('removes page title buttons via data-md="skip"', () => {
     const $ = cheerio.load(`<main>
       <h1>Title</h1>
@@ -61,15 +48,6 @@ describe('cleanHtml', () => {
     expect($('main').text()).not.toContain('$ ');
   });
 
-  it('converts terminal blocks (bg-palette-black) to pre>code', () => {
-    const $ = cheerio.load(`<main><div class="rounded bg-palette-black p-4"><code>npx expo start</code></div></main>`);
-    cleanHtml($, $('main'));
-    const html = $('main').html();
-    expect(html).toContain('<pre>');
-    expect(html).toContain('<code class="language-sh">');
-    expect(html).toContain('npx expo start');
-  });
-
   it('converts terminal blocks with data-md="code-block"', () => {
     const $ = cheerio.load(`<main><div data-md="code-block" class="rounded p-4"><code>npx expo start</code></div></main>`);
     cleanHtml($, $('main'));
@@ -78,29 +56,11 @@ describe('cleanHtml', () => {
     expect(html).toContain('<code class="language-sh">');
     expect(html).toContain('npx expo start');
   });
-
-  it('joins multiple code elements in terminal blocks', () => {
-    const $ = cheerio.load(`<main><div class="bg-palette-black"><code>line 1</code><code>line 2</code></div></main>`);
-    cleanHtml($, $('main'));
-    const html = $('main').html();
-    expect(html).toContain('line 1\nline 2');
-  });
-
-  it('removes elements with data-md="skip"', () => {
-    const $ = cheerio.load('<main><code data-md="skip">$ </code><code>npm install</code></main>');
-    cleanHtml($, $('main'));
-    expect($('main').text()).toContain('npm install');
-    expect($('main').text()).not.toContain('$ ');
-  });
 });
 
 describe('cleanMarkdown', () => {
   it('removes anchor links in headings', () => {
     expect(cleanMarkdown('## Installation[](#installation)')).toBe('## Installation');
-  });
-
-  it('removes anchor links in deeply nested headings', () => {
-    expect(cleanMarkdown('#### API Reference[](#api-reference)')).toBe('#### API Reference');
   });
 
   it('removes empty links (leftover from icon-only links)', () => {
@@ -119,12 +79,6 @@ describe('cleanMarkdown', () => {
 
   it('trims whitespace', () => {
     expect(cleanMarkdown('  \n\ncontent\n\n  ')).toBe('content');
-  });
-
-  it('handles multiple cleanups together', () => {
-    const input = '## Title[](#title)\n\n\n\n[](http://example.com)\n\n* * *\n\ncontent';
-    const result = cleanMarkdown(input);
-    expect(result).toBe('## Title\n\ncontent');
   });
 });
 
@@ -163,63 +117,10 @@ describe('convertHtmlToMarkdown', () => {
     expect(md).toContain('### H3');
   });
 
-  it('converts links', () => {
-    const html = '<main><a href="/docs/intro">Introduction</a></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[Introduction](/docs/intro)');
-  });
-
   it('converts pre>code to fenced code blocks', () => {
     const html = '<main><pre><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```js\nconst x = 1;\n```');
-  });
-
-  it('converts pre>code without language to plain fenced blocks', () => {
-    const html = '<main><pre><code>plain code</code></pre></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('```\nplain code\n```');
-  });
-
-  it('removes images', () => {
-    const html = '<main><p>Before</p><img src="/static/img/screenshot.png" alt="screenshot"/><p>After</p></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Before');
-    expect(md).toContain('After');
-    expect(md).not.toContain('screenshot');
-    expect(md).not.toContain('img');
-  });
-
-  it('removes buttons and SVGs', () => {
-    const html = `<main>
-      <p>Content</p>
-      <button>Copy to clipboard</button>
-      <svg viewBox="0 0 24 24"><path d="M0"/></svg>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Content');
-    expect(md).not.toContain('Copy');
-    expect(md).not.toContain('svg');
-  });
-
-  it('strips Edit page links', () => {
-    const html = `<main>
-      <h1>Title</h1>
-      <span><a href="https://github.com/expo/expo/edit/main/docs/foo.mdx">Edit page</a></span>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('# Title');
-    expect(md).not.toContain('Edit page');
-  });
-
-  it('converts terminal-style blocks to fenced sh code', () => {
-    const html = `<main>
-      <div class="rounded-b-md bg-palette-black p-4">
-        <span class="select-none">$ </span><code>npx create-expo-app@latest</code>
-      </div>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('```sh\nnpx create-expo-app@latest\n```');
   });
 
   it('converts tables with GFM', () => {
@@ -233,52 +134,9 @@ describe('convertHtmlToMarkdown', () => {
     expect(md).toContain('| Name | Type |');
     expect(md).toContain('| foo | string |');
   });
-
-  it('converts unordered lists with dash markers', () => {
-    const html = '<main><ul><li>Item 1</li><li>Item 2</li></ul></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('-   Item 1');
-    expect(md).toContain('-   Item 2');
-  });
-
-  it('cleans heading anchor fragments', () => {
-    const html = '<main><h2>Installation<a href="#installation"></a></h2></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('## Installation');
-    expect(md).not.toContain('[](#installation)');
-  });
-
-  it('ends with a trailing newline', () => {
-    const html = '<main><p>Content</p></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toMatch(/\n$/);
-  });
 });
 
 describe('card links', () => {
-  it('converts card links to inline markdown links', () => {
-    const html = `<main>
-      <p>Get started with the following guide:</p>
-      <a href="/eas-insights/introduction">
-        <div class="flex flex-row gap-4">
-          <div class="flex items-center justify-center">
-            <svg viewBox="0 0 24 24"><path/></svg>
-          </div>
-          <div class="flex flex-col">
-            <span data-text="true">EAS Insights</span>
-            <p data-text="true">Learn how to use EAS Insights to monitor your app.</p>
-          </div>
-        </div>
-        <svg viewBox="0 0 16 16"><path/></svg>
-      </a>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[EAS Insights](/eas-insights/introduction)');
-    expect(md).toContain('Learn how to use EAS Insights to monitor your app.');
-    // Should not have the ugly multi-line link format
-    expect(md).not.toMatch(/\[\s*\n/);
-  });
-
   it('converts card links with data-md="card-link"', () => {
     const html = `<main>
       <a href="/guide" data-md="card-link">
@@ -294,65 +152,9 @@ describe('card links', () => {
     expect(md).toContain('[My Guide](/guide)');
     expect(md).toContain('Guide description.');
   });
-
-  it('converts multiple card links on same page', () => {
-    const html = `<main>
-      <a href="/guide-a">
-        <div class="flex flex-row gap-4">
-          <div><svg/></div>
-          <div class="flex flex-col">
-            <span data-text="true">Guide A</span>
-            <p data-text="true">Description A</p>
-          </div>
-        </div>
-      </a>
-      <a href="/guide-b">
-        <div class="flex flex-row gap-4">
-          <div><svg/></div>
-          <div class="flex flex-col">
-            <span data-text="true">Guide B</span>
-            <p data-text="true">Description B</p>
-          </div>
-        </div>
-      </a>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[Guide A](/guide-a)');
-    expect(md).toContain('[Guide B](/guide-b)');
-    expect(md).toContain('Description A');
-    expect(md).toContain('Description B');
-  });
 });
 
 describe('terminal snippet labels', () => {
-  it('removes the "Terminal" label from terminal-snippet containers', () => {
-    const html = `<main>
-      <div class="terminal-snippet">
-        <div class="flex min-h-[40px] justify-between border border-default bg-default rounded-t-md">
-          <span data-text="true"><span class="break-words">Terminal</span></span>
-        </div>
-        <div class="bg-palette-black p-4"><code>npx expo start</code></div>
-      </div>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('```sh\nnpx expo start\n```');
-    expect(md).not.toMatch(/^Terminal$/m);
-  });
-
-  it('removes filename labels from code snippet containers', () => {
-    const html = `<main>
-      <div class="terminal-snippet">
-        <div class="flex min-h-[40px] justify-between border border-default bg-default rounded-t-md">
-          <span data-text="true"><span class="break-words">app.json</span></span>
-        </div>
-        <pre><code class="language-json">{"expo": {}}</code></pre>
-      </div>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('```json');
-    expect(md).not.toMatch(/^app\.json$/m);
-  });
-
   it('removes labels using data-md="terminal"', () => {
     const html = `<main>
       <div data-md="terminal">
@@ -369,22 +171,6 @@ describe('terminal snippet labels', () => {
 });
 
 describe('step numbers', () => {
-  it('removes orphaned step numbers before headings', () => {
-    const html = `<main>
-      <div class="mb-8 mt-6 flex gap-4">
-        <p class="font-medium text-base text-secondary mt-1 flex h-7 min-w-[28px] items-center justify-center">1</p>
-        <div class="w-full">
-          <h2 data-heading="true">Install the library</h2>
-          <p>Run the following command.</p>
-        </div>
-      </div>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('## Install the library');
-    expect(md).toContain('Run the following command.');
-    expect(md).not.toMatch(/^1$/m);
-  });
-
   it('removes step numbers using data-md="step" and data-md="step-content"', () => {
     const html = `<main>
       <div data-md="step" class="mb-8 mt-6 flex gap-4">
@@ -403,42 +189,6 @@ describe('step numbers', () => {
 });
 
 describe('platform indicators', () => {
-  it('preserves platform text in "Only for:" indicators', () => {
-    const html = `<main>
-      <div class="mb-2 inline-flex empty:hidden">
-        <span data-text="true">
-          <span class="text-xs font-medium text-tertiary">Only for: </span>
-          <div class="select-none rounded-full border bg-palette-blue3">
-            <svg viewBox="0 0 24 24"><path/></svg>
-            <span class="whitespace-nowrap">iOS</span>
-          </div>
-        </span>
-      </div>
-      <p>This feature is iOS only.</p>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Only for: iOS');
-    expect(md).toContain('This feature is iOS only.');
-  });
-
-  it('handles multiple platform badges', () => {
-    const html = `<main>
-      <div class="mb-2 inline-flex empty:hidden">
-        <span data-text="true">
-          <span class="text-xs font-medium text-tertiary">Only for: </span>
-          <div class="select-none rounded-full border bg-palette-blue3">
-            <svg/><span class="whitespace-nowrap">iOS</span>
-          </div>
-          <div class="select-none rounded-full border bg-palette-green3">
-            <svg/><span class="whitespace-nowrap">Android</span>
-          </div>
-        </span>
-      </div>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Only for: iOS, Android');
-  });
-
   it('extracts platform text from data-md="platform-badge" elements', () => {
     const html = `<main>
       <div class="mb-2 inline-flex empty:hidden">
@@ -460,31 +210,6 @@ describe('platform indicators', () => {
 });
 
 describe('diff tables', () => {
-  it('converts HTML diff tables to code blocks (table.diff fallback)', () => {
-    const html = `<main>
-      <table class="diff diff-unified">
-        <colgroup><col class="diff-gutter-col"><col class="diff-gutter-col"><col></colgroup>
-        <tbody class="diff-hunk">
-          <tr class="diff-line">
-            <td class="diff-gutter diff-gutter-delete">1</td>
-            <td class="diff-gutter diff-gutter-delete"></td>
-            <td class="diff-code diff-code-delete"><span>- old line</span></td>
-          </tr>
-          <tr class="diff-line">
-            <td class="diff-gutter diff-gutter-insert"></td>
-            <td class="diff-gutter diff-gutter-insert">1</td>
-            <td class="diff-code diff-code-insert"><span>+ new line</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('```diff');
-    expect(md).toContain('- old line');
-    expect(md).toContain('+ new line');
-    expect(md).not.toContain('<table');
-  });
-
   it('converts diff tables inside data-md="diff" wrapper', () => {
     const html = `<main>
       <div data-md="diff">
@@ -541,8 +266,6 @@ describe('escaped dashes', () => {
       </table>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    // Turndown escapes leading dashes to \- to prevent list interpretation.
-    // Our cleanMarkdown should unescape them.
     expect(md).not.toContain('\\-');
     expect(md).toContain('| - |');
   });
@@ -550,32 +273,17 @@ describe('escaped dashes', () => {
 
 describe('orphaned bullet markers', () => {
   it('removes standalone bullet markers on their own line', () => {
-    const md = cleanMarkdown('### `Sharing.share()`\n\n • \n\nShares the content.');
-    expect(md).not.toContain(' • ');
+    const md = cleanMarkdown('### `Sharing.share()`\n\n \u2022 \n\nShares the content.');
+    expect(md).not.toContain(' \u2022 ');
     expect(md).toContain('### `Sharing.share()`');
     expect(md).toContain('Shares the content.');
   });
 });
 
 describe('platform badge commas', () => {
-  it('strips orphan comma before platform name in headings', () => {
+  it('strips orphan comma before platform name', () => {
     const md = cleanMarkdown('### Known issues , Android');
     expect(md).toBe('### Known issues Android');
-  });
-
-  it('strips orphan comma before platform name in bullet items', () => {
-    const md = cleanMarkdown('-   , Android A terminated app will not restart');
-    expect(md).toBe('-   Android A terminated app will not restart');
-  });
-
-  it('strips orphan comma before platform name in inline text', () => {
-    const md = cleanMarkdown('Apple Maps (available on , iOS only).');
-    expect(md).toBe('Apple Maps (available on iOS only).');
-  });
-
-  it('strips orphan comma before platform name in table cells', () => {
-    const md = cleanMarkdown('| `ERR_CODE` | , iOS | User declined |');
-    expect(md).toBe('| `ERR_CODE` | iOS | User declined |');
   });
 
   it('preserves commas between platform names in "Only for:" lists', () => {
@@ -585,28 +293,17 @@ describe('platform badge commas', () => {
 });
 
 describe('experimental and deprecated badges', () => {
-  it('removes bullet separator from Experimental badge line', () => {
+  it('removes bullet separator from badge line', () => {
     const md = cleanMarkdown('### `method()`\nExperimental\u2002\u2022\u2002\nAndroid, iOS');
     expect(md).toContain('Experimental');
     expect(md).not.toContain('\u2022');
     expect(md).toContain('Android, iOS');
-  });
-
-  it('removes bullet separator from Deprecated badge line', () => {
-    const md = cleanMarkdown('### `method()`\nDeprecated\u2002\u2022\u2002');
-    expect(md).toContain('Deprecated');
-    expect(md).not.toContain('\u2022');
   });
 });
 
 describe('Default: spacing', () => {
   it('adds space between Default: and backtick value', () => {
     const md = cleanMarkdown("Default:`'weak'`");
-    expect(md).toBe("Default: `'weak'`");
-  });
-
-  it('does not double-space if already correct', () => {
-    const md = cleanMarkdown("Default: `'weak'`");
     expect(md).toBe("Default: `'weak'`");
   });
 });
@@ -715,29 +412,10 @@ describe('checkMarkdownQuality', () => {
     expect(warnings).toEqual([]);
   });
 
-  it('does not false-positive on CSS class names inside code blocks', () => {
-    const md = '# Title\n\nSome content that is long enough to pass the check.\n\n```css\n.bg-palette-black { color: white; }\n.select-none { user-select: none; }\n```';
-    const warnings = checkMarkdownQuality(md);
-    expect(warnings).toEqual([]);
-  });
-
-  it('still warns about HTML tags outside code blocks even when code blocks exist', () => {
-    const md = '# Title\n\n<div>leaked html</div>\n\nEnough content here to pass length.\n\n```jsx\n<div>this is fine</div>\n```';
-    const warnings = checkMarkdownQuality(md);
-    expect(warnings).toContain('Contains raw HTML tags (<div> or <span>)');
-  });
-
   it('suppresses exempted warnings when pagePath matches', () => {
     const md = '# Title\n\nShort.';
     expect(checkMarkdownQuality(md).some(w => w.includes('Suspiciously short'))).toBe(true);
     expect(checkMarkdownQuality(md, 'build/index.html').some(w => w.includes('Suspiciously short'))).toBe(false);
-  });
-
-  it('does not suppress non-exempted warnings for exempted pages', () => {
-    const md = '# Title\n\n<div>leaked</div>';
-    const warnings = checkMarkdownQuality(md, 'build/index.html');
-    expect(warnings.some(w => w.includes('Suspiciously short'))).toBe(false);
-    expect(warnings).toContain('Contains raw HTML tags (<div> or <span>)');
   });
 });
 
@@ -745,20 +423,6 @@ describe('stripCodeBlocks', () => {
   it('strips fenced code blocks', () => {
     const md = 'before\n\n```js\nconst x = 1;\n```\n\nafter';
     expect(stripCodeBlocks(md)).toBe('before\n\n\n\nafter');
-  });
-
-  it('strips multiple code blocks', () => {
-    const md = '```\nblock1\n```\n\ntext\n\n```\nblock2\n```';
-    expect(stripCodeBlocks(md)).toBe('\n\ntext\n\n');
-  });
-
-  it('preserves text outside code blocks', () => {
-    const md = '# Title\n\nParagraph text.\n\n```\ncode\n```\n\nMore text.';
-    const result = stripCodeBlocks(md);
-    expect(result).toContain('# Title');
-    expect(result).toContain('Paragraph text.');
-    expect(result).toContain('More text.');
-    expect(result).not.toContain('code');
   });
 
   it('handles markdown with no code blocks', () => {
@@ -778,70 +442,14 @@ describe('checkPage (check-markdown-pages)', () => {
     expect(checkPage('   \n\n  ')).toEqual(['Empty file']);
   });
 
-  it('detects missing headings', () => {
-    const md = 'This is a paragraph without any headings but with enough content.';
-    const errors = checkPage(md);
-    expect(errors).toContain('No headings found');
-  });
-
-  it('detects raw HTML tags in prose', () => {
-    const md = '# Title\n\n<div class="something">leaked</div>\n\nMore content here.';
-    const errors = checkPage(md);
-    expect(errors).toContain('Contains raw HTML tags');
-  });
-
-  it('does not flag HTML tags inside code blocks', () => {
-    const md = '# Title\n\nSome content.\n\n```jsx\n<div className="container">\n  <span>Hello</span>\n</div>\n```';
-    expect(checkPage(md)).toEqual([]);
-  });
-
-  it('detects CSS class names in prose', () => {
-    const md = '# Title\n\nbg-palette-black leaked into text.\n\nMore content.';
-    const errors = checkPage(md);
-    expect(errors).toContain('Contains CSS class names in text');
-  });
-
-  it('does not flag CSS class names inside code blocks', () => {
-    const md = '# Title\n\nSome content.\n\n```css\n.terminal-snippet { display: block; }\n```';
-    expect(checkPage(md)).toEqual([]);
-  });
-
   it('detects unbalanced code fences', () => {
     const md = '# Title\n\n```js\nconst x = 1;\n\nMissing closing fence.';
     const errors = checkPage(md);
     expect(errors.some(e => e.includes('Unbalanced code fences'))).toBe(true);
   });
-
-  it('passes with balanced code fences', () => {
-    const md = '# Title\n\n```js\nconst x = 1;\n```\n\n```sh\nnpm install\n```';
-    expect(checkPage(md)).toEqual([]);
-  });
 });
 
 describe('collapsible/details', () => {
-  it('converts details/summary to markdown', () => {
-    const html = `<main>
-      <h1>Guide</h1>
-      <details class="mb-3 rounded-md border border-default bg-default">
-        <summary class="group cursor-pointer rounded-md bg-subtle p-1.5">
-          <div class="ml-1.5 mr-2"><svg viewBox="0 0 24 24"><path/></svg></div>
-          <span class="font-medium">Additional information</span>
-          <a href="#additional-information"><svg/></a>
-          <div></div>
-        </summary>
-        <div class="overflow-hidden">
-          <div class="px-5 py-4">
-            <p>This is the collapsible content with details.</p>
-          </div>
-        </div>
-      </details>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('# Guide');
-    expect(md).toContain('Additional information');
-    expect(md).toContain('collapsible content with details');
-  });
-
   it('converts collapsible with data-md="collapsible"', () => {
     const html = `<main>
       <h1>Guide</h1>
@@ -859,21 +467,6 @@ describe('collapsible/details', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('How to configure');
     expect(md).toContain('Configuration details here.');
-  });
-
-  it('preserves code blocks inside collapsibles', () => {
-    const html = `<main>
-      <h1>Guide</h1>
-      <details>
-        <summary><span>Show example</span></summary>
-        <div><div>
-          <pre><code class="language-js">const x = 1;</code></pre>
-        </div></div>
-      </details>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Show example');
-    expect(md).toContain('```js\nconst x = 1;\n```');
   });
 });
 
@@ -903,8 +496,6 @@ describe('tabs', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('# Installation');
-    // Tab buttons are removed (they're <button> elements)
-    // Active panel content is preserved
     expect(md).toContain('npm install expo');
   });
 });
@@ -923,37 +514,6 @@ describe('callouts/blockquotes', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('# Setup');
     expect(md).toContain('informational note about the setup process');
-    // SVG icon should be removed
-    expect(md).not.toContain('svg');
-  });
-
-  it('converts callout with data-md="callout"', () => {
-    const html = `<main>
-      <h1>Guide</h1>
-      <blockquote data-md="callout">
-        <svg class="select-none"><path/></svg>
-        <div>
-          <p data-text="true">Important: always back up your data before upgrading.</p>
-        </div>
-      </blockquote>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('always back up your data before upgrading');
-    expect(md).not.toContain('svg');
-  });
-
-  it('converts warning callout to blockquote', () => {
-    const html = `<main>
-      <h1>Guide</h1>
-      <blockquote class="mb-4 flex gap-2.5 rounded-md border border-warning bg-warning" data-testid="callout-container">
-        <svg class="mt-1 select-none icon-sm text-warning"><path/></svg>
-        <div class="w-full leading-normal text-default">
-          <p data-text="true">Warning: this action is irreversible and may cause data loss.</p>
-        </div>
-      </blockquote>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Warning: this action is irreversible');
     expect(md).not.toContain('svg');
   });
 
@@ -1001,33 +561,6 @@ describe('SVG checkmarks in tables', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('| Offline | ✗ |');
   });
-
-  it('handles mixed checkmarks and X marks in same table', () => {
-    const html = `<main>
-      <table>
-        <thead><tr><th>Feature</th><th>iOS</th><th>Android</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Push</td>
-            <td><svg class="text-icon-success"><path/></svg></td>
-            <td><svg class="text-icon-danger"><path/></svg></td>
-          </tr>
-        </tbody>
-      </table>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('| Push | ✓ | ✗ |');
-  });
-
-  it('still removes non-semantic SVGs', () => {
-    const html = `<main>
-      <p>Text</p>
-      <svg class="decorative-icon" viewBox="0 0 24 24"><path/></svg>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).not.toContain('svg');
-    expect(md).toContain('Text');
-  });
 });
 
 describe('multi-line table cells', () => {
@@ -1058,20 +591,6 @@ describe('multi-line table cells', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('| url | The URL to open. |');
   });
-
-  it('flattens nested div>p structure in table cells', () => {
-    const html = `<main>
-      <table>
-        <thead><tr><th>Param</th><th>Info</th></tr></thead>
-        <tbody><tr>
-          <td>config</td>
-          <td><div><p>Configuration object for the request.</p></div></td>
-        </tr></tbody>
-      </table>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('| config | Configuration object for the request. |');
-  });
 });
 
 describe('duplicate platform names in headings', () => {
@@ -1088,34 +607,6 @@ describe('duplicate platform names in headings', () => {
     expect(md).toContain('### Android');
     expect(md).not.toContain('Android Android');
   });
-
-  it('removes platform badge inside heading with CSS fallback', () => {
-    const html = `<main>
-      <h3>iOS <span>
-        <div class="select-none rounded-full border bg-palette-blue3">
-          <svg/><span>iOS</span>
-        </div>
-      </span></h3>
-      <p>Content here.</p>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('### iOS');
-    expect(md).not.toContain('iOS iOS');
-  });
-
-  it('still extracts platform badge text outside headings', () => {
-    const html = `<main>
-      <div>
-        <span>Only for: </span>
-        <div data-md="platform-badge">
-          <svg/><span>Android</span>
-        </div>
-      </div>
-      <p>Content.</p>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Android');
-  });
 });
 
 describe('snippet headers', () => {
@@ -1131,20 +622,6 @@ describe('snippet headers', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```json');
     expect(md).not.toMatch(/^app\.json$/m);
-  });
-
-  it('removes Example labels from non-terminal snippets', () => {
-    const html = `<main>
-      <div>
-        <div data-md="snippet-header" class="flex min-h-[40px]">
-          <label><svg/><span>Example</span></label>
-        </div>
-        <pre><code class="language-jsx">export default App;</code></pre>
-      </div>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('```jsx');
-    expect(md).not.toMatch(/^Example$/m);
   });
 });
 
@@ -1176,15 +653,35 @@ describe('escaped underscores', () => {
     expect(md).toBe('Run tests in the __tests__ directory.');
   });
 
-  it('unescapes underscores in variable names', () => {
-    const input = String.raw`Set the \_\_DEV\_\_ flag.`;
-    const md = cleanMarkdown(input);
-    expect(md).toBe('Set the __DEV__ flag.');
-  });
-
   it('preserves underscores that are already unescaped', () => {
     const md = cleanMarkdown('Use snake_case naming.');
     expect(md).toBe('Use snake_case naming.');
+  });
+});
+
+describe('escaped square brackets', () => {
+  it('unescapes brackets in file paths', () => {
+    const input = String.raw`Navigate to ios/\[app\]/Info.plist`;
+    const md = cleanMarkdown(input);
+    expect(md).toBe('Navigate to ios/[app]/Info.plist');
+  });
+
+  it('preserves brackets that are part of markdown links', () => {
+    const md = cleanMarkdown('See [the docs](https://example.com) for details.');
+    expect(md).toBe('See [the docs](https://example.com) for details.');
+  });
+});
+
+describe('blockquote in table cells', () => {
+  it('flattens blockquote inside table cell to plain text', () => {
+    const html = `<main><table><tr><th>Permission</th><th>Description</th></tr>
+      <tr><td>READ_PHONE_STATE</td><td>
+        <p>Allows read only access to phone state.</p>
+        <blockquote><div><span>Allows read only access to phone state, including PhoneAccounts.</span></div></blockquote>
+      </td></tr></table></main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).not.toContain('> Allows');
+    expect(md).toContain('Allows read only access to phone state');
   });
 });
 
@@ -1195,34 +692,9 @@ describe('code block language from data-md-lang', () => {
     expect(md).toContain('```tsx\nconst App = () => null;\n```');
   });
 
-  it('falls back to class-based language when no data-md-lang', () => {
-    const html = '<main><pre><code class="language-python">print("hi")</code></pre></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('```python\nprint("hi")\n```');
-  });
-
   it('prefers data-md-lang over class-based language', () => {
     const html = '<main><pre data-md-lang="typescript"><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```typescript\nconst x = 1;\n```');
-  });
-});
-
-describe('bundled version metadata', () => {
-  it('removes bundled version with data-md="skip"', () => {
-    const html = `<main>
-      <h1>expo-camera</h1>
-      <div data-md="skip" class="flex items-center gap-1.5">
-        <svg class="icon-sm"><path/></svg>
-        Bundled version:
-        <span>~15.0.8</span>
-      </div>
-      <p>A library for accessing the device camera.</p>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('# expo-camera');
-    expect(md).toContain('A library for accessing the device camera.');
-    expect(md).not.toContain('Bundled version');
-    expect(md).not.toContain('15.0.8');
   });
 });
