@@ -127,7 +127,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
     });
     if (platforms.length > 0) {
-      $el.replaceWith('<p>Supported platforms: ' + platforms.join(', ') + '</p>');
+      $el.replaceWith('<p>Supported platforms: ' + platforms.join(', ') + '.</p>');
     } else {
       $el.remove();
     }
@@ -269,34 +269,58 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     $el.replaceWith('<code>' + $el.text() + '</code>');
   });
 
-  // Swap code-wrapped links so Turndown preserves both.
-  main.find('code').each((_, el) => {
+  // Unwrap <code> elements that contain links so the links render in markdown.
+  // Turndown converts <code> to backticks which escapes markdown link syntax inside,
+  // so we remove the <code> wrapper and let the inner content (links + text) stand alone.
+  main.find('code:has(a)').each((_, el) => {
     const $code = $(el);
-    const children = $code.contents();
-    if (children.length === 1 && children.first().is('a')) {
-      const $a = children.first();
-      const href = $a.attr('href');
-      const text = $a.text();
-      if (href && text) {
-        $code.replaceWith('<a href="' + href + '"><code>' + text + '</code></a>');
-      }
-    }
+    $code.replaceWith($code.html() ?? '');
   });
 
   // Flatten block elements inside table cells to prevent newlines breaking markdown tables.
   // Turndown converts <p>, <div>, and <blockquote> to blocks with newlines, which breaks
-  // GFM table syntax. Flatten innermost elements first (p, blockquote, span) then outer (div).
+  // GFM table syntax.
+  //
+  // Strategy: first handle data-md annotated elements with known semantics, then loop
+  // generic block flattening until no block elements remain (nested divs require multiple
+  // passes because cheerio's .find() snapshot misses children revealed by parent unwrapping).
   main.find('td, th').each((_, cell) => {
     const $cell = $(cell);
-    $cell.find('blockquote').each((_, el) => {
-      $(el).replaceWith($(el).text().trim());
+
+    // data-md="callout" — inline the callout text (e.g. deprecation warnings).
+    // The callout's visible text (like "Deprecated: use X instead") is already meaningful;
+    // just extract it and drop the blockquote/svg/div wrapper structure.
+    // Target the <p> inside the callout to avoid picking up SVG alt text.
+    $cell.find('[data-md="callout"]').each((_, el) => {
+      const text = $(el).find('p').first().text().trim();
+      $(el).replaceWith(text ? text + ' ' : '');
     });
-    $cell.find('p').each((_, el) => {
-      $(el).replaceWith($(el).html() ?? '');
-    });
-    $cell.find('div').each((_, el) => {
-      $(el).replaceWith($(el).html() ?? '');
-    });
+
+    // Generic block flattening — loop until stable since nested divs require multiple passes.
+    // Prepend ". " when unwrapping so adjacent blocks read as separate sentences, then
+    // clean up artifacts (double periods, leading separators) after the loop.
+    let hasBlocks = true;
+    while (hasBlocks) {
+      hasBlocks = false;
+      $cell.find('blockquote').each((_, el) => {
+        $(el).replaceWith('. ' + $(el).text().trim());
+        hasBlocks = true;
+      });
+      $cell.find('p').each((_, el) => {
+        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        hasBlocks = true;
+      });
+      $cell.find('div').each((_, el) => {
+        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        hasBlocks = true;
+      });
+    }
+    // Collapse ". ." / ".." from nested unwrapping and trim leading ". " at cell start.
+    const cellHtml = $cell
+      .html()!
+      .replace(/\.\s*\.\s*/g, '. ')
+      .replace(/^\s*\.\s*/, '');
+    $cell.html(cellHtml);
   });
 
   // Convert diff tables to fenced diff code blocks.

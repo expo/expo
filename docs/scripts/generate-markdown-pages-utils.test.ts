@@ -687,8 +687,8 @@ describe('API parameter names', () => {
   });
 });
 
-describe('code-wrapped type links', () => {
-  it('swaps code-wrapped links so Turndown preserves both', () => {
+describe('code elements with links', () => {
+  it('unwraps code with a single link so the link renders in markdown', () => {
     const html = [
       '<main><table>',
       '<thead><tr><th>Type</th></tr></thead>',
@@ -698,15 +698,103 @@ describe('code-wrapped type links', () => {
       '</table></main>',
     ].join('');
     const md = convertHtmlToMarkdown(html);
-    // Should produce a linked code reference
     expect(md).toContain('VideoQuality');
     expect(md).toContain('#videoquality');
   });
 
-  it('does not swap when code contains more than just a link', () => {
+  it('unwraps code with mixed content and links so links render', () => {
     const html = '<main><p><code>use <a href="#foo">Foo</a> here</code></p></main>';
     const md = convertHtmlToMarkdown(html);
-    expect(md).toMatch(/`/);
+    expect(md).toContain('[Foo](#foo)');
+  });
+
+  it('unwraps complex type signatures with multiple links', () => {
+    const html = [
+      '<main><p><code>',
+      '<span>(</span>',
+      '<span>options?: <a href="#scanningoptions">ScanningOptions</a></span>',
+      '<span>) =&gt;</span> ',
+      '<a href="https://developer.mozilla.org/Promise">Promise</a>',
+      '&lt;void&gt;',
+      '</code></p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('[ScanningOptions](#scanningoptions)');
+    expect(md).toContain('[Promise](https://developer.mozilla.org/Promise)');
+    expect(md).toContain('<void>');
+    // Should NOT have backtick-escaped link syntax
+    expect(md).not.toMatch(/`\[/);
+  });
+
+  it('unwraps generic return type: Promise<BarcodeScanningResult[]>', () => {
+    // Pattern: reference type with typeArguments containing array of reference
+    const html = [
+      '<main><p><code>',
+      '<a href="https://developer.mozilla.org/Promise">Promise</a>',
+      '<span>&lt;</span>',
+      '<a href="#barcodescanningresult">BarcodeScanningResult[]</a>',
+      '<span>&gt;</span>',
+      '</code></p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('[Promise](https://developer.mozilla.org/Promise)');
+    expect(md).toContain('[BarcodeScanningResult[]](#barcodescanningresult)');
+    expect(md).not.toMatch(/`\[/);
+  });
+
+  it('unwraps union of reference types: TypeA | TypeB', () => {
+    // Pattern: union of two reference types, both linked
+    const html = [
+      '<main><p><code>',
+      '<a href="#explicitsupported">ExplicitlySupportedDevicePushToken</a>',
+      ' | ',
+      '<a href="#implicitsupported">ImplicitlySupportedDevicePushToken</a>',
+      '</code></p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('[ExplicitlySupportedDevicePushToken](#explicitsupported)');
+    expect(md).toContain('[ImplicitlySupportedDevicePushToken](#implicitsupported)');
+    expect(md).toContain('|');
+  });
+
+  it('unwraps callback type: (event: Notification) => void', () => {
+    // Pattern: function signature with linked parameter type
+    const html = [
+      '<main><p><code>',
+      '<span>(</span>',
+      '<span>event<span>:</span> <a href="#notification">Notification</a></span>',
+      '<span>) =&gt;</span> void',
+      '</code></p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('[Notification](#notification)');
+    expect(md).toContain('event');
+    expect(md).toContain('void');
+    expect(md).not.toMatch(/`\[/);
+  });
+
+  it('unwraps generic with multiple type arguments: Omit<Type, Keys>', () => {
+    // Pattern: generic reference with multiple typeArguments
+    const html = [
+      '<main><p><code>',
+      '<a href="#omit">Omit</a>',
+      '<span>&lt;</span>',
+      '<a href="#barcodescanningresult">BarcodeScanningResult</a>',
+      '<span>, </span>',
+      "'bounds' | 'cornerPoints'",
+      '<span>&gt;</span>',
+      '</code></p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('[Omit](#omit)');
+    expect(md).toContain('[BarcodeScanningResult](#barcodescanningresult)');
+    expect(md).not.toMatch(/`\[/);
+  });
+
+  it('preserves code elements that have no links', () => {
+    const html = '<main><p><code>plainCode</code></p></main>';
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toMatch(/`plainCode`/);
   });
 });
 
