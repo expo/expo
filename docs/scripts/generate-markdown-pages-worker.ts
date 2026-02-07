@@ -36,7 +36,7 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
       type: 'result',
       htmlPath,
       status: 'generated',
-      warnings: warnings.length ? warnings.map((w) => `${rel}: ${w}`) : undefined,
+      warnings: warnings.length > 0 ? warnings.map(w => `${rel}: ${w}`) : undefined,
     });
   }
 });

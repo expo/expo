@@ -20,10 +20,8 @@ function createTurndownService(): TurndownService {
     replacement: (_content: string, node: HTMLElement) => {
       const code = node.querySelector('code') as HTMLElement;
       const lang =
-        node.getAttribute('data-md-lang') ||
-        code.className?.match(/language-(\w+)/)?.[1] ||
-        '';
-      const text = code.textContent || '';
+        node.getAttribute('data-md-lang') ?? code.className?.match(/language-(\w+)/)?.[1] ?? '';
+      const text = code.textContent ?? '';
       return `\n\n\`\`\`${lang}\n${text.trim()}\n\`\`\`\n\n`;
     },
   });
@@ -47,7 +45,9 @@ export function findHtmlPages(dir: string): string[] {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (entry.name === '_next' || entry.name === 'static') continue;
+      if (entry.name === '_next' || entry.name === 'static') {
+        continue;
+      }
       results.push(...findHtmlPages(fullPath));
     } else if (entry.name === 'index.html') {
       results.push(fullPath);
@@ -68,7 +68,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // YesIcon (text-icon-success) → ✓, NoIcon (text-icon-danger) → ✗
   main.find('svg').each((_, el) => {
     const $svg = $(el);
-    const cls = $svg.attr('class') || '';
+    const cls = $svg.attr('class') ?? '';
     if (cls.includes('text-icon-success')) {
       $svg.replaceWith('✓');
     } else if (cls.includes('text-icon-danger')) {
@@ -97,7 +97,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $el = $(el);
     // Inside headings, remove the badge entirely — the heading text already contains
     // the platform name, so replacing would duplicate it (e.g. "### Android Android").
-    if ($el.closest('h1, h2, h3, h4, h5, h6').length) {
+    if ($el.closest('h1, h2, h3, h4, h5, h6').length > 0) {
       $el.remove();
       return;
     }
@@ -109,9 +109,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Fallback: extract platform badges that lack data-md but have the old CSS class pattern
   main.find('.select-none').each((_, el) => {
     const $el = $(el);
-    const cls = $el.attr('class') || '';
+    const cls = $el.attr('class') ?? '';
     if (cls.includes('rounded-full') && cls.includes('border')) {
-      if ($el.closest('h1, h2, h3, h4, h5, h6').length) {
+      if ($el.closest('h1, h2, h3, h4, h5, h6').length > 0) {
         $el.remove();
         return;
       }
@@ -136,13 +136,17 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   main.find('[data-md="card-link"], a:has(div)').each((_, el) => {
     const $a = $(el);
     const href = $a.attr('href');
-    if (!href) return;
+    if (!href) {
+      return;
+    }
     const texts: string[] = [];
     $a.find('[data-text="true"]').each((_, textEl) => {
       const t = $(textEl).text().trim();
-      if (t) texts.push(t);
+      if (t) {
+        texts.push(t);
+      }
     });
-    if (texts.length >= 1) {
+    if (texts.length > 0) {
       const title = texts[0];
       const desc = texts.slice(1).join(' — ');
       const replacement = desc
@@ -174,7 +178,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   main.find('[data-md="step"]').each((_, el) => {
     const $div = $(el);
     const content = $div.find('[data-md="step-content"]');
-    if (content.length) {
+    if (content.length > 0) {
       $div.replaceWith(content.html()!);
       return;
     }
@@ -187,11 +191,17 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Fallback for steps without data-md attributes
   main.find('div').each((_, el) => {
     const $div = $(el);
-    if ($div.attr('data-md')) return; // Already handled
-    const cls = $div.attr('class') || '';
-    if (!cls.includes('flex') || !cls.includes('gap-4')) return;
+    if ($div.attr('data-md')) {
+      return;
+    } // Already handled
+    const cls = $div.attr('class') ?? '';
+    if (!cls.includes('flex') || !cls.includes('gap-4')) {
+      return;
+    }
     const children = $div.children();
-    if (children.length !== 2) return;
+    if (children.length !== 2) {
+      return;
+    }
     const first = $(children[0]);
     const second = $(children[1]);
     const firstText = first.text().trim();
@@ -205,9 +215,15 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // GFM table syntax. Flatten innermost elements first (p, blockquote, span) then outer (div).
   main.find('td, th').each((_, cell) => {
     const $cell = $(cell);
-    $cell.find('blockquote').each((_, el) => { $(el).replaceWith($(el).text().trim()); });
-    $cell.find('p').each((_, el) => { $(el).replaceWith($(el).html() || ''); });
-    $cell.find('div').each((_, el) => { $(el).replaceWith($(el).html() || ''); });
+    $cell.find('blockquote').each((_, el) => {
+      $(el).replaceWith($(el).text().trim());
+    });
+    $cell.find('p').each((_, el) => {
+      $(el).replaceWith($(el).html() ?? '');
+    });
+    $cell.find('div').each((_, el) => {
+      $(el).replaceWith($(el).html() ?? '');
+    });
   });
 
   // Convert diff tables to fenced diff code blocks.
@@ -220,9 +236,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const $row = $(row);
       const codeCell = $row.find('td').last();
       const text = codeCell.text().trim();
-      if (text) lines.push(text);
+      if (text) {
+        lines.push(text);
+      }
     });
-    if (lines.length) {
+    if (lines.length > 0) {
       $table.replaceWith(`<pre><code class="language-diff">${lines.join('\n')}</code></pre>`);
     }
   });
@@ -234,9 +252,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const codeTexts: string[] = [];
     $el.find('code').each((_, code) => {
       const text = $(code).text().trim();
-      if (text) codeTexts.push(text);
+      if (text) {
+        codeTexts.push(text);
+      }
     });
-    if (codeTexts.length) {
+    if (codeTexts.length > 0) {
       $el.replaceWith(`<pre><code class="language-sh">${codeTexts.join('\n')}</code></pre>`);
     }
   });
@@ -279,7 +299,7 @@ export function cleanMarkdown(markdown: string): string {
       .replace(/\\_/g, '_')
       // Unescape square brackets that turndown escapes to prevent link interpretation.
       // Only unescape \[...\] sequences that are NOT followed by (...) link targets.
-      .replace(/\\\[([^\]]*?)\\\](?!\()/g, '[$1]')
+      .replace(/\\\[([^\]]*?)\\](?!\()/g, '[$1]')
       // Remove orphaned bullet markers (from platform tag separators)
       .replace(/^\s*•\s*$/gm, '')
       // Replace fullwidth equals sign with regular equals
@@ -295,7 +315,7 @@ export function cleanMarkdown(markdown: string): string {
  * on code examples (e.g. React docs teaching <div>, CSS class name references).
  */
 export function stripCodeBlocks(markdown: string): string {
-  return markdown.replace(/^```[^\n]*\n[\s\S]*?^```$/gm, '');
+  return markdown.replace(/^```[^\n]*\n[\S\s]*?^```$/gm, '');
 }
 
 /**
@@ -322,7 +342,8 @@ const KNOWN_WARNING_EXEMPTIONS = {
  * @param pagePath - Relative path from OUT_DIR (e.g. "build/index.html") for exemption matching.
  */
 export function checkMarkdownQuality(markdown: string, pagePath?: string): string[] {
-  const exemptions = (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) || [];
+  const exemptions =
+    (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) ?? [];
   const warnings: string[] = [];
   if (!/(^|\n)#{1,6}\s/.test(markdown)) {
     warnings.push('No headings found');
@@ -338,7 +359,7 @@ export function checkMarkdownQuality(markdown: string, pagePath?: string): strin
   if (/bg-palette-|select-none|rounded-full/.test(prose)) {
     warnings.push('Contains CSS class names in text');
   }
-  return warnings.filter(w => !exemptions.some(e => w.startsWith(e)));
+  return warnings.filter(w => !exemptions.some(ex => w.startsWith(ex)));
 }
 
 const CI_CSS_CLASS_PATTERN = /\b(bg-palette-|select-none|rounded-full\s+border|terminal-snippet)\b/;
@@ -350,7 +371,8 @@ const CI_CSS_CLASS_PATTERN = /\b(bg-palette-|select-none|rounded-full\s+border|t
  * @param pagePath - Relative path from OUT_DIR (e.g. "faq/index.html") for exemption matching.
  */
 export function checkPage(markdown: string, pagePath?: string): string[] {
-  const exemptions = (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) || [];
+  const exemptions =
+    (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) ?? [];
   const errors: string[] = [];
 
   if (!markdown.trim()) {
@@ -363,7 +385,7 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
   }
 
   // Check that code fences are balanced (must happen before stripping)
-  const fenceCount = (markdown.match(/^```/gm) || []).length;
+  const fenceCount = (markdown.match(/^```/gm) ?? []).length;
   if (fenceCount % 2 !== 0) {
     errors.push(`Unbalanced code fences (${fenceCount} fence markers)`);
   }
@@ -380,7 +402,7 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
     errors.push('Contains CSS class names in text');
   }
 
-  return errors.filter(e => !exemptions.some(ex => e.startsWith(ex)));
+  return errors.filter(error => !exemptions.some(ex => error.startsWith(ex)));
 }
 
 /**
@@ -391,12 +413,16 @@ export function convertHtmlToMarkdown(html: string): string | null {
   const $ = cheerio.load(html);
 
   const main = $('main');
-  if (!main.length) return null;
+  if (main.length === 0) {
+    return null;
+  }
 
   cleanHtml($, main);
 
   const mainHtml = main.html();
-  if (!mainHtml) return null;
+  if (!mainHtml) {
+    return null;
+  }
 
   let markdown = turndown.turndown(mainHtml);
   markdown = cleanMarkdown(markdown);

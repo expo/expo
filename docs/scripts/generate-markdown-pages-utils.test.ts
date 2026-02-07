@@ -6,6 +6,8 @@ import {
   convertHtmlToMarkdown,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
+
+// eslint-disable-next-line import/order -- cheerio must be imported after the local module for jest ESM transforms
 import * as cheerio from 'cheerio';
 
 describe('cleanHtml', () => {
@@ -17,7 +19,9 @@ describe('cleanHtml', () => {
   });
 
   it('removes SVGs', () => {
-    const $ = cheerio.load('<main><svg viewBox="0 0 24 24"><path d="M0 0"/></svg><p>text</p></main>');
+    const $ = cheerio.load(
+      '<main><svg viewBox="0 0 24 24"><path d="M0 0"/></svg><p>text</p></main>'
+    );
     cleanHtml($, $('main'));
     expect($('main').html()).not.toContain('svg');
     expect($('main').text()).toContain('text');
@@ -41,7 +45,9 @@ describe('cleanHtml', () => {
   });
 
   it('removes .select-none elements', () => {
-    const $ = cheerio.load('<main><span class="select-none">$ </span><code>npm install</code></main>');
+    const $ = cheerio.load(
+      '<main><span class="select-none">$ </span><code>npm install</code></main>'
+    );
     cleanHtml($, $('main'));
     expect($('main').html()).not.toContain('select-none');
     expect($('main').text()).toContain('npm install');
@@ -49,7 +55,9 @@ describe('cleanHtml', () => {
   });
 
   it('converts terminal blocks with data-md="code-block"', () => {
-    const $ = cheerio.load(`<main><div data-md="code-block" class="rounded p-4"><code>npx expo start</code></div></main>`);
+    const $ = cheerio.load(
+      `<main><div data-md="code-block" class="rounded p-4"><code>npx expo start</code></div></main>`
+    );
     cleanHtml($, $('main'));
     const html = $('main').html();
     expect(html).toContain('<pre>');
@@ -114,7 +122,6 @@ describe('convertHtmlToMarkdown', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```js\nconst x = 1;\n```');
   });
-
 });
 
 describe('card links', () => {
@@ -359,12 +366,14 @@ describe('convertHtmlToMarkdown with real page structure', () => {
 
 describe('checkMarkdownQuality', () => {
   it('returns no warnings for well-formed markdown', () => {
-    const md = '# Title\n\nThis is a paragraph with enough content to pass the length check easily.\n\nMore content here to be safe.';
+    const md =
+      '# Title\n\nThis is a paragraph with enough content to pass the length check easily.\n\nMore content here to be safe.';
     expect(checkMarkdownQuality(md)).toEqual([]);
   });
 
   it('warns when no headings are found', () => {
-    const md = 'This is a paragraph with no headings but enough content to be long enough for the check.';
+    const md =
+      'This is a paragraph with no headings but enough content to be long enough for the check.';
     const warnings = checkMarkdownQuality(md);
     expect(warnings).toContain('No headings found');
   });
@@ -382,13 +391,15 @@ describe('checkMarkdownQuality', () => {
   });
 
   it('warns when CSS class names leak into text', () => {
-    const md = '# Title\n\nbg-palette-black some content here that is long enough for the length check threshold.';
+    const md =
+      '# Title\n\nbg-palette-black some content here that is long enough for the length check threshold.';
     const warnings = checkMarkdownQuality(md);
     expect(warnings).toContain('Contains CSS class names in text');
   });
 
   it('does not false-positive on HTML tags inside code blocks', () => {
-    const md = '# Real Title\n\nSome content that is long enough to pass the check.\n\n```jsx\n<div className="container">\n  <span>Hello</span>\n</div>\n```';
+    const md =
+      '# Real Title\n\nSome content that is long enough to pass the check.\n\n```jsx\n<div className="container">\n  <span>Hello</span>\n</div>\n```';
     const warnings = checkMarkdownQuality(md);
     expect(warnings).toEqual([]);
   });
@@ -396,7 +407,9 @@ describe('checkMarkdownQuality', () => {
   it('suppresses exempted warnings when pagePath matches', () => {
     const md = '# Title\n\nShort.';
     expect(checkMarkdownQuality(md).some(w => w.includes('Suspiciously short'))).toBe(true);
-    expect(checkMarkdownQuality(md, 'build/index.html').some(w => w.includes('Suspiciously short'))).toBe(false);
+    expect(
+      checkMarkdownQuality(md, 'build/index.html').some(w => w.includes('Suspiciously short'))
+    ).toBe(false);
   });
 });
 
@@ -405,12 +418,12 @@ describe('stripCodeBlocks', () => {
     const md = 'before\n\n```js\nconst x = 1;\n```\n\nafter';
     expect(stripCodeBlocks(md)).toBe('before\n\n\n\nafter');
   });
-
 });
 
 describe('checkPage (check-markdown-pages)', () => {
   it('returns no errors for well-formed markdown', () => {
-    const md = '# Title\n\nThis is valid content with enough text to pass all checks.\n\nMore content here.';
+    const md =
+      '# Title\n\nThis is valid content with enough text to pass all checks.\n\nMore content here.';
     expect(checkPage(md)).toEqual([]);
   });
 
@@ -422,7 +435,7 @@ describe('checkPage (check-markdown-pages)', () => {
   it('detects unbalanced code fences', () => {
     const md = '# Title\n\n```js\nconst x = 1;\n\nMissing closing fence.';
     const errors = checkPage(md);
-    expect(errors.some(e => e.includes('Unbalanced code fences'))).toBe(true);
+    expect(errors.some(error => error.includes('Unbalanced code fences'))).toBe(true);
   });
 });
 
@@ -493,7 +506,6 @@ describe('callouts/blockquotes', () => {
     expect(md).toContain('informational note about the setup process');
     expect(md).not.toContain('svg');
   });
-
 });
 
 describe('SVG checkmarks in tables', () => {
@@ -510,7 +522,6 @@ describe('SVG checkmarks in tables', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('| Caching | ✓ |');
   });
-
 });
 
 describe('multi-line table cells', () => {
@@ -527,7 +538,6 @@ describe('multi-line table cells', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('| timeout | Maximum time in milliseconds. |');
   });
-
 });
 
 describe('duplicate platform names in headings', () => {
@@ -571,7 +581,6 @@ export default function App() {}</code></pre></main>`;
     expect(md).not.toContain('import Constants');
     expect(md).toContain('export default function App() {}');
   });
-
 });
 
 describe('escaped underscores', () => {
@@ -580,7 +589,6 @@ describe('escaped underscores', () => {
     const md = cleanMarkdown(input);
     expect(md).toBe('Run tests in the __tests__ directory.');
   });
-
 });
 
 describe('escaped square brackets', () => {
@@ -617,7 +625,8 @@ describe('code block language from data-md-lang', () => {
   });
 
   it('prefers data-md-lang over class-based language', () => {
-    const html = '<main><pre data-md-lang="typescript"><code class="language-js">const x = 1;</code></pre></main>';
+    const html =
+      '<main><pre data-md-lang="typescript"><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```typescript\nconst x = 1;\n```');
   });

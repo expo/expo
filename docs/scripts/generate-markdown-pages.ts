@@ -10,8 +10,8 @@
  * Run after `next build` so the out/ directory exists with all published HTML pages.
  */
 
-import os from 'node:os';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 
@@ -37,9 +37,7 @@ let warned = 0;
 let nextIndex = 0;
 let activeWorkers = numWorkers;
 
-console.log(
-  ` \x1b[2m⧖\x1b[0m Converting ${htmlPages.length} pages with ${numWorkers} workers…`
-);
+console.warn(` \x1b[2m⧖\x1b[0m Converting ${htmlPages.length} pages with ${numWorkers} workers…`);
 
 function sendNext(worker: Worker) {
   if (nextIndex < htmlPages.length) {
@@ -59,8 +57,11 @@ const done = new Promise<void>((resolve, reject) => {
 
     worker.on('message', (msg: { type: string; status: string; warnings?: string[] }) => {
       if (msg.type === 'result') {
-        if (msg.status === 'generated') generated++;
-        else if (msg.status === 'skipped') skipped++;
+        if (msg.status === 'generated') {
+          generated++;
+        } else if (msg.status === 'skipped') {
+          skipped++;
+        }
 
         if (msg.warnings) {
           for (const w of msg.warnings) {
@@ -73,8 +74,10 @@ const done = new Promise<void>((resolve, reject) => {
       }
     });
 
-    worker.on('error', (err) => {
-      for (const w of workers) w.terminate();
+    worker.on('error', err => {
+      for (const w of workers) {
+        void w.terminate();
+      }
       reject(err);
     });
 
@@ -98,8 +101,10 @@ try {
 }
 
 const parts = [`${skipped} skipped`];
-if (warned) parts.push(`${warned} with warnings`);
+if (warned) {
+  parts.push(`${warned} with warnings`);
+}
 
-console.log(
+console.warn(
   ` \x1b[1m\x1b[32m✓\x1b[0m Generated ${generated} markdown pages (${parts.join(', ')})`
 );

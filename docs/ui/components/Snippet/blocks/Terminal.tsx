@@ -274,7 +274,9 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key} className="w-fit">
-        <CODE data-md="skip" className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
+        <CODE
+          data-md="skip"
+          className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
           -&nbsp;
         </CODE>
         <CODE

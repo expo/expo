@@ -31,7 +31,9 @@ function findMarkdownPages(dir: string): string[] {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (entry.name === '_next' || entry.name === 'static') continue;
+      if (entry.name === '_next' || entry.name === 'static') {
+        continue;
+      }
       results.push(...findMarkdownPages(fullPath));
     } else if (entry.name === 'index.md') {
       results.push(fullPath);
@@ -65,9 +67,9 @@ for (const mdPath of mdFiles) {
   const rel = path.relative(OUT_DIR, mdPath);
   const htmlRel = rel.replace(/\.md$/, '.html');
   const errors = checkPage(markdown, htmlRel);
-  if (errors.length) {
-    for (const e of errors) {
-      console.error(`  \x1b[31m✗\x1b[0m ${rel}: ${e}`);
+  if (errors.length > 0) {
+    for (const error of errors) {
+      console.error(`  \x1b[31m✗\x1b[0m ${rel}: ${error}`);
     }
     failCount++;
   }
@@ -79,7 +81,7 @@ if (failCount) {
   );
   process.exit(1);
 } else {
-  console.log(
+  console.warn(
     ` \x1b[1m\x1b[32m✓\x1b[0m All ${mdFiles.length} markdown pages passed quality checks`
   );
 }
