@@ -630,6 +630,86 @@ describe('blockquote in table cells', () => {
   });
 });
 
+describe('font-semibold to bold', () => {
+  it('converts font-semibold spans to bold text', () => {
+    const html = '<main><p><span class="font-semibold">Android</span> only feature.</p></main>';
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('**Android**');
+  });
+});
+
+describe('API platform tags', () => {
+  it('converts api-platforms to supported platforms text', () => {
+    const html = [
+      '<main><h1>Camera</h1>',
+      '<div data-md="api-platforms" class="mb-3 flex flex-row">',
+      '<div data-md="platform-badge"><svg/><span>Android</span></div>',
+      '<div data-md="platform-badge"><svg/><span>iOS</span></div>',
+      '</div>',
+      '<p>Camera API.</p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Supported platforms: Android, iOS');
+  });
+});
+
+describe('API returns section', () => {
+  it('converts api-returns to inline returns text', () => {
+    const html = [
+      '<main><h3>takePictureAsync()</h3>',
+      '<div data-md="api-returns" class="flex flex-row items-start gap-2">',
+      '<div class="flex flex-row items-center gap-2">',
+      '<svg viewBox="0 0 24 24"><path/></svg>',
+      '<span class="text-xs">Returns:</span>',
+      '</div>',
+      '<code>Promise</code>',
+      '</div></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Returns:');
+    expect(md).toMatch(/Returns: .?Promise.?/);
+  });
+});
+
+describe('API parameter names', () => {
+  it('converts api-param-name spans to code formatting', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Name</th><th>Type</th></tr></thead>',
+      '<tbody><tr>',
+      '<td><span data-md="api-param-name" class="font-medium">options</span></td>',
+      '<td><code>CameraOptions</code></td>',
+      '</tr></tbody>',
+      '</table></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toMatch(/`options`/);
+  });
+});
+
+describe('code-wrapped type links', () => {
+  it('swaps code-wrapped links so Turndown preserves both', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Type</th></tr></thead>',
+      '<tbody><tr>',
+      '<td><code><a href="#videoquality">VideoQuality</a></code></td>',
+      '</tr></tbody>',
+      '</table></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    // Should produce a linked code reference
+    expect(md).toContain('VideoQuality');
+    expect(md).toContain('#videoquality');
+  });
+
+  it('does not swap when code contains more than just a link', () => {
+    const html = '<main><p><code>use <a href="#foo">Foo</a> here</code></p></main>';
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toMatch(/`/);
+  });
+});
+
 describe('code block language from data-md-lang', () => {
   it('uses data-md-lang attribute for language tag', () => {
     const html = '<main><pre data-md-lang="tsx"><code>const App = () => null;</code></pre></main>';

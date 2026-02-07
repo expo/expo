@@ -522,7 +522,7 @@ export const getCommentContent = (content: CommentContentData[]) => {
   return content
     .map(entry => {
       if (entry.tag === '@link' && !entry.text.includes('/')) {
-        return `[${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}](#${slug(entry.text)})`;
+        return `[\`${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}\`](#${slug(entry.text)})`;
       }
       return entry.text;
     })

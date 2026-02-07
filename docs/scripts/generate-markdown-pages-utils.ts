@@ -110,6 +110,29 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  // Convert font-semibold spans to <strong> so Turndown produces bold text.
+  main.find('span.font-semibold').each((_, el) => {
+    const $el = $(el);
+    $el.replaceWith('<strong>' + $el.html() + '</strong>');
+  });
+
+  // Convert API platform tag groups to "Supported platforms: X, Y" text.
+  main.find('[data-md="api-platforms"]').each((_, el) => {
+    const $el = $(el);
+    const platforms: string[] = [];
+    $el.find('[data-md="platform-badge"]').each((_, badge) => {
+      const text = $(badge).find('span').last().text().trim();
+      if (text) {
+        platforms.push(text);
+      }
+    });
+    if (platforms.length > 0) {
+      $el.replaceWith('<p>Supported platforms: ' + platforms.join(', ') + '</p>');
+    } else {
+      $el.remove();
+    }
+  });
+
   // Extract platform text from badge elements BEFORE removing skip/select-none elements.
   // data-md="platform-badge" is the stable marker; fallback matches .select-none.rounded-full.border.
   main.find('[data-md="platform-badge"]').each((_, el) => {
@@ -226,6 +249,37 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const firstText = first.text().trim();
     if (/^\d{1,2}$/.test(firstText) && second.prop('tagName') === 'DIV') {
       $div.replaceWith(second.html()!);
+    }
+  });
+
+  // Convert API returns sections to inline "Returns: type" text.
+  main.find('[data-md="api-returns"]').each((_, el) => {
+    const $el = $(el);
+    const codeEl = $el.find('code').first();
+    const typeText =
+      codeEl.length > 0 ? codeEl.text().trim() : $el.text().replace('Returns:', '').trim();
+    if (typeText) {
+      $el.replaceWith('<p>Returns: <code>' + typeText + '</code></p>');
+    }
+  });
+
+  // Convert API parameter name spans to <code> for backtick formatting.
+  main.find('[data-md="api-param-name"]').each((_, el) => {
+    const $el = $(el);
+    $el.replaceWith('<code>' + $el.text() + '</code>');
+  });
+
+  // Swap code-wrapped links so Turndown preserves both.
+  main.find('code').each((_, el) => {
+    const $code = $(el);
+    const children = $code.contents();
+    if (children.length === 1 && children.first().is('a')) {
+      const $a = children.first();
+      const href = $a.attr('href');
+      const text = $a.text();
+      if (href && text) {
+        $code.replaceWith('<a href="' + href + '"><code>' + text + '</code></a>');
+      }
     }
   });
 
