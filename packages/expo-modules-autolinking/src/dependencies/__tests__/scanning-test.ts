@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
-import { createMemoizer } from '../../memoize';
+import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
 import { scanDependenciesInSearchPath } from '../scanning';
 
 function mockedNodeModule(
@@ -31,8 +31,12 @@ const symlinkMany = (symlinks: Record<string, string>) => {
 const projectRoot = '/fake/project';
 const projectRootNodeModules = '/fake/project/node_modules';
 
-const itWithMemoize = (name: string, fn: () => Promise<void>) =>
-  it(name, () => createMemoizer().withMemoizer(fn));
+const itWithMemoize = (name: string, fn: () => Promise<void>) => {
+  return it(name, async () => {
+    await createMemoizer().withMemoizer(fn);
+    expect(_verifyMemoizerFreed()).toBe(true);
+  });
+};
 
 describe(scanDependenciesInSearchPath, () => {
   afterEach(() => {

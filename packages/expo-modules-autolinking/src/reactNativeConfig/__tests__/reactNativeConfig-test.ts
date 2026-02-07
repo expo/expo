@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
-import { createMemoizer } from '../../memoize';
+import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
 import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
 import { loadConfigAsync } from '../config';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
@@ -32,8 +32,12 @@ const BASE_AUTOLINKING_OPTIONS: AutolinkingOptions = {
   exclude: [],
 };
 
-const itWithMemoize = (name: string, fn: () => Promise<void>) =>
-  it(name, () => createMemoizer().withMemoizer(fn));
+const itWithMemoize = (name: string, fn: () => Promise<void>) => {
+  return it(name, async () => {
+    await createMemoizer().withMemoizer(fn);
+    expect(_verifyMemoizerFreed()).toBe(true);
+  });
+};
 
 describe(createReactNativeConfigAsync, () => {
   const mockPlatformResolverIos = resolveDependencyConfigImplIosAsync as jest.MockedFunction<
