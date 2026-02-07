@@ -407,6 +407,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             <a
@@ -487,6 +488,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             <a
@@ -568,6 +570,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             number
@@ -651,6 +654,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             <span
@@ -751,6 +755,7 @@ in here.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             StyleProp
