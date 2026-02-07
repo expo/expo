@@ -11,6 +11,7 @@ import {
   resolveModulesAsync,
   resolveExtraBuildDependenciesAsync,
 } from '../autolinking/resolveModules';
+import { createMemoizer } from '../memoize';
 import type {
   ModuleDescriptor,
   CommonNativeModuleDescriptor,
@@ -39,63 +40,65 @@ export function resolveCommand(cli: commander.CommanderStatic) {
         searchPaths,
       });
 
-      const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
-      const appRoot = await autolinkingOptionsLoader.getAppRoot();
+      await createMemoizer().withMemoizer(async () => {
+        const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
+        const appRoot = await autolinkingOptionsLoader.getAppRoot();
 
-      const expoModulesSearchResults = await findModulesAsync({
-        autolinkingOptions,
-        appRoot,
-      });
+        const expoModulesSearchResults = await findModulesAsync({
+          autolinkingOptions,
+          appRoot,
+        });
 
-      const expoModulesResolveResults = await resolveModulesAsync(
-        expoModulesSearchResults,
-        autolinkingOptions
-      );
-
-      const extraDependencies = await resolveExtraBuildDependenciesAsync({
-        commandRoot: autolinkingOptionsLoader.getCommandRoot(),
-        platform,
-      });
-
-      const configuration = getConfiguration({ autolinkingOptions });
-
-      const coreFeatures = [
-        ...expoModulesResolveResults.reduce<Set<string>>((acc, module) => {
-          if (hasCoreFeatures(module)) {
-            const features = module.coreFeatures ?? [];
-            for (const feature of features) {
-              acc.add(feature);
-            }
-            return acc;
-          }
-
-          return acc;
-        }, new Set()),
-      ];
-
-      if (commandArguments.json) {
-        console.log(
-          JSON.stringify({
-            extraDependencies,
-            coreFeatures,
-            modules: expoModulesResolveResults,
-            ...(configuration ? { configuration } : {}),
-          })
+        const expoModulesResolveResults = await resolveModulesAsync(
+          expoModulesSearchResults,
+          autolinkingOptions
         );
-      } else {
-        console.log(
-          require('util').inspect(
-            {
+
+        const extraDependencies = await resolveExtraBuildDependenciesAsync({
+          commandRoot: autolinkingOptionsLoader.getCommandRoot(),
+          platform,
+        });
+
+        const configuration = getConfiguration({ autolinkingOptions });
+
+        const coreFeatures = [
+          ...expoModulesResolveResults.reduce<Set<string>>((acc, module) => {
+            if (hasCoreFeatures(module)) {
+              const features = module.coreFeatures ?? [];
+              for (const feature of features) {
+                acc.add(feature);
+              }
+              return acc;
+            }
+
+            return acc;
+          }, new Set()),
+        ];
+
+        if (commandArguments.json) {
+          console.log(
+            JSON.stringify({
               extraDependencies,
               coreFeatures,
               modules: expoModulesResolveResults,
               ...(configuration ? { configuration } : {}),
-            },
-            false,
-            null,
-            true
-          )
-        );
-      }
+            })
+          );
+        } else {
+          console.log(
+            require('util').inspect(
+              {
+                extraDependencies,
+                coreFeatures,
+                modules: expoModulesResolveResults,
+                ...(configuration ? { configuration } : {}),
+              },
+              false,
+              null,
+              true
+            )
+          );
+        }
+      });
     });
 }

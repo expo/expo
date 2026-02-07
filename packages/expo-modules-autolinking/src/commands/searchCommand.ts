@@ -6,6 +6,7 @@ import {
   registerAutolinkingArguments,
 } from './autolinkingOptions';
 import { findModulesAsync } from '../autolinking/findModules';
+import { createMemoizer } from '../memoize';
 
 interface SearchArguments extends AutolinkingCommonArguments {
   json?: boolean | null;
