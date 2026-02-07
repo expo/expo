@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- update labels for consistency ([#42825](https://github.com/expo/expo/pull/42825) by [@vonovak](https://github.com/vonovak))
+
 ## 55.0.4 — 2026-02-03
 
 ### 🐛 Bug fixes

@@ -107,14 +107,14 @@ object MenuIcons {
   }
 
   @Composable
-  fun Bug(
+  fun Code(
     size: Dp,
     tint: Color,
     modifier: Modifier = Modifier
   ) {
     Icon(
-      painter = painterResource(R.drawable.bug),
-      contentDescription = "JS debugger",
+      painter = painterResource(R.drawable.code_brackets),
+      contentDescription = "DevTools",
       tint = tint,
       modifier = Modifier
         .size(size)
