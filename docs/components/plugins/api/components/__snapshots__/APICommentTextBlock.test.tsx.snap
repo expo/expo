@@ -111,6 +111,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       </p>
       <pre
         class="relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle [p+&]:mt-0"
+        data-md-lang="ts"
         data-text="true"
       >
         <div
