@@ -21,10 +21,6 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     const htmlPath = msg.htmlPath!;
     const html = fs.readFileSync(htmlPath, 'utf-8');
     const markdown = convertHtmlToMarkdown(html);
-    if (!markdown) {
-      parentPort!.postMessage({ type: 'result', htmlPath, status: 'skipped' });
-      return;
-    }
 
     const rel = path.relative(outDir, htmlPath);
     const warnings = checkMarkdownQuality(markdown, rel);

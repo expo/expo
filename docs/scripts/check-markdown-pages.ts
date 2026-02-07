@@ -17,29 +17,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { checkPage, findHtmlPages } from './generate-markdown-pages-utils.ts';
+import { checkPage, findHtmlPages, findMarkdownPages } from './generate-markdown-pages-utils.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
 
 if (!fs.existsSync(OUT_DIR)) {
   console.error('out/ directory not found. Run `next build` first.');
   process.exit(1);
-}
-
-function findMarkdownPages(dir: string): string[] {
-  const results: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (entry.name === '_next' || entry.name === 'static') {
-        continue;
-      }
-      results.push(...findMarkdownPages(fullPath));
-    } else if (entry.name === 'index.md') {
-      results.push(fullPath);
-    }
-  }
-  return results;
 }
 
 const htmlFiles = findHtmlPages(OUT_DIR);
@@ -50,12 +34,10 @@ if (mdFiles.length === 0) {
   process.exit(1);
 }
 
-// Some HTML pages legitimately produce no markdown (empty <main>, redirect pages).
-// Flag if more than 5% of pages were skipped — that suggests a pipeline problem.
-const skipRate = 1 - mdFiles.length / htmlFiles.length;
-if (skipRate > 0.05) {
+// Every HTML page should have a corresponding markdown file.
+if (mdFiles.length !== htmlFiles.length) {
   console.error(
-    `\n \x1b[1m\x1b[31m✗\x1b[0m Only ${mdFiles.length} markdown pages for ${htmlFiles.length} HTML pages (${(skipRate * 100).toFixed(1)}% skipped). Possible content loss.`
+    `\n \x1b[1m\x1b[31m✗\x1b[0m Markdown/HTML count mismatch: ${mdFiles.length} markdown files for ${htmlFiles.length} HTML pages`
   );
   process.exit(1);
 }

@@ -15,13 +15,22 @@ import os from 'node:os';
 import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 
-import { findHtmlPages } from './generate-markdown-pages-utils.ts';
+import { findHtmlPages, findMarkdownPages } from './generate-markdown-pages-utils.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
 
 if (!fs.existsSync(OUT_DIR)) {
   console.error('out/ directory not found. Run `next build` first.');
   process.exit(1);
+}
+
+// Remove any existing markdown pages from a previous run
+const existingMdPages = findMarkdownPages(OUT_DIR);
+for (const mdPath of existingMdPages) {
+  fs.unlinkSync(mdPath);
+}
+if (existingMdPages.length > 0) {
+  console.warn(` \x1b[2m⧖\x1b[0m Removed ${existingMdPages.length} existing markdown pages`);
 }
 
 const htmlPages = findHtmlPages(OUT_DIR);
@@ -32,7 +41,6 @@ const numWorkers = Math.min(
 );
 
 let generated = 0;
-let skipped = 0;
 let warned = 0;
 let nextIndex = 0;
 let activeWorkers = numWorkers;
@@ -59,8 +67,6 @@ const done = new Promise<void>((resolve, reject) => {
       if (msg.type === 'result') {
         if (msg.status === 'generated') {
           generated++;
-        } else if (msg.status === 'skipped') {
-          skipped++;
         }
 
         if (msg.warnings) {
@@ -100,11 +106,11 @@ try {
   process.exit(1);
 }
 
-const parts = [`${skipped} skipped`];
+const parts: string[] = [];
 if (warned) {
   parts.push(`${warned} with warnings`);
 }
 
 console.warn(
-  ` \x1b[1m\x1b[32m✓\x1b[0m Generated ${generated} markdown pages (${parts.join(', ')})`
+  ` \x1b[1m\x1b[32m✓\x1b[0m Generated ${generated} markdown pages${parts.length > 0 ? ` (${parts.join(', ')})` : ''}`
 );

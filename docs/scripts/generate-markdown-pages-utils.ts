@@ -57,6 +57,25 @@ export function findHtmlPages(dir: string): string[] {
 }
 
 /**
+ * Recursively find all index.md files in a directory, skipping internal directories.
+ */
+export function findMarkdownPages(dir: string): string[] {
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === '_next' || entry.name === 'static') {
+        continue;
+      }
+      results.push(...findMarkdownPages(fullPath));
+    } else if (entry.name === 'index.md') {
+      results.push(fullPath);
+    }
+  }
+  return results;
+}
+
+/**
  * Clean up the HTML before conversion: remove non-content elements,
  * normalize terminal blocks, and strip decorative artifacts.
  */
@@ -342,6 +361,10 @@ const KNOWN_WARNING_EXEMPTIONS = {
  * @param pagePath - Relative path from OUT_DIR (e.g. "build/index.html") for exemption matching.
  */
 export function checkMarkdownQuality(markdown: string, pagePath?: string): string[] {
+  // Redirect and fallback pages are intentionally minimal — skip quality checks.
+  if (markdown.startsWith('This page redirects to') || markdown.startsWith('No content found')) {
+    return [];
+  }
   const exemptions =
     (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) ?? [];
   const warnings: string[] = [];
@@ -371,6 +394,10 @@ const CI_CSS_CLASS_PATTERN = /\b(bg-palette-|select-none|rounded-full\s+border|t
  * @param pagePath - Relative path from OUT_DIR (e.g. "faq/index.html") for exemption matching.
  */
 export function checkPage(markdown: string, pagePath?: string): string[] {
+  // Redirect and fallback pages are intentionally minimal — skip quality checks.
+  if (markdown.startsWith('This page redirects to') || markdown.startsWith('No content found')) {
+    return [];
+  }
   const exemptions =
     (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) ?? [];
   const errors: string[] = [];
@@ -405,27 +432,41 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
   return errors.filter(error => !exemptions.some(ex => error.startsWith(ex)));
 }
 
+const NO_CONTENT_FALLBACK =
+  'No content found for this page. See https://docs.expo.dev/llms.txt for a full index of available documentation.\n';
+
 /**
  * Convert a full HTML page string to markdown, extracting <main> content.
- * Returns null if the page has no <main> element or no content.
+ * Always returns a string so every page gets a .md file.
+ * For redirect pages (meta refresh), returns a pointer to the redirect target.
  */
-export function convertHtmlToMarkdown(html: string): string | null {
+export function convertHtmlToMarkdown(html: string): string {
   const $ = cheerio.load(html);
+
+  // Detect redirect pages via <meta http-equiv="refresh" content="0; url=/path/">
+  const refreshMeta = $('meta[http-equiv="refresh"]').attr('content');
+  if (refreshMeta) {
+    const match = refreshMeta.match(/url=(\S+)/i);
+    if (match) {
+      const target = match[1];
+      return `This page redirects to [${target}](https://docs.expo.dev${target}).\n`;
+    }
+  }
 
   const main = $('main');
   if (main.length === 0) {
-    return null;
+    return NO_CONTENT_FALLBACK;
   }
 
   cleanHtml($, main);
 
   const mainHtml = main.html();
   if (!mainHtml) {
-    return null;
+    return NO_CONTENT_FALLBACK;
   }
 
   let markdown = turndown.turndown(mainHtml);
   markdown = cleanMarkdown(markdown);
 
-  return markdown ? markdown + '\n' : null;
+  return markdown ? markdown + '\n' : NO_CONTENT_FALLBACK;
 }

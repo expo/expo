@@ -91,12 +91,25 @@ describe('cleanMarkdown', () => {
 });
 
 describe('convertHtmlToMarkdown', () => {
-  it('returns null for HTML without <main>', () => {
-    expect(convertHtmlToMarkdown('<html><body><div>no main</div></body></html>')).toBeNull();
+  it('returns fallback message for HTML without <main>', () => {
+    const result = convertHtmlToMarkdown('<html><body><div>no main</div></body></html>');
+    expect(result).toContain('No content found');
+    expect(result).toContain('https://docs.expo.dev/llms.txt');
   });
 
-  it('returns null for empty <main>', () => {
-    expect(convertHtmlToMarkdown('<html><body><main></main></body></html>')).toBeNull();
+  it('returns fallback message for empty <main>', () => {
+    const result = convertHtmlToMarkdown('<html><body><main></main></body></html>');
+    expect(result).toContain('No content found');
+    expect(result).toContain('https://docs.expo.dev/llms.txt');
+  });
+
+  it('returns redirect pointer for meta refresh pages', () => {
+    const html =
+      '<html><head><meta http-equiv="refresh" content="0; url=/get-started/introduction/"></head><body><div id="__next"></div></body></html>';
+    const result = convertHtmlToMarkdown(html);
+    expect(result).toContain('/get-started/introduction/');
+    expect(result).toContain('https://docs.expo.dev/get-started/introduction/');
+    expect(result).toContain('redirects to');
   });
 
   it('converts a simple page', () => {
