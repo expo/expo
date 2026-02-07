@@ -56,15 +56,10 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
     // would be incompatible with `RCTViewManager` as it doesn't specify the actor.
     return MainActor.assumeIsolated {
       if let expoViewType = ViewType.self as? AnyExpoView.Type {
-#if RCT_NEW_ARCH_ENABLED
         if let fabricViewType = ViewType.self as? ExpoFabricView.Type {
           return AppleView.from(ExpoFabricView.create(viewType: fabricViewType, viewDefinition: self, appContext: appContext))
         }
-#endif
         return AppleView.from(expoViewType.init(appContext: appContext))
-      }
-      if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
-        return AppleView.from(legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView)
       }
       if let UIViewType = ViewType.self as? UIView.Type {
         return AppleView.from(UIViewType.init(frame: .zero))

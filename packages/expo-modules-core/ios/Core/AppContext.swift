@@ -122,14 +122,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   @objc
   public var appIdentifier: String? {
-    #if RCT_NEW_ARCH_ENABLED
     guard let moduleRegistry = reactBridge?.moduleRegistry else {
       return nil
     }
     return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
-    #else
-    return nil
-    #endif
   }
 
   /**
@@ -365,27 +361,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   /**
-   Returns an array of event names supported by all Swift modules.
-   */
-  @objc
-  public func getSupportedEvents() -> [String] {
-    return moduleRegistry.reduce(into: [String]()) { events, holder in
-      events.append(contentsOf: holder.definition.eventNames)
-    }
-  }
-
-  /**
-   Modifies listeners count for module with given name. Depending on the listeners count,
-   `onStartObserving` and `onStopObserving` are called.
-   */
-  @objc
-  public func modifyEventListenersCount(_ moduleName: String, count: Int) {
-    moduleRegistry
-      .get(moduleHolderForName: moduleName)?
-      .modifyListenersCount(count)
-  }
-
-  /**
    Asynchronously calls module's function with given arguments.
    */
   @objc
@@ -479,19 +454,17 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Registers native views defined by registered native modules.
-   - Note: It should stay private as `registerNativeModules` should be the only call site. Works only with the New Architecture.
+   - Note: It should stay private as `registerNativeModules` should be the only call site.
    - Todo: `RCTComponentViewFactory` is thread-safe, so this function should be as well.
    */
   @MainActor
   private func registerNativeViews() {
-#if RCT_NEW_ARCH_ENABLED
     for holder in moduleRegistry {
       for (key, viewDefinition) in holder.definition.views {
         let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
         ExpoFabricView.registerComponent(viewModule, appContext: self)
       }
     }
-#endif
   }
 
   // MARK: - Runtime

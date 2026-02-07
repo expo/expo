@@ -2,8 +2,6 @@
 
 #import <ExpoModulesCore/Platform.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #ifdef __cplusplus
 
 #import <React/RCTViewComponentView.h> // Allows non-umbrella since it's coming from React-RCTFabric
@@ -14,18 +12,10 @@
 #else
 
 // Interface visible in Swift
-@interface ExpoFabricViewObjC
+@interface ExpoFabricViewObjC : UIView
 @end
 
 #endif // __cplusplus
-#else  // Paper
-
-#import <React/RCTView.h>
-
-@interface ExpoFabricViewObjC : RCTView
-@end
-
-#endif // !RCT_NEW_ARCH_ENABLED
 
 @class EXAppContext;
 @class EXViewModuleWrapper;

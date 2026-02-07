@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Removed some unused code.
+
 ## 55.0.7 — 2026-02-03
 
 ### 🐛 Bug fixes
