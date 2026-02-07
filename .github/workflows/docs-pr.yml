@@ -74,36 +74,31 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy --branch=pr-${{ github.event.pull_request.number }}
           workingDirectory: docs
-      - name: 🔍 Find old comment if it exists
+      - name: 💬 Comment with preview URL
         if: contains(github.event.pull_request.labels.*.name, 'preview')
-        uses: peter-evans/find-comment@v3
-        id: old_comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'expo-bot'
-          body-includes: 📘 Your docs
-      - name: 💬 Add comment with preview URL
-        if: contains(github.event.pull_request.labels.*.name, 'preview') && steps.old_comment.outputs.comment-id == ''
         uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
-            github.rest.issues.createComment({
+            const body = '📘 Your docs [preview website](https://pr-${{ github.event.pull_request.number }}.expo-docs.pages.dev/) is ready!';
+            const comments = await github.paginate(github.rest.issues.listComments, {
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📘 Your docs [preview website](https://pr-${{ github.event.pull_request.number }}.expo-docs.pages.dev/) is ready!'
             });
-      - name: 💬 Update comment with preview URL
-        if: contains(github.event.pull_request.labels.*.name, 'preview') && steps.old_comment.outputs.comment-id != ''
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.updateComment({
-              issue_number: context.issue.number,
-              comment_id: ${{ steps.old_comment.outputs.comment-id }},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '📘 Your docs [preview website](https://pr-${{ github.event.pull_request.number }}.expo-docs.pages.dev/) is ready!'
-            });
+            const existing = comments.find(c => c.user.login.startsWith('expo-bot') && c.body.includes('📘 Your docs'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body,
+              });
+            }

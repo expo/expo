@@ -71,7 +71,8 @@ const Collapsible: ComponentType<CollapsibleProps> = withHeadingManager(
           className
         )}
         open={isOpen}
-        data-testid={testID}>
+        data-testid={testID}
+        data-md="collapsible">
         <summary
           className={mergeClasses(
             'group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3',

@@ -884,7 +884,7 @@ export declare const useCalendarPermissions: (options?: import("expo-modules-cor
  */
 export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
- * platform ios
+ * @platform ios
  */
 export declare enum EntityTypes {
     EVENT = "event",

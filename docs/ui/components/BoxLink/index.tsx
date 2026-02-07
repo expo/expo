@@ -19,6 +19,8 @@ export function BoxLink({ title, description, href, testID, Icon, imageUrl }: Bo
   return (
     <LinkBase
       href={href}
+      // Used by scripts/generate-markdown-pages-utils.js to extract card link title/description
+      data-md="card-link"
       className={mergeClasses(
         'group mb-3 flex flex-row justify-between rounded-md border border-solid border-default px-4 py-3 transition',
         'hocus:bg-subtle hocus:shadow-xs'

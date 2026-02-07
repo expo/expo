@@ -19,6 +19,7 @@ export const PlatformTag = ({ platform, label, className, suffix, ...rest }: Pla
 
   return (
     <div
+      data-md="platform-badge"
       className={mergeClasses(
         'mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border border-default bg-element px-[7px] py-0.5',
         'last:mr-0',
