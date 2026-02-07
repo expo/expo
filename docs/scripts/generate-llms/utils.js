@@ -25,7 +25,10 @@ export function processPageData(pageHref, pageName) {
     return null;
   }
 
-  const filePath = path.join('pages', pageHref + '.mdx');
+  let filePath = path.join('pages', pageHref + '.mdx');
+  if (!fs.existsSync(filePath)) {
+    filePath = path.join('pages', pageHref, 'index.mdx');
+  }
   const { title, description, content } = readFrontmatter(filePath);
 
   return title || pageName

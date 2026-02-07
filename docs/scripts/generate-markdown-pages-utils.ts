@@ -420,7 +420,9 @@ export function checkMarkdownQuality(markdown: string, pagePath?: string): strin
     return [];
   }
   const exemptions =
-    (pagePath ? KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS] : undefined) ?? [];
+    (pagePath
+      ? KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]
+      : undefined) ?? [];
   const warnings: string[] = [];
   if (!/(^|\n)#{1,6}\s/.test(markdown)) {
     warnings.push('No headings found');
@@ -453,7 +455,9 @@ export function checkPage(markdown: string, pagePath?: string): string[] {
     return [];
   }
   const exemptions =
-    (pagePath ? KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS] : undefined) ?? [];
+    (pagePath
+      ? KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]
+      : undefined) ?? [];
   const errors: string[] = [];
 
   if (!markdown.trim()) {
