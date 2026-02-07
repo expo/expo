@@ -44,6 +44,6 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🧪 Run tests
+      - name: 🧪 Run types tests
         working-directory: packages/expo-router
         run: yarn test:types
