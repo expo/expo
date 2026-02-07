@@ -243,7 +243,7 @@ export async function parseComponentDescriptorsAsync(
   const results = new Set<string>();
   for await (const entry of scanFilesRecursively(jsRoot)) {
     if (extRe.test(entry.name)) {
-      const contents = await fs.readFile(entry.path);
+      const contents = await fs.readFile(entry.path, 'utf8');
       const matched = matchComponentDescriptors(entry.path, contents);
       if (matched) {
         results.add(matched);
@@ -254,14 +254,12 @@ export async function parseComponentDescriptorsAsync(
 }
 
 let lazyCodegenComponentRegex: RegExp | null = null;
-function matchComponentDescriptors(_filePath: string, contents: Buffer): string | null {
-  const fileContents = contents.toString();
-
+function matchComponentDescriptors(_filePath: string, contents: string): string | null {
   if (!lazyCodegenComponentRegex) {
     lazyCodegenComponentRegex =
       /codegenNativeComponent(<.*>)?\s*\(\s*["'`](\w+)["'`](,?[\s\S]+interfaceOnly:\s*(\w+))?/m;
   }
-  const match = fileContents.match(lazyCodegenComponentRegex);
+  const match = contents.match(lazyCodegenComponentRegex);
   if (!(match?.[4] === 'true') && match?.[2]) {
     return `${match[2]}ComponentDescriptor`;
   }
