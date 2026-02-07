@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Reduce memory retained after autolinking runs ([#42947](https://github.com/expo/expo/pull/42947) by [@kitten](https://github.com/kitten))
+
 ## 55.0.5 — 2026-02-16
 
 _This version does not introduce any user-facing changes._
