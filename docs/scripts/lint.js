@@ -9,6 +9,8 @@ const eslintArgs = [
   '--ext=js,cjs,ts,jsx,tsx,md,mdx',
   '--exit-on-fatal-error',
   '--cache',
+  '--cache-strategy',
+  'content',
   '--cache-location',
   CACHE_LOCATION,
   '--concurrency=auto',
