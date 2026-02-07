@@ -63,10 +63,12 @@ public class TestPackage implements ReactPackage {
     `);
   });
 
-  itWithMemoize('should return android config if gradle found but not AndroidManifest.xml', async () => {
-    vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
-      '/app/node_modules/react-native-test/android/build.gradle': `
+  itWithMemoize(
+    'should return android config if gradle found but not AndroidManifest.xml',
+    async () => {
+      vol.fromJSON({
+        '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+        '/app/node_modules/react-native-test/android/build.gradle': `
 android {
     namespace "com.test"
     defaultConfig {
@@ -74,7 +76,7 @@ android {
     }
 }
 `,
-      '/app/node_modules/react-native-test/android/src/main/com/test/TestPackage.java': `\
+        '/app/node_modules/react-native-test/android/src/main/com/test/TestPackage.java': `\
 package com.test;
 
 import com.facebook.react.ReactPackage;
@@ -82,30 +84,33 @@ import com.facebook.react.ReactPackage;
 public class TestPackage implements ReactPackage {
 }
 `,
-    });
-    const result = await resolveDependencyConfigImplAndroidAsync(
-      '/app/node_modules/react-native-test',
-      undefined
-    );
-    expect(result).not.toBeNull();
-  });
+      });
+      const result = await resolveDependencyConfigImplAndroidAsync(
+        '/app/node_modules/react-native-test',
+        undefined
+      );
+      expect(result).not.toBeNull();
+    }
+  );
 
-  itWithMemoize('should return C++-only config without AndroidManifest.xml and gradle file', async () => {
-    vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
-      '/app/node_modules/react-native-test/android/build.gradle': '',
-      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
-    });
-    const result = await resolveDependencyConfigImplAndroidAsync(
-      '/app/node_modules/react-native-test',
-      {
-        cxxModuleCMakeListsModuleName: 'TestMod',
-        cxxModuleCMakeListsPath: 'CMakeLists.txt',
-        cxxModuleHeaderName: 'TestModSpec',
-        sourceDir: 'cpp',
-      }
-    );
-    expect(result).toMatchInlineSnapshot(`
+  itWithMemoize(
+    'should return C++-only config without AndroidManifest.xml and gradle file',
+    async () => {
+      vol.fromJSON({
+        '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+        '/app/node_modules/react-native-test/android/build.gradle': '',
+        '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+      });
+      const result = await resolveDependencyConfigImplAndroidAsync(
+        '/app/node_modules/react-native-test',
+        {
+          cxxModuleCMakeListsModuleName: 'TestMod',
+          cxxModuleCMakeListsPath: 'CMakeLists.txt',
+          cxxModuleHeaderName: 'TestModSpec',
+          sourceDir: 'cpp',
+        }
+      );
+      expect(result).toMatchInlineSnapshot(`
       {
         "buildTypes": [],
         "cmakeListsPath": "/app/node_modules/react-native-test/cpp/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -119,21 +124,25 @@ public class TestPackage implements ReactPackage {
         "sourceDir": "/app/node_modules/react-native-test/cpp",
       }
     `);
-  });
+    }
+  );
 
-  itWithMemoize('should not misdetect an Expo module as a C++-only React Native module', async () => {
-    vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
-      '/app/node_modules/react-native-test/android/build.gradle': '',
-      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
-      '/app/node_modules/react-native-test/expo-module.config.json': '{}',
-    });
-    const result = await resolveDependencyConfigImplAndroidAsync(
-      '/app/node_modules/react-native-test',
-      undefined
-    );
-    expect(result).toBe(null);
-  });
+  itWithMemoize(
+    'should not misdetect an Expo module as a C++-only React Native module',
+    async () => {
+      vol.fromJSON({
+        '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+        '/app/node_modules/react-native-test/android/build.gradle': '',
+        '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+        '/app/node_modules/react-native-test/expo-module.config.json': '{}',
+      });
+      const result = await resolveDependencyConfigImplAndroidAsync(
+        '/app/node_modules/react-native-test',
+        undefined
+      );
+      expect(result).toBe(null);
+    }
+  );
 
   itWithMemoize('should return android config from custom sourceDir', async () => {
     vol.fromJSON({
