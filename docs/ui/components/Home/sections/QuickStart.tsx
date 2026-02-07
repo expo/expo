@@ -12,7 +12,7 @@ export function QuickStart() {
   return (
     <>
       <H1 className="mt-1 border-0 pb-0 !font-extrabold">
-        Create amazing apps that run everywhere
+        Create amazing apps that run everywhere preview test
       </H1>
       <P className="mb-2 text-secondary">
         Build one JavaScript/TypeScript project that runs natively on all your users' devices.
