@@ -92,7 +92,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📘 Your docs [preview website](${{ steps.deploy.outputs.deployment-url }}) is ready!'
+              body: '📘 Your docs [preview website](https://pr-${{ github.event.pull_request.number }}.expo-docs.pages.dev/) is ready!'
             });
       - name: 💬 Update comment with preview URL
         if: contains(github.event.pull_request.labels.*.name, 'preview') && steps.old_comment.outputs.comment-id != ''
@@ -105,5 +105,5 @@ jobs:
               comment_id: ${{ steps.old_comment.outputs.comment-id }},
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '📘 Your docs [preview website](${{ steps.deploy.outputs.deployment-url }}) is ready!'
+              body: '📘 Your docs [preview website](https://pr-${{ github.event.pull_request.number }}.expo-docs.pages.dev/) is ready!'
             });
