@@ -31,7 +31,7 @@ import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAsset
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
-import type { RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/internal/routing';
 import { type RouteInfo, type RoutesManifest, type ImmutableRequest } from 'expo-server/private';
 import path from 'path';
 
