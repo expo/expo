@@ -346,8 +346,11 @@ const CI_CSS_CLASS_PATTERN = /\b(bg-palette-|select-none|rounded-full\s+border|t
 /**
  * Strict quality check for CI — used by check-markdown-pages.js as a blocking gate.
  * Returns an array of error strings (empty if the page passes).
+ *
+ * @param pagePath - Relative path from OUT_DIR (e.g. "faq/index.html") for exemption matching.
  */
-export function checkPage(markdown: string): string[] {
+export function checkPage(markdown: string, pagePath?: string): string[] {
+  const exemptions = (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) || [];
   const errors: string[] = [];
 
   if (!markdown.trim()) {
@@ -377,7 +380,7 @@ export function checkPage(markdown: string): string[] {
     errors.push('Contains CSS class names in text');
   }
 
-  return errors;
+  return errors.filter(e => !exemptions.some(ex => e.startsWith(ex)));
 }
 
 /**

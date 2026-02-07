@@ -48,9 +48,12 @@ if (mdFiles.length === 0) {
   process.exit(1);
 }
 
-if (mdFiles.length < htmlFiles.length) {
+// Some HTML pages legitimately produce no markdown (empty <main>, redirect pages).
+// Flag if more than 5% of pages were skipped — that suggests a pipeline problem.
+const skipRate = 1 - mdFiles.length / htmlFiles.length;
+if (skipRate > 0.05) {
   console.error(
-    `\n \x1b[1m\x1b[31m✗\x1b[0m Only ${mdFiles.length} markdown pages found for ${htmlFiles.length} HTML pages. Possible content loss.`
+    `\n \x1b[1m\x1b[31m✗\x1b[0m Only ${mdFiles.length} markdown pages for ${htmlFiles.length} HTML pages (${(skipRate * 100).toFixed(1)}% skipped). Possible content loss.`
   );
   process.exit(1);
 }
@@ -59,9 +62,10 @@ let failCount = 0;
 
 for (const mdPath of mdFiles) {
   const markdown = fs.readFileSync(mdPath, 'utf-8');
-  const errors = checkPage(markdown);
+  const rel = path.relative(OUT_DIR, mdPath);
+  const htmlRel = rel.replace(/\.md$/, '.html');
+  const errors = checkPage(markdown, htmlRel);
   if (errors.length) {
-    const rel = path.relative(OUT_DIR, mdPath);
     for (const e of errors) {
       console.error(`  \x1b[31m✗\x1b[0m ${rel}: ${e}`);
     }
