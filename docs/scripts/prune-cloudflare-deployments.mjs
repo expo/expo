@@ -62,6 +62,16 @@ async function fetchAllDeployments() {
 }
 
 console.log(`Fetching deployments for "${project}"...`);
+
+// Fetch the project to find the current production deployment, which we never delete even with
+// force=true
+const projectResponse = await fetch(api, { headers });
+const projectData = await projectResponse.json();
+if (!projectData.success) {
+  throw new Error(projectData.errors?.[0]?.message ?? 'Failed to fetch project');
+}
+const productionDeploymentId = projectData.result?.canonical_deployment?.id;
+
 const allDeployments = await fetchAllDeployments();
 
 const branchDeployments = allDeployments
@@ -70,7 +80,15 @@ const branchDeployments = allDeployments
 
 console.log(`Found ${branchDeployments.length} deployments for branch "${branch}"`);
 
-const toDelete = branchDeployments.slice(keep);
+const toDelete = branchDeployments.slice(keep).filter(deployment => {
+  if (deployment.id === productionDeploymentId) {
+    console.log(
+      `Skipping production deployment ${deployment.short_id ?? deployment.id.slice(0, 8)}`
+    );
+    return false;
+  }
+  return true;
+});
 if (toDelete.length === 0) {
   console.log('Nothing to delete');
   process.exit(0);
@@ -90,10 +108,13 @@ for (const deployment of toDelete) {
     continue;
   }
 
-  const response = await fetch(`${api}/deployments/${encodeURIComponent(deployment.id)}`, {
-    method: 'DELETE',
-    headers,
-  });
+  const response = await fetch(
+    `${api}/deployments/${encodeURIComponent(deployment.id)}?force=true`,
+    {
+      method: 'DELETE',
+      headers,
+    }
+  );
   const data = await response.json();
 
   if (data.success) {
