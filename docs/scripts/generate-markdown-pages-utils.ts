@@ -19,7 +19,10 @@ function createTurndownService(): TurndownService {
     filter: (node: HTMLElement) => node.nodeName === 'PRE' && !!node.querySelector('code'),
     replacement: (_content: string, node: HTMLElement) => {
       const code = node.querySelector('code') as HTMLElement;
-      const lang = code.className?.match(/language-(\w+)/)?.[1] || '';
+      const lang =
+        node.getAttribute('data-md-lang') ||
+        code.className?.match(/language-(\w+)/)?.[1] ||
+        '';
       const text = code.textContent || '';
       return `\n\n\`\`\`${lang}\n${text.trim()}\n\`\`\`\n\n`;
     },
@@ -60,7 +63,23 @@ export function findHtmlPages(dir: string): string[] {
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Remove interactive/decorative elements
   main.find('button').remove();
+
+  // Preserve semantic SVG icons as text before blanket SVG removal.
+  // YesIcon (text-icon-success) → ✓, NoIcon (text-icon-danger) → ✗
+  main.find('svg').each((_, el) => {
+    const $svg = $(el);
+    const cls = $svg.attr('class') || '';
+    if (cls.includes('text-icon-success')) {
+      $svg.replaceWith('✓');
+    } else if (cls.includes('text-icon-danger')) {
+      $svg.replaceWith('✗');
+    }
+  });
   main.find('svg').remove();
+
+  // Remove hidden code spans that contain %%placeholder%% markers and collapsed imports.
+  // These leak into text content if not removed before turndown processes the HTML.
+  main.find('.code-hidden').remove();
 
   // Remove "Edit page" / "Report an issue" links.
   // Primary removal is via data-md="skip" on PageTitleButtons; this is the fallback
@@ -76,6 +95,12 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // data-md="platform-badge" is the stable marker; fallback matches .select-none.rounded-full.border.
   main.find('[data-md="platform-badge"]').each((_, el) => {
     const $el = $(el);
+    // Inside headings, remove the badge entirely — the heading text already contains
+    // the platform name, so replacing would duplicate it (e.g. "### Android Android").
+    if ($el.closest('h1, h2, h3, h4, h5, h6').length) {
+      $el.remove();
+      return;
+    }
     const platformText = $el.find('span').last().text().trim();
     if (platformText) {
       $el.replaceWith(`, ${platformText}`);
@@ -86,6 +111,10 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $el = $(el);
     const cls = $el.attr('class') || '';
     if (cls.includes('rounded-full') && cls.includes('border')) {
+      if ($el.closest('h1, h2, h3, h4, h5, h6').length) {
+        $el.remove();
+        return;
+      }
       const platformText = $el.find('span').last().text().trim();
       if (platformText) {
         $el.replaceWith(`, ${platformText}`);
@@ -122,6 +151,10 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       $a.replaceWith(replacement);
     }
   });
+
+  // Remove snippet headers (file labels, "Example" labels above code blocks).
+  // data-md="snippet-header" is the stable marker (from SnippetHeader component).
+  main.find('[data-md="snippet-header"]').remove();
 
   // Remove terminal snippet labels ("Terminal", filename labels above code blocks).
   // data-md="terminal" is the stable marker; .terminal-snippet is the fallback.
@@ -165,6 +198,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     if (/^\d{1,2}$/.test(firstText) && second.prop('tagName') === 'DIV') {
       $div.replaceWith(second.html()!);
     }
+  });
+
+  // Flatten block elements inside table cells to prevent newlines breaking markdown tables.
+  // Turndown converts <p> and <div> to blocks with newlines, which breaks GFM table syntax.
+  main.find('td, th').each((_, cell) => {
+    const $cell = $(cell);
+    $cell.find('div').each((_, el) => { $(el).replaceWith($(el).html() || ''); });
+    $cell.find('p').each((_, el) => { $(el).replaceWith($(el).html() || ''); });
   });
 
   // Convert diff tables to fenced diff code blocks.
@@ -232,6 +273,8 @@ export function cleanMarkdown(markdown: string): string {
       .replace(/\.Deprecated/g, '. Deprecated')
       // Unescape dashes that turndown escapes to prevent list interpretation
       .replace(/\\-/g, '-')
+      // Unescape underscores that turndown escapes to prevent italic interpretation
+      .replace(/\\_/g, '_')
       // Remove orphaned bullet markers (from platform tag separators)
       .replace(/^\s*•\s*$/gm, '')
       // Replace fullwidth equals sign with regular equals
@@ -251,11 +294,30 @@ export function stripCodeBlocks(markdown: string): string {
 }
 
 /**
+ * Pages where specific warnings are expected and should be suppressed.
+ *
+ * - Section landing pages (build/, eas/hosting/) render only a title -- legitimately short.
+ * - Pages that teach about HTML elements (faq/, dom-components/, static-rendering/, workflow/web/)
+ *   mention <div>, <span>, etc. in inline code which isn't stripped by stripCodeBlocks.
+ */
+const KNOWN_WARNING_EXEMPTIONS = {
+  'build/index.html': ['Suspiciously short'],
+  'eas/hosting/index.html': ['Suspiciously short'],
+  'faq/index.html': ['Contains raw HTML tags'],
+  'guides/dom-components/index.html': ['Contains raw HTML tags'],
+  'router/web/static-rendering/index.html': ['Contains raw HTML tags'],
+  'workflow/web/index.html': ['Contains raw HTML tags'],
+};
+
+/**
  * Check generated markdown for quality issues that suggest a conversion problem.
  * Returns an array of warning strings (empty if no issues).
  * Used during generation to log non-blocking warnings.
+ *
+ * @param pagePath - Relative path from OUT_DIR (e.g. "build/index.html") for exemption matching.
  */
-export function checkMarkdownQuality(markdown: string): string[] {
+export function checkMarkdownQuality(markdown: string, pagePath?: string): string[] {
+  const exemptions = (pagePath && KNOWN_WARNING_EXEMPTIONS[pagePath as keyof typeof KNOWN_WARNING_EXEMPTIONS]) || [];
   const warnings: string[] = [];
   if (!/(^|\n)#{1,6}\s/.test(markdown)) {
     warnings.push('No headings found');
@@ -271,7 +333,7 @@ export function checkMarkdownQuality(markdown: string): string[] {
   if (/bg-palette-|select-none|rounded-full/.test(prose)) {
     warnings.push('Contains CSS class names in text');
   }
-  return warnings;
+  return warnings.filter(w => !exemptions.some(e => w.startsWith(e)));
 }
 
 const CI_CSS_CLASS_PATTERN = /\b(bg-palette-|select-none|rounded-full\s+border|terminal-snippet)\b/;

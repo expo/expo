@@ -36,9 +36,9 @@ for (const htmlPath of findHtmlPages(OUT_DIR)) {
     continue;
   }
 
-  const warnings = checkMarkdownQuality(markdown);
+  const rel = path.relative(OUT_DIR, htmlPath);
+  const warnings = checkMarkdownQuality(markdown, rel);
   if (warnings.length) {
-    const rel = path.relative(OUT_DIR, htmlPath);
     for (const w of warnings) {
       console.warn(`  \x1b[33m⚠\x1b[0m ${rel}: ${w}`);
     }

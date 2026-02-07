@@ -726,6 +726,19 @@ describe('checkMarkdownQuality', () => {
     const warnings = checkMarkdownQuality(md);
     expect(warnings).toContain('Contains raw HTML tags (<div> or <span>)');
   });
+
+  it('suppresses exempted warnings when pagePath matches', () => {
+    const md = '# Title\n\nShort.';
+    expect(checkMarkdownQuality(md).some(w => w.includes('Suspiciously short'))).toBe(true);
+    expect(checkMarkdownQuality(md, 'build/index.html').some(w => w.includes('Suspiciously short'))).toBe(false);
+  });
+
+  it('does not suppress non-exempted warnings for exempted pages', () => {
+    const md = '# Title\n\n<div>leaked</div>';
+    const warnings = checkMarkdownQuality(md, 'build/index.html');
+    expect(warnings.some(w => w.includes('Suspiciously short'))).toBe(false);
+    expect(warnings).toContain('Contains raw HTML tags (<div> or <span>)');
+  });
 });
 
 describe('stripCodeBlocks', () => {
@@ -957,5 +970,259 @@ describe('callouts/blockquotes', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('`npx expo start`');
     expect(md).toContain('Run');
+  });
+});
+
+describe('SVG checkmarks in tables', () => {
+  it('converts success SVG icons to ✓ text', () => {
+    const html = `<main>
+      <table>
+        <thead><tr><th>Feature</th><th>Supported</th></tr></thead>
+        <tbody><tr>
+          <td>Caching</td>
+          <td><svg class="text-icon-success" viewBox="0 0 24 24"><path d="M0"/></svg></td>
+        </tr></tbody>
+      </table>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('| Caching | ✓ |');
+  });
+
+  it('converts danger SVG icons to ✗ text', () => {
+    const html = `<main>
+      <table>
+        <thead><tr><th>Feature</th><th>Supported</th></tr></thead>
+        <tbody><tr>
+          <td>Offline</td>
+          <td><svg class="text-icon-danger" viewBox="0 0 24 24"><path d="M0"/></svg></td>
+        </tr></tbody>
+      </table>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('| Offline | ✗ |');
+  });
+
+  it('handles mixed checkmarks and X marks in same table', () => {
+    const html = `<main>
+      <table>
+        <thead><tr><th>Feature</th><th>iOS</th><th>Android</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Push</td>
+            <td><svg class="text-icon-success"><path/></svg></td>
+            <td><svg class="text-icon-danger"><path/></svg></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('| Push | ✓ | ✗ |');
+  });
+
+  it('still removes non-semantic SVGs', () => {
+    const html = `<main>
+      <p>Text</p>
+      <svg class="decorative-icon" viewBox="0 0 24 24"><path/></svg>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).not.toContain('svg');
+    expect(md).toContain('Text');
+  });
+});
+
+describe('multi-line table cells', () => {
+  it('flattens div-wrapped content in table cells', () => {
+    const html = `<main>
+      <table>
+        <thead><tr><th>Name</th><th>Description</th></tr></thead>
+        <tbody><tr>
+          <td>timeout</td>
+          <td><div>Maximum time in milliseconds.</div></td>
+        </tr></tbody>
+      </table>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('| timeout | Maximum time in milliseconds. |');
+  });
+
+  it('flattens paragraph-wrapped content in table cells', () => {
+    const html = `<main>
+      <table>
+        <thead><tr><th>Param</th><th>Info</th></tr></thead>
+        <tbody><tr>
+          <td>url</td>
+          <td><p>The URL to open.</p></td>
+        </tr></tbody>
+      </table>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('| url | The URL to open. |');
+  });
+
+  it('flattens nested div>p structure in table cells', () => {
+    const html = `<main>
+      <table>
+        <thead><tr><th>Param</th><th>Info</th></tr></thead>
+        <tbody><tr>
+          <td>config</td>
+          <td><div><p>Configuration object for the request.</p></div></td>
+        </tr></tbody>
+      </table>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('| config | Configuration object for the request. |');
+  });
+});
+
+describe('duplicate platform names in headings', () => {
+  it('removes platform badge inside heading with data-md attribute', () => {
+    const html = `<main>
+      <h3>Android <span>
+        <div data-md="platform-badge">
+          <svg/><span>Android</span>
+        </div>
+      </span></h3>
+      <p>Content here.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('### Android');
+    expect(md).not.toContain('Android Android');
+  });
+
+  it('removes platform badge inside heading with CSS fallback', () => {
+    const html = `<main>
+      <h3>iOS <span>
+        <div class="select-none rounded-full border bg-palette-blue3">
+          <svg/><span>iOS</span>
+        </div>
+      </span></h3>
+      <p>Content here.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('### iOS');
+    expect(md).not.toContain('iOS iOS');
+  });
+
+  it('still extracts platform badge text outside headings', () => {
+    const html = `<main>
+      <div>
+        <span>Only for: </span>
+        <div data-md="platform-badge">
+          <svg/><span>Android</span>
+        </div>
+      </div>
+      <p>Content.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Android');
+  });
+});
+
+describe('snippet headers', () => {
+  it('removes snippet headers with data-md="snippet-header"', () => {
+    const html = `<main>
+      <div>
+        <div data-md="snippet-header" class="flex min-h-[40px]">
+          <label><span>app.json</span></label>
+        </div>
+        <pre><code class="language-json">{"expo": {}}</code></pre>
+      </div>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```json');
+    expect(md).not.toMatch(/^app\.json$/m);
+  });
+
+  it('removes Example labels from non-terminal snippets', () => {
+    const html = `<main>
+      <div>
+        <div data-md="snippet-header" class="flex min-h-[40px]">
+          <label><svg/><span>Example</span></label>
+        </div>
+        <pre><code class="language-jsx">export default App;</code></pre>
+      </div>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```jsx');
+    expect(md).not.toMatch(/^Example$/m);
+  });
+});
+
+describe('hidden code spans', () => {
+  it('removes .code-hidden spans containing placeholder markers', () => {
+    const html = `<main><pre><code><span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">...</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">import Constants from 'expo-constants';</span></span>
+export default function App() {}</code></pre></main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).not.toContain('%%placeholder');
+    expect(md).not.toContain('import Constants');
+    expect(md).toContain('export default function App() {}');
+  });
+
+  it('preserves visible code around hidden spans', () => {
+    const html = `<main><pre><code>import React from 'react';
+<span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">...</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">import { View } from 'react-native';</span>
+export default App;</code></pre></main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain("import React from 'react';");
+    expect(md).toContain('export default App;');
+    expect(md).not.toContain('%%placeholder');
+  });
+});
+
+describe('escaped underscores', () => {
+  it('unescapes underscores in path names', () => {
+    const input = String.raw`Run tests in the \_\_tests\_\_ directory.`;
+    const md = cleanMarkdown(input);
+    expect(md).toBe('Run tests in the __tests__ directory.');
+  });
+
+  it('unescapes underscores in variable names', () => {
+    const input = String.raw`Set the \_\_DEV\_\_ flag.`;
+    const md = cleanMarkdown(input);
+    expect(md).toBe('Set the __DEV__ flag.');
+  });
+
+  it('preserves underscores that are already unescaped', () => {
+    const md = cleanMarkdown('Use snake_case naming.');
+    expect(md).toBe('Use snake_case naming.');
+  });
+});
+
+describe('code block language from data-md-lang', () => {
+  it('uses data-md-lang attribute for language tag', () => {
+    const html = '<main><pre data-md-lang="tsx"><code>const App = () => null;</code></pre></main>';
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```tsx\nconst App = () => null;\n```');
+  });
+
+  it('falls back to class-based language when no data-md-lang', () => {
+    const html = '<main><pre><code class="language-python">print("hi")</code></pre></main>';
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```python\nprint("hi")\n```');
+  });
+
+  it('prefers data-md-lang over class-based language', () => {
+    const html = '<main><pre data-md-lang="typescript"><code class="language-js">const x = 1;</code></pre></main>';
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```typescript\nconst x = 1;\n```');
+  });
+});
+
+describe('bundled version metadata', () => {
+  it('removes bundled version with data-md="skip"', () => {
+    const html = `<main>
+      <h1>expo-camera</h1>
+      <div data-md="skip" class="flex items-center gap-1.5">
+        <svg class="icon-sm"><path/></svg>
+        Bundled version:
+        <span>~15.0.8</span>
+      </div>
+      <p>A library for accessing the device camera.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('# expo-camera');
+    expect(md).toContain('A library for accessing the device camera.');
+    expect(md).not.toContain('Bundled version');
+    expect(md).not.toContain('15.0.8');
   });
 });
