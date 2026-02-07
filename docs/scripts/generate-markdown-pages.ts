@@ -15,7 +15,7 @@ import {
   checkMarkdownQuality,
   convertHtmlToMarkdown,
   findHtmlPages,
-} from './generate-markdown-pages-utils.js';
+} from './generate-markdown-pages-utils.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
 

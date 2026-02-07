@@ -1,10 +1,12 @@
 import * as cheerio from 'cheerio';
+import type { Cheerio, CheerioAPI } from 'cheerio';
+import type { AnyNode } from 'domhandler';
 import fs from 'node:fs';
 import path from 'node:path';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
-function createTurndownService() {
+function createTurndownService(): TurndownService {
   const turndown = new TurndownService({
     headingStyle: 'atx',
     codeBlockStyle: 'fenced',
@@ -14,9 +16,9 @@ function createTurndownService() {
 
   // Ensure pre>code blocks are rendered as fenced code blocks
   turndown.addRule('codeBlocks', {
-    filter: node => node.nodeName === 'PRE' && node.querySelector('code'),
-    replacement: (content, node) => {
-      const code = node.querySelector('code');
+    filter: (node: HTMLElement) => node.nodeName === 'PRE' && !!node.querySelector('code'),
+    replacement: (_content: string, node: HTMLElement) => {
+      const code = node.querySelector('code') as HTMLElement;
       const lang = code.className?.match(/language-(\w+)/)?.[1] || '';
       const text = code.textContent || '';
       return `\n\n\`\`\`${lang}\n${text.trim()}\n\`\`\`\n\n`;
@@ -37,8 +39,8 @@ const turndown = createTurndownService();
 /**
  * Recursively find all index.html files in a directory, skipping internal directories.
  */
-export function findHtmlPages(dir) {
-  const results = [];
+export function findHtmlPages(dir: string): string[] {
+  const results: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
@@ -55,7 +57,7 @@ export function findHtmlPages(dir) {
  * Clean up the HTML before conversion: remove non-content elements,
  * normalize terminal blocks, and strip decorative artifacts.
  */
-export function cleanHtml($, main) {
+export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Remove interactive/decorative elements
   main.find('button').remove();
   main.find('svg').remove();
@@ -106,7 +108,7 @@ export function cleanHtml($, main) {
     const $a = $(el);
     const href = $a.attr('href');
     if (!href) return;
-    const texts = [];
+    const texts: string[] = [];
     $a.find('[data-text="true"]').each((_, textEl) => {
       const t = $(textEl).text().trim();
       if (t) texts.push(t);
@@ -140,13 +142,13 @@ export function cleanHtml($, main) {
     const $div = $(el);
     const content = $div.find('[data-md="step-content"]');
     if (content.length) {
-      $div.replaceWith(content.html());
+      $div.replaceWith(content.html()!);
       return;
     }
     // Fallback: unwrap second child
     const children = $div.children();
     if (children.length >= 2) {
-      $div.replaceWith($(children[1]).html());
+      $div.replaceWith($(children[1]).html()!);
     }
   });
   // Fallback for steps without data-md attributes
@@ -161,7 +163,7 @@ export function cleanHtml($, main) {
     const second = $(children[1]);
     const firstText = first.text().trim();
     if (/^\d{1,2}$/.test(firstText) && second.prop('tagName') === 'DIV') {
-      $div.replaceWith(second.html());
+      $div.replaceWith(second.html()!);
     }
   });
 
@@ -170,7 +172,7 @@ export function cleanHtml($, main) {
   // (class="diff" comes from the react-diff-view library).
   main.find('[data-md="diff"] table, table.diff').each((_, el) => {
     const $table = $(el);
-    const lines = [];
+    const lines: string[] = [];
     $table.find('tr').each((_, row) => {
       const $row = $(row);
       const codeCell = $row.find('td').last();
@@ -186,7 +188,7 @@ export function cleanHtml($, main) {
   // data-md="code-block" is the stable marker; bg-palette-black is the fallback.
   main.find('[data-md="code-block"], [class*="bg-palette-black"]').each((_, el) => {
     const $el = $(el);
-    const codeTexts = [];
+    const codeTexts: string[] = [];
     $el.find('code').each((_, code) => {
       const text = $(code).text().trim();
       if (text) codeTexts.push(text);
@@ -204,7 +206,7 @@ export function cleanHtml($, main) {
  * - scripts/generate-llms/utils.js cleanContent()
  * - ui/components/MarkdownActions/processMarkdown.ts
  */
-export function cleanMarkdown(markdown) {
+export function cleanMarkdown(markdown: string): string {
   return (
     markdown
       // Remove anchor links in headings: ## Title[](#title) → ## Title
@@ -244,7 +246,7 @@ export function cleanMarkdown(markdown) {
  * Strip fenced code blocks from markdown so quality checks don't false-positive
  * on code examples (e.g. React docs teaching <div>, CSS class name references).
  */
-export function stripCodeBlocks(markdown) {
+export function stripCodeBlocks(markdown: string): string {
   return markdown.replace(/^```[^\n]*\n[\s\S]*?^```$/gm, '');
 }
 
@@ -253,8 +255,8 @@ export function stripCodeBlocks(markdown) {
  * Returns an array of warning strings (empty if no issues).
  * Used during generation to log non-blocking warnings.
  */
-export function checkMarkdownQuality(markdown) {
-  const warnings = [];
+export function checkMarkdownQuality(markdown: string): string[] {
+  const warnings: string[] = [];
   if (!/(^|\n)#{1,6}\s/.test(markdown)) {
     warnings.push('No headings found');
   }
@@ -278,8 +280,8 @@ const CI_CSS_CLASS_PATTERN = /\b(bg-palette-|select-none|rounded-full\s+border|t
  * Strict quality check for CI — used by check-markdown-pages.js as a blocking gate.
  * Returns an array of error strings (empty if the page passes).
  */
-export function checkPage(markdown) {
-  const errors = [];
+export function checkPage(markdown: string): string[] {
+  const errors: string[] = [];
 
   if (!markdown.trim()) {
     errors.push('Empty file');
@@ -315,7 +317,7 @@ export function checkPage(markdown) {
  * Convert a full HTML page string to markdown, extracting <main> content.
  * Returns null if the page has no <main> element or no content.
  */
-export function convertHtmlToMarkdown(html) {
+export function convertHtmlToMarkdown(html: string): string | null {
   const $ = cheerio.load(html);
 
   const main = $('main');

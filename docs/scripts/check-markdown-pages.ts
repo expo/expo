@@ -5,7 +5,7 @@
  * produced reasonable output. Exits non-zero if any page fails structural checks,
  * which will fail CI.
  *
- * Checks (via checkPage in generate-markdown-pages-utils.js):
+ * Checks (via checkPage in generate-markdown-pages-utils.ts):
  * - Every .md file has at least one heading
  * - No raw HTML tags (<div>, <span>) leaked through (outside code blocks)
  * - No CSS class names appear in the text (outside code blocks)
@@ -17,7 +17,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { checkPage } from './generate-markdown-pages-utils.js';
+import { checkPage } from './generate-markdown-pages-utils.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
 
@@ -30,8 +30,8 @@ if (!fs.existsSync(OUT_DIR)) {
   process.exit(1);
 }
 
-function findMarkdownPages(dir) {
-  const results = [];
+function findMarkdownPages(dir: string): string[] {
+  const results: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {

@@ -5,7 +5,7 @@ import {
   cleanMarkdown,
   convertHtmlToMarkdown,
   stripCodeBlocks,
-} from './generate-markdown-pages-utils.js';
+} from './generate-markdown-pages-utils.ts';
 import * as cheerio from 'cheerio';
 
 describe('cleanHtml', () => {
