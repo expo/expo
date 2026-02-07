@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Improve tree shaking with binding analysis. ([#42718](https://github.com/expo/expo/pull/42445) by [@tilgovi](https://github.com/tilgovi))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
