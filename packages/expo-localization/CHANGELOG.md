@@ -37,6 +37,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Correct types for getCalendars and getLocales ([#39703](https://github.com/expo/expo/pull/39703) by [@kadikraman](https://github.com/kadikraman))
+- Added missing iOS 16+ calendar identifiers. ([#41017](https://github.com/expo/expo/pull/41017) by [@codebyharry](https://github.com/codebyharry))
 
 ### 💡 Others
 
