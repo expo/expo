@@ -1,4 +1,5 @@
 import { compileTalksFile } from './compileTalks.js';
+import { generateGenerateMd } from './generatemd/index.js';
 import { generateLlmsEasTxt } from './llms-eas-txt.js';
 import { generateLlmsFullTxt } from './llms-full-txt.js';
 import { generateLlmsSdkTxt } from './llms-sdk.js';
@@ -11,4 +12,5 @@ Promise.allSettled([
   await generateLlmsEasTxt(),
   await generateLlmsFullTxt(),
   await generateLlmsTxt(),
+  await generateGenerateMd(),
 ]).catch(console.error);

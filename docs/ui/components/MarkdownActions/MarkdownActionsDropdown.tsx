@@ -5,9 +5,8 @@ import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 
 import { ClaudeLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
+import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
-import { githubRawUrl, getPageMdxFilePath } from '~/ui/components/Footer/utils';
-import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/processMarkdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 const getPrompt = (url: string) =>
@@ -19,26 +18,22 @@ export function MarkdownActionsDropdown() {
   const pathname = router?.pathname;
   const asPath = router?.asPath;
 
-  const rawMarkdownUrl = useMemo(() => {
-    if (!pathname) {
+  const perPageMdUrl = useMemo(() => {
+    const pagePath = asPath ?? pathname;
+    if (!pagePath) {
       return null;
     }
-
-    const filePath = getPageMdxFilePath(pathname);
-    if (!filePath) {
-      return null;
-    }
-
-    return githubRawUrl(pathname);
-  }, [pathname]);
+    const cleanPath = pagePath.replace(/\/$/, '');
+    return `${cleanPath}.md`;
+  }, [asPath, pathname]);
 
   const handleCopyMarkdown = useCallback(async () => {
-    if (!rawMarkdownUrl) {
+    if (!perPageMdUrl) {
       return;
     }
 
     try {
-      const response = await fetch(rawMarkdownUrl);
+      const response = await fetch(perPageMdUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch markdown: ${response.status}`);
       }
@@ -49,14 +44,11 @@ export function MarkdownActionsDropdown() {
         throw new Error('Clipboard API unavailable');
       }
 
-      const preparedMarkdown = await prepareMarkdownForCopyAsync(markdown, {
-        path: asPath ?? pathname ?? '',
-      });
-      await navigator.clipboard.writeText(preparedMarkdown);
+      await navigator.clipboard.writeText(markdown);
     } catch (error) {
       console.error('Unable to copy markdown content', error);
     }
-  }, [rawMarkdownUrl, asPath, pathname]);
+  }, [perPageMdUrl]);
 
   const pagePath = asPath ?? pathname;
 
@@ -88,13 +80,23 @@ export function MarkdownActionsDropdown() {
 
   const dropdownItems = [];
 
-  if (rawMarkdownUrl) {
+  if (perPageMdUrl) {
     dropdownItems.push(
       <Dropdown.Item
         key="copy-markdown"
         label="Copy Markdown"
         Icon={Copy04Icon}
         onSelect={handleCopyMarkdown}
+      />
+    );
+
+    dropdownItems.push(
+      <Dropdown.Item
+        key="view-markdown"
+        label="View Markdown"
+        Icon={MarkdownIcon}
+        href={perPageMdUrl}
+        openInNewTab
       />
     );
   }

@@ -1,0 +1,75 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { home, general, eas, learn, reference } from '../../../constants/navigation.js';
+import { OUTPUT_DIRECTORY_NAME } from '../utils.js';
+import { processPage } from './process-page.js';
+
+function collectPageHrefs(node) {
+  const hrefs = [];
+  if (node.type === 'page' && node.href && !node.href.startsWith('http')) {
+    hrefs.push(node.href);
+  }
+  if (node.children) {
+    for (const child of node.children) {
+      hrefs.push(...collectPageHrefs(child));
+    }
+  }
+  return hrefs;
+}
+
+function findIndexFiles(dir, basePath = '') {
+  const hrefs = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const subDir = path.join(dir, entry.name);
+      const subPath = basePath ? `${basePath}/${entry.name}` : `/${entry.name}`;
+      hrefs.push(...findIndexFiles(subDir, subPath));
+    } else if (entry.name === 'index.mdx' && basePath) {
+      hrefs.push(basePath);
+    }
+  }
+
+  return hrefs;
+}
+
+export async function generateGenerateMd() {
+  const allReferenceSections = Object.values(reference || {}).flat();
+  const allSections = [...home, ...general, ...eas, ...learn, ...allReferenceSections].filter(
+    Boolean
+  );
+  const navigationHrefs = allSections.flatMap(collectPageHrefs);
+  const indexHrefs = findIndexFiles('pages');
+  const hrefs = [...new Set([...navigationHrefs, ...indexHrefs])];
+  let count = 0;
+
+  for (const href of hrefs) {
+    let filePath = path.join('pages', href + '.mdx');
+    if (!fs.existsSync(filePath)) {
+      filePath = path.join('pages', href, 'index.mdx');
+      if (!fs.existsSync(filePath)) {
+        continue;
+      }
+    }
+
+    let markdown = await processPage(filePath, href);
+    if (!markdown) {
+      continue;
+    }
+
+    markdown = markdown.replace(/(\n---)+\s*$/, '');
+
+    const sitemap = ['---', '', '### Sitemap', '', '[Overview of all docs pages](/llms.txt)'].join(
+      '\n'
+    );
+
+    const outputPath = path.join(OUTPUT_DIRECTORY_NAME, href + '.md');
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, markdown + '\n\n' + sitemap, 'utf-8');
+    count++;
+  }
+
+  console.log(` \x1b[1m\x1b[32m✓\x1b[0m Generated ${count} markdown files`);
+}
