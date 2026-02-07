@@ -312,10 +312,12 @@ PODS:
   - ExpoModulesJSI (55.0.7):
     - hermes-engine
     - React-Core
+    - React-runtimescheduler
     - ReactCommon
   - ExpoModulesJSI/Tests (55.0.7):
     - hermes-engine
     - React-Core
+    - React-runtimescheduler
     - ReactCommon
   - ExpoModulesTestCore (55.0.1):
     - ExpoModulesCore
@@ -4685,7 +4687,7 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: 1933325111834d148e912c8d5f441a9342c67282
   ExpoMeshGradient: 446a2a4593c04d443331b2a733e2095fc0131974
   ExpoModulesCore: edefc4695d2ac4d3866bc4ae056aec8dce1d7f29
-  ExpoModulesJSI: e0daca70b42ae5f0fb4b93c0b6cfe8865b590c36
+  ExpoModulesJSI: dde7f0509a0b257ed10edf195cef77fcbbd0029a
   ExpoModulesTestCore: 266af467667c499db565ae20297511ccd3a1106c
   ExpoNetwork: 3c3dc905e4228f61c79fc2bf8728e3e57c1fa6fa
   ExpoNotifications: 510c8f72ea329f09433fd54a58cea2ec51eb57fb
