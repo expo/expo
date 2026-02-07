@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "start": "expo start --port 80",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml",
-    "download-snack-runtime": "node scripts/download-snack-runtime.js --platform ios"
+    "download-snack-runtime": "node scripts/download-snack-runtime.js --platform ios",
+    "check-snack-runtime-deps": "node scripts/check-snack-runtime-deps.js",
+    "bump-snack-runtime-deps": "node scripts/bump-snack-runtime-deps.js"
   },
   "author": "Expo",
   "license": "MIT",

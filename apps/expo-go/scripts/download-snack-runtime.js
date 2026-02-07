@@ -17,6 +17,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const { checkSnackRuntimeDeps, formatMismatchTable } = require('./snackRuntimeDepsUtils');
 
 const SNACK_PROJECT_ID = '933fd9c0-1666-11e7-afca-d980795c5824';
 const UPDATE_GROUP_ID = 'c9fb9b03-1a02-471e-b0e0-bcce08392ce1';
@@ -460,10 +461,31 @@ Set \`USE_EMBEDDED_SNACK_RUNTIME\` to \`true\` in \`EXBuildConstants.plist\`.
 // ---------------------------------------------------------------------------
 
 async function main() {
-  const localPath = process.argv[2];
+  const args = process.argv.slice(2);
+  const force = args.includes('-f');
+  const localPath = args.find((a) => a !== '-f');
 
   try {
     if (localPath) {
+      // Check dependency versions before building
+      const { mismatches } = checkSnackRuntimeDeps(localPath);
+      if (mismatches.length > 0 && !force) {
+        console.error(
+          `Snack runtime has ${mismatches.length} dependency version mismatch(es) with bundledNativeModules.json:\n`
+        );
+        console.error(formatMismatchTable(mismatches));
+        console.error(
+          '\nRun `yarn bump-snack-runtime-deps <snack-runtime-path>` to fix, or use -f to ignore.'
+        );
+        process.exit(1);
+      }
+
+      if (mismatches.length > 0 && force) {
+        console.warn(
+          `Warning: ${mismatches.length} dependency version mismatch(es) (ignored with -f)\n`
+        );
+      }
+
       console.log(`Building snack runtime from local source: ${localPath}\n`);
       await buildLocalSnackRuntime(localPath);
     } else {
