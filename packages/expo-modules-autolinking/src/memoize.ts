@@ -2,19 +2,18 @@
 // However, memoizing them naively means that we may hold on to the cached values for too long.
 // Instead, we wrap all calls with a `Memoizer`.
 //
-// The Memoizer uses an AsyncLocalStorage to distribute itself, and provides a cached
-// `.call` method that uses its `Map` to return cached values. Since the `Memoizer` is
-// created and held on to for only as long as we need it, it's freed after the relevant
-// scope.
+// This could use AsyncLocalStorage, but those are expensive. Instead, we only share one
+// cache for all calls, and assume that all memoizable return values may be memoized and
+// shared globally.
+//
+// Memoizers are created once per run, and then shared between all subsequent calls. They
+// are freed when their usage count to zero, after one tick.
 //
 // NOTE: If you need to debug whether the memoizer is properly used, change when the
 // `console.warn` appears to see if you have any uncached calls. We allow uncached calls
 // for backwards-compatibility, since, at worst, we have an uncached call, if the
 // Memoizer is missing.
 
-import { AsyncLocalStorage } from 'node:async_hooks';
-
-const memoizeContext = new AsyncLocalStorage<Memoizer>();
 const MAX_SIZE = 5_000;
 
 export interface Memoizer {
@@ -35,6 +34,7 @@ export interface MemoizableAsyncFn<Args extends any[] = any[], T = any> {
 }
 
 let currentMemoizer: Memoizer | undefined;
+let currentContexts = 0;
 
 /** Wraps a function in a memoizer, using the memoizer async local storage */
 export function memoize<Args extends any[], T, Fn extends MemoizableAsyncFn<Args, T>>(
@@ -42,8 +42,7 @@ export function memoize<Args extends any[], T, Fn extends MemoizableAsyncFn<Args
 ): MemoizableAsyncFn<Args, T> {
   return (input: string, ...args: Args) => {
     // We either use the current memoizer (sync) or the memoize context (async)
-    const memoizer = currentMemoizer ?? memoizeContext.getStore();
-    if (!memoizer) {
+    if (!currentMemoizer) {
       if (process.env.NODE_ENV === 'test') {
         console.warn(
           `expo-modules-autolinking: Memoized function called without memoize context (${fn.name})\n` +
@@ -52,12 +51,17 @@ export function memoize<Args extends any[], T, Fn extends MemoizableAsyncFn<Args
       }
       return fn(input, ...args);
     }
-    return memoizer.call(fn, input, ...args);
+    return currentMemoizer.call(fn, input, ...args);
   };
 }
 
 /** Creates a memoizer that can provide a cache to memoized functions */
 export function createMemoizer(): Memoizer {
+  // If we already have a memoizer, reuse it, since we can share them globally
+  if (currentMemoizer) {
+    return currentMemoizer;
+  }
+
   const cacheByFn = new Map<MemoizableAsyncFn, Map<string, any>>();
   const memoizer: Memoizer = {
     async call(fn, input, ...args) {
@@ -67,16 +71,7 @@ export function createMemoizer(): Memoizer {
         cacheByFn.set(fn, cache);
       }
       if (!cache.has(input)) {
-        let promise: Promise<any>;
-        try {
-          // We provide the current memoizer synchronously, so we're able
-          // to use `.call()` on functions directly
-          currentMemoizer = memoizer;
-          promise = fn(input, ...args);
-        } finally {
-          currentMemoizer = undefined;
-        }
-        const value = await promise;
+        const value = await memoizer.withMemoizer(fn, input, ...args);
         if (cache.size > MAX_SIZE) {
           cache.clear();
         }
@@ -85,8 +80,19 @@ export function createMemoizer(): Memoizer {
       }
       return cache.get(input);
     },
-    withMemoizer<R, TArgs extends any[] = []>(fn: (...args: TArgs) => R, ...args: TArgs) {
-      return memoizeContext.run(memoizer, fn, ...args);
+    async withMemoizer<R, TArgs extends any[] = []>(fn: (...args: TArgs) => R, ...args: TArgs) {
+      currentMemoizer = memoizer;
+      currentContexts++;
+      try {
+        return await fn(...args);
+      } finally {
+        if (currentContexts > 0) {
+          currentContexts--;
+        }
+        if (currentContexts === 0) {
+          currentMemoizer = undefined;
+        }
+      }
     },
   };
   return memoizer;
