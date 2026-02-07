@@ -19,6 +19,10 @@ data class Version(
     return major * 10000 + minor * 100 + patch
   }
 
+  override fun toString(): String {
+    return "$major.$minor.$patch"
+  }
+
   companion object {
     fun fromString(value: String): Version {
       // strip pre-release

@@ -29,8 +29,6 @@ buildscript {
   }
 }
 
-def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
-
 group = 'host.exp.exponent'
 version = '55.0.0-preview.9'
 
