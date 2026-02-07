@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { ComponentType } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
+import { PresentationDetent } from '../../swift-ui/modifiers';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -27,10 +28,17 @@ export type BottomSheetProps = {
    * @default false
    */
   fitToContents?: boolean;
+  detents?: PresentationDetent[];
+  selectedDetent?: PresentationDetent;
+  onSelectedDetentChange?: (detent: PresentationDetent) => void;
 } & CommonViewModifierProps;
 
-type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsPresentedChange'> & {
+type NativeBottomSheetProps = Omit<
+  BottomSheetProps,
+  'onIsPresentedChange' | 'onSelectedDetentChange'
+> & {
   onIsPresentedChange: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
+  onSelectedDetentChange?: (event: NativeSyntheticEvent<{ detent: PresentationDetent }>) => void;
 };
 
 const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNativeView(
@@ -46,6 +54,9 @@ function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetPr
     ...restProps,
     onIsPresentedChange: ({ nativeEvent: { isPresented } }) => {
       props?.onIsPresentedChange?.(isPresented);
+    },
+    onSelectedDetentChange: ({ nativeEvent: { detent } }) => {
+      props?.onSelectedDetentChange?.(detent);
     },
   };
 }

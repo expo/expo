@@ -1,3 +1,4 @@
+import { PresentationDetent } from '../../swift-ui/modifiers';
 import { type CommonViewModifierProps } from '../types';
 export type BottomSheetProps = {
     /**
@@ -21,6 +22,9 @@ export type BottomSheetProps = {
      * @default false
      */
     fitToContents?: boolean;
+    detents?: PresentationDetent[];
+    selectedDetent?: PresentationDetent;
+    onSelectedDetentChange?: (detent: PresentationDetent) => void;
 } & CommonViewModifierProps;
 /**
  * `BottomSheet` presents content from the bottom of the screen.
