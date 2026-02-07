@@ -396,7 +396,7 @@ export const resolveTypeName = (
     } else if (type === 'intrinsic') {
       return name ?? 'undefined';
     } else if (type === 'rest' && elementType) {
-      return `...${resolveTypeName(elementType, sdkVersion)}`;
+      return <>...{resolveTypeName(elementType, sdkVersion)}</>;
     } else if (value === null) {
       return 'null';
     }
