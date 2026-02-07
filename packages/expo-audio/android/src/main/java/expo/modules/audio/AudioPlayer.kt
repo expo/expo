@@ -18,7 +18,9 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedRef
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -314,9 +316,12 @@ class AudioPlayer(
     }
   }
 
+  @OptIn(DelicateCoroutinesApi::class)
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
-    appContext?.mainQueue?.launch {
+    // Run on global scope (not appContext.mainQueue) so that reloading doesn't cancel the release process
+    // https://github.com/expo/expo/blob/cdf592a7fea56fc01b0149e9b2e5dbd294bcdc4c/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt#L277-L279
+    GlobalScope.launch(Dispatchers.Main) {
       if (isActiveForLockScreen) {
         AudioControlsService.clearSession()
       }
