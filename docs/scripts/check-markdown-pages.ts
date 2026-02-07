@@ -17,13 +17,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { checkPage } from './generate-markdown-pages-utils.ts';
+import { checkPage, findHtmlPages } from './generate-markdown-pages-utils.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
-
-// Minimum expected number of markdown pages. If fewer are generated, something
-// is likely broken in the build pipeline. Update this when the docs grow.
-const MIN_EXPECTED_PAGES = 100;
 
 if (!fs.existsSync(OUT_DIR)) {
   console.error('out/ directory not found. Run `next build` first.');
@@ -44,6 +40,7 @@ function findMarkdownPages(dir: string): string[] {
   return results;
 }
 
+const htmlFiles = findHtmlPages(OUT_DIR);
 const mdFiles = findMarkdownPages(OUT_DIR);
 
 if (mdFiles.length === 0) {
@@ -51,9 +48,9 @@ if (mdFiles.length === 0) {
   process.exit(1);
 }
 
-if (mdFiles.length < MIN_EXPECTED_PAGES) {
+if (mdFiles.length < htmlFiles.length) {
   console.error(
-    `\n \x1b[1m\x1b[31m✗\x1b[0m Only ${mdFiles.length} markdown pages found (expected at least ${MIN_EXPECTED_PAGES}). Possible content loss.`
+    `\n \x1b[1m\x1b[31m✗\x1b[0m Only ${mdFiles.length} markdown pages found for ${htmlFiles.length} HTML pages. Possible content loss.`
   );
   process.exit(1);
 }

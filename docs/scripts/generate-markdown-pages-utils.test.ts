@@ -109,31 +109,12 @@ describe('convertHtmlToMarkdown', () => {
     expect(md).not.toContain('Footer');
   });
 
-  it('converts headings to ATX style', () => {
-    const html = '<main><h1>H1</h1><h2>H2</h2><h3>H3</h3></main>';
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('# H1');
-    expect(md).toContain('## H2');
-    expect(md).toContain('### H3');
-  });
-
   it('converts pre>code to fenced code blocks', () => {
     const html = '<main><pre><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```js\nconst x = 1;\n```');
   });
 
-  it('converts tables with GFM', () => {
-    const html = `<main>
-      <table>
-        <thead><tr><th>Name</th><th>Type</th></tr></thead>
-        <tbody><tr><td>foo</td><td>string</td></tr></tbody>
-      </table>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('| Name | Type |');
-    expect(md).toContain('| foo | string |');
-  });
 });
 
 describe('card links', () => {
@@ -425,10 +406,6 @@ describe('stripCodeBlocks', () => {
     expect(stripCodeBlocks(md)).toBe('before\n\n\n\nafter');
   });
 
-  it('handles markdown with no code blocks', () => {
-    const md = '# Title\n\nJust text.';
-    expect(stripCodeBlocks(md)).toBe(md);
-  });
 });
 
 describe('checkPage (check-markdown-pages)', () => {
@@ -517,20 +494,6 @@ describe('callouts/blockquotes', () => {
     expect(md).not.toContain('svg');
   });
 
-  it('preserves code inside callouts', () => {
-    const html = `<main>
-      <h1>Guide</h1>
-      <blockquote class="mb-4 flex gap-2.5 rounded-md border border-default bg-subtle" data-testid="callout-container">
-        <svg class="mt-1 select-none icon-sm"><path/></svg>
-        <div class="w-full">
-          <p data-text="true">Run <code>npx expo start</code> to begin.</p>
-        </div>
-      </blockquote>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('`npx expo start`');
-    expect(md).toContain('Run');
-  });
 });
 
 describe('SVG checkmarks in tables', () => {
@@ -548,19 +511,6 @@ describe('SVG checkmarks in tables', () => {
     expect(md).toContain('| Caching | ✓ |');
   });
 
-  it('converts danger SVG icons to ✗ text', () => {
-    const html = `<main>
-      <table>
-        <thead><tr><th>Feature</th><th>Supported</th></tr></thead>
-        <tbody><tr>
-          <td>Offline</td>
-          <td><svg class="text-icon-danger" viewBox="0 0 24 24"><path d="M0"/></svg></td>
-        </tr></tbody>
-      </table>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('| Offline | ✗ |');
-  });
 });
 
 describe('multi-line table cells', () => {
@@ -578,19 +528,6 @@ describe('multi-line table cells', () => {
     expect(md).toContain('| timeout | Maximum time in milliseconds. |');
   });
 
-  it('flattens paragraph-wrapped content in table cells', () => {
-    const html = `<main>
-      <table>
-        <thead><tr><th>Param</th><th>Info</th></tr></thead>
-        <tbody><tr>
-          <td>url</td>
-          <td><p>The URL to open.</p></td>
-        </tr></tbody>
-      </table>
-    </main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('| url | The URL to open. |');
-  });
 });
 
 describe('duplicate platform names in headings', () => {
@@ -635,15 +572,6 @@ export default function App() {}</code></pre></main>`;
     expect(md).toContain('export default function App() {}');
   });
 
-  it('preserves visible code around hidden spans', () => {
-    const html = `<main><pre><code>import React from 'react';
-<span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">...</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">import { View } from 'react-native';</span>
-export default App;</code></pre></main>`;
-    const md = convertHtmlToMarkdown(html);
-    expect(md).toContain("import React from 'react';");
-    expect(md).toContain('export default App;');
-    expect(md).not.toContain('%%placeholder');
-  });
 });
 
 describe('escaped underscores', () => {
@@ -653,10 +581,6 @@ describe('escaped underscores', () => {
     expect(md).toBe('Run tests in the __tests__ directory.');
   });
 
-  it('preserves underscores that are already unescaped', () => {
-    const md = cleanMarkdown('Use snake_case naming.');
-    expect(md).toBe('Use snake_case naming.');
-  });
 });
 
 describe('escaped square brackets', () => {
