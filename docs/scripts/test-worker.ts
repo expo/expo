@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
 
@@ -39,7 +40,7 @@ function waitForReady(process: ChildProcess, timeoutMs = 30000): Promise<void> {
   });
 }
 
-async function cleanup(): Promise<void> {
+async function cleanupAsync(): Promise<void> {
   if (wranglerProcess) {
     wranglerProcess.kill();
     wranglerProcess = null;
@@ -80,7 +81,7 @@ function setupTestDirectory(): void {
   console.log('✓ Test directory created');
 }
 
-async function startWrangler(): Promise<void> {
+async function startWranglerAsync(): Promise<void> {
   console.log('\n--- Starting wrangler pages dev ---');
 
   wranglerProcess = spawn('wrangler', ['pages', 'dev', TEST_DIR, '--port', String(PORT)], {
@@ -93,7 +94,7 @@ async function startWrangler(): Promise<void> {
   console.log('✓ Wrangler started');
 }
 
-async function testHttpResponse(): Promise<void> {
+async function testHttpResponseAsync(): Promise<void> {
   console.log('\n--- Testing HTTP responses ---');
 
   const response = await fetch(BASE_URL);
@@ -103,7 +104,7 @@ async function testHttpResponse(): Promise<void> {
   console.log(`✓ Server responds with HTTP ${response.status}`);
 }
 
-async function testDirectMarkdownAccess(): Promise<void> {
+async function testDirectMarkdownAccessAsync(): Promise<void> {
   console.log('\n--- Testing direct .md file access (bypasses worker) ---');
 
   const response = await fetch(`${BASE_URL}/test-page/index.md`);
@@ -120,7 +121,7 @@ async function testDirectMarkdownAccess(): Promise<void> {
   console.log('✓ Direct .md file request serves content correctly');
 }
 
-async function testMarkdownContentNegotiation(): Promise<void> {
+async function testMarkdownContentNegotiationAsync(): Promise<void> {
   console.log('\n--- Testing markdown content negotiation ---');
 
   // Without Accept: text/markdown, should serve HTML
@@ -137,7 +138,7 @@ async function testMarkdownContentNegotiation(): Promise<void> {
     headers: { Accept: 'text/markdown' },
   });
 
-  const mdContentType = mdResponse.headers.get('content-type') || '';
+  const mdContentType = mdResponse.headers.get('content-type') ?? '';
   const mdBody = await mdResponse.text();
 
   if (!mdBody.includes('Test Markdown Content')) {
@@ -151,7 +152,7 @@ async function testMarkdownContentNegotiation(): Promise<void> {
   console.log('✓ Accept: text/markdown request returns correct Content-Type');
 }
 
-async function testMarkdownNotFound(): Promise<void> {
+async function testMarkdownNotFoundAsync(): Promise<void> {
   console.log('\n--- Testing markdown 404 responses ---');
 
   // Page with HTML but no .md should 404 when markdown is requested
@@ -175,24 +176,37 @@ async function testMarkdownNotFound(): Promise<void> {
   console.log('✓ Nonexistent page returns 404');
 }
 
-async function main(): Promise<void> {
+async function testHtmlNotFoundAsync(): Promise<void> {
+  console.log('\n--- Testing HTML 404 responses ---');
+
+  // Nonexistent page without Accept: text/markdown should not 500
+  const response = await fetch(`${BASE_URL}/nonexistent-page`);
+
+  if (response.status >= 500) {
+    throw new Error(`Server error for nonexistent page: HTTP ${response.status}`);
+  }
+  console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
+}
+
+async function mainAsync(): Promise<void> {
   console.log('=== Testing Cloudflare Pages Worker and Routes ===');
 
   try {
     setupTestDirectory();
-    await startWrangler();
-    await testHttpResponse();
-    await testDirectMarkdownAccess();
-    await testMarkdownContentNegotiation();
-    await testMarkdownNotFound();
+    await startWranglerAsync();
+    await testHttpResponseAsync();
+    await testDirectMarkdownAccessAsync();
+    await testMarkdownContentNegotiationAsync();
+    await testMarkdownNotFoundAsync();
+    await testHtmlNotFoundAsync();
 
     console.log('\n=== All tests passed! ===');
   } catch (error) {
     console.error('\n✗ Test failed:', error instanceof Error ? error.message : error);
     process.exitCode = 1;
   } finally {
-    await cleanup();
+    await cleanupAsync();
   }
 }
 
-main();
+void mainAsync();
