@@ -44,6 +44,23 @@ function getBundleEncoding(encoding: string | undefined): OutputOptions['bundleE
     : undefined;
 }
 
+/**
+ * Resolve the entry file for Metro based on the provided `--entry-file` flag.
+ * React Native on Windows uses file paths relative to the current working directory, while React Native on iOS uses absolute file paths.
+ * This is done to work around the unescaped `cmd` file paths possibly containing spaces, and breaking the command execution.
+ * Because of this, we only support absolute file paths, or paths relative to the current working directory.
+ * @note Entry files pointing to modules, e.g. `expo-router/entry` should be resolved as either absolute or relative paths.
+ * @see https://github.com/facebook/react-native/commit/bb02ccf13f76f46b8572e2a85d578fd8d4fd9467
+ */
+function ensureAbsoluteEntryFile(entryFile: string | undefined) {
+  // Windows may pass file paths relative to the current working directory
+  if (entryFile && !path.isAbsolute(entryFile)) {
+    return path.join(process.cwd(), entryFile);
+  }
+
+  return entryFile ?? null;
+}
+
 export function resolveOptions(
   projectRoot: string,
   args: arg.Result<arg.Spec>,
@@ -60,7 +77,8 @@ export function resolveOptions(
   const bundleOutput = args['--bundle-output'];
 
   const commonOptions = {
-    entryFile: args['--entry-file'] ?? resolveEntryPoint(projectRoot, { platform }),
+    entryFile:
+      ensureAbsoluteEntryFile(args['--entry-file']) ?? resolveEntryPoint(projectRoot, { platform }),
     assetCatalogDest: args['--asset-catalog-dest'],
     platform,
     transformer: args['--transformer'],
@@ -143,7 +161,8 @@ export function resolveEagerOptionsAsync(
     eager: options.eager ?? true,
     bundleOutput,
     assetsDest,
-    entryFile: options.entryFile ?? resolveEntryPoint(projectRoot, { platform }),
+    entryFile:
+      ensureAbsoluteEntryFile(options.entryFile) ?? resolveEntryPoint(projectRoot, { platform }),
     resetCache: !!options.resetCache,
     platform,
     minify,
