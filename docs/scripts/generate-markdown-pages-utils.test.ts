@@ -31,6 +31,41 @@ describe('cleanHtml', () => {
     expect($('main').text()).toContain('text');
   });
 
+  it('removes empty divs inside headings after SVG removal', () => {
+    const html = [
+      '<main>',
+      '<h2>',
+      '<div class="rounded-lg"><svg viewBox="0 0 24 24"><path/></svg></div>',
+      'Launch to app stores',
+      '</h2>',
+      '</main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('h2').text().trim()).toBe('Launch to app stores');
+    expect($('h2').find('div').length).toBe(0);
+  });
+
+  it('converts data-md="link" elements to plain links', () => {
+    const html = [
+      '<main>',
+      '<a data-md="link" href="https://launch.expo.dev/">',
+      '<span>Try Launch</span>',
+      '</a>',
+      '</main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    const result = $('main').html()!;
+    expect(result).toContain('<a href="https://launch.expo.dev/">Try Launch</a>');
+  });
+
+  it('removes data-md="link" elements with no href', () => {
+    const $ = cheerio.load('<main><a data-md="link"><span>No Link</span></a></main>');
+    cleanHtml($, $('main'));
+    expect($('main').text().trim()).toBe('');
+  });
+
   it('removes page title buttons via data-md="skip"', () => {
     const $ = cheerio.load(`<main>
       <h1>Title</h1>
@@ -71,6 +106,11 @@ describe('cleanHtml', () => {
 });
 
 describe('cleanMarkdown', () => {
+  it('removes empty headings', () => {
+    expect(cleanMarkdown('## Content\n\n## \n\nMore text')).toBe('## Content\n\nMore text');
+    expect(cleanMarkdown('###\n\nContent')).toBe('Content');
+  });
+
   it('removes anchor links in headings', () => {
     expect(cleanMarkdown('## Installation[](#installation)')).toBe('## Installation');
   });
@@ -138,6 +178,42 @@ describe('convertHtmlToMarkdown', () => {
     const html = '<main><pre><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```js\nconst x = 1;\n```');
+  });
+});
+
+describe('homepage buttons (data-md="link")', () => {
+  it('converts homepage action buttons to markdown links', () => {
+    const html = [
+      '<main>',
+      '<h2>Launch to app stores</h2>',
+      '<p>Ship apps with zero config.</p>',
+      '<a data-md="link" href="https://launch.expo.dev/">',
+      'Try Launch',
+      '<svg viewBox="0 0 24 24"><path/></svg>',
+      '</a>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('## Launch to app stores');
+    expect(md).toContain('Ship apps with zero config.');
+    expect(md).toContain('[Try Launch](https://launch.expo.dev/)');
+  });
+
+  it('preserves heading text when icon wrapper div becomes empty after SVG removal', () => {
+    const html = [
+      '<main>',
+      '<h2>',
+      '<div class="rounded-lg p-2">',
+      '<svg viewBox="0 0 24 24"><path/></svg>',
+      '</div>',
+      'Launch to app stores',
+      '</h2>',
+      '<p>Description text.</p>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('## Launch to app stores');
+    expect(md).toContain('Description text.');
   });
 });
 

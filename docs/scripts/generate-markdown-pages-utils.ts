@@ -135,6 +135,33 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   });
   main.find('svg').remove();
 
+  // Remove empty block elements inside headings (leftover from icon wrappers after SVG removal).
+  // A <div> inside <h2> is invalid HTML and breaks Turndown — it splits the heading, leaving
+  // an empty "## " and the heading text as a standalone paragraph.
+  main.find('h1, h2, h3, h4, h5, h6').each((_, el) => {
+    $(el)
+      .find('div')
+      .each((_, div) => {
+        if (!$(div).text().trim()) {
+          $(div).remove();
+        }
+      });
+  });
+
+  // Convert data-md="link" elements (HomeButton) to simple <a> tags so Turndown produces
+  // clean inline links. These are action buttons on the homepage that link to external
+  // services or internal tutorials. Without this, the links are lost in card layouts.
+  main.find('[data-md="link"]').each((_, el) => {
+    const $el = $(el);
+    const href = $el.attr('href');
+    const text = $el.text().trim();
+    if (href && text) {
+      $el.replaceWith(`<p><a href="${href}">${text}</a></p>`);
+    } else {
+      $el.remove();
+    }
+  });
+
   // Remove hidden code spans that contain %%placeholder%% markers and collapsed imports.
   // These leak into text content if not removed before turndown processes the HTML.
   main.find('.code-hidden').remove();
@@ -400,6 +427,8 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
 export function cleanMarkdown(markdown: string): string {
   return (
     markdown
+      // Remove empty headings (from sections whose only content was visual/interactive)
+      .replace(/^#{1,6}\s*$/gm, '')
       // Remove anchor links in headings: ## Title[](#title) → ## Title
       .replace(/(#{1,6}\s+.+?)\[]\(#[^)]+\)/g, '$1')
       // Remove empty links: [](url) — leftover from icon-only links after SVG removal
