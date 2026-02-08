@@ -595,3 +595,48 @@ it('can set params for dynamic routes using href when nested stack is used', () 
   expect(screen.getByTestId('id-index')).toBeVisible();
   expect(screen.getByTestId('id-index')).toHaveTextContent('1234');
 });
+
+it('propagates params inside tabs', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '[id]/_layout': () => <Tabs />,
+      '[id]/index': function Index() {
+        const params = useLocalSearchParams();
+        return <Text testID="index">{JSON.stringify(params)}</Text>;
+      },
+      '[id]/two': function Two() {
+        const params = useLocalSearchParams();
+        return <Text testID="two">{JSON.stringify(params)}</Text>;
+      },
+      '[id]/three': function Three() {
+        const params = useLocalSearchParams();
+        return <Text testID="three">{JSON.stringify(params)}</Text>;
+      },
+    },
+    {
+      initialUrl: '/test/',
+    }
+  );
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('index').children).toEqual(['{"id":"test"}']);
+
+  expect(screen.getByLabelText('index, tab, 1 of 3')).toBeVisible();
+  expect(screen.getByLabelText('two, tab, 2 of 3')).toBeVisible();
+  expect(screen.getByLabelText('three, tab, 3 of 3')).toBeVisible();
+
+  act(() => fireEvent.press(screen.getByLabelText('two, tab, 2 of 3')));
+
+  expect(screen.getByTestId('two')).toBeVisible();
+  expect(screen.getByTestId('two').children).toEqual(['{"id":"test"}']);
+
+  act(() => fireEvent.press(screen.getByLabelText('three, tab, 3 of 3')));
+
+  expect(screen.getByTestId('three')).toBeVisible();
+  expect(screen.getByTestId('three').children).toEqual(['{"id":"test"}']);
+
+  act(() => fireEvent.press(screen.getByLabelText('index, tab, 1 of 3')));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.getByTestId('index').children).toEqual(['{"id":"test"}']);
+});
