@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import { taskAll } from '../../concurrency';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
 import { scanFilesRecursively } from '../../utils';
 
@@ -65,59 +66,57 @@ export async function resolveModuleAsync(
     };
   }
 
-  const projects = await Promise.all(
-    androidProjects.map(async (project) => {
-      const projectPath = path.join(revision.path, project.path);
+  const projects = await taskAll(androidProjects, async (project) => {
+    const projectPath = path.join(revision.path, project.path);
 
-      const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
-        const projectName = `${defaultProjectName}$${aarProject.name}`;
-        const projectDir = path.join(projectPath, 'build', projectName);
-        return {
-          name: projectName,
-          aarFilePath: path.join(revision.path, aarProject.aarFilePath),
-          projectDir,
-        };
-      });
+    const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
+      const projectName = `${defaultProjectName}$${aarProject.name}`;
+      const projectDir = path.join(projectPath, 'build', projectName);
+      return {
+        name: projectName,
+        aarFilePath: path.join(revision.path, aarProject.aarFilePath),
+        projectDir,
+      };
+    });
 
-      const { publication } = project;
-      const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
-        ? path.join(revision.path, project.shouldUsePublicationScriptPath)
-        : undefined;
+    const { publication } = project;
+    const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+      ? path.join(revision.path, project.shouldUsePublicationScriptPath)
+      : undefined;
 
-      const packages = new Set<string>();
-      for await (const file of scanFilesRecursively(projectPath)) {
-        if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
-          continue;
-        }
-        const fileContent = await fs.promises.readFile(file.path, 'utf8');
+    const packages = new Set<string>();
+    for await (const file of scanFilesRecursively(projectPath)) {
+      if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
+        continue;
+      }
+      const fileContent = await fs.promises.readFile(file.path, 'utf8');
 
-        // Very naive check to skip non-expo packages
-        if (
-          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
-        ) {
-          continue;
-        }
-
-        const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
-
-        if (classPathMatches) {
-          const basename = path.basename(file.name, path.extname(file.name));
-          packages.add(`${classPathMatches[1]}.${basename}`);
-        }
+      // Very naive check to skip non-expo packages
+      if (
+        !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
+      ) {
+        continue;
       }
 
-      return {
-        name: project.name,
-        sourceDir: projectPath,
-        modules: project.modules ?? [],
-        services: project.services ?? [],
-        packages: [...packages].sort((a, b) => a.localeCompare(b)),
-        ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
-        ...(publication ? { publication } : {}),
-        ...(aarProjects?.length > 0 ? { aarProjects } : {}),
-      };
-    })
-  );
+      const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
+
+      if (classPathMatches) {
+        const basename = path.basename(file.name, path.extname(file.name));
+        packages.add(`${classPathMatches[1]}.${basename}`);
+      }
+    }
+
+    return {
+      name: project.name,
+      sourceDir: projectPath,
+      modules: project.modules ?? [],
+      services: project.services ?? [],
+      packages: [...packages].sort((a, b) => a.localeCompare(b)),
+      ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
+      ...(publication ? { publication } : {}),
+      ...(aarProjects?.length > 0 ? { aarProjects } : {}),
+    };
+  });
 
   const coreFeatures = revision.config?.coreFeatures() ?? [];
 

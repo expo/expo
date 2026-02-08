@@ -6,6 +6,7 @@ import {
   DependencyResolutionSource,
 } from './types';
 import { defaultShouldIncludeDependency, mergeResolutionResults } from './utils';
+import { taskAll } from '../concurrency';
 import { type PackageJson, loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 
 declare module 'node:module' {
@@ -93,10 +94,9 @@ async function resolveDependencies(
     return null;
   };
 
-  const modules = await Promise.all(
-    Object.keys(dependencies)
-      .filter((dependencyName) => shouldIncludeDependency(dependencyName))
-      .map((dependencyName) => resolveDependency(dependencyName))
+  const modules = await taskAll(
+    Object.keys(dependencies).filter((dependencyName) => shouldIncludeDependency(dependencyName)),
+    (dependencyName) => resolveDependency(dependencyName)
   );
 
   return modules.filter((resolution) => resolution != null);
@@ -151,9 +151,7 @@ export async function scanDependenciesRecursively(
     }
 
     if (depth + 1 < maxDepth) {
-      const childResults = await Promise.all(
-        modules.map((resolution) => recurse(resolution, depth + 1))
-      );
+      const childResults = await taskAll(modules, (resolution) => recurse(resolution, depth + 1));
       return mergeResolutionResults(childResults, searchResults);
     } else {
       return searchResults;

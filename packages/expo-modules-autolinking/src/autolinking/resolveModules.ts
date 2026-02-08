@@ -1,4 +1,5 @@
 import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { taskAll } from '../concurrency';
 import { getLinkingImplementationForPlatform } from '../platforms';
 import type {
   ExtraDependencies,
@@ -16,8 +17,9 @@ export async function resolveModulesAsync(
   // Additional output property for Cocoapods flags
   const extraOutput = { flags: autolinkingOptions.flags };
 
-  const moduleDescriptorList = await Promise.all(
-    Object.entries(searchResults).map(async ([packageName, revision]) => {
+  const moduleDescriptorList = await taskAll(
+    Object.entries(searchResults),
+    async ([packageName, revision]) => {
       const resolvedModule = await platformLinking.resolveModuleAsync(
         packageName,
         revision,
@@ -30,7 +32,7 @@ export async function resolveModulesAsync(
             packageName: resolvedModule.packageName ?? packageName,
           }
         : null;
-    })
+    }
   );
 
   return moduleDescriptorList

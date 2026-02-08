@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.scanDependenciesInSearchPath = scanDependenciesInSearchPath;
 const fs_1 = __importDefault(require("fs"));
+const concurrency_1 = require("../concurrency");
 const utils_1 = require("./utils");
 const utils_2 = require("../utils");
 async function resolveDependency(basePath, dependencyName, shouldIncludeDependency) {
@@ -57,7 +58,7 @@ async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency =
     }
     else {
         const dirents = await fs_1.default.promises.readdir(rootPath, { withFileTypes: true });
-        await Promise.all(dirents.map(async (entry) => {
+        await (0, concurrency_1.taskAll)(dirents, async (entry) => {
             if (entry.isSymbolicLink()) {
                 const resolution = await resolveDependency(rootPath, entry.name, shouldIncludeDependency);
                 if (resolution)
@@ -89,7 +90,7 @@ async function scanDependenciesInSearchPath(rawPath, { shouldIncludeDependency =
                         resolvedDependencies.push(resolution);
                 }
             }
-        }));
+        });
     }
     for (let idx = 0; idx < resolvedDependencies.length; idx++) {
         const resolution = resolvedDependencies[idx];

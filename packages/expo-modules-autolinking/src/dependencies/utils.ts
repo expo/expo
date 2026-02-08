@@ -1,7 +1,6 @@
-import fs from 'fs';
 import path from 'path';
 
-import { memoize } from '../memoize';
+import { taskAll } from '../concurrency';
 import {
   DependencyResolutionSource,
   type DependencyResolution,
@@ -105,24 +104,22 @@ export async function filterMapResolutionResult<T extends { name: string }>(
   results: ResolutionResult,
   filterMap: (resolution: DependencyResolution) => Promise<T | null> | T | null
 ): Promise<Record<string, T>> {
-  const resolutions = await Promise.all(
-    Object.keys(results).map(async (key) => {
-      const resolution = results[key];
-      const result = resolution ? await filterMap(resolution) : null;
-      // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
-      // to see if the `searchPaths` result is not a module but another is
-      if (resolution?.source === DependencyResolutionSource.SEARCH_PATH && !result) {
-        for (let idx = 0; resolution.duplicates && idx < resolution.duplicates.length; idx++) {
-          const duplicate = resolution.duplicates[idx];
-          const duplicateResult = await filterMap({ ...resolution, ...duplicate });
-          if (duplicateResult != null) {
-            return duplicateResult;
-          }
+  const resolutions = await taskAll(Object.keys(results), async (key) => {
+    const resolution = results[key];
+    const result = resolution ? await filterMap(resolution) : null;
+    // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
+    // to see if the `searchPaths` result is not a module but another is
+    if (resolution?.source === DependencyResolutionSource.SEARCH_PATH && !result) {
+      for (let idx = 0; resolution.duplicates && idx < resolution.duplicates.length; idx++) {
+        const duplicate = resolution.duplicates[idx];
+        const duplicateResult = await filterMap({ ...resolution, ...duplicate });
+        if (duplicateResult != null) {
+          return duplicateResult;
         }
       }
-      return result;
-    })
-  );
+    }
+    return result;
+  });
   const output: Record<string, T> = Object.create(null);
   for (let idx = 0; idx < resolutions.length; idx++) {
     const resolution = resolutions[idx];
