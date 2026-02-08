@@ -59,7 +59,7 @@ In `@expo/webpack-config` all routes shared a single HTML file. This file was ba
 
 In Expo Router, there are two different rendering patterns:
 
-- **Recommended**: `web.output: "static"` which outputs a new HTML file for each route in the app. This approach lets you [dynamically generate the entire HTML template using the **app/+html.js** file](/router/web/static-rendering#root-html).
+- **Recommended**: `web.output: "static"` which outputs a new HTML file for each route in the app. This approach lets you [dynamically generate the entire HTML template using the **src/app/+html.tsx** file](/router/web/static-rendering#root-html).
 - **Not recommended**: `web.output: "single"` which outputs a single-page application. This approach lets you use `public/index.html` as the template HTML file.
 
 ## Static resources
@@ -176,7 +176,7 @@ For example, here's a possible flow for setting up Workbox. Create a new project
 
 Next, create a root HTML file for the app and add the service worker registration script:
 
-```tsx app/+html.tsx
+```tsx src/app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
@@ -283,7 +283,7 @@ Unlike `@expo/webpack-config`, Expo Router does not automatically attempt to gen
 
 You can link this in your HTML file using the `link` tag:
 
-```tsx app/+html.tsx
+```tsx src/app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
