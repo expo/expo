@@ -8,6 +8,7 @@ exports.mergeWithDuplicate = mergeWithDuplicate;
 exports.filterMapResolutionResult = filterMapResolutionResult;
 exports.mergeResolutionResults = mergeResolutionResults;
 const path_1 = __importDefault(require("path"));
+const concurrency_1 = require("../concurrency");
 const NODE_MODULES_PATTERN = `${path_1.default.sep}node_modules${path_1.default.sep}`;
 // The default dependencies we exclude don't contain dependency chains leading to autolinked modules
 function defaultShouldIncludeDependency(dependencyName) {
@@ -94,7 +95,7 @@ function mergeWithDuplicate(a, b) {
     return target;
 }
 async function filterMapResolutionResult(results, filterMap) {
-    const resolutions = await Promise.all(Object.keys(results).map(async (key) => {
+    const resolutions = await (0, concurrency_1.taskAll)(Object.keys(results), async (key) => {
         const resolution = results[key];
         const result = resolution ? await filterMap(resolution) : null;
         // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
@@ -109,7 +110,7 @@ async function filterMapResolutionResult(results, filterMap) {
             }
         }
         return result;
-    }));
+    });
     const output = Object.create(null);
     for (let idx = 0; idx < resolutions.length; idx++) {
         const resolution = resolutions[idx];
