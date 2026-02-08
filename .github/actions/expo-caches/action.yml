@@ -11,6 +11,9 @@ inputs:
   yarn-docs:
     description: 'Restore yarn /docs cache'
     required: false
+  docs-api-data:
+    description: 'Restore generated Docs API data (TypeDoc JSON)'
+    required: false
   ios-pods:
     description: 'Restore /ios pods cache'
     required: false
@@ -57,6 +60,9 @@ outputs:
   yarn-docs-hit:
     description: 'Returns true, if yarn /docs cache is up-to-date'
     value: steps.docs-modules-cache.outputs.cache-hit
+  docs-api-data-hit:
+    description: 'Returns true, if Docs API data cache is up-to-date'
+    value: steps.docs-api-data-cache.outputs.cache-hit
   ios-pods-hit:
     description: 'Returns true, if /ios pods cache is up-to-date'
     value: steps.ios-pods-cache.outputs.cache-hit
@@ -126,6 +132,14 @@ runs:
         path: docs/.eslintcache
         key: ${{ runner.os }}-docs-eslint-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/eslint.config.mjs') }}
         restore-keys: ${{ runner.os }}-docs-eslint-${{ hashFiles('docs/yarn.lock') }}-
+
+    - name: ♻️ Restore Docs API data
+      if: inputs.docs-api-data == 'true'
+      uses: actions/cache@v4
+      id: docs-api-data-cache
+      with:
+        path: docs/public/static/data/unversioned
+        key: docs-api-data-${{ hashFiles('packages/*/src/**/*.ts', 'packages/*/src/**/*.tsx', 'packages/@expo/*/src/**/*.ts', 'packages/*/tsconfig.json', 'packages/@expo/*/tsconfig.json', 'tools/src/commands/GenerateDocsAPIData.ts', 'tools/yarn.lock') }}
 
     - name: ♻️ Restore ios/Pods from cache
       if: inputs.ios-pods == 'true'

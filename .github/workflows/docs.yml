@@ -38,6 +38,7 @@ jobs:
           yarn-docs: 'true'
           yarn-tools: 'true'
           yarn-workspace: 'true'
+          docs-api-data: 'true'
       - name: 🧶 Install workspace deps on cache miss
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --immutable
@@ -48,6 +49,7 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📝 Regenerate `unversioned` data for Docs
+        if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
         run: expotools generate-docs-api-data
       - name: 🧶 Yarn install
         working-directory: docs
