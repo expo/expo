@@ -14,10 +14,7 @@ import { gfm } from 'turndown-plugin-gfm';
  */
 export function findMdxSource(htmlPath: string, outDir: string, pagesDir: string): string | null {
   const rel = path.relative(outDir, path.dirname(htmlPath)); // e.g. "versions/v55.0.0/sdk/camera"
-  const candidates = [
-    path.join(pagesDir, rel + '.mdx'),
-    path.join(pagesDir, rel, 'index.mdx'),
-  ];
+  const candidates = [path.join(pagesDir, rel + '.mdx'), path.join(pagesDir, rel, 'index.mdx')];
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) {
       return candidate;
@@ -32,7 +29,7 @@ export function findMdxSource(htmlPath: string, outDir: string, pagesDir: string
  */
 export function extractFrontmatter(mdxPath: string): string | null {
   const content = fs.readFileSync(mdxPath, 'utf-8');
-  const match = content.match(/^---\n([\s\S]*?\n)---\n/);
+  const match = content.match(/^---\n([\S\s]*?\n)---\n/);
   if (!match) {
     return null;
   }

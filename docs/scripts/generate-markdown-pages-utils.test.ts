@@ -1,3 +1,8 @@
+import * as cheerio from 'cheerio';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
 import {
   checkMarkdownQuality,
   checkPage,
@@ -8,12 +13,6 @@ import {
   findMdxSource,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
-
-// eslint-disable-next-line import/order -- cheerio must be imported after the local module for jest ESM transforms
-import * as cheerio from 'cheerio';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
 
 describe('cleanHtml', () => {
   it('removes buttons', () => {
@@ -871,11 +870,7 @@ describe('findMdxSource', () => {
   });
 
   it('finds direct .mdx file for route', () => {
-    const result = findMdxSource(
-      path.join(outDir, 'guides/routing/index.html'),
-      outDir,
-      pagesDir
-    );
+    const result = findMdxSource(path.join(outDir, 'guides/routing/index.html'), outDir, pagesDir);
     expect(result).toBe(path.join(pagesDir, 'guides/routing.mdx'));
   });
 
@@ -910,7 +905,7 @@ describe('extractFrontmatter', () => {
       [
         '---',
         'title: Camera',
-        "description: A camera component.",
+        'description: A camera component.',
         "platforms: ['android', 'ios']",
         '---',
         '',
@@ -919,10 +914,7 @@ describe('extractFrontmatter', () => {
       ].join('\n')
     );
 
-    fs.writeFileSync(
-      path.join(tmpDir, 'minimal.mdx'),
-      '---\ntitle: Minimal\n---\n\n# Minimal\n'
-    );
+    fs.writeFileSync(path.join(tmpDir, 'minimal.mdx'), '---\ntitle: Minimal\n---\n\n# Minimal\n');
 
     fs.writeFileSync(
       path.join(tmpDir, 'no-frontmatter.mdx'),
