@@ -11,6 +11,7 @@ import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import type { Shape } from './shapes/index';
 import type { Color } from './types';
 /**
  * Sets the spacing between adjacent sections.
@@ -503,6 +504,134 @@ export declare const backgroundOverlay: (params: {
     alignment?: "center" | "top" | "bottom" | "leading" | "trailing";
 }) => ModifierConfig;
 /**
+ * Line cap style for stroke endpoints.
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/coregraphics/cglinecap).
+ */
+export type LineCap = 'butt' | 'round' | 'square';
+/**
+ * Line join style for stroke corners.
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/coregraphics/cglinejoin).
+ */
+export type LineJoin = 'miter' | 'round' | 'bevel';
+/**
+ * Stroke style configuration matching SwiftUI's StrokeStyle.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/strokestyle).
+ */
+export interface StrokeStyleParams {
+    /** Line width in points (default: 1.0) */
+    lineWidth?: number;
+    /** Line cap style for stroke endpoints (default: 'butt') */
+    lineCap?: LineCap;
+    /** Line join style for corners (default: 'miter') */
+    lineJoin?: LineJoin;
+    /** Miter limit for sharp corners (default: 10.0) */
+    miterLimit?: number;
+    /** Dash pattern array, e.g., [5, 3] for 5pt dash, 3pt gap */
+    dashPattern?: number[];
+    /** Phase offset for dash pattern (default: 0) */
+    dashPhase?: number;
+    /** Whether to antialias the stroke (default: true) */
+    antialiased?: boolean;
+}
+/**
+ * Stroke overlay style - either a color or gradient.
+ */
+export type StrokeOverlayStyle = Color | {
+    type: 'color';
+    color: Color;
+} | {
+    type: 'linearGradient';
+    colors: Color[];
+    startPoint: {
+        x: number;
+        y: number;
+    };
+    endPoint: {
+        x: number;
+        y: number;
+    };
+} | {
+    type: 'radialGradient';
+    colors: Color[];
+    center: {
+        x: number;
+        y: number;
+    };
+    startRadius: number;
+    endRadius: number;
+} | {
+    type: 'angularGradient';
+    colors: Color[];
+    center: {
+        x: number;
+        y: number;
+    };
+};
+/**
+ * Adds a stroked shape overlay to a view with full StrokeStyle and gradient support.
+ *
+ * Uses SwiftUI's `strokeBorder()` which draws the stroke entirely inside
+ * the shape's bounds for predictable sizing in UI elements like buttons.
+ *
+ * @param params - Stroke overlay configuration object.
+ * @param params.style - The stroke style (color or gradient).
+ * @param params.shape - Shape to stroke (from `shapes.*`). Required.
+ * @param params.lineWidth - Line width in points (default: 1.0).
+ * @param params.lineCap - Line cap style: 'butt', 'round', or 'square' (default: 'butt').
+ * @param params.lineJoin - Line join style: 'miter', 'round', or 'bevel' (default: 'miter').
+ * @param params.miterLimit - Miter limit for sharp corners (default: 10.0).
+ * @param params.dashPattern - Dash pattern array, e.g., [5, 3] for dashed lines.
+ * @param params.dashPhase - Phase offset for dash pattern (default: 0).
+ * @param params.antialiased - Whether to antialias the stroke (default: true).
+ *
+ * @see Official [SwiftUI strokeBorder documentation](https://developer.apple.com/documentation/swiftui/insettableshape/strokeborder(_:style:antialiased:)).
+ * @see Official [StrokeStyle documentation](https://developer.apple.com/documentation/swiftui/strokestyle).
+ *
+ * @example
+ * ```tsx
+ * import { strokeOverlay, shapes } from '@expo/ui/swift-ui/modifiers';
+ *
+ * // Simple color stroke
+ * <Button modifiers={[strokeOverlay({
+ *   style: 'rgba(0,0,0,0.1)',
+ *   shape: shapes.circle(),
+ *   lineWidth: 0.5
+ * })]} />
+ *
+ * // Dashed stroke with rounded caps
+ * <View modifiers={[strokeOverlay({
+ *   style: '#FF0000',
+ *   shape: shapes.roundedRectangle({ cornerRadius: 12 }),
+ *   lineWidth: 2,
+ *   lineCap: 'round',
+ *   dashPattern: [5, 3]
+ * })]} />
+ *
+ * // Gradient stroke
+ * <View modifiers={[strokeOverlay({
+ *   style: {
+ *     type: 'linearGradient',
+ *     colors: ['#FF0000', '#0000FF'],
+ *     startPoint: { x: 0, y: 0 },
+ *     endPoint: { x: 1, y: 1 }
+ *   },
+ *   shape: shapes.circle(),
+ *   lineWidth: 3
+ * })]} />
+ * ```
+ */
+export declare const strokeOverlay: (params: {
+    style: StrokeOverlayStyle;
+    shape: Shape;
+    lineWidth?: number;
+    lineCap?: LineCap;
+    lineJoin?: LineJoin;
+    miterLimit?: number;
+    dashPattern?: number[];
+    dashPhase?: number;
+    antialiased?: boolean;
+}) => ModifierConfig;
+/**
  * Sets aspect ratio constraint.
  * @param params - Width/height aspect ratio and content mode.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/aspectratio(_:contentmode:)).
@@ -778,7 +907,7 @@ export declare const listStyle: (style: ListStyle) => ModifierConfig;
  * This provides type safety for the modifiers array.
  * @hidden
  */
-export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle>;
+export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof strokeOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.

@@ -14,6 +14,7 @@ import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import type { Shape } from './shapes/index';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
@@ -634,6 +635,147 @@ export const backgroundOverlay = (params: {
 }) => createModifier('backgroundOverlay', params);
 
 /**
+ * Line cap style for stroke endpoints.
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/coregraphics/cglinecap).
+ */
+export type LineCap = 'butt' | 'round' | 'square';
+
+/**
+ * Line join style for stroke corners.
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/coregraphics/cglinejoin).
+ */
+export type LineJoin = 'miter' | 'round' | 'bevel';
+
+/**
+ * Stroke style configuration matching SwiftUI's StrokeStyle.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/strokestyle).
+ */
+export interface StrokeStyleParams {
+  /** Line width in points (default: 1.0) */
+  lineWidth?: number;
+  /** Line cap style for stroke endpoints (default: 'butt') */
+  lineCap?: LineCap;
+  /** Line join style for corners (default: 'miter') */
+  lineJoin?: LineJoin;
+  /** Miter limit for sharp corners (default: 10.0) */
+  miterLimit?: number;
+  /** Dash pattern array, e.g., [5, 3] for 5pt dash, 3pt gap */
+  dashPattern?: number[];
+  /** Phase offset for dash pattern (default: 0) */
+  dashPhase?: number;
+  /** Whether to antialias the stroke (default: true) */
+  antialiased?: boolean;
+}
+
+/**
+ * Stroke overlay style - either a color or gradient.
+ */
+export type StrokeOverlayStyle =
+  | Color // Simple color string
+  | { type: 'color'; color: Color }
+  | {
+      type: 'linearGradient';
+      colors: Color[];
+      startPoint: { x: number; y: number };
+      endPoint: { x: number; y: number };
+    }
+  | {
+      type: 'radialGradient';
+      colors: Color[];
+      center: { x: number; y: number };
+      startRadius: number;
+      endRadius: number;
+    }
+  | {
+      type: 'angularGradient';
+      colors: Color[];
+      center: { x: number; y: number };
+    };
+
+/**
+ * Adds a stroked shape overlay to a view with full StrokeStyle and gradient support.
+ *
+ * Uses SwiftUI's `strokeBorder()` which draws the stroke entirely inside
+ * the shape's bounds for predictable sizing in UI elements like buttons.
+ *
+ * @param params - Stroke overlay configuration object.
+ * @param params.style - The stroke style (color or gradient).
+ * @param params.shape - Shape to stroke (from `shapes.*`). Required.
+ * @param params.lineWidth - Line width in points (default: 1.0).
+ * @param params.lineCap - Line cap style: 'butt', 'round', or 'square' (default: 'butt').
+ * @param params.lineJoin - Line join style: 'miter', 'round', or 'bevel' (default: 'miter').
+ * @param params.miterLimit - Miter limit for sharp corners (default: 10.0).
+ * @param params.dashPattern - Dash pattern array, e.g., [5, 3] for dashed lines.
+ * @param params.dashPhase - Phase offset for dash pattern (default: 0).
+ * @param params.antialiased - Whether to antialias the stroke (default: true).
+ *
+ * @see Official [SwiftUI strokeBorder documentation](https://developer.apple.com/documentation/swiftui/insettableshape/strokeborder(_:style:antialiased:)).
+ * @see Official [StrokeStyle documentation](https://developer.apple.com/documentation/swiftui/strokestyle).
+ *
+ * @example
+ * ```tsx
+ * import { strokeOverlay, shapes } from '@expo/ui/swift-ui/modifiers';
+ *
+ * // Simple color stroke
+ * <Button modifiers={[strokeOverlay({
+ *   style: 'rgba(0,0,0,0.1)',
+ *   shape: shapes.circle(),
+ *   lineWidth: 0.5
+ * })]} />
+ *
+ * // Dashed stroke with rounded caps
+ * <View modifiers={[strokeOverlay({
+ *   style: '#FF0000',
+ *   shape: shapes.roundedRectangle({ cornerRadius: 12 }),
+ *   lineWidth: 2,
+ *   lineCap: 'round',
+ *   dashPattern: [5, 3]
+ * })]} />
+ *
+ * // Gradient stroke
+ * <View modifiers={[strokeOverlay({
+ *   style: {
+ *     type: 'linearGradient',
+ *     colors: ['#FF0000', '#0000FF'],
+ *     startPoint: { x: 0, y: 0 },
+ *     endPoint: { x: 1, y: 1 }
+ *   },
+ *   shape: shapes.circle(),
+ *   lineWidth: 3
+ * })]} />
+ * ```
+ */
+export const strokeOverlay = (params: {
+  style: StrokeOverlayStyle;
+  shape: Shape;
+  lineWidth?: number;
+  lineCap?: LineCap;
+  lineJoin?: LineJoin;
+  miterLimit?: number;
+  dashPattern?: number[];
+  dashPhase?: number;
+  antialiased?: boolean;
+}) => {
+  const { style, shape, ...strokeParams } = params;
+
+  // Normalize style to object format
+  let styleParams: Record<string, unknown>;
+  if (typeof style === 'string') {
+    styleParams = { styleType: 'color', color: style };
+  } else if ('type' in style) {
+    styleParams = { styleType: style.type, ...style };
+  } else {
+    styleParams = { styleType: 'color', color: style };
+  }
+
+  return createModifier('strokeOverlay', {
+    ...styleParams,
+    ...shape,
+    ...strokeParams,
+  });
+};
+
+/**
  * Sets aspect ratio constraint.
  * @param params - Width/height aspect ratio and content mode.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/aspectratio(_:contentmode:)).
@@ -1000,6 +1142,7 @@ export type BuiltInModifier =
   | ReturnType<typeof mask>
   | ReturnType<typeof overlay>
   | ReturnType<typeof backgroundOverlay>
+  | ReturnType<typeof strokeOverlay>
   | ReturnType<typeof aspectRatio>
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
