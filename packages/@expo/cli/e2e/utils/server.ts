@@ -122,6 +122,8 @@ export function createBackgroundServer({
         stdio: ['ignore', 'pipe', 'pipe'],
         ...spawnOptions,
         env: {
+          // NOTE: Preconfigure flags to disable certain background-like activities
+          EXPO_UNSTABLE_HEADLESS: '1',
           ...env, // Pipe through all environment variables from the host by default
           ...spawnOptions.env,
         },
