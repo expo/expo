@@ -1,6 +1,4 @@
-import React
-
-public protocol AnyExpoView: RCTView {
+public protocol AnyExpoView: UIView {
   var appContext: AppContext? { get }
 
   init(appContext: AppContext?)

@@ -1,7 +1,5 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #import <objc/runtime.h>
 #import <string.h>
 
@@ -216,5 +214,3 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 }
 
 @end
-
-#endif // RCT_NEW_ARCH_ENABLED
