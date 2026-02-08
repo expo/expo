@@ -112,12 +112,13 @@ runs:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/yarn.lock') }}
     - name: ♻️ Restore Docs Next cache
-      if: inputs.yarn-docs == 'true' && steps.docs-modules-cache.outputs.cache-hit == 'true'
+      if: inputs.yarn-docs == 'true'
       uses: actions/cache@v4
       with:
         path: docs/.next/cache
-        key: ${{ runner.os }}-docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/**/*.ts', 'docs/**/*.tsx', 'docs/**/*.js', 'docs/**/*.jsx', 'docs/**/*.mdx', 'docs/**/*.md', 'docs/**/*.cjs') }}
-        restore-keys: ${{ runner.os }}-docs-next-${{ hashFiles('docs/yarn.lock') }}-
+        key: ${{ runner.os }}-docs-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/**/*.js', 'docs/**/*.jsx', 'docs/**/*.ts', 'docs/**/*.tsx') }}
+        restore-keys: |
+          ${{ runner.os }}-docs-${{ hashFiles('docs/yarn.lock') }}-
     - name: ♻️ Restore Docs ESLint cache
       if: inputs.yarn-docs == 'true'
       uses: actions/cache@v4
