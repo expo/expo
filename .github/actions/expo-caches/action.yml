@@ -2,6 +2,9 @@ name: 'Expo Caches'
 description: 'Composite action to perform cache related tasks.'
 
 inputs:
+  yarn-cache:
+    description: 'Restore Yarn global cache'
+    required: false
   yarn-workspace:
     description: 'Restore yarn workspace cache'
     required: false
@@ -85,6 +88,19 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: 🔎 Find Yarn Cache
+      if: inputs.yarn-cache == 'true'
+      id: yarn-cache
+      run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      shell: bash
+    - name: ♻️ Restore Yarn Cache
+      if: inputs.yarn-cache == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.yarn-cache.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
       uses: actions/cache@v4
@@ -100,7 +116,6 @@ runs:
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
         key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-
     - name: ♻️ Restore /tools node modules and bins
       if: inputs.yarn-tools == 'true'
       uses: actions/cache@v4

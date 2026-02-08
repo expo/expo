@@ -9,6 +9,12 @@ runs:
       run: |
         echo 'Disk space before cleanup'
         df -aH
+        # Check total disk size and skip cleanup if it's a larger runner to save time
+        TOTAL_DISK_GB=$(df -BG / | tail -1 | awk '{print $2}' | sed 's/G//')
+        echo "Detected Disk Size: ${TOTAL_DISK_GB} GB"
+        if [ "$TOTAL_DISK_GB" -ge 100 ]; then
+          exit 0
+        fi
 
         # Regular package cleanup
         sudo apt-get remove -y --purge '^mysql-.*' '^mongodb-.*' '^mssql-.*' '^postgresql-.*' '^aspnetcore-*' '^dotnet-.*' '^php.*-.*' 'mono-complete' '^llvm-.*' 'powershell' 'google-chrome-*' 'microsoft-edge-*' 'firefox' 'nginx' 'apache2' 'ghc' '^ghc-*'
