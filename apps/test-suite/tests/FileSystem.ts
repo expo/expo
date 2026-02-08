@@ -213,6 +213,94 @@ export async function test({ describe, expect, it, ...t }) {
       }
     });
 
+    if (Platform.OS === 'android') {
+      describe('Android bundle directory listing', () => {
+        it('returns correct names for files in bundle directory', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          // All items should have non-empty names
+          for (const item of items) {
+            expect(item.name).not.toBe('');
+            expect(item.name).not.toBeNull();
+            expect(item.name).not.toBeUndefined();
+          }
+        });
+
+        it('returns non-null sizes for files in bundle directory', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          // Find actual files (not directories)
+          const files = items.filter((item) => item instanceof File);
+
+          // Files should have non-null sizes
+          for (const file of files) {
+            expect((file as File).size).not.toBeNull();
+            expect((file as File).size).toBeGreaterThan(0);
+          }
+        });
+
+        it('can list subdirectories without permission errors', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          // Find directories
+          const directories = items.filter((item) => item instanceof Directory);
+
+          // Should be able to list each subdirectory without throwing
+          for (const subdir of directories) {
+            expect(() => {
+              (subdir as Directory).list();
+            }).not.toThrow();
+          }
+        });
+
+        it('can recursively list nested bundle directories', () => {
+          const dir = new Directory(Paths.bundle);
+
+          // Recursive function to test listing
+          const testRecursiveList = (directory: Directory, depth: number) => {
+            if (depth > 3) return; // Limit depth to avoid infinite loops
+
+            const items = directory.list();
+            for (const item of items) {
+              // Every item should have a valid name
+              expect(item.name).toBeTruthy();
+
+              if (item instanceof Directory) {
+                // Subdirectories should be listable
+                expect(() => testRecursiveList(item, depth + 1)).not.toThrow();
+              } else if (item instanceof File) {
+                // Files should have size accessible (may be 0 for empty files, but not null)
+                expect(item.size).not.toBeNull();
+              }
+            }
+          };
+
+          expect(() => testRecursiveList(dir, 0)).not.toThrow();
+        });
+
+        it('maintains correct asset:// URIs for nested items', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          for (const item of items) {
+            // All items in bundle should have asset:// URIs
+            expect(item.uri.startsWith('asset://')).toBe(true);
+
+            if (item instanceof Directory) {
+              const subItems = item.list();
+              for (const subItem of subItems) {
+                // Nested items should also have asset:// URIs
+                expect(subItem.uri.startsWith('asset://')).toBe(true);
+              }
+            }
+          }
+        });
+      });
+    }
+
     describe('Works with %, # and space characters in names', () => {
       it('Works with spaces as filename', () => {
         const outputFile = new File(testDirectory, 'my new file.txt');

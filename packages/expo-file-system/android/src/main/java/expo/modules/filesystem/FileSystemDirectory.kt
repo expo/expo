@@ -93,9 +93,14 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
     validatePermission(Permission.READ)
     return file.listFilesAsUnified().map {
       val uriString = it.uri.toString()
+      val isDir = it.isDirectory()
       mapOf(
-        "isDirectory" to it.isDirectory(),
-        "uri" to if (uriString.endsWith("/")) uriString else "$uriString/"
+        "isDirectory" to isDir,
+        "uri" to if (isDir) {
+          if (uriString.endsWith("/")) uriString else "$uriString/"
+        } else {
+          uriString
+        }
       )
     }
   }
