@@ -70,6 +70,9 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
 
   const segments: string[] = [];
   let params: UrlObject['params'] = Object.create(null);
+  
+  // Track last route name for index detection in NativeTabs
+  let lastRouteName: string | null = null;
 
   while (state) {
     route = state.routes['index' in state && state.index ? state.index : 0];
@@ -80,6 +83,9 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     if (routeName.startsWith('/')) {
       routeName = routeName.slice(1);
     }
+
+    // Store the last route name for index detection
+    lastRouteName = routeName;
 
     segments.push(...routeName.split('/'));
     state = route.state;
@@ -100,6 +106,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   /**
    * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
    * then the state maybe incomplete. The reset of the path is in the params, instead of being a route
+   * This commonly happens with NativeTabs where the full route tree isn't rendered immediately.
    */
   let routeParams: StrictFocusedRouteParams | undefined = route.params;
   while (routeParams && 'screen' in routeParams) {
@@ -108,6 +115,12 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
         ? routeParams.screen.slice(1)
         : routeParams.screen;
       segments.push(...screen.split('/'));
+      
+      // Update lastRouteName with the screen value for better index detection
+      const screenParts = screen.split('/');
+      if (screenParts.length > 0) {
+        lastRouteName = screenParts[screenParts.length - 1];
+      }
     }
 
     if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
@@ -117,15 +130,17 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     }
   }
 
-  if (route.params && 'screen' in route.params && route.params.screen === 'string') {
-    const screen = route.params.screen.startsWith('/')
-      ? route.params.screen.slice(1)
-      : route.params.screen;
-    segments.push(...screen.split('/'));
-  }
+  // Enhanced index detection: check both segments and lastRouteName (fallback for NativeTabs)
+  const wasIndexRoute = (
+    segments[segments.length - 1] === 'index' ||
+    lastRouteName === 'index'
+  );
 
-  if (segments[segments.length - 1] === 'index') {
-    segments.pop();
+  if (wasIndexRoute) {
+    // Only pop if it's actually in segments (not just in lastRouteName)
+    if (segments[segments.length - 1] === 'index') {
+      segments.pop();
+    }
   }
 
   delete params['screen'];
@@ -209,8 +224,8 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     unstable_globalHref: appendBaseUrl(pathnameWithParams),
     searchParams,
     pathnameWithParams,
-    // TODO: Remove this, it is not used anywhere
-    isIndex: false,
+    // Enhanced: Use wasIndexRoute detection for better NativeTabs support
+    isIndex: wasIndexRoute,
   };
 }
 
