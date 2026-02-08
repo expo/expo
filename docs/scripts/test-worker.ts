@@ -1,5 +1,5 @@
-import { spawn, type ChildProcess } from 'child_process';
-import { readFileSync, existsSync, mkdirSync, writeFileSync, rmSync } from 'fs';
+import { spawn, type ChildProcess } from 'node:child_process';
+import fs from 'node:fs';
 
 const PORT = 8788;
 const BASE_URL = `http://localhost:${PORT}`;
@@ -44,8 +44,8 @@ async function cleanup(): Promise<void> {
     wranglerProcess.kill();
     wranglerProcess = null;
   }
-  if (existsSync(TEST_DIR)) {
-    rmSync(TEST_DIR, { recursive: true, force: true });
+  if (fs.existsSync(TEST_DIR)) {
+    fs.rmSync(TEST_DIR, { recursive: true, force: true });
   }
 }
 
@@ -53,12 +53,12 @@ function validateRoutesJson(): void {
   console.log('\n--- Validating _routes.json ---');
 
   const routesPath = 'public/_routes.json';
-  if (!existsSync(routesPath)) {
+  if (!fs.existsSync(routesPath)) {
     throw new Error('_routes.json does not exist');
   }
   console.log('✓ _routes.json exists');
 
-  const content = readFileSync(routesPath, 'utf8');
+  const content = fs.readFileSync(routesPath, 'utf8');
   const routes = JSON.parse(content);
   console.log('✓ _routes.json is valid JSON');
 
@@ -94,12 +94,12 @@ function validateWorkerJs(): void {
   console.log('\n--- Validating _worker.js ---');
 
   const workerPath = 'public/_worker.js';
-  if (!existsSync(workerPath)) {
+  if (!fs.existsSync(workerPath)) {
     throw new Error('_worker.js does not exist');
   }
   console.log('✓ _worker.js exists');
 
-  const content = readFileSync(workerPath, 'utf8');
+  const content = fs.readFileSync(workerPath, 'utf8');
 
   if (!content.includes('export default')) {
     throw new Error('_worker.js missing default export');
@@ -115,21 +115,21 @@ function validateWorkerJs(): void {
 function setupTestDirectory(): void {
   console.log('\n--- Setting up test directory ---');
 
-  mkdirSync(TEST_DIR, { recursive: true });
-  mkdirSync(`${TEST_DIR}/test-page`, { recursive: true });
+  fs.mkdirSync(TEST_DIR, { recursive: true });
+  fs.mkdirSync(`${TEST_DIR}/test-page`, { recursive: true });
 
   // Copy worker files
-  const routesContent = readFileSync('public/_routes.json', 'utf8');
-  const workerContent = readFileSync('public/_worker.js', 'utf8');
+  const routesContent = fs.readFileSync('public/_routes.json', 'utf8');
+  const workerContent = fs.readFileSync('public/_worker.js', 'utf8');
 
-  writeFileSync(`${TEST_DIR}/_routes.json`, routesContent);
-  writeFileSync(`${TEST_DIR}/_worker.js`, workerContent);
-  writeFileSync(`${TEST_DIR}/index.html`, '<html><body><h1>Test Page</h1></body></html>');
-  writeFileSync(
+  fs.writeFileSync(`${TEST_DIR}/_routes.json`, routesContent);
+  fs.writeFileSync(`${TEST_DIR}/_worker.js`, workerContent);
+  fs.writeFileSync(`${TEST_DIR}/index.html`, '<html><body><h1>Test Page</h1></body></html>');
+  fs.writeFileSync(
     `${TEST_DIR}/test-page/index.html`,
     '<html><body><h1>Test Page HTML</h1></body></html>'
   );
-  writeFileSync(
+  fs.writeFileSync(
     `${TEST_DIR}/test-page/index.md`,
     '# Test Markdown Content\n\nThis is test content.'
   );
