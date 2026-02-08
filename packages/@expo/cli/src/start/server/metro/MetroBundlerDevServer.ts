@@ -197,15 +197,31 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const artifactBasename = encodeURIComponent(path.basename(artifactFilename) + '.map');
       src = src.replace(/\/\/# sourceMappingURL=.*/g, `//# sourceMappingURL=${artifactBasename}`);
       const parsedMap = typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
+      // Calculate workspace-relative prefix for source path normalization
+      // The static serializer may return paths relative to the workspace root
+      // e.g., /apps/router-e2e/__e2e__/... instead of /Users/.../apps/router-e2e/__e2e__/...
+      const workspaceRelativePrefix =
+        '/' +
+        convertPathToModuleSpecifier(
+          path.relative(getMetroServerRoot(this.projectRoot), this.projectRoot)
+        );
+
       const mapData: any = {
         ...descriptor,
         contents: JSON.stringify({
           version: parsedMap.version,
           sources: parsedMap.sources.map((source: string) => {
-            source =
-              typeof source === 'string' && source.startsWith(this.projectRoot)
-                ? path.relative(this.projectRoot, source)
-                : source;
+            // Handle absolute paths (default serializer)
+            if (typeof source === 'string' && source.startsWith(this.projectRoot + '/')) {
+              source = path.relative(this.projectRoot, source);
+            }
+            // Handle workspace-relative paths (static serializer)
+            else if (
+              typeof source === 'string' &&
+              source.startsWith(workspaceRelativePrefix + '/')
+            ) {
+              source = source.slice(workspaceRelativePrefix.length + 1);
+            }
             return convertPathToModuleSpecifier(source);
           }),
           sourcesContent: new Array(parsedMap.sources.length).fill(null),
@@ -238,13 +254,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files: ExportAssetMap;
     platform: string;
     includeSourceMaps?: boolean;
-  }) {
+  }): Promise<readonly BundleAssetWithFileHashes[] | undefined> {
     if (!manifest.middleware) return;
 
     const middlewareFilePath = path.isAbsolute(manifest.middleware.file)
       ? manifest.middleware.file
       : path.join(appDir, manifest.middleware.file);
-    const contents = await this.bundleApiRoute(middlewareFilePath, { platform });
+    // Disable chunk splitting for middleware to ensure all async imports are bundled inline.
+    // Middleware typically needs all code dependencies inlined and doesn't import static assets.
+    const { contents, assets } = await this.bundleApiRouteForExport(middlewareFilePath, {
+      platform,
+      splitChunks: false,
+    });
     const artifactFilename = convertPathToModuleSpecifier(
       path.join(outputDir, path.relative(appDir, middlewareFilePath.replace(/\.[tj]sx?$/, '.js')))
     );
@@ -261,6 +282,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Remap the middleware file to represent the output file.
     manifest.middleware.file = artifactFilename;
+
+    return assets;
   }
 
   async exportExpoRouterApiRoutesAsync({
@@ -274,7 +297,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // This does not contain the API routes info.
     prerenderManifest: RoutesManifest<string>;
     platform: string;
-  }): Promise<{ files: ExportAssetMap; manifest: RoutesManifest<string> }> {
+  }): Promise<{
+    files: ExportAssetMap;
+    manifest: RoutesManifest<string>;
+    assets: readonly BundleAssetWithFileHashes[];
+  }> {
     const { routerRoot } = this.instanceMetroOptions;
     assert(
       routerRoot != null,
@@ -285,6 +312,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const manifest = await this.getExpoRouterRoutesManifestAsync({ appDir });
 
     const files: ExportAssetMap = new Map();
+    const allAssets: BundleAssetWithFileHashes[] = [];
 
     // Inject RSC middleware.
     const rscPath = '/_flight/[...rsc]';
@@ -307,7 +335,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
-    await this.exportMiddlewareAsync({
+    const middlewareAssets = await this.exportMiddlewareAsync({
       manifest,
       appDir,
       outputDir,
@@ -315,10 +343,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform,
       includeSourceMaps,
     });
+    if (middlewareAssets) {
+      allAssets.push(...middlewareAssets);
+    }
 
     for (const route of manifest.apiRoutes) {
       const filepath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
-      const contents = await this.bundleApiRoute(filepath, { platform });
+      const { contents, assets } = await this.bundleApiRouteForExport(filepath, { platform });
+
+      if (assets) {
+        allAssets.push(...assets);
+      }
 
       const artifactFilename =
         route.page === rscPath
@@ -347,6 +382,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         htmlRoutes: prerenderManifest.htmlRoutes,
       },
       files,
+      assets: allAssets,
     };
   }
 
@@ -1623,9 +1659,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
     filePath: string,
-    { platform }: { platform: string }
+    {
+      platform,
+      serializerOutput,
+      serializerIncludeMaps,
+      splitChunks,
+    }: {
+      platform: string;
+      serializerOutput?: 'static';
+      serializerIncludeMaps?: boolean;
+      splitChunks?: boolean;
+    }
   ): Promise<SSRModuleContentsResult | null | undefined> {
-    if (this.pendingRouteOperations.has(filePath)) {
+    // Only use caching for runtime bundling (not export)
+    const useCache = !serializerOutput;
+    if (useCache && this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }
     const bundleAsync = async (): Promise<SSRModuleContentsResult> => {
@@ -1634,6 +1682,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return await this.ssrLoadModuleContents(filePath, {
           isExporting: this.instanceMetroOptions.isExporting,
           platform,
+          serializerOutput,
+          serializerIncludeMaps,
+          splitChunks,
         });
       } catch (error: any) {
         const appDir = this.instanceMetroOptions?.routerRoot
@@ -1659,8 +1710,38 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
     const route = bundleAsync();
 
-    this.pendingRouteOperations.set(filePath, route);
+    if (useCache) {
+      this.pendingRouteOperations.set(filePath, route);
+    }
     return route;
+  }
+
+  /**
+   * Bundle an API route for export with asset collection.
+   * Uses serializerOutput: 'static' to collect any assets (images, fonts, etc.)
+   * that the API route imports.
+   *
+   * @param splitChunks - Controls chunk splitting. Set to true (default) to enable asset collection.
+   *   Set to false for middleware which needs all async imports bundled inline and typically
+   *   doesn't import static assets.
+   */
+  private async bundleApiRouteForExport(
+    filePath: string,
+    { platform, splitChunks = true }: { platform: string; splitChunks?: boolean }
+  ): Promise<{
+    contents: SSRModuleContentsResult | null;
+    assets: readonly BundleAssetWithFileHashes[] | undefined;
+  }> {
+    const result = await this.bundleApiRoute(filePath, {
+      platform,
+      serializerOutput: 'static',
+      serializerIncludeMaps: true,
+      splitChunks,
+    });
+    return {
+      contents: result ?? null,
+      assets: result?.assets,
+    };
   }
 
   private async ssrImportApiRoute(

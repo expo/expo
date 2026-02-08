@@ -361,6 +361,73 @@ API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-met
 - Node.js standard library &mdash; ensure that you are using the correct version of Node.js locally for your server environment.
 - **babel.config.js** and **metro.config.js** support &mdash; settings work across both client and server code.
 
+### Asset support
+
+> **info** Asset support in API routes is available in SDK 55 and later.
+
+API routes can import and reference static assets such as images, fonts, and other files. When you export your project, these assets are automatically collected and included in the output bundle alongside the client assets.
+
+```ts app/image+api.ts
+import logo from '../assets/logo.png';
+
+export function GET() {
+  // The asset is available and will be included in the export
+  return Response.json({ logoPath: logo });
+}
+```
+
+Assets imported in API routes are processed with the following behavior:
+
+- **Automatic collection**: Assets are detected and bundled during the export process without additional configuration.
+- **Fingerprinted filenames**: Assets are exported with content-based hash filenames (for example, `logo.d41d8cd98f.png`) enabling long-term caching.
+- **Client directory output**: Assets are placed in **dist/client/assets/** directory, making them publicly accessible and cacheable by CDNs.
+- **Shared with client**: If the same asset is imported by both client and server code, it is deduplicated in the output.
+
+> **warning** Assets imported in API routes are placed in the public **client** directory and are publicly accessible. Do not import sensitive files (such as private keys or credentials) using the asset import syntax. For sensitive data, use external storage solutions (such as environment variables, databases, or cloud storage like Cloudflare KV/R2) and access them via `fetch()` or appropriate SDKs.
+
+#### Example: Dynamic Open Graph images
+
+A common use case for assets in API routes is generating dynamic Open Graph images. The following example uses [Satori](https://github.com/vercel/satori) to render React components as SVG images, with fonts imported directly:
+
+```tsx app/og/[title]+api.tsx
+import satori from 'satori';
+import { Text, View } from 'react-native';
+
+// Import font asset - will be bundled and available at runtime
+import interFont from '@/assets/fonts/inter.ttf';
+
+export async function GET(req: Request, { title }: { title: string }) {
+  // Fetch the font data from the bundled asset URL
+  const fontData = await fetch(new URL(interFont, req.url)).then(res => res.arrayBuffer());
+
+  // Generate SVG using Satori with React Native components
+  const svg = await satori(
+    <View
+      style={{
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#1a1a2e',
+      }}>
+      <Text style={{ color: 'white', fontSize: 64 }}>{decodeURIComponent(title)}</Text>
+    </View>,
+    {
+      width: 1200,
+      height: 630,
+      fonts: [{ name: 'Inter', data: fontData, weight: 400, style: 'normal' }],
+    }
+  );
+
+  return new Response(svg, {
+    headers: { 'Content-Type': 'image/svg+xml' },
+  });
+}
+```
+
+In the above example, the font is imported as an asset, which ensures it is bundled and exported with your application. At runtime, `fetch()` retrieves the font data from the bundled asset URL.
+
 {/* TODO: SSR, redirects, middleware, and so on. */}
 
 ## Security
