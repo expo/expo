@@ -1,8 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesJSI/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXWorkletRuntime.h>
+#import <ExpoModulesWorklets/EXWorkletRuntime.h>
 
 @class EXAppContext;
 

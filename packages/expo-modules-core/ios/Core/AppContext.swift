@@ -95,8 +95,14 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  /** 
+   Hook for ExpoModulesWorklets to register the UI runtime installer.
+   When set, the `installOnUIRuntime` function in CoreModule will use this to create the worklet runtime.
+  */
+  nonisolated(unsafe) public static var uiRuntimeFactory: ((_ appContext: AppContext, _ pointerValue: JavaScriptValue, _ runtime: JavaScriptRuntime) throws -> JavaScriptRuntime)?
+
   @objc
-  public var _uiRuntime: WorkletRuntime? {
+  public var _uiRuntime: JavaScriptRuntime? {
     didSet {
       if _uiRuntime != oldValue {
         MainActor.assumeIsolated {
@@ -106,7 +112,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
-  public var uiRuntime: WorkletRuntime {
+  public var uiRuntime: JavaScriptRuntime {
     get throws {
       if let uiRuntime = _uiRuntime {
         return uiRuntime

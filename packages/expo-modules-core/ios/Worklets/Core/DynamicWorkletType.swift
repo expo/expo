@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 internal struct DynamicWorkletType: AnyDynamicType {
   let serializableDynamicType = DynamicSerializableType(innerType: Worklet.self)
 
@@ -23,6 +25,14 @@ internal struct DynamicWorkletType: AnyDynamicType {
       throw Conversions.ConvertingException<Worklet>(value)
     }
     return worklet
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try JavaScriptValue.from(value, runtime: appContext.runtime)
+  }
+
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    return result
   }
 
   var description: String {

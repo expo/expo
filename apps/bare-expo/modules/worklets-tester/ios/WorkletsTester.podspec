@@ -18,8 +18,9 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.source_files = '**/*.{h,cpp,m,mm,swift}'
-  
+
   s.dependency 'ExpoModulesCore'
+  s.dependency 'ExpoModulesWorklets'
 
   install_modules_dependencies(s)
 end

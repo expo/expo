@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXWorkletRuntime.h>
+#import <ExpoModulesWorklets/EXWorkletRuntime.h>
 
 @implementation EXWorkletRuntime {
 #if WORKLETS_ENABLED
