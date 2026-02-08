@@ -121,6 +121,20 @@ export function findMarkdownPages(dir: string): string[] {
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Remove interactive/decorative elements
   main.find('button').remove();
+  main.find('style').remove();
+
+  // Keep only the first tab panel in each tab group (typically the npm variant).
+  // @reach/tabs renders all panels in SSR HTML; we want only the first (default) one
+  // to avoid duplicating install commands for npm/yarn/bun.
+  main.find('[data-reach-tab-panels]').each((_, el) => {
+    $(el)
+      .find('[data-reach-tab-panel]')
+      .each((i, panel) => {
+        if (i > 0) {
+          $(panel).remove();
+        }
+      });
+  });
 
   // Preserve semantic SVG icons as text before blanket SVG removal.
   // YesIcon (text-icon-success) → ✓, NoIcon (text-icon-danger) → ✗
@@ -135,17 +149,31 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   });
   main.find('svg').remove();
 
-  // Remove empty block elements inside headings (leftover from icon wrappers after SVG removal).
-  // A <div> inside <h2> is invalid HTML and breaks Turndown — it splits the heading, leaving
-  // an empty "## " and the heading text as a standalone paragraph.
+  // Unwrap block elements inside headings — a <div> or nested <span> inside <h2> is invalid HTML
+  // and breaks Turndown, splitting the heading into an empty "## " and a standalone paragraph.
+  // Empty wrappers (leftover from icon removal) are removed; non-empty ones are unwrapped.
+  // Skip elements with data-md attributes — those have dedicated handlers that run later.
+  // Loop until stable because nested wrappers require multiple passes.
   main.find('h1, h2, h3, h4, h5, h6').each((_, el) => {
-    $(el)
-      .find('div')
-      .each((_, div) => {
-        if (!$(div).text().trim()) {
-          $(div).remove();
-        }
-      });
+    let found = true;
+    while (found) {
+      found = false;
+      $(el)
+        .find('div, span')
+        .each((_, child) => {
+          const $child = $(child);
+          if ($child.attr('data-md') || $child.closest('[data-md]').length > 0) {
+            return;
+          }
+          const html = $child.html();
+          if (!html?.trim()) {
+            $child.remove();
+          } else {
+            $child.replaceWith(html);
+          }
+          found = true;
+        });
+    }
   });
 
   // Convert data-md="link" elements (HomeButton) to simple <a> tags so Turndown produces
@@ -323,12 +351,105 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     $el.replaceWith('<code>' + $el.text() + '</code>');
   });
 
+  // Preserve angle brackets around unknown HTML elements in type signatures.
+  // The API type renderer sometimes emits <TypeName> as literal HTML instead of
+  // &lt;TypeName&gt; entities. Cheerio parses these as unknown elements, losing
+  // the angle brackets. Re-escape them so they survive as visible text.
+  const knownHtmlTags = new Set([
+    'a',
+    'abbr',
+    'b',
+    'blockquote',
+    'br',
+    'button',
+    'caption',
+    'cite',
+    'code',
+    'col',
+    'colgroup',
+    'dd',
+    'del',
+    'details',
+    'dfn',
+    'div',
+    'dl',
+    'dt',
+    'em',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'hr',
+    'i',
+    'img',
+    'input',
+    'ins',
+    'kbd',
+    'label',
+    'li',
+    'mark',
+    'ol',
+    'option',
+    'p',
+    'path',
+    'picture',
+    'pre',
+    'q',
+    's',
+    'samp',
+    'select',
+    'small',
+    'source',
+    'span',
+    'strong',
+    'sub',
+    'summary',
+    'sup',
+    'svg',
+    'table',
+    'tbody',
+    'td',
+    'th',
+    'thead',
+    'tr',
+    'u',
+    'ul',
+    'var',
+    'wbr',
+  ]);
+  main.find('code').each((_, codeEl) => {
+    $(codeEl)
+      .find('*')
+      .each((_, child) => {
+        const tag = (child as any).tagName?.toLowerCase();
+        if (tag && !knownHtmlTags.has(tag)) {
+          const $child = $(child);
+          const inner = $child.text();
+          $child.replaceWith(inner ? `&lt;${tag}&gt;${inner}&lt;/${tag}&gt;` : `&lt;${tag}&gt;`);
+        }
+      });
+  });
+
   // Unwrap <code> elements that contain links so the links render in markdown.
   // Turndown converts <code> to backticks which escapes markdown link syntax inside,
   // so we remove the <code> wrapper and let the inner content (links + text) stand alone.
   main.find('code:has(a)').each((_, el) => {
     const $code = $(el);
     $code.replaceWith($code.html() ?? '');
+  });
+
+  // Decode double-encoded HTML entities in code blocks.
+  // Some upstream renderers produce &amp;lt; instead of &lt; — decode one layer so
+  // the Turndown textContent extraction yields the correct characters.
+  main.find('pre code').each((_, el) => {
+    const $el = $(el);
+    let html = $el.html() ?? '';
+    if (html.includes('&amp;')) {
+      html = html.replace(/&amp;(lt|gt|amp|quot|apos|#\d+|#x[\dA-Fa-f]+);/g, '&$1;');
+      $el.html(html);
+    }
   });
 
   // Flatten block elements inside table cells to prevent newlines breaking markdown tables.
@@ -340,6 +461,10 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // passes because cheerio's .find() snapshot misses children revealed by parent unwrapping).
   main.find('td, th').each((_, cell) => {
     const $cell = $(cell);
+
+    // Remove <br> tags — they create newlines that break GFM table rows.
+    // PlatformTags renders {prefix && <br />} after badges which is decorative only.
+    $cell.find('br').remove();
 
     // data-md="callout" — inline the callout text (e.g. deprecation warnings).
     // The callout's visible text (like "Deprecated: use X instead") is already meaningful;
@@ -384,6 +509,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Convert diff tables to fenced diff code blocks.
   // data-md="diff" is the stable marker on the DiffBlock wrapper; table.diff is the fallback
   // (class="diff" comes from the react-diff-view library).
+  //
+  // react-diff-view renders +/- markers via CSS classes (diff-code-insert, diff-code-delete),
+  // NOT as literal text. We infer the marker from cell/row class names and prepend it.
   main.find('[data-md="diff"] table, table.diff').each((_, el) => {
     const $table = $(el);
     const lines: string[] = [];
@@ -391,8 +519,24 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const $row = $(row);
       const codeCell = $row.find('td').last();
       const text = codeCell.text().trim();
-      if (text) {
+      if (!text) {
+        return;
+      }
+      // Determine diff marker from CSS class on gutter/code cells or the row itself
+      const rowCls = $row.attr('class') ?? '';
+      const codeCls = codeCell.attr('class') ?? '';
+      const allCls = rowCls + ' ' + codeCls;
+      let marker = ' ';
+      if (allCls.includes('insert')) {
+        marker = '+';
+      } else if (allCls.includes('delete')) {
+        marker = '-';
+      }
+      // If the text already starts with +/- (from inline content), don't double-prefix
+      if (/^[+-]\s/.test(text)) {
         lines.push(text);
+      } else {
+        lines.push(marker + ' ' + text);
       }
     });
     if (lines.length > 0) {
