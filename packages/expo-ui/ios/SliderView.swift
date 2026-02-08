@@ -9,6 +9,8 @@ struct SliderView: ExpoSwiftUI.View {
 
   init(props: SliderProps) {
     self.props = props
+    var initialValue = props.value ?? 0.0
+    _value = State(initialValue: initialValue)
   }
 
   var body: some View {
@@ -23,12 +25,6 @@ struct SliderView: ExpoSwiftUI.View {
       }
       .onReceive(props.value.publisher, perform: { newValue in
         var sliderValue = newValue
-        if let min = props.min {
-          sliderValue = max(sliderValue, min)
-        }
-        if let max = props.max {
-          sliderValue = min(sliderValue, max)
-        }
         value = sliderValue
       })
 #else

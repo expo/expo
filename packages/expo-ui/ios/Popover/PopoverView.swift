@@ -7,6 +7,11 @@ internal struct PopoverView: ExpoSwiftUI.View {
   @ObservedObject var props: PopoverViewProps
   @State private var isPresented: Bool = false
 
+  init(props: PopoverViewProps) {
+    self.props = props
+    _isPresented = State(initialValue: props.isPresented)
+  }
+
   var body: some View {
 #if os(tvOS)
     triggerContent
@@ -34,9 +39,6 @@ internal struct PopoverView: ExpoSwiftUI.View {
       )
       .onChange(of: props.isPresented) { newValue in
         isPresented = newValue
-      }
-      .onAppear {
-        isPresented = props.isPresented
       }
 #endif
   }
