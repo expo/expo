@@ -27,6 +27,17 @@ export default function SectionScreen() {
           <Text>This section uses the title prop</Text>
           <Text>Simple and clean</Text>
         </Section>
+        <Section title="Title with Footer" footer={<Text>This footer should be visible</Text>}>
+          <Text>This section has both a title and a footer</Text>
+        </Section>
+        <Section
+          header={<Text>Header with Footer</Text>}
+          footer={<Text>Footer with custom header</Text>}>
+          <Text>This section uses header and footer props</Text>
+        </Section>
+        <Section footer={<Text>Footer without header</Text>}>
+          <Text>This section only has a footer</Text>
+        </Section>
       </List>
     </Host>
   );

@@ -37,8 +37,18 @@ internal struct SectionView: ExpoSwiftUI.View {
   @ViewBuilder
   private var regularSection: some View {
     if let title = props.title, !title.isEmpty {
-      Section(title) {
-        contentChildren
+      if let footerView {
+        Section {
+          contentChildren
+        } header: {
+          Text(title)
+        } footer: {
+          footerView
+        }
+      } else {
+        Section(title) {
+          contentChildren
+        }
       }
     } else if let headerView, let footerView {
       Section {
