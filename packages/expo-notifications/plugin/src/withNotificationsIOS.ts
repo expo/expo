@@ -99,7 +99,12 @@ export function setNotificationSounds(
     // Since it's possible that the filename is the same, but the
     // file itself id different, let's copy it regardless
     copyFileSync(sourceFilepath, destinationFilepath);
-    if (!project.hasFile(`${projectName}/${fileName}`)) {
+
+    // TODO: Deprecate support for non-synchronized groups after SDK 55.
+    if (
+      !IOSConfig.XcodeUtils.isAppTargetUsingFileSystemSynchronizedGroups(project) &&
+      !project.hasFile(`${projectName}/${fileName}`)
+    ) {
       project = IOSConfig.XcodeUtils.addResourceFileToGroup({
         filepath: `${projectName}/${fileName}`,
         groupName: projectName,

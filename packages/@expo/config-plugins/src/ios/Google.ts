@@ -9,7 +9,11 @@ import { InfoPlist } from './IosConfig.types';
 import { getSourceRoot } from './Paths';
 import { appendScheme } from './Scheme';
 import { ConfigPlugin, ModProps } from '../Plugin.types';
-import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
+import {
+  addResourceFileToGroup,
+  getProjectName,
+  isAppTargetUsingFileSystemSynchronizedGroups,
+} from './utils/Xcodeproj';
 import { withInfoPlist, withXcodeProject } from '../plugins/ios-plugins';
 
 export const withGoogle: ConfigPlugin = (config) => {
@@ -95,16 +99,19 @@ export function setGoogleServicesFile(
     path.join(getSourceRoot(projectRoot), 'GoogleService-Info.plist')
   );
 
-  const projectName = getProjectName(projectRoot);
-  const plistFilePath = `${projectName}/GoogleService-Info.plist`;
-  if (!project.hasFile(plistFilePath)) {
-    project = addResourceFileToGroup({
-      filepath: plistFilePath,
-      groupName: projectName,
-      project,
-      isBuildFile: true,
-      verbose: true,
-    });
+  // TODO: Deprecate support for non-synchronized groups after SDK 55.
+  if (!isAppTargetUsingFileSystemSynchronizedGroups(project)) {
+    const projectName = getProjectName(projectRoot);
+    const plistFilePath = `${projectName}/GoogleService-Info.plist`;
+    if (!project.hasFile(plistFilePath)) {
+      project = addResourceFileToGroup({
+        filepath: plistFilePath,
+        groupName: projectName,
+        project,
+        isBuildFile: true,
+        verbose: true,
+      });
+    }
   }
   return project;
 }

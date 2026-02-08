@@ -82,6 +82,7 @@ async function writeStringsFile({
       comment
     }) => comment === fileName)) {
       // Only write the file if it doesn't already exist.
+      // TODO: this may not be needed with synchronized groups?
       project = (0, _Xcodeproj().addResourceFileToGroup)({
         filepath: _path().default.relative(supportingDirectory, strings),
         groupName,
