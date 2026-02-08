@@ -1,11 +1,12 @@
 'use client';
 
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation, useStateForPath } from '@react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
-import React, { use } from 'react';
+import React, { use, useMemo } from 'react';
 
 import { LocalRouteParamsContext } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
+import { getRouteInfoFromState } from './global-state/routeInfo';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
@@ -372,10 +373,15 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const serverDataLoaderContext = use(ServerDataLoaderContext);
   const loaderCache = use(LoaderCacheContext);
 
-  const routeInfo = useRouteInfo();
-  const pathname = routeInfo.pathname || '/';
-  const searchString = routeInfo.searchParams?.toString() || '';
-  const normalizedPath = searchString ? `${pathname}?${searchString}` : pathname;
+  const stateForPath = useStateForPath();
+
+  const normalizedPath = useMemo(() => {
+    const routeInfo = getRouteInfoFromState(stateForPath);
+    const pathname = routeInfo.pathname || '/';
+    const searchString = routeInfo.searchParams?.toString() || '';
+
+    return searchString ? `${pathname}?${searchString}` : pathname;
+  }, [stateForPath]);
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {
