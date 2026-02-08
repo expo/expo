@@ -44,7 +44,6 @@
   },
   "dependencies": {
     "@expo/image-utils": "^0.8.12",
-    "@ide/backoff": "^1.0.0",
     "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~55.0.5",
