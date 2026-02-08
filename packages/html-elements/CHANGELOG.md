@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `<BR />` to render as `<br>` ([#38354](https://github.com/expo/expo/pull/38354) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26
