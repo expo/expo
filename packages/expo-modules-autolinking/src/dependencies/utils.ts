@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { memoize } from '../utils';
+import { memoize } from '../memoize';
 import {
   DependencyResolutionSource,
   type DependencyResolution,
@@ -50,37 +50,6 @@ export function defaultShouldIncludeDependency(dependencyName: string): boolean 
       return true;
   }
 }
-
-export const fastJoin: (from: string, append: string) => string =
-  path.sep === '/'
-    ? (from, append) => `${from}${path.sep}${append}`
-    : (from, append) =>
-        `${from}${path.sep}${append[0] === '@' ? append.replace('/', path.sep) : append}`;
-
-export const maybeRealpath = async (target: string): Promise<string | null> => {
-  try {
-    return await fs.promises.realpath(target);
-  } catch {
-    return null;
-  }
-};
-
-export type PackageJson = Record<string, unknown> & { version?: string };
-
-export const loadPackageJson = memoize(async function loadPackageJson(
-  jsonPath: string
-): Promise<PackageJson | null> {
-  try {
-    const packageJsonText = await fs.promises.readFile(jsonPath, 'utf8');
-    const json = JSON.parse(packageJsonText);
-    if (typeof json !== 'object' || json == null) {
-      return null;
-    }
-    return json;
-  } catch {
-    return null;
-  }
-});
 
 export function mergeWithDuplicate(
   a: DependencyResolution,

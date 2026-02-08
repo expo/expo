@@ -2,6 +2,7 @@ import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
+import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
 import { scanDependenciesRecursively } from '../resolution';
 
 function mockedNodeModule(
@@ -33,12 +34,19 @@ const symlinkMany = (symlinks: Record<string, string>) => {
 
 const projectRoot = '/fake/project';
 
+const itWithMemoize = (name: string, fn: () => Promise<void>) => {
+  return it(name, async () => {
+    await createMemoizer().withMemoizer(fn);
+    expect(_verifyMemoizerFreed()).toBe(true);
+  });
+};
+
 describe(scanDependenciesRecursively, () => {
   afterEach(() => {
     vol.reset();
   });
 
-  it('discovers flat dependencies', async () => {
+  itWithMemoize('discovers flat dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -68,7 +76,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('discovers transitive dependencies', async () => {
+  itWithMemoize('discovers transitive dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -116,7 +124,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('discovers transitive, hoisted dependencies', async () => {
+  itWithMemoize('discovers transitive, hoisted dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -158,7 +166,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('discovers transitive, isolated dependencies', async () => {
+  itWithMemoize('discovers transitive, isolated dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -213,7 +221,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('discovers dependencies on nameless package.json', async () => {
+  itWithMemoize('discovers dependencies on nameless package.json', async () => {
     vol.fromNestedJSON(
       {
         'package.json': JSON.stringify({
@@ -246,7 +254,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('ignores transitive, hoisted dependencies without dependents', async () => {
+  itWithMemoize('ignores transitive, hoisted dependencies without dependents', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -277,7 +285,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('ignores dependency names from filter', async () => {
+  itWithMemoize('ignores dependency names from filter', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -310,7 +318,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('discovers transitive, duplicate dependencies', async () => {
+  itWithMemoize('discovers transitive, duplicate dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -380,7 +388,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('allows depth to be limited', async () => {
+  itWithMemoize('allows depth to be limited', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -419,7 +427,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('discovers transitive peer dependencies', async () => {
+  itWithMemoize('discovers transitive peer dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {
@@ -467,7 +475,7 @@ describe(scanDependenciesRecursively, () => {
     `);
   });
 
-  it('ignores transitive optional peer dependencies', async () => {
+  itWithMemoize('ignores transitive optional peer dependencies', async () => {
     vol.fromNestedJSON(
       {
         ...mockedNodeModule('root', {

@@ -5,14 +5,8 @@ import {
   type DependencyResolution,
   DependencyResolutionSource,
 } from './types';
-import {
-  type PackageJson,
-  defaultShouldIncludeDependency,
-  mergeResolutionResults,
-  loadPackageJson,
-  maybeRealpath,
-  fastJoin,
-} from './utils';
+import { defaultShouldIncludeDependency, mergeResolutionResults } from './utils';
+import { type PackageJson, loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];

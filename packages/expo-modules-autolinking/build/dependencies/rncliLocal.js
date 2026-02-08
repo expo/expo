@@ -6,8 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.scanDependenciesFromRNProjectConfig = scanDependenciesFromRNProjectConfig;
 const path_1 = __importDefault(require("path"));
 const utils_1 = require("./utils");
+const utils_2 = require("../utils");
 async function scanDependenciesFromRNProjectConfig(rawPath, projectConfig, { shouldIncludeDependency = utils_1.defaultShouldIncludeDependency } = {}) {
-    const rootPath = await (0, utils_1.maybeRealpath)(rawPath);
+    const rootPath = await (0, utils_2.maybeRealpath)(rawPath);
     const searchResults = Object.create(null);
     if (!rootPath || !projectConfig || !projectConfig.dependencies) {
         return searchResults;
@@ -19,7 +20,7 @@ async function scanDependenciesFromRNProjectConfig(rawPath, projectConfig, { sho
         const dependencyConfig = projectConfig.dependencies[dependencyName];
         if (dependencyConfig && dependencyConfig.root && typeof dependencyConfig.root === 'string') {
             const originPath = path_1.default.resolve(rootPath, dependencyConfig.root);
-            const realPath = await (0, utils_1.maybeRealpath)(originPath);
+            const realPath = await (0, utils_2.maybeRealpath)(originPath);
             if (realPath) {
                 searchResults[dependencyName] = {
                     source: 2 /* DependencyResolutionSource.RN_CLI_LOCAL */,

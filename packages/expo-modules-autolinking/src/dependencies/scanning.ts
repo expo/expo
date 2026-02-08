@@ -5,7 +5,8 @@ import {
   type DependencyResolution,
   DependencyResolutionSource,
 } from './types';
-import { defaultShouldIncludeDependency, loadPackageJson, maybeRealpath, fastJoin } from './utils';
+import { defaultShouldIncludeDependency } from './utils';
+import { loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 
 async function resolveDependency(
   basePath: string,
@@ -21,7 +22,7 @@ async function resolveDependency(
   if (packageJson) {
     return {
       source: DependencyResolutionSource.SEARCH_PATH,
-      name: packageJson.name,
+      name: packageJson.name || '',
       version: packageJson.version || '',
       path: realPath || originPath,
       originPath,
