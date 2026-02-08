@@ -133,14 +133,13 @@ Styles applied to these components use JavaScript objects rather than CSS, which
 
 Let's modify **app/index.tsx** screen:
 
-1. Import `StyleSheet` from `react-native` and create a `styles` object to define our custom styles.
-2. Add a `styles.container.backgroundColor` property to `<View>` with the value of `#25292e`. This changes the background color.
-3. Replace the default value of `<Text>` with "Home screen".
-4. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
+1. Add a `styles.container.backgroundColor` property to `<View>` with the value of `#25292e`. This changes the background color.
+2. Replace the default value of `<Text>` with "Home screen".
+3. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=340
-import { Text, View, /* @tutinfo Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet/* @end */ } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 export default function Index() {
   return (
@@ -161,9 +160,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  /* @tutinfo Create a <CODE>text</CODE> style with a <CODE>color</CODE> property of <CODE>'#fff'</CODE>. */
   text: {
     color: '#fff',
   },
+  /* @end */
 });
 ```
 
