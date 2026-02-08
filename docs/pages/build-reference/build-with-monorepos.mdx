@@ -7,7 +7,7 @@ description: Learn how to set up EAS Build with a monorepo.
 To set up EAS Build with a monorepo, you need to follow the standard process as described below:
 
 - Run all EAS CLI commands from the root of the app directory. For example, if your project exists inside your git repository at **apps/my-app**, then run `eas build` from there.
-- All files related to EAS Build, such as **eas.json** and **credentials.json**, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
+- All files related to EAS, such as **eas.json**, **credentials.json**, and the **.eas/workflows** directory, should be in the root of the app directory. If you have multiple apps in your monorepo, each app directory will have its own copy of these files.
 - **If you are building a managed project in a monorepo**, see [Working with Monorepos](/guides/monorepos) guide.
 - If your project needs additional setup beyond what is provided, add a `postinstall` step to **package.json** in your project that builds all necessary dependencies in other workspaces. For example:
 
@@ -18,3 +18,11 @@ To set up EAS Build with a monorepo, you need to follow the standard process as 
   }
 }
 ```
+
+## Using EAS Workflows with monorepos
+
+When you connect a GitHub repository to your Expo project, you can set a base directory that points to your app directory (for example, **apps/my-app**). This allows [EAS Workflows](/eas/workflows/introduction/) to trigger builds and other automated tasks for that specific app.
+
+The **.eas/workflows** directory lives in the same directory as **eas.json**, so each app in your monorepo can have its own workflows.
+
+> Learn more about [setting up EAS Workflows with monorepos](/eas/workflows/get-started/#monorepo-setup).
