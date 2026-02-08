@@ -252,20 +252,76 @@ export default function Page() {
 
 ## Prefetching
 
-The `prefetch` prop on a `<Link />` component enables prefetching of the target screen when the component is rendered. This allows for faster navigation by preparing the screen in advance.
+Prefetching allows you to load a screen in the background before navigating to it, enabling smoother navigation. Expo Router provides three ways to prefetch routes.
+
+### Using the Link component
+
+The `prefetch` prop on a `<Link />` component enables prefetching of the target screen when the component is rendered:
 
 ```tsx
 import { Link } from 'expo-router';
 
 export default function Page() {
-  return <Link href="/about" prefetch />;
+  return (
+    <Link href="/about" prefetch>
+      About
+    </Link>
+  );
 }
 ```
+
+### Imperative API
+
+You can prefetch a route programmatically using `router.prefetch()`. This is useful when you want to trigger prefetching based on custom logic or events:
+
+{/* prettier-ignore */}
+```tsx
+import { router } from 'expo-router';
+/* @info Import the <CODE>router</CODE> object to prefetch routes imperatively. */
+import { useEffect } from 'react';
+/* @end */
+
+export default function Page() {
+  useEffect(() => {
+    /* @info Prefetch the about page when this component mounts. */
+    router.prefetch('/about');
+    /* @end */
+  }, []);
+
+  return {/* ... */};
+}
+```
+
+### Prefetch component
+
+You can use the `<Prefetch />` component to preload a route when the component is rendered on a focused screen:
+
+{/* prettier-ignore */}
+```tsx
+import { Prefetch } from 'expo-router';
+
+export default function Page() {
+  return (
+    <>
+      {/* @info The about page will be prefetched when this screen is focused. */}
+      <Prefetch href="/about" />
+      /* @end */
+      {/* ... rest of your component */}
+    </>
+  );
+}
+```
+
+The `<Prefetch />` component only triggers prefetching when the screen it's rendered on is focused. This makes it useful for preparing routes that the user is likely to navigate to next.
+
+### How prefetching works
 
 When `prefetch` is set, Expo Router will attempt to render the target screen off-screen. The exact behavior depends on the type of navigator used:
 
 - **Expo Router Navigators**: Render the target screen off-screen to enable preloading.
 - **Custom Navigators**: May implement prefetching differently or not support it at all.
+
+### Limitations
 
 When a screen is preloaded in a stack navigator, it will have a few limitations:
 

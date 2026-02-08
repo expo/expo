@@ -17,6 +17,7 @@ export {
 export { router, Router } from './imperative-api';
 
 export * from './link/Link';
+export { Prefetch, PreloadProps as PrefetchProps } from './Prefetch';
 export type {
   LinkMenuActionProps,
   LinkMenuProps,

@@ -2,6 +2,7 @@ import { Navigator, Slot } from './views/Navigator';
 export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, useLoaderData, } from './hooks';
 export { router, Router } from './imperative-api';
 export * from './link/Link';
+export { Prefetch, PreloadProps as PrefetchProps } from './Prefetch';
 export type { LinkMenuActionProps, LinkMenuProps, LinkPreviewProps, LinkTriggerProps, } from './link/elements';
 export type { LinkAppleZoomProps } from './link/zoom/link-apple-zoom';
 export { usePreventZoomTransitionDismissal } from './link/zoom/usePreventZoomTransitionDismissal';
