@@ -48,14 +48,23 @@ internal final class CoreModule: Module {
         throw WorkletUIRuntimeException()
       }
 
-      let uiRuntimePointer = WorkletRuntimeFactory.extractRuntimePointer(pointerHolder, runtime: runtime)
-      if uiRuntimePointer == nil {
-        throw WorkletUIRuntimePointerExtractionException()
+      guard let factory = AppContext.uiRuntimeFactory else {
+        throw WorkletUIRuntimeException()
       }
 
+      // Use a Sendable box to safely capture error across isolation boundaries
+      final class ErrorHolder: @unchecked Sendable {
+        var error: (any Error)?
+      }
+      let errorHolder = ErrorHolder()
+
       let block = {
-        let workletRuntime = WorkletRuntimeFactory.createWorkletRuntime(appContext, fromPointer: uiRuntimePointer)
-        appContext._uiRuntime = workletRuntime
+        do {
+          let uiRuntime = try factory(appContext, pointerHolder, runtime)
+          appContext._uiRuntime = uiRuntime
+        } catch {
+          errorHolder.error = error
+        }
       }
 
       if Thread.isMainThread {
@@ -64,6 +73,10 @@ internal final class CoreModule: Module {
         DispatchQueue.main.sync {
           block()
         }
+      }
+
+      if let error = errorHolder.error {
+        throw error
       }
     }
 
@@ -127,8 +140,3 @@ internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
   }
 }
 
-internal final class WorkletUIRuntimePointerExtractionException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Cannot extract pointer to UI worklet runtime"
-  }
-}

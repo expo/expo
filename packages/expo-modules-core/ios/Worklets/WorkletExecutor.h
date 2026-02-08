@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXWorkletRuntime.h>
-#import <ExpoModulesCore/EXJavaScriptSerializable.h>
+#import <ExpoModulesWorklets/EXWorkletRuntime.h>
+#import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
 
 NS_SWIFT_NAME(WorkletExecutor)
 @interface EXWorkletExecutor : NSObject

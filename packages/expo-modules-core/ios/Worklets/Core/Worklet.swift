@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 /**
  A wrapper class for worklets from react-native-worklets.
  */

@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 internal struct DynamicSerializableType: AnyDynamicType {
   let innerType: any AnySerializable.Type
 
@@ -29,6 +31,14 @@ internal struct DynamicSerializableType: AnyDynamicType {
       throw Conversions.ConvertingException<Serializable>(value)
     }
     return serializable
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try JavaScriptValue.from(value, runtime: appContext.runtime)
+  }
+
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    return result
   }
 
   var description: String {
