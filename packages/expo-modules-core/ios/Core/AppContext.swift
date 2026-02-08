@@ -149,6 +149,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   internal private(set) lazy var converter = MainValueConverter(appContext: self)
 
+  public private(set) lazy var performance = Performance()
+
   /**
    Designated initializer without modules provider.
    */
@@ -175,12 +177,17 @@ public final class AppContext: NSObject, @unchecked Sendable {
   @objc
   @discardableResult
   public func useModulesProvider(_ providerName: String) -> Self {
-    return useModulesProvider(Self.modulesProvider(withName: providerName))
+    let modulesProvider = performance.measuring(.loadingModulesProvider) {
+      return Self.modulesProvider(withName: providerName)
+    }
+    return useModulesProvider(modulesProvider)
   }
 
   @discardableResult
   public func useModulesProvider(_ provider: ModulesProvider) -> Self {
-    moduleRegistry.register(fromProvider: provider)
+    performance.measuring(.modulesRegistration) {
+      moduleRegistry.register(fromProvider: provider)
+    }
     return self
   }
 
@@ -498,6 +505,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   @JavaScriptActor
   internal func prepareRuntime() throws {
+    performance.start(.runtimePreparation)
+
     let runtime = try runtime
     let coreObject = runtime.createObject()
 
@@ -524,6 +533,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+
+    performance.stop(.runtimePreparation)
   }
 
   @MainActor
