@@ -79,13 +79,13 @@ The Image component takes the source of an image as its value. The source can be
   className="max-w-[250px]"
 />
 
-To use the Image component in **app/(tabs)/index.tsx** file:
+To use the Image component in **src/app/(tabs)/index.tsx** file:
 
 1. Import `Image` from the `expo-image` library.
 2. Create a `PlaceholderImage` variable to use **assets/images/background-image.png** file as the `source` prop on the `Image` component.
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx|collapseHeight=380
+```tsx src/app/(tabs)/index.tsx|collapseHeight=380
 import { View, StyleSheet } from 'react-native';
 /* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
 
@@ -134,11 +134,11 @@ const styles = StyleSheet.create({
 
 Let's divide the code into multiple files as we add more components to this screen. Throughout this tutorial, we'll use the components directory to create custom components.
 
-1. Create a top-level **components** directory, and inside it, create the **ImageViewer.tsx** file.
+1. Create a **components** directory inside **src**, and inside it, create the **image-viewer.tsx** file.
 2. Move the code to display the image in this file along with the `image` styles.
 
 {/* prettier-ignore */}
-```tsx components/ImageViewer.tsx|collapseHeight=280
+```tsx src/components/image-viewer.tsx|collapseHeight=280
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 
@@ -159,15 +159,15 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **app** directory. Every file inside **app** directory is either a layout file or a route file. For more information, see [Non-navigation components live outside of app directory](/router/basics/core-concepts/#5-non-navigation-components-live-outside-of-app-directory).
+> **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **src/app** directory. Every file inside **src/app** directory is either a layout file or a route file. For more information, see [Non-navigation components live outside of app directory](/router/basics/core-concepts/#5-non-navigation-components-live-outside-of-app-directory).
 
-Import `ImageViewer` and use it in the **app/(tabs)/index.tsx**:
+Import `ImageViewer` and use it in the **src/app/(tabs)/index.tsx**:
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx|collapseHeight=320
+```tsx src/app/(tabs)/index.tsx|collapseHeight=320
 import { StyleSheet, View } from 'react-native';
 
-/* @tutinfo */import ImageViewer from '@/components/ImageViewer'; /* @end */
+/* @tutinfo */import ImageViewer from '@/components/image-viewer'; /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -209,10 +209,10 @@ The `@` symbol is a custom [path alias](/guides/typescript/#path-aliases-optiona
 
 React Native includes a few different components for handling touch events, but [`<Pressable>`](https://reactnative.dev/docs/pressable) is recommended for its flexibility. It can detect single taps, long presses, trigger separate events when the button is pushed in and released, and more.
 
-In the design, there are two buttons we need to create. Each has a different style and label. Let's start by creating a reusable component for these buttons. Create a **Button.tsx** file inside the **components** directory with the following code:
+In the design, there are two buttons we need to create. Each has a different style and label. Let's start by creating a reusable component for these buttons. Create a **button.tsx** file inside the **src/components** directory with the following code:
 
 {/* prettier-ignore */}
-```tsx components/Button.tsx|collapseHeight=280
+```tsx src/components/button.tsx|collapseHeight=280
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 
 type Props = {
@@ -253,14 +253,14 @@ const styles = StyleSheet.create({
 });
 ```
 
-The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls `alert()` on its `onPress` prop. Let's import this component into **app/(tabs)/index.tsx** file and add styles for the `<View>` that encapsulates these buttons:
+The app displays an alert when the user taps any of the buttons on the screen. It happens because `<Pressable>` calls `alert()` on its `onPress` prop. Let's import this component into **src/app/(tabs)/index.tsx** file and add styles for the `<View>` that encapsulates these buttons:
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 
-/* @tutinfo */import Button from '@/components/Button'; /* @end */
-import ImageViewer from '@/components/ImageViewer';
+/* @tutinfo */import Button from '@/components/button'; /* @end */
+import ImageViewer from '@/components/image-viewer';
 
 const PlaceholderImage = require("@/assets/images/background-image.png");
 
@@ -317,10 +317,10 @@ The second button with the label "Use this photo" resembles the actual button fr
 
 The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme. This button also has an icon before the label. We will use an icon from the `@expo/vector-icons` library.
 
-To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **components/Button.tsx** to add the following code snippet:
+To load and display the icon on the button, let's use `FontAwesome` from the library. Modify **src/components/button.tsx** to add the following code snippet:
 
 {/* prettier-ignore */}
-```tsx components/Button.tsx
+```tsx src/components/button.tsx
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 /* @tutinfo Import FontAwesome. */import FontAwesome from '@expo/vector-icons/FontAwesome';/* @end */
 
@@ -397,14 +397,14 @@ Let's learn what the above code does:
 - The `<Pressable>` component in the primary theme uses a `backgroundColor` property with a value `#fff` to set the button's background to white. If we add this property to the `styles.button`, the background color value will be set for both the primary theme and the unstyled one.
 - Inline styles use JavaScript and override the default styles for a specific value.
 
-Now, modify the **app/(tabs)/index.tsx** file to use the `theme="primary"` prop on the first button.
+Now, modify the **src/app/(tabs)/index.tsx** file to use the `theme="primary"` prop on the first button.
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 

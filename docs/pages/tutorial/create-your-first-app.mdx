@@ -89,11 +89,11 @@ In this tutorial, we'll build our app from scratch and understand the fundamenta
 
 <Terminal cmd={['$ npm run reset-project']} />
 
-After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **app** directory. The previous files from **app** and other directories (**components**, **constants**, and **hooks** &mdash; containing boilerplate code) are moved inside the **app-example** directory by the script. We'll create our own directories and component files as we go along.
+After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **src/app** directory. The previous files from **src** and other directories (**components**, **constants**, and **hooks** &mdash; containing boilerplate code) are moved inside the **example** directory by the script. We'll create our own directories and component files as we go along.
 
 <Collapsible summary={<>What does the <CODE>reset-project</CODE> script do?</>}>
 
-`reset-project` script resets the **app** directory structure in a project and copies the previous boilerplate files from the project's root directory to another sub-directory called **app-example**. We can delete it since it is not part of our main app's structure.
+`reset-project` script resets the **src/app** directory structure in a project and moves the previous boilerplate files from the project's **src** directory to another sub-directory called **example**. We can delete it since it is not part of our main app's structure.
 
 </Collapsible>
 
@@ -127,11 +127,11 @@ Once it is running on all platforms, the app should look like this:
 
 ## Edit the index screen
 
-The **app/index.tsx** file defines the text displayed on the app's screen. It is the entry point of our app and executes when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
+The **src/app/index.tsx** file defines the text displayed on the app's screen. It is the entry point of our app and executes when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
 
 Styles applied to these components use JavaScript objects rather than CSS, which is used on web. However, a lot of the properties will look familiar if you've previously used CSS on web. Most React Native components accept a `style` prop that accepts a JavaScript object as its value. For more details, see [Styling in React Native](https://reactnative.dev/docs/style).
 
-Let's modify **app/index.tsx** screen:
+Let's modify **src/app/index.tsx** screen:
 
 1. Import `StyleSheet` from `react-native` and create a `styles` object to define our custom styles.
 2. Add a `styles.container.backgroundColor` property to `<View>` with the value of `#25292e`. This changes the background color.
@@ -139,13 +139,13 @@ Let's modify **app/index.tsx** screen:
 4. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=340
+```tsx src/app/index.tsx|collapseHeight=340
 import { Text, View, /* @tutinfo Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet/* @end */ } from 'react-native';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say "Edit app/index.tsx to edit this screen". Now it says, "Home screen". */
+      /* @tutinfo This used to say "Edit src/app/index.tsx to edit this screen". Now it says, "Home screen". */
       <Text style={styles.text}>Home screen</Text>
       /* @end */
     </View>
