@@ -3,7 +3,7 @@ import { AudioMode, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectio
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
     constructor(source: AudioSource, options?: AudioPlayerOptions);
-    id: number;
+    id: string;
     isAudioSamplingSupported: boolean;
     isBuffering: boolean;
     shouldCorrectPitch: boolean;
@@ -42,7 +42,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
 export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {
     constructor(options: Partial<RecordingOptions>);
     setup(): Promise<void>;
-    id: number;
+    id: string;
     currentTime: number;
     uri: string | null;
     private options;

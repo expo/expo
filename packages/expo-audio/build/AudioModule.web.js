@@ -4,7 +4,7 @@ import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKey
 import { RecordingPresets } from './RecordingConstants';
 const nextId = (() => {
     let id = 0;
-    return () => id++;
+    return () => String(id++);
 })();
 async function getPermissionWithQueryAsync(name) {
     if (!navigator || !navigator.permissions || !navigator.permissions.query)
