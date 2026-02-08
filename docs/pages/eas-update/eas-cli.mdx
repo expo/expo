@@ -109,6 +109,16 @@ Renaming branches do not disconnect any channel–branch links. If you had a cha
   cmdCopy="eas branch:rename --from [branch-name] --to [branch-name]"
 />
 
+### Connect a chanel with a branch 
+
+you can connect any channel with a branch by running 
+
+```
+eas channel:edit
+```
+
+This command will help you to map the branches with the channels that you have
+
 ### Republish a previous update within a branch
 
 We can make a previous update immediately available to all users. This command takes the previous update and publishes it again so that it becomes the most current update on the branch. As your users re-open their apps, the apps will see the newly re-published update and will download it.
