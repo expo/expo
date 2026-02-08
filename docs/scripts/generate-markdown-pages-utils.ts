@@ -198,21 +198,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
-  // Remove snippet headers (file labels, "Example" labels above code blocks).
+  // Remove snippet headers (file labels, "Terminal" labels above code blocks).
   // data-md="snippet-header" is the stable marker (from SnippetHeader component).
   main.find('[data-md="snippet-header"]').remove();
-
-  // Remove terminal snippet labels ("Terminal", filename labels above code blocks).
-  // data-md="terminal" is the stable marker; .terminal-snippet is the fallback.
-  main.find('[data-md="terminal"], .terminal-snippet').each((_, el) => {
-    const $snippet = $(el);
-    // The label is in the first child div (the header bar), the code is in the rest
-    const header = $snippet.children().first();
-    const headerText = header.text().trim();
-    if (headerText) {
-      header.remove();
-    }
-  });
 
   // Remove orphaned step numbers: replace step containers with just the content.
   // data-md="step" is the stable marker; the fallback matches div.flex.gap-4 with

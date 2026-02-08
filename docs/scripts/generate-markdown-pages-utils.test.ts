@@ -156,10 +156,10 @@ describe('card links', () => {
 });
 
 describe('terminal snippet labels', () => {
-  it('removes labels using data-md="terminal"', () => {
+  it('removes snippet-header and converts code-block inside terminal', () => {
     const html = `<main>
       <div data-md="terminal">
-        <div class="flex min-h-[40px] justify-between">
+        <div data-md="snippet-header" class="flex min-h-[40px] justify-between">
           <span>Terminal</span>
         </div>
         <div data-md="code-block"><code>npx expo start</code></div>
@@ -168,6 +168,26 @@ describe('terminal snippet labels', () => {
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```sh\nnpx expo start\n```');
     expect(md).not.toMatch(/^Terminal$/m);
+  });
+
+  it('preserves install command from Terminal with prompt prefix', () => {
+    const html = [
+      '<main>',
+      '<div data-md="terminal" class="terminal-snippet">',
+      '<div data-md="snippet-header"><span>Terminal</span></div>',
+      '<div data-md="code-block" class="bg-palette-black">',
+      '<div class="w-fit">',
+      '<code data-md="skip" class="select-none">- </code>',
+      '<code>npx expo install expo-camera</code>',
+      '</div>',
+      '</div>',
+      '</div>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('npx expo install expo-camera');
+    expect(md).not.toContain('Terminal');
+    expect(md).not.toContain('- ');
   });
 });
 
