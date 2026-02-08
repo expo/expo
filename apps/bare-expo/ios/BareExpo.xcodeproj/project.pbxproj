@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -44,6 +44,20 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748332CFB461C0044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		BDA56DE284754F748719E00E /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "../../native-component-list/src/screens/inlineModules/inlineModulesExamples";
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		00E356EB1AD99517003FC87E /* Frameworks */ = {
@@ -115,6 +129,7 @@
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
 				AC3B6E5EB4FE4A6AACD31066 /* Resources */,
+				BDA56DE284754F748719E00E /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -217,6 +232,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BDA56DE284754F748719E00E /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
 			);
 			name = BareExpo;
 			productName = BareExpo;
