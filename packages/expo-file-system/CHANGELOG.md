@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `append` option to write methods. ([#42778](https://github.com/expo/expo/pull/42778) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.5 — 2026-02-08
+
+### 🎉 New features
+
+- Add `append` option to write methods. ([#42778](https://github.com/expo/expo/pull/42778) by [@aleqsio](https://github.com/aleqsio))
 
 ## 55.0.4 — 2026-02-03
 

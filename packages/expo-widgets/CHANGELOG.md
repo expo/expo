@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.0-alpha.6 — 2026-02-08
+
+### 🐛 Bug fixes
+
 - Register widget extension target with EAS Build => Apple Developer Portal ([#42954](https://github.com/expo/expo/pull/42954) by [@garygcchiu](https://github.com/garygcchiu))
 - Set DEVELOPMENT_TEAM on the widget target during prebuild when ios.appleTeamId is configured ([#42954](https://github.com/expo/expo/pull/42954) by [@garygcchiu](https://github.com/garygcchiu))
-
-### 💡 Others
 
 ## 55.0.0-alpha.5 — 2026-02-03
 
