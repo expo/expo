@@ -323,3 +323,11 @@ data class MapOptionsRecord(
   @Field
   val mapId: String? = null
 ) : Record
+
+data class SelectOptionsRecord(
+  @Field
+  val zoom: Float? = null,
+
+  @Field
+  val moveCamera: Boolean = true
+) : Record

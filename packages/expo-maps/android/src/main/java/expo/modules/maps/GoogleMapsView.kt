@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,10 +82,13 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private lateinit var cameraState: CameraPositionState
   private var manualCameraControl = false
 
+  // Selection state management
+  private lateinit var markerState: State<List<Pair<MarkerRecord, MarkerState>>>
+
   @Composable
   override fun ComposableScope.Content() {
     cameraState = updateCameraState()
-    val markerState = markerStateFromProps()
+    markerState = markerStateFromProps()
     val locationSource = locationSourceFromProps()
     val polylineState by polylineStateFromProps()
     val polygonState by polygonStateFromProps()
@@ -346,6 +350,39 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
     // If centering on the user's location, stop manual camera control.
     if (config?.coordinates == null) {
       manualCameraControl = false
+    }
+  }
+
+  /**
+   * Programmatically select a marker by its ID.
+   * Shows the info window and optionally animates the camera to the marker.
+   */
+  suspend fun selectMarker(id: String?, options: SelectOptionsRecord?) {
+    if (id == null) {
+      markerState.value.forEach { it.second.hideInfoWindow() }
+      val cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraState.position)
+      cameraState.move(cameraUpdate)
+      return
+    }
+    val (marker, state) = markerState.value.find { it.first.id == id } ?: return
+    state.showInfoWindow()
+    onMarkerClick(
+      MarkerRecord(
+        id = marker.id,
+        title = marker.title,
+        snippet = marker.snippet,
+        coordinates = marker.coordinates
+      )
+    )
+    val moveCamera = options?.moveCamera ?: true
+    if (moveCamera) {
+      val zoom = options?.zoom
+      val cameraUpdate = if (zoom != null) {
+        CameraUpdateFactory.newLatLngZoom(state.position, zoom)
+      } else {
+        CameraUpdateFactory.newLatLng(state.position)
+      }
+      cameraState.animate(cameraUpdate)
     }
   }
 
