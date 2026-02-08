@@ -26,9 +26,11 @@ open class DevMenuModule: Module {
           return
         }
 
-        let shouldCollapse = callback["shouldCollapse"] as? Bool ?? true
+        let type = callback["type"] as? String ?? "action"
+        let value = callback["value"] as? Bool ?? false
+        let shouldCollapse = callback["shouldCollapse"] as? Bool ?? (type != "toggle")
         DevMenuManager.shared.registeredCallbacks.append(
-          DevMenuManager.Callback(name: name, shouldCollapse: shouldCollapse)
+          DevMenuManager.Callback(name: name, shouldCollapse: shouldCollapse, type: type, value: value)
         )
       }
     }

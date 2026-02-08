@@ -12,22 +12,24 @@ try {
   // do nothing
 }
 
-DevMenu.registerDevMenuItems([
-  {
-    name: 'Action 1',
-    callback: () => {
-      console.log('Action 1 executed');
+let debugMode = false;
+
+function registerMenuItems() {
+  DevMenu.registerDevMenuItems([
+    {
+      name: 'Debug Mode',
+      type: 'toggle',
+      value: debugMode,
+      callback: () => {
+        debugMode = !debugMode;
+        console.log('Debug Mode:', debugMode);
+        registerMenuItems();
+      },
     },
-    shouldCollapse: true,
-  },
-  {
-    name: 'Action 2',
-    callback: () => {
-      console.log('Action 2 executed');
-    },
-    shouldCollapse: false,
-  },
-]);
+  ]);
+}
+
+registerMenuItems();
 
 Splashscreen.setOptions({ fade: true, duration: 800 });
 

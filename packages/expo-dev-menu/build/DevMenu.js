@@ -41,7 +41,12 @@ export async function registerDevMenuItems(items) {
     const callbackNames = [];
     items.forEach((item) => {
         handlers.set(item.name, item.callback);
-        callbackNames.push({ name: item.name, shouldCollapse: item.shouldCollapse });
+        callbackNames.push({
+            name: item.name,
+            shouldCollapse: item.shouldCollapse,
+            type: item.type,
+            value: item.value,
+        });
     });
     return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
 }
