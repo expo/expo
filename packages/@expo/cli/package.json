@@ -86,7 +86,6 @@
     "pretty-format": "^29.7.0",
     "progress": "^2.0.3",
     "prompts": "^2.3.2",
-    "qrcode-terminal": "0.11.0",
     "require-from-string": "^2.0.2",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0",
@@ -96,6 +95,7 @@
     "stacktrace-parser": "^0.1.10",
     "structured-headers": "^0.4.1",
     "terminal-link": "^2.1.1",
+    "toqr": "^0.1.1",
     "wrap-ansi": "^7.0.0",
     "ws": "^8.12.1",
     "zod": "^3.25.76"
