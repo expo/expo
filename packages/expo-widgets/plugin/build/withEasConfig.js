@@ -1,10 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/**
- * Registers the widget extension target with EAS Build so that it can
- * automatically create and configure the App ID in Apple Developer Portal,
- * enable the App Groups capability, and manage provisioning profiles.
- */
 const withEasConfig = (config, { targetName, bundleIdentifier, groupIdentifier }) => {
     let configIndex = null;
     config.extra?.eas?.build?.experimental?.ios?.appExtensions?.forEach((ext, index) => {

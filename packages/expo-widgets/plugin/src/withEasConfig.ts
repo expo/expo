@@ -6,12 +6,6 @@ type EasConfigProps = {
   groupIdentifier: string;
 };
 
-/**
- * Registers the widget extension target with EAS Build so that it can
- * automatically create and configure the App ID in Apple Developer Portal,
- * enable the App Groups capability, and manage provisioning profiles.
- * Based on packages/expo-sharing/plugin/src/withConfig.ts
- */
 const withEasConfig: ConfigPlugin<EasConfigProps> = (
   config,
   { targetName, bundleIdentifier, groupIdentifier }
@@ -52,6 +46,7 @@ const withEasConfig: ConfigPlugin<EasConfigProps> = (
       },
     };
   } else if (config.extra) {
+    // Ensure the entitlements are up to date for an existing entry
     const existingEntry =
       config.extra.eas.build.experimental.ios.appExtensions[configIndex];
     const existingGroups =
