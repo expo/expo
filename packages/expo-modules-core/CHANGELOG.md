@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Deduped Worklets integration into separate podspec.
+
 ## 55.0.8 — 2026-02-08
 
 ### 🐛 Bug fixes
