@@ -29,6 +29,7 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
     {
       onMapClick,
       onMarkerClick,
+      onAnnotationClick,
       onCameraMove,
       onPolylineClick,
       onCircleClick,
@@ -49,10 +50,17 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
       async openLookAroundAsync(coordinates: Coordinates) {
         return nativeRef.current?.openLookAroundAsync(coordinates);
       },
+      selectMarker(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
+        return nativeRef.current?.selectMarker(id, options);
+      },
+      selectAnnotation(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
+        return nativeRef.current?.selectAnnotation(id, options);
+      },
     }));
 
     const onNativeMapClick = useNativeEvent(onMapClick);
     const onNativeMarkerClick = useNativeEvent(onMarkerClick);
+    const onNativeAnnotationClick = useNativeEvent(onAnnotationClick);
     const onNativeCameraMove = useNativeEvent(onCameraMove);
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
     const onNativePolygonClick = useNativeEvent(onPolygonClick);
@@ -95,6 +103,7 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
         annotations={parsedAnnotations}
         onMapClick={onNativeMapClick}
         onMarkerClick={onNativeMarkerClick}
+        onAnnotationClick={onNativeAnnotationClick}
         onCameraMove={onNativeCameraMove}
         onPolylineClick={onNativePolylineClick}
         onPolygonClick={onNativePolygonClick}

@@ -46,6 +46,7 @@ export namespace AppleMaps {
   export type MapColorScheme = AppleTypes.AppleMapsColorScheme;
 
   export type Marker = AppleTypes.AppleMapsMarker;
+  export type Annotation = AppleTypes.AppleMapsAnnotation;
   export type MapUISettings = AppleTypes.AppleMapsUISettings;
   export type MapProperties = AppleTypes.AppleMapsProperties;
 

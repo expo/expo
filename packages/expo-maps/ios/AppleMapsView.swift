@@ -16,6 +16,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var colorScheme: MapColorScheme = .automatic
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
+  let onAnnotationClick = EventDispatcher()
   let onPolylineClick = EventDispatcher()
   let onPolygonClick = EventDispatcher()
   let onCircleClick = EventDispatcher()
@@ -25,6 +26,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
 protocol AppleMapsViewProtocol: View {
   func setCameraPosition(config: CameraPosition?)
   func openLookAround(coordinate: Coordinate) async throws
+  func setSelection(config: SelectionConfig)
 }
 
 struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, AppleMapsViewProtocol {
@@ -48,6 +50,51 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
 
   func openLookAround(coordinate: Coordinate) async throws {
     try await appleMapsView?.openLookAround(coordinate: coordinate)
+  }
+
+  func setSelection(config: SelectionConfig) {
+    appleMapsView?.setSelection(config: config)
+  }
+
+  private func applySelection(
+    mapItem: MKMapItem?, coordinate: CLLocationCoordinate2D?, options: SelectOptions?
+  ) {
+    let moveCamera = options?.moveCamera ?? true
+    let zoom = options?.zoom
+    appleMapsView?.setSelection(
+      config: SelectionConfig(
+        mapItem: mapItem,
+        coordinate: coordinate,
+        zoom: zoom,
+        moveCamera: moveCamera
+      ))
+  }
+
+  func selectMarker(id: String?, options: SelectOptions? = nil) {
+    guard let id = id else {
+      applySelection(mapItem: nil, coordinate: nil, options: options)
+      return
+    }
+    if let marker = props.markers.first(where: { $0.id == id }) {
+      applySelection(
+        mapItem: marker.mapItem, coordinate: marker.clLocationCoordinate2D, options: options)
+      return
+    }
+    applySelection(mapItem: nil, coordinate: nil, options: options)
+  }
+
+  func selectAnnotation(id: String?, options: SelectOptions? = nil) {
+    guard let id = id else {
+      applySelection(mapItem: nil, coordinate: nil, options: options)
+      return
+    }
+    if let annotation = props.annotations.first(where: { $0.id == id }) {
+      applySelection(
+        mapItem: annotation.mapItem, coordinate: annotation.clLocationCoordinate2D, options: options
+      )
+      return
+    }
+    applySelection(mapItem: nil, coordinate: nil, options: options)
   }
 
   var body: some View {
