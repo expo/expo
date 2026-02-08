@@ -56,6 +56,12 @@ export const createLimiter = (limit: number): Limiter => {
 };
 
 export const taskAll = <T, R>(inputs: T[], map: (input: T) => Promise<R>): Promise<R[]> => {
+  // NOTE: This doesn't depend on CPU cores, but instead is hard-coded depending on
+  // number of concurrent IO-bound tasks. `taskAll` can be called concurrently, and
+  // we don't keep track of concurrent `taskAll` calls in expo-modules-autolinking.
+  // There's a fixed number of concurrent pending IO operations that Node.js handles
+  // nicely. It seems that expo-modules-autolinking behaves nicely when this number
+  // is around ~8, but this may be higher if disk + core speed is higher.
   const limiter = createLimiter(8);
   return Promise.all(inputs.map((input) => limiter(map, input)));
 };
