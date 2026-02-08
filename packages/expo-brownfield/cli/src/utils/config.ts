@@ -1,70 +1,83 @@
-import type { Result, Spec } from 'arg';
-import path from 'path';
+import type { OptionValues } from 'commander';
 
+import { buildPublishingTask, findBrownfieldLibrary } from './android';
 import type {
-  BuildConfigAndroid,
-  BuildConfigCommon,
-  BuildConfigIos,
-  BuildTypeAndroid,
-  BuildTypeCommon,
+  AndroidConfig,
+  BuildVariant,
+  CommonConfig,
+  IosConfig,
+  TasksConfigAndroid,
 } from './types';
-import { Defaults } from '../constants';
-import { inferAndroidLibrary, inferScheme, inferXCWorkspace } from './infer';
 
-export const getCommonConfig = (args: Result<Spec>): BuildConfigCommon => {
+// export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> => {
+//   const buildType = getBuildTypeCommon(args);
+//   const derivedDataPath = path.join(process.cwd(), 'ios/build');
+//   const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
+
+//   return {
+//     ...getCommonConfig(args),
+//     artifacts: path.join(process.cwd(), args['--artifacts'] || Defaults.artifactsPath),
+//     buildType,
+//     derivedDataPath,
+//     device: path.join(buildProductsPath, `${buildType}-iphoneos`),
+//     simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
+//     hermesFrameworkPath: args['--hermes-framework'] || Defaults.hermesFrameworkPath,
+//     scheme: args['--scheme'] || (await inferScheme()),
+//     workspace: args['--xcworkspace'] || (await inferXCWorkspace()),
+//   };
+// };
+
+export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
+  const variant = resolveVariant(options);
   return {
-    dryRun: !!args['--dry-run'],
-    help: !!args['--help'],
-    verbose: !!args['--verbose'],
+    ...resolveCommonConfig(options),
+    library: resolveLibrary(options),
+    tasks: resolveTaskArray(options, variant),
+    variant,
   };
 };
 
-export const getAndroidConfig = async (args: Result<Spec>): Promise<BuildConfigAndroid> => {
+export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
   return {
-    ...getCommonConfig(args),
-    buildType: getBuildTypeAndroid(args),
-    libraryName: args['--library'] || (await inferAndroidLibrary()),
-    repositories: args['--repository'] || [],
-    tasks: args['--task'] || [],
+    ...resolveCommonConfig(options),
   };
 };
 
-export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> => {
-  const buildType = getBuildTypeCommon(args);
-  const derivedDataPath = path.join(process.cwd(), 'ios/build');
-  const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
-
+export const resolveTasksConfigAndroid = (options: OptionValues): TasksConfigAndroid => {
   return {
-    ...getCommonConfig(args),
-    artifacts: path.join(process.cwd(), args['--artifacts'] || Defaults.artifactsPath),
-    buildType,
-    derivedDataPath,
-    device: path.join(buildProductsPath, `${buildType}-iphoneos`),
-    simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
-    hermesFrameworkPath: args['--hermes-framework'] || Defaults.hermesFrameworkPath,
-    scheme: args['--scheme'] || (await inferScheme()),
-    workspace: args['--xcworkspace'] || (await inferXCWorkspace()),
+    ...resolveCommonConfig(options),
+    library: resolveLibrary(options),
   };
 };
 
-export const getTasksAndroidConfig = async (args: Result<Spec>) => {
-  const commonConfig = getCommonConfig(args);
-  const libraryName = !commonConfig.help ? args['--library'] || (await inferAndroidLibrary()) : '';
-
+const resolveCommonConfig = (options: OptionValues): CommonConfig => {
   return {
-    ...commonConfig,
-    libraryName,
+    dryRun: !!options.dryRun,
+    verbose: !!options.verbose,
   };
 };
 
-export const getBuildTypeCommon = (args: Result<Spec>): BuildTypeCommon => {
-  return !args['--release'] && args['--debug'] ? 'debug' : 'release';
+const resolveLibrary = (options: OptionValues): string => {
+  return options.library || findBrownfieldLibrary();
 };
 
-export const getBuildTypeAndroid = (args: Result<Spec>): BuildTypeAndroid => {
-  if ((args['--debug'] && args['--release']) || (!args['--debug'] && !args['--release'])) {
-    return 'all';
+const resolveTaskArray = (options: OptionValues, variant: BuildVariant): string[] => {
+  const tasks: string[] = options.task ?? [];
+  const repoTasks = (options.repository ?? []).map((repo: string) =>
+    buildPublishingTask(variant, repo)
+  );
+
+  return Array.from(new Set([...tasks, ...repoTasks]));
+};
+
+const resolveVariant = (options: OptionValues): BuildVariant => {
+  let variant: BuildVariant = 'All';
+  if (options.release && !options.debug) {
+    variant = 'Release';
+  }
+  if (options.debug && !options.release) {
+    variant = 'Debug';
   }
 
-  return getBuildTypeCommon(args);
+  return variant;
 };

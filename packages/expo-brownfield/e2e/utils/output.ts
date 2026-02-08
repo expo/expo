@@ -17,23 +17,19 @@ export const BUILD = {
   PREBUILD_PROMPT: `Do you want to run the prebuild now?`,
   PREBUILD_WARNING: (platform: 'android' | 'ios') =>
     `Prebuild for platform: ${platform} is missing`,
-  VERBOSE: `- Verbose: true`,
+  VERBOSE: ` - Verbose: true`,
 };
 
 /**
  * Android build outputs
  */
 export const BUILD_ANDROID = {
-  CONFIGURATION: `Build configuration:
-- Verbose: false
-- Build type: All
-- Brownfield library: brownfield
-- Repositories: []
-- Tasks: someGradleTask`,
-  LIBRARY: `- Brownfield library: brownfieldlib`,
-  REPOSTORIES: `- Repositories: MavenLocal, CustomLocal`,
-  TASK: `- Tasks: task1`,
-  TASKS: `- Tasks: task1, task2, task3`,
+  BUILLD_VARIANT_ALL: `- Build variant: All`,
+  BUILLD_VARIANT_DEBUG: `- Build variant: Debug`,
+  BUILLD_VARIANT_RELEASE: `- Build variant: Release`,
+  LIBRARY: `- Library: brownfieldlib`,
+  TASK: [`- Tasks:`, `- task1`],
+  TASKS: [`- Tasks:`, `- task1`, `- task2`, `- task3`],
 };
 
 /**
@@ -71,11 +67,11 @@ export const BUILD_IOS = {
  */
 export const TASKS_ANDROID = {
   RESULT: [
-    `Publish tasks:`,
+    `Publishing tasks`,
     '- publishBrownfieldAllPublicationToMavenLocal',
     '- publishBrownfieldDebugPublicationToMavenLocal',
     '- publishBrownfieldReleasePublicationToMavenLocal',
-    'Repositories:',
+    'Repositories',
     '- MavenLocal',
   ],
   VERBOSE: [`> Configure project`, `Publishing tasks\n----------------`, `BUILD SUCCESSFUL in`],
@@ -85,15 +81,13 @@ export const TASKS_ANDROID = {
  * Error outputs
  */
 export const ERROR = {
-  ADDITIONAL_COMMAND: (
-    command: string
-  ) => `Error: Command ${command} doesn't support additional commands
-For all available options please use the help command:
-npx expo-brownfield ${command} --help`,
+  ADDITIONAL_COMMAND: (command: string) =>
+    `error: too many arguments for '${command}'. Expected 0 arguments but got 1.`,
+  MISSING_PREBUILD: () => `Brownfield cannot be built without prebuilding the native project`,
   MISSING_TASKS_OR_REPOSITORIES: () => `Error: At least one task or repository must be specified`,
   UNKNOWN_COMMAND: () => `Error: unknown command
 Supported commands: build:android, build:ios, tasks:android`,
-  UNKNOWN_OPTION: (option: string) => `Error: unknown or unexpected option: ${option}`,
+  UNKNOWN_OPTION: (option: string) => `error: unknown option '${option}'`,
 };
 
 /**

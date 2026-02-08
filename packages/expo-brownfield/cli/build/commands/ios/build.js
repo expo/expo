@@ -1,125 +1,134 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+// import fs from 'node:fs/promises';
 Object.defineProperty(exports, "__esModule", { value: true });
-const promises_1 = __importDefault(require("node:fs/promises"));
-const constants_1 = require("../../constants");
-const utils_1 = require("../../utils");
-const action = async () => {
-    const args = (0, utils_1.parseArgs)({
-        spec: constants_1.Args.IOS,
-        // Skip first three args:
-        // <node-path> expo-brownfield build:ios
-        argv: process.argv.slice(3),
-        stopAtPositional: true,
-    });
-    if ((0, utils_1.getCommand)(args)) {
-        return constants_1.Errors.additionalCommand('build:ios');
-    }
-    // Only resolve --help and --verbose options
-    const basicConfig = (0, utils_1.getCommonConfig)(args);
-    if (basicConfig.help) {
-        console.log(constants_1.Help.IOS);
-        return process.exit(0);
-    }
-    await (0, utils_1.ensurePrebuild)('ios');
-    const config = await (0, utils_1.getIosConfig)(args);
-    (0, utils_1.printConfig)(config);
-    await cleanUpArtifacts(config);
-    await runBuild(config);
-    await packageFrameworks(config);
-    await copyHermesFramework(config);
-};
-exports.default = action;
-const cleanUpArtifacts = async (config) => {
-    if (config.dryRun) {
-        console.log('Cleaning up previous artifacts');
-        return;
-    }
-    return (0, utils_1.withSpinner)({
-        operation: async () => {
-            try {
-                await promises_1.default.access(config.artifacts);
-            }
-            catch (error) {
-                return;
-            }
-            const artifacts = (await promises_1.default.readdir(config.artifacts)).filter((artifact) => artifact.endsWith('.xcframework'));
-            for (const artifact of artifacts) {
-                await promises_1.default.rm(`${config.artifacts}/${artifact}`, {
-                    recursive: true,
-                    force: true,
-                });
-            }
-        },
-        loaderMessage: 'Cleaning up previous artifacts...',
-        successMessage: 'Cleaning up previous artifacts succeeded',
-        errorMessage: 'Cleaning up previous artifacts failed',
-    });
-};
-const runBuild = async (config) => {
-    const args = [
-        '-workspace',
-        config.workspace,
-        '-scheme',
-        config.scheme,
-        '-derivedDataPath',
-        config.derivedDataPath,
-        '-destination',
-        'generic/platform=iphoneos',
-        '-destination',
-        'generic/platform=iphonesimulator',
-        '-configuration',
-        config.buildType.charAt(0).toUpperCase() + config.buildType.slice(1),
-    ];
-    if (config.dryRun) {
-        console.log(`xcodebuild ${args.join(' ')}`);
-        return;
-    }
-    return (0, utils_1.withSpinner)({
-        operation: () => (0, utils_1.runCommand)('xcodebuild', args, { verbose: config.verbose }),
-        loaderMessage: 'Compiling framework...',
-        successMessage: 'Compiling framework succeeded',
-        errorMessage: 'Compiling framework failed',
-        verbose: config.verbose,
-    });
-};
-const packageFrameworks = async (config) => {
-    const args = [
-        '-create-xcframework',
-        '-framework',
-        `${config.device}/${config.scheme}.framework`,
-        '-framework',
-        `${config.simulator}/${config.scheme}.framework`,
-        '-output',
-        `${config.artifacts}/${config.scheme}.xcframework`,
-    ];
-    if (config.dryRun) {
-        console.log(`xcodebuild ${args.join(' ')}`);
-        return;
-    }
-    return (0, utils_1.withSpinner)({
-        operation: () => (0, utils_1.runCommand)('xcodebuild', args, { verbose: config.verbose }),
-        loaderMessage: 'Packaging framework into an XCFramework...',
-        successMessage: 'Packaging framework into an XCFramework succeeded',
-        errorMessage: 'Packaging framework into an XCFramework failed',
-        verbose: config.verbose,
-    });
-};
-const copyHermesFramework = async (config) => {
-    if (config.dryRun) {
-        console.log(`Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${config.artifacts}/hermes.xcframework`);
-        return;
-    }
-    return (0, utils_1.withSpinner)({
-        operation: () => promises_1.default.cp(`./ios/${config.hermesFrameworkPath}`, `${config.artifacts}/hermes.xcframework`, {
-            force: true,
-            recursive: true,
-        }),
-        loaderMessage: 'Copying hermes.xcframework to the artifacts directory...',
-        successMessage: 'Copying hermes.xcframework to the artifacts directory succeeded',
-        errorMessage: 'Copying hermes.xcframework to the artifacts directory failed',
-        verbose: config.verbose,
-    });
-};
+exports.a = void 0;
+// import { Errors } from '../../constants';
+// import {
+//   ensurePrebuild,
+//   printConfig,
+//   runCommand,
+//   withSpinner,
+// } from '../../utils';
+// const action = async () => {
+//   // const args = parseArgs({
+//   //   spec: Args.IOS,
+//   //   // Skip first three args:
+//   //   // <node-path> expo-brownfield build:ios
+//   //   argv: process.argv.slice(3),
+//   //   stopAtPositional: true,
+//   // });
+//   // if (getCommand(args)) {
+//   //   return Errors.additionalCommand('build:ios');
+//   // }
+//   // // Only resolve --help and --verbose options
+//   // const basicConfig = getCommonConfig(args);
+//   // if (basicConfig.help) {
+//   //   console.log(Help.IOS);
+//   //   return process.exit(0);
+//   // }
+//   // await ensurePrebuild('ios');
+//   // const config = await getIosConfig(args);
+//   // printConfig(config);
+//   // await cleanUpArtifacts(config);
+//   // await runBuild(config);
+//   // await packageFrameworks(config);
+//   // await copyHermesFramework(config);
+//   console.log('build:ios');
+// };
+// export default action;
+// const cleanUpArtifacts = async (config: BuildConfigIos) => {
+//   if (config.dryRun) {
+//     console.log('Cleaning up previous artifacts');
+//     return;
+//   }
+//   return withSpinner({
+//     operation: async () => {
+//       try {
+//         await fs.access(config.artifacts);
+//       } catch (error) {
+//         return;
+//       }
+//       const artifacts = (await fs.readdir(config.artifacts)).filter((artifact) =>
+//         artifact.endsWith('.xcframework')
+//       );
+//       for (const artifact of artifacts) {
+//         await fs.rm(`${config.artifacts}/${artifact}`, {
+//           recursive: true,
+//           force: true,
+//         });
+//       }
+//     },
+//     loaderMessage: 'Cleaning up previous artifacts...',
+//     successMessage: 'Cleaning up previous artifacts succeeded',
+//     errorMessage: 'Cleaning up previous artifacts failed',
+//   });
+// };
+// const runBuild = async (config: BuildConfigIos) => {
+//   const args = [
+//     '-workspace',
+//     config.workspace,
+//     '-scheme',
+//     config.scheme,
+//     '-derivedDataPath',
+//     config.derivedDataPath,
+//     '-destination',
+//     'generic/platform=iphoneos',
+//     '-destination',
+//     'generic/platform=iphonesimulator',
+//     '-configuration',
+//     config.buildType.charAt(0).toUpperCase() + config.buildType.slice(1),
+//   ];
+//   if (config.dryRun) {
+//     console.log(`xcodebuild ${args.join(' ')}`);
+//     return;
+//   }
+//   return withSpinner({
+//     operation: () => runCommand('xcodebuild', args, { verbose: config.verbose }),
+//     loaderMessage: 'Compiling framework...',
+//     successMessage: 'Compiling framework succeeded',
+//     errorMessage: 'Compiling framework failed',
+//     verbose: config.verbose,
+//   });
+// };
+// const packageFrameworks = async (config: BuildConfigIos) => {
+//   const args = [
+//     '-create-xcframework',
+//     '-framework',
+//     `${config.device}/${config.scheme}.framework`,
+//     '-framework',
+//     `${config.simulator}/${config.scheme}.framework`,
+//     '-output',
+//     `${config.artifacts}/${config.scheme}.xcframework`,
+//   ];
+//   if (config.dryRun) {
+//     console.log(`xcodebuild ${args.join(' ')}`);
+//     return;
+//   }
+//   return withSpinner({
+//     operation: () => runCommand('xcodebuild', args, { verbose: config.verbose }),
+//     loaderMessage: 'Packaging framework into an XCFramework...',
+//     successMessage: 'Packaging framework into an XCFramework succeeded',
+//     errorMessage: 'Packaging framework into an XCFramework failed',
+//     verbose: config.verbose,
+//   });
+// };
+// const copyHermesFramework = async (config: BuildConfigIos) => {
+//   if (config.dryRun) {
+//     console.log(
+//       `Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${config.artifacts}/hermes.xcframework`
+//     );
+//     return;
+//   }
+//   return withSpinner({
+//     operation: () =>
+//       fs.cp(`./ios/${config.hermesFrameworkPath}`, `${config.artifacts}/hermes.xcframework`, {
+//         force: true,
+//         recursive: true,
+//       }),
+//     loaderMessage: 'Copying hermes.xcframework to the artifacts directory...',
+//     successMessage: 'Copying hermes.xcframework to the artifacts directory succeeded',
+//     errorMessage: 'Copying hermes.xcframework to the artifacts directory failed',
+//     verbose: config.verbose,
+//   });
+// };
+exports.a = {};

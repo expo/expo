@@ -1,12 +1,3 @@
-import type { ArgError } from 'arg';
-
-const additionalCommandError = (command: string) => {
-  console.error(`Error: Command ${command} doesn't support additional commands
-For all available options please use the help command:
-npx expo-brownfield ${command} --help`);
-  return process.exit(1);
-};
-
 /**
  * Prints a generic error message.
  *
@@ -45,32 +36,9 @@ const parseArgsError = () => {
   return process.exit(1);
 };
 
-/**
- * Prints the error message for an unknown command.
- */
-const unknownCommandError = () => {
-  console.error(`Error: unknown command
-Supported commands: build:android, build:ios, tasks:android`);
-  return process.exit(1);
-};
-
-/**
- * Prints the error message for an unknown option.
- *
- * @param argError - The error object.
- */
-const unkownOptionError = (argError: ArgError) => {
-  const message = argError.message.replace('ArgError: ', '');
-  console.error(`Error: ${message}`);
-  return process.exit(1);
-};
-
 export const Errors = {
-  additionalCommand: additionalCommandError,
   generic: genericError,
   inference: inferenceError,
   missingTasksOrRepositories: missingTasksOrRepositoriesError,
   parseArgs: parseArgsError,
-  unknownCommand: unknownCommandError,
-  unknownOption: unkownOptionError,
 } as const;
