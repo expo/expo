@@ -42,6 +42,8 @@ jobs:
         run: yarn install --immutable
       - name: 🧪 Run Docs tests
         run: yarn test
+      - name: 🧪 Test Cloudflare worker and routes
+        run: yarn test:worker
       - name: 🚨 Lint Docs website code
         env:
           NODE_ENV: production

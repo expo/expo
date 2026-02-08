@@ -4,6 +4,8 @@ import { readFileSync, existsSync, mkdirSync, writeFileSync, rmSync } from 'fs';
 const PORT = 8788;
 const BASE_URL = `http://localhost:${PORT}`;
 
+const TEST_DIR = '.worker-test';
+
 let wranglerProcess: ChildProcess | null = null;
 
 function waitForReady(process: ChildProcess, timeoutMs = 30000): Promise<void> {
@@ -42,8 +44,8 @@ async function cleanup(): Promise<void> {
     wranglerProcess.kill();
     wranglerProcess = null;
   }
-  if (existsSync('out')) {
-    rmSync('out', { recursive: true, force: true });
+  if (existsSync(TEST_DIR)) {
+    rmSync(TEST_DIR, { recursive: true, force: true });
   }
 }
 
@@ -113,21 +115,24 @@ function validateWorkerJs(): void {
 function setupTestDirectory(): void {
   console.log('\n--- Setting up test directory ---');
 
-  mkdirSync('out', { recursive: true });
-  mkdirSync('out/test-page', { recursive: true });
+  mkdirSync(TEST_DIR, { recursive: true });
+  mkdirSync(`${TEST_DIR}/test-page`, { recursive: true });
 
   // Copy worker files
   const routesContent = readFileSync('public/_routes.json', 'utf8');
   const workerContent = readFileSync('public/_worker.js', 'utf8');
 
-  writeFileSync('out/_routes.json', routesContent);
-  writeFileSync('out/_worker.js', workerContent);
-  writeFileSync('out/index.html', '<html><body><h1>Test Page</h1></body></html>');
+  writeFileSync(`${TEST_DIR}/_routes.json`, routesContent);
+  writeFileSync(`${TEST_DIR}/_worker.js`, workerContent);
+  writeFileSync(`${TEST_DIR}/index.html`, '<html><body><h1>Test Page</h1></body></html>');
   writeFileSync(
-    'out/test-page/index.html',
+    `${TEST_DIR}/test-page/index.html`,
     '<html><body><h1>Test Page HTML</h1></body></html>'
   );
-  writeFileSync('out/test-page/index.md', '# Test Markdown Content\n\nThis is test content.');
+  writeFileSync(
+    `${TEST_DIR}/test-page/index.md`,
+    '# Test Markdown Content\n\nThis is test content.'
+  );
 
   console.log('✓ Test directory created');
 }
@@ -135,7 +140,7 @@ function setupTestDirectory(): void {
 async function startWrangler(): Promise<void> {
   console.log('\n--- Starting wrangler pages dev ---');
 
-  wranglerProcess = spawn('npx', ['wrangler', 'pages', 'dev', 'out', '--port', String(PORT)], {
+  wranglerProcess = spawn('wrangler', ['pages', 'dev', TEST_DIR, '--port', String(PORT)], {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 

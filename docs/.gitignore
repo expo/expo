@@ -15,6 +15,9 @@ public/static/constants
 .swc
 out
 
+# worker test temp dir
+.worker-test
+
 # yarn berry
 .pnp.*
 .yarn/*
