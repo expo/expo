@@ -50,9 +50,9 @@ First, configure your app to use server output by adding the server configuratio
 
 ### Create your middleware file
 
-Create a **+middleware.ts** file in your **app** directory, to define your server middleware function:
+Create a **+middleware.ts** file in your **src/app** directory, to define your server middleware function:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export default function middleware(request) {
   console.log(`Middleware executed for: ${request.url}`);
   // Your middleware logic goes here
@@ -89,7 +89,7 @@ Visit your app in a browser or make requests to test that your middleware is wor
 
 By default, middleware runs on all server requests. You can add a matcher to control when your middleware executes with `unstable_settings`:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     // Only run on GET requests
@@ -175,7 +175,7 @@ Middleware does not run for:
 
 Middleware is often used to perform authorization checks before a route has loaded. You can check headers, cookies, or query parameters to determine if a user has access to certain routes:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 import { jwtVerify } from 'jose';
 
 export default function middleware(request) {
@@ -194,7 +194,7 @@ export default function middleware(request) {
 
 You can use middleware to log requests for debugging or analytics purposes. This can help you track user activity or diagnose issues in your app:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export default function middleware(request) {
   console.log(`${request.method} ${request.url}`);
 }
@@ -206,7 +206,7 @@ export default function middleware(request) {
 
 Middleware can also be used to perform dynamic redirects. This allows you to control user navigation based on specific conditions:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export default function middleware(request) {
   if (request.headers.has('specific-header')) {
     return Response.redirect('https://expo.dev');
@@ -220,7 +220,7 @@ export default function middleware(request) {
 
 Use matchers to run middleware only for API routes, keeping other routes unaffected:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     patterns: ['/api'],
@@ -244,7 +244,7 @@ export default function middleware(request) {
 
 Protect write operations (POST, PUT, DELETE) while allowing public read access:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     methods: ['POST', 'PUT', 'DELETE'],
@@ -272,7 +272,7 @@ function isValidToken(token: string): boolean {
 
 Monitor specific endpoints without logging every request:
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 export const unstable_settings = {
   matcher: {
     patterns: ['/api/users/[userId]', '/admin', /^\/webhook/],
@@ -301,7 +301,7 @@ export default function middleware(request) {
 
 ### Typed middleware
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 import { MiddlewareFunction } from 'expo-router/server';
 
 const middleware: MiddlewareFunction = request => {
