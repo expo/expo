@@ -89,12 +89,10 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
+          yarn-cache: 'true'
           bare-expo-pods: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --prefer-offline --frozen-lockfile
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios
@@ -185,12 +183,11 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
+          yarn-cache: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --prefer-offline --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --prefer-offline --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
       - name: Build Screen Inspector
         run: ./scripts/build.sh
@@ -275,14 +272,12 @@ jobs:
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
+          yarn-cache: 'true'
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --prefer-offline --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --prefer-offline --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
       - name: 🧪 Test image comparison utilities
         run: bun test
@@ -359,12 +354,11 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
+          yarn-cache: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --prefere-offline --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --prefer-offline --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
       - name: 🧪 Run e2e tests (bare-expo)
         uses: ./.github/actions/use-android-emulator
