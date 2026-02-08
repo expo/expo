@@ -5,6 +5,7 @@ package expo.modules.sqlite
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import java.io.Closeable
+import java.nio.ByteBuffer
 
 @Suppress("KotlinJniMissingFunction", "FunctionName")
 @DoNotStrip
@@ -26,10 +27,10 @@ internal class NativeSessionBinding : Closeable {
   external fun sqlite3session_attach(tableName: String?): Int
   external fun sqlite3session_enable(enabled: Boolean): Int
   external fun sqlite3session_delete()
-  external fun sqlite3session_changeset(): ByteArray?
-  external fun sqlite3session_changeset_inverted(): ByteArray?
-  external fun sqlite3changeset_apply(db: NativeDatabaseBinding, changeset: ByteArray): Int
-  external fun sqlite3changeset_invert(changeset: ByteArray): ByteArray?
+  external fun sqlite3session_changeset(): ByteBuffer?
+  external fun sqlite3session_changeset_inverted(): ByteBuffer?
+  external fun sqlite3changeset_apply(db: NativeDatabaseBinding, changeset: ByteBuffer): Int
+  external fun sqlite3changeset_invert(changeset: ByteBuffer): ByteBuffer?
 
   // endregion
 
