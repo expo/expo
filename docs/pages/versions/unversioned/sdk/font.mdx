@@ -72,14 +72,57 @@ On Android and iOS, the plugin allows you to embed font files at build time whic
     },
     {
       name: 'android',
+      description: 'An object containing Android-specific font configuration.',
+      default: 'undefined',
+    },
+    {
+      name: 'android.fonts',
       description:
-        'An array of font definitions to link to the native project on Android. Use the object syntax to embed [xml fonts](https://developer.android.com/develop/ui/views/text-and-emoji/fonts-in-xml) with custom family name.',
+        'An array of font definitions to link to the native project on Android. Each item can be a string (font file path) or an object for [xml fonts](https://developer.android.com/develop/ui/views/text-and-emoji/fonts-in-xml) with custom family name.',
+      platform: 'android',
       default: '[]',
     },
     {
+      name: 'android.fonts[].fontFamily',
+      description:
+        'The font family name to use for this font group. This is the name you will use in your styles (for example, `fontFamily: "Source Serif 4"`).',
+      platform: 'android',
+    },
+    {
+      name: 'android.fonts[].fontDefinitions',
+      description:
+        'An array of font file definitions that belong to this font family. Each definition specifies a font file with its weight and style.',
+      platform: 'android',
+      default: '[]',
+    },
+    {
+      name: 'android.fonts[].fontDefinitions[].path',
+      description:
+        'The path to the font file, relative to the project root (for example, `"./assets/fonts/SourceSerif4-Bold.ttf"`).',
+      platform: 'android',
+    },
+    {
+      name: 'android.fonts[].fontDefinitions[].weight',
+      description:
+        'The font weight as a number (for example, `400` for normal, `700` for bold, `800` for extra bold). Valid values range from `100` to `900`.',
+      platform: 'android',
+    },
+    {
+      name: 'android.fonts[].fontDefinitions[].style',
+      description: 'The font style. Can be `"normal"` or `"italic"`.',
+      platform: 'android',
+      default: '"normal"',
+    },
+    {
       name: 'ios',
+      description: 'An object containing iOS-specific font configuration.',
+      default: 'undefined',
+    },
+    {
+      name: 'ios.fonts',
       description:
         'An array of font file paths to link to the native project on iOS. The font family name is taken directly from the font file.',
+      platform: 'ios',
       default: '[]',
     },
   ]}
