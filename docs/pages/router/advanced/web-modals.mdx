@@ -19,11 +19,11 @@ Modals in Expo Router are configured using `Stack.Screen` component with specifi
 
 Consider the following navigation tree, which includes a stack navigator defined in the layout file, a home screen where the modal is accessed, and the modal screen component:
 
-<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/modal.tsx']} />
+<FileTree files={['src/app/_layout.tsx', 'src/app/index.tsx', 'src/app/modal.tsx']} />
 
-In the layout file (**app/\_layout.tsx**), the modal screen component is added to the Stack navigator:
+In the layout file (**src/app/\_layout.tsx**), the modal screen component is added to the Stack navigator:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -48,7 +48,7 @@ export default function Layout() {
 
 The **modal.tsx** is used to display the contents of a modal:
 
-```tsx app/modal.tsx
+```tsx src/app/modal.tsx
 import { Text, View } from 'react-native';
 
 export default function Modal() {
@@ -58,7 +58,7 @@ export default function Modal() {
 
 Now, to open the modal from **index.tsx**, you can use `router.push('/modal')` in your index route:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { router } from 'expo-router';
 import { Pressable, Text, View, StyleSheet } from 'react-native';
 
@@ -213,7 +213,7 @@ webModalStyle: {
 
 To create a full screen modal for content that covers maximum space, you can use `webModalStyle` property in your modal route's `Stack.Screen` options:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -246,7 +246,7 @@ Here's the result of the above example:
 
 When running your web app on mobile devices, you can set `sheetAllowedDetents` to `fitToContents` or a custom value if you want to avoid showing a full screen modal:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -284,7 +284,7 @@ The modal appears as a sheet on a mobile device:
 
 For smaller interactions, you can create a compact modal that fits its content:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -325,7 +325,7 @@ Here's the result of the above example:
 
 You can set the `presentation` option to `transparentModal` when you want to display an overlay that should maintain the visual context of the underlying screen:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -357,7 +357,7 @@ Here's the result of the above example:
 
 You customize the corner radius using `sheetCornerRadius`:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -394,7 +394,7 @@ Here's the result of the above example:
 
 You can use `sheetAllowedDetents` to define the height at which the modal can rest:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
@@ -454,9 +454,9 @@ The video above demonstrates a modal window that appears over the main content o
 
 You can achieve the above web modal behavior by using the [`transparentModal`](https://reactnavigation.org/docs/stack-navigator/#transparent-modals) presentation mode, styling the overlay and modal content, and utilizing [`react-native-reanimated`](/versions/latest/sdk/reanimated/#installation) to animate the modal's presentation.
 
-Modify your project's root layout (**app/\_layout.tsx**) to add an `options` object to the modal route:
+Modify your project's root layout (**src/app/\_layout.tsx**) to add an `options` object to the modal route:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 /* @info <CODE>unstable_settings</CODE> can be set in any stack's <CODE>_layout.tsx</CODE> file. It is used to define the initial route name for the stack, which ensures that users have a consistent starting point, especially when deep linking. */
@@ -495,7 +495,7 @@ The above example sets the `index` screen as the [`initialRouteName`](/router/ad
 Style the overlay and modal content in **modal.tsx** as shown below:
 
 {/* prettier-ignore */}
-```tsx app/modal.tsx|collapseHeight=250
+```tsx src/app/modal.tsx|collapseHeight=250
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';

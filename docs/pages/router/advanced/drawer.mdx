@@ -3,10 +3,16 @@ title: Drawer
 description: Learn how to use the Drawer layout in Expo Router.
 ---
 
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 A navigation drawer is a common pattern in mobile apps, it allows users to swipe open a menu from a side of their screen to expose navigation options. This menu is also typically toggleable through a button in the app's header.
+
+<ContentSpotlight
+  alt="A video showing drawer navigation in action."
+  file="expo-router/drawer.mp4"
+/>
 
 ## Installation
 
@@ -39,7 +45,7 @@ To use [drawer navigator](https://reactnavigation.org/docs/drawer-based-navigati
 
 Now you can use the `Drawer` layout to create a drawer navigator.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Drawer } from 'expo-router/drawer';
 
 export default function Layout() {
@@ -49,7 +55,7 @@ export default function Layout() {
 
 To edit the drawer navigation menu labels, titles and screen options specific screens are required as follows:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Drawer } from 'expo-router/drawer';
 
 export default function Layout() {

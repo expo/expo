@@ -23,20 +23,20 @@ With Expo Router, all routes are always defined and accessible. You can use runt
 
 <FileTree
   files={[
-    ['app/_layout.tsx', <span>Controls what is protected</span>],
+    ['src/app/_layout.tsx', <span>Controls what is protected</span>],
     [
-      'app/sign-in.tsx',
+      'src/app/sign-in.tsx',
       <span>
         Always accessible <LockUnlocked01Icon className="mb-1 inline" />
       </span>,
     ],
     [
-      'app/(app)/_layout.tsx',
+      'src/app/(app)/_layout.tsx',
       <span>
         Requires authorization <Lock01Icon className="mb-1 inline" />
       </span>,
     ],
-    ['app/(app)/index.tsx', <span>Should be protected by the (app)/_layout</span>],
+    ['src/app/(app)/index.tsx', <span>Should be protected by the (app)/_layout</span>],
   ]}
 />
 
@@ -48,7 +48,7 @@ To follow the above example, set up a [React Context provider](https://react.dev
 
 This provider uses a mock implementation. You can replace it with your own [authentication provider](/guides/authentication/).
 
-```tsx ctx.tsx
+```tsx src/ctx.tsx
 import { use, createContext, type PropsWithChildren } from 'react';
 
 import { useStorageState } from './useStorageState';
@@ -100,7 +100,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
 The following code snippet is a basic hook that persists tokens securely on native with [`expo-secure-store`](/versions/latest/sdk/securestore) and in local storage on web.
 
 {/* prettier-ignore */}
-```tsx useStorageState.ts
+```tsx src/useStorageState.ts
 import  { useEffect, useCallback, useReducer } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
@@ -178,7 +178,7 @@ export function useStorageState(key: string): UseStateHook<string> {
 
 Create a **SplashScreenController** to manage the splash screen. Authentication loading is asynchronous, so keep the splash screen visible until authentication loads.
 
-```tsx splash.tsx
+```tsx src/splash.tsx
 import { SplashScreen } from 'expo-router';
 import { useSession } from './ctx';
 
@@ -201,11 +201,11 @@ export function SplashScreenController() {
 
 Add the `SessionProvider` to your root layout. This gives your entire app access to the authentication context. Ensure the `SplashScreenController` is inside the `SessionProvider`.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
-import { SessionProvider } from '../ctx';
-import { SplashScreenController } from '../splash';
+import { SessionProvider } from '@/ctx';
+import { SplashScreenController } from '@/splash';
 
 export default function Root() {
   // Set up the auth context and render your layout inside of it.
@@ -229,11 +229,11 @@ function RootNavigator() {
 
 Create the `/sign-in` screen. This screen toggles authentication using `signIn()`. Since this screen is outside the `(app)` group, the group's layout and authentication check do not run when rendering this screen. This lets logged-out users access this screen.
 
-```tsx app/sign-in.tsx|collapseHeight=480
+```tsx src/app/sign-in.tsx|collapseHeight=480
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
-import { useSession } from '../ctx';
+import { useSession } from '@/ctx';
 
 export default function SignIn() {
   const { signIn } = useSession();
@@ -258,9 +258,9 @@ export default function SignIn() {
 
 Now modify the `RootNavigator` to protect routes based on your `SessionProvider`.
 
-```tsx app/_layout.tsx|collapseHeight=400
+```tsx src/app/_layout.tsx|collapseHeight=400
 // All import statements remain the same except you need to import `useSession` from your `ctx.tsx` file.
-import { SessionProvider, useSession } from '../ctx';
+import { SessionProvider, useSession } from '@/ctx';
 
 // All of the above code remains unchanged. Update the `RootNavigator` to protect routes based on your `SessionProvider` below.
 
@@ -287,10 +287,10 @@ function RootNavigator() {
 
 Implement an authenticated screen that lets users sign out.
 
-```tsx app/(app)/index.tsx|collapseHeight=480
+```tsx src/app/(app)/index.tsx|collapseHeight=480
 import { Text, View } from 'react-native';
 
-import { useSession } from '../../ctx';
+import { useSession } from '@/ctx';
 
 export default function Index() {
   const { signOut } = useSession();
@@ -312,9 +312,9 @@ export default function Index() {
 
 <Step label="7">
 
-Create the **app/(app)/\_layout.tsx**:
+Create the **src/app/(app)/\_layout.tsx**:
 
-```tsx app/(app)/_layout.tsx
+```tsx src/app/(app)/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function AppLayout() {
@@ -333,12 +333,12 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
 
 <FileTree
   files={[
-    ['app/_layout.tsx', 'Declares global session context'],
-    'app/(app)/_layout.tsx',
-    ['app/(app)/sign-in.tsx', <span>Modal presented over the root</span>],
-    ['app/(app)/(root)/_layout.tsx', <span>Protects child routes</span>],
+    ['src/app/_layout.tsx', 'Declares global session context'],
+    'src/app/(app)/_layout.tsx',
+    ['src/app/(app)/sign-in.tsx', <span>Modal presented over the root</span>],
+    ['src/app/(app)/(root)/_layout.tsx', <span>Protects child routes</span>],
     [
-      'app/(app)/(root)/index.tsx',
+      'src/app/(app)/(root)/index.tsx',
       <span>
         Requires authorization <Lock01Icon className="mb-1 inline" />
       </span>,
@@ -346,7 +346,7 @@ Another common pattern is to render a sign-in modal over the top of the app. Thi
   ]}
 />
 
-```tsx app/(app)/_layout.tsx|collapseHeight=480
+```tsx src/app/(app)/_layout.tsx|collapseHeight=480
 import { Stack } from 'expo-router';
 
 export const unstable_settings = {
