@@ -8,5 +8,7 @@ data class ImageLoadOptions(
   @Field
   val maxWidth: Int = SIZE_ORIGINAL,
   @Field
-  val maxHeight: Int = SIZE_ORIGINAL
+  val maxHeight: Int = SIZE_ORIGINAL,
+  @Field
+  val tintColor: Int? = null
 ) : Record

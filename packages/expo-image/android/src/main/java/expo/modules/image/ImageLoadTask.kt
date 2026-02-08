@@ -1,5 +1,7 @@
 package expo.modules.image
 
+import android.graphics.drawable.BitmapDrawable
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
 import expo.modules.image.records.ImageLoadOptions
 import expo.modules.image.records.SourceMap
@@ -21,17 +23,24 @@ open class ImageLoadTask(
     val model = sourceToLoad?.getGlideModel()
 
     try {
-      val bitmap = withContext(Dispatchers.IO) {
+      val drawable = withContext(Dispatchers.IO) {
         Glide
           .with(context)
           .asDrawable()
           .load(model)
           .centerInside()
+          .customize(options.tintColor) {
+            apply(RequestOptions().set(CustomOptions.tintColor, it))
+          }
           .submit(options.maxWidth, options.maxHeight)
           .get()
       }
 
-      return Image(bitmap)
+      if (drawable is BitmapDrawable && options.tintColor != null) {
+        drawable.setTint(options.tintColor)
+      }
+
+      return Image(drawable)
     } catch (e: Exception) {
       throw ImageLoadFailed(e)
     }
