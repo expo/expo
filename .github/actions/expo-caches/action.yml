@@ -198,6 +198,7 @@ runs:
       shell: bash
     - name: ♻️ Restore Git LFS cache
       uses: actions/cache@v4
+      id: git-lfs-cache
       if: inputs.git-lfs == 'true'
       with:
         path: .git/lfs
