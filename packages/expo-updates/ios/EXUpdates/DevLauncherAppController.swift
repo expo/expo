@@ -72,6 +72,10 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
     launcher?.launchAssetUrl
   }
 
+  public var launchAssetPath: String? {
+    launcher?.launchAssetUrl?.relativePath
+  }
+
   public var runtimeVersion: String? {
     config?.runtimeVersion
   }

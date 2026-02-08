@@ -206,6 +206,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     return getEmbeddedUpdate()?.updateId
   }
 
+  public var launchAssetPath: String? {
+    return startupProcedure.launchAssetUrl()?.relativePath
+  }
+
   public var isEnabled: Bool = true
 
   // MARK: - Internal

@@ -338,6 +338,9 @@ class EnabledUpdatesController(
   override val embeddedUpdateId: UUID?
     get() = getEmbeddedUpdate()?.id
 
+  override val launchAssetPath: String?
+    get() = startupProcedure.launchAssetFile
+
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     val subscriptionId = UUID.randomUUID().toString()
     stateChangeListenerMap[subscriptionId] = listener

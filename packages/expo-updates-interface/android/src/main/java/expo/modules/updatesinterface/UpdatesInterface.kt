@@ -28,6 +28,7 @@ interface UpdatesInterface {
    */
   val launchedUpdateId: UUID? get() = null
   val embeddedUpdateId: UUID? get() = null
+  val launchAssetPath: String? get() = null
 
   /**
    * User code or third party modules can add a listener that will be called

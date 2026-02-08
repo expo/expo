@@ -23,6 +23,8 @@ public class DisabledAppController: InternalAppControllerInterface, UpdatesInter
 
   public var embeddedUpdateId: UUID?
 
+  public var launchAssetPath: String?
+
   public var reloadScreenManager: Reloadable?
 
   public let isActiveController = false

@@ -34,6 +34,7 @@ public protocol UpdatesInterface {
    */
   @objc var launchedUpdateId: UUID? { get }
   @objc var embeddedUpdateId: UUID? { get }
+  @objc var launchAssetPath: String? { get }
   /*
    * User code or third party modules can add a listener that will be called
    * on updates state machine transitions (only when updates is enabled)

@@ -93,13 +93,13 @@ internal enum UpdatesStateEvent {
     case .downloadCompleteWithUpdate(manifest: let manifest):
       return ["type": "downloadCompleteWithUpdate", "manifest": manifest]
     case .checkError(errorMessage: let errorMessage):
-      return ["type": type, "errorMessage": errorMessage]
+      return ["type": "checkError", "errorMessage": errorMessage]
     case .downloadError(errorMessage: let errorMessage):
-      return ["type": type, "errorMessage": errorMessage]
+      return ["type": "downloadError", "errorMessage": errorMessage]
     case .downloadProgress(progress: let progress):
-      return ["type": type, "progress": progress]
+      return ["type": "downloadProgress", "progress": progress]
     default:
-      return ["type": type]
+      return ["type": "\(type)"]
     }
   }
 }
