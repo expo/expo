@@ -27,8 +27,7 @@ import java.lang.ref.WeakReference
  * and so there is no more need to trigger the error recovery pipeline.
  */
 class ErrorRecovery(
-  private val logger: UpdatesLogger,
-  private val enableBridgelessArchitecture: Boolean = true
+  private val logger: UpdatesLogger
 ) {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
   internal lateinit var handler: Handler
@@ -98,11 +97,7 @@ class ErrorRecovery(
   }
 
   private fun registerErrorHandler(devSupportManager: DevSupportManager) {
-    if (enableBridgelessArchitecture) {
-      registerErrorHandlerImplBridgeless()
-    } else {
-      registerErrorHandlerImplBridge(devSupportManager)
-    }
+    registerErrorHandlerImplBridgeless()
   }
 
   private fun registerErrorHandlerImplBridgeless() {
@@ -128,11 +123,7 @@ class ErrorRecovery(
   }
 
   private fun unregisterErrorHandler() {
-    if (enableBridgelessArchitecture) {
-      unregisterErrorHandlerImplBridgeless()
-    } else {
-      unregisterErrorHandlerImplBridge()
-    }
+    unregisterErrorHandlerImplBridgeless()
   }
 
   private fun unregisterErrorHandlerImplBridgeless() {
@@ -159,9 +150,5 @@ class ErrorRecovery(
     // quitSafely will wait for processing messages to finish but cancel all messages scheduled for
     // a future time, so delay for a few more seconds in case there are any scheduled messages
     handler.postDelayed({ handlerThread.quitSafely() }, 10000)
-  }
-
-  companion object {
-    private val TAG = ErrorRecovery::class.java.simpleName
   }
 }
