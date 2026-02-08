@@ -18,6 +18,7 @@ import { Worker } from 'node:worker_threads';
 import { findHtmlPages, findMarkdownPages } from './generate-markdown-pages-utils.ts';
 
 const OUT_DIR = path.join(process.cwd(), 'out');
+const PAGES_DIR = path.join(process.cwd(), 'pages');
 
 if (!fs.existsSync(OUT_DIR)) {
   console.error('out/ directory not found. Run `next build` first.');
@@ -60,7 +61,7 @@ const done = new Promise<void>((resolve, reject) => {
   for (let i = 0; i < numWorkers; i++) {
     const worker = new Worker(workerFile, {
       execArgv: ['--experimental-strip-types'],
-      workerData: { outDir: OUT_DIR },
+      workerData: { outDir: OUT_DIR, pagesDir: PAGES_DIR },
     });
 
     worker.on('message', (msg: { type: string; status: string; warnings?: string[] }) => {

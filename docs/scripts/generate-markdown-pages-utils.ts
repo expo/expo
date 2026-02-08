@@ -6,6 +6,45 @@ import path from 'node:path';
 import TurndownService from 'turndown';
 import { gfm } from 'turndown-plugin-gfm';
 
+/**
+ * Find the MDX source file corresponding to an output HTML path.
+ * Returns the absolute path to the .mdx file, or null if not found.
+ *
+ * Mapping: out/a/b/c/index.html → pages/a/b/c.mdx or pages/a/b/c/index.mdx
+ */
+export function findMdxSource(htmlPath: string, outDir: string, pagesDir: string): string | null {
+  const rel = path.relative(outDir, path.dirname(htmlPath)); // e.g. "versions/v55.0.0/sdk/camera"
+  const candidates = [path.join(pagesDir, rel + '.mdx'), path.join(pagesDir, rel, 'index.mdx')];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+/**
+ * Extract the raw YAML frontmatter block (including --- delimiters) from an MDX file.
+ * Strips lines with empty values (e.g. `modificationDate:` injected by append-dates.js
+ * with no value in shallow CI clones).
+ * Returns the frontmatter string with trailing newline, or null if no frontmatter found.
+ */
+export function extractFrontmatter(mdxPath: string): string | null {
+  const content = fs.readFileSync(mdxPath, 'utf-8');
+  const match = content.match(/^---\n([\S\s]*?\n)---\n/);
+  if (!match) {
+    return null;
+  }
+  const filtered = match[1]
+    .split('\n')
+    .filter(line => !/^\w+:\s*$/.test(line))
+    .join('\n');
+  if (!filtered.trim()) {
+    return null;
+  }
+  return '---\n' + filtered + '---\n';
+}
+
 function createTurndownService(): TurndownService {
   const turndown = new TurndownService({
     headingStyle: 'atx',

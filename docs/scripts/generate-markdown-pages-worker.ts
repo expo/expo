@@ -8,9 +8,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parentPort, workerData } from 'node:worker_threads';
 
-import { checkMarkdownQuality, convertHtmlToMarkdown } from './generate-markdown-pages-utils.ts';
+import {
+  checkMarkdownQuality,
+  convertHtmlToMarkdown,
+  extractFrontmatter,
+  findMdxSource,
+} from './generate-markdown-pages-utils.ts';
 
 const outDir: string = workerData.outDir;
+const pagesDir: string = workerData.pagesDir;
 
 parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
   if (msg.type === 'done') {
@@ -20,7 +26,16 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
   if (msg.type === 'task') {
     const htmlPath = msg.htmlPath!;
     const html = fs.readFileSync(htmlPath, 'utf-8');
-    const markdown = convertHtmlToMarkdown(html);
+    let markdown = convertHtmlToMarkdown(html);
+
+    // Prepend frontmatter from the MDX source file if available
+    const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
+    if (mdxPath) {
+      const frontmatter = extractFrontmatter(mdxPath);
+      if (frontmatter) {
+        markdown = frontmatter + '\n' + markdown;
+      }
+    }
 
     const rel = path.relative(outDir, htmlPath);
     const warnings = checkMarkdownQuality(markdown, rel);
