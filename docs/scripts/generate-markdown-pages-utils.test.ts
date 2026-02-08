@@ -164,14 +164,12 @@ describe('cleanHtml', () => {
   });
 
   it('re-escapes unknown HTML elements in code as angle-bracket text', () => {
-    const html = [
-      '<main><p><code>',
-      'Promise<uint8array></uint8array>',
-      '</code></p></main>',
-    ].join('');
+    const html = ['<main><p><code>', 'Promise<uint8array></uint8array>', '</code></p></main>'].join(
+      ''
+    );
     const $ = cheerio.load(html);
     cleanHtml($, $('main'));
-    const result = $('code').html() || '';
+    const result = $('code').html() ?? '';
     expect(result).toContain('&lt;uint8array&gt;');
   });
 
@@ -183,7 +181,7 @@ describe('cleanHtml', () => {
     ].join('');
     const $ = cheerio.load(html);
     cleanHtml($, $('main'));
-    const result = $('code').html() || '';
+    const result = $('code').html() ?? '';
     expect(result).toContain('&lt;expo-sfv&gt;');
     expect(result).not.toContain('&amp;');
   });
@@ -1106,11 +1104,7 @@ describe('collapsed headings', () => {
 describe('generic type parameters', () => {
   it('preserves angle brackets around unknown elements in code', () => {
     // Simulates cheerio parsing <Uint8Array> as an HTML element
-    const html = [
-      '<main><p><code>',
-      'Promise&lt;Uint8Array&gt;',
-      '</code></p></main>',
-    ].join('');
+    const html = ['<main><p><code>', 'Promise&lt;Uint8Array&gt;', '</code></p></main>'].join('');
     const md = convertHtmlToMarkdown(html);
     expect(md).toMatch(/Promise.*Uint8Array/);
   });
