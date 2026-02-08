@@ -87,6 +87,9 @@ struct DevServersView: View {
             .font(.system(size: 14))
             #endif
           Spacer()
+          if viewModel.isLoadingServer && viewModel.devServers.isEmpty {
+            ProgressView()
+          }
         }
       }
 
