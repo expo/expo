@@ -53,34 +53,34 @@ inputs:
 outputs:
   yarn-workspace-hit:
     description: 'Returns true, if yarn workspace cache is up-to-date'
-    value: steps.workspace-modules-cache.outputs.cache-hit
+    value: ${{ steps.workspace-modules-cache.outputs.cache-hit }}
   yarn-tools-hit:
     description: 'Returns true, if yarn /tools cache is up-to-date'
-    value: steps.tools-modules-cache.outputs.cache-hit
+    value: ${{ steps.tools-modules-cache.outputs.cache-hit }}
   yarn-docs-hit:
     description: 'Returns true, if yarn /docs cache is up-to-date'
-    value: steps.docs-modules-cache.outputs.cache-hit
+    value: ${{ steps.docs-modules-cache.outputs.cache-hit }}
   docs-api-data-hit:
     description: 'Returns true, if Docs API data cache is up-to-date'
-    value: steps.docs-api-data-cache.outputs.cache-hit
+    value: ${{ steps.docs-api-data-cache.outputs.cache-hit }}
   ios-pods-hit:
     description: 'Returns true, if /ios pods cache is up-to-date'
-    value: steps.ios-pods-cache.outputs.cache-hit
+    value: ${{ steps.ios-pods-cache.outputs.cache-hit }}
   bare-expo-pods-hit:
     description: 'Returns true, if /apps/bare-expo/ios pods cache is up-to-date'
-    value: steps.bare-expo-pods-cache.outputs.cache-hit
+    value: ${{ steps.bare-expo-pods-cache.outputs.cache-hit }}
   bare-expo-macos-pods-hit:
     description: 'Returns true, if /apps/bare-expo/macos pods cache is up-to-date'
-    value: steps.bare-expo-macos-pods-cache.outputs.cache-hit
+    value: ${{ steps.bare-expo-macos-pods-cache.outputs.cache-hit }}
   native-tests-pods-hit:
     description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
-    value: steps.native-tests-pods-cache.outputs.cache-hit
+    value: ${{ steps.native-tests-pods-cache.outputs.cache-hit }}
   git-lfs-hit:
     description: 'Returns true, if Git LFS cache is up-to-date'
-    value: steps.git-lfs-cache.outputs.cache-hit
+    value: ${{ steps.git-lfs-cache.outputs.cache-hit }}
   hermes-engine-aar-hit:
     description: 'Returns true, if prebuilt hermes-engine AAR cache is up-to-date'
-    value: steps.cache-hermes-engine-aar.outputs.cache-hit
+    value: ${{ steps.cache-hermes-engine-aar.outputs.cache-hit }}
 
 runs:
   using: 'composite'
