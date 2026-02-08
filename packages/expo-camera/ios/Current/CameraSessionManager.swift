@@ -88,7 +88,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     : deviceDiscovery.frontCameraLenses
 
     let selectedDevice = lenses.first {
-      $0.localizedName == delegate.selectedLens
+      $0.deviceType.rawValue == delegate.selectedLens
     }
 
     if let selectedDevice {
@@ -221,7 +221,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     }
   }
 
-  func getAvailableLenses() -> [String] {
+  func getAvailableLenses() -> [[String: String]] {
     guard let delegate else {
       return []
     }
@@ -232,8 +232,13 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
 
     // Lens ordering can be varied which causes problems if you keep the result in react state.
     // We sort them to provide a stable ordering
-    return availableLenses.map { $0.localizedName }.sorted {
-      $0 < $1
+    return availableLenses.map { 
+      [
+        "deviceType": $0.deviceType.rawValue,
+        "localizedName": $0.localizedName
+      ]
+    }.sorted {
+        $0["deviceType"]! < $1["deviceType"]!
     }
   }
 

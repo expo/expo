@@ -232,6 +232,22 @@ export type CameraRecordingOptions = {
 };
 
 /**
+ * Information about an available camera lens.
+ */
+export type LensInfo = {
+  /**
+   * The stable device type identifier (e.g., `"AVCaptureDeviceTypeBuiltInUltraWideCamera"`).
+   * Use this value for the `selectedLens` prop.
+   */
+  deviceType: string;
+  /**
+   * The localized display name for the lens (e.g., `"Back Ultra Wide Camera"`).
+   * Use this for displaying lens options in the UI.
+   */
+  localizedName: string;
+};
+
+/**
  * @hidden
  */
 export type PictureSavedListener = (event: {
@@ -244,7 +260,7 @@ export type PictureSavedListener = (event: {
 export type AvailableLensesChangedListener = (event: { nativeEvent: AvailableLenses }) => void;
 
 // @docsMissing
-export type AvailableLenses = { lenses: string[] };
+export type AvailableLenses = { lenses: LensInfo[] };
 
 /**
  * @hidden
@@ -420,10 +436,30 @@ export type CameraViewProps = ViewProps & {
    */
   pictureSize?: string;
   /**
-   * Available lenses are emitted to the `onAvailableLensesChanged` callback whenever the currently selected camera changes or by calling [`getAvailableLensesAsync`](#getavailablelensesasync).
-   * You can read more about the available lenses in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
+   * The `deviceType` identifier for the lens to use. Retrieve available lenses by calling
+   * [`getAvailableLensesAsync`](#getavailablelensesasync) or listening to the `onAvailableLensesChanged`
+   * callback, then pass the `deviceType` value from the returned `LensInfo` objects.
+   *
+   * Common values include:
+   * - `"AVCaptureDeviceTypeBuiltInWideAngleCamera"` - Standard wide angle camera
+   * - `"AVCaptureDeviceTypeBuiltInUltraWideCamera"` - Ultra wide angle camera
+   * - `"AVCaptureDeviceTypeBuiltInTelephotoCamera"` - Telephoto camera
+   *
+   * If not specified or if the value doesn't match an available lens, the default camera for the
+   * current position (front/back) is used.
+   *
+   * You can read more about device types in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
+   *
+   * @example
+   * ```tsx
+   * const lenses = await cameraRef.current.getAvailableLensesAsync();
+   * const ultraWide = lenses.find(l => l.deviceType === 'AVCaptureDeviceTypeBuiltInUltraWideCamera');
+   * if (ultraWide) {
+   *   setSelectedLens(ultraWide.deviceType);
+   * }
+   * ```
+   *
    * @platform ios
-   * @default 'builtInWideAngleCamera'
    */
   selectedLens?: string;
   /**
@@ -504,7 +540,7 @@ export interface CameraViewRef {
   readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
   readonly takePictureRef?: (options: CameraPictureOptions) => Promise<PictureRef>;
   readonly getAvailablePictureSizes: () => Promise<string[]>;
-  readonly getAvailableLenses: () => Promise<string[]>;
+  readonly getAvailableLenses: () => Promise<LensInfo[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
   readonly toggleRecording: () => Promise<void>;
   readonly stopRecording: () => Promise<void>;

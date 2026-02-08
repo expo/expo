@@ -235,7 +235,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     }
   }
 
-  func getAvailableLenses() -> [String] {
+  func getAvailableLenses() -> [[String: String]] {
     return sessionManager.getAvailableLenses()
   }
 
