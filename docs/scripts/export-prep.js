@@ -3,7 +3,6 @@ import { spawn } from 'node:child_process';
 const tasks = [
   { name: 'versions-schema-sync', cmd: 'node', args: ['./scripts/fetch-versions-schema.js'] },
   { name: 'append-last-modified-dates', cmd: 'node', args: ['./scripts/append-dates.js'] },
-  { name: 'copy-latest', cmd: 'node', args: ['./scripts/copy-latest.js'] },
 ];
 
 const results = await Promise.allSettled(
