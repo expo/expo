@@ -25,6 +25,7 @@ public class AudioModule: Module {
       #endif
 
       setupInterruptionHandling()
+      initializeAudioSession()
     }
 
     AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
@@ -339,6 +340,28 @@ public class AudioModule: Module {
     #endif
   }
 
+  private func initializeAudioSession() {
+    // Set audio session category once at initialization to avoid blocking delays later.
+    // Using .playAndRecord with .mixWithOthers allows both playback and recording
+    // without needing to change categories, which eliminates 3+ second blocking delays.
+    let session = AVAudioSession.sharedInstance()
+    do {
+      var options: AVAudioSession.CategoryOptions = [.mixWithOthers]
+      #if !os(tvOS)
+        #if compiler(>=6.2) // Xcode 26
+          options.insert(.allowBluetoothHFP)
+        #else
+          options.insert(.allowBluetooth)
+        #endif
+      #endif
+
+      try session.setCategory(.playAndRecord, mode: .default, options: options)
+      try session.setActive(true, options: [.notifyOthersOnDeactivation])
+    } catch {
+      print("Failed to initialize audio session: \(error)")
+    }
+  }
+
   private func setupInterruptionHandling() {
     let session = AVAudioSession.sharedInstance()
     NotificationCenter.default.addObserver(
@@ -518,8 +541,9 @@ public class AudioModule: Module {
 
   private func setAudioMode(mode: AudioMode) throws {
     try AudioUtils.validateAudioMode(mode: mode)
-    let session = AVAudioSession.sharedInstance()
-    var category: AVAudioSession.Category = session.category
+    // Commenting out category changes to avoid 3+ second blocking delays.
+    // The audio session category is set once at initialization and remains as .playAndRecord.
+    // This allows both playback and recording without delays when switching between modes.
 
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
@@ -541,6 +565,11 @@ public class AudioModule: Module {
     }
     #endif
 
+    // Original category-changing code commented out to prevent blocking delays:
+    /*
+    let session = AVAudioSession.sharedInstance()
+    var category: AVAudioSession.Category = session.category
+    
     if !mode.playsInSilentMode {
       if mode.interruptionMode == .doNotMix {
         category = .soloAmbient
@@ -579,6 +608,7 @@ public class AudioModule: Module {
     } else {
       try session.setCategory(category, options: sessionOptions)
     }
+    */
   }
 
   private func activateSession() throws {
@@ -586,6 +616,12 @@ public class AudioModule: Module {
   }
 
   private func deactivateSession() {
+    // Don't disable AVAudioSession as it is a synchronous and blocking process. This was causing
+    // 3+ second delays when switching between playing and recording audio on iOS.
+    // With this change, transitions between play/record modes are effectively instant
+    // without frame drops. To avoid triggering unnecessary setActive(true) calls, we update
+    // the internal sessionIsActive flag without actually disabling the session.
+
     // We need to give isPlaying time to update before running this
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
       guard let self else {
@@ -593,11 +629,17 @@ public class AudioModule: Module {
       }
       let hasActivePlayers = self.registry.allPlayers.values.contains { $0.isPlaying }
       if !hasActivePlayers {
+        // Only update the internal flag, do not call setActive(false) to avoid blocking delays
+        self.sessionIsActive = false
+
+        // Original blocking code commented out to prevent 3+ second delays:
+        /*
         do {
           try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
         } catch {
           print("Failed to deactivate audio session: \(error)")
         }
+        */
       }
     }
   }
