@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [Android] The next and previous buttons are now hidden by default in the native `VideoView` controls. ([#42875](https://github.com/expo/expo/pull/42875) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
+
+- [Android] Add `buttonConfiguration` prop to `VideoView`. ([#42875](https://github.com/expo/expo/pull/42875) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
