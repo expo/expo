@@ -33,7 +33,7 @@ open class LoaderFiles {
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
-  fun copyAssetAndGetHash(asset: AssetEntity, destination: File, context: Context): ByteArray {
+  fun copyAssetAndGetHash(asset: AssetEntity, destination: File, context: Context): UpdatesUtils.FileWriteResult {
     return if (asset.embeddedAssetFilename != null) {
       copyContextAssetAndGetHash(asset, destination, context)
     } else if (asset.resourcesFilename != null && asset.resourcesFolder != null) {
@@ -48,7 +48,7 @@ open class LoaderFiles {
     asset: AssetEntity,
     destination: File,
     context: Context
-  ): ByteArray {
+  ): UpdatesUtils.FileWriteResult {
     try {
       context.assets.open(asset.embeddedAssetFilename!!)
         .use { inputStream -> return UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, null) }
@@ -64,7 +64,7 @@ open class LoaderFiles {
     asset: AssetEntity,
     destination: File,
     context: Context
-  ): ByteArray {
+  ): UpdatesUtils.FileWriteResult {
     val id = context.resources.getIdentifier(
       asset.resourcesFilename,
       asset.resourcesFolder,

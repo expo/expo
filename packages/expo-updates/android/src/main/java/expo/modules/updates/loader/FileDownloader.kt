@@ -124,13 +124,17 @@ class FileDownloader(
         responseBody.use { body ->
           val patchMetadata = parsePatchResponseMetadata(resp)
           if (patchMetadata == null) {
-            body.byteStream().use { inputStream ->
+            val result = body.byteStream().use { inputStream ->
               UpdatesUtils.verifySHA256AndWriteToFile(
                 inputStream,
                 destination,
                 expectedBase64URLEncodedSHA256Hash
               )
             }
+            if (asset.isLaunchAsset) {
+              asset.expectedSize = result.size
+            }
+            result.hash
           } else {
             val requestedUpdateId = requestedUpdate?.id?.toString()
             val idsAreDifferent = launchedUpdate != null && requestedUpdate != null && launchedUpdate.id != requestedUpdate.id
@@ -234,7 +238,7 @@ class FileDownloader(
             destination,
             expectedBase64URLEncodedSHA256Hash
           )
-        }
+        }.hash
       }
     }
   }
@@ -303,7 +307,7 @@ class FileDownloader(
       launchedUpdate = launchedUpdate
     )
 
-    return applyHermesDiff(
+    val result = applyHermesDiff(
       baseFile = launchAssetContext.baseFile,
       diffBody = responseBody,
       destination = destination,
@@ -311,6 +315,10 @@ class FileDownloader(
       asset = asset,
       requestedUpdateId = requestedUpdate?.id?.toString()
     )
+    if (asset.isLaunchAsset) {
+      asset.expectedSize = result.size
+    }
+    return result.hash
   }
 
   internal data class LaunchAssetContext(val baseFile: File)
@@ -389,7 +397,7 @@ class FileDownloader(
     expectedBase64URLEncodedSHA256Hash: String?,
     asset: AssetEntity,
     requestedUpdateId: String?
-  ): ByteArray {
+  ): UpdatesUtils.FileWriteResult {
     val patchFile = File(destination.absolutePath + PATCH_TEMP_SUFFIX)
     val patchedTempFile = File(destination.absolutePath + PATCHED_TEMP_SUFFIX)
 
