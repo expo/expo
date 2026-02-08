@@ -2,7 +2,7 @@ import { promptAsync } from '../../../utils/prompts';
 import { ApiV2Error } from '../../rest/client';
 import { showLoginPromptAsync } from '../actions';
 import { retryUsernamePasswordAuthWithOTPAsync, UserSecondFactorDeviceMethod } from '../otp';
-import { loginAsync, ssoLoginAsync } from '../user';
+import { loginAsync, browserLoginAsync } from '../user';
 
 jest.mock('../../../log');
 jest.mock('../../../utils/prompts');
@@ -22,7 +22,7 @@ beforeEach(() => {
   });
 
   jest.mocked(loginAsync).mockClear();
-  jest.mocked(ssoLoginAsync).mockClear();
+  jest.mocked(browserLoginAsync).mockClear();
 });
 
 describe(showLoginPromptAsync, () => {
@@ -103,10 +103,19 @@ describe(showLoginPromptAsync, () => {
     expect(loginAsync).toHaveBeenCalledTimes(1);
   });
 
-  it('calls SSO login if the sso flag is true', async () => {
+  it('calls browser login with sso=true if the sso flag is true', async () => {
     jest.mocked(promptAsync);
     await showLoginPromptAsync({ username: 'hello', password: 'world', sso: true });
 
-    expect(ssoLoginAsync).toHaveBeenCalledTimes(1);
+    expect(browserLoginAsync).toHaveBeenCalledTimes(1);
+    expect(browserLoginAsync).toHaveBeenCalledWith({ sso: true });
+  });
+
+  it('calls browser login with sso=false if the browser flag is true', async () => {
+    jest.mocked(promptAsync);
+    await showLoginPromptAsync({ username: 'hello', password: 'world', browser: true });
+
+    expect(browserLoginAsync).toHaveBeenCalledTimes(1);
+    expect(browserLoginAsync).toHaveBeenCalledWith({ sso: false });
   });
 });

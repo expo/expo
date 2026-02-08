@@ -4,11 +4,10 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
 import React, { use } from 'react';
 
-import { LocalRouteParamsContext, useRouteNode } from './Route';
+import { LocalRouteParamsContext } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
-import { resolveHref } from './link/href';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
 import { LoaderCacheContext } from './loaders/LoaderCache';
 import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
@@ -370,18 +369,13 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  * }
  */
 export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T> {
-  const routeNode = useRouteNode();
-  const params = useLocalSearchParams();
   const serverDataLoaderContext = use(ServerDataLoaderContext);
   const loaderCache = use(LoaderCacheContext);
 
-  if (!routeNode) {
-    throw new Error('No route node found. This is likely a bug in expo-router.');
-  }
-
-  const resolvedPath = `/${resolveHref({ pathname: routeNode?.route, params })}`;
-  // Normalize by stripping trailing `/index` to match URL pathname
-  const normalizedPath = resolvedPath.replace(/\/index$/, '') || '/';
+  const routeInfo = useRouteInfo();
+  const pathname = routeInfo.pathname || '/';
+  const searchString = routeInfo.searchParams?.toString() || '';
+  const normalizedPath = searchString ? `${pathname}?${searchString}` : pathname;
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {

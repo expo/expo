@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "55.0.0-preview.6",
+  "version": "55.0.0-preview.7",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -73,6 +73,7 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
+    "test:types": "expo-module build -p tsconfig.test.json",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -81,13 +82,13 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/metro-runtime": "^55.0.4",
-    "@expo/log-box": "55.0.5",
+    "@expo/metro-runtime": "^55.0.5",
+    "@expo/log-box": "55.0.6",
     "@react-navigation/drawer": "^7.7.2",
     "@testing-library/react-native": ">= 12.0.0",
     "expo": "*",
-    "expo-constants": "^55.0.3",
-    "expo-linking": "^55.0.3",
+    "expo-constants": "^55.0.4",
+    "expo-linking": "^55.0.4",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",
@@ -132,7 +133,7 @@
     "react-server-dom-webpack": "~19.0.4"
   },
   "dependencies": {
-    "@expo/metro-runtime": "^55.0.4",
+    "@expo/metro-runtime": "^55.0.5",
     "@expo/schema-utils": "^55.0.2",
     "@radix-ui/react-slot": "1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
@@ -142,6 +143,7 @@
     "client-only": "^0.0.1",
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",
+    "expo-glass-effect": "^55.0.5",
     "expo-image": "^55.0.3",
     "expo-server": "^55.0.3",
     "expo-symbols": "^55.0.3",

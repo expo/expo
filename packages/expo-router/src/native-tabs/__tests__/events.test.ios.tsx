@@ -19,7 +19,7 @@ jest.mock('react-native-screens', () => {
   const actualModule = jest.requireActual(
     'react-native-screens'
   ) as typeof import('react-native-screens');
-  let triggerNativeFocusChange: TabsHostProps['onNativeFocusChange'] = () => {};
+  let triggerNativeFocusChange: NonNullable<TabsHostProps['onNativeFocusChange']> = () => {};
   return {
     ...actualModule,
     Tabs: {
@@ -30,8 +30,9 @@ jest.mock('react-native-screens', () => {
       }),
       Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
     },
-    __triggerNativeFocusChange: (event: Parameters<TabsHostProps['onNativeFocusChange']>[0]) =>
-      triggerNativeFocusChange(event),
+    __triggerNativeFocusChange: (
+      event: Parameters<NonNullable<TabsHostProps['onNativeFocusChange']>>[0]
+    ) => triggerNativeFocusChange(event),
   };
 });
 

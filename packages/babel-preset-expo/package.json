@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "55.0.3",
+  "version": "55.0.4",
   "description": "The Babel preset for Expo projects",
   "main": "build/index.js",
   "files": [
@@ -43,7 +43,8 @@
   "peerDependencies": {
     "@babel/runtime": "^7.20.0",
     "react-refresh": ">=0.14.0 <1.0.0",
-    "expo": "*"
+    "expo": "*",
+    "expo-widgets": "^55.0.0-alpha.6"
   },
   "peerDependenciesMeta": {
     "@babel/runtime": {
@@ -51,9 +52,13 @@
     },
     "expo": {
       "optional": true
+    },
+    "expo-widgets": {
+      "optional": true
     }
   },
   "dependencies": {
+    "@babel/generator": "^7.20.5",
     "@babel/helper-module-imports": "^7.25.9",
     "@babel/plugin-proposal-decorators": "^7.12.9",
     "@babel/plugin-syntax-export-default-from": "^7.24.7",

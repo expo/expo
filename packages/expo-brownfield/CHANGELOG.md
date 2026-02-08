@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 55.0.7 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- [Android] fix dev menu in isolated brownfield ([#42637](https://github.com/expo/expo/pull/42637) by [@pmleczek](https://github.com/pmleczek))
+- [cli] handle build:android called with no args ([#42914](https://github.com/expo/expo/pull/42914) by [@pmleczek](https://github.com/pmleczek))
+
+### 💡 Others
+
+- [test] setup maestro e2e tests for expo-brownfield on android in [#42864](https://github.com/expo/expo/pull/42864) by [@pmleczek](https://github.com/pmleczek)
+
 ## 55.0.6 — 2026-02-03
 
 _This version does not introduce any user-facing changes._
@@ -24,6 +35,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - [test] Added E2E tests and improvements for CLI in [#42120](https://github.com/expo/expo/pull/42120) by [@pmleczek](https://github.com/pmleczek)
+- [test] Added E2E tests for the config plugin in [#42374](https://github.com/expo/expo/pull/42374) by [@pmleczek](https://github.com/pmleczek)
 
 ## 55.0.4 — 2026-01-27
 

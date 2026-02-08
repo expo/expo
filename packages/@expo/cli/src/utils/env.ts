@@ -67,7 +67,7 @@ class Env {
   }
   /** Disable auto web setup */
   get EXPO_NO_WEB_SETUP() {
-    return boolish('EXPO_NO_WEB_SETUP', false);
+    return boolish('EXPO_NO_WEB_SETUP', envIsHeadless());
   }
   /** Disable auto TypeScript setup */
   get EXPO_NO_TYPESCRIPT_SETUP() {
@@ -174,13 +174,6 @@ class Env {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
   }
 
-  /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
-   * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
-   */
-  get EXPO_USE_STICKY_RESOLVER() {
-    return boolish('EXPO_USE_STICKY_RESOLVER', false);
-  }
-
   /** Disable Environment Variable injection in client bundles. */
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
@@ -261,14 +254,12 @@ class Env {
 
   /** Disable the React Native Directory compatibility check for new architecture when installing packages */
   get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
-    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', envIsHeadless());
   }
 
   /** Disable the dependency validation when installing other dependencies and starting the project */
   get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
-    // Default to disabling when running in a web container (stackblitz, bolt, etc).
-    const isWebContainer = process.versions.webcontainer != null;
-    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', envIsHeadless());
   }
 
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
@@ -306,7 +297,12 @@ class Env {
    * Enable Bonjour advertising of the Expo CLI on local networks
    */
   get EXPO_UNSTABLE_BONJOUR(): boolean {
-    return boolish('EXPO_UNSTABLE_BONJOUR', false);
+    return boolish('EXPO_UNSTABLE_BONJOUR', !envIsHeadless());
+  }
+
+  /** @internal Configure other environment variables for headless operations */
+  get EXPO_UNSTABLE_HEADLESS() {
+    return boolish('EXPO_UNSTABLE_HEADLESS', envIsWebcontainer());
   }
 }
 
@@ -318,4 +314,8 @@ export function envIsWebcontainer() {
     env.EXPO_FORCE_WEBCONTAINER_ENV ||
     (process.env.SHELL === '/bin/jsh' && !!process.versions.webcontainer)
   );
+}
+
+export function envIsHeadless() {
+  return env.EXPO_UNSTABLE_HEADLESS;
 }

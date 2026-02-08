@@ -24,7 +24,7 @@ jest.mock('node:console', () => {
 });
 
 /** The original reference to `process.env`, containing the actual environment variables. */
-const originalEnv = process.env as Readonly<NodeJS.ProcessEnv>;
+const originalEnv = { ...process.env } as Readonly<NodeJS.ProcessEnv>;
 
 beforeEach(() => {
   vol.reset();
@@ -260,7 +260,8 @@ describe(parseProjectEnv, () => {
     expect(parseProjectEnv('/')).toEqual({
       files: ['/.env'],
       env: {
-        TEST_EXPAND: '${TEST_EXPAND}',
+        // NOTE: This value is untouched before dotenv-expand@11.0.7 but fixed to be empty after
+        TEST_EXPAND: '',
       },
     });
   });

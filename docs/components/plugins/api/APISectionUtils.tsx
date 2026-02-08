@@ -396,7 +396,7 @@ export const resolveTypeName = (
     } else if (type === 'intrinsic') {
       return name ?? 'undefined';
     } else if (type === 'rest' && elementType) {
-      return `...${resolveTypeName(elementType, sdkVersion)}`;
+      return <>...{resolveTypeName(elementType, sdkVersion)}</>;
     } else if (value === null) {
       return 'null';
     }
@@ -522,7 +522,7 @@ export const getCommentContent = (content: CommentContentData[]) => {
   return content
     .map(entry => {
       if (entry.tag === '@link' && !entry.text.includes('/')) {
-        return `[${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}](#${slug(entry.text)})`;
+        return `[\`${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}\`](#${slug(entry.text)})`;
       }
       return entry.text;
     })

@@ -1,0 +1,99 @@
+diff --git a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
+index a9fbbe7d70..f7561327e7 100644
+--- a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
++++ b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
+@@ -12,6 +12,16 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+ import com.facebook.react.modules.core.DeviceEventManagerModule
+ import expo.modules.ExpoReactHostFactory
+ import expo.modules.brownfield.BrownfieldNavigationState
++// Dependencies needed to properly set up expo-dev-menu in brownfield
++import android.view.ViewGroup
++import com.facebook.react.devsupport.DevSupportManagerBase
++import com.facebook.react.devsupport.interfaces.DevSupportManager
++import expo.modules.devmenu.AppInfo
++import expo.modules.devmenu.api.DevMenuApi
++import java.lang.ref.WeakReference
++import expo.modules.brownfield.fetchManifest
++import expo.modules.brownfield.closeAndReopenPackagerConnection
++import expo.modules.manifests.core.ExpoUpdatesManifest
+ 
+ class ReactNativeHostManager {
+   companion object {
+@@ -61,13 +71,44 @@ class ReactNativeHostManager {
+       context = application.applicationContext,
+       packageList = PackageList(application).packages
+     )
++
++    if (BuildConfig.DEBUG) {
++      reactHost?.devSupportManager?.let { devSupportManager ->
++        if (devSupportManager is DevSupportManagerBase) {
++          DevMenuApi.installWebSocketHandlers(devSupportManager)
++          DevMenuApi.uninstallDefaultShakeDetector(devSupportManager)
++          closeAndReopenPackagerConnection(devSupportManager)
++        }
++      }
++    }
+   }
+ }
+ 
+ fun Activity.showReactNativeFragment() {
+   ReactNativeHostManager.shared.initialize(this.application)
+-  val fragment = ReactNativeFragment.createFragmentHost(this)
+-  setContentView(fragment)
++
++  if (BuildConfig.DEBUG) {
++    val reactHost = ReactNativeHostManager.shared.getReactHost()
++    val fragmentHost = DevMenuApi.createFragmentHost(
++      activity = this,
++      reactHostHolder = WeakReference(reactHost),
++    )
++    if (fragmentHost != null) {
++      val reactNativeView = ReactNativeViewFactory.createFrameLayout(
++        this,
++        this as androidx.fragment.app.FragmentActivity,
++        RootComponent.Main
++      )
++      fragmentHost.addView(reactNativeView, ViewGroup.LayoutParams.MATCH_PARENT)
++      setContentView(fragmentHost)
++      maybeGetAppInfoFromManifest(application, reactHost, this)
++    }
++  } else {
++    setContentView(
++      ReactNativeFragment.createFragmentHost(this)
++    )
++  }
++
+   setUpNativeBackHandling()
+ }
+ 
+@@ -97,3 +138,30 @@ fun Activity.setUpNativeBackHandling() {
+ 
+   componentActivity.onBackPressedDispatcher?.addCallback(componentActivity, backCallback)
+ }
++
++internal fun maybeGetAppInfoFromManifest(
++  application: Application, 
++  reactHost: ReactHost?,
++  activity: Activity
++) {
++  if (reactHost == null) {
++    return
++  }
++
++  val defaultAppInfo = AppInfo.getAppInfo(application, reactHost)
++  fetchManifest(reactHost) { manifest, manifestUrl ->
++    if (manifest != null && manifestUrl != null) {
++      val updatedAppInfo = defaultAppInfo.copy(
++        appName = manifest.getName() ?: defaultAppInfo.appName,
++        appVersion = manifest.getVersion() ?: defaultAppInfo.appVersion,
++        sdkVersion = (manifest as? ExpoUpdatesManifest)?.getExpoGoSDKVersion() ?: defaultAppInfo.sdkVersion,
++        runtimeVersion = (manifest as? ExpoUpdatesManifest)?.getRuntimeVersion() ?: defaultAppInfo.runtimeVersion,
++        hostUrl = manifestUrl
++      )
++
++      val viewModel = DevMenuApi.model { activity }.value
++      viewModel?.updateAppInfo(updatedAppInfo)
++      println("Successfully updated dev menu with info from manifest")
++    }
++  }
++}

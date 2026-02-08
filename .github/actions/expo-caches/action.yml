@@ -11,6 +11,9 @@ inputs:
   yarn-docs:
     description: 'Restore yarn /docs cache'
     required: false
+  docs-api-data:
+    description: 'Restore generated Docs API data (TypeDoc JSON)'
+    required: false
   ios-pods:
     description: 'Restore /ios pods cache'
     required: false
@@ -50,31 +53,34 @@ inputs:
 outputs:
   yarn-workspace-hit:
     description: 'Returns true, if yarn workspace cache is up-to-date'
-    value: steps.workspace-modules-cache.outputs.cache-hit
+    value: ${{ steps.workspace-modules-cache.outputs.cache-hit }}
   yarn-tools-hit:
     description: 'Returns true, if yarn /tools cache is up-to-date'
-    value: steps.tools-modules-cache.outputs.cache-hit
+    value: ${{ steps.tools-modules-cache.outputs.cache-hit }}
   yarn-docs-hit:
     description: 'Returns true, if yarn /docs cache is up-to-date'
-    value: steps.docs-modules-cache.outputs.cache-hit
+    value: ${{ steps.docs-modules-cache.outputs.cache-hit }}
+  docs-api-data-hit:
+    description: 'Returns true, if Docs API data cache is up-to-date'
+    value: ${{ steps.docs-api-data-cache.outputs.cache-hit }}
   ios-pods-hit:
     description: 'Returns true, if /ios pods cache is up-to-date'
-    value: steps.ios-pods-cache.outputs.cache-hit
+    value: ${{ steps.ios-pods-cache.outputs.cache-hit }}
   bare-expo-pods-hit:
     description: 'Returns true, if /apps/bare-expo/ios pods cache is up-to-date'
-    value: steps.bare-expo-pods-cache.outputs.cache-hit
+    value: ${{ steps.bare-expo-pods-cache.outputs.cache-hit }}
   bare-expo-macos-pods-hit:
     description: 'Returns true, if /apps/bare-expo/macos pods cache is up-to-date'
-    value: steps.bare-expo-macos-pods-cache.outputs.cache-hit
+    value: ${{ steps.bare-expo-macos-pods-cache.outputs.cache-hit }}
   native-tests-pods-hit:
     description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
-    value: steps.native-tests-pods-cache.outputs.cache-hit
+    value: ${{ steps.native-tests-pods-cache.outputs.cache-hit }}
   git-lfs-hit:
     description: 'Returns true, if Git LFS cache is up-to-date'
-    value: steps.git-lfs-cache.outputs.cache-hit
+    value: ${{ steps.git-lfs-cache.outputs.cache-hit }}
   hermes-engine-aar-hit:
     description: 'Returns true, if prebuilt hermes-engine AAR cache is up-to-date'
-    value: steps.cache-hermes-engine-aar.outputs.cache-hit
+    value: ${{ steps.cache-hermes-engine-aar.outputs.cache-hit }}
 
 runs:
   using: 'composite'
@@ -112,11 +118,28 @@ runs:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/yarn.lock') }}
     - name: ♻️ Restore Docs Next cache
-      if: inputs.yarn-docs == 'true' && steps.docs-modules-cache.outputs.cache-hit == 'true'
+      if: inputs.yarn-docs == 'true'
       uses: actions/cache@v4
       with:
         path: docs/.next/cache
-        key: ${{ runner.os }}-docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/next.config.js') }}
+        key: ${{ runner.os }}-docs-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/**/*.js', 'docs/**/*.jsx', 'docs/**/*.ts', 'docs/**/*.tsx') }}
+        restore-keys: |
+          ${{ runner.os }}-docs-${{ hashFiles('docs/yarn.lock') }}-
+    - name: ♻️ Restore Docs ESLint cache
+      if: inputs.yarn-docs == 'true'
+      uses: actions/cache@v4
+      with:
+        path: docs/.eslintcache
+        key: ${{ runner.os }}-docs-eslint-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/eslint.config.mjs') }}
+        restore-keys: ${{ runner.os }}-docs-eslint-${{ hashFiles('docs/yarn.lock') }}-
+
+    - name: ♻️ Restore Docs API data
+      if: inputs.docs-api-data == 'true'
+      uses: actions/cache@v4
+      id: docs-api-data-cache
+      with:
+        path: docs/public/static/data/unversioned
+        key: docs-api-data-${{ hashFiles('packages/*/src/**/*.ts', 'packages/*/src/**/*.tsx', 'packages/@expo/*/src/**/*.ts', 'packages/*/tsconfig.json', 'packages/@expo/*/tsconfig.json', 'tools/src/commands/GenerateDocsAPIData.ts', 'tools/yarn.lock') }}
 
     - name: ♻️ Restore ios/Pods from cache
       if: inputs.ios-pods == 'true'

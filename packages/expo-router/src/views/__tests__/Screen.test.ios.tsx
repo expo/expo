@@ -1,8 +1,14 @@
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { screen } from '@testing-library/react-native';
 import { View } from 'react-native';
 
 import Stack from '../../layouts/Stack';
 import { renderRouter } from '../../testing-library';
+
+type HeaderTitleFunction = Extract<
+  NativeStackNavigationOptions['headerTitle'],
+  (...args: any) => any
+>;
 
 describe('Screen', () => {
   it('should throw an error when name is set outside of a Layout', () => {
@@ -75,7 +81,7 @@ describe('Screen', () => {
   });
 
   it('should set options when used inside a Layout', () => {
-    const headerTitle = jest.fn(() => null);
+    const headerTitle = jest.fn((...args: Parameters<HeaderTitleFunction>) => null);
     renderRouter({
       _layout: () => (
         <Stack screenOptions={{ headerTitle }}>
@@ -98,7 +104,7 @@ describe('Screen', () => {
     );
   });
   it('should set options when used inside a Screen', () => {
-    const headerTitle = jest.fn(() => null);
+    const headerTitle = jest.fn((...args: Parameters<HeaderTitleFunction>) => null);
     renderRouter({
       _layout: () => <Stack screenOptions={{ headerTitle }} />,
       index: () => <Stack.Screen options={{ title: 'Test Title' }} />,

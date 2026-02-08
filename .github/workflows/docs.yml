@@ -24,11 +24,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 30000
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
       - name: ♻️ Restore caches
@@ -38,6 +38,7 @@ jobs:
           yarn-docs: 'true'
           yarn-tools: 'true'
           yarn-workspace: 'true'
+          docs-api-data: 'true'
       - name: 🧶 Install workspace deps on cache miss
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --immutable
@@ -48,6 +49,7 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📝 Regenerate `unversioned` data for Docs
+        if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
         run: expotools generate-docs-api-data
       - name: 🧶 Yarn install
         working-directory: docs
@@ -82,14 +84,21 @@ jobs:
         working-directory: docs
         run: yarn lint-links --quiet
       - name: 🚀 Deploy Docs website
+        if: github.ref == 'refs/heads/main'
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy --branch=main
+          workingDirectory: docs
+      - name: 🧹 Prune old production deployments
+        if: github.ref == 'refs/heads/main'
         working-directory: docs
-        if: ${{ github.event.ref == 'refs/heads/main' }}
-        run: ./deploy.sh
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-2'
-          AWS_BUCKET: 'docs.expo.dev'
+          CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/prune-cloudflare-deployments.mjs --project=expo-docs --branch=main --keep=2
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && github.event.ref == 'refs/heads/main'

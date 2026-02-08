@@ -178,6 +178,7 @@ export const renderMethod = (
             type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
               <>
                 <div
+                  data-md="api-returns"
                   className={mergeClasses(
                     'flex flex-row items-start gap-2',
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING

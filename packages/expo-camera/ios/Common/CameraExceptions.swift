@@ -8,7 +8,7 @@ internal final class CameraUnmountedException: Exception {
 
 internal final class CameraNotReadyException: Exception {
   override var reason: String {
-    "Camera unmounted during taking photo process"
+    "Camera is not ready yet"
   }
 }
 
@@ -57,5 +57,11 @@ internal final class CameraInvalidPhotoData: Exception {
 internal final class CameraToggleRecordingException: Exception {
   override var reason: String {
     "`toggleRecording()` is only supported on iOS 18.0 or later"
+  }
+}
+
+internal final class CameraScannerUnavailableException: Exception {
+  override var reason: String {
+    "Modern barcode scanner is not available on this device"
   }
 }
