@@ -4,11 +4,16 @@ import {
   cleanHtml,
   cleanMarkdown,
   convertHtmlToMarkdown,
+  extractFrontmatter,
+  findMdxSource,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
 
 // eslint-disable-next-line import/order -- cheerio must be imported after the local module for jest ESM transforms
 import * as cheerio from 'cheerio';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 describe('cleanHtml', () => {
   it('removes buttons', () => {
@@ -830,5 +835,127 @@ describe('code block language from data-md-lang', () => {
       '<main><pre data-md-lang="typescript"><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```typescript\nconst x = 1;\n```');
+  });
+});
+
+describe('findMdxSource', () => {
+  const tmpDir = path.join(os.tmpdir(), 'findMdxSource-test-' + Date.now());
+  const outDir = path.join(tmpDir, 'out');
+  const pagesDir = path.join(tmpDir, 'pages');
+
+  beforeAll(() => {
+    // pages/guides/routing.mdx  (direct .mdx file)
+    fs.mkdirSync(path.join(pagesDir, 'guides'), { recursive: true });
+    fs.writeFileSync(path.join(pagesDir, 'guides/routing.mdx'), '---\ntitle: Routing\n---\n');
+
+    // pages/archive/index.mdx  (index file in directory)
+    fs.mkdirSync(path.join(pagesDir, 'archive'), { recursive: true });
+    fs.writeFileSync(path.join(pagesDir, 'archive/index.mdx'), '---\ntitle: Archive\n---\n');
+
+    // pages/versions/v55/sdk/camera.mdx  (deeply nested)
+    fs.mkdirSync(path.join(pagesDir, 'versions/v55/sdk'), { recursive: true });
+    fs.writeFileSync(
+      path.join(pagesDir, 'versions/v55/sdk/camera.mdx'),
+      '---\ntitle: Camera\n---\n'
+    );
+
+    // Create corresponding output directories
+    fs.mkdirSync(path.join(outDir, 'guides/routing'), { recursive: true });
+    fs.mkdirSync(path.join(outDir, 'archive'), { recursive: true });
+    fs.mkdirSync(path.join(outDir, 'versions/v55/sdk/camera'), { recursive: true });
+    fs.mkdirSync(path.join(outDir, 'no-source'), { recursive: true });
+  });
+
+  afterAll(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('finds direct .mdx file for route', () => {
+    const result = findMdxSource(
+      path.join(outDir, 'guides/routing/index.html'),
+      outDir,
+      pagesDir
+    );
+    expect(result).toBe(path.join(pagesDir, 'guides/routing.mdx'));
+  });
+
+  it('finds index.mdx when direct .mdx does not exist', () => {
+    const result = findMdxSource(path.join(outDir, 'archive/index.html'), outDir, pagesDir);
+    expect(result).toBe(path.join(pagesDir, 'archive/index.mdx'));
+  });
+
+  it('finds deeply nested mdx source', () => {
+    const result = findMdxSource(
+      path.join(outDir, 'versions/v55/sdk/camera/index.html'),
+      outDir,
+      pagesDir
+    );
+    expect(result).toBe(path.join(pagesDir, 'versions/v55/sdk/camera.mdx'));
+  });
+
+  it('returns null when no mdx source exists', () => {
+    const result = findMdxSource(path.join(outDir, 'no-source/index.html'), outDir, pagesDir);
+    expect(result).toBeNull();
+  });
+});
+
+describe('extractFrontmatter', () => {
+  const tmpDir = path.join(os.tmpdir(), 'extractFrontmatter-test-' + Date.now());
+
+  beforeAll(() => {
+    fs.mkdirSync(tmpDir, { recursive: true });
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'full.mdx'),
+      [
+        '---',
+        'title: Camera',
+        "description: A camera component.",
+        "platforms: ['android', 'ios']",
+        '---',
+        '',
+        "import Foo from './Foo';",
+        '',
+      ].join('\n')
+    );
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'minimal.mdx'),
+      '---\ntitle: Minimal\n---\n\n# Minimal\n'
+    );
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'no-frontmatter.mdx'),
+      "import Foo from './Foo';\n\n# Hello\n"
+    );
+  });
+
+  afterAll(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('extracts full frontmatter including delimiters', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'full.mdx'));
+    expect(result).not.toBeNull();
+    expect(result).toContain('title: Camera');
+    expect(result).toContain('description: A camera component.');
+    expect(result).toContain('platforms:');
+    // Should include --- delimiters
+    expect(result).toMatch(/^---\n/);
+    expect(result).toMatch(/\n---\n$/);
+    // Should NOT include content after frontmatter
+    expect(result).not.toContain('import');
+  });
+
+  it('extracts minimal frontmatter', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'minimal.mdx'));
+    expect(result).not.toBeNull();
+    expect(result).toContain('title: Minimal');
+    expect(result).not.toContain('# Minimal');
+  });
+
+  it('returns null when no frontmatter exists', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'no-frontmatter.mdx'));
+    expect(result).toBeNull();
   });
 });
