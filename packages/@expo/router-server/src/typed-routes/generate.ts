@@ -120,6 +120,9 @@ import * as Router from 'expo-router';
 
 export * from 'expo-router';
 
+// Re-export Link with proper static property types
+export declare const Link: Router.LinkComponent;
+
 declare module 'expo-router' {
   export namespace ExpoRouter {
     export interface __routes<T extends string | object = string> {

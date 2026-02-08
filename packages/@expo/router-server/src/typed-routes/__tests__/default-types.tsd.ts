@@ -6,6 +6,7 @@ import {
   useLocalSearchParams,
   useSegments,
   UnknownOutputParams,
+  Link,
 } from './fixtures/default';
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -264,5 +265,28 @@ describe('set params', () => {
   });
   it('works without a generic', () => {
     expectType<void>(router.setParams({ hello: 'world' }));
+  });
+});
+describe('Link static properties', () => {
+  it('has AppleZoom property', () => {
+    expectType<typeof Link.AppleZoom>(Link.AppleZoom);
+  });
+  it('has AppleZoomTarget property', () => {
+    expectType<typeof Link.AppleZoomTarget>(Link.AppleZoomTarget);
+  });
+  it('has resolveHref property', () => {
+    expectType<typeof Link.resolveHref>(Link.resolveHref);
+  });
+  it('has Menu property', () => {
+    expectType<typeof Link.Menu>(Link.Menu);
+  });
+  it('has Trigger property', () => {
+    expectType<typeof Link.Trigger>(Link.Trigger);
+  });
+  it('has Preview property', () => {
+    expectType<typeof Link.Preview>(Link.Preview);
+  });
+  it('has MenuAction property', () => {
+    expectType<typeof Link.MenuAction>(Link.MenuAction);
   });
 });
