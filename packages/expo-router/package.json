@@ -73,6 +73,7 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
+    "test:types": "expo-module build -p tsconfig.test.json",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },

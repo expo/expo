@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Optimized `response.arrayBuffer` implementation. ([#42643](https://github.com/expo/expo/pull/42643) by [@barthap](https://github.com/barthap))
+
 ## 55.0.0-preview.9 — 2026-02-03
 
 ### 🐛 Bug fixes

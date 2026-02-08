@@ -1,0 +1,315 @@
+# Old redirects
+/distribution/building-standalone-apps /build/setup 301
+
+# clients is now development
+/clients/installation /versions/latest/sdk/dev-client 301
+
+# Expo Modules
+/modules /modules/overview 301
+/module-api /modules/module-api 301
+/module-config /modules/module-config 301
+
+# Development builds
+/development/build /develop/development-builds/create-a-build 301
+/development/getting-started /develop/development-builds/create-a-build 301
+/development/troubleshooting /develop/development-builds/introduction 301
+/development/upgrading /develop/development-builds/introduction 301
+/development/extensions /develop/development-builds/development-workflows 301
+/development/develop-your-project /develop/development-builds/use-development-builds 301
+/develop/development-builds/installation /develop/development-builds/create-a-build 301
+
+# Guides that have been deleted
+/guides/web-performance /guides/analyzing-bundles 301
+/push-notifications/obtaining-a-device-token-for-fcm-or-apns /push-notifications/sending-notifications-custom 301
+
+# Redirects after adding Home to the docs
+/next-steps/additional-resources /additional-resources 301
+/get-started/create-a-new-app /get-started/create-a-project 301
+/guides/config-plugins /config-plugins/introduction 301
+/workflow/debugging /debugging/runtime-issues 301
+/workflow/expo-go /get-started/set-up-your-environment 301
+/guides/splash-screens /develop/user-interface/splash-screen 301
+/guides/app-icons /develop/user-interface/app-icons 301
+/guides/color-schemes /develop/user-interface/color-themes 301
+/development/introduction /develop/development-builds/introduction 301
+/development/create-development-builds /develop/development-builds/create-a-build 301
+/development/use-development-builds /develop/development-builds/use-development-builds 301
+/development/development-workflows /develop/development-builds/development-workflows 301
+/debugging /debugging/runtime-issues 301
+/debugging/runtime-issue /debugging/runtime-issues 301
+/develop/development-builds/parallel-installation /build-reference/variants 301
+/guides/assets /develop/user-interface/assets 301
+
+# Redirects after Guides organization
+/guides /guides/overview 301
+/guides/routing-and-navigation /routing/introduction 301
+/guides/errors /debugging/runtime-issues 301
+/workflow/expo-cli /more/expo-cli 301
+/versions/latest/workflow/expo-cli /more/expo-cli 301
+/bare/hello-world /bare/overview 301
+/guides/using-graphql /guides/overview 301
+/build/automating-submissions /build/automate-submissions 301
+/workflow/run-on-device /build/internal-distribution 301
+/archive/workflow/customizing /workflow/customizing 301
+/guides/building-standalone-apps /build/setup 301
+/versions/latest/sdk/permissions /guides/permissions 301
+/push-notifications/using-fcm /push-notifications/push-notifications-setup 301
+
+# Redirects reported from SEO tools list (MOZ, SEMRush, GSC, etc.)
+/bare/installing-unimodules /bare/installing-expo-modules 301
+/versions/latest/sdk/admob /versions/latest 301
+/workflow/publishing /archive/classic-updates/publishing 301
+/workflow/already-used-react-native /workflow/overview 301
+/development/installation /develop/development-builds/create-a-build 301
+/bare/updating-your-app /eas-update/getting-started 301
+/technical-specs/expo-updates-0 /technical-specs/expo-updates-1 301
+/archive/expokit/eject /archive/glossary 301
+/archive/expokit/overview /archive/glossary 301
+/expokit/overview /archive/glossary 301
+/bare/existing-apps /bare/installing-expo-modules 301
+/bare/exploring-bare-workflow /bare/overview 301
+/build-reference/custom-build-config /custom-builds/get-started 301
+/build-reference/how-tos /build-reference/private-npm-packages 301
+/eas-update/migrate-codepush-to-eas-update /eas-update/codepush 301
+/guides/testing-on-devices /build/internal-distribution 301
+/technical-specs/latest /technical-specs/expo-updates-1 301
+
+# We should change this redirect to a more general EAS guide later
+/guides/setting-up-continuous-integration /build/building-on-ci 301
+
+# Moved classic updates
+/distribution/release-channels /archive/classic-updates/release-channels 301
+/distribution/advanced-release-channels /archive/classic-updates/advanced-release-channels 301
+/distribution/optimizing-updates /archive/classic-updates/optimizing-updates 301
+/distribution/runtime-versions /eas-update/runtime-versions 301
+/guides/offline-support /archive/classic-updates/offline-support 301
+/guides/preloading-and-caching-assets /archive/classic-updates/preloading-and-caching-assets 301
+/guides/configuring-updates /archive/classic-updates/configuring-updates 301
+/eas-update/bare-react-native /eas-update/getting-started 301
+/worfkflow/publishing /archive/classic-updates/publishing 301
+/classic/building-standalone-apps /build/setup 301
+/classic/turtle-cli /build/setup 301
+/archive/classic-updates/getting-started /eas-update/getting-started 301
+/archive/classic-updates/building-standalone-apps /build/setup 301
+
+# EAS Update
+/eas-update/developing-with-eas-update /eas-update/develop-faster 301
+/eas-update/eas-update-with-local-build /eas-update/standalone-service 301
+/eas-update/eas-update-and-eas-cli /eas-update/eas-cli 301
+/eas-update/debug-updates /eas-update/debug 301
+/eas-update/how-eas-update-works /eas-update/how-it-works 301
+/eas-update/migrate-to-eas-update /eas-update/migrate-from-classic-updates 301
+/eas-update/custom-updates-server /versions/latest/sdk/updates 301
+/distribution/custom-updates-server /versions/latest/sdk/updates 301
+/bare/error-recovery /eas-update/error-recovery 301
+/deploy/instant-updates /eas-update/send-over-the-air-updates 301
+/eas-update/publish /eas-update/getting-started 301
+/eas-update/debug-advanced /eas-update/debug 301
+/eas-update/develop-faster /eas-update/preview 301
+
+# Redirects for Expo Router docs
+/routing/next-steps /router/introduction 301
+/routing/introduction /router/introduction 301
+/routing/installation /router/installation 301
+/routing/create-pages /router/create-pages 301
+/routing/navigating-pages /router/navigating-pages 301
+/routing/layouts /router/basics/layout 301
+/routing/appearance /router/introduction 301
+/routing/error-handling /router/error-handling 301
+/router/advance/root-layout /router/basics/layout/#root-layout 301
+/router/advance/stack /router/advanced/stack 301
+/router/advance/tabs /router/advanced/tabs 301
+/router/advance/drawer /router/advanced/drawer 301
+/router/advance/nesting-navigators /router/advanced/nesting-navigators 301
+/router/advance/modal /router/advanced/modals 301
+/router/advance/platform-specific-modules /router/advanced/platform-specific-modules 301
+/router/reference/platform-specific-modules /router/advanced/platform-specific-modules 301
+/router/advance/shared-routes /router/advanced/shared-routes 301
+/router/advance/router-setttings /router/advanced/router-settings 301
+/router/reference/search-parameters /router/reference/url-parameters 301
+/router/appearance /router/introduction 301
+
+# Removed API reference docs
+/versions/latest/sdk/facebook /guides/authentication 301
+/versions/latest/sdk/taskmanager /versions/latest/sdk/task-manager 301
+/versions/latest/sdk/videothumbnails /versions/latest/sdk/video-thumbnails 301
+/versions/latest/sdk/appearance /versions/latest/react-native/appearance 301
+/versions/latest/sdk/app-loading /versions/latest/sdk/splash-screen 301
+/versions/latest/sdk/app-auth /guides/authentication 301
+/versions/latest/sdk/firebase-core /guides/using-firebase 301
+/versions/latest/sdk/firebase-analytics /guides/using-firebase 301
+/versions/latest/sdk/firebase-recaptcha /guides/using-firebase 301
+/versions/latest/sdk/google-sign-in /guides/authentication 301
+/versions/latest/sdk/google /guides/authentication 301
+/versions/latest/sdk/amplitude /guides/using-analytics 301
+/versions/latest/sdk/util /versions/latest 301
+/versions/latest/introduction/faq /faq 301
+/versions/latest/sdk/in-app-purchases /guides/in-app-purchases/ 301
+
+# Redirects based on Sentry reports
+/push-notifications /push-notifications/overview 301
+/eas/submit /submit/introduction 301
+/development/tools/expo-dev-client /develop/development-builds/introduction 301
+/develop/user-interface/custom-fonts /develop/user-interface/fonts 301
+/workflow/snack /more/glossary-of-terms 301
+/accounts/teams-and-accounts /accounts/account-types 301
+/push-notifications/fcm /push-notifications/sending-notifications-custom 301
+/troubleshooting/clear-cache-mac /troubleshooting/clear-cache-macos-linux 301
+/guides/using-preact /guides/overview 301
+/versions/latest/sdk/shared-element /versions/latest 301
+/workflow/hermes /guides/using-hermes 301
+
+# Redirects based on Algolia 404 report
+/workflow/build/building-on-ci /build/building-on-ci 301
+/versions/v52.0.0/sdk/taskmanager /versions/v52.0.0/sdk/task-manager 301
+/task-manager /versions/latest/sdk/task-manager 301
+/versions/latest/sdk/filesystem.md /versions/latest/sdk/filesystem 301
+/guides/how-expo-works /faq 301
+/config/app /workflow/configuration 301
+/guides/authentication.md /guides/authentication 301
+/versions/latest/workflow/linking /guides/linking 301
+/versions/latest/sdk/overview /versions/latest 301
+
+# Deprecated webpack
+/guides/customizing-webpack /archive/customizing-webpack 301
+
+# May 2024 home / get started section
+/overview /get-started/introduction 301
+/get-started/installation /get-started/create-a-project 301
+/get-started/expo-go /get-started/set-up-your-environment 301
+
+# Redirect for /learn URL
+/learn /tutorial/introduction 301
+
+# May 2024 home / develop section
+/develop/user-interface/app-icons /develop/user-interface/splash-screen-and-app-icon 301
+/develop/user-interface/splash-screen /develop/user-interface/splash-screen-and-app-icon 301
+
+# Preview section
+/preview/support /preview/introduction 301
+/preview/react-compiler /guides/react-compiler 301
+
+# Archived
+/guides/using-flipper /debugging/tools 301
+
+# Troubleshooting section
+/guides/troubleshooting-proxies /troubleshooting/proxies 301
+
+# After adding "Linking" (/linking/**) section
+/guides/linking /linking/overview 301
+/guides/deep-linking /linking/into-your-app 301
+
+# After adding /sdk/router/ API reference
+/router/reference/hooks /versions/latest/sdk/router 301
+
+# After moving custom tabs under Expo Router > Navigation patterns
+/router/ui/tabs /router/advanced/custom-tabs 301
+
+# After new environment variables guide
+/build-reference/variables /eas/environment-variables 301
+/eas-update/environment-variables /eas/environment-variables 301
+
+# After moving common questions from Expo Router FAQ to Introduction
+/router/reference/faq /router/introduction 301
+
+# After migrating Prebuild page info to CNG page
+/workflow/prebuild /workflow/continuous-native-generation 301
+
+# After removing UI programming section
+/ui-programming/image-background /tutorial/overview 301
+/ui-programming/implementing-a-checkbox /versions/latest/sdk/checkbox 301
+/ui-programming/z-index /tutorial/overview 301
+/ui-programming/using-svgs /versions/latest/sdk/svg 301
+/ui-programming/react-native-toast /tutorial/overview 301
+/ui-programming/react-native-styling-buttons /tutorial/overview 301
+/ui-programming/user-interface-libraries /tutorial/overview 301
+
+# After renaming "workflows" to "eas-workflows"
+/workflows/get-started /eas/workflows/get-started 301
+/workflows/triggers /eas/workflows/syntax/#on 301
+/workflows/jobs /eas/workflows/syntax/#jobs 301
+/workflows/control-flow /eas/workflows/syntax/#control-flow 301
+/workflows/variables /eas/workflows/syntax/#jobsjob_idoutputs 301
+
+# After moving eas-workflows to eas/workflows
+/eas-workflows/get-started /eas/workflows/get-started 301
+/eas-workflows/triggers /eas/workflows/syntax/#on 301
+/eas-workflows/jobs /eas/workflows/syntax/#jobs 301
+/eas-workflows/control-flow /eas/workflows/syntax/#control-flow 301
+/eas-workflows/variables /eas/workflows/syntax/#jobsjob_idoutputs 301
+/eas-workflows/upgrade /eas/workflows/automating-eas-cli 301
+/eas/workflows/upgrade /eas/workflows/automating-eas-cli 301
+
+# After moving eas/workflows/examples to eas/workflows/examples/*
+/eas/workflows/examples /eas/workflows/examples/introduction 301
+/eas/workflows/reference/e2e-tests /eas/workflows/examples/e2e-tests 301
+
+# After moving e2e-tests to eas/workflows/reference
+/build-reference/e2e-tests /eas/workflows/examples/e2e-tests 301
+
+# After adding distribution section under EAS
+/distribution/publishing-websites /guides/publishing-websites 301
+
+# Based on Google Search Console not found report 2025-01-02
+/versions/latest/sdk/sqlite-next /versions/latest/sdk/sqlite 301
+/versions/latest/sdk/camera-next /versions/latest/sdk/camera 301
+/home/overview / 301
+/develop/project-structure /get-started/start-developing 301
+/versions/latest/sdk/bar-code-scanner /versions/latest/sdk/camera 301
+/bare/using-expo-client /bare/install-dev-builds-in-bare 301
+/versions/latest/sdk/sqlite-legacy /versions/latest/sdk/sqlite 301
+/versions/latest/config/app/name /versions/latest/config/app/#name 301
+/bare /bare/overview 301
+/accounts/working-together /accounts/account-types 301
+/versions/latest/sdk/random /versions/latest/sdk/crypto 301
+/eas-update/known-issues /eas-update/introduction 301
+
+# After consolidating the "Internal distribution" information
+/guides/sharing-preview-releases /build/internal-distribution 301
+
+# After merging EAS environment variables guides
+/eas/using-environment-variables /eas/environment-variables 301
+
+# After Expo Router Getting Started Guide
+/router/reference/authentication /router/advanced/authentication 301
+/router/advanced/root-layout /router/basics/layout/#root-layout 301
+/router/reference/not-found /router/error-handling 301
+/router/navigating-pages /router/basics/navigation 301
+/router/create-pages /router/basics/core-concepts 301
+
+# After updating config plugin section
+/config-plugins/plugins-and-mods /config-plugins/plugins 301
+
+# After merging registerRootComponent info in `expo` API reference
+/versions/v53.0.0/sdk/register-root-component /versions/latest/sdk/expo/#registerrootcomponentcomponent 301
+/versions/v53.0.0/sdk/url /versions/v53.0.0/sdk/expo/#url-api 301
+/versions/v53.0.0/sdk/encoding /versions/v53.0.0/sdk/expo/#encoding-api 301
+
+# After adding System bars
+/guides/configuring-statusbar /develop/user-interface/system-bars 301
+
+# After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
+/regulatory-compliance/privacy-shield /regulatory-compliance/data-and-privacy-protection 301
+
+# After changing brownfield docs
+/brownfield/installing-expo-modules /brownfield/get-started 301
+
+# After removing Navigation section from Home and adding a Navigation page
+/develop/file-based-routing /develop/app-navigation 301
+/develop/dynamic-routes /develop/app-navigation 301
+/develop/next-steps /develop/app-navigation 301
+
+# After moving server-focused Expo Router docs under /router/web/**
+/router/reference/api-routes /router/web/api-routes 301
+/router/reference/middleware /router/web/middleware 301
+/router/reference/static-rendering /router/web/static-rendering 301
+/router/reference/async-routes /router/web/async-routes 301
+
+# After moving FAQ to EAS Update page
+/eas-update/faq /eas-update/introduction 301
+
+# After moving MetadataFAQ to EAS Metadata page
+/eas/metadata/faq /eas/metadata 301
+
+# After creating EAS environment variables section
+/eas/hosting/environment-variables /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301

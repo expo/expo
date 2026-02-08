@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.FrameworkAPI;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.interop.UIBlockViewResolver;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -25,6 +26,7 @@ import java.util.Objects;
 import java.util.WeakHashMap;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import expo.modules.BuildConfig;
 import expo.modules.core.interfaces.ActivityEventListener;
 import expo.modules.core.interfaces.ActivityProvider;
@@ -33,6 +35,7 @@ import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.UIManager;
 
+@OptIn(markerClass = UnstableReactNativeAPI.class)
 public class UIManagerModuleWrapper implements
   ActivityProvider,
   InternalModule,
@@ -277,6 +280,7 @@ public class UIManagerModuleWrapper implements
   }
 }
 
+@OptIn(markerClass = UnstableReactNativeAPI.class)
 @SuppressWarnings("deprecation")
 interface UIBlockInterface extends com.facebook.react.uimanager.UIBlock, com.facebook.react.fabric.interop.UIBlock {
 }

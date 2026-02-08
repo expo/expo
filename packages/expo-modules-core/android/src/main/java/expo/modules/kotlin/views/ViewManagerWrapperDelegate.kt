@@ -105,7 +105,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder<*>, int
     }
   }
 
-  fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? = buildMap {
+  fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> = buildMap {
     definition
       .callbacksDefinition
       ?.names

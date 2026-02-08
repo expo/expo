@@ -30,11 +30,14 @@ const action = async () => {
     if (config.tasks.length > 0) {
         tasks = config.tasks;
     }
-    else {
+    else if (config.repositories.length > 0) {
         for (const repository of config.repositories) {
             const task = constructTask(config.buildType, repository);
             tasks.push(task);
         }
+    }
+    else {
+        constants_1.Errors.missingTasksOrRepositories();
     }
     for (const task of tasks) {
         if (!config.dryRun) {

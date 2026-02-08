@@ -41,7 +41,7 @@ it('deep link to a redirect', () => {
     {
       source: '/foo',
       destination: '/bar',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter(
@@ -78,7 +78,7 @@ it('deep link to a dynamic redirect', () => {
     {
       source: '/foo/[slug]',
       destination: 'deeply/nested/route/[slug]',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter(
@@ -119,7 +119,7 @@ it('keeps extra params as query params', () => {
     {
       source: '/foo/[slug]',
       destination: '/bar',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter(
@@ -154,7 +154,7 @@ it('can redirect from single to catch all', () => {
     {
       source: '/foo/[slug]',
       destination: 'bar/[...slug]',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter(
@@ -195,7 +195,7 @@ it('can push to a redirect', () => {
     {
       source: '/foo',
       destination: '/bar',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter({
@@ -265,7 +265,7 @@ it('does not render redirects in tabs', async () => {
     {
       source: '/foo',
       destination: '/bar',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter({
@@ -282,7 +282,7 @@ it('redirect to external URL', async () => {
     {
       source: '/foo',
       destination: '//example.com',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter({
@@ -301,7 +301,7 @@ it('redirects will override existing routes', () => {
     {
       source: '(tabs)/explore',
       destination: '//example.com',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter({
@@ -322,7 +322,7 @@ it('tabs can still work for redirects', () => {
     {
       source: './(tabs)/explore',
       destination: '/page',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter(
@@ -349,7 +349,7 @@ it('tabs can still work for external redirects', () => {
     {
       source: './(tabs)/explore.tsx',
       destination: '//example.com',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter(
@@ -374,7 +374,7 @@ it('not existing nested route redirects correctly', () => {
     {
       source: '/test/1234',
       destination: '/explore',
-    },
+    } as RedirectConfig,
   ]);
 
   renderRouter(

@@ -6,14 +6,31 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActionButton, Header } from '@/components';
 
 type MessageType = Record<string, any>;
-const MESSAGE: MessageType = {};
+const MESSAGE: MessageType = {
+  sender: 'brownfield-tester/expo-app',
+  source: {
+    platform: 'React Native',
+  },
+  timestamps: new Date().toISOString(),
+  data: {
+    message: 'Hello, world!',
+    array: [1, 2, 3, 4, 5, true, false, { key: 'value' }],
+    object: { key: 'value' },
+  },
+};
 
 const Communication = () => {
   const [message, setMessage] = useState<MessageType>({});
+  const [multiple, setMultiple] = useState(false);
 
   useEffect(() => {
     const subscription = ExpoBrownfield.addMessageListener((event) => {
-      setMessage(event);
+      setMessage((prev) => {
+        if (Object.keys(prev).length > 0) {
+          setMultiple(true);
+        }
+        return event;
+      });
     });
 
     return () => {
@@ -29,10 +46,13 @@ const Communication = () => {
         description="Send a message to the native app"
         icon="send"
         onPress={() => ExpoBrownfield.sendMessage(MESSAGE)}
+        testID="communication-send-message"
       />
       <View style={styles.container}>
-        <Text style={styles.title}>Received message (latest):</Text>
-        <Text style={styles.message}>{JSON.stringify(message, null, 2)}</Text>
+        <Text style={styles.title}>Received message (multiple: {String(multiple)})</Text>
+        <Text style={styles.message} testID="communication-received-message">
+          {JSON.stringify(message, null, 2)}
+        </Text>
       </View>
     </SafeAreaView>
   );
