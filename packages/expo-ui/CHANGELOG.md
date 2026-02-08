@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `selection` and `onSelectionChange` to `presentationDetents` modifier for programmatic control of bottom sheet detents. ([#42910](https://github.com/expo/expo/pull/42910) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

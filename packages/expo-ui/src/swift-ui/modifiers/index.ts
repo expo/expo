@@ -9,7 +9,7 @@ import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
 import { contentShape } from './contentShape';
-import { createModifier, ModifierConfig } from './createModifier';
+import { createModifier, createModifierWithEventListener, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
@@ -17,17 +17,6 @@ import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
-
-/**
- * Creates a modifier with an event listener.
- */
-function createModifierWithEventListener(
-  type: string,
-  eventListener: (args: any) => void,
-  params: Record<string, any> = {}
-): ModifierConfig {
-  return { $type: type, ...params, eventListener };
-}
 
 // =============================================================================
 // Built-in Modifier Functions

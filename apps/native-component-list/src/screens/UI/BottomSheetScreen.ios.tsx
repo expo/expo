@@ -3,6 +3,7 @@ import {
   BottomSheet,
   Form,
   Host,
+  List,
   Picker,
   RNHostView,
   Section,
@@ -42,6 +43,15 @@ export default function BottomSheetScreen() {
   const [dragIndicator, setDragIndicator] = React.useState<DragIndicatorOption>('automatic');
   const [backgroundInteractionEnabled, setBackgroundInteractionEnabled] = React.useState(false);
   const [dismissDisabled, setDismissDisabled] = React.useState(false);
+
+  const [showSelectionTracking, setShowSelectionTracking] = React.useState(false);
+  const selectionDetents: PresentationDetent[] = [
+    { height: 300 },
+    { fraction: 0.3 },
+    'medium',
+    'large',
+  ];
+  const [selectedDetent, setSelectedDetent] = React.useState<PresentationDetent>('medium');
 
   const [showRNContent, setShowRNContent] = React.useState(false);
   const [showRNContentWithFlex1, setShowRNContentWithFlex1] = React.useState(false);
@@ -117,6 +127,13 @@ export default function BottomSheetScreen() {
           />
         </Section>
 
+        <Section title="Selection Tracking">
+          <Button
+            label="Open Selection Tracking Sheet"
+            onPress={() => setShowSelectionTracking(true)}
+          />
+        </Section>
+
         <Section title="React Native Content">
           <Text modifiers={[foregroundStyle('secondaryLabel')]}>
             Sheet with React Native views inside
@@ -179,6 +196,34 @@ export default function BottomSheetScreen() {
             </Text>
             <Button label="Close" onPress={() => setShowConfigured(false)} />
           </VStack>
+        </Group>
+      </BottomSheet>
+
+      {/* Selection Tracking Sheet */}
+      <BottomSheet
+        isPresented={showSelectionTracking}
+        onIsPresentedChange={setShowSelectionTracking}>
+        <Group
+          modifiers={[
+            presentationDetents(selectionDetents, {
+              selection: selectedDetent,
+              onSelectionChange: setSelectedDetent,
+            }),
+            presentationDragIndicator('visible'),
+          ]}>
+          <List>
+            <Section title="Change Detent">
+              <Button label="Height 300" onPress={() => setSelectedDetent({ height: 300 })} />
+              <Button label="Fraction 0.3" onPress={() => setSelectedDetent({ fraction: 0.3 })} />
+              <Button label="Medium" onPress={() => setSelectedDetent('medium')} />
+              <Button label="Large" onPress={() => setSelectedDetent('large')} />
+            </Section>
+            <Section title="Current">
+              <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+                {formatDetent(selectedDetent)}
+              </Text>
+            </Section>
+          </List>
         </Group>
       </BottomSheet>
 

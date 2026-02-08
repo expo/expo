@@ -1893,8 +1893,8 @@ extension ViewModifierRegistry {
       return try GaugeStyleModifier(from: params, appContext: appContext)
     }
 
-    register("presentationDetents") { params, appContext, _ in
-      return try PresentationDetentsModifier(from: params, appContext: appContext)
+    register("presentationDetents") { params, appContext, eventDispatcher in
+      return try PresentationDetentsModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
     register("presentationDragIndicator") { params, appContext, _ in

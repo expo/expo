@@ -25,4 +25,8 @@ export interface ModifierConfig {
  * ```
  */
 export declare function createModifier(type: string, params?: Record<string, any>): ModifierConfig;
+/**
+ * Creates a modifier with an event listener.
+ */
+export declare function createModifierWithEventListener(type: string, eventListener: (args: any) => void, params?: Record<string, any>): ModifierConfig;
 //# sourceMappingURL=createModifier.d.ts.map

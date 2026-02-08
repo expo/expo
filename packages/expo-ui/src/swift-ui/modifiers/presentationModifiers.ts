@@ -1,4 +1,8 @@
-import { createModifier } from './createModifier';
+import {
+  createModifier,
+  createModifierWithEventListener,
+  type ModifierConfig,
+} from './createModifier';
 
 /**
  * Presentation detent type for controlling sheet heights.
@@ -12,12 +16,34 @@ export type PresentationDetent = 'medium' | 'large' | { fraction: number } | { h
 /**
  * Sets the available heights for a sheet presentation.
  * @param detents - Array of detents the sheet can snap to.
+ * @param options - Optional settings for tracking the selected detent.
+ * @param options.selection - The currently selected detent.
+ * @param options.onSelectionChange - Callback fired when the user changes the active detent by dragging.
  * @platform ios 16.0+
  * @platform tvos 16.0+
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationdetents(_:)).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationdetents(_:selection:)).
  */
-export const presentationDetents = (detents: PresentationDetent[]) =>
-  createModifier('presentationDetents', { detents });
+export const presentationDetents = (
+  detents: PresentationDetent[],
+  options?: {
+    selection?: PresentationDetent;
+    onSelectionChange?: (detent: PresentationDetent) => void;
+  }
+): ModifierConfig => {
+  const params = { detents, selection: options?.selection };
+
+  if (options?.onSelectionChange) {
+    return createModifierWithEventListener(
+      'presentationDetents',
+      (args: { detent: PresentationDetent }) => {
+        options.onSelectionChange!(args.detent);
+      },
+      params
+    );
+  }
+
+  return createModifier('presentationDetents', params);
+};
 
 /**
  * Controls the visibility of the drag indicator on a sheet.
