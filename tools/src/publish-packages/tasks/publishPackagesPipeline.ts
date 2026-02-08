@@ -20,6 +20,7 @@ import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateProjectTemplates } from './updateProjectTemplates';
+import { updateVersionsEndpoint } from './updateVersionsEndpoint';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 import Git from '../../Git';
 import logger from '../../Logger';
@@ -89,6 +90,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       pushCommittedChanges,
       publishAndroidArtifacts,
       publishPackages,
+      updateVersionsEndpoint,
       grantTeamAccessToPackages,
       addPublishedLabelToPullRequests,
       cleanWorkingTree,
