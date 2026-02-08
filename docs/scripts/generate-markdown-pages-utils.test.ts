@@ -917,6 +917,16 @@ describe('extractFrontmatter', () => {
     fs.writeFileSync(path.join(tmpDir, 'minimal.mdx'), '---\ntitle: Minimal\n---\n\n# Minimal\n');
 
     fs.writeFileSync(
+      path.join(tmpDir, 'empty-values.mdx'),
+      '---\nmodificationDate: \ntitle: Camera\ndescription: A camera.\n---\n\n# Camera\n'
+    );
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'only-empty.mdx'),
+      '---\nmodificationDate: \n---\n\n# Page\n'
+    );
+
+    fs.writeFileSync(
       path.join(tmpDir, 'no-frontmatter.mdx'),
       "import Foo from './Foo';\n\n# Hello\n"
     );
@@ -944,6 +954,19 @@ describe('extractFrontmatter', () => {
     expect(result).not.toBeNull();
     expect(result).toContain('title: Minimal');
     expect(result).not.toContain('# Minimal');
+  });
+
+  it('strips lines with empty values', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'empty-values.mdx'));
+    expect(result).not.toBeNull();
+    expect(result).toContain('title: Camera');
+    expect(result).toContain('description: A camera.');
+    expect(result).not.toContain('modificationDate');
+  });
+
+  it('returns null when all frontmatter fields are empty', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'only-empty.mdx'));
+    expect(result).toBeNull();
   });
 
   it('returns null when no frontmatter exists', () => {
