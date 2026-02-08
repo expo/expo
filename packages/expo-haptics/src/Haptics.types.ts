@@ -129,3 +129,54 @@ export enum AndroidHaptics {
    */
   Text_Handle_Move = 'text-handle-move',
 }
+
+/** @platform ios */
+export type HapticEventType = 'hapticTransient' | 'hapticContinuous';
+
+/** @platform ios */
+export type HapticEventParameterID =
+  | 'hapticIntensity'
+  | 'hapticSharpness'
+  | 'attackTime'
+  | 'decayTime'
+  | 'releaseTime'
+  | 'sustained';
+
+/** @platform ios */
+export type HapticDynamicParameterID =
+  | 'hapticIntensityControl'
+  | 'hapticSharpnessControl';
+
+/** @platform ios */
+export type HapticEventParameter = {
+  parameterID: HapticEventParameterID;
+  value: number;
+};
+
+/** @platform ios */
+export type HapticEvent = {
+  eventType: HapticEventType;
+  time?: number;
+  eventDuration?: number;
+  parameters?: HapticEventParameter[];
+};
+
+/** @platform ios */
+export type HapticParameterCurveControlPoint = {
+  relativeTime: number;
+  value: number;
+};
+
+/** @platform ios */
+export type HapticParameterCurve = {
+  parameterID: HapticDynamicParameterID;
+  controlPoints: HapticParameterCurveControlPoint[];
+  relativeTime?: number;
+};
+
+/** @platform ios */
+export type HapticPatternData = {
+  events: HapticEvent[];
+  parameterCurves?: HapticParameterCurve[];
+};
+
