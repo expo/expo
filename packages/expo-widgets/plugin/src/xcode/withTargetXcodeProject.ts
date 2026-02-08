@@ -12,12 +12,13 @@ type TargetXcodeProjectProps = {
   targetName: string;
   bundleIdentifier: string;
   deploymentTarget: string;
+  appleTeamId?: string;
   getFileUris: () => string[];
 };
 
 const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
   config,
-  { targetName, bundleIdentifier, deploymentTarget, getFileUris }
+  { targetName, bundleIdentifier, deploymentTarget, appleTeamId, getFileUris }
 ) =>
   withXcodeProject(config, (config) => {
     const xcodeProject = config.modResults;
@@ -31,6 +32,7 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
       bundleIdentifier,
       deploymentTarget,
       marketingVersion,
+      appleTeamId,
     });
 
     const productFile = addProductFile(xcodeProject, {
