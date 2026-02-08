@@ -103,6 +103,88 @@ describe('cleanHtml', () => {
     expect(html).toContain('<code class="language-sh">');
     expect(html).toContain('npx expo start');
   });
+
+  it('removes <br> tags inside table cells', () => {
+    const html = [
+      '<main><table><tr>',
+      '<td>',
+      '<span>Only for: </span>',
+      '<div data-md="platform-badge"><svg/><span>iOS</span></div>',
+      '<br/>',
+      '<p>A string to set the permission message.</p>',
+      '</td>',
+      '</tr></table></main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('td').find('br').length).toBe(0);
+  });
+
+  it('removes style tags', () => {
+    const html = '<main><style>.foo { color: red; }</style><p>content</p></main>';
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('main').html()).not.toContain('style');
+    expect($('main').html()).not.toContain('color');
+    expect($('main').text()).toContain('content');
+  });
+
+  it('keeps only first tab panel in @reach/tabs groups', () => {
+    const html = [
+      '<main>',
+      '<div data-reach-tabs="">',
+      '<div data-reach-tab-panels="">',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">npm install expo</code></pre>',
+      '</div>',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">yarn add expo</code></pre>',
+      '</div>',
+      '</div>',
+      '</div>',
+      '</main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('main').text()).toContain('npm install expo');
+    expect($('main').text()).not.toContain('yarn add expo');
+  });
+
+  it('unwraps non-empty div/span inside headings', () => {
+    const html = [
+      '<main>',
+      '<h2><span class="wrapper"><span class="inner">Fix the error</span></span></h2>',
+      '</main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect($('h2').text().trim()).toBe('Fix the error');
+    expect($('h2').find('div').length).toBe(0);
+    expect($('h2').find('span').length).toBe(0);
+  });
+
+  it('re-escapes unknown HTML elements in code as angle-bracket text', () => {
+    const html = ['<main><p><code>', 'Promise<uint8array></uint8array>', '</code></p></main>'].join(
+      ''
+    );
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    const result = $('code').html() ?? '';
+    expect(result).toContain('&lt;uint8array&gt;');
+  });
+
+  it('decodes double-encoded HTML entities in code blocks', () => {
+    const html = [
+      '<main><pre><code>',
+      'filters: &amp;lt;expo-sfv&amp;gt;',
+      '</code></pre></main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    const result = $('code').html() ?? '';
+    expect(result).toContain('&lt;expo-sfv&gt;');
+    expect(result).not.toContain('&amp;');
+  });
 });
 
 describe('cleanMarkdown', () => {
@@ -310,6 +392,60 @@ describe('platform indicators', () => {
   });
 });
 
+describe('platform indicators in table cells', () => {
+  it('keeps "Only for: iOS" on same line as description in table cells', () => {
+    const html = [
+      '<main><table>',
+      '<thead><tr><th>Property</th><th>Default</th><th>Description</th></tr></thead>',
+      '<tbody><tr>',
+      '<td><code>contactsPermission</code></td>',
+      '<td><code>"Allow..."</code></td>',
+      '<td>',
+      '<span>Only for: </span>',
+      '<div data-md="platform-badge"><svg/><span>iOS</span></div>',
+      '<br/>',
+      '<p>A string to set the permission message.</p>',
+      '</td>',
+      '</tr></tbody>',
+      '</table></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    // Should be a single table row, not split across lines
+    const lines = md.split('\n').filter(l => l.startsWith('|'));
+    const dataRow = lines.find(l => l.includes('contactsPermission'));
+    expect(dataRow).toBeDefined();
+    expect(dataRow).toContain('iOS');
+    expect(dataRow).toContain('permission message');
+  });
+});
+
+describe('tab panel deduplication', () => {
+  it('only includes first tab panel content in output', () => {
+    const html = [
+      '<main>',
+      '<h1>Installation</h1>',
+      '<div data-reach-tabs="">',
+      '<div data-reach-tab-panels="">',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">npx expo install expo-camera</code></pre>',
+      '</div>',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">yarn add expo-camera</code></pre>',
+      '</div>',
+      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<pre><code class="language-sh">bun add expo-camera</code></pre>',
+      '</div>',
+      '</div>',
+      '</div>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('npx expo install expo-camera');
+    expect(md).not.toContain('yarn add expo-camera');
+    expect(md).not.toContain('bun add expo-camera');
+  });
+});
+
 describe('diff tables', () => {
   it('converts diff tables inside data-md="diff" wrapper', () => {
     const html = `<main>
@@ -334,6 +470,34 @@ describe('diff tables', () => {
     expect(md).toContain('```diff');
     expect(md).toContain('- removed');
     expect(md).toContain('+ added');
+  });
+
+  it('infers +/- markers from react-diff-view CSS classes', () => {
+    const html = [
+      '<main><div data-md="diff"><table class="diff">',
+      '<colgroup><col class="diff-gutter-col"/><col class="diff-gutter-col"/><col/></colgroup>',
+      '<tr class="diff-line">',
+      '<td class="diff-gutter diff-gutter-delete">1</td>',
+      '<td class="diff-gutter diff-gutter-delete"></td>',
+      '<td class="diff-code diff-code-delete">old line</td>',
+      '</tr>',
+      '<tr class="diff-line">',
+      '<td class="diff-gutter diff-gutter-insert"></td>',
+      '<td class="diff-gutter diff-gutter-insert">1</td>',
+      '<td class="diff-code diff-code-insert">new line</td>',
+      '</tr>',
+      '<tr class="diff-line">',
+      '<td class="diff-gutter diff-gutter-normal">2</td>',
+      '<td class="diff-gutter diff-gutter-normal">2</td>',
+      '<td class="diff-code diff-code-normal">unchanged</td>',
+      '</tr>',
+      '</table></div></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('```diff');
+    expect(md).toContain('- old line');
+    expect(md).toContain('+ new line');
+    expect(md).toMatch(/^\s+unchanged$/m);
   });
 });
 
@@ -910,6 +1074,71 @@ describe('code block language from data-md-lang', () => {
       '<main><pre data-md-lang="typescript"><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```typescript\nconst x = 1;\n```');
+  });
+});
+
+describe('collapsed headings', () => {
+  it('unwraps non-empty span wrappers inside headings', () => {
+    const html = [
+      '<main>',
+      '<h2><span class="text-wrapper"><span>Fix the TypeScript error</span></span></h2>',
+      '<p>Details here.</p>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('## Fix the TypeScript error');
+  });
+
+  it('unwraps non-empty div inside heading without losing text', () => {
+    const html = [
+      '<main>',
+      '<h3><div class="inline">Custom tabs</div></h3>',
+      '<p>Content.</p>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('### Custom tabs');
+  });
+});
+
+describe('generic type parameters', () => {
+  it('preserves angle brackets around unknown elements in code', () => {
+    // Simulates cheerio parsing <Uint8Array> as an HTML element
+    const html = ['<main><p><code>', 'Promise&lt;Uint8Array&gt;', '</code></p></main>'].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toMatch(/Promise.*Uint8Array/);
+  });
+});
+
+describe('double-encoded HTML entities', () => {
+  it('decodes double-encoded entities in code blocks', () => {
+    const html = [
+      '<main><pre><code>',
+      'expo-manifest-filters: &amp;lt;expo-sfv&amp;gt;',
+      '</code></pre></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('<expo-sfv>');
+    expect(md).not.toContain('&amp;');
+    expect(md).not.toContain('&lt;');
+  });
+});
+
+describe('style tag removal', () => {
+  it('removes style tags and their CSS content', () => {
+    const html = [
+      '<main>',
+      '<style>.react-flow { display: flex; } .node { padding: 10px; }</style>',
+      '<h1>Config Plugins</h1>',
+      '<p>Content here.</p>',
+      '</main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('# Config Plugins');
+    expect(md).toContain('Content here.');
+    expect(md).not.toContain('react-flow');
+    expect(md).not.toContain('display');
+    expect(md).not.toContain('padding');
   });
 });
 
