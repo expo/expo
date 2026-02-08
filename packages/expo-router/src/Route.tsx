@@ -64,9 +64,11 @@ export type RouteNode = {
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
 export const LocalRouteParamsContext = createContext<object | undefined>({});
+export const RoutePathnameContext = createContext<string | undefined>(undefined);
 
 if (process.env.NODE_ENV !== 'production') {
   CurrentRouteContext.displayName = 'RouteNode';
+  RoutePathnameContext.displayName = 'RoutePathname';
 }
 
 /** Return the RouteNode at the current contextual boundary. */

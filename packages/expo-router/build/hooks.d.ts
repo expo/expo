@@ -121,6 +121,19 @@ export declare function useSegments<TSegments extends RouteSegments<Route>>(): T
  */
 export declare function usePathname(): string;
 /**
+ * @internal
+ * Returns the full structural pathname for the contextually focused route.
+ * The path includes __root, groups, and unresolved template segments
+ * (e.g. `/__root/(app)/[id]/a`).
+ *
+ * Unlike `usePathname()` which returns the globally focused route's resolved URL pathname,
+ * `useRoutePathname()` returns the structural pathname of the route where the hook is rendered.
+ *
+ * This is useful in stacks where multiple screens are mounted simultaneously —
+ * each screen will return its own pathname rather than the currently visible screen's pathname.
+ */
+export declare function useRoutePathname(): string;
+/**
  * @hidden
  */
 export declare function useGlobalSearchParams<TParams extends UnknownOutputParams = UnknownOutputParams>(): TParams;
