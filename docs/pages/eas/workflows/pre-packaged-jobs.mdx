@@ -521,6 +521,15 @@ You can reference the following outputs in subsequent jobs:
 | ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
 | android_package_id    | string | The Android package ID of the submitted build.    |
 
+#### Hooks
+
+Hooks are supported for this job. Available hooks:
+
+- `before_submit`: steps to run before the submission starts.
+- `after_submit`: steps to run after the submission completes.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
+
 ### Examples
 
 Here are some practical examples of using the submit job:
@@ -854,6 +863,15 @@ You can pass the following parameters into the `params` list:
 | device_identifier            | string or `{ android?: string, ios?: string }` object | Optional. Device identifier to use for the tests. You can also use a single-value expression like `pixel_6`, `iPhone 16 Plus` or `${{ needs.build.outputs.platform == "android" ? "pixel_6" : "iPhone 16 Plus" }}` and an object like `device_identifier: { android: "pixel_6", ios: "iPhone 16 Plus" }`. Note that iOS devices availability differs across runner images. A list of available devices can be found in the jobs logs. |
 | skip_build_check             | boolean                                               | Optional. Skip validation of the build (whether an iOS build is a simulator build). Defaults to false.                                                                                                                                                                                                                                                                                                                                |
 
+#### Hooks
+
+Hooks are supported for this job. Available hooks:
+
+- `before_maestro_tests`: steps to run before the tests start.
+- `after_maestro_tests`: steps to run after the tests complete.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
+
 ### Examples
 
 Here are some practical examples of using the Maestro job:
@@ -990,6 +1008,9 @@ jobs:
       name: string # optional - name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional - override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional - run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+    hooks:
+      before_maestro_cloud: step[] # optional - steps to run before the Maestro Cloud upload.
+      after_maestro_cloud: step[] # optional - steps to run after the Maestro Cloud upload.
 ```
 
 #### Parameters
@@ -1016,6 +1037,13 @@ You can pass the following parameters into the `params` list:
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
 
+Hooks are supported for this job. Available hooks:
+
+- `before_maestro_cloud`: steps to run before the Maestro Cloud upload.
+- `after_maestro_cloud`: steps to run after the Maestro Cloud upload.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
+
 #### Outputs
 
 You can reference the following outputs in subsequent jobs:
@@ -1030,6 +1058,8 @@ You can reference the following outputs in subsequent jobs:
 | failed_flow_names_json     | string | JSON array containing the names of failed flows.                         |
 
 > **Note:** When using `async: true` mode, only the `maestro_cloud_url` output is guaranteed to be valid. Other outputs (flow counts and flow names) may be invalid or empty because the job does not wait for the upload to complete and the flows have not been executed yet.
+
+You can also define additional outputs for this job using [`jobs.<job_id>.outputs`](/eas/workflows/syntax/#jobsjob_idoutputs).
 
 ### Examples
 
@@ -1101,6 +1131,134 @@ jobs:
     params:
       webhook_url: ${{ env.SLACK_WEBHOOK_URL }} # make sure to set it up in the right environment (see "environment: ..." above)
       message: 'Tests complete: ${{ after.maestro_test.outputs.successful_flows_count }}/${{ after.maestro_test.outputs.total_flows_count }} passed'
+```
+
+</Collapsible>
+
+<Collapsible summary="Build a tagged failed-flow summary from the Maestro Cloud API response">
+
+This workflow captures the Maestro Cloud API response, reads tags from your flow files, builds a compact summary string (failed and successful flows), and exposes it as a job output that you can use in Slack or other notifications.
+
+```yaml .eas/workflows/maestro-cloud-failed-flows.yml
+name: Maestro Cloud Failed Flow Summary
+
+jobs:
+  maestro_test:
+    name: Run Maestro Cloud Tests
+    type: maestro-cloud
+    environment: preview
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+    hooks:
+      after_maestro_cloud:
+        - name: Install yq
+          if: true
+          run: |
+            # yq lets us read flow metadata (name/tags) without writing a parser.
+            sudo apt-get update -y && sudo apt-get install -y yq || \
+              echo "yq not available; flow tags will be omitted."
+        - name: Build failed flow summary
+          id: build_failed_flow_summary
+          if: true
+          run: |
+            # Capture the API response once so we can parse it in Node.
+            MAESTRO_API_RESPONSE_JSON=$(cat <<'EOF'
+${{ toJSON(steps.results.outputs.maestro_cloud_api_response_json) }}
+EOF
+            )
+            SUMMARY="$(
+              node - <<'NODE'
+              const fs = require('fs');
+              const path = require('path');
+              const { execFileSync } = require('child_process');
+
+              // Flow results come from the Maestro Cloud API response.
+              const response = JSON.parse(process.env.MAESTRO_API_RESPONSE_JSON || '{}');
+
+              // Adjust this if your flows live elsewhere or you pass a single file path.
+              const flowDir = path.join(process.cwd(), 'maestro', 'flows');
+              const flowFiles = [];
+              const walk = (dir) => {
+                for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                  const entryPath = path.join(dir, entry.name);
+                  if (entry.isDirectory()) {
+                    walk(entryPath);
+                  } else if (entry.isFile() && (entry.name.endsWith('.yml') || entry.name.endsWith('.yaml'))) {
+                    flowFiles.push(entryPath);
+                  }
+                }
+              };
+              if (fs.existsSync(flowDir)) {
+                walk(flowDir);
+              }
+
+              // Map flow name -> "#tag1, #tag2" from YAML. Failures are ignored to keep the job running.
+              const nameToTags = new Map();
+              for (const file of flowFiles) {
+                try {
+                  const json = execFileSync(
+                    'yq',
+                    ['select(documentIndex == 0)', '-o', 'json', file],
+                    { encoding: 'utf8' }
+                  );
+                  const doc = JSON.parse(json);
+                  if (!doc || !doc.name) {
+                    continue;
+                  }
+
+                  const tags = Array.isArray(doc.tags) ? doc.tags : [];
+                  nameToTags.set(doc.name, tags.map((tag) => `#${tag}`).join(', '));
+                } catch (error) {
+                  continue;
+                }
+              }
+
+              // Split flows by status so the summary is easy to scan in Slack.
+              const failedFlows = (response.flows || []).filter(
+                (flow) => flow.status === 'ERROR' || flow.status === 'STOPPED'
+              );
+              const successfulFlows = (response.flows || []).filter(
+                (flow) => flow.status === 'SUCCESS' || flow.status === 'WARNING'
+              );
+
+              // Include a placeholder when a section is empty.
+              let summary = '✅ Successful flows:';
+              if (successfulFlows.length === 0) {
+                summary += '\n- no successful flows';
+              } else {
+                for (const flow of successfulFlows) {
+                  const tags = nameToTags.get(flow.name);
+                  summary += `\n- ${flow.name}${tags ? ` (${tags})` : ''}`;
+                }
+              }
+              summary += '\n\n❌ Failed flows:';
+              if (failedFlows.length === 0) {
+                summary += '\n- no failed flows';
+              } else {
+                for (const flow of failedFlows) {
+                  const tags = nameToTags.get(flow.name);
+                  summary += `\n- ${flow.name}${tags ? ` (${tags})` : ''}`;
+                }
+              }
+
+              process.stdout.write(summary);
+              NODE
+            )"
+
+            # Expose the summary as a job output for notifications.
+            set-output failed_flow_summary "$SUMMARY"
+    outputs:
+      failed_flow_summary: ${{ steps.build_failed_flow_summary.outputs.failed_flow_summary }}
+
+  notify:
+    name: Send Summary
+    after: [maestro_test]
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: ${{ after.maestro_test.outputs.failed_flow_summary }}
 ```
 
 </Collapsible>
