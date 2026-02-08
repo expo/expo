@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixes `mediaServicesDidReset` not being correctly implemented. ([#42898](https://github.com/expo/expo/pull/42898) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 55.0.5 — 2026-02-08
