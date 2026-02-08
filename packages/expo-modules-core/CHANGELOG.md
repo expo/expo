@@ -97,6 +97,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [iOS] Prevent crash on iOS 18.6+ when converting HTTP URLs to file URLs by adding early HTTP/HTTPS URL detection and stricter validation before calling `URL(fileURLWithPath:)`. ([#TBD] by [@OtavioStasiak](https://github.com/OtavioStasiak)) ([#42168](https://github.com/expo/expo/pull/42168) by [@OtavioStasiak](https://github.com/OtavioStasiak))
 - [Android] Fixed DSL view props using stale state when updating. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
 - [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
 - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
