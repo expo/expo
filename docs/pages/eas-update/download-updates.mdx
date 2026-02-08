@@ -46,7 +46,7 @@ You can use [`expo-background-task`](/versions/latest/sdk/background-task/) to c
 
 It's worth considering whether you want to reload the app after an update is downloaded in the background, or wait for the user to close and reopen it. If you choose to only download it in the background and not apply it, this should still be useful to ensure that the next boot will immediately have the latest version, and it will lead to a faster adoption rate for updates compared to the default behavior.
 
-<Collapsible summary="An example of how to check for updates in the background">
+<Collapsible summary="An example of how to check for updates in the background (at a minimum interval)">
 
 To ensure the background task is registered when the application starts, import and invoke the `setupBackgroundUpdates` function within the top-level component.
 
@@ -73,6 +73,16 @@ export const setupBackgroundUpdates = async () => {
 };
 
 setupBackgroundUpdates();
+```
+
+</Collapsible>
+
+<Collapsible summary="An example of how to check for updates in the background (in response to a notification)">
+
+Explain here
+
+```ts
+// insert code here
 ```
 
 </Collapsible>
