@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `preferEphemeralSession` support to `openAuthSessionAsync` to request an ephemeral Custom Tabs session. This requires Android 16 (API 36+) and `androidx.browser:browser:1.9.0` or newer, and is honored on a best-effort basis depending on the browser (some Chrome builds gate it behind `chrome://flags/#cct-ephemeral-mode`). ([#42253](https://github.com/expo/expo/pull/42253) by [@mroswald](https://github.com/mroswald))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
