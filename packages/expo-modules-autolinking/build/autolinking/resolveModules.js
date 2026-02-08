@@ -2,13 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveModulesAsync = resolveModulesAsync;
 exports.resolveExtraBuildDependenciesAsync = resolveExtraBuildDependenciesAsync;
+const concurrency_1 = require("../concurrency");
 const platforms_1 = require("../platforms");
 /** Resolves search results to a list of platform-specific configuration. */
 async function resolveModulesAsync(searchResults, autolinkingOptions) {
     const platformLinking = (0, platforms_1.getLinkingImplementationForPlatform)(autolinkingOptions.platform);
     // Additional output property for Cocoapods flags
     const extraOutput = { flags: autolinkingOptions.flags };
-    const moduleDescriptorList = await Promise.all(Object.entries(searchResults).map(async ([packageName, revision]) => {
+    const moduleDescriptorList = await (0, concurrency_1.taskAll)(Object.entries(searchResults), async ([packageName, revision]) => {
         const resolvedModule = await platformLinking.resolveModuleAsync(packageName, revision, extraOutput);
         return resolvedModule
             ? {
@@ -17,7 +18,7 @@ async function resolveModulesAsync(searchResults, autolinkingOptions) {
                 packageName: resolvedModule.packageName ?? packageName,
             }
             : null;
-    }));
+    });
     return moduleDescriptorList
         .filter((moduleDescriptor) => moduleDescriptor != null)
         .sort((a, b) => a.packageName.localeCompare(b.packageName));

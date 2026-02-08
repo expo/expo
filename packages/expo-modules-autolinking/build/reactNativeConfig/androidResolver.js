@@ -12,6 +12,7 @@ exports.parseComponentDescriptorsAsync = parseComponentDescriptorsAsync;
 exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const concurrency_1 = require("../concurrency");
 const utils_1 = require("../utils");
 async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeConfig, expoModuleConfig) {
     if (reactNativeConfig === null) {
@@ -258,7 +259,7 @@ const findAndroidManifestsAsync = async (targetPath) => {
     return manifestPaths.sort((a, b) => a.localeCompare(b));
 };
 const getFileCandidatesAsync = async (targetPath, fileNames) => {
-    const gradlePaths = await Promise.all(fileNames.map((fileName) => (0, utils_1.fileExistsAsync)(path_1.default.join(targetPath, fileName))));
+    const gradlePaths = await (0, concurrency_1.taskAll)(fileNames, (fileName) => (0, utils_1.fileExistsAsync)(path_1.default.join(targetPath, fileName)));
     return gradlePaths.filter((file) => file != null).sort((a, b) => a.localeCompare(b));
 };
 async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {
