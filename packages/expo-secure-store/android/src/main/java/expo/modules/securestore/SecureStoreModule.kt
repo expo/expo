@@ -75,6 +75,15 @@ open class SecureStoreModule : Module() {
       }
     }
 
+    Function("canUseDeviceCredentialsAuthentication") {
+      return@Function try {
+        authenticationHelper.assertDeviceSecurity()
+        true
+      } catch (e: AuthenticationException) {
+        false
+      }
+    }
+
     OnCreate {
       authenticationHelper = AuthenticationHelper(reactContext, appContext.legacyModuleRegistry)
       hybridAESEncryptor = HybridAESEncryptor(reactContext, mAESEncryptor)
@@ -201,7 +210,7 @@ open class SecureStoreModule : Module() {
        back a value.
        */
       val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
-      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper, options.enableDeviceFallback)
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
       saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
 
@@ -343,7 +352,11 @@ open class SecureStoreModule : Module() {
     return getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication) ?: run {
       // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
       if (requireAuthentication) {
-        authenticationHelper.assertBiometricsSupport()
+        if (options.enableDeviceFallback) {
+          authenticationHelper.assertDeviceSecurity()
+        } else {
+          authenticationHelper.assertBiometricsSupport()
+        }
       }
       encryptor.initializeKeyStoreEntry(keyStore, options)
     }
@@ -383,6 +396,7 @@ open class SecureStoreModule : Module() {
     private const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
     const val USES_KEYSTORE_SUFFIX_PROPERTY = "usesKeystoreSuffix"
     const val DEFAULT_KEYSTORE_ALIAS = "key_v1"
+    const val DEFAULT_FALLBACK_KEYSTORE_ALIAS = "fallback_key_v1"
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
     const val UNAUTHENTICATED_KEYSTORE_SUFFIX = "keystoreUnauthenticated"
   }

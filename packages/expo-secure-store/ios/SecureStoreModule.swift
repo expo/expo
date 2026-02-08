@@ -64,6 +64,14 @@ public final class SecureStoreModule: Module {
       return isBiometricsSupported
       #endif
     }
+
+    Function("canUseDeviceCredentialsAuthentication") { () -> Bool in
+      return areDeviceCredentialsEnabled()
+    }
+  }
+
+  private func areDeviceCredentialsEnabled() -> Bool {
+    return LAContext().canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: nil)
   }
 
   private func get(with key: String, options: SecureStoreOptions) throws -> String? {
@@ -97,12 +105,17 @@ public final class SecureStoreModule: Module {
     if !options.requireAuthentication {
       setItemQuery[kSecAttrAccessible as String] = accessibility
     } else {
-      guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
-        throw MissingPlistKeyException()
+      if (!options.enableDeviceFallback) {
+        guard let _ = Bundle.main.infoDictionary?["NSFaceIDUsageDescription"] as? String else {
+          throw MissingPlistKeyException()
+        }
       }
 
       var error: Unmanaged<CFError>? = nil
-      guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, .biometryCurrentSet, &error) else {
+
+      let accessControlFlag: SecAccessControlCreateFlags = options.enableDeviceFallback ? .userPresence : .biometryCurrentSet
+
+      guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, accessControlFlag, &error) else {
         let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
         throw SecAccessControlError(errorCode)
       }

@@ -142,6 +142,15 @@ export function getItem(key, options = {}) {
 export function canUseBiometricAuthentication() {
     return ExpoSecureStore.canUseBiometricAuthentication();
 }
+/**
+ * Checks whether any device credentials are configured on the device.
+ * @return `true` if the device has device credentials configured. Otherwise, returns `false`.
+ * @platform android
+ * @platform ios
+ */
+export function canUseDeviceCredentialsAuthentication() {
+    return ExpoSecureStore.canUseDeviceCredentialsAuthentication();
+}
 function ensureValidKey(key) {
     if (!isValidKey(key)) {
         throw new Error(`Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".`);

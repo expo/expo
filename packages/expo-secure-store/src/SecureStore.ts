@@ -81,7 +81,6 @@ export type SecureStoreOptions = {
    * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
    * In release builds or when using continuous native generation, make sure to use the `expo-secure-store` config plugin.
    *
-   * > **Note:** This library requires a real device for testing since emulators/simulators do not require biometric authentication when retrieving secrets, unlike real iOS devices.
    */
   requireAuthentication?: boolean;
   /**
@@ -102,6 +101,17 @@ export type SecureStoreOptions = {
    * @platform ios
    */
   accessGroup?: string;
+
+  /**
+   * This flag enables users to authenticate using Lock Screen Knowledge Factor (e.g. PIN, pattern or password).
+   * For sensitive apps, it is recommended not having biometric fall back to such factor.
+   * @see: https://developer.android.com/security/fraud-prevention/authentication
+   *
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  enableDeviceFallback?: boolean;
 };
 
 // @needsAudit
@@ -224,6 +234,16 @@ export function getItem(key: string, options: SecureStoreOptions = {}): string |
  */
 export function canUseBiometricAuthentication(): boolean {
   return ExpoSecureStore.canUseBiometricAuthentication();
+}
+
+/**
+ * Checks whether any device credentials are configured on the device.
+ * @return `true` if the device has device credentials configured. Otherwise, returns `false`.
+ * @platform android
+ * @platform ios
+ */
+export function canUseDeviceCredentialsAuthentication(): boolean {
+  return ExpoSecureStore.canUseDeviceCredentialsAuthentication();
 }
 
 function ensureValidKey(key: string) {
