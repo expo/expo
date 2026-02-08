@@ -112,15 +112,8 @@ function fromDeepLink(url: string): string {
     results += res.pathname;
   }
 
-  const qs = !res.search
-    ? ''
-    : // @ts-ignore: `entries` is not on `URLSearchParams` in some typechecks.
-      [...res.searchParams.entries()].map(([k, v]) => `${k}=${decodeURIComponent(v)}`).join('&');
-
-  if (qs) {
-    results += '?' + qs;
-  }
-
+  results += res.search;
+  
   return results;
 }
 
