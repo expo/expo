@@ -40,6 +40,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [web] Fix corrupted JSON in synchronous operations (length header encoding). ([#39785](https://github.com/expo/expo/pull/39785) by [@Xample](https://github.com/Xample))
 - Fixed `serializeAsync` / `serializeSync` errors from memory database on web. ([#40899](https://github.com/expo/expo/pull/40899) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
