@@ -118,7 +118,13 @@ export async function downloadExpoGoAsync(
       const version = await getExpoGoVersionEntryAsync(sdkVersion);
 
       debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
-      url = version[versionsKey] as string;
+      url = version[versionsKey] as string | undefined;
+
+      if (!url) {
+        throw new CommandError(
+          `Unable to find Expo Go URL for SDK ${sdkVersion} on ${platform}. The Expo Go client may not be available for this SDK version.`
+        );
+      }
     }
   } catch (error) {
     spinner.fail();
