@@ -6,6 +6,7 @@ import type {
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { taskAll } from '../concurrency';
 import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
@@ -296,8 +297,8 @@ const findAndroidManifestsAsync = async (targetPath: string) => {
 };
 
 const getFileCandidatesAsync = async (targetPath: string, fileNames: string[]) => {
-  const gradlePaths = await Promise.all(
-    fileNames.map((fileName) => fileExistsAsync(path.join(targetPath, fileName)))
+  const gradlePaths = await taskAll(fileNames, (fileName) =>
+    fileExistsAsync(path.join(targetPath, fileName))
   );
   return gradlePaths.filter((file) => file != null).sort((a, b) => a.localeCompare(b));
 };

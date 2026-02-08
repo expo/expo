@@ -55,10 +55,7 @@ export const createLimiter = (limit: number): Limiter => {
   };
 };
 
-export const taskAll = <T, R>(
-  inputs: T[],
-  map: (input: T) => Promise<R>
-): Promise<R[]> => {
+export const taskAll = <T, R>(inputs: T[], map: (input: T) => Promise<R>): Promise<R[]> => {
   const limiter = createLimiter(8);
-  return Promise.all(inputs.map(input => limiter(map, input)));
+  return Promise.all(inputs.map((input) => limiter(map, input)));
 };
