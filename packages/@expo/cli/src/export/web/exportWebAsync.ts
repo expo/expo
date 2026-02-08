@@ -10,11 +10,12 @@ import { CommandError } from '../../utils/errors';
 import { setNodeEnv } from '../../utils/nodeEnv';
 
 export async function exportWebAsync(projectRoot: string, options: Options) {
+  require('@expo/env').load(projectRoot);
+
   // Ensure webpack is available
   await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
 
   setNodeEnv(options.dev ? 'development' : 'production');
-  require('@expo/env').load(projectRoot);
 
   const { exp } = getConfig(projectRoot);
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
