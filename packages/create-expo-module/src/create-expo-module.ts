@@ -18,6 +18,7 @@ import {
   getLocalSubstitutionDataPrompts,
   getSlugPrompt,
   getSubstitutionDataPrompts,
+  getViewNamePrompt,
 } from './prompts';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
@@ -46,6 +47,21 @@ const IGNORES_PATHS = [
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
+
+function deriveBaseIdentifierFromSlug(slug: string): string {
+  // Take the last segment after scope if present
+  const base = slug.replace(/^@/, '').split('/').pop() || slug;
+  // Remove non-alphanumeric, strip reserved prefixes, lowercase
+  let namespace = base
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .replace(/^(expo|reactnative)/i, '')
+    .toLowerCase();
+  if (!/^[a-z]/.test(namespace)) {
+    namespace = `m${namespace}`;
+  }
+  if (!namespace) namespace = 'module';
+  return `expo.modules.${namespace}`;
+}
 
 async function getCorrectLocalDirectory(targetOrSlug: string) {
   let packageJsonPath: string | null = null;
@@ -103,14 +119,16 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(slug, options.local);
+  const data = await askForSubstitutionDataAsync(slug, options.local, options.includeGhConfig);
 
   // Make one line break between prompts and progress logs
   console.log();
 
   const packageManager = resolvePackageManager();
   const packagePath = options.source
-    ? path.join(CWD, options.source)
+    ? path.isAbsolute(options.source)
+      ? options.source
+      : path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
 
   await logEventAsync(eventCreateExpoModule(packageManager, options));
@@ -119,6 +137,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     await createModuleFromTemplate(packagePath, targetDir, data);
     step.succeed('Created the module from template files');
   });
+
   if (!options.local) {
     await newStep('Installing module dependencies', async (step) => {
       await installDependencies(packageManager, targetDir);
@@ -174,7 +193,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     printFurtherLocalInstructions(slug, data.project.moduleName);
   } else {
     console.log('✅ Successfully created Expo module');
-    printFurtherInstructions(targetDir, packageManager, options.example);
+    printFurtherInstructions(targetDir, packageManager, options.example, data.features);
   }
 }
 
@@ -287,6 +306,13 @@ function handleSuffix(name: string, suffix: string): string {
   return `${name}${suffix}`;
 }
 
+function resolveViewName(name: string, moduleName: string, providedViewName?: string): string {
+  const baseName = name.endsWith('Module') ? name.slice(0, -'Module'.length) : name;
+  const fallbackView = providedViewName ?? handleSuffix(name, 'View');
+  const candidates = [fallbackView, handleSuffix(baseName, 'View'), `${baseName}NativeView`];
+  return candidates.find((candidate) => candidate !== moduleName) ?? `${baseName}NativeView`;
+}
+
 /**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
@@ -304,10 +330,17 @@ async function createModuleFromTemplate(
       closeDelimiter: '}',
       escape: (value: string) => value.replace(/\./g, path.sep),
     });
+
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
     const template = await fs.promises.readFile(fromPath, 'utf8');
     const renderedContent = ejs.render(template, data);
+
+    //if the first non-empty line contains __SKIP_FILE__, skip writing this file
+    const firstNonEmptyLine = renderedContent.split(/\r?\n/).find((l) => l.trim().length > 0) || '';
+    if (firstNonEmptyLine.includes('__SKIP_FILE__')) {
+      continue;
+    }
 
     if (!fs.existsSync(path.dirname(toPath))) {
       await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
@@ -365,39 +398,78 @@ async function askForPackageSlugAsync(customTargetPath?: string, isLocal = false
  */
 async function askForSubstitutionDataAsync(
   slug: string,
-  isLocal = false
+  isLocal = false,
+  includeGhConfig = false
 ): Promise<SubstitutionData | LocalSubstitutionData> {
-  const promptQueries = await (
-    isLocal ? getLocalSubstitutionDataPrompts : getSubstitutionDataPrompts
-  )(slug);
+  const promptQueries = isLocal
+    ? await getLocalSubstitutionDataPrompts(slug)
+    : await getSubstitutionDataPrompts(slug, includeGhConfig);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
     process.exit(0);
   };
 
-  const {
-    name,
-    description,
-    package: projectPackage,
-    authorName,
-    authorEmail,
-    authorUrl,
-    repo,
-  } = await prompts(promptQueries, { onCancel });
+  const baseAnswers = await prompts(promptQueries, { onCancel });
+
+  const { name, description, authorName, authorEmail, authorUrl, repo, platform, includeView } =
+    baseAnswers;
+
+  // we need to ask separately to validate against previous answers
+  let viewName: string | undefined = undefined;
+
+  if (includeView) {
+    const { viewName: answeredViewName } = await prompts(getViewNamePrompt(name), { onCancel });
+    viewName = answeredViewName;
+  }
+
+  const projectPackage = deriveBaseIdentifierFromSlug(slug);
+
+  const platformSelection = (() => {
+    const list: string[] = [].concat(platform ?? []);
+    return {
+      list,
+      isiOS(): boolean {
+        return this.list.includes('ios');
+      },
+      isAndroid(): boolean {
+        return this.list.includes('android');
+      },
+      isWeb(): boolean {
+        return this.list.includes('web');
+      },
+    };
+  })();
+
+  const moduleName = handleSuffix(name, 'Module');
+  const resolvedViewName = resolveViewName(name, moduleName, viewName);
 
   if (isLocal) {
     return {
       project: {
         slug,
         name,
+        description,
         package: projectPackage,
-        moduleName: handleSuffix(name, 'Module'),
-        viewName: handleSuffix(name, 'View'),
+        moduleName,
+        viewName: resolvedViewName,
+      },
+      features: {
+        view: !!includeView,
+        platforms: platformSelection.list,
+        ios: platformSelection.isiOS(),
+        android: platformSelection.isAndroid(),
+        web: platformSelection.isWeb(),
       },
       type: 'local',
     };
   }
+
+  const author =
+    includeGhConfig && authorName
+      ? `${authorName}${authorEmail ? ` <${authorEmail}>` : ''}${authorUrl ? ` (${authorUrl})` : ''}`
+      : '';
+  const repoOut = includeGhConfig && repo ? repo : '';
 
   return {
     project: {
@@ -406,12 +478,19 @@ async function askForSubstitutionDataAsync(
       version: '0.1.0',
       description,
       package: projectPackage,
-      moduleName: handleSuffix(name, 'Module'),
-      viewName: handleSuffix(name, 'View'),
+      moduleName,
+      viewName: resolvedViewName,
     },
-    author: `${authorName} <${authorEmail}> (${authorUrl})`,
+    features: {
+      view: !!includeView,
+      platforms: platformSelection.list,
+      ios: platformSelection.isiOS(),
+      android: platformSelection.isAndroid(),
+      web: platformSelection.isWeb(),
+    },
+    author,
     license: 'MIT',
-    repo,
+    repo: repoOut,
     type: 'remote',
   };
 }
@@ -448,19 +527,36 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
 function printFurtherInstructions(
   targetDir: string,
   packageManager: PackageManagerName,
-  includesExample: boolean
+  includesExample: boolean,
+  features: { ios?: boolean; android?: boolean; web?: boolean; platforms?: string[] }
 ) {
   if (includesExample) {
-    const commands = [
-      `cd ${path.relative(CWD, targetDir)}`,
-      formatRunCommand(packageManager, 'open:ios'),
-      formatRunCommand(packageManager, 'open:android'),
-    ];
+    const commands: string[] = [`cd ${path.relative(CWD, targetDir)}`];
+    const platformNames: string[] = [];
+
+    if (features?.ios) {
+      platformNames.push('iOS');
+      commands.push(formatRunCommand(packageManager, 'open:ios'));
+    }
+    if (features?.android) {
+      platformNames.push('Android');
+      commands.push(formatRunCommand(packageManager, 'open:android'));
+    }
 
     console.log();
-    console.log(
-      'To start developing your module, navigate to the directory and open Android and iOS projects of the example app'
-    );
+    if (platformNames.length === 0) {
+      console.log('To start developing your module, navigate to the example directory:');
+    } else if (platformNames.length === 1) {
+      console.log(
+        `To start developing your module, navigate to the directory and open the ${platformNames[0]} project of the example app`
+      );
+    } else {
+      const last = platformNames.pop();
+      console.log(
+        `To start developing your module, navigate to the directory and open the ${platformNames.join(', ')} and ${last} projects of the example app`
+      );
+    }
+
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
   }
@@ -498,6 +594,11 @@ program
   .option(
     '--local',
     'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.',
+    false
+  )
+  .option(
+    '--include-gh-config',
+    'Include prompts for author and GitHub/repository configuration.',
     false
   )
   .action(main);

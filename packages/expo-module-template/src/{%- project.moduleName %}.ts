@@ -1,4 +1,5 @@
-import { NativeModule, requireNativeModule } from 'expo';
+<% const multiPlatform = features.platforms.length >= 3; %>
+import { NativeModule, <%- multiPlatform ? 'requireNativeModule' : 'requireOptionalNativeModule' %> } from 'expo';
 
 import { <%- project.moduleName %>Events } from './<%- project.name %>.types';
 
@@ -9,4 +10,4 @@ declare class <%- project.moduleName %> extends NativeModule<<%- project.moduleN
 }
 
 // This call loads the native module object from the JSI.
-export default requireNativeModule<<%- project.moduleName %>>('<%- project.name %>');
+export default <%- multiPlatform ? 'requireNativeModule' : 'requireOptionalNativeModule' %><<%- project.moduleName %>>('<%- project.name %>');

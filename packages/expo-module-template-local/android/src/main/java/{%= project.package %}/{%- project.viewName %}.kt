@@ -1,3 +1,4 @@
+<% if (!features.view || !features.android) { %>// __SKIP_FILE__<% } %>
 package <%- project.package %>
 
 import android.content.Context

@@ -1,3 +1,4 @@
+<% if (!features.view || !features.ios) { %>// __SKIP_FILE__<% } %>
 import ExpoModulesCore
 import WebKit
 

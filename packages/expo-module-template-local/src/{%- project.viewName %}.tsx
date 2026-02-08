@@ -1,3 +1,4 @@
+<% if (!features.view) { %>// __SKIP_FILE__<% } %>
 import { requireNativeView } from 'expo';
 import * as React from 'react';
 

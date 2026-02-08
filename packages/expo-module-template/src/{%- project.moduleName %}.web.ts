@@ -1,3 +1,4 @@
+<% if (!features.web) { %>// __SKIP_FILE__<% } %>
 import { registerWebModule, NativeModule } from 'expo';
 
 import { <%- project.moduleName %>Events } from './<%- project.name %>.types';
