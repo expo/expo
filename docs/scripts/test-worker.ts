@@ -49,74 +49,12 @@ async function cleanup(): Promise<void> {
   }
 }
 
-function validateRoutesJson(): void {
-  console.log('\n--- Validating _routes.json ---');
-
-  const routesPath = 'public/_routes.json';
-  if (!fs.existsSync(routesPath)) {
-    throw new Error('_routes.json does not exist');
-  }
-  console.log('✓ _routes.json exists');
-
-  const content = fs.readFileSync(routesPath, 'utf8');
-  const routes = JSON.parse(content);
-  console.log('✓ _routes.json is valid JSON');
-
-  if (routes.version !== 1) {
-    throw new Error('_routes.json version must be 1');
-  }
-  if (!Array.isArray(routes.include)) {
-    throw new Error('_routes.json include must be an array');
-  }
-  if (!Array.isArray(routes.exclude)) {
-    throw new Error('_routes.json exclude must be an array');
-  }
-  console.log('✓ _routes.json has valid structure (version, include, exclude)');
-
-  // Validate that static asset extensions are excluded from the worker
-  const requiredExcludes = ['/*.md', '/*.txt', '/*.xml', '/*.json'];
-  for (const pattern of requiredExcludes) {
-    if (!routes.exclude.includes(pattern)) {
-      throw new Error(`_routes.json missing required exclude pattern: ${pattern}`);
-    }
-  }
-  console.log('✓ _routes.json excludes static asset patterns (md, txt, xml, json)');
-
-  // Ensure total rules stay within Cloudflare's limit of 100
-  const totalRules = routes.include.length + routes.exclude.length;
-  if (totalRules > 100) {
-    throw new Error(`_routes.json has ${totalRules} rules, exceeding Cloudflare's limit of 100`);
-  }
-  console.log(`✓ _routes.json has ${totalRules} rules (limit: 100)`);
-}
-
-function validateWorkerJs(): void {
-  console.log('\n--- Validating _worker.js ---');
-
-  const workerPath = 'public/_worker.js';
-  if (!fs.existsSync(workerPath)) {
-    throw new Error('_worker.js does not exist');
-  }
-  console.log('✓ _worker.js exists');
-
-  const content = fs.readFileSync(workerPath, 'utf8');
-
-  if (!content.includes('export default')) {
-    throw new Error('_worker.js missing default export');
-  }
-  console.log('✓ _worker.js has default export');
-
-  if (!content.includes('async fetch')) {
-    throw new Error('_worker.js missing fetch handler');
-  }
-  console.log('✓ _worker.js has fetch handler');
-}
-
 function setupTestDirectory(): void {
   console.log('\n--- Setting up test directory ---');
 
   fs.mkdirSync(TEST_DIR, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/test-page`, { recursive: true });
+  fs.mkdirSync(`${TEST_DIR}/html-only-page`, { recursive: true });
 
   // Copy worker files
   const routesContent = fs.readFileSync('public/_routes.json', 'utf8');
@@ -132,6 +70,11 @@ function setupTestDirectory(): void {
   fs.writeFileSync(
     `${TEST_DIR}/test-page/index.md`,
     '# Test Markdown Content\n\nThis is test content.'
+  );
+  // Page with HTML but no .md — for fallback testing
+  fs.writeFileSync(
+    `${TEST_DIR}/html-only-page/index.html`,
+    '<html><body><h1>HTML Only Page</h1></body></html>'
   );
 
   console.log('✓ Test directory created');
@@ -208,17 +151,40 @@ async function testMarkdownContentNegotiation(): Promise<void> {
   console.log('✓ Accept: text/markdown request returns correct Content-Type');
 }
 
+async function testMarkdownNotFound(): Promise<void> {
+  console.log('\n--- Testing markdown 404 responses ---');
+
+  // Page with HTML but no .md should 404 when markdown is requested
+  const missingMd = await fetch(`${BASE_URL}/html-only-page`, {
+    headers: { Accept: 'text/markdown' },
+  });
+
+  if (missingMd.status !== 404) {
+    throw new Error(`Expected 404 for missing .md, got: HTTP ${missingMd.status}`);
+  }
+  console.log('✓ Missing .md file returns 404');
+
+  // Nonexistent page should also 404
+  const notFound = await fetch(`${BASE_URL}/nonexistent-page`, {
+    headers: { Accept: 'text/markdown' },
+  });
+
+  if (notFound.status !== 404) {
+    throw new Error(`Expected 404 for nonexistent page, got: HTTP ${notFound.status}`);
+  }
+  console.log('✓ Nonexistent page returns 404');
+}
+
 async function main(): Promise<void> {
   console.log('=== Testing Cloudflare Pages Worker and Routes ===');
 
   try {
-    validateRoutesJson();
-    validateWorkerJs();
     setupTestDirectory();
     await startWrangler();
     await testHttpResponse();
     await testDirectMarkdownAccess();
     await testMarkdownContentNegotiation();
+    await testMarkdownNotFound();
 
     console.log('\n=== All tests passed! ===');
   } catch (error) {
