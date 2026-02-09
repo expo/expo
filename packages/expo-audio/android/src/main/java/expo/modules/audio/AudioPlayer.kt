@@ -13,7 +13,9 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
-import expo.modules.audio.service.AudioControlsService
+import androidx.media3.session.MediaSession
+import expo.modules.audio.service.AudioPlaybackServiceConnection
+import expo.modules.audio.service.ServiceBindingState
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedRef
@@ -29,7 +31,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-
+import java.lang.ref.WeakReference
 import java.util.UUID
 
 private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
@@ -60,7 +62,10 @@ class AudioPlayer(
 
   // Lock screen controls
   var isActiveForLockScreen = false
-  private var metadata: Metadata? = null
+  internal var metadata: Metadata? = null
+  internal var lockScreenOptions: AudioLockScreenOptions? = null
+  internal var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
+  val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
 
   private var playerScope = CoroutineScope(Dispatchers.Main)
   private var samplingEnabled = false
@@ -108,22 +113,47 @@ class AudioPlayer(
   fun setActiveForLockScreen(active: Boolean, metadata: Metadata? = null, options: AudioLockScreenOptions? = null) {
     if (active) {
       this.metadata = metadata
-      AudioControlsService.setActivePlayer(context, this, metadata, options)
+      this.lockScreenOptions = options
+      this.isActiveForLockScreen = true
+
+      if (serviceConnection.bindingState == ServiceBindingState.UNBOUND) {
+        serviceConnection.bindWithService()
+      }
+
+      val serviceBinder = serviceConnection.playbackServiceBinder
+      if (serviceBinder != null && serviceConnection.bindingState == ServiceBindingState.BOUND) {
+        serviceBinder.service.setPlayerOptions(this, metadata, options)
+      } else if (serviceConnection.bindingState == ServiceBindingState.BINDING) {
+        // The settings will be applied when the service connects
+      } else {
+        appContext?.jsLogger?.error(
+          getPlaybackServiceErrorMessage("Failed to activate lock screen controls - service binding failed")
+        )
+      }
     } else if (isActiveForLockScreen) {
-      AudioControlsService.setActivePlayer(context, null)
+      this.isActiveForLockScreen = false
+      serviceConnection.playbackServiceBinder?.service?.unregisterPlayer()
     }
   }
 
   fun updateLockScreenMetadata(metadata: Metadata) {
     if (isActiveForLockScreen) {
       this.metadata = metadata
-      AudioControlsService.updateMetadata(this, metadata)
+
+      val serviceBinder = serviceConnection.playbackServiceBinder
+      if (serviceBinder != null && serviceConnection.bindingState == ServiceBindingState.BOUND) {
+        serviceBinder.service.setPlayerMetadata(this, metadata)
+      } else {
+        appContext?.jsLogger?.warn(
+          getPlaybackServiceErrorMessage("Cannot update lock screen metadata - service not connected")
+        )
+      }
     }
   }
 
   fun clearLockScreenControls() {
     if (isActiveForLockScreen) {
-      AudioControlsService.setActivePlayer(context, null)
+      serviceConnection.playbackServiceBinder?.service?.unregisterPlayer()
     }
   }
 
@@ -252,6 +282,11 @@ class AudioPlayer(
     )
   }
 
+  internal fun assignBasicMediaSession() {
+    mediaSession.release()
+    mediaSession = buildBasicMediaSession(context, ref)
+  }
+
   private fun sendPlayerUpdate(map: Map<String, Any?>? = null) {
     val data = currentStatus()
     val body = map?.let { data + it } ?: data
@@ -308,12 +343,17 @@ class AudioPlayer(
   @OptIn(DelicateCoroutinesApi::class)
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
+
+    serviceConnection.release()
+
     // Run on global scope (not appContext.mainQueue) so that reloading doesn't cancel the release process
     // https://github.com/expo/expo/blob/cdf592a7fea56fc01b0149e9b2e5dbd294bcdc4c/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt#L277-L279
     GlobalScope.launch(Dispatchers.Main) {
+      mediaSession.release()
       if (isActiveForLockScreen) {
-        AudioControlsService.clearSession()
+        serviceConnection.playbackServiceBinder?.service?.unregisterPlayer()
       }
+      serviceConnection.unbind()
       playerScope.cancel()
       visualizer?.release()
       ref.release()

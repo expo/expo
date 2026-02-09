@@ -8,37 +8,38 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import expo.modules.audio.AudioRecorder
+import expo.modules.audio.getRecordingServiceErrorMessage
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import java.lang.ref.WeakReference
 
 private const val TAG = "AudioRecordingService"
 
 class AudioRecordingService : Service() {
-  private val binder = AudioRecordingBinder()
-  private var activeRecorders = mutableSetOf<WeakReference<AudioRecorder>>()
+  private val binder = AudioRecordingServiceBinder(this)
+  private val activeRecorders = mutableSetOf<WeakReference<AudioRecorder>>()
+  private val recorderLock = Any()
   private var notificationId = NOTIFICATION_ID
 
-  inner class AudioRecordingBinder : Binder() {
-    fun getService(): AudioRecordingService = this@AudioRecordingService
-  }
+  @Volatile
+  private var isRunningForeground = false
+
+  private lateinit var weakContext: WeakReference<AppContext>
+  var appContext: AppContext
+    get() = weakContext.get() ?: throw Exceptions.AppContextLost()
+    set(value) {
+      weakContext = WeakReference(value)
+    }
 
   override fun onCreate() {
     super.onCreate()
     Log.d(TAG, "Service onCreate()")
-    instance = this
     createNotificationChannelIfNeeded()
-
-    synchronized(pendingRecorders) {
-      pendingRecorders.forEach { recorder ->
-        registerRecorder(recorder)
-      }
-      pendingRecorders.clear()
-    }
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -65,6 +66,10 @@ class AudioRecordingService : Service() {
           NotificationManager.IMPORTANCE_LOW
         ).apply {
           description = "Shows when audio is being recorded in the background"
+          setShowBadge(false)
+          enableVibration(false)
+          enableLights(false)
+          setSound(null, null)
         }
         notificationManager.createNotificationChannel(channel)
       }
@@ -103,6 +108,9 @@ class AudioRecordingService : Service() {
         stopPendingIntent
       )
       .setCategory(NotificationCompat.CATEGORY_SERVICE)
+      .setSilent(true)
+      .setShowWhen(false)
+      .setVisibility(NotificationCompat.VISIBILITY_SECRET) // Hide from lock screen on secure devices
       .build()
   }
 
@@ -119,32 +127,57 @@ class AudioRecordingService : Service() {
       } else {
         startForeground(notificationId, notification)
       }
-    } catch (_: Exception) {
+      isRunningForeground = true
+    } catch (e: Exception) {
+      appContext.jsLogger?.error(
+        getRecordingServiceErrorMessage("Failed to start the expo-audio foreground service for background recording"),
+        e
+      )
+      isRunningForeground = false
     }
   }
 
-  fun registerRecorder(recorder: AudioRecorder) {
-    activeRecorders.removeAll { it.get() == null }
-    activeRecorders.add(WeakReference(recorder))
+  private fun stopForegroundWithNotification() {
+    stopForeground(STOP_FOREGROUND_REMOVE)
+    isRunningForeground = false
+  }
 
-    if (activeRecorders.size == 1) {
-      startForegroundWithNotification()
+  fun registerRecorder(recorder: AudioRecorder) {
+    synchronized(recorderLock) {
+      activeRecorders.removeAll { it.get() == null }
+
+      if (activeRecorders.any { it.get() === recorder }) {
+        return
+      }
+
+      activeRecorders.add(WeakReference(recorder))
+
+      if (activeRecorders.size == 1 || !isRunningForeground) {
+        startForegroundWithNotification()
+      }
     }
   }
 
   fun unregisterRecorder(recorder: AudioRecorder) {
-    activeRecorders.removeAll { it.get() == recorder || it.get() == null }
+    synchronized(recorderLock) {
+      activeRecorders.removeAll { it.get() == recorder || it.get() == null }
 
-    if (activeRecorders.isEmpty()) {
-      stopSelf()
+      if (activeRecorders.isEmpty()) {
+        stopForegroundWithNotification()
+        stopSelf()
+      }
     }
   }
 
   private fun stopRecordingAndService() {
-    activeRecorders.forEach { weakRef ->
-      weakRef.get()?.stopRecording()
+    synchronized(recorderLock) {
+      activeRecorders.forEach { weakRef ->
+        weakRef.get()?.stopRecording()
+      }
+      activeRecorders.clear()
     }
-    activeRecorders.clear()
+
+    stopForegroundWithNotification()
     stopSelf()
   }
 
@@ -154,48 +187,17 @@ class AudioRecordingService : Service() {
 
   override fun onDestroy() {
     super.onDestroy()
-    instance = null
-    activeRecorders.clear()
+    // Ensure notification is removed when service is destroyed
+    stopForegroundWithNotification()
+    synchronized(recorderLock) {
+      activeRecorders.clear()
+    }
   }
 
   companion object {
     private const val CHANNEL_ID = "expo_audio_recording_channel"
     private const val NOTIFICATION_ID = 2001
-    private const val ACTION_START_RECORDING = "expo.modules.audio.action.START_RECORDING"
-    private const val ACTION_STOP_RECORDING = "expo.modules.audio.action.STOP_RECORDING"
-
-    @Volatile
-    private var instance: AudioRecordingService? = null
-    private val pendingRecorders = mutableSetOf<AudioRecorder>()
-
-    fun getInstance(): AudioRecordingService? = instance
-
-    fun startService(context: Context, recorder: AudioRecorder) {
-      val intent = Intent(context, AudioRecordingService::class.java).apply {
-        action = ACTION_START_RECORDING
-      }
-
-      val service = getInstance()
-      if (service != null) {
-        service.registerRecorder(recorder)
-      } else {
-        synchronized(pendingRecorders) {
-          pendingRecorders.add(recorder)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          context.startForegroundService(intent)
-        } else {
-          context.startService(intent)
-        }
-      }
-    }
-
-    fun stopService(context: Context) {
-      val intent = Intent(context, AudioRecordingService::class.java).apply {
-        action = ACTION_STOP_RECORDING
-      }
-      context.startService(intent)
-    }
+    internal const val ACTION_START_RECORDING = "expo.modules.audio.action.START_RECORDING"
+    internal const val ACTION_STOP_RECORDING = "expo.modules.audio.action.STOP_RECORDING"
   }
 }
