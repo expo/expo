@@ -565,7 +565,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
  * Post-process the markdown output to clean up common artifacts.
  *
  * Related markdown cleanup in other pipelines (they operate on MDX source, not rendered HTML):
- * - scripts/generate-llms/utils.js cleanContent()
+ * - scripts/generate-llms/llms-txt.js cleanContent()
  * - ui/components/MarkdownActions/processMarkdown.ts
  */
 export function cleanMarkdown(markdown: string): string {
