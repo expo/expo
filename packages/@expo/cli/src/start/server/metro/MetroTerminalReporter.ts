@@ -22,6 +22,17 @@ import {
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
 import { events } from '../../../events';
 
+type ClientLogLevel =
+  | 'trace'
+  | 'info'
+  | 'error'
+  | 'warn'
+  | 'log'
+  | 'group'
+  | 'groupCollapsed'
+  | 'groupEnd'
+  | 'debug';
+
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 // prettier-ignore
@@ -56,7 +67,7 @@ export const event = events('metro', (t) => [
     data: string | unknown[] | null;
   }>(),
   t.event<'client_log', {
-    level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug' | null;
+    level: ClientLogLevel | null;
     data: unknown[] | null;
   }>(),
   t.event<'hmr_client_error', {
@@ -120,67 +131,11 @@ export class MetroTerminalReporter extends TerminalReporter {
       case 'client_log': {
         if (this.shouldFilterClientLog(event)) {
           return;
-        }
-        const { level } = event;
-
-        if (!level) {
+        } else if (event.level != null) {
+          return this.#onClientLog(event);
+        } else {
           break;
         }
-
-        if (level === 'warn' || (level as string) === 'error') {
-          let hasStack = false;
-          const parsed = event.data.map((msg) => {
-            // Quick check to see if an unsymbolicated stack is being logged.
-            if (msg.includes('.bundle//&platform=')) {
-              const stack = parseErrorStringToObject(msg);
-              if (stack) {
-                hasStack = true;
-              }
-              return stack;
-            }
-            return msg;
-          });
-
-          if (hasStack) {
-            (async () => {
-              const symbolicating = parsed.map((p) => {
-                if (typeof p === 'string') return p;
-                return maybeSymbolicateAndFormatJSErrorStackLogAsync(this.projectRoot, level, p);
-              });
-
-              let usefulStackCount = 0;
-              const fallbackIndices: number[] = [];
-              const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
-                if (s.status === 'rejected') {
-                  debug('Error formatting stack', parsed[index], s.reason);
-                  return parsed[index];
-                } else if (typeof s.value === 'string') {
-                  return s.value;
-                } else {
-                  if (!s.value.isFallback) {
-                    usefulStackCount++;
-                  } else {
-                    fallbackIndices.push(index);
-                  }
-                  return s.value.stack;
-                }
-              });
-
-              // Using EXPO_DEBUG we can print all stack
-              const filtered =
-                usefulStackCount && !env.EXPO_DEBUG
-                  ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
-                  : symbolicated;
-
-              logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
-            })();
-            return;
-          }
-        }
-
-        // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-        logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...event.data);
-        return;
       }
     }
     return super._log(event);
@@ -374,6 +329,81 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
   }
 
+  #onClientLog(evt: { type: 'client_log'; level?: ClientLogLevel; data: unknown[] }) {
+    const { level = 'log', data } = evt;
+    if (level === 'warn' || (level as string) === 'error') {
+      let hasStack = false;
+      const parsed = data.map((msg) => {
+        // Quick check to see if an unsymbolicated stack is being logged.
+        if (typeof msg === 'string' && msg.includes('.bundle//&platform=')) {
+          const stack = parseErrorStringToObject(msg);
+          if (stack) {
+            hasStack = true;
+          }
+          return stack;
+        }
+        return msg;
+      });
+
+      if (hasStack) {
+        (async () => {
+          const symbolicating = parsed.map((p) => {
+            if (typeof p === 'string') {
+              return p;
+            } else if (
+              p &&
+              typeof p === 'object' &&
+              'message' in p &&
+              typeof p.message === 'string'
+            ) {
+              return maybeSymbolicateAndFormatJSErrorStackLogAsync(
+                this.projectRoot,
+                level,
+                p as any
+              );
+            } else {
+              return null;
+            }
+          });
+
+          let usefulStackCount = 0;
+          const fallbackIndices: number[] = [];
+          const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
+            if (s.status === 'rejected') {
+              debug('Error formatting stack', parsed[index], s.reason);
+              return parsed[index];
+            } else if (!s.value) {
+              return parsed[index];
+            } else if (typeof s.value === 'string') {
+              return s.value;
+            } else {
+              if (!s.value.isFallback) {
+                usefulStackCount++;
+              } else {
+                fallbackIndices.push(index);
+              }
+              return s.value.stack;
+            }
+          });
+
+          // Using EXPO_DEBUG we can print all stack
+          const filtered =
+            usefulStackCount && !env.EXPO_DEBUG
+              ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
+              : symbolicated;
+
+          event('client_log', { level, data: symbolicated });
+          logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
+        })();
+        return;
+      }
+    }
+
+    event('client_log', { level, data });
+    // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+    logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...data);
+  }
+
   #captureLog(evt: TerminalReportableEvent) {
     switch (evt.type) {
       case 'bundle_build_started':
@@ -389,10 +419,8 @@ export class MetroTerminalReporter extends TerminalReporter {
           data: evt.data ?? null,
         });
       case 'client_log':
-        return event('client_log', {
-          level: evt.level ?? null,
-          data: evt.data ?? null,
-        });
+        // Handled separately: see this.#onClientLog
+        return;
       case 'hmr_client_error':
       case 'cache_write_error':
       case 'cache_read_error':
