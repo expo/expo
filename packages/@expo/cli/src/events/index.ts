@@ -25,6 +25,9 @@ function parseLogTarget(env: string | undefined) {
   return logDestination;
 }
 
+/** Activates the event logger based on the input env var
+ * @param env - The target to write the logs to; defaults to `$EVENT_LOG`
+ */
 export function installEventLogger(env = process.env.EVENT_LOG) {
   const eventLogDestination = parseLogTarget(env);
   if (eventLogDestination) {
@@ -41,8 +44,36 @@ export function installEventLogger(env = process.env.EVENT_LOG) {
   }
 }
 
+/** Returns whether the event logger is active */
 export const shouldLogEvents = () => !!logStream;
 
+/** Used to create an event logger for structured JSONL logs activated with the `EVENT_LOG` environment variable.
+ *
+ * @remarks
+ * Structured logs are streamed to a JSONL output file or file descriptor, and are meant for automated tooling
+ * or normal usage to document what happened during a user session. When creating a module that outputs errors,
+ * events, or captures what the user was doing, create a new event logger category for them and add structured
+ * log events.
+ * For example, `../start/server/metro/MetroTerminalReporter` captures most of Metro's logged events.
+ * Structured JSONL logs don't have a large performance impact, unlike `DEBUG` logs, and are easily parseable
+ * and filterable, including by wrapper processes.
+ *
+ * After adding a new event category, don't forget to add it to `./types.ts` to collect all event shape types
+ * in one place.
+ *
+ * @example
+ * ```ts
+ * export const event = events('test', (t) => [
+ *   t.event<'my_event', {
+ *     myValue: string | null;
+ *   }>(),
+ * ]);
+ *
+ * event('my_event', { myValue: 'test' });
+ * ```
+ *
+ * This will log a `{ key: 'test:my_event', myValue: 'test' }` entry in the event log.
+ */
 export const events: EventLoggerBuilder = ((
   category: string,
   _fn: (builder: EventBuilder) => readonly EventShape<string>[]
