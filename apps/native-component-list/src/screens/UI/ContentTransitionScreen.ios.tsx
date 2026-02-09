@@ -16,7 +16,6 @@ export default function ContentTransitionScreen() {
   const [count, setCount] = useState(0);
   const [countDown, setCountDown] = useState(100);
   const [opacityCount, setOpacityCount] = useState(0);
-  const [interpolateCount, setInterpolateCount] = useState(0);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -28,8 +27,9 @@ export default function ContentTransitionScreen() {
               modifiers={[
                 font({ size: 48, weight: 'bold', design: 'rounded' }),
                 contentTransition('numericText'),
+                animation(Animation.default, count),
               ]}>
-              {count.toString()}
+              {count.toLocaleString()}
             </Text>
             <HStack
               modifiers={[
@@ -52,7 +52,7 @@ export default function ContentTransitionScreen() {
                 contentTransition('numericText', { countsDown: true }),
                 animation(Animation.default, countDown),
               ]}>
-              {countDown.toString()}
+              {countDown.toLocaleString()}
             </Text>
             <HStack
               modifiers={[
@@ -75,7 +75,7 @@ export default function ContentTransitionScreen() {
                 contentTransition('opacity'),
                 animation(Animation.easeInOut({ duration: 0.5 }), opacityCount),
               ]}>
-              {opacityCount.toString()}
+              {opacityCount.toLocaleString()}
             </Text>
             <HStack
               modifiers={[
