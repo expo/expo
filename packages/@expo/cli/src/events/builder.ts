@@ -4,11 +4,13 @@ type obj<T> = T extends { [key: string | number]: any } ? { [K in keyof T]: T[K]
 
 export type EmptyPayload = {
   [key: string]: never;
-  key: never;
+  _e: never;
+  _t: never;
 };
 
 type AbstractPayload = Record<string, any> & {
-  key?: never;
+  _e?: never;
+  _t?: never;
 };
 
 export type Event<

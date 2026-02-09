@@ -81,7 +81,7 @@ export const shouldReduceLogs = () => !!logStream && env.EXPO_UNSTABLE_HEADLESS;
  * event('my_event', { myValue: 'test' });
  * ```
  *
- * This will log a `{ key: 'test:my_event', myValue: 'test' }` entry in the event log.
+ * This will log a `{ _e: 'test:my_event', _t: 0, myValue: 'test' }` entry in the event log.
  */
 export const events: EventLoggerBuilder = ((
   category: string,
@@ -89,8 +89,9 @@ export const events: EventLoggerBuilder = ((
 ) => {
   function log(event: string, data: any) {
     if (logStream) {
-      const key = `${category}:${String(event)}`;
-      const payload = JSON.stringify({ key, ...data });
+      const _e = `${category}:${String(event)}`;
+      const _t = Date.now();
+      const payload = JSON.stringify({ _e, _t, ...data });
       logStream._write(payload + '\n');
     }
   }
