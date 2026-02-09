@@ -155,23 +155,11 @@ export class MetroTerminalReporter extends TerminalReporter {
     const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
-    let localPath: string;
-
-    if (
+    const localPath =
       typeof progress.bundleDetails?.customTransformOptions?.dom === 'string' &&
       progress.bundleDetails.customTransformOptions.dom.includes(path.sep)
-    ) {
-      // Because we use a generated entry file for DOM components, we need to adjust the logging path so it
-      // shows a unique path for each component.
-      // Here, we take the relative import path and remove all the starting slashes.
-      localPath = progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '');
-    } else {
-      const inputFile = progress.bundleDetails.entryFile;
-
-      localPath = path.isAbsolute(inputFile)
-        ? path.relative(this.projectRoot, inputFile)
-        : inputFile;
-    }
+        ? progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
+        : this.#normalizePath(progress.bundleDetails.entryFile);
 
     if (!inProgress) {
       const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
@@ -300,8 +288,8 @@ export class MetroTerminalReporter extends TerminalReporter {
         message: error.message ?? null,
         importStack: importStack ?? null,
         filename: error.filename ?? null,
-        targetModuleName: error.targetModuleName ?? null,
-        originModulePath: error.originModulePath ?? null,
+        targetModuleName: this.#normalizePath(error.targetModuleName),
+        originModulePath: this.#normalizePath(error.originModulePath),
       });
 
       return this.terminal.log(importStack ? `${message}\n\n${importStack}` : message);
@@ -406,13 +394,19 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   #captureLog(evt: TerminalReportableEvent) {
     switch (evt.type) {
-      case 'bundle_build_started':
+      case 'bundle_build_started': {
+        const entry =
+          typeof evt.bundleDetails?.customTransformOptions?.dom === 'string' &&
+          evt.bundleDetails.customTransformOptions.dom.includes(path.sep)
+            ? evt.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
+            : this.#normalizePath(evt.bundleDetails.entryFile);
         return event('bundling:started', {
           id: evt.buildID,
           platform: evt.bundleDetails.platform ?? null,
           environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
-          entry: evt.bundleDetails.entryFile,
+          entry,
         });
+      }
       case 'unstable_server_log':
         return event('server_log', {
           level: evt.level ?? null,
@@ -428,6 +422,12 @@ export class MetroTerminalReporter extends TerminalReporter {
           message: evt.error.message,
         });
     }
+  }
+
+  #normalizePath<T extends string | null>(dest: T | undefined): T | string {
+    return dest != null && path.isAbsolute(dest)
+      ? path.relative(this.projectRoot, dest)
+      : ((dest || null) as T);
   }
 }
 
