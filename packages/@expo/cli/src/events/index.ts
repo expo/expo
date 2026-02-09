@@ -46,7 +46,7 @@ export function installEventLogger(env = process.env.EVENT_LOG) {
 }
 
 /** Returns whether the event logger is active */
-export const shouldLogEvents = () => !!logStream;
+export const isEventLoggerActive = () => !!logStream?.writable;
 
 /** Whether logs shown in the terminal should be reduced.
  * @remarks
