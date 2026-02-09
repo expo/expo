@@ -54,10 +54,6 @@ if (LegacyNativeProxy) {
       };
     });
   });
-} else {
-  console.warn(
-    `The "EXNativeModulesProxy" native module is not exported through NativeModules; verify that expo-modules-core's native code is linked properly`
-  );
 }
 
 export default NativeModulesProxy;
