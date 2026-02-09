@@ -20,8 +20,54 @@ import {
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
+import { events } from '../../../events';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
+
+// prettier-ignore
+export const event = events('metro', (t) => [
+  t.event<'bundling:started', {
+    id: string;
+    platform: null | string;
+    environment: null | string;
+    entry: string;
+  }>(),
+  t.event<'bundling:done', {
+    id: string | null;
+    ms: number | null;
+    total: number;
+  }>(),
+  t.event<'bundling:failed', {
+    id: string | null;
+    filename: string | null;
+    message: string | null;
+    targetModuleName: string | null;
+    originModulePath: string | null;
+  }>(),
+  t.event<'bundling:progress', {
+    id: string | null;
+    progress: number;
+    current: number;
+    total: number;
+  }>(),
+  t.event<'server_log', {
+    level: 'info' | 'warn' | 'error' | null;
+    data: string | unknown[] | null;
+  }>(),
+  t.event<'client_log', {
+    level: 'trace' | 'info' | 'warn' | 'log' | 'group' | 'groupCollapsed' | 'groupEnd' | 'debug' | null;
+    data: unknown[] | null;
+  }>(),
+  t.event<'hmr_client_error', {
+    message: string;
+  }>(),
+  t.event<'cache_write_error', {
+    message: string;
+  }>(),
+  t.event<'cache_read_error', {
+    message: string;
+  }>(),
+]);
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -31,6 +77,8 @@ const LIGHT_BLOCK_CHAR = '\u2591';
  * Also removes the giant Metro logo from the output.
  */
 export class MetroTerminalReporter extends TerminalReporter {
+  #lastFailedBuildID: string | undefined;
+
   constructor(
     public projectRoot: string,
     terminal: Terminal
@@ -39,6 +87,7 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   _log(event: TerminalReportableEvent): void {
+    this.#captureLog(event);
     switch (event.type) {
       case 'unstable_server_log':
         if (typeof event.data?.[0] === 'string') {
@@ -175,19 +224,28 @@ export class MetroTerminalReporter extends TerminalReporter {
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
 
       let time: string = '';
+      let ms: number | null = null;
 
       if (startTime != null) {
         const elapsed: bigint = this._getElapsedTime(startTime);
         const micro = Number(elapsed) / 1000;
-        const converted = Number(elapsed) / 1e6;
+        ms = Number(elapsed) / 1e6;
         // If the milliseconds are < 0.5 then it will display as 0, so we display in microseconds.
-        if (converted <= 0.5) {
+        if (ms <= 0.5) {
           const tenthFractionOfMicro = ((micro * 10) / 1000).toFixed(0);
           // Format as microseconds to nearest tenth
           time = chalk.cyan.bold(`0.${tenthFractionOfMicro}ms`);
         } else {
-          time = chalk.dim(converted.toFixed(0) + 'ms');
+          time = chalk.dim(ms.toFixed(0) + 'ms');
         }
+      }
+
+      if (phase === 'done') {
+        event('bundling:done', {
+          id: progress.bundleDetails.buildID ?? null,
+          total: progress.totalFileCount,
+          ms,
+        });
       }
 
       // iOS Bundled 150ms
@@ -211,6 +269,13 @@ export class MetroTerminalReporter extends TerminalReporter {
             .padStart(progress.totalFileCount.toString().length)}/${progress.totalFileCount})`
         )
       : '';
+
+    event('bundling:progress', {
+      id: progress.bundleDetails.buildID ?? null,
+      progress: progress.ratio,
+      total: progress.totalFileCount,
+      current: progress.transformedFileCount,
+    });
 
     return (
       platform +
@@ -258,7 +323,25 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
   }
 
+  /**
+   * Workaround to link build ids to bundling errors.
+   * This works because `_logBundleBuildFailed` is called before `_logBundlingError` in synchronous manner.
+   * https://github.com/facebook/metro/blob/main/packages/metro/src/Server.js#L939-L945
+   */
+  _logBundleBuildFailed(buildID: string): void {
+    this.#lastFailedBuildID = buildID;
+    super._logBundleBuildFailed(buildID);
+  }
+
   _logBundlingError(error: SnippetError): void {
+    event('bundling:failed', {
+      id: this.#lastFailedBuildID ?? null,
+      message: error.message ?? null,
+      filename: error.filename ?? null,
+      targetModuleName: error.targetModuleName ?? null,
+      originModulePath: error.originModulePath ?? null,
+    });
+
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
     if (moduleResolutionError) {
       let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
@@ -277,6 +360,34 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
 
     return super._logBundlingError(error);
+  }
+
+  #captureLog(evt: TerminalReportableEvent) {
+    switch (evt.type) {
+      case 'bundle_build_started':
+        return event('bundling:started', {
+          id: evt.buildID,
+          platform: evt.bundleDetails.platform ?? null,
+          environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
+          entry: evt.bundleDetails.entryFile,
+        });
+      case 'unstable_server_log':
+        return event('server_log', {
+          level: evt.level ?? null,
+          data: evt.data ?? null,
+        });
+      case 'client_log':
+        return event('client_log', {
+          level: evt.level ?? null,
+          data: evt.data ?? null,
+        });
+      case 'hmr_client_error':
+      case 'cache_write_error':
+      case 'cache_read_error':
+        return event(evt.type, {
+          message: evt.error.message,
+        });
+    }
   }
 }
 
