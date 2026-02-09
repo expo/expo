@@ -2290,7 +2290,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-slider (5.1.1):
+  - react-native-slider (5.1.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2302,7 +2302,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-slider/common (= 5.1.1)
+    - react-native-slider/common (= 5.1.2)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2313,7 +2313,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-slider/common (5.1.1):
+  - react-native-slider/common (5.1.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3936,7 +3936,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: e37989fc447aa4b5de6d0d2ffb0229e817329246
   react-native-safe-area-context: 53f796cb6c814661bbe99fbdfd0585d07b996cdd
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
-  react-native-slider: 7814a1258f438c043f370eb82110ef036793e95a
+  react-native-slider: a4bbed2fba298dbcd09225b5f4a1e9baf2d04268
   react-native-skia: 9f66ac6335a2fe03db06733fafb746435c097ca0
   react-native-view-shot: 26174e54ec6b4b7c5d70b86964b747919759adc1
   react-native-webview: a0107c12442bf2ac454d509f615daef00f34df47

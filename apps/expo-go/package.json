@@ -29,7 +29,7 @@
     "@graphql-codegen/introspection": "^2.1.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "^8.6.0",
-    "@react-native-community/slider": "5.1.1",
+    "@react-native-community/slider": "5.1.2",
     "@react-native-community/netinfo": "11.5.2",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@react-native-picker/picker": "2.11.4",
