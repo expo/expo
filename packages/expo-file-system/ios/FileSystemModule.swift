@@ -194,7 +194,7 @@ public final class FileSystemModule: Module {
         return try file.bytes()
       }
 
-      Function("open") { file in
+      Function("open") { (file, _mode: String?) in
         return try FileSystemFileHandle(file: file)
       }
 
