@@ -30,6 +30,9 @@ export class DevServerManagerActions {
   printDevServerInfo(
     options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
   ) {
+    // Keep track of approximately how much space we have to print our usage guide
+    let rows = process.stdout.rows || Infinity;
+
     // If native dev server is running, print its URL.
     if (this.devServerManager.getNativeDevServerPort()) {
       const devServer = this.devServerManager.getDefaultDevServer();
@@ -37,9 +40,30 @@ export class DevServerManagerActions {
         const nativeRuntimeUrl = devServer.getNativeRuntimeUrl()!;
         const interstitialPageUrl = devServer.getRedirectUrl();
 
-        printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
+        // Print the URL to stdout for tests
+        if (env.__EXPO_E2E_TEST) {
+          console.info(
+            `[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: devServer.getDevServerUrl() })}`
+          );
+          rows--;
+        }
+
+        const qr = printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
+        rows -= qr.lines;
+        qr.print();
+
+        let qrMessage = '';
+        if (!options.devClient) {
+          qrMessage = `Scan the QR code above to open in ${chalk`{bold Expo Go}`}.`;
+        } else {
+          qrMessage = chalk`Scan the QR code above to open in a {bold development build}.`;
+          qrMessage += ` (${learnMore('https://expo.fyi/start')})`;
+        }
+        rows--;
+        Log.log(printItem(qrMessage, { dim: true }));
 
         if (interstitialPageUrl) {
+          rows--;
           Log.log(
             printItem(
               chalk`Choose an app to open your project at {underline ${interstitialPageUrl}}`
@@ -47,25 +71,8 @@ export class DevServerManagerActions {
           );
         }
 
-        if (env.__EXPO_E2E_TEST) {
-          // Print the URL to stdout for tests
-          console.info(
-            `[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: devServer.getDevServerUrl() })}`
-          );
-        }
-
-        Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
-        if (options.devClient === false) {
-          // TODO: if development build, change this message!
-          Log.log(printItem('Scan the QR code above to open the project in Expo Go.'));
-        } else {
-          Log.log(
-            printItem(
-              'Scan the QR code above to open the project in a development build. ' +
-                learnMore('https://expo.fyi/start')
-            )
-          );
-        }
+        rows--;
+        Log.log(printItem(chalk`Metro: {underline ${nativeRuntimeUrl}}`));
       } catch (error) {
         console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
@@ -73,8 +80,9 @@ export class DevServerManagerActions {
           throw error;
         } else {
           const serverUrl = devServer.getDevServerUrl();
-          Log.log(printItem(chalk`Metro waiting on {underline ${serverUrl}}`));
+          Log.log(printItem(chalk`Metro: {underline ${serverUrl}}`));
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
+          rows -= 2;
         }
       }
     }
@@ -83,12 +91,12 @@ export class DevServerManagerActions {
       const webDevServer = this.devServerManager.getWebDevServer();
       const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
       if (webUrl) {
-        Log.log();
-        Log.log(printItem(chalk`Web is waiting on {underline ${webUrl}}`));
+        Log.log(printItem(chalk`Web: {underline ${webUrl}}`));
+        rows--;
       }
     }
 
-    printUsage(options, { verbose: false });
+    printUsage(options, { verbose: false, rows });
     printHelp();
     Log.log();
   }
