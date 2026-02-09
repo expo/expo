@@ -92,7 +92,7 @@ export class MetroTerminalReporter extends TerminalReporter {
   #lastFailedBuildID: string | undefined;
 
   constructor(
-    public projectRoot: string,
+    public serverRoot: string,
     terminal: Terminal
   ) {
     super(terminal);
@@ -279,7 +279,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logBundlingError(error: SnippetError): void {
     const importStack = nearestImportStack(error);
-    const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
+    const moduleResolutionError = formatUsingNodeStandardLibraryError(this.serverRoot, error);
 
     if (moduleResolutionError) {
       const message = maybeAppendCodeFrame(moduleResolutionError, error.message);
@@ -345,7 +345,7 @@ export class MetroTerminalReporter extends TerminalReporter {
               typeof p.message === 'string'
             ) {
               return maybeSymbolicateAndFormatJSErrorStackLogAsync(
-                this.projectRoot,
+                this.serverRoot,
                 level,
                 p as any
               );
@@ -426,7 +426,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   #normalizePath<T extends string | null>(dest: T | undefined): T | string {
     return dest != null && path.isAbsolute(dest)
-      ? path.relative(this.projectRoot, dest)
+      ? path.relative(this.serverRoot, dest)
       : ((dest || null) as T);
   }
 }
@@ -439,7 +439,7 @@ export class MetroTerminalReporter extends TerminalReporter {
  * @returns error message or null if not a module resolution error
  */
 export function formatUsingNodeStandardLibraryError(
-  projectRoot: string,
+  serverRoot: string,
   error: SnippetError
 ): string | null {
   if (!error.message) {
@@ -449,7 +449,7 @@ export function formatUsingNodeStandardLibraryError(
   if (!targetModuleName || !originModulePath) {
     return null;
   }
-  const relativePath = path.relative(projectRoot, originModulePath);
+  const relativePath = path.relative(serverRoot, originModulePath);
 
   const DOCS_PAGE_URL =
     'https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries';
