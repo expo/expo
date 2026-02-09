@@ -1,1 +1,1 @@
-export * from '@expo/devtools';
+module.exports = require('@expo/devtools');
