@@ -28,7 +28,6 @@ export default function ContentTransitionScreen() {
               modifiers={[
                 font({ size: 48, weight: 'bold', design: 'rounded' }),
                 contentTransition('numericText'),
-                animation(Animation.default, count),
               ]}>
               {count.toString()}
             </Text>

@@ -938,15 +938,15 @@ export const submitLabel = (
 /**
  * Sets the content transition type for a view.
  * Useful for animating changes in text content, especially numeric text.
- * Animation is applied automatically when the content changes.
+ * Use with the [animation](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
  *
  * @param transitionType - The type of content transition.
  * @param params - Optional parameters.
- * @param params.countsDown - Whether the numeric text counts down (only applies to `numericText`, requires iOS 17.0+).
+ * @param params.countsDown - Whether the numeric text counts down.
  *
  * @example
  * ```tsx
- * <Text modifiers={[contentTransition('numericText')]}>
+ * <Text modifiers={[contentTransition('numericText'), animation(Animation.default, count)]}>
  *   {count.toString()}
  * </Text>
  * ```
