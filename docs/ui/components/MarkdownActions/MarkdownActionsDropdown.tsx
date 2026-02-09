@@ -7,8 +7,6 @@ import { useCallback, useMemo } from 'react';
 import { ClaudeLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
-import { githubRawUrl, getPageMdxFilePath } from '~/ui/components/Footer/utils';
-import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/processMarkdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 const getPrompt = (url: string) =>
@@ -19,45 +17,6 @@ export function MarkdownActionsDropdown() {
 
   const pathname = router?.pathname;
   const asPath = router?.asPath;
-
-  const rawMarkdownUrl = useMemo(() => {
-    if (!pathname) {
-      return null;
-    }
-
-    const filePath = getPageMdxFilePath(pathname);
-    if (!filePath) {
-      return null;
-    }
-
-    return githubRawUrl(pathname);
-  }, [pathname]);
-
-  const handleCopyMarkdown = useCallback(async () => {
-    if (!rawMarkdownUrl) {
-      return;
-    }
-
-    try {
-      const response = await fetch(rawMarkdownUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch markdown: ${response.status}`);
-      }
-
-      const markdown = await response.text();
-
-      if (!navigator.clipboard?.writeText) {
-        throw new Error('Clipboard API unavailable');
-      }
-
-      const preparedMarkdown = await prepareMarkdownForCopyAsync(markdown, {
-        path: asPath ?? pathname ?? '',
-      });
-      await navigator.clipboard.writeText(preparedMarkdown);
-    } catch (error) {
-      console.error('Unable to copy markdown content', error);
-    }
-  }, [rawMarkdownUrl, asPath, pathname]);
 
   const pagePath = asPath ?? pathname;
   const markdownViewUrl = useMemo(() => {
@@ -74,6 +33,28 @@ export function MarkdownActionsDropdown() {
     }
     return path.endsWith('/index') ? `${path}.md` : `${path}/index.md`;
   }, [pagePath]);
+
+  const handleCopyMarkdown = useCallback(async () => {
+    if (!markdownViewUrl) {
+      return;
+    }
+
+    try {
+      const response = await fetch(markdownViewUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch markdown: ${response.status}`);
+      }
+      const markdown = await response.text();
+
+      if (!navigator.clipboard?.writeText) {
+        throw new Error('Clipboard API unavailable');
+      }
+
+      await navigator.clipboard.writeText(markdown);
+    } catch (error) {
+      console.error('Unable to copy markdown content', error);
+    }
+  }, [markdownViewUrl]);
 
   const pageUrl = useMemo(() => {
     if (!pagePath) {
@@ -103,7 +84,7 @@ export function MarkdownActionsDropdown() {
 
   const dropdownItems = [];
 
-  if (rawMarkdownUrl) {
+  if (markdownViewUrl) {
     dropdownItems.push(
       <Dropdown.Item
         key="copy-markdown"
