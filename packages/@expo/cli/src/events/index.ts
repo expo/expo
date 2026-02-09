@@ -4,6 +4,7 @@ import { WriteStream } from 'node:tty';
 
 import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
 import { LogStream } from './stream';
+import { env } from '../utils/env';
 
 let logStream: LogStream | undefined;
 
@@ -46,6 +47,14 @@ export function installEventLogger(env = process.env.EVENT_LOG) {
 
 /** Returns whether the event logger is active */
 export const shouldLogEvents = () => !!logStream;
+
+/** Whether logs shown in the terminal should be reduced.
+ * @remarks
+ * We indicate that we're in an automated tool (e.g. E2E tests) with `EXPO_UNSTABLE_HEADLESS`.
+ * If the event logger is activate and we're running in a headless tool, we should reduce
+ * interactive or noisy logs, in favour of the event logger.
+ */
+export const shouldReduceLogs = () => !!logStream && env.EXPO_UNSTABLE_HEADLESS;
 
 /** Used to create an event logger for structured JSONL logs activated with the `EVENT_LOG` environment variable.
  *

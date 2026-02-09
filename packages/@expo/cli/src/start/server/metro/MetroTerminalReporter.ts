@@ -20,7 +20,7 @@ import {
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
-import { events } from '../../../events';
+import { events, shouldReduceLogs } from '../../../events';
 import { stripAnsi } from '../../../utils/ansi';
 
 type ClientLogLevel =
@@ -202,8 +202,17 @@ export class MetroTerminalReporter extends TerminalReporter {
       );
     }
 
-    const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
+    event('bundling:progress', {
+      id: progress.bundleDetails.buildID ?? null,
+      progress: progress.ratio,
+      total: progress.totalFileCount,
+      current: progress.transformedFileCount,
+    });
+    if (shouldReduceLogs()) {
+      return '';
+    }
 
+    const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
     const _progress = inProgress
       ? chalk.green.bgGreen(DARK_BLOCK_CHAR.repeat(filledBar)) +
         chalk.bgWhite.white(LIGHT_BLOCK_CHAR.repeat(MAX_PROGRESS_BAR_CHAR_WIDTH - filledBar)) +
@@ -214,14 +223,6 @@ export class MetroTerminalReporter extends TerminalReporter {
             .padStart(progress.totalFileCount.toString().length)}/${progress.totalFileCount})`
         )
       : '';
-
-    event('bundling:progress', {
-      id: progress.bundleDetails.buildID ?? null,
-      progress: progress.ratio,
-      total: progress.totalFileCount,
-      current: progress.transformedFileCount,
-    });
-
     return (
       platform +
       chalk.reset.dim(`${path.dirname(localPath)}${path.sep}`) +
