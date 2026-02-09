@@ -17,6 +17,40 @@ export function parseParams(request: Request, route: Route): Record<string, stri
   return params;
 }
 
+/**
+ * Resolves a route's context key into a concrete path by substituting dynamic segments
+ * with actual param values.
+ *
+ * @example
+ *
+ * resolveLoaderContextKey('/users/[id]`, { id: '123' }) // /users/123
+ */
+export function resolveLoaderContextKey(
+  contextKey: string,
+  params: Record<string, string | string[]>
+): string {
+  const normalizedKey = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
+  const resolved = normalizedKey
+    .split('/')
+    .map((segment) => {
+      let match: string | undefined;
+      if ((match = matchDeepDynamicRouteName(segment))) {
+        const value = params[match];
+        if (value == null) return segment;
+        return Array.isArray(value) ? value.join('/') : value;
+      }
+      if ((match = matchDynamicName(segment))) {
+        const value = params[match];
+        if (value == null) return segment;
+        return Array.isArray(value) ? value.join('/') : value;
+      }
+      return segment;
+    })
+    .join('/');
+
+  return `/${resolved}`;
+}
+
 export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL {
   const originalQueryParams = url.searchParams.entries();
   const params = parseParams(request, route);

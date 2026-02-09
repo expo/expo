@@ -8,7 +8,7 @@ import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
 import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
-import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import { type RoutesManifest } from 'expo-server/private';
 import path from 'path';
@@ -264,7 +264,7 @@ export async function exportFromServerAsync(
             loaderId: normalizedPathname,
           });
 
-          renderOpts = { loader: { data } };
+          renderOpts = { loader: { data, contextKey: getContextKey(route.contextKey) } };
         }
       }
 

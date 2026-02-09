@@ -4,7 +4,7 @@ import { NavigationProp, useNavigation, useStateForPath } from '@react-navigatio
 import type { LoaderFunction } from 'expo-server';
 import React, { use, useMemo } from 'react';
 
-import { LocalRouteParamsContext } from './Route';
+import { LocalRouteParamsContext, useContextKey } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
 import { getRouteInfoFromState } from './global-state/routeInfo';
 import { store, useRouteInfo } from './global-state/router-store';
@@ -15,6 +15,7 @@ import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
 import { getLoaderData } from './loaders/getLoaderData';
 import { fetchLoader } from './loaders/utils';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { getSingularId } from './useScreens';
 
 export { useRouteInfo };
 
@@ -374,30 +375,32 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const loaderCache = use(LoaderCacheContext);
 
   const stateForPath = useStateForPath();
+  const contextKey = useContextKey();
 
-  const normalizedPath = useMemo(() => {
+  const resolvedPath = useMemo(() => {
     const routeInfo = getRouteInfoFromState(stateForPath);
-    const pathname = routeInfo.pathname || '/';
+    const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
+    const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
     const searchString = routeInfo.searchParams?.toString() || '';
 
-    return searchString ? `${pathname}?${searchString}` : pathname;
-  }, [stateForPath]);
+    return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
+  }, [contextKey, stateForPath]);
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {
-    return serverDataLoaderContext[normalizedPath];
+    return serverDataLoaderContext[resolvedPath];
   }
 
   // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
   // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
   if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath]) {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath];
+    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
+      return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
     }
   }
 
   const result = getLoaderData<LoaderFunctionResult<T>>({
-    resolvedPath: normalizedPath,
+    resolvedPath,
     cache: loaderCache,
     fetcher: fetchLoader,
   });

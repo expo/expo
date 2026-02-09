@@ -740,9 +740,9 @@ describe(useLoaderData, () => {
   });
 
   it.each([
-    { route: 'index', initialUrl: '/', expectedPath: '/' },
-    { route: 'users/index', initialUrl: '/users', expectedPath: '/users' },
-    { route: '(group)/index', initialUrl: '/', expectedPath: '/' },
+    { route: 'index', initialUrl: '/', expectedPath: '/index' },
+    { route: 'users/index', initialUrl: '/users', expectedPath: '/users/index' },
+    { route: '(group)/index', initialUrl: '/', expectedPath: '/(group)/index' },
     { route: 'users/[id]', initialUrl: '/users/123', expectedPath: '/users/123' },
   ])('resolves $route to $expectedPath', ({ route, initialUrl, expectedPath }) => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
@@ -756,14 +756,23 @@ describe(useLoaderData, () => {
 
   it('resolves nested route under `_layout` to full pathname', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/nested': { correct: true },
+      '/nested/index': { correct: true },
     };
 
-    const { result } = renderHook(() => useLoaderData(), ['nested/_layout', 'nested/index'], {
-      initialUrl: '/nested',
-    });
+    let loaderResult: any;
 
-    expect(result.current).toEqual({ correct: true });
+    renderRouter(
+      {
+        'nested/_layout': () => <Slot />,
+        'nested/index': function NestedIndex() {
+          loaderResult = useLoaderData();
+          return <Text>Nested</Text>;
+        },
+      },
+      { initialUrl: '/nested' }
+    );
+
+    expect(loaderResult).toEqual({ correct: true });
   });
 
   it('includes search params in the lookup key', () => {
@@ -781,11 +790,11 @@ describe(useLoaderData, () => {
   it('retrieves server-side data from `ServerDataLoaderContext`', () => {
     // Added to ensure that data is not fetched from global scope
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { source: 'global' },
+      '/index': { source: 'global' },
     };
 
     const ServerWrapper = ({ children }: { children: React.ReactNode }) => (
-      <ServerDataLoaderContext value={{ '/': { source: 'server' } }}>
+      <ServerDataLoaderContext value={{ '/index': { source: 'server' } }}>
         {children}
       </ServerDataLoaderContext>
     );
@@ -800,7 +809,7 @@ describe(useLoaderData, () => {
 
   it('retrieves server-injected data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { some: 'data' },
+      '/index': { some: 'data' },
     };
 
     const { result } = renderHook(() => useLoaderData(), ['index'], {
@@ -864,7 +873,7 @@ describe(useLoaderData, () => {
     };
 
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+      '/index': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
     };
 
     const { result } = renderHook(() => useLoaderData<typeof asyncLoader>(), ['index'], {
@@ -876,7 +885,7 @@ describe(useLoaderData, () => {
 
   it('resolves loader data for non-focused tab route', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { tab: 'home' },
+      '/index': { tab: 'home' },
       '/profile': { tab: 'profile' },
     };
 

@@ -1,7 +1,7 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
 import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
-import { isResponse, parseParams } from '../../utils/matchers';
+import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -111,7 +111,10 @@ export function createEnvironment(input: EnvironmentInput) {
           if (route.loader) {
             const result = await executeLoader(request, route);
             const data = isResponse(result) ? await result.json() : result;
-            renderOptions = { loader: { data: data ?? null } };
+            const params = parseParams(request, route);
+            renderOptions = {
+              loader: { data: data ?? null, contextKey: resolveLoaderContextKey(route.page, params) },
+            };
           }
           return await renderer(request, renderOptions);
         } catch (error) {
