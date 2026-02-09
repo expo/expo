@@ -21,6 +21,7 @@ import {
 } from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
 import { events } from '../../../events';
+import { stripAnsi } from '../../../utils/ansi';
 
 type ClientLogLevel =
   | 'trace'
@@ -285,7 +286,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       const message = maybeAppendCodeFrame(moduleResolutionError, error.message);
       event('bundling:failed', {
         id: this.#lastFailedBuildID ?? null,
-        message: error.message ?? null,
+        message: stripAnsi(message) ?? null,
         importStack: importStack ?? null,
         filename: error.filename ?? null,
         targetModuleName: this.#normalizePath(error.targetModuleName),
@@ -296,7 +297,7 @@ export class MetroTerminalReporter extends TerminalReporter {
     } else {
       event('bundling:failed', {
         id: this.#lastFailedBuildID ?? null,
-        message: error.message ?? null,
+        message: stripAnsi(error.message) ?? null,
         importStack: importStack ?? null,
         filename: error.filename ?? null,
         targetModuleName: error.targetModuleName ?? null,
