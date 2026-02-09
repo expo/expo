@@ -53,7 +53,9 @@ struct LocalNetworkPermissionView: View {
     }
     .padding(.horizontal, 24)
     .padding(.vertical, 32)
+#if !os(tvOS)
     .background(Color(.systemBackground))
+#endif
     .onDisappear {
       timeoutTask?.cancel()
       timeoutTask = nil
@@ -147,7 +149,9 @@ struct RequestPermissionView: View {
           .multilineTextAlignment(.center)
       }
       .padding()
+#if !os(tvOS)
       .background(Color(.secondarySystemBackground))
+#endif
       .cornerRadius(12)
       
       Button {
