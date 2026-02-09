@@ -26,6 +26,10 @@ export declare class NativeAudioModule extends NativeModule {
   requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
   requestNotificationPermissionsAsync(): Promise<PermissionResponse>;
   getRecordingPermissionsAsync(): Promise<PermissionResponse>;
+  preload(source: AudioSource, preferredForwardBufferDuration: number): Promise<void>;
+  clearPreloadedSource(source: AudioSource): Promise<void>;
+  clearAllPreloadedSources(): Promise<void>;
+  getPreloadedSources(): Promise<string[]>;
 
   readonly AudioPlayer: typeof AudioPlayer;
   readonly AudioRecorder: typeof AudioRecorder;
@@ -37,7 +41,12 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Initializes a new audio player instance with the given source.
    * @hidden
    */
-  constructor(source: AudioSource, updateInterval: number, keepAudioSessionActive: boolean);
+  constructor(
+    source: AudioSource,
+    updateInterval: number,
+    keepAudioSessionActive: boolean,
+    preferredForwardBufferDuration: number
+  );
 
   /**
    * Unique identifier for the player object.

@@ -124,6 +124,40 @@ export type AudioPlayerOptions = {
    * @default false
    */
   keepAudioSessionActive?: boolean;
+  /**
+   * The duration in seconds the player should buffer ahead of the current playback position.
+   * A higher value improves playback stability at the cost of more memory/network usage.
+   *
+   * - **iOS**: Maps to `AVPlayerItem.preferredForwardBufferDuration`. A value of `0` lets the system decide.
+   * - **Android**: Configures ExoPlayer's `DefaultLoadControl` max buffer duration.
+   * - **Web**: Not applicable (browser manages buffering).
+   *
+   * @default 0 (system default)
+   *
+   * @platform ios
+   * @platform android
+   */
+  preferredForwardBufferDuration?: number;
+};
+
+/**
+ * Options for configuring audio preloading behavior.
+ */
+export type PreloadOptions = {
+  /**
+   * The duration in seconds the player should buffer ahead of the current playback position.
+   * A higher value improves playback stability at the cost of more memory/network usage.
+   *
+   * - **iOS**: Maps to `AVPlayerItem.preferredForwardBufferDuration`. A value of `0` lets the system decide.
+   * - **Android**: Configures ExoPlayer's buffer duration.
+   * - **Web**: Not applicable (browser manages buffering).
+   *
+   * @default 10
+   *
+   * @platform ios
+   * @platform android
+   */
+  preferredForwardBufferDuration?: number;
 };
 
 /**

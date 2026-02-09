@@ -60,7 +60,37 @@ public class AudioModule: Module {
       #endif
     }
 
+    AsyncFunction("preload") { (source: AudioSource, preferredForwardBufferDuration: Double) in
+      guard let uri = source.uri else {
+        return
+      }
+      let key = uri.absoluteString
+      if self.registry.hasPreloadedPlayer(forKey: key) {
+        return
+      }
+      let player = AudioUtils.createAVPlayer(from: source)
+      player.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
+      self.registry.addPreloadedPlayer(player, forKey: key)
+    }
+
+    AsyncFunction("clearPreloadedSource") { (source: AudioSource) in
+      guard let uri = source.uri else {
+        return
+      }
+      let key = uri.absoluteString
+      _ = self.registry.removePreloadedPlayer(forKey: key)
+    }
+
+    AsyncFunction("clearAllPreloadedSources") {
+      self.registry.removeAllPreloadedPlayers()
+    }
+
+    AsyncFunction("getPreloadedSources") {
+      self.registry.preloadedPlayerKeys()
+    }
+
     OnDestroy {
+      registry.removeAllPreloadedPlayers()
       registry.removeAll()
       NotificationCenter.default.removeObserver(self)
     }
@@ -89,8 +119,16 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(from: source)
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double) -> AudioPlayer in
+        let avPlayer: AVPlayer
+        if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
+          avPlayer = cachedPlayer
+        } else {
+          avPlayer = AudioUtils.createAVPlayer(from: source)
+          if preferredForwardBufferDuration > 0 {
+            avPlayer.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
+          }
+        }
         let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
@@ -194,7 +232,13 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource) in
-        player.replaceCurrentSource(source: source)
+        if let uri = source.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
+          let cachedItem = cachedPlayer.currentItem
+          cachedPlayer.replaceCurrentItem(with: nil)
+          player.replaceWithPreloadedItem(cachedItem)
+        } else {
+          player.replaceCurrentSource(source: source)
+        }
       }
 
       Function("pause") { player in

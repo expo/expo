@@ -1,5 +1,11 @@
+import { preload } from 'expo-audio';
+
+import { sfx1, sfx2 } from './AudioPreloadScreen';
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
+
+preload(sfx1);
+preload(sfx2);
 
 export const AudioScreens = [
   {
@@ -34,7 +40,6 @@ export const AudioScreens = [
       return optionalRequire(() => require('./CreateAudioPlayerScreen'));
     },
   },
-
   {
     name: 'Expo Audio Lock Screen Controls',
     route: 'audio/expo-audio-controls',
@@ -49,6 +54,14 @@ export const AudioScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./AudioEventsScreen'));
+    },
+  },
+  {
+    name: 'Expo Audio Preloading',
+    route: 'audio/expo-audio-preload',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AudioPreloadScreen'));
     },
   },
 ];

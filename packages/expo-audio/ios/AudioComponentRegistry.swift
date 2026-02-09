@@ -1,8 +1,10 @@
+import AVFoundation
 import Foundation
 
 class AudioComponentRegistry {
   private var players = [String: AudioPlayer]()
   private var playlists = [String: AudioPlaylist]()
+  private var preloadedPlayers = [String: AVPlayer]()
   #if os(iOS)
   private var recorders = [String: AudioRecorder]()
   #endif
@@ -105,4 +107,35 @@ class AudioComponentRegistry {
     }
   }
   #endif
+
+  func addPreloadedPlayer(_ player: AVPlayer, forKey key: String) {
+    registryQueue.async(flags: .barrier) {
+      self.preloadedPlayers[key] = player
+    }
+  }
+
+  func hasPreloadedPlayer(forKey key: String) -> Bool {
+    return registryQueue.sync {
+      return preloadedPlayers[key] != nil
+    }
+  }
+
+  func removePreloadedPlayer(forKey key: String) -> AVPlayer? {
+    return registryQueue.sync(flags: .barrier) {
+      return preloadedPlayers.removeValue(forKey: key)
+    }
+  }
+
+  func removeAllPreloadedPlayers() {
+    registryQueue.async(flags: .barrier) {
+      self.preloadedPlayers.values.forEach { $0.replaceCurrentItem(with: nil) }
+      self.preloadedPlayers.removeAll()
+    }
+  }
+
+  func preloadedPlayerKeys() -> [String] {
+    return registryQueue.sync {
+      return Array(preloadedPlayers.keys)
+    }
+  }
 }

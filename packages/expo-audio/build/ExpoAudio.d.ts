@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
+import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
 /**
@@ -381,5 +381,53 @@ export declare function requestNotificationPermissionsAsync(): Promise<Permissio
  * ```
  */
 export declare function getRecordingPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Preloads an audio source for near-instant playback later.
+ *
+ * This should be called in module scope, before any React components render.
+ * When the source is later used with `useAudioPlayer()`, `createAudioPlayer()`, or `player.replace()`,
+ * playback begins with minimal delay.
+ *
+ * @param source The audio source to preload. Can be a URL string, a local asset via `require()`, or an audio source object.
+ * @param options Optional configuration for preloading behavior.
+ *
+ * @example
+ * ```tsx
+ * import { preload, useAudioPlayer } from 'expo-audio';
+ *
+ * const track1 = 'https://example.com/track1.mp3';
+ * const track2 = 'https://example.com/track2.mp3';
+ *
+ * // Preload at module scope — starts buffering immediately
+ * preload(track1);
+ * preload(track2, { preferredForwardBufferDuration: 20 });
+ *
+ * export default function App() {
+ *   const player = useAudioPlayer(track1);
+ *   // Playback starts near-instantly because the source was preloaded
+ *   return <Button title="Play" onPress={() => player.play()} />;
+ * }
+ * ```
+ */
+export declare function preload(source: AudioSource, options?: PreloadOptions): Promise<void>;
+/**
+ * Releases a specific preloaded audio source to free memory.
+ *
+ * @param source The audio source to release. Must match the source previously passed to `preload()`.
+ */
+export declare function clearPreloadedSource(source: AudioSource): Promise<void>;
+/**
+ * Releases all preloaded audio sources to free memory.
+ */
+export declare function clearAllPreloadedSources(): Promise<void>;
+/**
+ * Returns the URIs of all currently preloaded audio sources.
+ *
+ * Sources are removed from this list when consumed by `useAudioPlayer()` or `createAudioPlayer()`,
+ * or when explicitly cleared with `clearPreloadedSource()` / `clearAllPreloadedSources()`.
+ *
+ * @returns An array of URI strings for sources currently in the preload cache.
+ */
+export declare function getPreloadedSources(): Promise<string[]>;
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.d.ts.map

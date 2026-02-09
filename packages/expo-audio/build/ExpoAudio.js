@@ -72,14 +72,19 @@ if (!Platform.isTV || Platform.OS !== 'ios') {
  * ```
  */
 export function useAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false, preferredForwardBufferDuration = 0, } = options;
     // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
     // If downloadFirst is false, we resolve the source here.
     // we call .replace() in the useEffect below to replace the source with the downloaded one.
     const initialSource = useMemo(() => {
         return downloadFirst ? null : resolveSource(source);
     }, [JSON.stringify(source), downloadFirst]);
-    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive), [JSON.stringify(initialSource), updateInterval, keepAudioSessionActive]);
+    const player = useReleasingSharedObject(() => new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive, preferredForwardBufferDuration), [
+        JSON.stringify(initialSource),
+        updateInterval,
+        keepAudioSessionActive,
+        preferredForwardBufferDuration,
+    ]);
     // Handle async source resolution for downloadFirst
     useEffect(() => {
         if (!downloadFirst || source === null) {
@@ -379,9 +384,9 @@ export function createAudioPlaylist(options = {}) {
  * @param options Audio player configuration options.
  */
 export function createAudioPlayer(source = null, options = {}) {
-    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false } = options;
+    const { updateInterval = 500, downloadFirst = false, keepAudioSessionActive = false, preferredForwardBufferDuration = 0, } = options;
     const initialSource = downloadFirst ? null : resolveSource(source);
-    const player = new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive);
+    const player = new AudioModule.AudioPlayer(initialSource, updateInterval, keepAudioSessionActive, preferredForwardBufferDuration);
     if (downloadFirst && source) {
         resolveSourceWithDownload(source)
             .then((resolved) => {
@@ -548,6 +553,69 @@ export async function requestNotificationPermissionsAsync() {
  */
 export async function getRecordingPermissionsAsync() {
     return await AudioModule.getRecordingPermissionsAsync();
+}
+/**
+ * Preloads an audio source for near-instant playback later.
+ *
+ * This should be called in module scope, before any React components render.
+ * When the source is later used with `useAudioPlayer()`, `createAudioPlayer()`, or `player.replace()`,
+ * playback begins with minimal delay.
+ *
+ * @param source The audio source to preload. Can be a URL string, a local asset via `require()`, or an audio source object.
+ * @param options Optional configuration for preloading behavior.
+ *
+ * @example
+ * ```tsx
+ * import { preload, useAudioPlayer } from 'expo-audio';
+ *
+ * const track1 = 'https://example.com/track1.mp3';
+ * const track2 = 'https://example.com/track2.mp3';
+ *
+ * // Preload at module scope — starts buffering immediately
+ * preload(track1);
+ * preload(track2, { preferredForwardBufferDuration: 20 });
+ *
+ * export default function App() {
+ *   const player = useAudioPlayer(track1);
+ *   // Playback starts near-instantly because the source was preloaded
+ *   return <Button title="Play" onPress={() => player.play()} />;
+ * }
+ * ```
+ */
+export async function preload(source, options = {}) {
+    const resolved = resolveSource(source);
+    if (!resolved)
+        return;
+    const { preferredForwardBufferDuration = 10 } = options;
+    return AudioModule.preload(resolved, preferredForwardBufferDuration);
+}
+/**
+ * Releases a specific preloaded audio source to free memory.
+ *
+ * @param source The audio source to release. Must match the source previously passed to `preload()`.
+ */
+export async function clearPreloadedSource(source) {
+    const resolved = resolveSource(source);
+    if (!resolved)
+        return;
+    return AudioModule.clearPreloadedSource(resolved);
+}
+/**
+ * Releases all preloaded audio sources to free memory.
+ */
+export async function clearAllPreloadedSources() {
+    return AudioModule.clearAllPreloadedSources();
+}
+/**
+ * Returns the URIs of all currently preloaded audio sources.
+ *
+ * Sources are removed from this list when consumed by `useAudioPlayer()` or `createAudioPlayer()`,
+ * or when explicitly cleared with `clearPreloadedSource()` / `clearAllPreloadedSources()`.
+ *
+ * @returns An array of URI strings for sources currently in the preload cache.
+ */
+export async function getPreloadedSources() {
+    return AudioModule.getPreloadedSources();
 }
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.js.map
