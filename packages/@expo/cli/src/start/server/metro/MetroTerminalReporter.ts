@@ -41,6 +41,7 @@ export const event = events('metro', (t) => [
     id: string | null;
     filename: string | null;
     message: string | null;
+    importStack: string | null;
     targetModuleName: string | null;
     originModulePath: string | null;
   }>(),
@@ -334,32 +335,43 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   _logBundlingError(error: SnippetError): void {
-    event('bundling:failed', {
-      id: this.#lastFailedBuildID ?? null,
-      message: error.message ?? null,
-      filename: error.filename ?? null,
-      targetModuleName: error.targetModuleName ?? null,
-      originModulePath: error.originModulePath ?? null,
-    });
-
+    const importStack = nearestImportStack(error);
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
+
     if (moduleResolutionError) {
-      let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
-      message += '\n\n' + nearestImportStack(error);
-      return this.terminal.log(message);
+      const message = maybeAppendCodeFrame(moduleResolutionError, error.message);
+      event('bundling:failed', {
+        id: this.#lastFailedBuildID ?? null,
+        message: error.message ?? null,
+        importStack: importStack ?? null,
+        filename: error.filename ?? null,
+        targetModuleName: error.targetModuleName ?? null,
+        originModulePath: error.originModulePath ?? null,
+      });
+
+      return this.terminal.log(importStack ? `${message}\n\n${importStack}` : message);
+    } else {
+      event('bundling:failed', {
+        id: this.#lastFailedBuildID ?? null,
+        message: error.message ?? null,
+        importStack: importStack ?? null,
+        filename: error.filename ?? null,
+        targetModuleName: error.targetModuleName ?? null,
+        originModulePath: error.originModulePath ?? null,
+      });
+
+      attachImportStackToRootMessage(error, importStack);
+
+      // NOTE(@kitten): Metro drops the stack forcefully when it finds a `SyntaxError`. However,
+      // this is really unhelpful, since it prevents debugging Babel plugins or reporting bugs
+      // in Babel plugins or a transformer entirely
+      if (error.snippet == null && error.stack != null && error instanceof SyntaxError) {
+        error.message = error.stack;
+        delete error.stack;
+      }
+
+      return super._logBundlingError(error);
     }
-
-    attachImportStackToRootMessage(error);
-
-    // NOTE(@kitten): Metro drops the stack forcefully when it finds a `SyntaxError`. However,
-    // this is really unhelpful, since it prevents debugging Babel plugins or reporting bugs
-    // in Babel plugins or a transformer entirely
-    if (error.snippet == null && error.stack != null && error instanceof SyntaxError) {
-      error.message = error.stack;
-      delete error.stack;
-    }
-
-    return super._logBundlingError(error);
   }
 
   #captureLog(evt: TerminalReportableEvent) {
