@@ -113,7 +113,7 @@
   "sentry-expo": "~7.0.0",
   "unimodules-app-loader": "~55.0.2",
   "unimodules-image-loader-interface": "~6.1.0",
-  "@shopify/react-native-skia": "2.4.14",
+  "@shopify/react-native-skia": "2.4.18",
   "@shopify/flash-list": "2.0.2",
   "@sentry/react-native": "~7.11.0",
   "react-native-bootsplash": "^6.3.10"
