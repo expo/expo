@@ -5,6 +5,7 @@ import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 
 import { ClaudeLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
+import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
 import { githubRawUrl, getPageMdxFilePath } from '~/ui/components/Footer/utils';
 import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/processMarkdown';
@@ -59,6 +60,20 @@ export function MarkdownActionsDropdown() {
   }, [rawMarkdownUrl, asPath, pathname]);
 
   const pagePath = asPath ?? pathname;
+  const markdownViewUrl = useMemo(() => {
+    if (!pagePath) {
+      return null;
+    }
+
+    const path = pagePath.split(/[#?]/)[0].replace(/\/$/, '');
+    if (!path || path === '/') {
+      return '/index.md';
+    }
+    if (path.endsWith('.md')) {
+      return path;
+    }
+    return path.endsWith('/index') ? `${path}.md` : `${path}/index.md`;
+  }, [pagePath]);
 
   const pageUrl = useMemo(() => {
     if (!pagePath) {
@@ -95,6 +110,18 @@ export function MarkdownActionsDropdown() {
         label="Copy Markdown"
         Icon={Copy04Icon}
         onSelect={handleCopyMarkdown}
+      />
+    );
+  }
+
+  if (markdownViewUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="view-markdown"
+        label="View Markdown"
+        Icon={MarkdownIcon}
+        href={markdownViewUrl}
+        openInNewTab
       />
     );
   }
