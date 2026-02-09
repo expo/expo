@@ -4,7 +4,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
 import React, { use } from 'react';
 
-import { LocalRouteParamsContext } from './Route';
+import { LocalRouteParamsContext, RoutePathnameContext } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
@@ -191,6 +191,22 @@ export function useSegments() {
  */
 export function usePathname(): string {
   return useRouteInfo().pathname;
+}
+
+/**
+ * @internal
+ * Returns the full structural pathname for the contextually focused route.
+ * The path includes __root, groups, and unresolved template segments
+ * (e.g. `/__root/(app)/[id]/a`).
+ *
+ * Unlike `usePathname()` which returns the globally focused route's resolved URL pathname,
+ * `useRoutePathname()` returns the structural pathname of the route where the hook is rendered.
+ *
+ * This is useful in stacks where multiple screens are mounted simultaneously —
+ * each screen will return its own pathname rather than the currently visible screen's pathname.
+ */
+export function useRoutePathname(): string {
+  return React.use(RoutePathnameContext) ?? '/';
 }
 
 /**

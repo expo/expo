@@ -200,6 +200,13 @@ function getQualifiedRouteComponent(value) {
     // Pass all other props to the component
     ...props }) {
         const stateForPath = (0, native_1.useStateForPath)();
+        const routePathname = (0, react_1.useMemo)(() => {
+            const stringUrl = (0, utils_2.generateStringUrlForState)(stateForPath);
+            if (!stringUrl)
+                return undefined;
+            const { pathname } = (0, utils_2.getPathAndParamsFromStringUrl)(stringUrl);
+            return pathname;
+        }, [stateForPath]);
         const isFocused = navigation.isFocused();
         const store = (0, storeContext_1.useExpoRouterStore)();
         if (isFocused) {
@@ -231,18 +238,20 @@ function getQualifiedRouteComponent(value) {
         }, [navigation]);
         const isRouteType = value.type === 'route';
         const hasRouteKey = !!route?.key;
-        return (<Route_1.Route node={value} params={route?.params}>
-        {navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
-        <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
-          <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
-          <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-            <WrappedScreenComponent {...props} 
+        return (<Route_1.RoutePathnameContext.Provider value={routePathname}>
+        <Route_1.Route node={value} params={route?.params}>
+          {navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
+          <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
+            <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
+            <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+              <WrappedScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment={value.route}/>
-          </react_1.default.Suspense>
-        </zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider>
-      </Route_1.Route>);
+            </react_1.default.Suspense>
+          </zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider>
+        </Route_1.Route>
+      </Route_1.RoutePathnameContext.Provider>);
     }
     if (__DEV__) {
         BaseRoute.displayName = `Route(${value.route})`;

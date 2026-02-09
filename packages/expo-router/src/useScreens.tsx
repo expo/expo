@@ -14,7 +14,14 @@ import {
 import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import React, { useEffect, useMemo } from 'react';
 
-import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import {
+  LoadedRoute,
+  Route,
+  RouteNode,
+  RoutePathnameContext,
+  sortRoutesWithInitial,
+  useRouteNode,
+} from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
@@ -287,6 +294,14 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     };
   }) {
     const stateForPath = useStateForPath();
+
+    const routePathname = useMemo(() => {
+      const stringUrl = generateStringUrlForState(stateForPath);
+      if (!stringUrl) return undefined;
+      const { pathname } = getPathAndParamsFromStringUrl(stringUrl);
+      return pathname;
+    }, [stateForPath]);
+
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
 
@@ -328,22 +343,24 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const hasRouteKey = !!route?.key;
 
     return (
-      <Route node={value} params={route?.params}>
-        {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
-          <AnalyticsListeners navigation={navigation} screenId={route.key} />
-        )}
-        <ZoomTransitionTargetContextProvider route={route}>
-          <ZoomTransitionEnabler route={route} />
-          <React.Suspense fallback={<SuspenseFallback route={value} />}>
-            <WrappedScreenComponent
-              {...props}
-              // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-              // the intention is to make it possible to deduce shared routes.
-              segment={value.route}
-            />
-          </React.Suspense>
-        </ZoomTransitionTargetContextProvider>
-      </Route>
+      <RoutePathnameContext.Provider value={routePathname}>
+        <Route node={value} params={route?.params}>
+          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
+            <AnalyticsListeners navigation={navigation} screenId={route.key} />
+          )}
+          <ZoomTransitionTargetContextProvider route={route}>
+            <ZoomTransitionEnabler route={route} />
+            <React.Suspense fallback={<SuspenseFallback route={value} />}>
+              <WrappedScreenComponent
+                {...props}
+                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                // the intention is to make it possible to deduce shared routes.
+                segment={value.route}
+              />
+            </React.Suspense>
+          </ZoomTransitionTargetContextProvider>
+        </Route>
+      </RoutePathnameContext.Provider>
     );
   }
 

@@ -42,6 +42,7 @@ exports.useRouter = useRouter;
 exports.useUnstableGlobalHref = useUnstableGlobalHref;
 exports.useSegments = useSegments;
 exports.usePathname = usePathname;
+exports.useRoutePathname = useRoutePathname;
 exports.useGlobalSearchParams = useGlobalSearchParams;
 exports.useLocalSearchParams = useLocalSearchParams;
 exports.useSearchParams = useSearchParams;
@@ -178,6 +179,21 @@ function useSegments() {
  */
 function usePathname() {
     return (0, router_store_1.useRouteInfo)().pathname;
+}
+/**
+ * @internal
+ * Returns the full structural pathname for the contextually focused route.
+ * The path includes __root, groups, and unresolved template segments
+ * (e.g. `/__root/(app)/[id]/a`).
+ *
+ * Unlike `usePathname()` which returns the globally focused route's resolved URL pathname,
+ * `useRoutePathname()` returns the structural pathname of the route where the hook is rendered.
+ *
+ * This is useful in stacks where multiple screens are mounted simultaneously —
+ * each screen will return its own pathname rather than the currently visible screen's pathname.
+ */
+function useRoutePathname() {
+    return react_1.default.use(Route_1.RoutePathnameContext) ?? '/';
 }
 function useGlobalSearchParams() {
     return (0, router_store_1.useRouteInfo)().params;

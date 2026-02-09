@@ -58,6 +58,7 @@ export type RouteNode = {
     middleware?: MiddlewareNode;
 };
 export declare const LocalRouteParamsContext: import("react").Context<object | undefined>;
+export declare const RoutePathnameContext: import("react").Context<string | undefined>;
 /** Return the RouteNode at the current contextual boundary. */
 export declare function useRouteNode(): RouteNode | null;
 export declare function useContextKey(): string;
