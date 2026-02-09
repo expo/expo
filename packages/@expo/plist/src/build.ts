@@ -83,11 +83,9 @@ function type(obj: object): string | null {
 
 export function build(
   obj: PlistValue,
-  xmlToStringOpts?: xmlbuilder.XMLToStringOptions,
-  createOpts?: xmlbuilder.CreateOptions
+  xmlToStringOpts: xmlbuilder.XMLToStringOptions = {},
+  createOpts: xmlbuilder.CreateOptions = {}
 ): string {
-  if (xmlToStringOpts === undefined) xmlToStringOpts = {};
-  if (createOpts === undefined) createOpts = {};
   xmlToStringOpts.pretty = xmlToStringOpts.pretty !== false;
 
   const XMLHDR = {
