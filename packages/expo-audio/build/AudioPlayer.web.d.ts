@@ -42,6 +42,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private stopSampling;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;
+    release(): void;
     setActiveForLockScreen(active: boolean, metadata?: AudioMetadata, options?: AudioLockScreenOptions): void;
     updateLockScreenMetadata(metadata: AudioMetadata): void;
     clearLockScreenControls(): void;

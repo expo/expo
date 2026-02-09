@@ -74,6 +74,9 @@ export function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioSt
   return status;
 }
 
+// Preload cache: maps original source URIs to pre-fetched blob URLs
+export const preloadCache = new Map<string, { blobUrl: string; audio: HTMLAudioElement }>();
+
 export function getSourceUri(source: AudioSource): string | undefined {
   if (typeof source === 'string') {
     return source;

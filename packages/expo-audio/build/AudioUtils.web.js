@@ -59,6 +59,8 @@ export function getStatusFromMedia(media, id) {
     };
     return status;
 }
+// Preload cache: maps original source URIs to pre-fetched blob URLs
+export const preloadCache = new Map();
 export function getSourceUri(source) {
     if (typeof source === 'string') {
         return source;

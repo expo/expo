@@ -1,8 +1,8 @@
 import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
-import { AudioMode } from './Audio.types';
+import { AudioMode, AudioSource } from './Audio.types';
 import { activePlayers } from './AudioPlayer.web';
-import { getUserMedia } from './AudioUtils.web';
+import { getUserMedia, getSourceUri, preloadCache } from './AudioUtils.web';
 
 export { AudioPlayerWeb } from './AudioPlayer.web';
 export { AudioPlaylistWeb } from './AudioPlaylist.web';
@@ -41,6 +41,47 @@ export async function setIsAudioActiveAsync(active: boolean) {
       }
     }
   }
+}
+
+export async function preloadAsync(source: AudioSource): Promise<void> {
+  const uri = getSourceUri(source);
+  if (!uri || preloadCache.has(uri)) return;
+
+  const headers =
+    source && typeof source === 'object' && !Array.isArray(source) ? source.headers : undefined;
+
+  const response = await fetch(uri, headers ? { headers } : undefined);
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const audio = new Audio(blobUrl);
+  audio.preload = 'auto';
+  preloadCache.set(uri, { blobUrl, audio });
+}
+
+export function preload(source: AudioSource): void {
+  preloadAsync(source).catch(() => {});
+}
+
+export function clearPreloadedSource(source: AudioSource): void {
+  const uri = getSourceUri(source);
+  if (!uri) return;
+
+  const cached = preloadCache.get(uri);
+  if (cached) {
+    URL.revokeObjectURL(cached.blobUrl);
+    preloadCache.delete(uri);
+  }
+}
+
+export function clearAllPreloadedSources(): void {
+  for (const cached of preloadCache.values()) {
+    URL.revokeObjectURL(cached.blobUrl);
+  }
+  preloadCache.clear();
+}
+
+export function getPreloadedSources(): string[] {
+  return Array.from(preloadCache.keys());
 }
 
 export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {

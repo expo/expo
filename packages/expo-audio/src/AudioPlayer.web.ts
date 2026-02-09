@@ -9,7 +9,13 @@ import { AudioLockScreenOptions } from './AudioConstants';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE } from './AudioEventKeys';
 import { AudioPlayer, AudioEvents } from './AudioModule.types';
 import { isAudioActive } from './AudioModule.web';
-import { getAudioContext, getSourceUri, getStatusFromMedia, nextId } from './AudioUtils.web';
+import {
+  getAudioContext,
+  getSourceUri,
+  getStatusFromMedia,
+  nextId,
+  preloadCache,
+} from './AudioUtils.web';
 import { mediaSessionController } from './MediaSessionController.web';
 
 export const activePlayers = new Set<AudioPlayerWeb>();
@@ -269,6 +275,10 @@ export class AudioPlayerWeb
     activePlayers.delete(this);
   }
 
+  release(): void {
+    this.remove();
+  }
+
   setActiveForLockScreen(
     active: boolean,
     metadata?: AudioMetadata,
@@ -299,7 +309,9 @@ export class AudioPlayerWeb
 
   _createMediaElement(): HTMLAudioElement {
     const newSource = getSourceUri(this.src);
-    const media = new Audio(newSource);
+    const cachedUri =
+      newSource && preloadCache.has(newSource) ? preloadCache.get(newSource)!.blobUrl : newSource;
+    const media = new Audio(cachedUri);
     if (this.crossOrigin !== undefined) {
       media.crossOrigin = this.crossOrigin;
     }

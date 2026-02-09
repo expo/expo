@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
+import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 export declare function createAudioPlayer(source?: AudioSource | string | number | null, options?: AudioPlayerOptions): AudioPlayer;
@@ -15,5 +15,9 @@ export declare function getRecordingPermissionsAsync(): Promise<PermissionRespon
 export declare function useAudioPlaylist(options?: AudioPlaylistOptions): AudioModule.AudioPlaylistWeb;
 export declare function useAudioPlaylistStatus(playlist: AudioModule.AudioPlaylistWeb): AudioPlaylistStatus;
 export declare function createAudioPlaylist(options?: AudioPlaylistOptions): AudioModule.AudioPlaylistWeb;
+export declare function preload(source: AudioSource, _options?: PreloadOptions): void;
+export declare function clearPreloadedSource(source: AudioSource): void;
+export declare function clearAllPreloadedSources(): void;
+export declare function getPreloadedSources(): string[];
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.web.d.ts.map
