@@ -8,6 +8,12 @@ enum WidgetsStorage {
     defaults.set(value, forKey: key)
   }
 
+  static func set(_ value: [[String: Any]], forKey key: String) {
+    guard let defaults else { return }
+
+    defaults.set(value, forKey: key)
+  }
+
   static func set(_ value: String, forKey key: String) {
     guard let defaults else { return }
 
@@ -24,6 +30,12 @@ enum WidgetsStorage {
     guard let defaults else { return nil }
 
     return defaults.dictionary(forKey: key)
+  }
+
+  static func getArray(forKey key: String) -> [Any]? {
+    guard let defaults else { return nil }
+
+    return defaults.array(forKey: key)
   }
 
   static func getData(forKey key: String) -> Data? {

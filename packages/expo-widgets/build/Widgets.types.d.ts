@@ -22,10 +22,16 @@ export type WidgetBase<T extends object = object> = {
      * The widget family.
      */
     family: WidgetFamily;
+    /**
+     * Function to update the widget's props. Call this function with the new props to trigger a widget update.
+     * The updated props will be passed to the widget component and can be used to render new content.
+     * @param props The new props to pass to the widget component.
+     */
+    updateProps: (props: T) => void;
 } & T;
 export type ExpoTimelineEntry = {
     timestamp: number;
-    content: ReactNode;
+    props: Record<string, any>;
 };
 /**
  * Defines the layout sections for an iOS Live Activity.
