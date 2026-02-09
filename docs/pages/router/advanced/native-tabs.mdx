@@ -348,6 +348,50 @@ export default function TabLayout() {
 
 > **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
 
+#### Asset catalog icons (iOS)
+
+> **info** This feature is available in SDK 55 and later.
+
+On iOS, you can use images from the Xcode asset catalog as tab icons with the `xcasset` prop. This is useful when you want to manage your icons through Xcode's asset catalog instead of bundling image files.
+
+Pass a string with the asset name to use the same icon for both default and selected states:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+const { Icon } = NativeTabs.Trigger;
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Icon xcasset="home-icon" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+To use different icons for default and selected states, pass an object:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+const { Icon } = NativeTabs.Trigger;
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Icon xcasset={{ default: 'home-outline', selected: 'home-filled' }} />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+> **info** The rendering mode for asset catalog icons is controlled in Xcode's asset catalog using the **Render As** setting on the image set, not via props.
+
 ### Label
 
 You can use the `Label` component to customize the label displayed in the tab bar item. The `Label` component accepts a string label passed as a child. If no label is provided, the tab bar item will use the route name as the label.
