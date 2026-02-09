@@ -89,7 +89,10 @@ function createEnvironment(input) {
                     if (route.loader) {
                         const result = await executeLoader(request, route);
                         const data = (0, matchers_1.isResponse)(result) ? await result.json() : result;
-                        renderOptions = { loader: { data: data ?? null } };
+                        const params = (0, matchers_1.parseParams)(request, route);
+                        renderOptions = {
+                            loader: { data: data ?? null, contextKey: (0, matchers_1.resolveLoaderContextKey)(route.page, params) },
+                        };
                     }
                     return await renderer(request, renderOptions);
                 }
