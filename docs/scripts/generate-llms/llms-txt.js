@@ -1,6 +1,7 @@
 import frontmatter from 'front-matter';
 import fs from 'node:fs';
 import path from 'node:path';
+import ts from 'typescript';
 
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
 
@@ -9,6 +10,8 @@ const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
 const TITLE = 'Expo Documentation';
 const DESCRIPTION =
   'Expo is an open-source React Native framework for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The company behind Expo also offers Expo Application Services (EAS), which are deeply integrated cloud services for Expo and React Native apps.';
+const TALKS_TS_PATH = path.join(process.cwd(), 'public/static/talks.ts');
+const TALKS_JS_PATH = path.join(process.cwd(), 'scripts/generate-llms/talks.js');
 
 function generateItemMarkdown(item) {
   return `- [${item.title}](${item.url})${item.description ? `: ${item.description}` : ''}\n`;
@@ -218,8 +221,25 @@ async function exportTalksData() {
   };
 }
 
+function compileTalksFile() {
+  const inputFileContent = fs.readFileSync(TALKS_TS_PATH, 'utf8');
+  const outputFileContent = ts.transpileModule(inputFileContent, {
+    module: ts.ModuleKind.ESNext,
+    compilerOptions: {
+      target: 'ES2024',
+      module: 'ES2024',
+      moduleResolution: 'node',
+    },
+  }).outputText;
+
+  fs.writeFileSync(TALKS_JS_PATH, outputFileContent, 'utf8');
+  console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully compiled talks.ts to talks.js`);
+}
+
 export async function generateLlmsTxt() {
   try {
+    compileTalksFile();
+
     const docSections = Object.values({ home, general, learn, eas, reference: reference.latest })
       .flat()
       .map(processSection)
