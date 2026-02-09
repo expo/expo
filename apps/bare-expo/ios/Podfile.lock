@@ -2151,8 +2151,28 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-netinfo (11.4.1):
+  - react-native-netinfo (11.5.2):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - react-native-pager-view (6.9.1):
     - hermes-engine
     - RCTRequired
@@ -3912,7 +3932,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 773eea58ff04e5fc8d525c5216957d6a82a6c84c
   React-microtasksnativemodule: 0294038bd92e2eb132975258e6ddc0a578a880ca
   react-native-keyboard-controller: 162162ec94d05c4afb903a07d5414c5e719d42a1
-  react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
+  react-native-netinfo: 789d8e48d938a77af984e9d6b7a08242d59f8e15
   react-native-pager-view: e37989fc447aa4b5de6d0d2ffb0229e817329246
   react-native-safe-area-context: 53f796cb6c814661bbe99fbdfd0585d07b996cdd
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
