@@ -70,6 +70,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/posts/[postId]');
     expect(files).toContain('_expo/loaders/posts/static-post-1');
     expect(files).toContain('_expo/loaders/posts/static-post-2');
+    expect(files).toContain('_expo/loaders/(group)');
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
@@ -96,6 +97,17 @@ describe.each(
 
       const data = await getData(response);
       expect(data).toEqual({ data: 'root-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)'))(
+    'can access data for group index route $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'grouped-index' });
     }
   );
 
