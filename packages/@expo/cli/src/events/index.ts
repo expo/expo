@@ -2,6 +2,7 @@ import { Console } from 'node:console';
 import path from 'node:path';
 import { WriteStream } from 'node:tty';
 
+import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
 import { LogStream } from './stream';
 
 let logStream: LogStream | undefined;
@@ -40,29 +41,21 @@ export function installEventLogger(env = process.env.EVENT_LOG) {
   }
 }
 
-type EmptyPayloads = {
-  [eventName: string]: never;
-};
+export const shouldLogEvents = () => !!logStream;
 
-interface AbstractPayloads {
-  [eventName: string]: Record<string, any>;
-}
-
-export interface EventLogger<Payloads extends AbstractPayloads> {
-  <EventName extends keyof Payloads>(event: EventName, data: Payloads[EventName]): void;
-}
-
-export function events<const Payloads extends AbstractPayloads = EmptyPayloads>(
-  category: string
-): EventLogger<Payloads> {
-  return function log<EventName extends keyof Payloads>(
-    event: EventName,
-    data: Payloads[EventName]
-  ) {
+export const events: EventLoggerBuilder = ((
+  category: string,
+  _fn: (builder: EventBuilder) => readonly EventShape<string>[]
+) => {
+  function log(event: string, data: any) {
     if (logStream) {
       const key = `${category}:${String(event)}`;
       const payload = JSON.stringify({ key, ...data });
       logStream._write(payload + '\n');
     }
-  };
-}
+  }
+  log.category = category;
+  return log;
+}) as EventLoggerBuilder;
+
+export type { EventLogger } from './builder';
