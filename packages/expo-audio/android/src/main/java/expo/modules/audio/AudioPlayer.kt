@@ -11,6 +11,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.session.MediaSession
@@ -43,13 +44,28 @@ class AudioPlayer(
   context: Context,
   appContext: AppContext,
   source: MediaSource?,
-  private val updateInterval: Double
+  private val updateInterval: Double,
+  bufferDurationMs: Long = 0
 ) : SharedRef<ExoPlayer>(
   ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
     .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
     .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
+    .apply {
+      if (bufferDurationMs > 0) {
+        setLoadControl(
+          DefaultLoadControl.Builder()
+            .setBufferDurationsMs(
+              DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
+              bufferDurationMs.toInt().coerceAtLeast(DefaultLoadControl.DEFAULT_MIN_BUFFER_MS),
+              DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
+              DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+            )
+            .build()
+        )
+      }
+    }
     .build(),
   appContext
 ),
