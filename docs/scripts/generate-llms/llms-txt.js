@@ -224,11 +224,10 @@ async function exportTalksData() {
 function compileTalksFile() {
   const inputFileContent = fs.readFileSync(TALKS_TS_PATH, 'utf8');
   const outputFileContent = ts.transpileModule(inputFileContent, {
-    module: ts.ModuleKind.ESNext,
     compilerOptions: {
-      target: 'ES2024',
-      module: 'ES2024',
-      moduleResolution: 'node',
+      target: ts.ScriptTarget.ESNext,
+      module: ts.ModuleKind.ESNext,
+      moduleResolution: ts.ModuleResolutionKind.NodeJs,
     },
   }).outputText;
 
