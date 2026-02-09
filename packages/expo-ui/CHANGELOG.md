@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `contentTransition` modifier. ([#42980](https://github.com/expo/expo/pull/42980) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
