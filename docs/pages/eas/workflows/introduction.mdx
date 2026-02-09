@@ -1,7 +1,7 @@
 ---
 title: Introduction to EAS Workflows
 sidebar_title: Introduction
-description: EAS Workflows is React Native CI/CD service for automating builds, updates, submissions, and tests for React Native and Expo apps.
+description: EAS Workflows is a CI/CD service for automating builds, updates, submissions, and tests for React Native and Expo apps.
 hasVideoLink: true
 ---
 
@@ -115,13 +115,13 @@ Use `needs` to specify that a job should wait for another job to succeed, or `af
 
 <Collapsible summary="Can I use environment variables in workflows?">
 
-Yes. Workflows support [EAS environment variables](/eas/environment-variables/) (production, preview, development) and inline `env` values. Environment variables can be referenced using `${{ env.VARIABLE_NAME }}` syntax.
+Yes. Workflows support [EAS environment variables](/eas/environment-variables/) and inline `env` values. Environment variables can be referenced using `${{ env.VARIABLE_NAME }}` syntax.
 
 </Collapsible>
 
 <Collapsible summary="What are the current limitations?">
 
-No shared workflow configurations (each workflow must be defined independently) - No matrix builds (cannot run multiple variations with different configurations in parallel). See [Limitations](/eas/workflows/limitations) for more details and updates.
+No shared workflow configurations (each workflow must be defined independently), and no matrix builds (cannot run multiple variations with different configurations in parallel). See [Limitations](/eas/workflows/limitations) for more details and updates.
 
 </Collapsible>
 
