@@ -1,45 +1,43 @@
 package dev.expo.brownfieldintegratedtester
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.community.minimaltester.brownfield.BrownfieldActivity
-import com.community.minimaltester.brownfield.showReactNativeFragment
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
-import dev.expo.brownfieldintegratedtester.ui.theme.BrownfieldIntegratedTesterTheme
+import android.view.Gravity
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
-class MainActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        showReactNativeFragment()
-    }
+        val rootLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        }
 
-    override fun invokeDefaultOnBackPressed() {
-        TODO("Not yet implemented")
-    }
-}
+        val button = Button(this).apply {
+            text = "Open React Native app"
+            backgroundTintList = ContextCompat.getColorStateList(context, R.color.purple_500)
+            id = R.id.openReactNativeButton
+            setTextColor(Color.WHITE)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+            setOnClickListener {
+                startActivity(Intent(context, ReactNativeActivity::class.java))
+            }
+        }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BrownfieldIntegratedTesterTheme {
-        Greeting("Android")
+        rootLayout.addView(button)
+        setContentView(rootLayout)
     }
 }

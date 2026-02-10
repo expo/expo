@@ -9,7 +9,7 @@ export const getRoutes = (
   version: PageApiVersionContextType['version']
 ): NavigationRoute[] => {
   if (isReferencePath(path)) {
-    return navigation.reference[version] as NavigationRoute[];
+    return (navigation.reference as Record<string, unknown>)[version] as NavigationRoute[];
   } else {
     return navigation[getPageSection(path)] as NavigationRoute[];
   }

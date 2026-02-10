@@ -89,7 +89,7 @@ export const Terminal = ({
   ) : null;
 
   return (
-    <Snippet className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
+    <Snippet data-md="terminal" className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
       <SnippetHeader
         alwaysDark
         title={title}
@@ -257,13 +257,14 @@ function cmdMapper(line: string, index: number) {
   const key = `line-${index}`;
 
   if (line.trim() === '') {
-    return <br key={key} className="select-none" />;
+    return <br key={key} data-md="skip" className="select-none" />;
   }
 
   if (line.startsWith('#')) {
     return (
       <CODE
         key={key}
+        data-md="skip"
         className="select-none whitespace-pre !border-none !bg-transparent !text-palette-gray10">
         {line}
       </CODE>
@@ -273,7 +274,9 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key} className="w-fit">
-        <CODE className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
+        <CODE
+          data-md="skip"
+          className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
           -&nbsp;
         </CODE>
         <CODE

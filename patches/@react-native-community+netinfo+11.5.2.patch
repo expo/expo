@@ -1,0 +1,13 @@
+diff --git a/node_modules/@react-native-community/netinfo/android/src/newarch/com/reactnativecommunity/netinfo/NetInfoModule.java b/node_modules/@react-native-community/netinfo/android/src/newarch/com/reactnativecommunity/netinfo/NetInfoModule.java
+index 61e44c4..d2c8844 100644
+--- a/node_modules/@react-native-community/netinfo/android/src/newarch/com/reactnativecommunity/netinfo/NetInfoModule.java
++++ b/node_modules/@react-native-community/netinfo/android/src/newarch/com/reactnativecommunity/netinfo/NetInfoModule.java
+@@ -9,7 +9,7 @@ public class NetInfoModule extends NativeRNCNetInfoSpec {
+ 
+     private NetInfoModuleImpl implementation;
+ 
+-    NetInfoModule(ReactApplicationContext context) {
++    public NetInfoModule(ReactApplicationContext context) {
+         super(context);
+         implementation = new NetInfoModuleImpl(context);
+     }

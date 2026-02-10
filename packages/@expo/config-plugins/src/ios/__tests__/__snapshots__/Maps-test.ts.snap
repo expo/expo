@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`addGoogleMapsAppDelegateImport adds maps import to AppDelegate 1`] = `
-"import Expo
+"internal import Expo
 import React
 import ReactAppDependencyProvider
 
@@ -11,7 +11,7 @@ import GoogleMaps
 #endif
 // @generated end react-native-maps-import
 @main
-public class AppDelegate: ExpoAppDelegate {
+class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
@@ -79,12 +79,12 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
 `;
 
 exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 1`] = `
-"import Expo
+"internal import Expo
 import React
 import ReactAppDependencyProvider
 
 @main
-public class AppDelegate: ExpoAppDelegate {
+class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
@@ -157,12 +157,12 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
 `;
 
 exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 2`] = `
-"import Expo
+"internal import Expo
 import React
 import ReactAppDependencyProvider
 
 @main
-public class AppDelegate: ExpoAppDelegate {
+class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?

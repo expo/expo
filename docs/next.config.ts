@@ -74,7 +74,7 @@ const nextConfig: NextConfig = {
   webpack: (config, { defaultLoaders }) => {
     // Add support for MDX with our custom loader
     config.module.rules.push({
-      test: /.mdx?$/,
+      test: /\.mdx?$/,
       use: [
         defaultLoaders.babel,
         {
@@ -135,7 +135,7 @@ const nextConfig: NextConfig = {
           }
         }
 
-        return { [page.page]: page };
+        return { [pathname]: page };
       })
     );
 
@@ -166,6 +166,7 @@ const nextConfigWithSentry = withSentryConfig(nextConfig, {
   org: 'expoio',
   project: 'docs',
   authToken: process.env.SENTRY_AUTH_TOKEN,
+  telemetry: false,
   debug: false, // Set to `true` to enable debug logging if having issues with missing source maps
   widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
   sourcemaps: {

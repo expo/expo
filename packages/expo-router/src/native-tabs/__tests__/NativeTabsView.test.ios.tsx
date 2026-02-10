@@ -58,8 +58,8 @@ it('uses shadowColor when it is passed to NativeTabs', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
-  expect(TabsScreen.mock.calls[0][0].standardAppearance.tabBarShadowColor).toBe('red');
-  expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarShadowColor).toBe('transparent');
+  expect(TabsScreen.mock.calls[0][0].standardAppearance!.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance!.tabBarShadowColor).toBe('transparent');
 });
 
 it('uses shadowColor when it is passed to NativeTabs in both standardAppearance and scrollEdgeAppearance when disableTransparentOnScrollEdge is true', () => {
@@ -74,6 +74,6 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
-  expect(TabsScreen.mock.calls[0][0].standardAppearance.tabBarShadowColor).toBe('red');
-  expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0][0].standardAppearance!.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
 });

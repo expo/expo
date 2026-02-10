@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.os.Parcel
 import android.text.format.DateUtils
 import android.util.Base64
+import androidx.core.content.edit
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.safeGetSerializable
 import java.io.Serializable
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
 
 const val EXPIRE_KEY = "expire"
 const val EXPIRATION_TIME = 5 * DateUtils.MINUTE_IN_MILLIS
@@ -65,7 +65,8 @@ class DataPersistor(context: Context) {
         bundle
           .keySet()
           .associateWith { key ->
-            bundle.safeGetSerializable<Serializable>(key) ?: throw IllegalStateException("For a key '$key' there should be a serializable class available")
+            bundle.safeGetSerializable<Serializable>(key)
+              ?: throw IllegalStateException("For a key '$key' there should be a serializable class available")
           }
       }
   }
@@ -87,13 +88,10 @@ class DataPersistor(context: Context) {
   }
 
   fun persist() {
-    val editor = sharedPreferences.edit()
-
-    editor.putString("bundle", accumulator.toBase64())
-    editor.putLong(EXPIRE_KEY, Date().time + EXPIRATION_TIME)
-
-    @Suppress("ApplySharedPref")
-    editor.commit()
+    sharedPreferences.edit(commit = true) {
+      putString("bundle", accumulator.toBase64())
+      putLong(EXPIRE_KEY, Date().time + EXPIRATION_TIME)
+    }
   }
 
   private fun retrieveData(): Bundle {
@@ -104,10 +102,9 @@ class DataPersistor(context: Context) {
       result = stringResult?.toBundle() ?: result
     }
 
-    sharedPreferences
-      .edit()
-      .clear()
-      .apply()
+    sharedPreferences.edit(commit = true) {
+      clear()
+    }
 
     return result
   }

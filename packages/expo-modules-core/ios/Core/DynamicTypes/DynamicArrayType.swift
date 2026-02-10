@@ -22,7 +22,7 @@ internal struct DynamicArrayType: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    let value = jsValue.getArray()
+    let value = jsValue.isArray() ? jsValue.getArray() : [jsValue]
     return try value.map { try elementType.cast(jsValue: $0, appContext: appContext) }
   }
 

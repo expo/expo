@@ -27,6 +27,7 @@ import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plu
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
+import { widgetsPlugin } from './widgets-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -294,6 +295,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
   extraPlugins.push(environmentRestrictedImportsPlugin);
+
+  // Transform widget component JSX expressions to capture widget components for native-side evaluation.
+  // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
+  if (hasModule('expo-widgets')) {
+    extraPlugins.push(widgetsPlugin);
+  }
 
   if (
     platformOptions.enableReactFastRefresh ||

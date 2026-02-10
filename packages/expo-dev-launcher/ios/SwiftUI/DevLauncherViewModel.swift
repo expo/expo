@@ -3,11 +3,14 @@
 import ExpoModulesCore
 import Foundation
 import AuthenticationServices
+import Network
 
 private let selectedAccountKey = "expo-selected-account-id"
 private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
+private let BONJOUR_TYPE = "_expo._tcp"
+private let networkPermissionFlowKey = "expo.devlauncher.hasCompletedNetworkPermissionFlow"
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
@@ -16,7 +19,6 @@ class DevLauncherViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
   @Published var updatesConfig: [AnyHashable: Any] = [:]
-  @Published var devServers: [DevServer] = []
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingCrashReport = false
   @Published var showingErrorAlert = false
@@ -43,7 +45,21 @@ class DevLauncherViewModel: ObservableObject {
   @Published var user: User?
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
-  private var discoveryTask: Task<Void, Never>?
+  @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
+
+  @Published var browserDevServers: [DevServer] = [] {
+    didSet { updateDevServers() }
+  }
+
+  @Published var localDevServers: [DevServer] = [] {
+    didSet { updateDevServers() }
+  }
+
+  @Published var devServers: [DevServer] = []
+
+  private var browser: NWBrowser?
+  private var pingTask: Task<Void, Never>?
+  private var scanTask: Task<Void, Never>?
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -71,6 +87,46 @@ class DevLauncherViewModel: ObservableObject {
     checkForStoredCrashes()
   }
 
+  private func updateDevServers() {
+    let allServers = browserDevServers + localDevServers
+    var serversByPort: [String: DevServer] = [:]
+
+    for server in allServers {
+      guard let port = extractPort(from: server.url) else {
+        serversByPort[server.url] = server
+        continue
+      }
+
+      if let existing = serversByPort[port] {
+        let existingHasName = existing.description != existing.url
+        let newHasName = server.description != server.url
+
+        if newHasName && !existingHasName {
+          serversByPort[port] = server
+        } else if existingHasName == newHasName {
+          let existingIsLinkLocal = existing.url.contains("169.254.")
+          let newIsLinkLocal = server.url.contains("169.254.")
+
+          if existingIsLinkLocal && !newIsLinkLocal {
+            serversByPort[port] = server
+          }
+        }
+      } else {
+        serversByPort[port] = server
+      }
+    }
+
+    devServers = serversByPort.values.sorted(by: <)
+  }
+
+  private func extractPort(from url: String) -> String? {
+    guard let urlComponents = URLComponents(string: url),
+          let port = urlComponents.port else {
+      return nil
+    }
+    return String(port)
+  }
+
   private func loadData() {
     let controller = EXDevLauncherController.sharedInstance()
     self.buildInfo = controller.getBuildInfo()
@@ -83,17 +139,33 @@ class DevLauncherViewModel: ObservableObject {
   private func loadRecentlyOpenedApps() {
     let apps = EXDevLauncherController.sharedInstance().recentlyOpenedAppsRegistry.recentlyOpenedApps()
 
-    self.recentlyOpenedApps = apps.compactMap { app in
-      guard let name = app["name"] as? String,
-      let url = app["url"] as? String,
-      let timestampInt64 = app["timestamp"] as? Int64,
-      let isEasUpdate = app["isEasUpdate"] as? Bool? else {
+    let allApps = apps.compactMap { app -> RecentlyOpenedApp? in
+      guard let url = app["url"] as? String,
+            let timestampInt64 = app["timestamp"] as? Int64 else {
         return nil
       }
 
+      let name = app["name"] as? String ?? url
+      let isEasUpdate = app["isEasUpdate"] as? Bool
       let timestamp = Date(timeIntervalSince1970: TimeInterval(timestampInt64))
       return RecentlyOpenedApp(name: name, url: url, timestamp: timestamp, isEasUpdate: isEasUpdate)
     }
+
+    var appsByKey: [String: RecentlyOpenedApp] = [:]
+    for app in allApps {
+      let port = extractPort(from: app.url) ?? ""
+      let key = "\(app.name):\(port)"
+
+      if let existing = appsByKey[key] {
+        if app.timestamp > existing.timestamp {
+          appsByKey[key] = app
+        }
+      } else {
+        appsByKey[key] = app
+      }
+    }
+
+    self.recentlyOpenedApps = appsByKey.values.sorted { $0.timestamp > $1.timestamp }
   }
 
   func openApp(url: String) {
@@ -129,43 +201,158 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func startServerDiscovery() {
-    discoveryTask?.cancel()
-    discoveryTask = Task {
-      await discoverDevServers()
+    if browser != nil {
+      return
+    }
+
+    let hasCompletedPermissionFlow = UserDefaults.standard.bool(
+      forKey: networkPermissionFlowKey
+    )
+
+    #if targetEnvironment(simulator)
+    // Simulators don't need permission, continue
+    #else
+    if !hasCompletedPermissionFlow {
+      return
+    }
+    #endif
+
+    stopServerDiscovery()
+    startDevServerBrowser()
+    startLocalDevServerScanner()
+  }
+
+  func startDiscoveryForPermissionCheck() {
+    permissionStatus = .checking
+    stopServerDiscovery()
+    startDevServerBrowser()
+    startLocalDevServerScanner()
+  }
+  
+  func markPermissionFlowCompleted() {
+    UserDefaults.standard.set(true, forKey: networkPermissionFlowKey)
+  }
+
+  func resetPermissionFlowState() {
+    UserDefaults.standard.removeObject(forKey: networkPermissionFlowKey)
+    permissionStatus = .unknown
+  }
+
+  var isFirstPermissionCheck: Bool {
+    !UserDefaults.standard.bool(forKey: networkPermissionFlowKey)
+  }
+
+  func stopServerDiscovery() {
+    pingTask?.cancel()
+    scanTask?.cancel()
+    browser?.cancel()
+    pingTask = nil
+    scanTask = nil
+    browser = nil
+  }
+
+  private func startLocalDevServerScanner() {
+    scanTask?.cancel()
+    scanTask = Task {
+      await scanLocalDevServers()
       while !Task.isCancelled {
         try? await Task.sleep(nanoseconds: 2_000_000_000)
         if Task.isCancelled {
           break
         }
-        await discoverDevServers()
+        await scanLocalDevServers()
       }
     }
   }
 
-  func stopServerDiscovery() {
-    discoveryTask?.cancel()
-    discoveryTask = nil
+  private func startDevServerBrowser() {
+    pingTask?.cancel()
+    browser?.cancel()
+
+    let params = NWParameters()
+    params.includePeerToPeer = true
+    params.allowLocalEndpointReuse = true
+
+    browser = NWBrowser(
+      for: NWBrowser.Descriptor.bonjourWithTXTRecord(type: BONJOUR_TYPE, domain: nil),
+      using: params
+    )
+
+    browser?.stateUpdateHandler = { [weak self] state in
+      Task { @MainActor [weak self] in
+        guard let self else { return }
+        switch state {
+        case .ready:
+          self.permissionStatus = .granted
+        case .waiting(let error):
+          if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
+            self.permissionStatus = .denied
+          }
+        case .failed(let error):
+          if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
+            self.permissionStatus = .denied
+          }
+        default:
+          break
+        }
+      }
+    }
+
+    browser?.browseResultsChangedHandler = { [weak self] results, _ in
+      guard let self = self else { return }
+      Task { @MainActor [weak self, results] in
+        guard let self else { return }
+        self.pingTask?.cancel()
+        self.pingTask = Task {
+          defer { self.pingTask = nil }
+          await self.pingDiscoveryResults(results.map { result in
+            DiscoveryResult(
+              name: NetworkUtilities.getNWBrowserResultName(result),
+              endpoint: result.endpoint
+            )
+          })
+        }
+      }
+    }
+
+    browser?.start(queue: DispatchQueue(label: "expo.devlauncher.discovery"))
   }
 
-  private func discoverDevServers() async {
+  private func scanLocalDevServers() async {
     guard !Task.isCancelled else {
       return
     }
 
     var discoveredServers: [DevServer] = []
-
-    // swiftlint:disable number_separator
-    let portsToCheck = [8081, 8082, 8_083, 8084, 8085, 19000, 19001, 19002]
-    // swiftlint:enable number_separator
-
-    let ipsToScan = NetworkUtilities.getIPAddressesToScan()
     await withTaskGroup(of: DevServer?.self) { group in
-      for ip in ipsToScan {
-        for port in portsToCheck {
-          group.addTask {
-            let baseAddress = ip == "localhost" ? "http://localhost" : "http://\(ip)"
-            return await self.checkDevServer(url: "\(baseAddress):\(port)")
-          }
+      for result in NetworkUtilities.getLocalEndpointsToScan() {
+        group.addTask {
+          return await self.resolveDevServer(result)
+        }
+      }
+
+      for await server in group {
+        if let server {
+          discoveredServers.append(server)
+        }
+      }
+    }
+
+    await MainActor.run {
+      self.localDevServers = discoveredServers
+    }
+  }
+
+  private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
+    guard !Task.isCancelled else {
+      return
+    }
+
+    var discoveredServers: [DevServer] = []
+    await withTaskGroup(of: DevServer?.self) { group in
+      for result in results {
+        group.addTask {
+          return await self.resolveDevServer(result)
         }
       }
 
@@ -181,32 +368,23 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     await MainActor.run {
-      self.devServers = discoveredServers.sorted { $0.url < $1.url }
+      self.browserDevServers = discoveredServers
     }
   }
 
-  private func checkDevServer(url: String) async -> DevServer? {
-    guard let statusURL = URL(string: "\(url)/status") else {
-      return nil
-    }
-
+  private func resolveDevServer(_ result: DiscoveryResult) async -> DevServer? {
     do {
-      let (data, response) = try await URLSession.shared.data(from: statusURL)
-
-      if let httpResponse = response as? HTTPURLResponse,
-        httpResponse.statusCode == 200 {
-        if let statusString = String(data: data, encoding: .utf8),
-          statusString.contains("packager-status:running") {
-          return DevServer(
-            url: url,
-            description: url,
-            source: "local"
-          )
-        }
+      if let host = try await NetworkUtilities.resolveBundlerEndpoint(
+        endpoint: result.endpoint,
+        queue: DispatchQueue.main
+      ) {
+        return DevServer(
+          url: host,
+          description: result.name ?? host,
+          source: "local"
+        )
       }
-    } catch {
-      // Server not running or not reachable
-    }
+    } catch {}
 
     return nil
   }
@@ -265,22 +443,6 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
 
-  private func validateSession() {
-    Task {
-      do {
-        let user = try await Queries.getUserProfile()
-        await MainActor.run {
-          self.isAuthenticated = true
-          self.user = user
-        }
-      } catch {
-        await MainActor.run {
-          self.clearInvalidSession()
-        }
-      }
-    }
-  }
-
   private func clearInvalidSession() {
     UserDefaults.standard.removeObject(forKey: sessionKey)
     APIClient.shared.setSession(nil)
@@ -289,28 +451,27 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func loadUserInfo() {
-    if isAuthenticated {
-      Task {
-        do {
-          let user = try await Queries.getUserProfile()
-          await MainActor.run {
-            self.user = user
-            let savedAccountId = UserDefaults.standard.string(forKey: selectedAccountKey)
-            if let savedAccountId,
-            user.accounts.contains(where: { $0.id == savedAccountId }) {
-              self.selectedAccountId = savedAccountId
-            } else if let firstAccount = user.accounts.first {
-              self.selectedAccountId = firstAccount.id
-              UserDefaults.standard.set(firstAccount.id, forKey: selectedAccountKey)
-            }
-          }
-        } catch {
-          await MainActor.run {
-            self.clearInvalidSession()
+    guard isAuthenticated else { return }
+
+    Task {
+      do {
+        let user = try await Queries.getUserProfile()
+        await MainActor.run {
+          self.user = user
+          let savedAccountId = UserDefaults.standard.string(forKey: selectedAccountKey)
+          if let savedAccountId,
+             user.accounts.contains(where: { $0.id == savedAccountId }) {
+            self.selectedAccountId = savedAccountId
+          } else if let firstAccount = user.accounts.first {
+            self.selectedAccountId = firstAccount.id
+            UserDefaults.standard.set(firstAccount.id, forKey: selectedAccountKey)
           }
         }
+      } catch {
+        await MainActor.run {
+          self.clearInvalidSession()
+        }
       }
-    } else {
     }
   }
 

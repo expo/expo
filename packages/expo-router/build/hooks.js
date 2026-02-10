@@ -50,6 +50,7 @@ const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const constants_1 = require("./constants");
+const routeInfo_1 = require("./global-state/routeInfo");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
@@ -266,10 +267,13 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
 function useLoaderData() {
     const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
     const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
-    const routeInfo = (0, router_store_1.useRouteInfo)();
-    const pathname = routeInfo.pathname || '/';
-    const searchString = routeInfo.searchParams?.toString() || '';
-    const normalizedPath = searchString ? `${pathname}?${searchString}` : pathname;
+    const stateForPath = (0, native_1.useStateForPath)();
+    const normalizedPath = (0, react_1.useMemo)(() => {
+        const routeInfo = (0, routeInfo_1.getRouteInfoFromState)(stateForPath);
+        const pathname = routeInfo.pathname || '/';
+        const searchString = routeInfo.searchParams?.toString() || '';
+        return searchString ? `${pathname}?${searchString}` : pathname;
+    }, [stateForPath]);
     // First invocation of this hook will happen server-side, so we look up the loaded data from context
     if (serverDataLoaderContext) {
         return serverDataLoaderContext[normalizedPath];

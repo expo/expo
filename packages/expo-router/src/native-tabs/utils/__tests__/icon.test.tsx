@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
+import type { ImageSourcePropType } from 'react-native';
 
-import type { SymbolOrImageSource } from '../../types';
+import type { NativeTabsProps, SymbolOrImageSource } from '../../types';
 import {
   convertIconColorPropToObject,
   convertOptionsIconToRNScreensPropsIcon,
@@ -29,7 +30,8 @@ describe(convertIconColorPropToObject, () => {
   });
 
   it('treats an object without default/selected as a ColorValue and returns it under default', () => {
-    const weird = { foo: 'bar' } as any;
+    // Intentionally passing wrong type to test edge case
+    const weird = { foo: 'bar' } as unknown as NativeTabsProps['iconColor'];
     expect(convertIconColorPropToObject(weird)).toEqual({ default: weird });
   });
 
@@ -38,7 +40,8 @@ describe(convertIconColorPropToObject, () => {
   });
 
   it('treats numeric 0 (falsy) as no color and returns empty object', () => {
-    expect(convertIconColorPropToObject(0 as any)).toEqual({});
+    // Intentionally passing wrong type to test edge case
+    expect(convertIconColorPropToObject(0 as unknown as NativeTabsProps['iconColor'])).toEqual({});
   });
 });
 
@@ -65,7 +68,7 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
   });
 
   it('returns ios and android icon objects when src is a numeric resource identifier', () => {
-    const src = 123 as any;
+    const src = 123;
     const result = convertOptionsIconToRNScreensPropsIcon({ src });
     expect(result).toEqual({
       ios: { type: 'imageSource', imageSource: src },
@@ -82,7 +85,10 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
   });
 
   it('returns undefined when src is falsy (null)', () => {
-    expect(convertOptionsIconToRNScreensPropsIcon({ src: null })).toEqual({
+    // Intentionally passing null to test falsy value handling
+    expect(
+      convertOptionsIconToRNScreensPropsIcon({ src: null as unknown as ImageSourcePropType })
+    ).toEqual({
       ios: undefined,
       android: undefined,
     });
@@ -198,7 +204,7 @@ describe('useAwaitedScreensIcon', () => {
     });
 
     it('returns src immediately when src is a numeric resource identifier', () => {
-      const src = 123 as any;
+      const src = 123;
       const { result } = renderHook(() => useAwaitedScreensIcon({ src }));
       expect(result.current).toEqual({ src });
     });
@@ -226,7 +232,7 @@ describe('useAwaitedScreensIcon', () => {
       const promise = new Promise((res) => {
         resolve = res;
       });
-      const asyncSrc = promise;
+      const asyncSrc = promise as unknown as ImageSourcePropType;
       const { result, unmount } = renderHook(() => useAwaitedScreensIcon({ src: asyncSrc }));
       expect(result.current).toBeUndefined();
       unmount();
@@ -243,7 +249,7 @@ describe('useAwaitedScreensIcon', () => {
       const firstPromise = new Promise((res) => {
         resolveFirst = res;
       });
-      const firstSrc = firstPromise;
+      const firstSrc = firstPromise as unknown as ImageSourcePropType;
       const { result, rerender } = renderHook(
         ({ icon }: { icon: SymbolOrImageSource }) => useAwaitedScreensIcon(icon),
         {

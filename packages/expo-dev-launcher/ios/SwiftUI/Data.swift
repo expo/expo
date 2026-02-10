@@ -1,3 +1,10 @@
+import Network
+
+struct DiscoveryResult {
+  let name: String?
+  let endpoint: NWEndpoint
+}
+
 struct BranchWithUpdates {
   let id: String
   let name: String
@@ -5,10 +12,22 @@ struct BranchWithUpdates {
   let hasCompatibleUpdates: Bool
 }
 
-struct DevServer {
+struct DevServer: Hashable {
   let url: String
   let description: String
   let source: String
+
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    return lhs.url == rhs.url
+  }
+
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(url)
+  }
+
+  static func < (lhs: Self, rhs: Self) -> Bool {
+    return lhs.url < rhs.url
+  }
 }
 
 struct BuildInfo {

@@ -53,7 +53,7 @@ struct DevServersView: View {
             .padding()
           Divider()
         } else {
-          ForEach(viewModel.devServers, id: \.url) { server in
+          ForEach(viewModel.devServers, id: \.self) { server in
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }
@@ -173,8 +173,22 @@ struct DevServerRow: View {
           .fill(Color.green)
           .frame(width: 12, height: 12)
 
-        Text(server.description)
-          .foregroundColor(.primary)
+        if server.description == server.url {
+          Text(server.description)
+            .foregroundColor(.primary)
+            .lineLimit(1)
+        } else {
+          VStack(alignment: .leading) {
+            Text(server.description)
+              .font(.headline)
+              .foregroundColor(.primary)
+              .lineLimit(1)
+            Text(server.url)
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .lineLimit(1)
+          }
+        }
 
         Spacer()
 

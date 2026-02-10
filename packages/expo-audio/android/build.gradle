@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'expo.modules.audio'
-version = '55.0.4'
+version = '55.0.5'
 
 android {
   namespace "expo.modules.audio"
   defaultConfig {
     versionCode 1
-    versionName "55.0.4"
+    versionName "55.0.5"
   }
 
   compileOptions {

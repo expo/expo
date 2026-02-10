@@ -470,6 +470,7 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   const item: NativeStackHeaderItemMenuAction = {
     ...rest,
+    description: props.subtitle,
     type: 'action',
     label: sharedProps.label,
     state: isOn ? 'on' : 'off',

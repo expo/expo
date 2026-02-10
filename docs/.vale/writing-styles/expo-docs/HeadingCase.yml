@@ -60,6 +60,7 @@ exceptions:
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
+  - '.*Convex.*'
   - '.*Command Line Tools.*'
   - '.*Config Plugin.*'
   - '.*CORS.*'

@@ -6,4 +6,5 @@ export interface ActionButtonProps {
   description?: string;
   onPress: () => void;
   type?: 'button' | 'link';
+  testID?: string;
 }
