@@ -23,7 +23,7 @@ import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
-import { events } from '../../../events';
+import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -206,13 +206,14 @@ export async function loadMetroConfigAsync(
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
+  const reduceLogs = shouldReduceLogs();
 
   const reactCompilerEnabled = !!exp.experiments?.reactCompiler;
-  if (reactCompilerEnabled) {
+  if (!reduceLogs && reactCompilerEnabled) {
     Log.log(chalk.gray`React Compiler enabled`);
   }
 
-  if (autolinkingModuleResolutionEnabled) {
+  if (!reduceLogs && autolinkingModuleResolutionEnabled) {
     Log.log(chalk.gray`Expo Autolinking module resolution enabled`);
   }
 
@@ -222,17 +223,17 @@ export async function loadMetroConfigAsync(
     );
   }
 
-  if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
-  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
   }
-  if (env.EXPO_UNSTABLE_LOG_BOX) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_LOG_BOX) {
     Log.warn(`Experimental Expo LogBox is enabled.`);
   }
 
-  if (serverActionsEnabled) {
+  if (!reduceLogs && serverActionsEnabled) {
     Log.warn(
       `React Server Functions (beta) are enabled. Route rendering mode: ${exp.experiments?.reactServerComponentRoutes ? 'server' : 'client'}`
     );
