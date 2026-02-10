@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { withSpinner } from './spinner';
 import { runCommand } from './commands';
 import CLIError from './error';
+import { withSpinner } from './spinner';
 import type { AndroidConfig, BuildVariant } from './types';
 
 export const buildPublishingTask = (variant: BuildVariant, repository: string): string => {

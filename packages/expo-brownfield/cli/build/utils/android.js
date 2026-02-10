@@ -7,9 +7,9 @@ exports.runTask = exports.processTasks = exports.processRepositories = exports.p
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const spinner_1 = require("./spinner");
 const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
+const spinner_1 = require("./spinner");
 const buildPublishingTask = (variant, repository) => {
     const repositoryName = repository === 'MavenLocal' ? repository : `${repository}Repository`;
     return `publishBrownfield${variant}PublicationTo${repositoryName}`;

@@ -3,9 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
 
-import { withSpinner } from './spinner';
 import { runCommand } from './commands';
 import CLIError from './error';
+import { withSpinner } from './spinner';
 import type { Platform } from './types';
 
 export const validatePrebuild = async (platform: Platform): Promise<void> => {

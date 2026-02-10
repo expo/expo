@@ -8,9 +8,9 @@ const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const prompts_1 = __importDefault(require("prompts"));
-const spinner_1 = require("./spinner");
 const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
+const spinner_1 = require("./spinner");
 const validatePrebuild = async (platform) => {
     if (!checkPrebuild(platform)) {
         console.info(`${chalk_1.default.yellow(`⚠ Prebuild for platform: ${platform} is missing`)}`);
