@@ -1,4 +1,5 @@
 import * as env from '@expo/env';
+import path from 'node:path';
 
 type EnvOutput = Record<string, string | undefined>;
 
@@ -51,6 +52,12 @@ export function loadEnvFiles(projectRoot: string, options?: LoadEnvFilesOptions)
 
   env.logLoadedEnv(envInfo, params);
   return process.env;
+}
+
+export function getEnvFiles(projectRoot: string) {
+  return env
+    .getEnvFiles({ mode: process.env.NODE_ENV })
+    .map((fileName) => path.join(projectRoot, fileName));
 }
 
 export function reloadEnvFiles(projectRoot: string) {
