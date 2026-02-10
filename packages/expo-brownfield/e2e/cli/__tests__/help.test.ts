@@ -38,6 +38,16 @@ describe('--help option', () => {
   });
 
   /**
+   * Command: npx expo-brownfield help
+   * Expected behavior: The CLI should support the `help` command
+   */
+  it('should support the `help` command', async () => {
+    const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['help']);
+    expect(exitCode).toBe(0);
+    expect(stdout).toMatchSnapshot();
+  });
+
+  /**
    * Command: npx expo-brownfield tasks:android --help
    * Expected behavior: The CLI should not print general help after a command is used
    */

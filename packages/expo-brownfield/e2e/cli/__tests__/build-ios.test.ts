@@ -77,6 +77,20 @@ describe('build:ios command', () => {
     });
 
     /**
+     * Command: npx expo-brownfield build:ios --scheme
+     * Expected behavior: The CLI should display the error message about missing argument
+     * (no need to test for all arguments as it's handled by commander)
+     */
+    it('should fail if argument value is not passed', async () => {
+      await buildIosTest({
+        directory: TEMP_DIR,
+        args: ['--scheme'],
+        successExit: false,
+        stderr: [ERROR.MISSING_ARGUMENT('s', 'scheme', 'scheme')],
+      });
+    });
+
+    /**
      * Command: npx expo-brownfield build:ios
      * Expected behavior: The CLI should fail if prebuild is cancelled
      */

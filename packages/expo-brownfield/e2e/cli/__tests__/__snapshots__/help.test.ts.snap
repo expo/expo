@@ -29,3 +29,18 @@ Commands:
                            android
   help [command]           display help for command"
 `;
+
+exports[`--help option should support the \`help\` command 1`] = `
+"Usage: expo-brownfield [options] [command]
+
+Options:
+  -v, --version            output the version number
+  -h, --help               display help for command
+
+Commands:
+  build:android [options]  Build and publish Android brownfield artifacts
+  build:ios [options]      Build and publish iOS brownfield artifacts
+  tasks:android [options]  List available publishing tasks and repositories for
+                           android
+  help [command]           display help for command"
+`;

@@ -74,6 +74,20 @@ describe('build:android command', () => {
     });
 
     /**
+     * Command: npx expo-brownfield build:android --library
+     * Expected behavior: The CLI should display the error message about missing argument
+     * (no need to test for all arguments as it's handled by commander)
+     */
+    it('should fail if argument value is not passed', async () => {
+      await buildAndroidTest({
+        directory: TEMP_DIR,
+        args: ['--library'],
+        successExit: false,
+        stderr: [ERROR.MISSING_ARGUMENT('l', 'library', 'library')],
+      });
+    });
+
+    /**
      * Command: npx expo-brownfield build:android
      * Expected behavior: The CLI should fail if prebuild is cancelled
      */
@@ -291,7 +305,7 @@ describe('build:android command', () => {
     it('should properly handle --task/-t option(s)', async () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--task', 'task1', '-t', 'task2', '--task', 'task3', '--dry-run'],
+        args: ['--task', 'task1', '-t', 'task2', 'task3', '--dry-run'],
         stdout: [...BUILD_ANDROID.TASKS, `./gradlew task1`, `./gradlew task2`, `./gradlew task3`],
       });
     });

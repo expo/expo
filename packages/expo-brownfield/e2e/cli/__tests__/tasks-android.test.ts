@@ -71,6 +71,20 @@ describe('tasks:android command', () => {
         stderr: [ERROR.ADDITIONAL_COMMAND('tasks:android')],
       });
     });
+
+    /**
+     * Command: npx expo-brownfield tasks:android --library
+     * Expected behavior: The CLI should display the error message about missing argument
+     * (no need to test for all arguments as it's handled by commander)
+     */
+    it('should fail if argument value is not passed', async () => {
+      await tasksAndroidTest({
+        directory: TEMP_DIR,
+        args: ['--library'],
+        successExit: false,
+        stderr: [ERROR.MISSING_ARGUMENT('l', 'library', 'library')],
+      });
+    });
   });
 
   /**
