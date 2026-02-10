@@ -41,7 +41,7 @@ func evaluateLayout(
 func getLiveActivityNodes(forName name: String, props: String = "{}") -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
   let propsData = props.data(using: .utf8)
-  let propsDict = try? JSONSerialization.jsonObject(with: propsData!, options: []) as? [String: Any]
+  let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] }
   guard let context = createWidgetContext(layout: layout, props: propsDict ?? [:]) else {
     return [:]
   }
