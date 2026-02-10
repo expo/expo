@@ -8,7 +8,7 @@ const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const prompts_1 = __importDefault(require("prompts"));
-const build_1 = require("./build");
+const spinner_1 = require("./spinner");
 const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
 const validatePrebuild = async (platform) => {
@@ -21,7 +21,7 @@ const validatePrebuild = async (platform) => {
             initial: false,
         });
         if (response.shouldRunPrebuild) {
-            await (0, build_1.withSpinner)({
+            await (0, spinner_1.withSpinner)({
                 operation: () => (0, commands_1.runCommand)('npx', ['expo', 'prebuild', '--platform', platform]),
                 loaderMessage: `Running 'npx expo prebuild' for platform: ${platform}...`,
                 successMessage: `Prebuild for ${platform} completed\n`,

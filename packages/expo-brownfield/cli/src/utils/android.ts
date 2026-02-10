@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { withSpinner } from './build';
+import { withSpinner } from './spinner';
 import { runCommand } from './commands';
 import CLIError from './error';
 import type { AndroidConfig, BuildVariant } from './types';

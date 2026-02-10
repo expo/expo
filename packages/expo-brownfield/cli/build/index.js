@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const commands_1 = require("./commands");
+const package_json_1 = __importDefault(require("../../package.json"));
 const program = new commander_1.Command();
 // main program
-program.name('expo-brownfield').version('0.0.1', '-v, --version');
+program.name('expo-brownfield').version(package_json_1.default.version, '-v, --version');
 // build:android
 program
     .command('build:android')

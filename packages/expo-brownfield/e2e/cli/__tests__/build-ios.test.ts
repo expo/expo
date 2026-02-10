@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { BUILD, BUILD_IOS, ERROR } from '../../utils/output';
-import { executeCommandAsync } from '../../utils/process';
+import { CLI_PATH, executeCommandAsync } from '../../utils/process';
 import { cleanUpProject, createTempProject } from '../../utils/project';
 import { buildIosTest, expectPrebuild } from '../../utils/test';
 
@@ -72,6 +72,25 @@ describe('build:ios command', () => {
 
     /**
      * Command: npx expo-brownfield build:ios
+     * Expected behavior: The CLI should fail if prebuild is cancelled
+     */
+    it('should fail if prebuild is cancelled', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes no | node ${CLI_PATH} build:android --repo MavenLocal`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
+    });
+
+    /**
+     * Command: npx expo-brownfield build:ios
      * Expected behavior: The CLI should validate and ask for prebuild
      */
     it('should validate and ask for prebuild', async () => {
@@ -80,21 +99,17 @@ describe('build:ios command', () => {
       const { exitCode, stdout, stderr } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', 'yes | npx expo-brownfield build:ios'],
+        ['-c', `yes | node ${CLI_PATH} build:ios`],
         { ignoreErrors: true }
       );
       expect(exitCode).not.toBe(0);
       expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
       expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
-      // TODO(pmleczek): Refactor CLI error handling
-      expect(stderr).toContain(`Error: Value of iOS Scheme`);
-      expect(stderr).toContain(`could not be inferred from the project`);
+      expect(stderr).toContain(`Could not find iOS scheme in the project`);
 
       // The android directory should be created and not empty
       await expectPrebuild(TEMP_DIR, 'ios');
     });
-
-    // TODO(pmleczek): Verify failure if prebuild is not done
   });
 
   /**
@@ -219,12 +234,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '-x', 'someworkspace.xcworkspace'],
-        stdout: [`- Xcode Workspace: someworkspace.xcworkspace`],
+        stdout: [`- Workspace: someworkspace.xcworkspace`],
       });
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '--xcworkspace', 'someworkspace.xcworkspace'],
-        stdout: [`- Xcode Workspace: someworkspace.xcworkspace`],
+        stdout: [`- Workspace: someworkspace.xcworkspace`],
       });
     });
 
@@ -236,12 +251,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '-s', 'somescheme'],
-        stdout: [`- Xcode Scheme: somescheme`],
+        stdout: [`- Scheme: somescheme`],
       });
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '--scheme', 'somescheme'],
-        stdout: [`- Xcode Scheme: somescheme`],
+        stdout: [`- Scheme: somescheme`],
       });
     });
 
@@ -254,12 +269,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '-a', '../artifacts'],
-        stdout: [`- Artifacts directory: ${expectedPath}`],
+        stdout: [`- Artifacts path: ${expectedPath}`],
       });
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '--artifacts', '../artifacts'],
-        stdout: [`- Artifacts directory: ${expectedPath}`],
+        stdout: [`- Artifacts path: ${expectedPath}`],
       });
     });
   });

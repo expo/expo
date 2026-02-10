@@ -1,31 +1,16 @@
 import type { OptionValues } from 'commander';
+import path from 'node:path';
 
 import { buildPublishingTask, findBrownfieldLibrary } from './android';
+import { findScheme, findWorkspace } from './ios';
 import type {
   AndroidConfig,
+  BuildConfiguration,
   BuildVariant,
   CommonConfig,
   IosConfig,
   TasksConfigAndroid,
 } from './types';
-
-// export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> => {
-//   const buildType = getBuildTypeCommon(args);
-//   const derivedDataPath = path.join(process.cwd(), 'ios/build');
-//   const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
-
-//   return {
-//     ...getCommonConfig(args),
-//     artifacts: path.join(process.cwd(), args['--artifacts'] || Defaults.artifactsPath),
-//     buildType,
-//     derivedDataPath,
-//     device: path.join(buildProductsPath, `${buildType}-iphoneos`),
-//     simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
-//     hermesFrameworkPath: args['--hermes-framework'] || Defaults.hermesFrameworkPath,
-//     scheme: args['--scheme'] || (await inferScheme()),
-//     workspace: args['--xcworkspace'] || (await inferXCWorkspace()),
-//   };
-// };
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
   const variant = resolveVariant(options);
@@ -38,8 +23,34 @@ export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig 
 };
 
 export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
+  let artifacts = options.artifacts || './artifacts';
+  if (!path.isAbsolute(artifacts)) {
+    artifacts = path.join(process.cwd(), artifacts);
+  }
+
+  const derivedDataPath = path.join(process.cwd(), 'ios/build');
+  const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
+
+  const buildConfiguration = resolveBuildConfiguration(options);
+  const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
+  const simulator = path.join(
+    buildProductsPath,
+    `${buildConfiguration.toLowerCase()}-iphonesimulator`
+  );
+
+  const hermesFrameworkPath =
+    'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
+
   return {
     ...resolveCommonConfig(options),
+    artifacts,
+    buildConfiguration,
+    derivedDataPath,
+    device,
+    simulator,
+    hermesFrameworkPath,
+    scheme: resolveScheme(options),
+    workspace: resolveWorkspace(options),
   };
 };
 
@@ -56,6 +67,8 @@ const resolveCommonConfig = (options: OptionValues): CommonConfig => {
     verbose: !!options.verbose,
   };
 };
+
+// SECTION: Android Helpers
 
 const resolveLibrary = (options: OptionValues): string => {
   return options.library || findBrownfieldLibrary();
@@ -81,3 +94,26 @@ const resolveVariant = (options: OptionValues): BuildVariant => {
 
   return variant;
 };
+
+// END SECTION: Android Helpers
+
+// SECTION: iOS Helpers
+
+const resolveBuildConfiguration = (options: OptionValues): BuildConfiguration => {
+  let buildConfiguration: BuildConfiguration = 'Release';
+  if (options.debug && !options.release) {
+    buildConfiguration = 'Debug';
+  }
+
+  return buildConfiguration;
+};
+
+const resolveScheme = (options: OptionValues): string => {
+  return options.scheme || findScheme();
+};
+
+const resolveWorkspace = (options: OptionValues): string => {
+  return options.xcworkspace || findWorkspace();
+};
+
+// END SECTION: iOS Helpers

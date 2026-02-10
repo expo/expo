@@ -17,12 +17,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validatePrebuild = exports.CLIError = void 0;
+exports.CLIError = void 0;
 __exportStar(require("./android"), exports);
-__exportStar(require("./build"), exports);
 __exportStar(require("./commands"), exports);
 __exportStar(require("./config"), exports);
 var error_1 = require("./error");
 Object.defineProperty(exports, "CLIError", { enumerable: true, get: function () { return __importDefault(error_1).default; } });
-var prebuild_1 = require("./prebuild");
-Object.defineProperty(exports, "validatePrebuild", { enumerable: true, get: function () { return prebuild_1.validatePrebuild; } });
+__exportStar(require("./ios"), exports);
+__exportStar(require("./prebuild"), exports);
+__exportStar(require("./spinner"), exports);

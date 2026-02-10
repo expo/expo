@@ -2,11 +2,12 @@
 import { Command } from 'commander';
 
 import { buildAndroid, buildIos, tasksAndroid } from './commands';
+import packageJson from '../../package.json';
 
 const program = new Command();
 
 // main program
-program.name('expo-brownfield').version('0.0.1', '-v, --version');
+program.name('expo-brownfield').version(packageJson.version, '-v, --version');
 
 // build:android
 program

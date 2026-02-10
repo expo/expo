@@ -7,7 +7,7 @@ exports.runTask = exports.processTasks = exports.processRepositories = exports.p
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const build_1 = require("./build");
+const spinner_1 = require("./spinner");
 const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
 const buildPublishingTask = (variant, repository) => {
@@ -76,7 +76,7 @@ const runTask = async (task, verbose, dryRun) => {
         console.log(`./gradlew ${task}`);
         return;
     }
-    return (0, build_1.withSpinner)({
+    return (0, spinner_1.withSpinner)({
         operation: () => (0, commands_1.runCommand)('./gradlew', [task], {
             cwd: node_path_1.default.join(process.cwd(), 'android'),
             verbose,
