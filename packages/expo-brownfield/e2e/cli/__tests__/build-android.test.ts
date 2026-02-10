@@ -317,10 +317,11 @@ describe('build:android command', () => {
     it('should properly handle --repo/--repository option(s)', async () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--repo', 'MavenLocal', '--repository', 'CustomLocal', '--dry-run'],
+        args: ['--repo', 'MavenLocal', '--repository', 'CustomLocal', 'RemotePublic', '--dry-run'],
         stdout: [
           `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
           `./gradlew publishBrownfieldAllPublicationToCustomLocalRepository`,
+          `./gradlew publishBrownfieldAllPublicationToRemotePublicRepository`,
         ],
       });
     });
@@ -329,11 +330,15 @@ describe('build:android command', () => {
      * Command: npx expo-brownfield build:android --repo MavenLocal --task task1 --dry-run
      * Expected behavior: Tasks should take precedence over repositories. Correct task should be executed
      */
-    it('tasks should take precedence over repositories', async () => {
+    it('should resolve both tasks and repositories', async () => {
       await buildAndroidTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--task', 'task1', '--dry-run'],
-        stdout: [...BUILD_ANDROID.TASK, `./gradlew task1`],
+        stdout: [
+          ...BUILD_ANDROID.TASK,
+          `./gradlew task1`,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ],
       });
     });
 
