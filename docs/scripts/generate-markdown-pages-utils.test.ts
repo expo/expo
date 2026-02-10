@@ -351,6 +351,59 @@ describe('terminal snippet labels', () => {
     expect(md).not.toContain('Terminal');
     expect(md).not.toContain('- ');
   });
+
+  it('converts tabbed terminal commands from data-md-commands in package manager order', () => {
+    const commands = {
+      bun: ['$ bun add expo'],
+      yarn: ['$ yarn add expo'],
+      npm: ['$ npm install expo', '# npm comment'],
+      pnpm: ['$ pnpm add expo'],
+    };
+    const $ = cheerio.load(`<main>
+      <div data-md="terminal">
+        <div data-md="snippet-header"><span>Terminal</span></div>
+        <div data-md="code-block"><code>npm install expo</code></div>
+      </div>
+    </main>`);
+    $('[data-md="terminal"]').attr('data-md-commands', JSON.stringify(commands));
+
+    const md = convertHtmlToMarkdown($.html());
+    const npmIndex = md.indexOf('# npm');
+    const yarnIndex = md.indexOf('# yarn');
+    const pnpmIndex = md.indexOf('# pnpm');
+    const bunIndex = md.indexOf('# bun');
+
+    expect(npmIndex).toBeGreaterThan(-1);
+    expect(yarnIndex).toBeGreaterThan(npmIndex);
+    expect(pnpmIndex).toBeGreaterThan(yarnIndex);
+    expect(bunIndex).toBeGreaterThan(pnpmIndex);
+    expect(md).toContain('npm install expo');
+    expect(md).toContain('yarn add expo');
+    expect(md).toContain('pnpm add expo');
+    expect(md).toContain('bun add expo');
+    expect(md).not.toContain('# npm comment');
+  });
+
+  it('skips empty/comment-only manager sections, ignores unknown keys, and preserves angle brackets', () => {
+    const commands = {
+      npm: ['# only comment', ''],
+      pnpm: ['$ pnpm add <package-name>'],
+      unknown: ['$ unknown add expo'],
+    };
+    const $ = cheerio.load(`<main>
+      <div data-md="terminal">
+        <div data-md="snippet-header"><span>Terminal</span></div>
+        <div data-md="code-block"><code>npm install expo</code></div>
+      </div>
+    </main>`);
+    $('[data-md="terminal"]').attr('data-md-commands', JSON.stringify(commands));
+
+    const md = convertHtmlToMarkdown($.html());
+
+    expect(md).toContain('```sh\n# pnpm\npnpm add <package-name>\n```');
+    expect(md).not.toContain('# npm');
+    expect(md).not.toContain('unknown add expo');
+  });
 });
 
 describe('step numbers', () => {

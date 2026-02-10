@@ -75,6 +75,8 @@ function createTurndownService(): TurndownService {
 }
 
 const turndown = createTurndownService();
+// Keep in sync with ui/components/Snippet/blocks/packageManagerStore.ts.
+const PACKAGE_MANAGER_MARKDOWN_ORDER = ['npm', 'yarn', 'pnpm', 'bun'] as const;
 
 /**
  * Recursively find all index.html files in a directory, skipping internal directories.
@@ -295,6 +297,51 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Remove snippet headers (file labels, "Terminal" labels above code blocks).
   // data-md="snippet-header" is the stable marker (from SnippetHeader component).
   main.find('[data-md="snippet-header"]').remove();
+
+  // Convert tabbed Terminal blocks (package manager variants) into a single shell block.
+  // data-md="terminal" is the stable marker; data-md-commands contains all manager commands.
+  main.find('[data-md="terminal"][data-md-commands]').each((_, el) => {
+    const $el = $(el);
+    const commandsJson = $el.attr('data-md-commands');
+    if (!commandsJson) {
+      return;
+    }
+
+    const commands = JSON.parse(commandsJson) as Record<string, unknown>;
+    const lines: string[] = [];
+
+    for (const manager of PACKAGE_MANAGER_MARKDOWN_ORDER) {
+      const rawCommands = commands[manager];
+      if (!Array.isArray(rawCommands) || rawCommands.length === 0) {
+        continue;
+      }
+
+      const managerLines = rawCommands
+        .filter((line): line is string => typeof line === 'string')
+        .map(line => line.replace(/^\$\s*/, '').trim())
+        // Preserve existing terminal behavior: drop source comment lines.
+        .filter(line => line.length > 0 && !line.startsWith('#'));
+
+      // Skip heading-only sections (for example, comment-only manager arrays).
+      if (managerLines.length === 0) {
+        continue;
+      }
+
+      if (lines.length > 0) {
+        lines.push('');
+      }
+      lines.push(`# ${manager}`);
+      lines.push(...managerLines);
+    }
+
+    if (lines.length > 0) {
+      const $pre = $('<pre></pre>');
+      const $code = $('<code class="language-sh"></code>');
+      $code.text(lines.join('\n'));
+      $pre.append($code);
+      $el.replaceWith($pre);
+    }
+  });
 
   // Remove orphaned step numbers: replace step containers with just the content.
   // data-md="step" is the stable marker; the fallback matches div.flex.gap-4 with
