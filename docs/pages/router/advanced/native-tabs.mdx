@@ -348,6 +348,50 @@ export default function TabLayout() {
 
 > **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
 
+#### Asset catalog icons (iOS)
+
+> **info** This feature is available in SDK 55 and later.
+
+On iOS, you can use images from the Xcode asset catalog as tab icons with the `xcasset` prop. This is useful when you want to manage your icons through Xcode's asset catalog instead of bundling image files.
+
+Pass a string with the asset name to use the same icon for both default and selected states:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+const { Icon } = NativeTabs.Trigger;
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Icon xcasset="home-icon" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+To use different icons for default and selected states, pass an object:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+const { Icon } = NativeTabs.Trigger;
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Icon xcasset={{ default: 'home-outline', selected: 'home-filled' }} />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+> **info** The rendering mode for asset catalog icons is controlled in Xcode's asset catalog using the **Render As** setting on the image set, not via props.
+
 ### Label
 
 You can use the `Label` component to customize the label displayed in the tab bar item. The `Label` component accepts a string label passed as a child. If no label is provided, the tab bar item will use the route name as the label.
@@ -970,6 +1014,71 @@ export default function HomeScreen() {
     <SafeAreaView edges={{ bottom: true }} style={{ flex: 1 }}>
       {/* Screen content */}
     </SafeAreaView>
+  );
+}
+```
+
+### Lazy loading
+
+All tab screens in native tabs render eagerly when the navigator mounts. This behavior cannot be changed because the native tab bar needs each screen to be available for transitions. If a tab contains expensive content that you want to defer until the user actually visits the tab, you can use one of the following approaches.
+
+#### Render content only when focused
+
+Use `useIsFocused` to conditionally render content. The content unmounts when the user navigates away and re-renders when they come back. This means any local state (scroll position, form inputs) is lost on every tab switch.
+
+```tsx app/(tabs)/search.tsx
+import { useIsFocused } from 'expo-router';
+import { View, ActivityIndicator, Text } from 'react-native';
+
+export default function SearchScreen() {
+  const isFocused = useIsFocused();
+
+  if (!isFocused) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Text>Expensive content that only renders when this tab is focused</Text>
+    </View>
+  );
+}
+```
+
+#### Load once on first focus
+
+Use `useFocusEffect` with a state flag to load content the first time the tab is focused, then keep it mounted.
+
+```tsx app/(tabs)/search.tsx
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { View, ActivityIndicator, Text } from 'react-native';
+
+export default function SearchScreen() {
+  const [hasActivated, setHasActivated] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      setHasActivated(true);
+    }, [])
+  );
+
+  if (!hasActivated) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Text>Content that loads once and stays mounted</Text>
+    </View>
   );
 }
 ```

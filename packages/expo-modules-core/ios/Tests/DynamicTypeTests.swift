@@ -208,6 +208,14 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `arrayizes a single JS value`() throws {
+      let jsInt = try appContext.runtime.eval("67")
+      let jsString = try appContext.runtime.eval("'Expo'")
+      #expect(try (~[Int].self).cast(jsValue: jsInt, appContext: appContext) as? [Int] == [67])
+      #expect(try (~[String].self).cast(jsValue: jsString, appContext: appContext) as? [String] == ["Expo"])
+    }
+
+    @Test
     func `arrayizes single element`() throws {
       // The dynamic array type can arrayize the single element
       // if only the array element's dynamic type can cast it.

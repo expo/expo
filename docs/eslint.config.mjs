@@ -72,6 +72,8 @@ export default defineConfig([
     '**/.cache',
     '**/.next/',
     '**/.swc/',
+    '**/.wrangler/',
+    '**/.worker-test/',
     '**/.yarn/',
     '**/.vale',
     '**/node_modules',
