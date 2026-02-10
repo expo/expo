@@ -100,11 +100,11 @@ describe('build:ios command', () => {
       const { exitCode, stdout, stderr } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', `yes no | node ${CLI_PATH} build:android --repo MavenLocal`],
+        ['-c', `yes no | node ${CLI_PATH} build:ios`],
         { ignoreErrors: true }
       );
       expect(exitCode).not.toBe(0);
-      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
       expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
       expect(stderr).toContain(ERROR.MISSING_PREBUILD());
     });

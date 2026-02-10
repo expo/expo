@@ -1,6 +1,7 @@
-import { ERROR, TASKS_ANDROID } from '../../utils/output';
+import { BUILD, ERROR, TASKS_ANDROID } from '../../utils/output';
+import { CLI_PATH, executeCommandAsync } from '../../utils/process';
 import { createTempProject, cleanUpProject } from '../../utils/project';
-import { buildTestCommon, tasksAndroidTest } from '../../utils/test';
+import { buildTestCommon, expectPrebuild, tasksAndroidTest } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -84,6 +85,47 @@ describe('tasks:android command', () => {
         successExit: false,
         stderr: [ERROR.MISSING_ARGUMENT('l', 'library', 'library')],
       });
+    });
+
+    /**
+     * Command: npx expo-brownfield build:ios
+     * Expected behavior: The CLI should fail if prebuild is cancelled
+     */
+    it('should fail if prebuild is cancelled', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes no | node ${CLI_PATH} tasks:android`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
+    });
+
+    /**
+     * Command: npx expo-brownfield tasks:android
+     * Expected behavior: The CLI should validate and ask for prebuild
+     */
+    it('should validate and ask for prebuild', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes | node ${CLI_PATH} tasks:android`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(`Could not find brownfield library in the project`);
+
+      // The android directory should be created and not empty
+      await expectPrebuild(TEMP_DIR, 'android');
     });
   });
 

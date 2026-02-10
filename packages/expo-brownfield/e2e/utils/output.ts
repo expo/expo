@@ -89,8 +89,7 @@ export const ERROR = {
     `error: option '-${short}, --${full} <${argumentName}>' argument missing`,
   MISSING_PREBUILD: () => `Brownfield cannot be built without prebuilding the native project`,
   MISSING_TASKS_OR_REPOSITORIES: () => `Error: At least one task or repository must be specified`,
-  UNKNOWN_COMMAND: () => `Error: unknown command
-Supported commands: build:android, build:ios, tasks:android`,
+  UNKNOWN_COMMAND: (command: string) => `error: unknown command '${command}'`,
   UNKNOWN_OPTION: (option: string) => `error: unknown option '${option}'`,
 };
 
