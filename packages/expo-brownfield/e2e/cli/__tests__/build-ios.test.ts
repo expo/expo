@@ -3,7 +3,7 @@ import path from 'path';
 import { BUILD, BUILD_IOS, ERROR } from '../../utils/output';
 import { CLI_PATH, executeCommandAsync } from '../../utils/process';
 import { cleanUpProject, createTempProject } from '../../utils/project';
-import { buildIosTest, expectPrebuild } from '../../utils/test';
+import { buildIosTest, buildTestCommon, expectPrebuild } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -30,7 +30,7 @@ describe('build:ios command', () => {
      * Command: npx expo-brownfield build:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
-    it('should display help message for --help/-h option', async () => {
+    it('should display help message for --help/-h/help <command> option', async () => {
       // Help message display shouldn't require prebuild
       await buildIosTest({
         directory: TEMP_DIR,
@@ -40,6 +40,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR,
         args: ['-h'],
+        useSnapshot: true,
+      });
+      await buildTestCommon({
+        directory: TEMP_DIR,
+        command: 'help',
+        args: ['build:ios'],
         useSnapshot: true,
       });
     });
@@ -105,7 +111,7 @@ describe('build:ios command', () => {
       expect(exitCode).not.toBe(0);
       expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
       expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
-      expect(stderr).toContain(`Could not find iOS scheme in the project`);
+      expect(stderr).toContain(`Could not find brownfield iOS scheme`);
 
       // The android directory should be created and not empty
       await expectPrebuild(TEMP_DIR, 'ios');
@@ -149,7 +155,7 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run'],
-        stdout: [BUILD_IOS.CONFIGURATION(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME)],
+        stdout: BUILD_IOS.CONFIGURATION(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME),
       });
     });
 
@@ -173,7 +179,7 @@ describe('build:ios command', () => {
       const expectedOutput = [
         ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Debug'),
         ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Debug'),
-        BUILD.BUILD_TYPE_DEBUG,
+        BUILD_IOS.BUILD_TYPE_DEBUG,
       ];
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
@@ -196,7 +202,7 @@ describe('build:ios command', () => {
       const expectedOutput = [
         ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
         ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
-        BUILD.BUILD_TYPE_RELEASE,
+        BUILD_IOS.BUILD_TYPE_RELEASE,
       ];
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
@@ -217,7 +223,7 @@ describe('build:ios command', () => {
     it('--release option should take precedence over --debug option', async () => {
       const expectedOutput = [
         ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
-        BUILD.BUILD_TYPE_RELEASE,
+        BUILD_IOS.BUILD_TYPE_RELEASE,
       ];
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,

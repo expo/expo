@@ -8,5 +8,6 @@ const buildIos = async (command) => {
     await (0, utils_1.cleanUpArtifacts)(config);
     await (0, utils_1.buildFramework)(config);
     await (0, utils_1.createXcframework)(config);
+    await (0, utils_1.copyHermesXcframework)(config);
 };
 exports.default = buildIos;

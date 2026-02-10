@@ -7,9 +7,9 @@ exports.printIosConfig = exports.findWorkspace = exports.findScheme = exports.cr
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
-const spinner_1 = require("./spinner");
 const commands_1 = require("./commands");
 const error_1 = __importDefault(require("./error"));
+const spinner_1 = require("./spinner");
 const cleanUpArtifacts = async (config) => {
     if (config.dryRun) {
         console.log('Cleaning up previous artifacts');

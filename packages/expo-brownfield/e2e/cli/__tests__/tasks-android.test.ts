@@ -1,6 +1,6 @@
 import { ERROR, TASKS_ANDROID } from '../../utils/output';
 import { createTempProject, cleanUpProject } from '../../utils/project';
-import { tasksAndroidTest } from '../../utils/test';
+import { buildTestCommon, tasksAndroidTest } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -26,7 +26,7 @@ describe('tasks:android command', () => {
      * Command: npx expo-brownfield tasks:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
-    it('should display help message for --help/-h option', async () => {
+    it('should display help message for --help/-h/help <command> option', async () => {
       // Help message display shouldn't require prebuild
       await tasksAndroidTest({
         directory: TEMP_DIR,
@@ -36,6 +36,12 @@ describe('tasks:android command', () => {
       await tasksAndroidTest({
         directory: TEMP_DIR,
         args: ['-h'],
+        useSnapshot: true,
+      });
+      await buildTestCommon({
+        directory: TEMP_DIR,
+        command: 'help',
+        args: ['tasks:android'],
         useSnapshot: true,
       });
     });

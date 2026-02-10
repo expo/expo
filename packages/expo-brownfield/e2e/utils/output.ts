@@ -4,16 +4,13 @@ import path from 'node:path';
  * Help messages
  */
 export const HELP_MESSAGE = {
-  GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`,
+  GENERAL_HEADER: `Usage: expo-brownfield [options] [command]`,
 };
 
 /**
  * Common build outputs
  */
 export const BUILD = {
-  BUILD_TYPE_ALL: `- Build type: All`,
-  BUILD_TYPE_DEBUG: `- Build type: Debug`,
-  BUILD_TYPE_RELEASE: `- Build type: Release`,
   PREBUILD_PROMPT: `Do you want to run the prebuild now?`,
   PREBUILD_WARNING: (platform: 'android' | 'ios') =>
     `Prebuild for platform: ${platform} is missing`,
@@ -46,12 +43,17 @@ export const BUILD_IOS = {
     `-destination generic/platform=iphonesimulator`,
     `-configuration ${configuration}`,
   ],
-  CONFIGURATION: (projectRoot: string, workspace: string) => `Build configuration:
-- Verbose: false
-- Artifacts directory: ${projectRoot}/artifacts
-- Build type: Release
-- Xcode Scheme: testapp${workspace}brownfield
-- Xcode Workspace: ${projectRoot}/ios/testapp${workspace}.xcworkspace`,
+  BUILD_TYPE_DEBUG: `- Build configuration: Debug`,
+  BUILD_TYPE_RELEASE: `- Build configuration: Release`,
+  CONFIGURATION: (projectRoot: string, workspace: string) => [
+    `Resolved build configuration`,
+    `- Build configuration: Release`,
+    `- Scheme: testapp${workspace}brownfield`,
+    `- Workspace: ${projectRoot}/ios/testapp${workspace}.xcworkspace`,
+    `- Dry run: true`,
+    `- Verbose: false`,
+    `- Artifacts path: ${projectRoot}/artifacts`,
+  ],
   HERMES_COPYING: `Copying hermes XCFramework from Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework to`,
   PACKAGE_COMMAND: (projectRoot: string, workspace: string, configuration: 'Debug' | 'Release') => [
     `xcodebuild`,

@@ -1,7 +1,7 @@
 import { BUILD, BUILD_ANDROID, ERROR } from '../../utils/output';
 import { CLI_PATH, executeCommandAsync } from '../../utils/process';
 import { cleanUpProject, createTempProject } from '../../utils/project';
-import { buildAndroidTest, expectPrebuild } from '../../utils/test';
+import { buildAndroidTest, buildTestCommon, expectPrebuild } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -27,7 +27,7 @@ describe('build:android command', () => {
      * Command: npx expo-brownfield build:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
-    it('should display help message for --help/-h option', async () => {
+    it('should display help message for --help/-h/help <command> option', async () => {
       // Help message display shouldn't require prebuild
       await buildAndroidTest({
         directory: TEMP_DIR,
@@ -37,6 +37,12 @@ describe('build:android command', () => {
       await buildAndroidTest({
         directory: TEMP_DIR,
         args: ['-h'],
+        useSnapshot: true,
+      });
+      await buildTestCommon({
+        directory: TEMP_DIR,
+        command: 'help',
+        args: ['build:android'],
         useSnapshot: true,
       });
     });

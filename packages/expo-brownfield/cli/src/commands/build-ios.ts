@@ -4,6 +4,7 @@ import {
   buildFramework,
   cleanUpArtifacts,
   createXcframework,
+  copyHermesXcframework,
   printIosConfig,
   resolveBuildConfigIos,
   validatePrebuild,
@@ -18,6 +19,7 @@ const buildIos = async (command: Command) => {
   await cleanUpArtifacts(config);
   await buildFramework(config);
   await createXcframework(config);
+  await copyHermesXcframework(config);
 };
 
 export default buildIos;
