@@ -45,7 +45,6 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         # TODO(pmleczek): Update paths once we wrap up Maestro tests (remove expo-brownfield/**)
-        # TODO(pmleczek): Refine paths like expo/**, expo-router/**, etc. (?)
         # TODO(pmleczek): Add "- 'packages/expo-updates/**'" to the compilation test filters
         with:
           filters: |
@@ -66,16 +65,17 @@ jobs:
               - 'packages/expo-brownfield/package.json'
             compilation_test_android:
               - 'packages/expo-brownfield/**'
-              - 'packages/expo/**'
-              - 'packages/expo-router/**'
-              - 'packages/expo-dev-menu/**'
-              - 'packages/expo-manifests/**'
+              - 'packages/expo/android/src/main/jave/expo/modules/**'
+              - 'packages/expo/android/build.gradle"
+              - 'packages/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/**'
+              - 'packages/expo-dev-menu/android/build.gradle"
+              - 'packages/expo-manifests/android/src/main/java/expo/modules/manifests/**"
+              - 'packages/expo-manifests/android/build.gradle"
             compilation_test_ios:
               - 'packages/expo-brownfield/**'
-              - 'packages/expo/**'
-              - 'packages/expo-router/**'
-              - 'packages/expo-dev-menu/**'
-              - 'packages/expo-manifests/**'
+              - 'packages/expo/ios/AppDelegates/**'
+              - 'packages/expo-dev-menu/ios/**'
+              - 'packages/expo-manifests/ios/EXManifests/**'
 
   jest-ubuntu-cli:
     runs-on: ubuntu-24.04
