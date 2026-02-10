@@ -226,7 +226,6 @@ jobs:
         with:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator

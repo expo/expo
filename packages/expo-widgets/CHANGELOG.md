@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix: blank widget preview content ([#42857](https://github.com/expo/expo/pull/42857) by [@garygcchiu](https://github.com/garygcchiu)
+
 ### 💡 Others
 
 ## 55.0.0-alpha.6 — 2026-02-08

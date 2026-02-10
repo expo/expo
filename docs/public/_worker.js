@@ -11,7 +11,8 @@ export default {
       url.pathname = mdPath;
       const mdResponse = await env.ASSETS.fetch(new Request(url, request));
 
-      if (mdResponse.ok) {
+      const contentType = mdResponse.headers.get("Content-Type") || "";
+      if (mdResponse.ok && contentType.includes("text/markdown")) {
         return new Response(mdResponse.body, {
           status: 200,
           headers: {
@@ -19,6 +20,8 @@ export default {
           },
         });
       }
+
+      return new Response("Not found\n", { status: 404 });
     }
 
     return env.ASSETS.fetch(request);

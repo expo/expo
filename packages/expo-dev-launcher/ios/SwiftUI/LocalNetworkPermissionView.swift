@@ -53,7 +53,7 @@ struct LocalNetworkPermissionView: View {
     }
     .padding(.horizontal, 24)
     .padding(.vertical, 32)
-    .background(Color(.systemBackground))
+    .background(Color.expoSystemBackground)
     .onDisappear {
       timeoutTask?.cancel()
       timeoutTask = nil
@@ -106,9 +106,11 @@ struct LocalNetworkPermissionView: View {
   }
   
   private func openSettings() {
+    #if os(iOS)
     if let url = URL(string: UIApplication.openSettingsURLString) {
       UIApplication.shared.open(url)
     }
+    #endif
   }
   
   private func continueWithoutPermission() {
@@ -147,7 +149,7 @@ struct RequestPermissionView: View {
           .multilineTextAlignment(.center)
       }
       .padding()
-      .background(Color(.secondarySystemBackground))
+      .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)
       
       Button {

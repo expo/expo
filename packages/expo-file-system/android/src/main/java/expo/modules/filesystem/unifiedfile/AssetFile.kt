@@ -50,7 +50,7 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
       }
 
       val parentPath = currentPath.substringBeforeLast('/')
-      val parentUri = "asset://$parentPath".toUri()
+      val parentUri = "asset:///$parentPath".toUri()
 
       return AssetFile(context, parentUri)
     }
@@ -69,7 +69,10 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
 
   override fun listFilesAsUnified(): List<UnifiedFileInterface> {
     val list = context.assets.list(path)
-    return list?.map { name -> AssetFile(context, File(path, name).toUri()) as UnifiedFileInterface } ?: emptyList()
+    return list?.map { name ->
+      val childPath = if (path.isEmpty()) name else "$path/$name"
+      AssetFile(context, "asset:///$childPath".toUri()) as UnifiedFileInterface
+    } ?: emptyList()
   }
 
   override val type: String?
@@ -131,8 +134,8 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
     if (isDirectory()) {
       val assets = context.assets.list(path)
       assets?.forEach { assetName ->
-        val childUri = "$uri/$assetName".replace("//", "/").toUri()
-        val childFile = AssetFile(context, childUri)
+        val childPath = if (path.isEmpty()) assetName else "$path/$assetName"
+        val childFile = AssetFile(context, "asset:///$childPath".toUri())
         yieldAll(childFile.walkTopDown())
       }
     }
