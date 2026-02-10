@@ -9,10 +9,100 @@ import {
   cleanHtml,
   cleanMarkdown,
   convertHtmlToMarkdown,
+  convertMdxInstructionToMarkdown,
   extractFrontmatter,
   findMdxSource,
   stripCodeBlocks,
 } from './generate-markdown-pages-utils.ts';
+
+describe('convertMdxInstructionToMarkdown', () => {
+  it('converts scene JSX components and inlines helper MDX', () => {
+    const mdx = `
+import Helper from './_helper.mdx';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+<BuildEnvironmentSwitch />
+
+## Set up root
+
+<Helper />
+
+<Step label="1">
+<Terminal cmd={['$ npm install -g eas-cli', '', '# comment', 'echo done']} />
+</Step>
+
+<div className="wrapper">
+  <QRCodeReact value="https://example.dev/download" size={228} />
+</div>
+
+Press <kbd>Y</kbd> when prompted.
+
+<ContentSpotlight alt="ignored" src="/image.png" />
+`;
+
+    const helperMdx = `
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Collapsible } from '~/ui/components/Collapsible';
+
+<Tabs>
+  <Tab label="macOS">
+    <Collapsible summary="Troubleshooting">Helper details</Collapsible>
+  </Tab>
+  <Tab label="Windows">
+    Helper on Windows
+  </Tab>
+</Tabs>
+`;
+
+    const markdown = convertMdxInstructionToMarkdown(
+      mdx,
+      (importPath, fromPath) => {
+        if (importPath === './_helper.mdx' && fromPath === '/tmp/root.mdx') {
+          return { content: helperMdx, resolvedPath: '/tmp/_helper.mdx' };
+        }
+        return null;
+      },
+      { fromPath: '/tmp/root.mdx' }
+    );
+
+    expect(markdown).toContain('## Set up root');
+    expect(markdown).toContain('#### macOS');
+    expect(markdown).toContain('**Troubleshooting**');
+    expect(markdown).toContain('```sh\nnpm install -g eas-cli\necho done\n```');
+    expect(markdown).toContain('Download link: [https://example.dev/download]');
+    expect(markdown).toContain('Press <kbd>Y</kbd> when prompted.');
+    expect(markdown).not.toMatch(
+      /<BuildEnvironmentSwitch|<Terminal|<Step|<ContentSpotlight|import\s/
+    );
+    expect(markdown).not.toContain('# comment');
+  });
+
+  it('avoids recursive import loops', () => {
+    const files = new Map<string, string>([
+      ['/tmp/main.mdx', "import A from './A.mdx';\n\n<A />\n"],
+      ['/tmp/A.mdx', "import B from './B.mdx';\n\n## A heading\n\n<B />\n"],
+      ['/tmp/B.mdx', "import A from './A.mdx';\n\n## B heading\n\n<A />\n"],
+    ]);
+
+    const markdown = convertMdxInstructionToMarkdown(
+      files.get('/tmp/main.mdx')!,
+      (importPath, fromPath) => {
+        const parentDir = path.dirname(fromPath ?? '/tmp/main.mdx');
+        const resolvedPath = path.resolve(parentDir, importPath);
+        const content = files.get(resolvedPath);
+        if (!content) {
+          return null;
+        }
+        return { content, resolvedPath };
+      },
+      { fromPath: '/tmp/main.mdx' }
+    );
+
+    expect(markdown).toContain('## A heading\n\n## B heading');
+    expect(markdown).not.toMatch(/<A\s*\/>|<B\s*\/>/);
+  });
+});
 
 describe('cleanHtml', () => {
   it('removes buttons', () => {

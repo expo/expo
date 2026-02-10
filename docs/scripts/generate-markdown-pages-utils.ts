@@ -115,6 +115,166 @@ export function findMarkdownPages(dir: string): string[] {
   return results;
 }
 
+export interface ResolvedMdxImport {
+  content: string;
+  resolvedPath?: string;
+}
+
+type ResolveImportedMdx = (importPath: string, fromPath: string | null) => ResolvedMdxImport | null;
+
+function decodeJsStringLiteral(value: string): string {
+  return value
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '\r')
+    .replace(/\\t/g, '\t')
+    .replace(/\\\\/g, '\\')
+    .replace(/\\'/g, "'")
+    .replace(/\\"/g, '"');
+}
+
+function extractTerminalCommands(arrayLiteral: string): string[] {
+  const commands: string[] = [];
+  const strRegex = /'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)"/g;
+  let match: RegExpExecArray | null = null;
+
+  while ((match = strRegex.exec(arrayLiteral)) !== null) {
+    const raw = match[1] ?? match[2] ?? '';
+    const decoded = decodeJsStringLiteral(raw);
+    if (!decoded.trim()) {
+      continue;
+    }
+    commands.push(decoded);
+  }
+
+  return commands;
+}
+
+/**
+ * Convert raw MDX instruction content to markdown.
+ * Handles JSX patterns used by set-up-your-environment instruction scenes.
+ */
+export function convertMdxInstructionToMarkdown(
+  mdxContent: string,
+  resolveImportedMdx: ResolveImportedMdx,
+  options: { fromPath?: string | null; visitedPaths?: Set<string> } = {}
+): string {
+  let content = mdxContent;
+  const fromPath = options.fromPath ?? null;
+  const visitedPaths = options.visitedPaths ?? new Set<string>();
+
+  if (fromPath) {
+    visitedPaths.add(fromPath);
+  }
+
+  const importMap = new Map<string, string>();
+  const importRegex = /^import\s+(\w+)\s+from\s+["'](\.\.?\/[^"']+\.mdx)["']\s*;?\s*$/gm;
+  let importMatch: RegExpExecArray | null = null;
+
+  while ((importMatch = importRegex.exec(content)) !== null) {
+    const componentName = importMatch[1];
+    const importPath = importMatch[2];
+    const resolvedImport = resolveImportedMdx(importPath, fromPath);
+    if (!resolvedImport) {
+      continue;
+    }
+
+    if (resolvedImport.resolvedPath && visitedPaths.has(resolvedImport.resolvedPath)) {
+      continue;
+    }
+
+    const nestedVisited = new Set(visitedPaths);
+    if (resolvedImport.resolvedPath) {
+      nestedVisited.add(resolvedImport.resolvedPath);
+    }
+
+    const inlinedMarkdown = convertMdxInstructionToMarkdown(
+      resolvedImport.content,
+      resolveImportedMdx,
+      {
+        fromPath: resolvedImport.resolvedPath ?? null,
+        visitedPaths: nestedVisited,
+      }
+    );
+
+    importMap.set(componentName, inlinedMarkdown);
+  }
+
+  content = content.replace(/^import\s+.*$/gm, '');
+
+  for (const [name, resolved] of importMap) {
+    content = content.replace(new RegExp(`<${name}\\s*/>`, 'g'), `\n${resolved}\n`);
+    content = content.replace(
+      new RegExp(`<${name}[^>]*>[\\s\\S]*?</${name}>`, 'g'),
+      `\n${resolved}\n`
+    );
+  }
+
+  content = content.replace(/<BuildEnvironmentSwitch\s*\/>/g, '');
+  content = content.replace(/<BuildEnvironmentSwitch[^>]*>[\S\s]*?<\/BuildEnvironmentSwitch>/g, '');
+
+  content = content.replace(/<Terminal\b([\S\s]*?)\/>/g, (_match, attrs: string) => {
+    const cmdMatch = attrs.match(/cmd={([\S\s]*?)}\s*(?=\w+=|$)/);
+    if (!cmdMatch) {
+      return '';
+    }
+
+    const lines = extractTerminalCommands(cmdMatch[1])
+      .map(line => line.replace(/^\$\s*/, '').trimEnd())
+      .filter(line => line.length > 0 && !line.startsWith('#'));
+
+    if (lines.length === 0) {
+      return '';
+    }
+
+    return `\n\`\`\`sh\n${lines.join('\n')}\n\`\`\`\n`;
+  });
+
+  content = content.replace(/<Step\s+label=(?:"[^"]*"|'[^']*')\s*>/g, '');
+  content = content.replace(/<\/Step>/g, '');
+
+  content = content.replace(/<ContentSpotlight[\S\s]*?\/>/g, '');
+  content = content.replace(/<ContentSpotlight[\S\s]*?<\/ContentSpotlight>/g, '');
+
+  content = content.replace(/<\/?Tabs[^>]*>/g, '');
+  content = content.replace(
+    /<Tab\s+label=(?:"([^"]*)"|'([^']*)')\s*>/g,
+    (_match, doubleQuoted: string | undefined, singleQuoted: string | undefined) =>
+      `\n#### ${(doubleQuoted ?? singleQuoted ?? '').trim()}\n`
+  );
+  content = content.replace(/<\/Tab>/g, '');
+
+  content = content.replace(
+    /<Collapsible\s+summary=(?:"([^"]*)"|'([^']*)')\s*>/g,
+    (_match, doubleQuoted: string | undefined, singleQuoted: string | undefined) =>
+      `\n**${(doubleQuoted ?? singleQuoted ?? '').trim()}**\n`
+  );
+  content = content.replace(/<\/Collapsible>/g, '');
+
+  content = content.replace(
+    /<QRCodeReact[\S\s]*?value=(?:"([^"]*)"|'([^']*)')[\S\s]*?\/>/g,
+    (_match, doubleQuoted: string | undefined, singleQuoted: string | undefined) => {
+      const url = (doubleQuoted ?? singleQuoted ?? '').trim();
+      if (!url) {
+        return '';
+      }
+      return `Download link: [${url}](${url})`;
+    }
+  );
+
+  content = content.replace(/<div[^>]*>/g, '');
+  content = content.replace(/<\/div>/g, '');
+
+  content = content.replace(/<\/?[A-Z][^>]*>/g, '');
+  content = content.replace(/{\/\*[\S\s]*?\*\/}/g, '');
+
+  content = content.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+
+  content = content.replace(/\n{3,}/g, '\n\n');
+  content = cleanMarkdown(content);
+
+  return content.trim();
+}
+
 /**
  * Clean up the HTML before conversion: remove non-content elements,
  * normalize terminal blocks, and strip decorative artifacts.
