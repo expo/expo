@@ -58,6 +58,9 @@ jobs:
       - name: 🧪 Run Docs tests
         working-directory: docs
         run: yarn test
+      - name: 🧪 Test Cloudflare worker and routes
+        working-directory: docs
+        run: yarn test:worker
       - name: 🚨 Lint Docs website code
         working-directory: docs
         env:

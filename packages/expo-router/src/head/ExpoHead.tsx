@@ -1,7 +1,7 @@
-import { useIsFocused } from '@react-navigation/native';
 import React from 'react';
 
 import { Helmet, HelmetProvider } from '../../vendor/react-helmet-async/lib';
+import { useIsFocused } from '../useIsFocused';
 
 function FocusedHelmet({ children }: { children?: React.ReactNode }) {
   return <Helmet>{children}</Helmet>;

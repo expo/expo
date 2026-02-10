@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Tabs = exports.Stack = exports.unstable_navigationEvents = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.usePreventZoomTransitionDismissal = exports.router = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.Tabs = exports.Stack = exports.unstable_navigationEvents = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useIsFocused = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.usePreventZoomTransitionDismissal = exports.router = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -82,6 +82,8 @@ var useNavigation_1 = require("./useNavigation");
 Object.defineProperty(exports, "useNavigation", { enumerable: true, get: function () { return useNavigation_1.useNavigation; } });
 var useFocusEffect_1 = require("./useFocusEffect");
 Object.defineProperty(exports, "useFocusEffect", { enumerable: true, get: function () { return useFocusEffect_1.useFocusEffect; } });
+var useIsFocused_1 = require("./useIsFocused");
+Object.defineProperty(exports, "useIsFocused", { enumerable: true, get: function () { return useIsFocused_1.useIsFocused; } });
 __exportStar(require("./color"), exports);
 var primitives_1 = require("./primitives");
 Object.defineProperty(exports, "Badge", { enumerable: true, get: function () { return primitives_1.Badge; } });

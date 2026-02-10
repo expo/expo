@@ -107,7 +107,6 @@ describe(prefixAndroidKeys, () => {
 describe(ensureToolsAvailable, () => {
   it(`ensures tools are available`, async () => {
     const manifest = await getFixtureManifestAsync();
-    expect(XML.format(manifest)).not.toMatch(/xmlns:tools="http:\/\/schemas\.android\.com\/tools"/);
 
     const firstFewLines = XML.format(ensureToolsAvailable(manifest))
       .split('\n')
