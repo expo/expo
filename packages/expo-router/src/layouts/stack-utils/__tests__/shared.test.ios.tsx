@@ -1,4 +1,7 @@
-import { convertStackHeaderSharedPropsToRNSharedHeaderItem } from '../toolbar/shared';
+import {
+  convertStackHeaderSharedPropsToRNSharedHeaderItem,
+  extractXcassetName,
+} from '../toolbar/shared';
 import {
   StackToolbarLabel,
   StackToolbarIcon,
@@ -101,6 +104,16 @@ describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
       const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({});
       expect(result.icon).toBeUndefined();
     });
+
+    it('extracts xcasset icon from StackToolbarIcon child with xcasset prop', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" />,
+      });
+      expect(result.icon).toEqual({
+        type: 'xcasset',
+        name: 'custom-icon',
+      });
+    });
   });
 
   describe('iconRenderingMode', () => {
@@ -177,6 +190,59 @@ describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
         source: imageSource,
         tinted: false,
       });
+    });
+  });
+
+  describe('xcasset iconRenderingMode warning', () => {
+    let spy: jest.SpyInstance;
+    beforeEach(() => {
+      spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+    afterEach(() => {
+      spy.mockRestore();
+    });
+
+    it('warns when iconRenderingMode=template with xcasset icon', () => {
+      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" />,
+        iconRenderingMode: 'template',
+      });
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining('iconRenderingMode has no effect on xcasset icons')
+      );
+    });
+
+    it('warns when iconRenderingMode=original with xcasset icon', () => {
+      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" />,
+        iconRenderingMode: 'original',
+      });
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining('iconRenderingMode has no effect on xcasset icons')
+      );
+    });
+
+    it('does not warn when iconRenderingMode is undefined with xcasset icon', () => {
+      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" />,
+      });
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('does not warn when iconRenderingMode is set with src icon', () => {
+      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon src={{ uri: 'https://example.com/icon.png' }} />,
+        iconRenderingMode: 'template',
+      });
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('does not warn when iconRenderingMode is set with sf icon', () => {
+      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon sf="star.fill" />,
+        iconRenderingMode: 'template',
+      });
+      expect(spy).not.toHaveBeenCalled();
     });
   });
 
@@ -335,5 +401,57 @@ describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
         disabled: false,
       });
     });
+  });
+});
+
+describe(extractXcassetName, () => {
+  it('returns xcasset name from StackToolbarIcon child with xcasset prop', () => {
+    const result = extractXcassetName({
+      children: <StackToolbarIcon xcasset="custom-icon" />,
+    });
+    expect(result).toBe('custom-icon');
+  });
+
+  it('returns undefined for StackToolbarIcon child with sf prop', () => {
+    const result = extractXcassetName({
+      children: <StackToolbarIcon sf="star.fill" />,
+    });
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined for StackToolbarIcon child with src prop', () => {
+    const result = extractXcassetName({
+      children: <StackToolbarIcon src={{ uri: 'https://example.com/icon.png' }} />,
+    });
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when no children provided', () => {
+    const result = extractXcassetName({});
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when children have no StackToolbarIcon', () => {
+    const result = extractXcassetName({
+      children: <StackToolbarLabel>Label</StackToolbarLabel>,
+    });
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined for string children', () => {
+    const result = extractXcassetName({
+      children: 'Just a string',
+    });
+    expect(result).toBeUndefined();
+  });
+
+  it('extracts xcasset from mixed children', () => {
+    const result = extractXcassetName({
+      children: [
+        <StackToolbarLabel key="label">Label</StackToolbarLabel>,
+        <StackToolbarIcon key="icon" xcasset="my-icon" />,
+      ],
+    });
+    expect(result).toBe('my-icon');
   });
 });

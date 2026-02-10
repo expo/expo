@@ -91,6 +91,16 @@ describe(convertStackToolbarButtonPropsToRNHeaderItem, () => {
     expect(result?.badge).toEqual({ value: '5' });
   });
 
+  it('extracts xcasset icon from StackToolbarIcon child', () => {
+    const result = convertStackToolbarButtonPropsToRNHeaderItem({
+      children: <StackToolbarIcon xcasset="custom-icon" />,
+    });
+    expect(result?.icon).toEqual({
+      type: 'xcasset',
+      name: 'custom-icon',
+    });
+  });
+
   it('handles all children types together', () => {
     const result = convertStackToolbarButtonPropsToRNHeaderItem({
       children: [

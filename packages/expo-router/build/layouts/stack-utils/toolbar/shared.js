@@ -1,10 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.extractXcassetName = extractXcassetName;
 exports.convertStackHeaderSharedPropsToRNSharedHeaderItem = convertStackHeaderSharedPropsToRNSharedHeaderItem;
 const react_1 = require("react");
 const toolbar_primitives_1 = require("./toolbar-primitives");
 const children_1 = require("../../../utils/children");
 const font_1 = require("../../../utils/font");
+/** @internal */
+function extractXcassetName(props) {
+    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+    if (iconComponentProps && 'xcasset' in iconComponentProps) {
+        return iconComponentProps.xcasset;
+    }
+    return undefined;
+}
 function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
     const { children, style, separateBackground, icon, ...rest } = props;
     const stringChildren = react_1.Children.toArray(children)
@@ -32,6 +41,17 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
                 type: 'image',
                 source: iconComponentProps.src,
                 tinted: effectiveRenderingMode === 'template',
+            };
+        }
+        if ('xcasset' in iconComponentProps) {
+            if (process.env.NODE_ENV !== 'production' && props.iconRenderingMode) {
+                console.warn('iconRenderingMode has no effect on xcasset icons in left and right toolbar placements. The rendering mode for xcasset icons is controlled by the "Render As" setting in the Xcode asset catalog.');
+            }
+            // Type assertion needed: xcasset is supported by react-native-screens
+            // but not yet typed in @react-navigation/native-stack's PlatformIconIOS
+            return {
+                type: 'xcasset',
+                name: iconComponentProps.xcasset,
             };
         }
         return {

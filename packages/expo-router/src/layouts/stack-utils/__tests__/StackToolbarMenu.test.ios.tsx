@@ -7,7 +7,11 @@ import {
   convertStackToolbarMenuActionPropsToRNHeaderItem,
 } from '../toolbar/StackToolbarMenu';
 import { ToolbarPlacementContext, type ToolbarPlacement } from '../toolbar/context';
-import { StackToolbarLabel, StackToolbarBadge } from '../toolbar/toolbar-primitives';
+import {
+  StackToolbarIcon,
+  StackToolbarLabel,
+  StackToolbarBadge,
+} from '../toolbar/toolbar-primitives';
 
 jest.mock('../../../link/preview/native', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -415,6 +419,21 @@ describe('submenu conversion', () => {
       convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
           <StackToolbarMenu title="Submenu" icon={{ uri: 'https://example.com/icon.png' }}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
+      );
+    });
+
+    it('warns for xcasset icons in submenu', () => {
+      convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu">
+            <StackToolbarIcon xcasset="custom-icon" />
             <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
           </StackToolbarMenu>
         ),

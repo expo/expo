@@ -32,6 +32,15 @@ export type StackToolbarIconProps =
     }
   | {
       sf: SFSymbol;
+    }
+  | {
+      /**
+       * Name of an image in your Xcode asset catalog (`.xcassets`).
+       * The rendering mode is controlled by the asset catalog's "Render As" setting.
+       *
+       * @platform ios
+       */
+      xcasset: string;
     };
 
 export const StackToolbarIcon: React.FC<StackToolbarIconProps> = Icon;
