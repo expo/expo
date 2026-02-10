@@ -7,7 +7,6 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
-import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import { type RoutesManifest } from 'expo-server/private';
@@ -256,15 +255,15 @@ export async function exportFromServerAsync(
 
         if (loaderResponse !== undefined) {
           const data = await loaderResponse.json();
-          const loaderPath = getLoaderModulePath(normalizedPathname);
-          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          const contextKeyPath = getContextKey(route.contextKey);
+          const fileSystemPath = `_expo/loaders${contextKeyPath}`;
           files.set(fileSystemPath, {
             contents: JSON.stringify(data, null, 2),
             targetDomain: 'client',
-            loaderId: normalizedPathname,
+            loaderId: contextKeyPath,
           });
 
-          renderOpts = { loader: { data, contextKey: getContextKey(route.contextKey) } };
+          renderOpts = { loader: { data, contextKey: contextKeyPath } };
         }
       }
 
