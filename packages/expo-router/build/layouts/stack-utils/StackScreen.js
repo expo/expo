@@ -55,7 +55,10 @@ function extractBottomToolbars(children) {
  */
 exports.StackScreen = Object.assign(function StackScreen({ children, options, ...rest }) {
     // This component will only render when used inside a page.
-    const updatedOptions = (0, react_1.useMemo)(() => appendScreenStackPropsToOptions(options ?? {}, {
+    if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
+        console.warn('Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.');
+    }
+    const updatedOptions = (0, react_1.useMemo)(() => appendScreenStackPropsToOptions(typeof options === 'function' ? {} : (options ?? {}), {
         children,
     }), [options, children]);
     const bottomToolbars = (0, react_1.useMemo)(() => extractBottomToolbars(children), [children]);

@@ -74,7 +74,7 @@ export async function getCustomTabsSupportingBrowsersAsync(): Promise<WebBrowser
 
 // @needsAudit
 /**
- * This method calls `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long))
+ * This method calls the `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long))
  * for specified package.
  *
  * @param browserPackage Package of browser to be warmed up. If not set, preferred browser will be warmed.

@@ -61,7 +61,8 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
         '[&_p]:!mb-0',
         className
       )}
-      data-testid="callout-container">
+      data-testid="callout-container"
+      data-md="callout">
       <Icon
         className={mergeClasses(
           'mt-1 select-none',

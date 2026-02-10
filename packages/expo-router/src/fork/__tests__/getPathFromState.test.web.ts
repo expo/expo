@@ -1,4 +1,4 @@
-import { getPathFromState } from '../getPathFromState';
+import { getPathFromState, type Options } from '../getPathFromState';
 
 it(`handles nested params.screen/params.params for dynamic routes`, () => {
   const state = {
@@ -31,7 +31,7 @@ it(`handles nested params.screen/params.params for dynamic routes`, () => {
     },
   };
 
-  expect(getPathFromState(state, config)).toBe('/foo/bar');
+  expect(getPathFromState(state, config as Options<object>)).toBe('/foo/bar');
 });
 
 describe('hash support', () => {

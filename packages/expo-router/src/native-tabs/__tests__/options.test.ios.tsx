@@ -8,13 +8,7 @@ import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../NativeTabsView';
-import {
-  type DrawableIcon,
-  type MaterialIcon,
-  type NativeTabsTriggerIconProps,
-  type SFSymbolIcon,
-  type SrcIcon,
-} from '../common/elements';
+import { type NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
@@ -323,6 +317,88 @@ describe('Icons', () => {
     } as NativeTabOptions);
     expect(call.tabs[1].options).toMatchObject({
       selectedIconColor: 'red',
+    } as NativeTabOptions);
+  });
+
+  it('when using Icon with xcasset string, values are passed correctly', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset="custom-icon" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: { xcasset: 'custom-icon' },
+      selectedIcon: undefined,
+    } as NativeTabOptions);
+  });
+
+  it('when using Icon with xcasset object, values are passed correctly', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset={{ default: 'home-outline', selected: 'home-filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: { xcasset: 'home-outline' },
+      selectedIcon: { xcasset: 'home-filled' },
+    } as NativeTabOptions);
+  });
+
+  it('when using Icon with xcasset selected-only, values are passed correctly', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset={{ selected: 'home-filled' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: undefined,
+      selectedIcon: { xcasset: 'home-filled' },
+    } as NativeTabOptions);
+  });
+
+  it('sf takes precedence over xcasset on iOS', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon sf="star" xcasset="custom-icon" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: { sf: 'star' },
+      selectedIcon: undefined,
     } as NativeTabOptions);
   });
 });
@@ -965,6 +1041,15 @@ describe(appendIconOptions, () => {
         src: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
       },
       { icon: { sf: '0.circle' }, selectedIcon: undefined },
+    ],
+    [{ xcasset: 'custom-icon' }, { icon: { xcasset: 'custom-icon' }, selectedIcon: undefined }],
+    [
+      { xcasset: { default: 'home-outline', selected: 'home-filled' } },
+      { icon: { xcasset: 'home-outline' }, selectedIcon: { xcasset: 'home-filled' } },
+    ],
+    [
+      { xcasset: { selected: 'home-filled' } },
+      { icon: undefined, selectedIcon: { xcasset: 'home-filled' } },
     ],
   ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',

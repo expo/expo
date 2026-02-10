@@ -5,12 +5,26 @@ public struct WidgetsTimelineProvider: TimelineProvider {
     WidgetsTimelineEntry(date: Date(), source: name, node: nil)
   }
 
-  public func getSnapshot(in context: Context, completion: @escaping @Sendable (WidgetsTimelineEntry) -> Void) {
-    completion(WidgetsTimelineEntry(date: Date(), source: name, node: nil))
+  public func getSnapshot(
+    in context: Context, completion: @escaping @Sendable (WidgetsTimelineEntry) -> Void
+  ) {
+    let groupIdentifier =
+      Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
+    guard let groupIdentifier else {
+      completion(WidgetsTimelineEntry(date: Date(), source: name, node: nil))
+      return
+    }
+
+    let entries = parseTimeline(identifier: groupIdentifier, name: name, family: context.family)
+    completion(entries.first ?? WidgetsTimelineEntry(date: Date(), source: name, node: nil))
   }
 
-  public func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<WidgetsTimelineEntry>) -> Void) {
-    let groupIdentifier = Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
+  public func getTimeline(
+    in context: Context,
+    completion: @escaping @Sendable (Timeline<WidgetsTimelineEntry>) -> Void
+  ) {
+    let groupIdentifier =
+      Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
     guard let groupIdentifier else {
       fatalError("Could not get the app group identifier from Info.plist")
     }

@@ -19,6 +19,7 @@ const Index = () => {
         title="Communication"
         description="Bi-directional communication API"
         onPress={() => navigateToScreen('communication')}
+        testID="apis-communication"
       />
       <ActionButton
         type="link"
@@ -26,6 +27,7 @@ const Index = () => {
         title="Navigation"
         description="Navigation API"
         onPress={() => navigateToScreen('navigation')}
+        testID="apis-navigation"
       />
     </SafeAreaView>
   );

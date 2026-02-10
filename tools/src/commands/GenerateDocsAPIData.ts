@@ -42,6 +42,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/label': ['swift-ui/Label/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/list': ['swift-ui/List/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],

@@ -1,6 +1,6 @@
 {
   "name": "expo-cellular",
-  "version": "55.0.4",
+  "version": "55.0.5",
   "description": "Provides information about the user’s cellular service provider",
   "main": "build/Cellular.js",
   "types": "build/Cellular.d.ts",

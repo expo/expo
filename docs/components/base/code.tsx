@@ -105,6 +105,7 @@ export function Code({ className, children, title }: CodeProps) {
       <SnippetContent className="p-0">
         <pre
           ref={contentRef}
+          data-md-lang={language}
           style={{
             maxHeight: collapseBound,
           }}
@@ -123,6 +124,7 @@ export function Code({ className, children, title }: CodeProps) {
   ) : (
     <pre
       ref={contentRef}
+      data-md-lang={language}
       style={{
         maxHeight: collapseBound,
       }}

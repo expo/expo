@@ -1,5 +1,3 @@
-import { ExpoGlobal } from 'expo-modules-core';
-
 import {
   extractExpoPathFromURL,
   parsePathAndParamsFromExpoGoLink,
@@ -9,9 +7,10 @@ import {
 describe(extractExpoPathFromURL, () => {
   beforeEach(() => {
     if (typeof expo === 'undefined') {
+      // Partial mock of ExpoGlobal
       globalThis.expo = {
         modules: {},
-      } as ExpoGlobal;
+      } as unknown as typeof expo;
     }
     delete expo.modules.ExpoGo;
   });

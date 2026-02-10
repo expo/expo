@@ -10,9 +10,23 @@
 
 ### 💡 Others
 
+- Bump to `dnssd-advertise@^1.1.3` ([#42928](https://github.com/expo/expo/pull/42928) by [@kitten](https://github.com/kitten))
+- Add more compact QR code rendering for terminals that support it, unless `COLOR=0` is set or TTY is non-interactive ([#42834](https://github.com/expo/expo/pull/42834) by [@kitten](https://github.com/kitten))
+- Collapse usage guide on `expo start` if space is insufficient ([#42835](https://github.com/expo/expo/pull/42835) by [@kitten](https://gthub.com/kitten))
+
+## 55.0.7 — 2026-02-08
+
+### 🎉 New features
+
+- Add `--browser` option to `expo login`. ([#42614](https://github.com/expo/expo/pull/42614) by [@byronkarlen](https://github.com/byronkarlen))
+
+### 💡 Others
+
 - delete old expo go artifacts to save disk space ([#42860](https://github.com/expo/expo/pull/42860) by [@vonovak](https://github.com/vonovak))
 - Bump to `fetch-nodeshim@^0.4.5` ([#42896](https://github.com/expo/expo/pull/42896) by [@kitten](https://github.com/kitten))
 - Enable `experiments.autolinkingModuleResolution` by default for workspaces/monorepos ([#40606](https://github.com/expo/expo/pull/40606) by [@kitten](https://github.com/kitten))
+- Add flag to preconfigure other flags for headless environment ([#42909](https://github.com/expo/expo/pull/42909) by [@kitten](https://github.com/kitten))
+- (Beta) Enable Bonjour by default ([#42929](https://github.com/expo/expo/pull/42929) by [@kitten](https://github.com/kitten))
 
 ## 55.0.6 — 2026-02-03
 

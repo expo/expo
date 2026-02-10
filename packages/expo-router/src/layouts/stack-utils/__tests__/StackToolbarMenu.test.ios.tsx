@@ -6,7 +6,7 @@ import {
   convertStackToolbarMenuPropsToRNHeaderItem,
   convertStackToolbarMenuActionPropsToRNHeaderItem,
 } from '../toolbar/StackToolbarMenu';
-import { ToolbarPlacementContext } from '../toolbar/context';
+import { ToolbarPlacementContext, type ToolbarPlacement } from '../toolbar/context';
 import { StackToolbarLabel, StackToolbarBadge } from '../toolbar/toolbar-primitives';
 
 jest.mock('../../../link/preview/native', () => {
@@ -166,12 +166,11 @@ describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
     expect(result.disabled).toBe(disabled);
   });
 
-  it('sets subtitle prop', () => {
-    // TODO(@ubax): investigate why subtitle is missing in types
+  it('sets description prop', () => {
     const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
       subtitle: 'Additional info',
     });
-    expect(result.subtitle).toBe('Additional info');
+    expect(result.description).toBe('Additional info');
   });
 
   it('sets discoverabilityLabel prop', () => {
@@ -450,7 +449,8 @@ describe('StackToolbarMenu component', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
       expect(() => {
         render(
-          <ToolbarPlacementContext.Provider value={placement as any}>
+          // Intentionally passing invalid placement as well
+          <ToolbarPlacementContext.Provider value={placement as ToolbarPlacement}>
             <StackToolbarMenu icon="ellipsis.circle">
               <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
             </StackToolbarMenu>
@@ -578,7 +578,8 @@ describe('StackToolbarMenuAction component', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
       expect(() => {
         render(
-          <ToolbarPlacementContext.Provider value={placement as any}>
+          // Intentionally passing invalid placement as well
+          <ToolbarPlacementContext.Provider value={placement as ToolbarPlacement}>
             <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
           </ToolbarPlacementContext.Provider>
         );
