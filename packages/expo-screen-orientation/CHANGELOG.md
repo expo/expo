@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] [New Architecture] Restore orientationMask after app transition from background to foreground ([]() by [@LongyuW](https://github.com/LongyuW))
+
 ### 💡 Others
 
 ## 8.1.7 — 2025-06-04
