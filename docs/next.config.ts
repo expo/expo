@@ -154,7 +154,7 @@ const nextConfig: NextConfig = {
         ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
-      pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories],
+      pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories, 'internal'],
     });
     event(`Generated sitemap with ${sitemapEntries.length} entries`);
 
