@@ -40,9 +40,9 @@ function getInitMetadata(): InitMetadata {
 }
 
 /** Activates the event logger based on the input env var
- * @param env - The target to write the logs to; defaults to `$EVENT_LOG`
+ * @param env - The target to write the logs to; defaults to `$LOG_EVENTS`
  */
-export function installEventLogger(env = process.env.EVENT_LOG) {
+export function installEventLogger(env = process.env.LOG_EVENTS) {
   const eventLogDestination = parseLogTarget(env);
   if (eventLogDestination) {
     if (eventLogDestination === 1) {
@@ -70,7 +70,7 @@ export const isEventLoggerActive = () => !!logStream?.writable;
  */
 export const shouldReduceLogs = () => !!logStream && env.EXPO_UNSTABLE_HEADLESS;
 
-/** Used to create an event logger for structured JSONL logs activated with the `EVENT_LOG` environment variable.
+/** Used to create an event logger for structured JSONL logs activated with the `LOG_EVENTS` environment variable.
  *
  * @remarks
  * Structured logs are streamed to a JSONL output file or file descriptor, and are meant for automated tooling
