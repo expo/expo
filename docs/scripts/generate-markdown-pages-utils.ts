@@ -25,8 +25,7 @@ export function findMdxSource(htmlPath: string, outDir: string, pagesDir: string
 
 /**
  * Extract the raw YAML frontmatter block (including --- delimiters) from an MDX file.
- * Strips lines with empty values (e.g. `modificationDate:` injected by append-dates.js
- * with no value in shallow CI clones).
+ * Keeps only non-empty `modificationDate` and drops other frontmatter fields.
  * Returns the frontmatter string with trailing newline, or null if no frontmatter found.
  */
 export function extractFrontmatter(mdxPath: string): string | null {
@@ -37,12 +36,12 @@ export function extractFrontmatter(mdxPath: string): string | null {
   }
   const filtered = match[1]
     .split('\n')
-    .filter(line => !/^\w+:\s*$/.test(line))
+    .filter(line => /^modificationDate:\s+\S/.test(line))
     .join('\n');
   if (!filtered.trim()) {
     return null;
   }
-  return '---\n' + filtered + '---\n';
+  return '---\n' + filtered + '\n---\n';
 }
 
 function createTurndownService(): TurndownService {

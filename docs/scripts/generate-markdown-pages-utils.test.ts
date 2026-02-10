@@ -1262,6 +1262,7 @@ describe('extractFrontmatter', () => {
       path.join(tmpDir, 'full.mdx'),
       [
         '---',
+        'modificationDate: July 08, 2025',
         'title: Camera',
         'description: A camera component.',
         "platforms: ['android', 'ios']",
@@ -1294,12 +1295,13 @@ describe('extractFrontmatter', () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  it('extracts full frontmatter including delimiters', () => {
+  it('extracts only modificationDate including delimiters', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'full.mdx'));
     expect(result).not.toBeNull();
-    expect(result).toContain('title: Camera');
-    expect(result).toContain('description: A camera component.');
-    expect(result).toContain('platforms:');
+    expect(result).toContain('modificationDate: July 08, 2025');
+    expect(result).not.toContain('title: Camera');
+    expect(result).not.toContain('description: A camera component.');
+    expect(result).not.toContain('platforms:');
     // Should include --- delimiters
     expect(result).toMatch(/^---\n/);
     expect(result).toMatch(/\n---\n$/);
@@ -1307,19 +1309,14 @@ describe('extractFrontmatter', () => {
     expect(result).not.toContain('import');
   });
 
-  it('extracts minimal frontmatter', () => {
+  it('returns null when frontmatter has no modificationDate', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'minimal.mdx'));
-    expect(result).not.toBeNull();
-    expect(result).toContain('title: Minimal');
-    expect(result).not.toContain('# Minimal');
+    expect(result).toBeNull();
   });
 
-  it('strips lines with empty values', () => {
+  it('returns null when modificationDate is empty', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'empty-values.mdx'));
-    expect(result).not.toBeNull();
-    expect(result).toContain('title: Camera');
-    expect(result).toContain('description: A camera.');
-    expect(result).not.toContain('modificationDate');
+    expect(result).toBeNull();
   });
 
   it('returns null when all frontmatter fields are empty', () => {
