@@ -373,6 +373,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     GlobalScope.launch(Dispatchers.Main) {
       firstFrameEventGenerator.release()
       player.removeListener(playerListener)
+      player.removeAnalyticsListener(analyticsListener)
       player.release()
     }
     uncommittedSource = null
