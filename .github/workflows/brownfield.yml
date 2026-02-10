@@ -1,4 +1,4 @@
-name: Brownfield Tests
+name: Expo Brownfield Tests
 
 on:
   workflow_dispatch: {}
@@ -260,6 +260,8 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
       - name: 🤖 Build and publish Android brownfield artifacts
         run: |
           npx expo prebuild --clean -p android
@@ -284,8 +286,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
@@ -302,6 +304,8 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
       - name: 🍏 Build iOS artifacts
         run: |
           npx expo prebuild --clean --platform ios
