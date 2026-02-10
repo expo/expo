@@ -64,7 +64,7 @@ export async function getDirectoryOfProcessById(pid: number): Promise<string | n
       .split('\n')
       .find((output) => output.startsWith('n'))
       ?.slice(1);
-    return processCWD && path.isAbsolute(processCWD) ? processCWD : null;
+    return processCWD && path.isAbsolute(processCWD) ? path.normalize(processCWD) : null;
   } catch {
     return null;
   }
