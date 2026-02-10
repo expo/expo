@@ -82,7 +82,11 @@ export function createEnvironment(input: EnvironmentInput) {
     return ssrRenderer;
   }
 
-  async function executeLoader(request: Request, route: Route): Promise<unknown> {
+  async function executeLoader(
+    request: Request,
+    route: Route,
+    params: Record<string, string>
+  ): Promise<unknown> {
     if (!route.loader) {
       return undefined;
     }
@@ -92,7 +96,6 @@ export function createEnvironment(input: EnvironmentInput) {
       throw new Error(`Loader module not found at: ${route.loader}`);
     }
 
-    const params = parseParams(request, route);
     return loaderModule.loader(new ImmutableRequest(request), params);
   }
 
@@ -109,11 +112,14 @@ export function createEnvironment(input: EnvironmentInput) {
 
         try {
           if (route.loader) {
-            const result = await executeLoader(request, route);
-            const data = isResponse(result) ? await result.json() : result;
             const params = parseParams(request, route);
+            const result = await executeLoader(request, route, params);
+            const data = isResponse(result) ? await result.json() : result;
             renderOptions = {
-              loader: { data: data ?? null, contextKey: resolveLoaderContextKey(route.page, params) },
+              loader: {
+                data: data ?? null,
+                contextKey: resolveLoaderContextKey(route.page, params),
+              },
             };
           }
           return await renderer(request, renderOptions);
@@ -153,7 +159,8 @@ export function createEnvironment(input: EnvironmentInput) {
     },
 
     async getLoaderData(request: Request, route: Route): Promise<Response> {
-      const result = await executeLoader(request, route);
+      const params = parseParams(request, route);
+      const result = await executeLoader(request, route, params);
 
       if (isResponse(result)) {
         return result;
