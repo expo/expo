@@ -5,8 +5,8 @@ declare class ExpoWidgetModule extends NativeModule<ExpoWidgetsEvents> {
     registerWidgetLayout(name: string, layout: string): void;
     updateWidgetTimeline(name: string, entries: ExpoTimelineEntry[]): void;
     registerLiveActivityLayout(name: string, layout: string): void;
-    startLiveActivity(name: string, props: object | undefined, url?: string): string;
-    updateLiveActivity(id: string, name: string, props: object | undefined): void;
+    startLiveActivity(name: string, props: string, url?: string): string;
+    updateLiveActivity(id: string, name: string, props: string): void;
     endLiveActivity(id: string, dismissalPolicy?: string): void;
     getLiveActivityPushToken(id: string): Promise<string | null>;
     getLiveActivities(): LiveActivityInfo[];

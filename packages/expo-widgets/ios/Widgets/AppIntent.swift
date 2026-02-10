@@ -11,7 +11,7 @@ struct WidgetUserInteraction: AppIntent {
 
   @Parameter(title: "target")
   var target: String?
-  
+
   @Parameter(title: "entryIndex")
   var entryIndex: Int?
 
@@ -46,11 +46,13 @@ struct WidgetUserInteraction: AppIntent {
       if let originalProps = entry["props"] as? [String: Any] {
         newEntry["props"] = originalProps.merging(newProps) { _, new in new }
       }
-      var newTimeline = timeline as! [[String: Any]]
+      guard var newTimeline = timeline as? [[String: Any]] else {
+        return .result()
+      }
       newTimeline[entryIndex] = newEntry
       WidgetsStorage.set(newTimeline, forKey: "__expo_widgets_\(source)_timeline")
     }
-    
+
     WidgetsEvents.shared.sendNotification(type: .userEvent, data: [
       "source": source as Any,
       "target": target as Any,

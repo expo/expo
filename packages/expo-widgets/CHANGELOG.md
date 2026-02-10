@@ -4,8 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- Render widgets in JSC. ([#42987](https://github.com/expo/expo/pull/42987) by [@jakex7](https://github.com/jakex7))
-
 ### 🎉 New features
 
 - Render widgets in JSC. ([#42987](https://github.com/expo/expo/pull/42987) by [@jakex7](https://github.com/jakex7))

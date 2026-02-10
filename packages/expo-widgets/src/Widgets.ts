@@ -19,7 +19,8 @@ import {
  * @return The unique identifier of the started Live Activity.
  */
 export const startLiveActivity = (name: string, props?: object, url?: string) => {
-  return ExpoWidgetModule.startLiveActivity(name, props, url);
+  const propsString = props ? JSON.stringify(props) : '{}';
+  return ExpoWidgetModule.startLiveActivity(name, propsString, url);
 };
 
 /**
@@ -29,7 +30,8 @@ export const startLiveActivity = (name: string, props?: object, url?: string) =>
  * @param props Optional props to pass to the Live Activity layout.
  */
 export const updateLiveActivity = (id: string, name: string, props?: object) => {
-  ExpoWidgetModule.updateLiveActivity(id, name, props);
+  const propsString = props ? JSON.stringify(props) : '{}';
+  ExpoWidgetModule.updateLiveActivity(id, name, propsString);
 };
 
 /**

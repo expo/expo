@@ -14,14 +14,8 @@ func createWidgetContext(layout: String, props: [String: Any]) -> JSContext? {
 
   // Inject ExpoUI bundle
   context.evaluateScript(expoUIBundleJS)
-  context.evaluateScript("""
-  (function () {
-    if (typeof __r !== 'function') {
-      return;
-    }
-    __r(0)
-  })();
-  """)
+
+  // Inject layout and props
   let layoutValue = context.evaluateScript("(\(layout))")
   context.setObject(layoutValue, forKeyedSubscript: "__expoWidgetLayout" as NSString)
   context.setObject(props, forKeyedSubscript: "__expoWidgetProps" as NSString)

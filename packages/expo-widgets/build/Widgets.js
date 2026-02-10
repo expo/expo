@@ -8,7 +8,8 @@ import ExpoWidgetModule from './ExpoWidgets';
  * @return The unique identifier of the started Live Activity.
  */
 export const startLiveActivity = (name, props, url) => {
-    return ExpoWidgetModule.startLiveActivity(name, props, url);
+    const propsString = props ? JSON.stringify(props) : '{}';
+    return ExpoWidgetModule.startLiveActivity(name, propsString, url);
 };
 /**
  * Updates an existing Live Activity with new content.
@@ -17,7 +18,8 @@ export const startLiveActivity = (name, props, url) => {
  * @param props Optional props to pass to the Live Activity layout.
  */
 export const updateLiveActivity = (id, name, props) => {
-    ExpoWidgetModule.updateLiveActivity(id, name, props);
+    const propsString = props ? JSON.stringify(props) : '{}';
+    ExpoWidgetModule.updateLiveActivity(id, name, propsString);
 };
 /**
  * Updates a widget's timeline with multiple entries that will be displayed at scheduled times.

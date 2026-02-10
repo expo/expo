@@ -54,7 +54,7 @@ public final class WidgetsModule: Module {
       }
     }
 
-    Function("startLiveActivity") { (name: String, props: [String: Any]?, url: URL?) throws -> String in
+    Function("startLiveActivity") { (name: String, props: String, url: URL?) throws -> String in
       guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
       guard ActivityAuthorizationInfo().areActivitiesEnabled else {
         throw LiveActivitiesNotSupportedException()
@@ -65,7 +65,7 @@ public final class WidgetsModule: Module {
       }
 
       do {
-        let initialState = LiveActivityAttributes.ContentState(name: name, props: "{\"test\":\"hello\"}")
+        let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
 
         let activity = try Activity.request(
           attributes: LiveActivityAttributes(),
@@ -83,16 +83,14 @@ public final class WidgetsModule: Module {
       }
     }
 
-    Function("updateLiveActivity") { (id: String, name: String, props: [String: Any]?) throws in
+    Function("updateLiveActivity") { (id: String, name: String, props: String) throws in
       guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
       guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id })
       else { throw LiveActivityNotFoundException(id) }
 
-      let jsonData = try? JSONSerialization.data(withJSONObject: props ?? [:], options: [])
-      let jsonString = String(data: jsonData!, encoding: .utf8)
       Task {
-        let newState = LiveActivityAttributes.ContentState(name: name, props: jsonString!)
+        let newState = LiveActivityAttributes.ContentState(name: name, props: props)
         await activity.update(ActivityContent(state: newState, staleDate: nil))
       }
     }
