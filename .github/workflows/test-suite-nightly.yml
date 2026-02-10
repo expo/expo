@@ -119,7 +119,6 @@ jobs:
         with:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.ts --test
@@ -246,6 +245,7 @@ jobs:
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
+        with:
           webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
           author_name: Test Suite Nightly (Android)
