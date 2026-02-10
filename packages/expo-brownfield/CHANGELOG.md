@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [cli] cli refactor ([#42921](https://github.com/expo/expo/pull/42921) by [@pmleczek](https://github.com/pmleczek))
+
 ## 55.0.6 — 2026-02-03
 
 _This version does not introduce any user-facing changes._
