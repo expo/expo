@@ -24,43 +24,60 @@ interface LoadEnvFilesOptions {
   mode?: string;
 }
 
+let prevEnvKeys: Set<string> | undefined;
+
 /**
  * Load the dotenv files into the current `process.env` scope.
  * Note, this requires `NODE_ENV` being set through `setNodeEnv`.
  */
 export function loadEnvFiles(projectRoot: string, options?: LoadEnvFilesOptions) {
-  const isEnabled = env.isEnabled();
-  if (isEnabled) {
-    const params = {
-      ...options,
-      force: !!options?.force,
-      silent: !!options?.silent,
-      mode: process.env.NODE_ENV,
-    };
+  const params = {
+    ...options,
+    force: !!options?.force,
+    silent: !!options?.silent,
+    mode: process.env.NODE_ENV,
+    systemEnv: process.env,
+  };
 
-    const envInfo = env.parseProjectEnv(projectRoot, params);
-    const envOutput: EnvOutput = {};
-    const skipped: string[] = [];
-    for (const key in envInfo.env) {
-      if (typeof process.env[key] !== 'undefined') {
-        skipped.push(key);
-      } else {
-        process.env[key] = envInfo.env[key];
-        envOutput[key] = envInfo.env[key] ?? undefined;
-      }
-    }
-
-    if (!params.silent) {
-      env.logLoadedEnv(
-        {
-          ...envInfo,
-          result: 'loaded',
-          loaded: Object.keys(envOutput),
-        },
-        params
-      );
+  const envInfo = env.loadProjectEnv(projectRoot, params);
+  const envOutput: EnvOutput = {};
+  if (envInfo.result === 'loaded') {
+    prevEnvKeys = new Set();
+    for (const key of envInfo.loaded) {
+      envOutput[key] = envInfo.env[key] ?? undefined;
+      prevEnvKeys.add(key);
     }
   }
 
+  env.logLoadedEnv(envInfo, params);
   return process.env;
+}
+
+export function reloadEnvFiles(projectRoot: string) {
+  const isEnabled = env.isEnabled();
+  if (isEnabled) {
+    const params = {
+      force: true,
+      silent: true,
+      mode: process.env.NODE_ENV,
+      systemEnv: process.env,
+    };
+
+    // We use a global tracker to allow overwrites of env vars we set ourselves
+    const envInfo = env.parseProjectEnv(projectRoot, params);
+    const envOutput: EnvOutput = {};
+    for (const key in envInfo.env) {
+      const value = envInfo.env[key];
+      if (process.env[key] !== value) {
+        if (
+          typeof process.env[key] === 'undefined' ||
+          ((!prevEnvKeys || prevEnvKeys.has(key)) && process.env[key] !== value)
+        ) {
+          (prevEnvKeys ||= new Set()).add(key);
+          process.env[key] = envInfo.env[key];
+          envOutput[key] = value ?? undefined;
+        }
+      }
+    }
+  }
 }
