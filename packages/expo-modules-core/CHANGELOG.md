@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added `DynamicBoolType` to correctly distinguish boolean values from numeric 0/1. ([#42978](https://github.com/expo/expo/pull/42978) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-08
