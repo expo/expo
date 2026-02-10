@@ -16,15 +16,6 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
-    // Swift's `as? Bool` matches any NSNumber with value 0 or 1, not just actual booleans
-    // This causes `Either<Bool, Double>` to incorrectly decode numbers 0/1 as Bool instead of Double.
-    // Guard against this by checking CFBooleanGetTypeID for Bool casts on NSNumber values.
-    if InnerType.self == Bool.self, let nsNumber = value as? NSNumber {
-      guard CFGetTypeID(nsNumber) == CFBooleanGetTypeID() else {
-        throw Conversions.CastingException<InnerType>(value)
-      }
-      return nsNumber.boolValue
-    }
     if let value = value as? InnerType {
       return value
     }
