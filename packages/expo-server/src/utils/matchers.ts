@@ -22,8 +22,9 @@ export function parseParams(request: Request, route: Route): Record<string, stri
  * with actual param values.
  *
  * @example
- *
+ * ```tsx
  * resolveLoaderContextKey('/users/[id]`, { id: '123' }) // /users/123
+ * ```
  */
 export function resolveLoaderContextKey(
   contextKey: string,

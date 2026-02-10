@@ -6,8 +6,9 @@ export declare function parseParams(request: Request, route: Route): Record<stri
  * with actual param values.
  *
  * @example
- *
+ * ```tsx
  * resolveLoaderContextKey('/users/[id]`, { id: '123' }) // /users/123
+ * ```
  */
 export declare function resolveLoaderContextKey(contextKey: string, params: Record<string, string | string[]>): string;
 export declare function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL;

@@ -26,8 +26,9 @@ function parseParams(request, route) {
  * with actual param values.
  *
  * @example
- *
+ * ```tsx
  * resolveLoaderContextKey('/users/[id]`, { id: '123' }) // /users/123
+ * ```
  */
 function resolveLoaderContextKey(contextKey, params) {
     const normalizedKey = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
