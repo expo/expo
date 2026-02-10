@@ -10,7 +10,7 @@
       "react-native": "0.83",
       "react-native-web": "0.21.0",
       "react-native-tvos": "0.83-stable",
-      "react": "19.2.3",
+      "react": "19.2.0",
       "node": "20.19.x"
     },
     {
