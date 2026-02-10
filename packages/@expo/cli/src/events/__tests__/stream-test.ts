@@ -9,19 +9,30 @@ jest.unmock('fs');
 let destFile: string;
 let destFD: number;
 
-beforeEach(() => {
-  destFile = path.resolve(tmpdir(), `logstream-${Math.random().toString(36).substring(7)}.log`);
-  destFD = fs.openSync(destFile, 'w', 0o666);
-});
+beforeEach(
+  () =>
+    new Promise((resolve, reject) => {
+      destFile = path.resolve(tmpdir(), `logstream-${Math.random().toString(36).substring(7)}.log`);
+      fs.open(destFile, 'w', 0o666, (err, fd) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve((destFD = fd));
+        }
+      });
+    })
+);
 
-afterEach(async () => {
-  try {
-    fs.closeSync(destFD);
-  } catch {}
-  try {
-    fs.unlinkSync(destFile);
-  } catch {}
-});
+afterEach(
+  () =>
+    new Promise<void>((resolve) => {
+      fs.close(destFD, () => {
+        fs.unlink(destFile, () => {
+          resolve();
+        });
+      });
+    })
+);
 
 describe('basic write operations', () => {
   it('writes before destroying a stream', async () => {
@@ -453,17 +464,22 @@ describe('events', () => {
 });
 
 describe('write returns backpressure signal', () => {
-  it('returns true when under high water mark', () => {
+  it('returns true when under high water mark', async () => {
     const stream = new LogStream(destFD);
+    const _close = new Promise((resolve) => stream.on('close', resolve));
+
     const result = stream.write('small\n');
     expect(result).toBe(true);
-    stream.destroy();
+
+    stream.end();
+    await _close;
   });
 
   it('returns false when over high water mark', async () => {
     const stream = new LogStream(destFD);
     const _close = new Promise((resolve) => stream.on('close', resolve));
 
+    stream.write('small\n');
     const largeLine = 'x'.repeat(20000) + '\n';
     const result = stream.write(largeLine);
     expect(result).toBe(false);
