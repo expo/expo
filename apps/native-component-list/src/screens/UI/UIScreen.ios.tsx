@@ -250,6 +250,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
+  {
+    name: 'ContentTransition modifier',
+    route: 'ui/content-transition',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContentTransitionScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

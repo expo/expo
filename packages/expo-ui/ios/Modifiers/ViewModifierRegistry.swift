@@ -521,6 +521,43 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
   }
 }
 
+internal enum ContentTransitionType: String, Enumerable {
+  case numericText
+  case opacity
+  case identity
+  case interpolate
+}
+
+internal struct ContentTransitionModifier: ViewModifier, Record {
+  @Field var transitionType: ContentTransitionType = .numericText
+  @Field var countsDown: Bool = false
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      switch transitionType {
+      case .numericText:
+        if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *) {
+          content.contentTransition(.numericText(countsDown: countsDown))
+        } else {
+          content.contentTransition(.numericText())
+        }
+      case .opacity:
+        content.contentTransition(.opacity)
+      case .identity:
+        content.contentTransition(.identity)
+      case .interpolate:
+        if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *) {
+          content.contentTransition(.interpolate)
+        } else {
+          content
+        }
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AccessibilityLabelModifier: ViewModifier, Record {
   @Field var label: String?
 
@@ -1739,6 +1776,10 @@ extension ViewModifierRegistry {
 
     register("contentShape") { params, appContext, _ in
       return try ContentShapeModifier(from: params, appContext: appContext)
+    }
+
+    register("contentTransition") { params, appContext, _ in
+      return try ContentTransitionModifier(from: params, appContext: appContext)
     }
 
     register("containerRelativeFrame") { params, appContext, _ in

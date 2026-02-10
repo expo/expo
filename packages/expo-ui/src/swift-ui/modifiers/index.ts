@@ -536,6 +536,30 @@ export const scrollDismissesKeyboard = (
 ) => createModifier('scrollDismissesKeyboard', { mode });
 
 /**
+ * Sets the content transition type for animating content changes within a view.
+ * Combine with the `animation` modifier for the transition to take effect.
+ * @param transition - The content transition type, or an object with `countsDown` for `numericText`.
+ * @platform ios 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
+ */
+export const contentTransition = (
+  transition:
+    | 'numericText'
+    | 'opacity'
+    | 'identity'
+    | 'interpolate'
+    | { type: 'numericText'; countsDown?: boolean }
+) => {
+  if (typeof transition === 'object') {
+    return createModifier('contentTransition', {
+      transitionType: transition.type,
+      countsDown: transition.countsDown ?? false,
+    });
+  }
+  return createModifier('contentTransition', { transitionType: transition });
+};
+
+/**
  * Disables or enables scrolling in scrollable views.
  * @param disabled - Whether scrolling should be disabled (default: true).
  * @platform ios 16.0+
@@ -1009,6 +1033,7 @@ export type BuiltInModifier =
   | ReturnType<typeof contentShape>
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
+  | ReturnType<typeof contentTransition>
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>

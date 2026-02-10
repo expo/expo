@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `contentTransition` modifier for SwiftUI with support for `numericText`, `opacity`, `identity`, and `interpolate` transition types. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@mickeypause](https://github.com/mickeypause))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
