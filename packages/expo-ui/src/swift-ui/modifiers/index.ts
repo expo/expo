@@ -938,7 +938,7 @@ export const submitLabel = (
 /**
  * Sets the content transition type for a view.
  * Useful for animating changes in text content, especially numeric text.
- * Use with the [animation](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
+ * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
  *
  * @param transitionType - The type of content transition.
  * @param params - Optional parameters.
