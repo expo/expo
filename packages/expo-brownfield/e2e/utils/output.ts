@@ -85,6 +85,8 @@ export const TASKS_ANDROID = {
 export const ERROR = {
   ADDITIONAL_COMMAND: (command: string) =>
     `error: too many arguments for '${command}'. Expected 0 arguments but got 1.`,
+  MISSING_ARGUMENT: (short: string, full: string, argumentName: string) =>
+    `error: option '-${short}, --${full} <${argumentName}>' argument missing`,
   MISSING_PREBUILD: () => `Brownfield cannot be built without prebuilding the native project`,
   MISSING_TASKS_OR_REPOSITORIES: () => `Error: At least one task or repository must be specified`,
   UNKNOWN_COMMAND: () => `Error: unknown command
