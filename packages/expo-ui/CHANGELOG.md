@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix rendering `0` in SwiftUI Text.
+
 ### 💡 Others
 
 ## 55.0.0-preview.5 — 2026-02-08
