@@ -66,11 +66,11 @@ jobs:
             compilation_test_android:
               - 'packages/expo-brownfield/**'
               - 'packages/expo/android/src/main/jave/expo/modules/**'
-              - 'packages/expo/android/build.gradle"
+              - 'packages/expo/android/build.gradle'
               - 'packages/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/**'
               - 'packages/expo-dev-menu/android/build.gradle'
               - 'packages/expo-manifests/android/src/main/java/expo/modules/manifests/**'
-              - 'packages/expo-manifests/android/build.gradle"
+              - 'packages/expo-manifests/android/build.gradle'
             compilation_test_ios:
               - 'packages/expo-brownfield/**'
               - 'packages/expo/ios/AppDelegates/**'
