@@ -6,7 +6,10 @@
 
 ### 🎉 New features
 
+- [iOS] - Support Section `footer` with `title` prop. ([#42966](https://github.com/expo/expo/pull/42966) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
+
 
 ### 💡 Others
 
