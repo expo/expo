@@ -32,7 +32,10 @@ function getPackageName(packageRoot: string): string | null {
 }
 
 /** Returns a command like `node /Users/evanbacon/.../bin/expo start` or the package.json name. */
-async function getProcessCommand(pid: number, procDirectory: string): Promise<string | null> {
+export async function getProcessCommand(
+  pid: number,
+  procDirectory: string
+): Promise<string | null> {
   let name = getPackageName(procDirectory);
   if (!name) {
     // ps
