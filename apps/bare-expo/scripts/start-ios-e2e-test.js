@@ -9,7 +9,7 @@ const path = require('path');
 const { createMaestroFlowAsync, ensureDirAsync, getStartMode, retryAsync } = require('./lib/e2e-common.js');
 
 const TARGET_DEVICE = 'iPhone 16 Pro';
-const TARGET_DEVICE_IOS_VERSION = 18;
+const TARGET_DEVICE_IOS_VERSION = 26;
 const APP_ID = 'dev.expo.Payments';
 const MAESTRO_GENERATED_FLOW = 'e2e/maestro-generated.yaml';
 const OUTPUT_APP_PATH = 'ios/build/BareExpo.app';
