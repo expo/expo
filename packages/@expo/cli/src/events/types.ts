@@ -1,3 +1,4 @@
+import type { rootEvent } from './index';
 import type { collectEventLoggers } from '../events/builder';
 import type { event as metroTerminalReporterEvent } from '../start/server/metro/MetroTerminalReporter';
 
@@ -6,4 +7,4 @@ import type { event as metroTerminalReporterEvent } from '../start/server/metro/
  * When creating a new logger with `events()`, import it here and
  * add it to add its types to this union type.
  */
-export type Events = collectEventLoggers<[typeof metroTerminalReporterEvent]>;
+export type Events = collectEventLoggers<[typeof rootEvent, typeof metroTerminalReporterEvent]>;

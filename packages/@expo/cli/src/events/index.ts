@@ -6,6 +6,11 @@ import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
 import { LogStream } from './stream';
 import { env } from '../utils/env';
 
+interface InitMetadata {
+  format: 'v0-jsonl' | (string & {});
+  version: string;
+}
+
 let logStream: LogStream | undefined;
 
 function parseLogTarget(env: string | undefined) {
@@ -26,6 +31,14 @@ function parseLogTarget(env: string | undefined) {
   return logDestination;
 }
 
+function getInitMetadata(): InitMetadata {
+  return {
+    format: 'v0-jsonl',
+    // Version is added in the build script.
+    version: process.env.__EXPO_VERSION ?? 'UNVERSIONED',
+  };
+}
+
 /** Activates the event logger based on the input env var
  * @param env - The target to write the logs to; defaults to `$EVENT_LOG`
  */
@@ -42,6 +55,7 @@ export function installEventLogger(env = process.env.EVENT_LOG) {
       globalThis.console = new Console(output, output);
     }
     logStream = new LogStream(eventLogDestination);
+    rootEvent('init', getInitMetadata());
   }
 }
 
@@ -98,5 +112,9 @@ export const events: EventLoggerBuilder = ((
   log.category = category;
   return log;
 }) as EventLoggerBuilder;
+
+// These are built-in events: We choose an ambiguous name on purpose,
+// since we don't assume this implementation will necessarily only be in `@expo/cli`
+export const rootEvent = events('root', (t) => [t.event<'init', InitMetadata>()]);
 
 export type { EventLogger } from './builder';
