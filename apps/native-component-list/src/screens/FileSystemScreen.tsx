@@ -143,7 +143,7 @@ export default function FileSystemScreen() {
                 return;
               }
               const assetInfo = await MediaLibrary.getAssetInfoAsync(assets.assets[0]);
-              const file = new File(assetInfo.uri);
+              const file = new File(assetInfo.localUri ?? assetInfo.uri);
               setCurrentFile(file);
               Alert.alert('MediaLibrary file', file.uri);
             } catch (e: any) {
@@ -253,7 +253,7 @@ export default function FileSystemScreen() {
 
         {/* ===== Section 4: Write Operations ===== */}
         <HeadingText>Write Operations</HeadingText>
-        <Text style={styles.note}>Works on file:// and SAF. Throws on asset://.</Text>
+        <Text style={styles.note}>Works on local and picked files. Throws on static assets.</Text>
         <SimpleActionDemo
           title="write() text"
           action={withCurrentFile(async (file) => {
@@ -280,7 +280,7 @@ export default function FileSystemScreen() {
 
         {/* ===== Section 5: File Handle ===== */}
         <HeadingText>File Handle (Random Access)</HeadingText>
-        <Text style={styles.note}>Works on file:// and SAF content://</Text>
+        <Text style={styles.note}>Works on local and picked files</Text>
         {Platform.OS === 'android' && (
           <View style={styles.optionRow}>
             <Text style={styles.optionLabel}>Mode:</Text>
