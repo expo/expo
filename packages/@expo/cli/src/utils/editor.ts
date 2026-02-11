@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { override } from 'prompts';
 
 import { env } from './env';
 import * as Log from '../log';
@@ -20,12 +21,13 @@ interface Editor {
 
 // See: https://github.com/sindresorhus/env-editor/blob/3f6aea10ff53910c877b1bf73a8e0c954a5fbf11/index.js
 // MIT License, Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
-function getEditor(input: string | undefined): Editor | null {
-  if (!input) {
+function getEditor(input: string | undefined, allowAnyEditor = false): Editor | null {
+  const needle = input?.trim().toLowerCase();
+  if (!needle) {
     return null;
   }
-  const needle = input.trim().toLowerCase();
-  const binary = needle.split(/[/\\]/).pop()?.replace(/\s/g, '-')?.split('-')[0];
+  const id = needle.split(/[/\\]/).pop()?.replace(/\s/g, '-');
+  const binary = id?.split('-')[0];
   const editor =
     EDITORS.find((editor) => {
       switch (needle) {
@@ -43,6 +45,16 @@ function getEditor(input: string | undefined): Editor | null {
           return false;
       }
     }) ?? (binary ? EDITORS.find((editor) => editor.binary === binary) : null);
+  if (allowAnyEditor && id && binary && !editor) {
+    return {
+      id,
+      name: needle,
+      binary,
+      isTerminalEditor: false,
+      paths: [],
+      keywords: [],
+    };
+  }
   return editor || null;
 }
 
@@ -70,26 +82,16 @@ export function guessEditor(): Editor | null {
     }
   }
 
-  if (editor) {
-    return editor;
-  } else {
-    debug('Falling back on vscode');
-    return getEditor('vscode');
-  }
+  return editor;
 }
 
-let _cachedVisualEditor: Editor | null | undefined;
-
 export async function guessFallbackVisualEditor(): Promise<Editor | null> {
-  if (_cachedVisualEditor !== undefined) {
-    return _cachedVisualEditor;
-  }
   // We search for editors at known `editor.paths`
   for (const editor of VISUAL_EDITORS) {
     const target = await editorExistsAtPaths(editor);
     if (target) {
       debug('Found visual editor fallback:', editor.name);
-      return (_cachedVisualEditor = { ...editor, binary: target });
+      return { ...editor, binary: target };
     }
   }
   // We search again for a visual editor against `editor.binary` in `$PATH`
@@ -97,17 +99,28 @@ export async function guessFallbackVisualEditor(): Promise<Editor | null> {
     const target = await editorExistsInPath(editor);
     if (target) {
       debug('Found visual editor fallback in $PATH:', editor.name);
-      return (_cachedVisualEditor = { ...editor, binary: target });
+      return { ...editor, binary: target };
     }
   }
-  return (_cachedVisualEditor = null);
+  return null;
 }
 
 /** Open a file path in a given editor. */
 export async function openInEditorAsync(path: string, lineNumber?: number): Promise<boolean> {
+  // First: Try to get a known editor
   let editor = guessEditor();
 
-  // Try to find a fallback visual editor, but keep the found one if we can't find a fallback
+  // Second: If we don't have a known editor, fall back to EXPO_EDITOR / VISUAL resolution
+  // We check if the binary in these environment variables exists in the $PATH
+  const forceEditorName = env.EXPO_EDITOR ?? process.env.VISUAL;
+  if (!editor && forceEditorName) {
+    const forceEditor = getEditor(forceEditorName, true);
+    if (forceEditor && (await editorExistsInPath(forceEditor))) {
+      editor = forceEditor;
+    }
+  }
+
+  // Third: Try to find a fallback visual editor, but keep the found one if we can't find a fallback
   if (editor?.isTerminalEditor) {
     const fallback = await guessFallbackVisualEditor();
     if (fallback) {
@@ -140,7 +153,7 @@ export async function openInEditorAsync(path: string, lineNumber?: number): Prom
     (editor?.isTerminalEditor
       ? `Could not open ${editor.name} as it's a terminal editor.`
       : 'Could not open editor.') +
-      `\nYou can set an editor for Expo to open automatically by defining the $EDITOR environment variable (e.g. "vscode" or "atom")`
+      `\nYou can set an editor for Expo to open by defining the $EXPO_EDITOR or $VISUAL environment variable (e.g. "vscode" or "atom")`
   );
   return false;
 }
