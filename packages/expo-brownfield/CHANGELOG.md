@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [cli] cli refactor ([#42921](https://github.com/expo/expo/pull/42921) by [@pmleczek](https://github.com/pmleczek))
+
 ## 55.0.7 — 2026-02-08
 
 ### 🐛 Bug fixes
@@ -20,7 +22,6 @@
 ### 💡 Others
 
 - [test] setup maestro e2e tests for expo-brownfield on android in [#42864](https://github.com/expo/expo/pull/42864) by [@pmleczek](https://github.com/pmleczek)
-- [cli] cli refactor ([#42921](https://github.com/expo/expo/pull/42921) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.6 — 2026-02-03
 
