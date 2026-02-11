@@ -174,32 +174,28 @@ export async function openInEditorAsync(path: string, lineNumber?: number): Prom
 }
 
 function getEditorArguments(editor: Editor, path: string, lineNumber?: number): string[] {
-  if (!lineNumber) {
-    return [path];
-  }
-
   switch (editor.id) {
     case 'atom':
     case 'sublime':
-      return [`${path}:${lineNumber}`];
+      return lineNumber ? [`${path}:${lineNumber}`] : [path];
 
     case 'emacs':
     case 'emacsforosx':
     case 'nano':
     case 'neovim':
     case 'vim':
-      return [`+${lineNumber}`, path];
+      return lineNumber ? [`+${lineNumber}`, path] : [path];
 
     case 'android-studio':
     case 'intellij':
     case 'textmate':
     case 'webstorm':
     case 'xcode':
-      return [`--line=${lineNumber}`, path];
+      return lineNumber ? [`--line=${lineNumber}`, path] : [path];
 
     case 'vscode':
     case 'vscodium':
-      return ['-g', `${path}:${lineNumber}`];
+      return lineNumber ? ['-g', `${path}:${lineNumber}`] : ['-g', path];
 
     default:
       return [path];

@@ -82,7 +82,7 @@ describe(openInEditorAsync, () => {
 
     expect(spawnAsync).toHaveBeenCalledWith(
       'code',
-      ['file'],
+      ['-g', 'file'],
       expect.objectContaining({ timeout: 1000 })
     );
     expect(spawnAsync).toHaveBeenCalledTimes(1);
