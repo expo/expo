@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
+import { FileMode, type DownloadOptions, type PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -115,11 +115,13 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   readableStream() {
-    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
+    return new ReadableStream(new FileSystemReadableStreamSource(super.open(FileMode.ReadOnly)));
   }
 
   writableStream() {
-    return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
+    return new WritableStream<Uint8Array>(
+      new FileSystemWritableSink(super.open(FileMode.WriteOnly))
+    );
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
