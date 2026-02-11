@@ -650,12 +650,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       const loaderData = await loaderResult.json();
-      const contextKey = resolveLoaderContextKey(
+      const resolvedLoaderKey = resolveLoaderContextKey(
         resolvedLoaderRoute.contextKey,
         resolvedLoaderRoute.params
       );
       return await getStaticContent(location, {
-        loader: { data: loaderData, contextKey },
+        loader: { data: loaderData, contextKey: resolvedLoaderKey },
       });
     };
 

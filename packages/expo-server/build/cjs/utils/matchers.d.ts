@@ -9,6 +9,8 @@ export declare function parseParams(request: Request, route: Route): Record<stri
  * ```tsx
  * resolveLoaderContextKey('/users/[id]`, { id: '123' }) // /users/123
  * ```
+ *
+ * @see import('expo-router/src/utils/matchers').getSingularId
  */
 export declare function resolveLoaderContextKey(contextKey: string, params: Record<string, string | string[]>): string;
 export declare function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL;

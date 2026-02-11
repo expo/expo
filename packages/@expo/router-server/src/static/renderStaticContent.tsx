@@ -74,8 +74,7 @@ export async function getStaticContent(
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const loaderKey =
-    options?.loader !== undefined ? options.loader.contextKey + location.search : null;
+  const loaderKey = options?.loader ? options.loader.contextKey + location.search : null;
 
   const loadedData = loaderKey
     ? {

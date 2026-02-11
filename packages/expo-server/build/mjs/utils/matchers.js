@@ -21,9 +21,12 @@ export function parseParams(request, route) {
  * ```tsx
  * resolveLoaderContextKey('/users/[id]`, { id: '123' }) // /users/123
  * ```
+ *
+ * @see import('expo-router/src/utils/matchers').getSingularId
  */
 export function resolveLoaderContextKey(contextKey, params) {
     const normalizedKey = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
+    // TODO(@hassankhan): Extract this logic into its own function and share with getRedirectRewriteLocation() below
     const resolved = normalizedKey
         .split('/')
         .map((segment) => {
