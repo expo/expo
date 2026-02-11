@@ -2,7 +2,7 @@
 import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { File, Directory, Paths } from 'expo-file-system';
+import { File, Directory, Paths, FileMode } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
@@ -1799,6 +1799,73 @@ export async function test({ describe, expect, it, ...t }) {
       handle.close();
       expect(src.textSync()).toBe(alphabet.repeat(4 * 10));
     });
+
+    if (Platform.OS === 'android') {
+      describe('FileMode (Android)', () => {
+        it('opens in ReadOnly mode and reads data', () => {
+          const src = new File(testDirectory, 'mode-read.txt');
+          src.write('Hello');
+          const handle = src.open(FileMode.ReadOnly);
+          expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+          handle.close();
+        });
+
+        it('throws when writing to a ReadOnly handle', () => {
+          const src = new File(testDirectory, 'mode-read-only.txt');
+          src.write('Hello');
+          const handle = src.open(FileMode.ReadOnly);
+          expect(() => handle.writeBytes(new Uint8Array([65]))).toThrow();
+          handle.close();
+        });
+
+        it('opens in WriteOnly mode and writes data', () => {
+          const src = new File(testDirectory, 'mode-write.txt');
+          src.create();
+          const handle = src.open(FileMode.WriteOnly);
+          handle.writeBytes(new Uint8Array([72, 105])); // Hi
+          handle.close();
+          expect(src.textSync()).toBe('Hi');
+        });
+
+        it('throws when reading from a WriteOnly handle', () => {
+          const src = new File(testDirectory, 'mode-write-only.txt');
+          src.create();
+          const handle = src.open(FileMode.WriteOnly);
+          expect(() => handle.readBytes(1)).toThrow();
+          handle.close();
+        });
+
+        it('opens in ReadWrite mode and supports both reading and writing', () => {
+          const src = new File(testDirectory, 'mode-rw.txt');
+          src.write('Hello');
+          const handle = src.open(FileMode.ReadWrite);
+          expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+          handle.offset = 0;
+          handle.writeBytes(new Uint8Array([87, 111, 114, 108, 100])); // World
+          handle.close();
+          expect(src.textSync()).toBe('World');
+        });
+
+        it('opens in Append mode and appends data', () => {
+          const src = new File(testDirectory, 'mode-append.txt');
+          src.write('Hello');
+          const handle = src.open(FileMode.Append);
+          handle.writeBytes(new Uint8Array([32, 87, 111, 114, 108, 100])); // ' World'
+          handle.close();
+          expect(src.textSync()).toBe('Hello World');
+        });
+
+        it('opens in Truncate mode and wipes existing content', () => {
+          const src = new File(testDirectory, 'mode-truncate.txt');
+          src.write('Old content');
+          const handle = src.open(FileMode.Truncate);
+          expect(handle.size).toBe(0);
+          handle.writeBytes(new Uint8Array([78, 101, 119])); // New
+          handle.close();
+          expect(src.textSync()).toBe('New');
+        });
+      });
+    }
 
     it('Provides a ReadableStream', async () => {
       const src = new File(testDirectory, 'abcs.txt');
