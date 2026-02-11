@@ -2,7 +2,6 @@ import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 import { event, error } from 'next/dist/build/output/log.js';
 import { join } from 'node:path';
-import webpack from 'webpack';
 import { exit } from 'node:process';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -11,6 +10,7 @@ import remarkMDX from 'remark-mdx';
 import remarkMdxDisableExplicitJsx from 'remark-mdx-disable-explicit-jsx';
 import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
+import webpack from 'webpack';
 
 import packageJson from '~/package.json';
 
@@ -79,7 +79,7 @@ const nextConfig: NextConfig = {
     if (!isServer) {
       config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(
-          /[\\/]polyfill-module\.js$/,
+          /[/\\]polyfill-module\.js$/,
           join(__dirname, 'empty-polyfill.js')
         )
       );
