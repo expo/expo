@@ -255,6 +255,8 @@ export async function exportFromServerAsync(
 
         if (loaderResponse !== undefined) {
           const data = await loaderResponse.json();
+          // Transforms a `route.contextKey` into a normalized path. For example,
+          // `./nested/[id]/index.tsx` becomes `/nested/[id]/index`
           const loaderKey = getContextKey(route.contextKey);
           const fileSystemPath = `_expo/loaders${loaderKey}`;
           files.set(fileSystemPath, {

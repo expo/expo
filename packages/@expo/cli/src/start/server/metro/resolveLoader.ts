@@ -9,7 +9,8 @@ export interface ResolvedLoaderRoute {
   file: string;
   /** The pathname being rendered */
   pathname: string;
-  /** The context key for the route */
+  // TODO(@hassankhan): Rename `contextKey` property to `page`
+  /** The context key for the route including unresolved parameters. For example, `/x/[y]/z` */
   contextKey: string;
   /** Extracted URL parameters */
   params: Record<string, string | string[]>;
