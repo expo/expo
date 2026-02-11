@@ -2,7 +2,6 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { override } from 'prompts';
 
 import { env } from './env';
 import * as Log from '../log';
