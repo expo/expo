@@ -64,6 +64,7 @@ export function AppJSBanner() {
         <Button
           size="xs"
           theme="tertiary"
+          aria-label="Dismiss banner"
           onClick={() => {
             setIsAppJSBannerVisible(false);
           }}
