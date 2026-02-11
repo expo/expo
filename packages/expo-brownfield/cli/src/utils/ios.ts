@@ -158,6 +158,17 @@ export const findWorkspace = (): string | undefined => {
   }
 };
 
+export const makeArtifactsDirectory = (config: IosConfig) => {
+  try {
+    if (!fs.existsSync(config.artifacts)) {
+      fs.mkdirSync(config.artifacts, { recursive: true });
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '';
+    CLIError.handle('ios-artifacts-directory-unknown-error', errorMessage);
+  }
+};
+
 export const printIosConfig = (config: IosConfig) => {
   console.log(chalk.bold('Resolved build configuration'));
   console.log(` - Build configuration: ${chalk.blue(config.buildConfiguration)}`);

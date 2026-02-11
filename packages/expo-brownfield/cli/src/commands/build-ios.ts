@@ -5,6 +5,7 @@ import {
   cleanUpArtifacts,
   createXcframework,
   copyHermesXcframework,
+  makeArtifactsDirectory,
   printIosConfig,
   resolveBuildConfigIos,
   validatePrebuild,
@@ -17,6 +18,7 @@ const buildIos = async (command: Command) => {
   printIosConfig(config);
 
   await cleanUpArtifacts(config);
+  makeArtifactsDirectory(config);
   await buildFramework(config);
   await createXcframework(config);
   await copyHermesXcframework(config);
