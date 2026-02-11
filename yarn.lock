@@ -3634,18 +3634,18 @@
   resolved "https://registry.yarnpkg.com/@react-native/assets-registry/-/assets-registry-0.84.0-rc.5.tgz#c51d29ffd534b396a6929bbd65e83c98c9c69b36"
   integrity sha512-EsM+B29GLtjhPH8baJY02HkT/ncQQTaYIlkFDkRvankqpG/3xtwzr18TCjPeVe8xP7JX47sYlT4PHmJmhSt1OA==
 
-"@react-native/babel-plugin-codegen@0.84.0-rc.2":
-  version "0.84.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@react-native/babel-plugin-codegen/-/babel-plugin-codegen-0.84.0-rc.2.tgz#e55e9b4222a7d5cefe13615c7ce843ba6d195531"
-  integrity sha512-RNhBBq8gvsY+yx0bqJ7zVNT3bgJ1uY0hUl7Cb/FdIHc9K4HfxIyejHIBk51r2sv3UpB/w4aH5J3kjlbhy1aL7Q==
+"@react-native/babel-plugin-codegen@0.84.0-rc.5":
+  version "0.84.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@react-native/babel-plugin-codegen/-/babel-plugin-codegen-0.84.0-rc.5.tgz#cdfd2cfd94ba67ab7bd09dd588199d21f609c350"
+  integrity sha512-jLgl/OLWNHHAJ419B3plZGJFg6gsb0oo0lJzXYtEuixO+RSZcByVPf5/8lExst98SNhK238v+BmeoNKzIQC95g==
   dependencies:
     "@babel/traverse" "^7.25.3"
-    "@react-native/codegen" "0.84.0-rc.2"
+    "@react-native/codegen" "0.84.0-rc.5"
 
-"@react-native/babel-preset@0.84.0-rc.2":
-  version "0.84.0-rc.2"
-  resolved "https://registry.yarnpkg.com/@react-native/babel-preset/-/babel-preset-0.84.0-rc.2.tgz#3bf9abe1dd5fb61b62e735ae6f4c7d875d8cd6b7"
-  integrity sha512-aRcbhRpvlAvRB2kkjusyiZVlDR4J2oBpX/jEMExtIrNCS15r5xi2eVtMYXQrct7Ri60Pz3sSVlePgteTGhZ1ag==
+"@react-native/babel-preset@0.84.0-rc.5":
+  version "0.84.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@react-native/babel-preset/-/babel-preset-0.84.0-rc.5.tgz#0c3ffed07c4ee3d2dc35bc89b04291dab35a540d"
+  integrity sha512-EPmDmjcezj/b8PnOnaZzH26nWAqFKhXKf4gB9sWMLa2PtDmTzWgO+VdF6BNPu3T0CeyNs39WCQP1Lwq+Ck5F+A==
   dependencies:
     "@babel/core" "^7.25.2"
     "@babel/plugin-proposal-export-default-from" "^7.24.7"
@@ -3676,7 +3676,7 @@
     "@babel/plugin-transform-runtime" "^7.24.7"
     "@babel/plugin-transform-typescript" "^7.25.2"
     "@babel/plugin-transform-unicode-regex" "^7.24.7"
-    "@react-native/babel-plugin-codegen" "0.84.0-rc.2"
+    "@react-native/babel-plugin-codegen" "0.84.0-rc.5"
     babel-plugin-syntax-hermes-parser "0.32.0"
     babel-plugin-transform-flow-enums "^0.0.2"
     react-refresh "^0.14.0"
