@@ -1,13 +1,13 @@
 import chalk from 'chalk';
-import freeportAsync from 'freeport-async';
 
 import { env } from './env';
 import { CommandError } from './errors';
+import { testPortAsync, freePortAsync } from './freeport';
 import * as Log from '../log';
 
 /** Get a free port or assert a CLI command error. */
 export async function getFreePortAsync(rangeStart: number): Promise<number> {
-  const port = await freeportAsync(rangeStart, { hostnames: [null, 'localhost'] });
+  const port = await freePortAsync(rangeStart, [null, 'localhost']);
   if (!port) {
     throw new CommandError('NO_PORT_FOUND', 'No available port found');
   }
@@ -20,9 +20,9 @@ export async function ensurePortAvailabilityAsync(
   projectRoot: string,
   { port }: { port: number }
 ): Promise<boolean> {
-  const freePort = await freeportAsync(port, { hostnames: [null] });
+  const isFreePort = await testPortAsync(port, [null]);
   // Check if port has become busy during the build.
-  if (freePort === port) {
+  if (isFreePort) {
     return true;
   }
 
@@ -78,12 +78,12 @@ export async function choosePortAsync(
   }
 ): Promise<number | null> {
   try {
-    const port = await freeportAsync(defaultPort, { hostnames: [host ?? null] });
+    const port = await freePortAsync(defaultPort, [host ?? null]);
     if (port === defaultPort || defaultPort === 0) {
       return port;
     }
 
-    const isRestricted = isRestrictedPort(port);
+    const isRestricted = port && isRestrictedPort(port);
 
     let message = isRestricted
       ? `Admin permissions are required to run a server on a port below 1024`

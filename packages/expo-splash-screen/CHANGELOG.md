@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash when storyboard is not present ([#42178](https://github.com/expo/expo/pull/42178) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- [iOS] Remove new architecture checks. ([#41767](https://github.com/expo/expo/pull/41767) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 31.0.12 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 31.0.11 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
 ## 31.0.10 — 2025-09-12
 
 _This version does not introduce any user-facing changes._

@@ -4,29 +4,38 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { type MiddlewareInfo, type RouteInfo, type RoutesManifest } from 'expo-server/private';
-import resolveFrom from 'resolve-from';
+import type { Options as RoutesManifestOptions } from '@expo/router-server/build/routes-manifest';
+import { type RoutesManifest } from 'expo-server/private';
 
 import { getRoutePaths } from './router';
 
 function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, '@expo/router-server/build/routes-manifest'))
+  return require('@expo/router-server/build/routes-manifest')
     .createRoutesManifest as typeof import('@expo/router-server/build/routes-manifest').createRoutesManifest;
 }
 
+interface FetchManifestOptions extends RoutesManifestOptions {
+  asJson?: boolean;
+  appDir: string;
+}
+
 // TODO: Simplify this now that we use Node.js directly, no need for the Metro bundler caching layer.
-export async function fetchManifest<TRegex = string>(
+async function fetchManifest(
   projectRoot: string,
-  options: {
-    asJson?: boolean;
-    appDir: string;
-  } & import('@expo/router-server/build/routes-manifest').Options
-): Promise<RoutesManifest<TRegex> | null> {
+  options: FetchManifestOptions & { asJson: true }
+): Promise<RoutesManifest<string> | null>;
+async function fetchManifest(
+  projectRoot: string,
+  options: FetchManifestOptions & { asJson?: false | undefined }
+): Promise<RoutesManifest<RegExp> | null>;
+async function fetchManifest(
+  projectRoot: string,
+  options: FetchManifestOptions
+): Promise<RoutesManifest | null> {
   const getManifest = getExpoRouteManifestBuilderAsync(projectRoot);
   const paths = getRoutePaths(options.appDir);
   // Get the serialized manifest
   const jsonManifest = getManifest(paths, options);
-
   if (!jsonManifest) {
     return null;
   }
@@ -36,12 +45,13 @@ export async function fetchManifest<TRegex = string>(
   }
 
   if (!options.asJson) {
-    // @ts-expect-error
     return inflateManifest(jsonManifest);
+  } else {
+    return jsonManifest;
   }
-  // @ts-expect-error
-  return jsonManifest;
 }
+
+export { fetchManifest };
 
 // Convert the serialized manifest to a usable format
 export function inflateManifest(json: RoutesManifest<string>): RoutesManifest<RegExp> {

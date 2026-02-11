@@ -40,7 +40,7 @@ open class ModuleDefinitionBuilderWithCompose(
   inline fun <reified Props : ComposeProps> View(
     name: String,
     events: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
-    noinline viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
+    noinline viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
   ) {
     val definitionBuilder = ComposeViewFunctionDefinitionBuilder(name, Props::class, viewFunction)
     events.invoke(definitionBuilder)
@@ -52,7 +52,7 @@ open class ModuleDefinitionBuilderWithCompose(
 class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
   val name: String,
   val propsClass: KClass<Props>,
-  val viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
+  val viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
 ) {
   private var callbacksDefinition: CallbacksDefinition? = null
 
@@ -65,7 +65,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
         } catch (e: Exception) {
           throw IllegalStateException("Could not instantiate props instance of $name compose component.", e)
         }
-        ComposeFunctionHolder(context, appContext, viewFunction, instance)
+        ComposeFunctionHolder(context, appContext, name, viewFunction, instance)
       },
       callbacksDefinition = callbacksDefinition,
       viewType = ComposeFunctionHolder::class.java,

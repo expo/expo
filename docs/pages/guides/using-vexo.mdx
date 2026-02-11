@@ -4,7 +4,6 @@ description: A guide on installing and configuring Vexo for real-time user analy
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
 [Vexo](https://www.vexo.co/) provides real-time user analytics for your Expo application, helping you understand how users interact with your app, identify friction points, and improve engagement.
 
@@ -36,14 +35,14 @@ With a two-line integration, Vexo starts collecting data automatically, giving y
 2. Create a new app: You'll be prompted to create a new app. Give it a name (you can change it later), and once you submit it, you'll receive an API key.
 3. Install the Vexo package: Run the following command in your project:
 
-   <Tabs>
-     <Tab label="npm">
-       <Terminal cmd={['$ npm install vexo-analytics']} />
-     </Tab>
-     <Tab label="yarn">
-       <Terminal cmd={['$ yarn add vexo-analytics']} />
-     </Tab>
-   </Tabs>
+   <Terminal
+     cmd={{
+       npm: ['$ npm install vexo-analytics'],
+       yarn: ['$ yarn add vexo-analytics'],
+       pnpm: ['$ pnpm add vexo-analytics'],
+       bun: ['$ bun install vexo-analytics'],
+     }}
+   />
 
 4. Initialize Vexo: Add the following code in your app's entry file (for example, **index.js**, **App.js**, or **app/\_layout.tsx** if using Expo Router):
 

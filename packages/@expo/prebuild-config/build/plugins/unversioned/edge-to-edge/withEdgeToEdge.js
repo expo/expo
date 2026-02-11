@@ -12,20 +12,6 @@ function _configPlugins() {
   };
   return data;
 }
-function _withConfigureEdgeToEdgeEnforcement() {
-  const data = require("./withConfigureEdgeToEdgeEnforcement");
-  _withConfigureEdgeToEdgeEnforcement = function () {
-    return data;
-  };
-  return data;
-}
-function _withEdgeToEdgeEnabledGradleProperties() {
-  const data = require("./withEdgeToEdgeEnabledGradleProperties");
-  _withEdgeToEdgeEnabledGradleProperties = function () {
-    return data;
-  };
-  return data;
-}
 function _withEnforceNavigationBarContrast() {
   const data = require("./withEnforceNavigationBarContrast");
   _withEnforceNavigationBarContrast = function () {
@@ -41,24 +27,14 @@ function _withRestoreDefaultTheme() {
   return data;
 }
 const TAG = 'EDGE_TO_EDGE_PLUGIN';
-const withEdgeToEdge = (config, {
-  projectRoot
-}) => {
-  return applyEdgeToEdge(config, projectRoot);
+const withEdgeToEdge = config => {
+  return applyEdgeToEdge(config);
 };
 exports.withEdgeToEdge = withEdgeToEdge;
-function applyEdgeToEdge(config, projectRoot) {
-  if (config.android?.edgeToEdgeEnabled === false) {
-    _configPlugins().WarningAggregator.addWarningAndroid(TAG, '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it is no longer be possible to disable edge-to-edge. Learn more:', 'https://expo.fyi/edge-to-edge-rollout');
+function applyEdgeToEdge(config) {
+  if ('edgeToEdgeEnabled' in (config.android ?? {})) {
+    _configPlugins().WarningAggregator.addWarningAndroid(TAG, '`edgeToEdgeEnabled` customization is no longer available - Android 16 makes edge-to-edge mandatory. Remove the `edgeToEdgeEnabled` entry from your app.json/app.config.js.');
   }
-  const edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled !== false;
-  config = (0, _withEdgeToEdgeEnabledGradleProperties().withEdgeToEdgeEnabledGradleProperties)(config, {
-    edgeToEdgeEnabled
-  });
-  // Enable/disable edge-to-edge enforcement
-  config = (0, _withConfigureEdgeToEdgeEnforcement().withConfigureEdgeToEdgeEnforcement)(config, {
-    disableEdgeToEdgeEnforcement: !edgeToEdgeEnabled
-  });
   config = (0, _withEnforceNavigationBarContrast().withEnforceNavigationBarContrast)(config, config.androidNavigationBar?.enforceContrast !== false);
 
   // We always restore the default theme in case the project has a leftover react-native-edge-to-edge theme from SDK 53.

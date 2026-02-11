@@ -1,6 +1,7 @@
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { type CommonViewModifierProps } from '../types';
-export type PickerProps = {
+type SelectionValueType = string | number | null;
+export type PickerProps<T extends SelectionValueType = any> = {
     /**
      * The name of the system image (SF Symbol).
      * For example: 'photo', 'heart.fill', 'star.circle'
@@ -13,16 +14,12 @@ export type PickerProps = {
     /**
      * The selected option's `tag` modifier value.
      */
-    selection?: string | number | null;
+    selection?: T;
     /**
      * Callback function that is called when an option is selected.
      * Gets called with the selected `tag` value.
      */
-    onSelectionChange?: (event: {
-        nativeEvent: {
-            selection: string | number;
-        };
-    }) => void;
+    onSelectionChange?: (selection: T) => void;
     /**
      * The content of the picker. You can use `Text` components with `tag` modifiers to display the options.
      */
@@ -38,5 +35,6 @@ export type PickerProps = {
  * </Picker>
  * ```
  */
-export declare function Picker(props: PickerProps): import("react").JSX.Element;
+export declare function Picker<T extends SelectionValueType>(props: PickerProps<T>): import("react").JSX.Element;
+export {};
 //# sourceMappingURL=index.d.ts.map

@@ -1,4 +1,5 @@
 import DocumentationPage from '~/components/DocumentationPage';
+import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
   QuickStart,
@@ -19,6 +20,7 @@ function Home() {
       <div className="h-0">
         <DevicesImageMasks />
       </div>
+      <AppJSBanner />
       <QuickStart />
       <CommandLineTools />
       <DiscoverMore />

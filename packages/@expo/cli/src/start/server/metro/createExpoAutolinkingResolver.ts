@@ -141,7 +141,7 @@ export function createAutolinkingModuleResolver(
       // We instead resolve as if it was a dependency from within the module (self-require/import)
       const context: ResolutionContext = {
         ...immutableContext,
-        nodeModulesPaths: [resolvedModulePath],
+        nodeModulesPaths: [],
         originModulePath: resolvedModulePath,
       };
       const res = getStrictResolver(context, platform)(moduleName);

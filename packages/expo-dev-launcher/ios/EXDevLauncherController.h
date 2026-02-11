@@ -1,7 +1,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeDelegate.h>
 
-#import <UIKit/UIKit.h>
+#import <ExpoModulesCore/Platform.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.

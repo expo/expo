@@ -47,7 +47,7 @@ class Subscriber {
         delete this.callbacks[id];
         ExpoLocation.removeWatchAsync(id);
         if (Object.keys(this.callbacks).length === 0 && this.eventSubscription) {
-            LocationEventEmitter.removeSubscription(this.eventSubscription);
+            this.eventSubscription.remove();
             this.eventSubscription = null;
         }
     }

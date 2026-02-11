@@ -19,6 +19,8 @@ import '~/styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 import 'tippy.js/dist/tippy.css';
+import '@xyflow/react/dist/style.css';
+import 'yet-another-react-lightbox/styles.css';
 
 const isDev = process.env.NODE_ENV === 'development';
 const KAPA_INTEGRATION_ID = '2063233f-1e70-45e8-b1b5-a872c9887afc';
@@ -43,7 +45,7 @@ Sentry.init({
     /https:\/\/expo\.nodejs\.cn/,
   ],
   integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
-  tracesSampleRate: 0.0001,
+  tracesSampleRate: 0.00001,
   replaysSessionSampleRate: 0.000005,
   replaysOnErrorSampleRate: 0.002,
 });

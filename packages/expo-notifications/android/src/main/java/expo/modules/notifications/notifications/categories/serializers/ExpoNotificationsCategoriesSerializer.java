@@ -2,10 +2,7 @@ package expo.modules.notifications.notifications.categories.serializers;
 
 import android.os.Bundle;
 
-import expo.modules.core.interfaces.InternalModule;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -14,12 +11,7 @@ import expo.modules.notifications.notifications.model.NotificationAction;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 
-public class ExpoNotificationsCategoriesSerializer implements NotificationsCategoriesSerializer, InternalModule {
-  @Override
-  public List<? extends Class> getExportedInterfaces() {
-    return Collections.singletonList(NotificationsCategoriesSerializer.class);
-  }
-
+public class ExpoNotificationsCategoriesSerializer implements NotificationsCategoriesSerializer {
   @Nullable
   @Override
   public Bundle toBundle(@Nullable NotificationCategory category) {

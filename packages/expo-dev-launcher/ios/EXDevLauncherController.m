@@ -9,7 +9,6 @@
 #import <React/RCTKeyCommands.h>
 
 #import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
@@ -100,6 +99,7 @@
   return [_recentlyOpenedAppsRegistry clearRegistry];
 }
 
+#if !TARGET_OS_OSX
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
   NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
@@ -125,6 +125,20 @@
 
   return launchOptions;
 }
+#else
+- (NSDictionary *)getLaunchOptions
+{
+  NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
+  NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
+
+  if (deepLink) {
+    // Passes pending deep link to initialURL if any
+    launchOptions[NSApplicationLaunchUserNotificationKey] = deepLink;
+  }
+
+  return launchOptions;
+}
+#endif
 
 - (EXManifestsManifest *)appManifest
 {
@@ -158,7 +172,6 @@
   if (lastOpenedApp != nil) {
     _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
   }
-  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
@@ -173,15 +186,26 @@
     });
   };
 
+#if TARGET_OS_SIMULATOR
+  BOOL hasCompletedPermissionFlow = YES;
+#else
+  BOOL hasCompletedPermissionFlow = [[NSUserDefaults standardUserDefaults] boolForKey:@"expo.devlauncher.hasCompletedNetworkPermissionFlow"];
+#endif
+
   NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
-  if (initialUrl) {
+  if (initialUrl && hasCompletedPermissionFlow) {
     [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
     return;
   }
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+
+  if (!hasCompletedPermissionFlow) {
+    shouldTryToLaunchLastOpenedBundle = NO;
+  }
+  
+  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
     // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
     NSTimeInterval requestTimeout = 10.0;
@@ -200,7 +224,9 @@
 
   self.networkInterceptor = nil;
 
+#if !TARGET_OS_OSX
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+#endif
 
   // Reset app react host
   [self.delegate destroyReactInstance];
@@ -441,6 +467,7 @@
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
+#if !TARGET_OS_OSX
     UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
     [self _applyUserInterfaceStyle:userInterfaceStyle];
 
@@ -451,13 +478,16 @@
     if (userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
       UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
     }
+#endif
 
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
 
     [self setDevMenuAppBridge];
 
     if (backgroundColor) {
+#if !TARGET_OS_OSX
       self.window.rootViewController.view.backgroundColor = backgroundColor;
+#endif
       self.window.backgroundColor = backgroundColor;
     }
   });
@@ -472,6 +502,7 @@
   return [_appBridge isValid];
 }
 
+#if !TARGET_OS_OSX
 /**
  * Temporary `expo-splash-screen` fix.
  *
@@ -502,6 +533,7 @@
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
 }
+#endif
 
 -(NSDictionary *)getBuildInfo
 {
@@ -568,7 +600,10 @@
 }
 
 -(void)copyToClipboard:(NSString *)content {
-#if !TARGET_OS_TV
+#if TARGET_OS_OSX
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard setString:(content ?: @"") forType:NSPasteboardTypeString];
+#elif !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ?: @"");
 #endif
@@ -577,7 +612,7 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:self.appBridge.parentBridge];
+  [manager updateCurrentBridge:self.appBridge];
 
   if (self.manifest != nil) {
     [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];

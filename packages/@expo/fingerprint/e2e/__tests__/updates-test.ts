@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
@@ -20,7 +19,7 @@ describe('updates managed support', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
     // Pin the SDK version to prevent the latest version breaking snapshots
     await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-51', projectName], {
       stdio: 'inherit',
@@ -41,7 +40,7 @@ describe('updates managed support', () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should have same hash before and after prebuild', async () => {

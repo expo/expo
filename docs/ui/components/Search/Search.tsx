@@ -7,10 +7,14 @@ import versions from '~/public/static/constants/versions.json';
 import { ExpoDashboardItem } from './ExpoDashboardItem';
 import { entries } from './expoEntries';
 
+type SearchProps = {
+  mainSection?: string;
+};
+
 const { LATEST_VERSION } = versions;
 const isDev = process.env.NODE_ENV === 'development';
 
-export const Search = () => {
+export const Search = ({ mainSection }: SearchProps) => {
   const { version } = usePageApiVersion();
   const [open, setOpen] = useState(false);
   const [expoDashboardItems, setExpoDashboardItems] = useState<ReactNode[]>([]);
@@ -29,13 +33,17 @@ export const Search = () => {
       <CommandMenu
         open={open}
         setOpen={setOpen}
-        config={{ docsVersion: version, docsTransformUrl: transformDocsUrl }}
+        config={{
+          docsVersion: version,
+          docsTransformUrl: transformDocsUrl,
+          ...(mainSection && { docsSectionContext: { mainSection } }),
+        }}
         customSections={[
           {
             heading: 'EAS dashboard',
             items: expoDashboardItems,
             getItemsAsync: getExpoItemsAsync,
-            sectionIndex: 2,
+            sectionIndex: Number.MAX_SAFE_INTEGER,
           },
         ]}
       />
@@ -53,11 +61,6 @@ function transformDocsUrl(url: string) {
   }
   if (isDev) {
     url = url.replace('https://docs.expo.dev/', 'http://localhost:3002/');
-  }
-
-  // If viewing a docs preview hosted on S3, use the current origin instead of production
-  if (window?.location?.origin?.includes('s3-website-us-east-1.amazonaws.com')) {
-    url = url.replace('https://docs.expo.dev/', window.location.origin + '/');
   }
 
   return url;

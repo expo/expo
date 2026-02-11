@@ -93,6 +93,7 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
     }
   }
 
+  @JavaScriptActor
   public func createReactComponentPrototype(appContext: AppContext) throws -> JavaScriptObject {
     let prototype = try appContext.runtime.createObject()
 

@@ -1,5 +1,12 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 
+import type {
+  StackToolbarBadgeProps,
+  StackToolbarIconProps,
+  StackToolbarLabelProps,
+  StackToolbarMenuActionProps,
+  StackToolbarMenuProps,
+} from '../layouts/stack-utils';
 import type { LinkMenuActionProps, LinkMenuProps } from '../link/elements';
 import type {
   NativeTabsTriggerBadgeProps,
@@ -7,9 +14,9 @@ import type {
   NativeTabsTriggerLabelProps,
 } from '../native-tabs';
 
-export type BadgeProps = NativeTabsTriggerBadgeProps;
+export type BadgeProps = NativeTabsTriggerBadgeProps | StackToolbarBadgeProps;
 
-export type IconProps = NativeTabsTriggerIconProps;
+export type IconProps = NativeTabsTriggerIconProps | StackToolbarIconProps;
 
 export interface VectorIconProps<NameT extends string> {
   /**
@@ -19,6 +26,8 @@ export interface VectorIconProps<NameT extends string> {
    * ```tsx
    * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
    * ```
+   *
+   * @hideType
    */
   family: {
     getImageSource: (
@@ -33,8 +42,8 @@ export interface VectorIconProps<NameT extends string> {
   name: NameT;
 }
 
-export type LabelProps = NativeTabsTriggerLabelProps;
+export type LabelProps = NativeTabsTriggerLabelProps | StackToolbarLabelProps;
 
-export type MenuActionProps = LinkMenuActionProps;
+export type MenuActionProps = LinkMenuActionProps | StackToolbarMenuActionProps;
 
-export type MenuProps = LinkMenuProps;
+export type MenuProps = LinkMenuProps | StackToolbarMenuProps;

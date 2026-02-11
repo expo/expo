@@ -8,7 +8,12 @@ import { requireNativeModule } from 'expo';
 import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
+import { contentShape } from './contentShape';
 import { createModifier, ModifierConfig } from './createModifier';
+import { datePickerStyle } from './datePickerStyle';
+import { environment } from './environment';
+import { gaugeStyle } from './gaugeStyle';
+import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
@@ -93,6 +98,30 @@ export const frame = (params: {
     | 'bottomLeading'
     | 'bottomTrailing';
 }) => createModifier('frame', params);
+
+/**
+ * Positions this view within an invisible frame with a size relative to the nearest container.
+ * @param params - The content relative frame parameters: `axes`, `count`, `span`, `spacing` and `alignment`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/containerRelativeFrame(_:alignment:)).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
+export const containerRelativeFrame = (params: {
+  axes: 'horizontal' | 'vertical' | 'both';
+  count?: number;
+  span?: number;
+  spacing?: number;
+  alignment?:
+    | 'center'
+    | 'leading'
+    | 'trailing'
+    | 'top'
+    | 'bottom'
+    | 'topLeading'
+    | 'topTrailing'
+    | 'bottomLeading'
+    | 'bottomTrailing';
+}) => createModifier('containerRelativeFrame', params);
 
 /**
  * Sets padding on a view.
@@ -350,6 +379,20 @@ export const foregroundStyle = (
 };
 
 /**
+ * Makes text bold.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/bold()).
+ */
+export const bold = () => createModifier('bold', {});
+
+/**
+ * Makes text italic.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
+ */
+export const italic = () => createModifier('italic', {});
+
+/**
  * Sets the tint color of a view.
  * @param color - The tint color (hex string). For example, `#FF0000`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/tint(_:)).
@@ -444,6 +487,36 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the style for toggles within this view.
+ * @param style - The toggle style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/togglestyle(_:)).
+ */
+export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
+  createModifier('toggleStyle', { style });
+
+/**
+ * Sets the size of controls within this view.
+ * @param size - The control size.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/controlsize(_:)).
+ */
+export const controlSize = (size: 'mini' | 'small' | 'regular' | 'large' | 'extraLarge') =>
+  createModifier('controlSize', { size });
+
+/**
+ * Sets the style for labels within this view.
+ * @param style - The label style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelstyle(_:)).
+ */
+export const labelStyle = (style: 'automatic' | 'iconOnly' | 'titleAndIcon' | 'titleOnly') =>
+  createModifier('labelStyle', { style });
+
+/**
+ * Hides the labels of any controls contained within this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelshidden()).
+ */
+export const labelsHidden = () => createModifier('labelsHidden', {});
+
+/**
  * Sets the text field style for text field views.
  * @param style - The text field style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textfieldstyle(_:)).
@@ -461,6 +534,36 @@ export const textFieldStyle = (style: 'automatic' | 'plain' | 'roundedBorder') =
 export const scrollDismissesKeyboard = (
   mode: 'automatic' | 'never' | 'interactively' | 'immediately'
 ) => createModifier('scrollDismissesKeyboard', { mode });
+
+/**
+ * Disables or enables scrolling in scrollable views.
+ * @param disabled - Whether scrolling should be disabled (default: true).
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
+ */
+export const scrollDisabled = (disabled: boolean = true) =>
+  createModifier('scrollDisabled', { disabled });
+
+/**
+ * Disables the move action for a view in a list.
+ * Apply to items within a `ForEach` to prevent them from being moved.
+ * @param disabled - Whether moving should be disabled
+ * @default true
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/movedisabled(_:)).
+ */
+export const moveDisabled = (disabled: boolean = true) =>
+  createModifier('moveDisabled', { disabled });
+
+/**
+ * Disables the delete action for a view in a list.
+ * Apply to items within a `ForEach` to prevent them from being deleted.
+ * @param disabled - Whether deletion should be disabled
+ * @default true
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/deletedisabled(_:)).
+ */
+export const deleteDisabled = (disabled: boolean = true) =>
+  createModifier('deleteDisabled', { disabled });
 
 /**
  * Controls the dismissal behavior of menu actions.
@@ -588,6 +691,17 @@ export const scrollContentBackground = (visible: 'automatic' | 'visible' | 'hidd
 export const listRowBackground = (color: Color) => createModifier('listRowBackground', { color });
 
 /**
+ * Controls the visibility of the separator for a list row.
+ * @param visibility - The visibility to apply.
+ * @param edges - The edges where the separator visibility applies.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowseparator(_:edges:)).
+ */
+export const listRowSeparator = (
+  visibility: 'automatic' | 'visible' | 'hidden',
+  edges?: 'all' | 'top' | 'bottom'
+) => createModifier('listRowSeparator', { visibility, edges });
+
+/**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
  * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
  * You can truncate at the beginning, middle, or end of the text view.
@@ -654,6 +768,12 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linespacing(_:)).
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
+/**
+ * Sets the maximum number of lines that text can occupy in the view.
+ * @param limit - The maximum number of lines.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
+ */
+export const lineLimit = (limit?: number) => createModifier('lineLimit', { limit });
 /**
  * Sets the header prominence for this view.
  * @param prominence - The prominence to apply.
@@ -815,6 +935,43 @@ export const submitLabel = (
   submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
 ) => createModifier('submitLabel', { submitLabel });
 
+/**
+ * Sets the content transition type for a view.
+ * Useful for animating changes in text content, especially numeric text.
+ * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
+ *
+ * @param transitionType - The type of content transition.
+ * @param params - Optional parameters.
+ * @param params.countsDown - Whether the numeric text counts down.
+ *
+ * @example
+ * ```tsx
+ * <Text modifiers={[contentTransition('numericText'), animation(Animation.default, count)]}>
+ *   {count.toString()}
+ * </Text>
+ * ```
+ *
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
+ */
+export const contentTransition = (
+  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate',
+  params?: { countsDown?: boolean }
+) =>
+  createModifier('contentTransition', {
+    transitionType,
+    countsDown: params?.countsDown,
+  });
+
+export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
+/**
+ * Sets the style for a List view.
+ * @param style - The list style to apply.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/liststyle(_:)).
+ */
+export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -845,6 +1002,8 @@ export type BuiltInModifier =
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
   | ReturnType<typeof foregroundStyle>
+  | ReturnType<typeof bold>
+  | ReturnType<typeof italic>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
@@ -857,6 +1016,10 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof toggleStyle>
+  | ReturnType<typeof controlSize>
+  | ReturnType<typeof labelStyle>
+  | ReturnType<typeof labelsHidden>
   | ReturnType<typeof textFieldStyle>
   | ReturnType<typeof menuActionDismissBehavior>
   | ReturnType<typeof accessibilityLabel>
@@ -872,8 +1035,15 @@ export type BuiltInModifier =
   | ReturnType<typeof glassEffectId>
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
+  | ReturnType<typeof contentShape>
+  | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
+  | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof moveDisabled>
+  | ReturnType<typeof deleteDisabled>
+  | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
+  | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>
@@ -883,6 +1053,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof lineLimit>
   | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
@@ -892,7 +1063,13 @@ export type BuiltInModifier =
   | ReturnType<typeof gridCellUnsizedAxes>
   | ReturnType<typeof gridCellColumns>
   | ReturnType<typeof gridColumnAlignment>
-  | ReturnType<typeof gridCellAnchor>;
+  | ReturnType<typeof gridCellAnchor>
+  | ReturnType<typeof submitLabel>
+  | ReturnType<typeof datePickerStyle>
+  | ReturnType<typeof progressViewStyle>
+  | ReturnType<typeof gaugeStyle>
+  | ReturnType<typeof listStyle>
+  | ReturnType<typeof contentTransition>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -905,18 +1082,8 @@ export type ViewModifier = BuiltInModifier | ModifierConfig;
 // Utility Functions
 // =============================================================================
 
-/**
- * Creates a custom modifier for 3rd party libraries.
- * This function is exported so 3rd party packages can create their own modifiers.
- *
- * @example
- * ```ts
- * // In a 3rd party package
- * export const blurEffect = (params: { radius: number; style?: string }) =>
- *   createModifier('blurEffect', params);
- * ```
- */
-export { createModifier };
+export * from './createModifier';
+export * from './utils';
 
 /**
  * Type guard to check if a value is a valid modifier.
@@ -936,8 +1103,20 @@ export const filterModifiers = (modifiers: unknown[]): ModifierConfig[] => {
 
 export * from './animation/index';
 export * from './containerShape';
+export * from './contentShape';
 export * from './shapes/index';
 export * from './background';
 export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
+export * from './datePickerStyle';
+export * from './progressViewStyle';
+export * from './gaugeStyle';
+export * from './presentationModifiers';
+export * from './environment';
+export type {
+  TimingAnimationParams,
+  SpringAnimationParams,
+  InterpolatingSpringAnimationParams,
+  ChainableAnimationType,
+} from './animation/types';

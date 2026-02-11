@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.getLocales = getLocales;
 exports.setLocalesAsync = setLocalesAsync;
 exports.withLocales = void 0;
+exports.writeStringsFile = writeStringsFile;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
   _fs = function () {
@@ -52,31 +53,20 @@ const withLocales = config => {
   });
 };
 exports.withLocales = withLocales;
-function getLocales(config) {
-  return config.locales ?? null;
-}
-async function setLocalesAsync(config, {
-  projectRoot,
+async function writeStringsFile({
+  localesMap,
+  supportingDirectory,
+  fileName,
+  projectName,
   project
 }) {
-  const locales = getLocales(config);
-  if (!locales) {
-    return project;
-  }
-  // possibly validate CFBundleAllowMixedLocalizations is enabled
-  const localesMap = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'ios');
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
-  const supportingDirectory = _path().default.join(projectRoot, 'ios', projectName, 'Supporting');
-
-  // TODO: Should we delete all before running? Revisit after we land on a lock file.
-  const stringName = 'InfoPlist.strings';
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
+    if (Object.entries(localizationObj).length === 0) return project;
     const dir = _path().default.join(supportingDirectory, `${lang}.lproj`);
-    // await fs.ensureDir(dir);
     await _fs().default.promises.mkdir(dir, {
       recursive: true
     });
-    const strings = _path().default.join(dir, stringName);
+    const strings = _path().default.join(dir, fileName);
     const buffer = [];
     for (const [plistKey, localVersion] of Object.entries(localizationObj)) {
       buffer.push(`${plistKey} = "${localVersion}";`);
@@ -90,7 +80,7 @@ async function setLocalesAsync(config, {
     // Ensure the file doesn't already exist
     if (!group?.children.some(({
       comment
-    }) => comment === stringName)) {
+    }) => comment === fileName)) {
       // Only write the file if it doesn't already exist.
       project = (0, _Xcodeproj().addResourceFileToGroup)({
         filepath: _path().default.relative(supportingDirectory, strings),
@@ -100,6 +90,44 @@ async function setLocalesAsync(config, {
         verbose: true
       });
     }
+  }
+  return project;
+}
+function getLocales(config) {
+  return config.locales ?? null;
+}
+async function setLocalesAsync(config, {
+  projectRoot,
+  project
+}) {
+  const locales = getLocales(config);
+  if (!locales) {
+    return project;
+  }
+  // possibly validate CFBundleAllowMixedLocalizations is enabled
+  const {
+    localesMap,
+    localizableStringsIOS: localizableStrings
+  } = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'ios');
+  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
+  const supportingDirectory = _path().default.join(projectRoot, 'ios', projectName, 'Supporting');
+
+  // TODO: Should we delete all before running? Revisit after we land on a lock file.
+  project = await writeStringsFile({
+    localesMap,
+    supportingDirectory,
+    fileName: 'InfoPlist.strings',
+    projectName,
+    project
+  });
+  if (localizableStrings && Object.keys(localizableStrings).length) {
+    project = await writeStringsFile({
+      localesMap: localizableStrings,
+      supportingDirectory,
+      fileName: 'Localizable.strings',
+      projectName,
+      project
+    });
   }
   return project;
 }

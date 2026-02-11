@@ -1,0 +1,17 @@
+diff --git a/MainApplication.kt b/MainApplication.kt
+index 5e0552887d2..535edd47e53 100644
+--- a/MainApplication.kt
++++ b/MainApplication.kt
+@@ -3,10 +3,12 @@ class MainApplication : Application() {
+   override fun onCreate() {
+     super.onCreate()
+     ...
++    ApplicationLifecycleDispatcher.onApplicationCreate(this)
+   }
+
+   override fun onConfigurationChanged(newConfig: Configuration) {
+     super.onConfigurationChanged(newConfig)
+     ...
++    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+   }
+ }

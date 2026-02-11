@@ -25,6 +25,7 @@ const createCachedImport = () => {
 interface WorkerdEnvParams {
   build?: string;
   environment?: string | null;
+  isDevelopment?: boolean;
 }
 
 export function createWorkerdEnv(params: WorkerdEnvParams) {
@@ -62,6 +63,7 @@ export function createWorkerdEnv(params: WorkerdEnvParams) {
     readText,
     readJson,
     loadModule,
+    isDevelopment: params.isDevelopment ?? false,
   });
 }
 
@@ -75,6 +77,7 @@ export function createWorkerdRequestScope<Env = unknown>(
   params: WorkerdEnvParams
 ) {
   const makeRequestAPISetup = (request: Request, _env: Env, ctx: ExecutionContext) => ({
+    requestHeaders: request.headers,
     origin: request.headers.get('Origin') || 'null',
     environment: params.environment ?? null,
     waitUntil: ctx.waitUntil?.bind(ctx),

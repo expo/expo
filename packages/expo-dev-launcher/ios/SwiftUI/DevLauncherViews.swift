@@ -1,52 +1,89 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
-import UIKit
 
 public struct DevLauncherRootView: View {
   @ObservedObject var viewModel: DevLauncherViewModel
   @State private var showingUserProfile = false
+  @State private var hasCompletedPermissionFlow: Bool
 
   init(viewModel: DevLauncherViewModel) {
     self.viewModel = viewModel
+    let shouldSkipPermissionFlow = Self.isSimulator 
+      || UserDefaults.standard.bool(forKey: "expo.devlauncher.hasCompletedNetworkPermissionFlow")
+    _hasCompletedPermissionFlow = State(initialValue: shouldSkipPermissionFlow)
+  }
+  
+  private static var isSimulator: Bool {
+    #if targetEnvironment(simulator)
+    return true
+    #else
+    return false
+    #endif
   }
 
   public var body: some View {
-    NavigationView {
-      TabView {
-        HomeTabView()
-          .tabItem {
-            Image(systemName: "house.fill")
-            Text("Home")
-          }
-
-        UpdatesTabView()
-          .tabItem {
-            Image(systemName: "arrow.2.circlepath")
-            Text("Updates")
-          }
-
-        SettingsTabView()
-          .tabItem {
-            Image(systemName: "gearshape")
-            Text("Settings")
-          }
-      }
-      .onAppear {
-        DevLauncherTabBarManager.shared.setCustomAppearance()
-      }
-      .onDisappear {
-        DevLauncherTabBarManager.shared.restoreOriginalAppearance()
-      }
-      .navigationBarHidden(true)
-      .environmentObject(viewModel)
-      .environmentObject(DevLauncherNavigation(showingUserProfile: $showingUserProfile))
+    if !hasCompletedPermissionFlow {
+      LocalNetworkPermissionView(
+        viewModel: viewModel,
+        onPermissionGranted: {
+          hasCompletedPermissionFlow = true
+        }
+      )
+    } else {
+      mainContent
     }
-    .navigationViewStyle(.stack)
+  }
+  
+  @ViewBuilder
+  private var mainContent: some View {
+    let tabView = TabView {
+      HomeTabView()
+        .tabItem {
+          Image(systemName: "house.fill")
+          Text("Home")
+        }
+
+      UpdatesTabView()
+        .tabItem {
+          Image(systemName: "arrow.2.circlepath")
+          Text("Updates")
+        }
+
+      SettingsTabView()
+        .tabItem {
+          Image(systemName: "gearshape")
+          Text("Settings")
+        }
+    }
+    .onAppear {
+      DevLauncherTabBarManager.shared.setCustomAppearance()
+    }
+    .onDisappear {
+      DevLauncherTabBarManager.shared.restoreOriginalAppearance()
+    }
+#if !os(macOS)
+    .navigationBarHidden(true)
+#endif
+    .environmentObject(viewModel)
+    .environmentObject(DevLauncherNavigation(showingUserProfile: $showingUserProfile))
+
+#if !os(macOS)
+    let navigationStack = NavigationView {
+      tabView
+    }.navigationViewStyle(.stack)
+#else
+    let navigationStack = NavigationStack {
+      tabView
+    }
+#endif
+
+    navigationStack
     .sheet(isPresented: $showingUserProfile) {
       AccountSheet()
         .environmentObject(viewModel)
     }
+#if !os(macOS)
     .fullScreenCover(isPresented: $viewModel.showingCrashReport) {
       if let error = viewModel.currentError {
         CrashReportView(
@@ -58,6 +95,19 @@ public struct DevLauncherRootView: View {
         )
       }
     }
+#else
+    .sheet(isPresented: $viewModel.showingCrashReport) {
+      if let error = viewModel.currentError {
+        CrashReportView(
+          error: error,
+          errorInstance: viewModel.storedCrashInstance,
+          onDismiss: {
+            viewModel.dismissCrashReport()
+          }
+        )
+      }
+    }
+#endif
     .alert("Error loading app", isPresented: $viewModel.showingErrorAlert) {
       Button("OK") {
         viewModel.dismissErrorAlert()

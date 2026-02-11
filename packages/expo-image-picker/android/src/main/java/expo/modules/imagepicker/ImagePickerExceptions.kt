@@ -4,9 +4,6 @@ import androidx.core.net.toUri
 import expo.modules.kotlin.exception.CodedException
 import java.io.File
 
-internal class FailedToDeduceTypeException :
-  CodedException("Can not deduce type of the returned file")
-
 internal class FailedToCreateFileException(path: String, cause: Throwable? = null) :
   CodedException("Failed to create the file '$path'", cause)
 

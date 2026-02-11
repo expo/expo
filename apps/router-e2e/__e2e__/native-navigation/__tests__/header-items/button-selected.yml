@@ -1,0 +1,17 @@
+appId: com.expo.routere2e
+name: Header Items button selected state
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://header-items?leftButton2=1
+- runFlow: ../close-warning.yml
+- assertVisible: "Stack Header Items E2E Test Screen"
+# TODO: Add screenshots comparison
+- takeScreenshot: header-items-button-not-selected
+- tapOn:
+    id: toggle-left-button-2-selected
+- takeScreenshot: header-items-button-selected
+- tapOn:
+    id: toggle-left-button-2-selected
+- tapOn:
+    id: toggle-left-button-2-separate-background
+- takeScreenshot: header-items-button-separate-background

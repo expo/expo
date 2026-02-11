@@ -37,3 +37,9 @@
 -keepnames class * implements expo.modules.kotlin.views.ExpoView {
   *;
 }
+
+-keep interface expo.modules.kotlin.services.Service
+
+-keep class * implements expo.modules.kotlin.services.Service {
+    <init>(...);
+}

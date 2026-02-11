@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle, StyleSheet, PixelRatio } from 'react-native';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
 
@@ -35,13 +35,9 @@ export type DateTimePickerProps = {
    */
   displayedComponents?: DisplayedComponents;
   /**
-   * Optional style to apply to the component.
-   */
-  style?: StyleProp<ViewStyle>;
-  /**
    * The tint color to use on the picker elements.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * Determines what format the clock should be displayed in on Android.
    * @default true
@@ -66,15 +62,6 @@ type NativeDatePickerProps = Omit<
  */
 export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
   const { variant, initialDate, ...rest } = props;
-  const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(rest.style) || {};
-
-  // On Android, the picker’s minWidth and minHeight must be 12dp.
-  // Otherwise, the picker will crash the app.
-  const minSize = PixelRatio.getPixelSizeForLayoutSize(12);
-
-  // However, when users pass the minWidth and minHeight props, we trust that they know what they are doing.
-  const parsedMinWidth = minWidth ? minSize : undefined;
-  const parsedMinHeight = minHeight ? minSize : undefined;
 
   // Convert ISO string to timestamp for Android
   const initialDateTimestamp = initialDate ? new Date(initialDate).getTime() : null;
@@ -86,9 +73,6 @@ export function transformDateTimePickerProps(props: DateTimePickerProps): Native
       props?.onDateSelected?.(new Date(date));
     },
     variant,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
-    style: [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }],
   };
 }
 

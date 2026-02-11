@@ -8,6 +8,17 @@ import fs from 'fs';
 import { builtinModules } from 'module';
 import path from 'path';
 
+// TODO(@kitten): When `builtinModules` isn't present, we instead use the `process.binding('natives')` internal
+// call which is almost equivalent. It's unclear from the History in Node.js' docs whether this fallback is still necessary
+// https://nodejs.org/api/module.html#modulebuiltinmodules
+declare global {
+  namespace NodeJS {
+    interface Process {
+      binding?(key: 'natives'): Record<string, unknown>;
+    }
+  }
+}
+
 // A list of the Node.js standard library modules that are currently
 // available,
 export const NODE_STDLIB_MODULES: string[] = [
@@ -29,7 +40,6 @@ export const NODE_STDLIB_MODULES: string[] = [
   // Collect all builtin modules...
   ...(
     builtinModules ||
-    // @ts-expect-error
     (process.binding ? Object.keys(process.binding('natives')) : []) ||
     []
   ).filter((x) => !/^(internal|v8|node-inspect)\/|\//.test(x) && !['sys'].includes(x)),

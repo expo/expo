@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { type ColorValue } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
 export type AndroidVariant = 'picker' | 'input';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
@@ -30,13 +30,9 @@ export type DateTimePickerProps = {
      */
     displayedComponents?: DisplayedComponents;
     /**
-     * Optional style to apply to the component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * The tint color to use on the picker elements.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Determines what format the clock should be displayed in on Android.
      * @default true

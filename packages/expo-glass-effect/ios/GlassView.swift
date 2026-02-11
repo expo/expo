@@ -34,7 +34,7 @@ public final class GlassView: ExpoView {
   // https://github.com/expo/expo/issues/40911
   private func isGlassEffectAvailable() -> Bool {
     #if compiler(>=6.2)
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
         return false
       }
@@ -45,11 +45,11 @@ public final class GlassView: ExpoView {
     return false
   }
 
-  public func updateBorderRadius() {
+  func updateBorderRadius() {
     guard isGlassEffectAvailable() else {
       return
     }
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
 
@@ -85,109 +85,140 @@ public final class GlassView: ExpoView {
     }
   }
 
-  public func setGlassStyle(_ style: GlassStyle) {
-    if glassStyle != style {
-      glassStyle = style
+  func setGlassStyle(_ config: GlassEffectStyleConfig) {
+    applyGlassStyle(config.style, animate: config.animate, animationDuration: config.animationDuration)
+  }
+
+  func setGlassStyle(_ style: GlassStyle) {
+    applyGlassStyle(style)
+  }
+
+  private func applyGlassStyle(_ newStyle: GlassStyle, animate: Bool = false, animationDuration: Double? = nil) {
+    if glassStyle != newStyle {
+      glassStyle = newStyle
       guard isGlassEffectAvailable() else {
         return
       }
-      if #available(iOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
-        let effect = UIGlassEffect(style: glassStyle?.toUIGlassEffectStyle() ?? .regular)
-        glassEffectView.effect = effect
-        glassEffect = effect
-        updateEffect()
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
+        #if compiler(>=6.2) // Xcode 26
+        let applyEffect = {
+          if let uiStyle = newStyle.toUIGlassEffectStyle() {
+            let effect = UIGlassEffect(style: uiStyle)
+            self.glassEffectView.effect = effect
+            self.glassEffect = effect
+            self.updateEffect()
+          } else {
+            // TODO: revisit this in newer versions of iOS
+            // setting `nil` does not work as expected, so we need to set a visual effect with no effect
+            self.glassEffectView.effect = UIVisualEffect()
+            self.glassEffect = self.glassEffectView.effect
+          }
+        }
+
+        if animate {
+          if let duration = animationDuration {
+            UIView.animate(withDuration: duration, animations: applyEffect)
+          } else {
+            UIView.animate(animations: applyEffect)
+          }
+        } else {
+          applyEffect()
+        }
         #endif
       }
     }
   }
 
   // TODO: support UIVisualEffectView with ExpoFabricView?
-  public func setBorderRadius(_ _radius: CGFloat?) {
+  func setBorderRadius(_ _radius: CGFloat?) {
     if _radius != radius {
       radius = _radius
       updateBorderRadius()
     }
   }
-  public func setBorderCurve(_: String?) {
+  func setBorderCurve(_: String?) {
     glassEffectView.layer.cornerCurve = self.layer.cornerCurve
   }
 
-  public func setBorderBottomLeftRadius(_ radius: CGFloat?) {
+  func setBorderBottomLeftRadius(_ radius: CGFloat?) {
     if radius != bottomLeftRadius {
       bottomLeftRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderBottomRightRadius(_ radius: CGFloat?) {
+  func setBorderBottomRightRadius(_ radius: CGFloat?) {
     if radius != bottomRightRadius {
       bottomRightRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopLeftRadius(_ radius: CGFloat?) {
+  func setBorderTopLeftRadius(_ radius: CGFloat?) {
     if radius != topLeftRadius {
       topLeftRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopRightRadius(_ radius: CGFloat?) {
+  func setBorderTopRightRadius(_ radius: CGFloat?) {
     if radius != topRightRadius {
       topRightRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderBottomStartRadius(_ radius: CGFloat?) {
+  func setBorderBottomStartRadius(_ radius: CGFloat?) {
     if radius != bottomStartRadius {
       bottomStartRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderBottomEndRadius(_ radius: CGFloat?) {
+  func setBorderBottomEndRadius(_ radius: CGFloat?) {
     if radius != bottomEndRadius {
       bottomEndRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopStartRadius(_ radius: CGFloat?) {
+  func setBorderTopStartRadius(_ radius: CGFloat?) {
     if radius != topStartRadius {
       topStartRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopEndRadius(_ radius: CGFloat?) {
+  func setBorderTopEndRadius(_ radius: CGFloat?) {
     if radius != topEndRadius {
       topEndRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setTintColor(_ color: UIColor?) {
+  func setTintColor(_ color: UIColor?) {
     if color != glassTintColor {
       glassTintColor = color
       updateEffect()
     }
   }
 
-  public func setInteractive(_ interactive: Bool) {
+  func setInteractive(_ interactive: Bool) {
     if interactive != glassIsInteractive {
       glassIsInteractive = interactive
       updateEffect()
     }
   }
 
+  func setColorScheme(_ colorScheme: GlassColorScheme) {
+    overrideUserInterfaceStyle = colorScheme.toUIUserInterfaceStyle()
+  }
+
   private func updateEffect() {
     guard isGlassEffectAvailable() else {
       return
     }
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       if let effect = glassEffect as? UIGlassEffect {
         effect.tintColor = glassTintColor

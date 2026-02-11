@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { type ColorSchemeName, I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { I18nManager, StyleProp, ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -28,13 +28,20 @@ export type HostProps = {
   /**
    * The color scheme of the host view.
    */
-  colorScheme?: ColorSchemeName;
+  colorScheme?: 'light' | 'dark';
 
   /**
    * The layout direction for the SwiftUI content.
    * Defaults to the current locale direction from I18nManager.
    */
   layoutDirection?: 'leftToRight' | 'rightToLeft';
+
+  /**
+   * Controls which safe area regions the SwiftUI hosting view should ignore. Can only be set once on mount.
+   * - `'all'`- ignores all safe area insets.
+   * - `'keyboard'` - ignores only the keyboard safe area.
+   */
+  ignoreSafeArea?: 'all' | 'keyboard';
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -48,7 +55,14 @@ const HostNativeView: React.ComponentType<
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, modifiers, layoutDirection, ...restProps } = props;
+  const {
+    matchContents,
+    onLayoutContent,
+    ignoreSafeArea,
+    modifiers,
+    layoutDirection,
+    ...restProps
+  } = props;
 
   return (
     <HostNativeView
@@ -64,6 +78,7 @@ export function Host(props: HostProps) {
       layoutDirection={
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
       }
+      ignoreSafeArea={ignoreSafeArea}
       {...restProps}
     />
   );

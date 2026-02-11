@@ -20,7 +20,6 @@ import { toPosixPath } from '../../../utils/filePath';
 import { memoize } from '../../../utils/fn';
 import { getIpAddress } from '../../../utils/ip';
 import { streamToStringAsync } from '../../../utils/stream';
-import { createBuiltinAPIRequestHandler } from '../middleware/createBuiltinAPIRequestHandler';
 import {
   createBundleUrlSearchParams,
   type ExpoMetroOptions,
@@ -35,13 +34,14 @@ type SSRLoadModuleArtifactsFunc = (
 ) => Promise<{ artifacts: SerialAsset[]; src: string }>;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
-  filePath: string,
+  filePath: string | null,
   specificOptions?: Partial<ExpoMetroOptions>,
   extras?: { hot?: boolean }
 ) => Promise<T>;
 
 const getMetroServerRootMemo = memoize(getMetroServerRoot);
 
+// TODO(@hassankhan): Rename this to `createRscRenderer()`
 export function createServerComponentsMiddleware(
   projectRoot: string,
   {
@@ -66,8 +66,8 @@ export function createServerComponentsMiddleware(
   }
 ) {
   const routerModule = useClientRouter
-    ? '@expo/router-server/build/rsc/router/noopRouter'
-    : '@expo/router-server/build/rsc/router/expo-definedRouter';
+    ? require.resolve('@expo/router-server/build/rsc/router/noopRouter')
+    : require.resolve('@expo/router-server/build/rsc/router/expo-definedRouter');
 
   const rscMiddleware = getRscMiddleware({
     config: {},
@@ -334,7 +334,7 @@ export function createServerComponentsMiddleware(
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
-    ssrManifest?: Map<string, string>;
+    ssrManifest?: Map<string, string | null>;
   }): (
     file: string,
     isServer: boolean
@@ -446,16 +446,13 @@ export function createServerComponentsMiddleware(
     typeof import('@expo/router-server/build/rsc/rsc-renderer')
   >();
 
-  let ensurePromise: Promise<any> | null = null;
+  let ensurePromise: Promise<unknown> | null = null;
   async function ensureSSRReady() {
     // TODO: Extract CSS Modules / Assets from the bundler process
-    const runtime = await ssrLoadModule<
-      typeof import('@expo/router-server/build/rsc/rsc-renderer')
-    >('metro-runtime/src/modules/empty-module.js', {
+    await ssrLoadModule(null, {
       environment: 'react-server',
       platform: 'web',
     });
-    return runtime;
   }
   const ensureMemo = () => {
     ensurePromise ??= ensureSSRReady();
@@ -472,7 +469,7 @@ export function createServerComponentsMiddleware(
     // TODO: Extract CSS Modules / Assets from the bundler process
     const renderer = await ssrLoadModule<
       typeof import('@expo/router-server/build/rsc/rsc-renderer')
-    >('@expo/router-server/build/rsc/rsc-renderer', {
+    >(require.resolve('@expo/router-server/build/rsc/rsc-renderer'), {
       environment: 'react-server',
       platform,
     });
@@ -515,7 +512,7 @@ export function createServerComponentsMiddleware(
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
       contentType?: string;
-      ssrManifest?: Map<string, string>;
+      ssrManifest?: Map<string, string | null>;
       decodedBody?: unknown;
       routerOptions: Record<string, any>;
     },
@@ -574,6 +571,9 @@ export function createServerComponentsMiddleware(
     getExpoRouterClientReferencesAsync,
     exportServerActionsAsync,
 
+    // Expose the RSC handler directly for use with `createRouteHandlerMiddleware()`
+    handler: rscMiddleware,
+
     async exportRoutesAsync(
       {
         platform,
@@ -581,7 +581,7 @@ export function createServerComponentsMiddleware(
         routerOptions,
       }: {
         platform: string;
-        ssrManifest: Map<string, string>;
+        ssrManifest: Map<string, string | null>;
         routerOptions: Record<string, any>;
       },
       files: ExportAssetMap
@@ -631,13 +631,6 @@ export function createServerComponentsMiddleware(
       );
     },
 
-    middleware: createBuiltinAPIRequestHandler(
-      // Match `/_flight/[platform]/[...path]`
-      (req) => {
-        return getFullUrl(req.url).pathname.startsWith(rscPathPrefix);
-      },
-      rscMiddleware
-    ),
     onReloadRscEvent: (platform: string) => {
       // NOTE: We cannot clear the renderer context because it would break the mounted context state.
 
@@ -646,14 +639,6 @@ export function createServerComponentsMiddleware(
     },
   };
 }
-
-const getFullUrl = (url: string) => {
-  try {
-    return new URL(url);
-  } catch {
-    return new URL(url, 'http://localhost:0');
-  }
-};
 
 export const fileURLToFilePath = (fileURL: string) => {
   try {

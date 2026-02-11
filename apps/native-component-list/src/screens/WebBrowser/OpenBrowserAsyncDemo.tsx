@@ -84,6 +84,12 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
         },
         {
           type: 'boolean',
+          name: 'useProxyActivity',
+          platforms: ['android'],
+          initial: true,
+        },
+        {
+          type: 'boolean',
           name: 'showInRecents',
           platforms: ['android'],
           initial: false,

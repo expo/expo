@@ -123,7 +123,7 @@ export function getStateFromPath<ParamList extends object>(
       });
 
     if (routes.length) {
-      return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.url.hash);
+      return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.hash);
     }
 
     return undefined;
@@ -150,7 +150,7 @@ export function getStateFromPath<ParamList extends object>(
         match.routeNames.map((name) => ({ name })),
         initialRoutes,
         configs,
-        expoPath.url.hash
+        expoPath.hash
       );
     }
 
@@ -166,7 +166,7 @@ export function getStateFromPath<ParamList extends object>(
 
   if (routes !== undefined) {
     // This will always be empty if full path matched
-    current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.url.hash);
+    current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.hash);
     remaining = remainingPath;
     result = current;
   }

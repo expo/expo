@@ -1,12 +1,9 @@
 'use client';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { isValidElement, type ReactElement, type ReactNode } from 'react';
+import { isValidElement, useCallback, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
-import type { NativeTabOptions, NativeTabTriggerProps } from './types';
-import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import { useSafeLayoutEffect } from '../views/useSafeLayoutEffect';
 import {
   NativeTabsTriggerIcon,
   NativeTabsTriggerBadge,
@@ -17,8 +14,11 @@ import {
   type NativeTabsTriggerIconProps,
   type SrcIcon,
 } from './common/elements';
-import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
+import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { convertComponentSrcToImageSource } from './utils/icon';
+import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { useFocusEffect } from '../useFocusEffect';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 import { convertMaterialIconNameToImageSource } from './utils/materialIconConverter';
 
 /**
@@ -28,8 +28,7 @@ import { convertMaterialIconNameToImageSource } from './utils/materialIconConver
  * When used in the tab screen, the `name` prop takes no effect.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -43,8 +42,7 @@ import { convertMaterialIconNameToImageSource } from './utils/materialIconConver
  * ```
  *
  * @example
- * ```tsx
- * // In a tab screen
+ * ```tsx app/home.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function HomeScreen() {
@@ -58,29 +56,28 @@ import { convertMaterialIconNameToImageSource } from './utils/materialIconConver
  *   );
  * }
  * ```
- *
- * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
-  const isFocused = navigation.isFocused();
   const isInPreview = useIsPreview();
 
-  useSafeLayoutEffect(() => {
-    // This will cause the tab to update only when it is focused.
-    // As long as all tabs are loaded at the start, we don't need this check.
-    // It is here to ensure similar behavior to stack
-    if (isFocused && !isInPreview) {
-      if (navigation.getState()?.type !== 'tab') {
-        throw new Error(
-          `Trigger component can only be used in the tab screen. Current route: ${route.name}`
-        );
+  useFocusEffect(
+    useCallback(() => {
+      // This will cause the tab to update only when it is focused.
+      // As long as all tabs are loaded at the start, we don't need this check.
+      // It is here to ensure similar behavior to stack
+      if (!isInPreview) {
+        if (navigation.getState()?.type !== 'tab') {
+          throw new Error(
+            `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+          );
+        }
+        const options = convertTabPropsToOptions(props, true);
+        navigation.setOptions(options);
       }
-      const options = convertTabPropsToOptions(props, true);
-      navigation.setOptions(options);
-    }
-  }, [isFocused, props, isInPreview]);
+    }, [props, isInPreview])
+  );
 
   return null;
 }
@@ -101,12 +98,15 @@ export function convertTabPropsToOptions(
     disableScrollToTop,
     unstable_nativeProps,
     disableAutomaticContentInsets,
+    contentStyle,
+    disableTransparentOnScrollEdge,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
   const initialOptions: NativeTabOptions = isDynamic
     ? {
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
+        ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
       }
     : {
         hidden: !!hidden,
@@ -116,9 +116,11 @@ export function convertTabPropsToOptions(
             scrollToTop: !disableScrollToTop,
           },
         },
+        contentStyle,
         role,
         nativeProps: unstable_nativeProps,
         disableAutomaticContentInsets,
+        ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,
@@ -184,6 +186,16 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
           }
         : undefined;
     }
+  } else if ('xcasset' in props && props.xcasset && process.env.EXPO_OS === 'ios') {
+    if (typeof props.xcasset === 'string') {
+      options.icon = { xcasset: props.xcasset };
+      options.selectedIcon = undefined;
+    } else {
+      options.icon = props.xcasset.default ? { xcasset: props.xcasset.default } : undefined;
+      options.selectedIcon = props.xcasset.selected
+        ? { xcasset: props.xcasset.selected }
+        : undefined;
+    }
   } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
     if ('md' in props) {
       console.warn(
@@ -221,20 +233,27 @@ function convertIconSrcToIconOption(
         : { defaultIcon: icon.src };
 
     const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
-    options.icon = convertSrcOrComponentToSrc(defaultIcon);
-    options.selectedIcon = convertSrcOrComponentToSrc(selected);
+    options.icon = convertSrcOrComponentToSrc(defaultIcon, { renderingMode: icon.renderingMode });
+    options.selectedIcon = convertSrcOrComponentToSrc(selected, {
+      renderingMode: icon.renderingMode,
+    });
     return options;
   }
 
   return undefined;
 }
 
-function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
+function convertSrcOrComponentToSrc(
+  src: ImageSourcePropType | ReactElement | undefined,
+  options: {
+    renderingMode: 'template' | 'original' | undefined;
+  }
+) {
   if (src) {
     if (isValidElement(src)) {
       return convertComponentSrcToImageSource(src);
     } else {
-      return { src };
+      return { src, renderingMode: options.renderingMode };
     }
   }
   return undefined;
@@ -244,24 +263,15 @@ export function isNativeTabTrigger(
   child: ReactNode,
   contextKey?: string
 ): child is ReactElement<NativeTabTriggerProps & { name: string }> {
-  if (isValidElement(child) && child && child.type === NativeTabTrigger) {
-    if (
-      typeof child.props === 'object' &&
-      child.props &&
-      'name' in child.props &&
-      !child.props.name
-    ) {
+  if (isChildOfType(child, NativeTabTrigger)) {
+    if ('name' in child.props && !child.props.name) {
       throw new Error(
         `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`
       );
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      if (
-        ['component', 'getComponent'].some(
-          (key) => child.props && typeof child.props === 'object' && key in child.props
-        )
-      ) {
+      if ((['component', 'getComponent'] as const).some((key) => key in child.props)) {
         throw new Error(
           `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`component\` or \`getComponent\` prop when used as a child of a Layout Route`
         );

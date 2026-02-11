@@ -1,18 +1,16 @@
-import React, { useDeferredValue } from 'react';
-import type { ColorValue } from 'react-native';
-import {
-  BottomTabs,
-  BottomTabsScreen,
-  featureFlags,
-  type BottomTabsProps,
-  type BottomTabsScreenAppearance,
-} from 'react-native-screens';
+import { useTheme } from '@react-navigation/native';
+import React, { useDeferredValue, useMemo } from 'react';
+import { View, type ColorValue } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Tabs, type TabsHostProps, type TabsScreenAppearance } from 'react-native-screens';
 import { SafeAreaView } from 'react-native-screens/experimental';
 
 import {
   createScrollEdgeAppearanceFromOptions,
   createStandardAppearanceFromOptions,
 } from './appearance';
+import { Color } from '../color';
+import { NativeTabsBottomAccessory } from './common/elements';
 import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
   SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
@@ -24,13 +22,18 @@ import {
   convertOptionsIconToIOSPropsIcon,
   useAwaitedScreensIcon,
 } from './utils/icon';
-
-// We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
-// Otherwise user may see glitches when switching between tabs.
-featureFlags.experiment.controlledBottomTabs = false;
+import { getFirstChildOfType } from '../utils/children';
+import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable } = props;
+  const {
+    minimizeBehavior,
+    disableIndicator,
+    focusedIndex,
+    tabs,
+    sidebarAdaptable,
+    nonTriggerChildren,
+  } = props;
 
   const deferredFocusedIndex = useDeferredValue(focusedIndex);
   // We need to check if the deferred index is not out of bounds
@@ -46,6 +49,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   }));
 
   const options = tabs.map((tab) => tab.options);
+
+  const bottomAccessory = useMemo(
+    () => getFirstChildOfType(nonTriggerChildren, NativeTabsBottomAccessory),
+    [nonTriggerChildren]
+  );
+
+  const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
 
   const children = tabs.map((tab, index) => {
     const isFocused = index === inBoundsDeferredFocusedIndex;
@@ -66,45 +76,75 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   });
 
   const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
-  const tabBarControllerMode: BottomTabsProps['tabBarControllerMode'] = sidebarAdaptable
+  const tabBarControllerMode: TabsHostProps['tabBarControllerMode'] = sidebarAdaptable
     ? 'tabSidebar'
     : sidebarAdaptable === false
       ? 'tabBar'
       : 'automatic';
 
+  // Material Design 3 dynamic color defaults for Android
+  const androidMaterialDefaults =
+    process.env.EXPO_OS === 'android'
+      ? {
+          inactiveColor: Color.android.dynamic.onSurfaceVariant,
+          activeIconColor: Color.android.dynamic.onSecondaryContainer,
+          activeLabelColor: Color.android.dynamic.onSurface,
+          backgroundColor: Color.android.dynamic.surfaceContainer,
+          rippleColor: Color.android.dynamic.primary,
+          indicatorColor: Color.android.dynamic.secondaryContainer,
+        }
+      : undefined;
+
   return (
-    <BottomTabsWrapper
+    <TabsHostWrapper
       // #region android props
-      tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor}
+      tabBarItemTitleFontColor={
+        currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor ??
+        androidMaterialDefaults?.inactiveColor
+      }
       tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily}
       tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize}
       tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize}
       tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight}
       tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle}
-      tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor}
-      tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor}
-      tabBarItemRippleColor={props.rippleColor}
+      tabBarItemIconColor={
+        currentTabAppearance?.stacked?.normal?.tabBarItemIconColor ??
+        androidMaterialDefaults?.inactiveColor
+      }
+      tabBarBackgroundColor={
+        currentTabAppearance?.tabBarBackgroundColor ?? androidMaterialDefaults?.backgroundColor
+      }
+      tabBarItemRippleColor={props.rippleColor ?? androidMaterialDefaults?.rippleColor}
       tabBarItemLabelVisibilityMode={props.labelVisibilityMode}
       tabBarItemIconColorActive={
-        currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor
+        currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ??
+        props?.tintColor ??
+        androidMaterialDefaults?.activeIconColor
       }
       tabBarItemTitleFontColorActive={
-        currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor
+        currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ??
+        props?.tintColor ??
+        androidMaterialDefaults?.activeLabelColor
       }
       // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
-      tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor}
+      tabBarItemActiveIndicatorColor={
+        options[inBoundsDeferredFocusedIndex]?.indicatorColor ??
+        androidMaterialDefaults?.indicatorColor
+      }
       tabBarItemActiveIndicatorEnabled={!disableIndicator}
       // #endregion
       // #region iOS props
       tabBarTintColor={props?.tintColor}
       tabBarMinimizeBehavior={minimizeBehavior}
       tabBarControllerMode={tabBarControllerMode}
+      bottomAccessory={bottomAccessoryFn}
+      tabBarHidden={props.hidden}
       // #endregion
       onNativeFocusChange={({ nativeEvent: { tabKey } }) => {
         props.onTabChange(tabKey);
       }}>
       {children}
-    </BottomTabsWrapper>
+    </TabsHostWrapper>
   );
 }
 
@@ -113,8 +153,8 @@ function Screen(props: {
   name: string;
   isFocused: boolean;
   options: NativeTabOptions;
-  standardAppearance: BottomTabsScreenAppearance;
-  scrollEdgeAppearance: BottomTabsScreenAppearance;
+  standardAppearance: TabsScreenAppearance;
+  scrollEdgeAppearance: TabsScreenAppearance;
   badgeTextColor: ColorValue | undefined;
   contentRenderer: () => React.ReactNode;
 }) {
@@ -133,19 +173,40 @@ function Screen(props: {
   // We need to await the icon, as VectorIcon will load asynchronously
   const icon = useAwaitedScreensIcon(options.icon);
   const selectedIcon = useAwaitedScreensIcon(options.selectedIcon);
+  const { colors } = useTheme();
 
-  const content = contentRenderer();
-  const wrappedContent =
-    process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets ? (
-      <SafeAreaView style={{ flex: 1 }} edges={{ bottom: true }}>
-        {content}
-      </SafeAreaView>
-    ) : (
-      content
-    );
+  const content = (
+    <View
+      // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+      collapsable={false}
+      style={[
+        { backgroundColor: colors.background },
+        options.contentStyle,
+        { flex: 1, position: 'relative', overflow: 'hidden' },
+      ]}>
+      {contentRenderer()}
+    </View>
+  );
+  const wrappedContent = useMemo(() => {
+    if (process.env.EXPO_OS === 'android' && !options.disableAutomaticContentInsets) {
+      return (
+        <SafeAreaView
+          // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
+          collapsable={false}
+          style={{ flex: 1 }}
+          edges={{ bottom: true }}>
+          {content}
+        </SafeAreaView>
+      );
+    } else if (process.env.EXPO_OS === 'ios') {
+      return <SafeAreaProvider>{content}</SafeAreaProvider>;
+    } else {
+      return content;
+    }
+  }, [content, options.disableAutomaticContentInsets]);
 
   return (
-    <BottomTabsScreen
+    <Tabs.Screen
       {...options}
       overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets}
       tabBarItemBadgeBackgroundColor={
@@ -154,8 +215,14 @@ function Screen(props: {
       tabBarItemBadgeTextColor={badgeTextColor}
       standardAppearance={standardAppearance}
       scrollEdgeAppearance={scrollEdgeAppearance}
-      icon={convertOptionsIconToRNScreensPropsIcon(icon)}
-      selectedIcon={convertOptionsIconToIOSPropsIcon(selectedIcon)}
+      icon={convertOptionsIconToRNScreensPropsIcon(
+        icon,
+        standardAppearance?.stacked?.normal?.tabBarItemIconColor
+      )}
+      selectedIcon={convertOptionsIconToIOSPropsIcon(
+        selectedIcon,
+        standardAppearance?.stacked?.selected?.tabBarItemIconColor
+      )}
       title={title}
       freezeContents={false}
       systemItem={options.role}
@@ -163,7 +230,7 @@ function Screen(props: {
       tabKey={routeKey}
       isFocused={isFocused}>
       {wrappedContent}
-    </BottomTabsScreen>
+    </Tabs.Screen>
   );
 }
 
@@ -172,7 +239,7 @@ const supportedTabBarItemLabelVisibilityModesSet = new Set<string>(
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES
 );
 
-function BottomTabsWrapper(props: BottomTabsProps) {
+function TabsHostWrapper(props: TabsHostProps) {
   let { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, ...rest } = props;
   if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
     console.warn(
@@ -191,7 +258,7 @@ function BottomTabsWrapper(props: BottomTabsProps) {
   }
 
   return (
-    <BottomTabs
+    <Tabs.Host
       tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode}
       tabBarMinimizeBehavior={tabBarMinimizeBehavior}
       {...rest}

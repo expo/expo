@@ -8,11 +8,41 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - [Android] Fixed broken thumbnail generation on Android 9 and lower. ([#3854081613](https://github.com/expo/expo/pull/40816) by [@andrejpavlovic](https://github.com/andrejpavlovic))
 
 ### 💡 Others
 
 - [Android] Remove unused `androidx.annotation:annotation` dependency. ([#39755](https://github.com/expo/expo/pull/39755) by [@lukmccall](https://github.com/lukmccall))
+
+## 10.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 10.0.7 — 2025-09-10
 

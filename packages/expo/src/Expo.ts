@@ -18,6 +18,9 @@ export {
   requireNativeViewManager as requireNativeView,
   registerWebModule,
   reloadAppAsync,
+
+  // Worklets
+  installOnUIRuntime,
 } from 'expo-modules-core';
 
 export type {

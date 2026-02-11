@@ -50,48 +50,48 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
-  fun write(content: String) {
+  fun write(content: String, append: Boolean = false) {
     validateType()
     validatePermission(Permission.WRITE)
     if (!exists) {
       create()
     }
-    file.outputStream().use { outputStream ->
+    file.outputStream(append).use { outputStream ->
       outputStream.write(content.toByteArray())
     }
   }
 
-  fun write(content: TypedArray) {
+  fun write(content: TypedArray, append: Boolean = false) {
     validateType()
     validatePermission(Permission.WRITE)
     if (!exists) {
       create()
     }
     if (uri.isContentUri) {
-      file.outputStream().use { outputStream ->
+      file.outputStream(append).use { outputStream ->
         val array = ByteArray(content.length)
         content.toDirectBuffer().get(array)
         outputStream.write(array)
       }
     } else {
-      FileOutputStream(javaFile).use {
+      FileOutputStream(javaFile, append).use {
         it.channel.write(content.toDirectBuffer())
       }
     }
   }
 
-  fun write(content: ByteArray) {
+  fun write(content: ByteArray, append: Boolean = false) {
     validateType()
     validatePermission(Permission.WRITE)
     if (!exists) {
       create()
     }
     if (uri.isContentUri) {
-      file.outputStream().use { outputStream ->
+      file.outputStream(append).use { outputStream ->
         outputStream.write(content)
       }
     } else {
-      FileOutputStream(javaFile).use {
+      FileOutputStream(javaFile, append).use {
         it.write(content)
       }
     }

@@ -1,0 +1,77 @@
+import { type EventSubscription } from 'expo-modules-core';
+import React from 'react';
+import { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, LiveActivityInfo, WidgetBase } from './Widgets.types';
+/**
+ * Starts a new Live Activity on iOS.
+ * Live Activities display real-time information on the Lock Screen and in the Dynamic Island.
+ * @param name The name/identifier of the Live Activity to start.
+ * @param liveActivity A function that returns the Live Activity layout configuration.
+ * @param url An optional deep link URL to open when the user taps the Live Activity.
+ * @return The unique identifier of the started Live Activity.
+ */
+export declare const startLiveActivity: (name: string, liveActivity: LiveActivityComponent, url?: string) => string;
+/**
+ * Updates an existing Live Activity with new content.
+ * @param id The unique identifier of the Live Activity to update (returned from `startLiveActivity`).
+ * @param name The name/identifier of the Live Activity.
+ * @param liveActivity A function that returns the updated Live Activity layout configuration.
+ */
+export declare const updateLiveActivity: (id: string, name: string, liveActivity: LiveActivityComponent) => void;
+/**
+ * Updates a widget's timeline with multiple entries that will be displayed at scheduled times.
+ * The widget system will automatically switch between entries based on their timestamps.
+ * @param name The name/identifier of the widget to update.
+ * @param dates An array of dates representing when each timeline entry should be displayed.
+ * @param widget A function component that renders the widget content for a given set of props.
+ * @param props Optional custom props to pass to the widget component.
+ * @param updateFunction Optional name of a function to call for dynamic updates.
+ * @template T The type of custom props passed to the widget.
+ */
+export declare const updateWidgetTimeline: <T extends object>(name: string, dates: Date[], widget: (p: WidgetBase<T>) => React.JSX.Element, props?: T, updateFunction?: string) => void;
+/**
+ * Updates a widget with a single snapshot entry for the current time.
+ * This is a convenience wrapper around `updateWidgetTimeline` for widgets that don't need multiple timeline entries.
+ * @param name The name/identifier of the widget to update.
+ * @param widget A function component that renders the widget content for a given set of props.
+ * @param props Optional custom props to pass to the widget component.
+ * @param updateFunction Optional name of a function to call for dynamic updates.
+ * @template T The type of custom props passed to the widget.
+ */
+export declare const updateWidgetSnapshot: <T extends object>(name: string, widget: (p: WidgetBase<T>) => React.JSX.Element, props?: T, updateFunction?: string) => void;
+/**
+ * Adds a listener for widget interaction events (for example, button taps).
+ * @param listener Callback function to handle user interaction events.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['onExpoWidgetsUserInteraction']): EventSubscription;
+/**
+ * Adds a listener for push-to-start token events.
+ * This token can be used to start live activities remotely via APNs.
+ * @param listener Callback function to handle push-to-start token events.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export declare function addPushToStartTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']): EventSubscription;
+/**
+ * Ends a live activity.
+ * @param activityId The ID of the live activity to end.
+ * @param dismissalPolicy How the live activity should be dismissed from the screen.
+ */
+export declare function endLiveActivity(activityId: string, dismissalPolicy?: LiveActivityDismissalPolicy): void;
+/**
+ * Adds a listener for push token updates.
+ * @param listener Callback function to handle push token updates.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export declare function addPushTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsTokenReceived']): EventSubscription;
+/**
+ * Gets the push token for a specific live activity.
+ * @param activityId The ID of the live activity.
+ * @return A promise that resolves to the push token, or null if not available.
+ */
+export declare function getLiveActivityPushToken(activityId: string): Promise<string | null>;
+/**
+ * Gets all currently running live activities.
+ * @return An array of live activity information objects.
+ */
+export declare function getLiveActivities(): LiveActivityInfo[];
+//# sourceMappingURL=Widgets.d.ts.map

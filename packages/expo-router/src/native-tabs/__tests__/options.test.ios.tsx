@@ -8,21 +8,21 @@ import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../NativeTabsView';
-import {
-  type DrawableIcon,
-  type MaterialIcon,
-  type NativeTabsTriggerIconProps,
-  type SFSymbolIcon,
-  type SrcIcon,
-} from '../common/elements';
+import { type NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actualModule = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
   return {
-    ...(jest.requireActual('react-native-screens') as typeof import('react-native-screens')),
-    BottomTabs: jest.fn(({ children }) => <View testID="BottomTabs">{children}</View>),
-    BottomTabsScreen: jest.fn(({ children }) => <View testID="BottomTabsScreen">{children}</View>),
+    ...actualModule,
+    Tabs: {
+      ...actualModule.Tabs,
+      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
+    },
   };
 });
 
@@ -137,6 +137,7 @@ it('when no options are passed, default ones are used', () => {
     selectedIconColor: undefined,
     labelStyle: undefined,
     selectedLabelStyle: undefined,
+    shadowColor: undefined,
     blurEffect: undefined,
     backgroundColor: undefined,
     badgeBackgroundColor: undefined,
@@ -144,6 +145,7 @@ it('when no options are passed, default ones are used', () => {
     badgeTextColor: undefined,
     nativeProps: undefined,
     disableAutomaticContentInsets: undefined,
+    contentStyle: undefined,
   } as NativeTabOptions);
 });
 
@@ -315,6 +317,88 @@ describe('Icons', () => {
     } as NativeTabOptions);
     expect(call.tabs[1].options).toMatchObject({
       selectedIconColor: 'red',
+    } as NativeTabOptions);
+  });
+
+  it('when using Icon with xcasset string, values are passed correctly', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset="custom-icon" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: { xcasset: 'custom-icon' },
+      selectedIcon: undefined,
+    } as NativeTabOptions);
+  });
+
+  it('when using Icon with xcasset object, values are passed correctly', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset={{ default: 'home-outline', selected: 'home-filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: { xcasset: 'home-outline' },
+      selectedIcon: { xcasset: 'home-filled' },
+    } as NativeTabOptions);
+  });
+
+  it('when using Icon with xcasset selected-only, values are passed correctly', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset={{ selected: 'home-filled' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: undefined,
+      selectedIcon: { xcasset: 'home-filled' },
+    } as NativeTabOptions);
+  });
+
+  it('sf takes precedence over xcasset on iOS', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon sf="star" xcasset="custom-icon" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+      icon: { sf: 'star' },
+      selectedIcon: undefined,
     } as NativeTabOptions);
   });
 });
@@ -709,6 +793,105 @@ describe('Tab options', () => {
       } as NativeTabOptions);
     }
   );
+
+  describe('disableTransparentOnScrollEdge', () => {
+    it.each([true, false] as const)(
+      'When disableTransparentOnScrollEdge is %p on trigger, passes it down',
+      (value) => {
+        renderRouter({
+          _layout: () => (
+            <NativeTabs>
+              <NativeTabs.Trigger name="index" disableTransparentOnScrollEdge={value} />
+            </NativeTabs>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(NativeTabsView).toHaveBeenCalledTimes(1);
+        const call = NativeTabsView.mock.calls[0][0];
+        expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(value);
+      }
+    );
+
+    it('When disableTransparentOnScrollEdge is not set on trigger, it inherits from NativeTabs screenOptions', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0][0];
+      // When not set on NativeTabs, screenOptions has undefined, which is inherited
+      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBeUndefined();
+    });
+
+    it('When disableTransparentOnScrollEdge is set on NativeTabs, passes it to all tabs', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs disableTransparentOnScrollEdge>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="one" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        one: () => <View testID="one" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0][0];
+      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(true);
+      expect(call.tabs[1].options.disableTransparentOnScrollEdge).toBe(true);
+    });
+
+    it('Trigger disableTransparentOnScrollEdge takes precedence over NativeTabs', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs disableTransparentOnScrollEdge>
+            <NativeTabs.Trigger name="index" disableTransparentOnScrollEdge={false} />
+            <NativeTabs.Trigger name="one" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        one: () => <View testID="one" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0][0];
+      // Trigger's value (false) takes precedence over NativeTabs' value (true)
+      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(false);
+      // Tab without explicit value inherits from NativeTabs
+      expect(call.tabs[1].options.disableTransparentOnScrollEdge).toBe(true);
+    });
+
+    it('Trigger disableTransparentOnScrollEdge=true takes precedence over NativeTabs=false', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs disableTransparentOnScrollEdge={false}>
+            <NativeTabs.Trigger name="index" disableTransparentOnScrollEdge />
+            <NativeTabs.Trigger name="one" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        one: () => <View testID="one" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0][0];
+      // Trigger's value (true) takes precedence over NativeTabs' value (false)
+      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(true);
+      // Tab without explicit value inherits from NativeTabs
+      expect(call.tabs[1].options.disableTransparentOnScrollEdge).toBe(false);
+    });
+  });
 });
 
 describe('Dynamic options', () => {
@@ -858,6 +1041,15 @@ describe(appendIconOptions, () => {
         src: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
       },
       { icon: { sf: '0.circle' }, selectedIcon: undefined },
+    ],
+    [{ xcasset: 'custom-icon' }, { icon: { xcasset: 'custom-icon' }, selectedIcon: undefined }],
+    [
+      { xcasset: { default: 'home-outline', selected: 'home-filled' } },
+      { icon: { xcasset: 'home-outline' }, selectedIcon: { xcasset: 'home-filled' } },
+    ],
+    [
+      { xcasset: { selected: 'home-filled' } },
+      { icon: undefined, selectedIcon: { xcasset: 'home-filled' } },
     ],
   ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',

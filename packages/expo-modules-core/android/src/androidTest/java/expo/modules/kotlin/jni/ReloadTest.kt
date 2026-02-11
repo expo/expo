@@ -23,7 +23,7 @@ class ReloadTest {
 
     val promiseResult = callAsync("f2")
     Truth.assertThat(promiseResult.isNumber()).isTrue()
-    Truth.assertThat(getLastPromiseResult().getInt()).isEqualTo(20)
+    Truth.assertThat(promiseResult.getInt()).isEqualTo(20)
   }
 
   @Test
@@ -41,7 +41,7 @@ class ReloadTest {
       val jsObject = callClass("MySharedObject").getObject()
       val id = SharedObjectId(jsObject.getProperty(sharedObjectIdPropertyName).getInt())
 
-      val runtimeContext = jsiInterop.runtimeContextHolder.get()!!
+      val runtimeContext = jsiInterop.runtimeHolder.get()!!
       val (native, _) = runtimeContext.sharedObjectRegistry.pairs[id]!!
       Truth.assertThat(native).isSameInstanceAs(mySharedObject)
     }

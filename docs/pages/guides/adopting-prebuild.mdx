@@ -3,7 +3,7 @@ title: Adopt Prebuild
 description: Learn how to adopt Expo Prebuild in a project that was bootstrapped with React Native CLI.
 ---
 
-import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 
 There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][prebuild] to [continuously generate your native projects](/workflow/continuous-native-generation). This guide will show you how to adopt Expo Prebuild in a project that was bootstrapped with `npx @react-native-community/cli@latest init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your Android and iOS native projects. This may take a minute or two on a brand new project, and on a large project, it will be much longer.
 
@@ -23,16 +23,20 @@ Ensure you install the version of `expo` that works for your currently installed
 
 Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of `AppRegistry.registerComponent`:
 
-```diff
-+ import {registerRootComponent} from 'expo';
-
-- import {AppRegistry} from 'react-native';
-import App from './App';
-- import {name as appName} from './app.json';
-
-- AppRegistry.registerComponent(appName, () => App);
-+ registerRootComponent(App);
-```
+<DiffBlock
+  raw={`diff --git a/index.js b/index.js
+index 0000000..1111111 100644
+--- a/index.js
++++ b/index.js
+@@ -1,5 +1,4 @@
+-import {AppRegistry} from 'react-native';
+-import {name as appName} from './app.json';
++import {registerRootComponent} from 'expo';
+ import App from './App';
+-
+-AppRegistry.registerComponent(appName, () => App);
++registerRootComponent(App);`}
+/>
 
 > Learn more about [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent).
 
@@ -74,15 +78,19 @@ The **android** and **ios** directories are automatically added to **.gitignore*
 
 Remove all fields that are outside the top-level `expo` object as these will not be used in `npx expo prebuild`.
 
-```diff
-{
+<DiffBlock
+  raw={`diff --git a/app.json b/app.json
+index 0000000..1111111 100644
+--- a/app.json
++++ b/app.json
+@@
 -  "name": "myapp",
 -  "displayName": "myapp"
 +  "expo": {
 +    "name": "myapp"
 +  }
-}
-```
+ }`}
+/>
 
 **metro.config.js**
 
@@ -92,15 +100,20 @@ See [Customizing Metro](/guides/customizing-metro/).
 
 You may want to change the scripts to use the [Expo CLI](/more/expo-cli/#compiling) run commands:
 
-```diff
-  "scripts": {
-    "start": "expo start",
+<DiffBlock
+  raw={`diff --git a/package.json b/package.json
+index 0000000..1111111 100644
+--- a/package.json
++++ b/package.json
+@@
+   "scripts": {
+     "start": "expo start",
 -    "android": "react-native run-android",
 -    "ios": "react-native run-ios",
 +    "android": "expo run:android",
 +    "ios": "expo run:ios",
-  },
-```
+   },`}
+/>
 
 These commands have better logging, auto code signing, better simulator handling, and they ensure you run `npx expo start` to serve files.
 

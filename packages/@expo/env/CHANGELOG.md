@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 2.1.0 — 2026-02-08
+
+### 🎉 New features
+
+- Switch to `node:util`'s `parseEnv` and preserve previous `dotenv-expand` logic ([#42763](https://github.com/expo/expo/pull/42763) by [@kitten](https://github.com/kitten))
+
+## 2.0.11 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.10 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.9 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.7 — 2025-09-10
 
 _This version does not introduce any user-facing changes._

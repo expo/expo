@@ -1,17 +1,17 @@
 import { requireNativeView } from 'expo';
 import { Children, ReactElement, ReactNode, useMemo } from 'react';
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewStyle, type ColorValue } from 'react-native';
 
 import { SubmenuProps } from './Submenu';
 import { MenuElement, transformChildrenToElementArray } from './utils';
-import { ExpoModifier } from '../../types';
+import { ModifierConfig } from '../../types';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
 
 const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(
   'ExpoUI',
-  'ContextMenu'
+  'ContextMenuView'
 );
 
 type SubmenuElement =
@@ -50,7 +50,7 @@ export type ContextMenuProps = {
   /**
    * The color of the container holding the context menu items.
    */
-  color?: string;
+  color?: ColorValue;
 
   /**
    * Optional styles to apply to the `ContextMenu`.
@@ -60,7 +60,7 @@ export type ContextMenuProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 /**
@@ -131,8 +131,7 @@ function ContextMenu(props: ContextMenuProps) {
       onContextMenuButtonPressed={createEventHandler('onPress')}
       onContextMenuSwitchValueChanged={createEventHandler('onValueChange')}
       onContextMenuPickerOptionSelected={createEventHandler('onOptionSelected')}
-      // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      modifiers={props.modifiers}
       {...props}>
       {activationElement}
     </MenuNativeView>

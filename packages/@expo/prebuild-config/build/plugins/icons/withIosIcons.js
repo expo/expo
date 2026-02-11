@@ -14,6 +14,13 @@ function _configPlugins() {
   };
   return data;
 }
+function _Target() {
+  const data = require("@expo/config-plugins/build/ios/Target");
+  _Target = function () {
+    return data;
+  };
+  return data;
+}
 function _imageUtils() {
   const data = require("@expo/image-utils");
   _imageUtils = function () {
@@ -58,7 +65,7 @@ const withIosIcons = config => {
     const projectName = config.modRequest.projectName;
     if (icon && typeof icon === 'string' && _path().default.extname(icon) === '.icon' && projectName) {
       const iconName = _path().default.basename(icon, '.icon');
-      setIconName(config.modResults, iconName);
+      setIconName(config.modResults, projectName, iconName);
       addIconFileToProject(config.modResults, projectName, iconName);
     }
     return config;
@@ -238,9 +245,10 @@ async function addLiquidGlassIcon(iconPath, projectRoot, iosNamedProjectRoot) {
 /**
  * Adds the .icons name to the project
  */
-function setIconName(project, iconName) {
-  const configurations = project.pbxXCBuildConfigurationSection();
-  for (const config of Object.values(configurations)) {
+function setIconName(project, projectName, iconName) {
+  const [, target] = (0, _Target().findNativeTargetByName)(project, projectName);
+  const configurations = _configPlugins().IOSConfig.XcodeUtils.getBuildConfigurationsForListId(project, target.buildConfigurationList);
+  for (const [, config] of configurations) {
     if (config?.buildSettings) {
       config.buildSettings.ASSETCATALOG_COMPILER_APPICON_NAME = iconName;
     }

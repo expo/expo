@@ -91,8 +91,13 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.addEventListener('change', async () => {
             if (input.files?.length) {
                 const files = allowsMultipleSelection ? input.files : [input.files[0]];
-                const assets = await Promise.all(Array.from(files).map((file) => readFile(file, { base64 })));
-                resolve({ canceled: false, assets });
+                try {
+                    const assets = await Promise.all(Array.from(files).map((file) => readFile(file, { base64 })));
+                    resolve({ canceled: false, assets });
+                }
+                catch (error) {
+                    resolve(Promise.reject(error));
+                }
             }
             else {
                 resolve({ canceled: true, assets: null });

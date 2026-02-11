@@ -10,7 +10,35 @@
 
 ### 💡 Others
 
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Updated library descriptions to focus on tracking functionality and removed outdated iOS version references. ([#39652](https://github.com/expo/expo/pull/39652) by [@reichhartd](https://github.com/reichhartd))
+
+## 6.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.7 — 2025-09-11
 

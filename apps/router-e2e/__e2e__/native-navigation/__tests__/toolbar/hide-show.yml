@@ -1,0 +1,28 @@
+appId: com.expo.routere2e
+name: Toolbar hide-show
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://toolbar
+- runFlow: ../close-warning.yml
+- assertVisible: "Toolbar E2E Test Screen"
+- tapOn:
+    id: "toggle-search-button"
+- tapOn: "Search"
+- assertVisible: "Searching for: empty"
+- tapOn: "OK"
+- tapOn:
+    id: "toggle-mic-button"
+- assertVisible: "microphone"
+- assertVisible: "search"
+- tapOn:
+    id: "toggle-custom-view"
+- assertVisible:
+    id: "toolbar-search-input"
+- tapOn:
+    id: "toggle-search-button"
+- assertNotVisible:
+    text: "undefined"
+    index: 1
+- tapOn:
+    id: "toggle-menu"
+- assertVisible: "Actions"

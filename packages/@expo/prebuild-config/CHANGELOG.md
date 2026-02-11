@@ -10,9 +10,43 @@
 
 ### 💡 Others
 
+## 55.0.4 — 2026-02-03
+
+### 💡 Others
+
+- remove deprecated `edgeToEdgeEnabled` field ([#42518](https://github.com/expo/expo/pull/42518) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- remove expo-notifications from auto plugins; the `notification` entry in app.json is no longer valid ([#40787](https://github.com/expo/expo/pull/40787) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- Fix withEdgeToEdge types ([#41510](https://github.com/expo/expo/pull/41510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Scope `.icon` build setting to app target. ([#41536](https://github.com/expo/expo/pull/41536) by [@patrickmichalik](https://github.com/patrickmichalik))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.7 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 54.0.6 - 2025-10-21
 

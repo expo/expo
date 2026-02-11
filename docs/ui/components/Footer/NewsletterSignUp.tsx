@@ -5,36 +5,56 @@ import { useState } from 'react';
 import { Input } from '~/ui/components/Form';
 import { A, CALLOUT, FOOTNOTE, LABEL } from '~/ui/components/Text';
 
-const isDev = process.env.NODE_ENV === 'development';
-const URL = isDev
-  ? `http://api.expo.test/v2/mailchimp-mailing-list/subscribe`
-  : `https://api.expo.dev/v2/mailchimp-mailing-list/subscribe`;
+const PORTAL_ID = '22007177';
+const FORM_GUID = '6a213eb9-5e86-4a8e-8607-33f9ac1e07d6';
+
+function getHutk() {
+  return (
+    document.cookie
+      .split('; ')
+      .find(cookie => cookie.startsWith('hubspotutk='))
+      ?.split('=')[1] ?? ''
+  );
+}
 
 export const NewsletterSignUp = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [userSignedUp, setUserSignedUp] = useState(false);
 
-  function signUp() {
+  async function signUpAsync() {
     if (email.length > 3) {
-      fetch(URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const hutk = getHutk();
+      const payload = {
+        submittedAt: Date.now(),
+        fields: [{ name: 'email', value: email }],
+        context: {
+          hutk: hutk || undefined,
+          pageUri: window.location.href,
+          pageName: document.title,
         },
-        body: JSON.stringify({ email }),
-      })
-        .then(res => res.json())
-        .then(res => {
-          if (res.errors) {
-            setError(res.errors);
-          } else {
-            setError(null);
-            setEmail('');
-            setUserSignedUp(true);
-          }
-        })
-        .catch(setError);
+      };
+
+      const url = `https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_GUID}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          setError('Failed to subscribe');
+          return;
+        }
+
+        setError(null);
+        setEmail('');
+        setUserSignedUp(true);
+      } catch {
+        setError('Failed to subscribe');
+      }
     }
   }
 
@@ -48,7 +68,7 @@ export const NewsletterSignUp = () => {
         className="relative"
         onSubmit={event => {
           event.preventDefault();
-          signUp();
+          void signUpAsync();
         }}>
         {userSignedUp ? (
           <LABEL className="my-2.5 flex h-12 items-center">Thank you for the sign up! 💙</LABEL>
@@ -73,7 +93,7 @@ export const NewsletterSignUp = () => {
             theme={userSignedUp ? 'quaternary' : 'secondary'}
             className="absolute right-2.5 top-2 min-w-[68px]"
             disabled={userSignedUp || email.length === 0}
-            onClick={signUp}>
+            onClick={signUpAsync}>
             {userSignedUp ? 'Done!' : 'Sign Up'}
           </Button>
         ) : null}

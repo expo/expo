@@ -22,10 +22,30 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.header_dir     = 'ExpoModulesJSI'
 
+  header_search_paths = []
+  if ENV['USE_FRAMEWORKS']
+    header_search_paths.concat([
+      # Transitive dependency of React-Core
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectorcdp/jsinspector_moderncdp.framework/Headers"',
+      # Transitive dependencies of React-runtimescheduler
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React_timing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/folly.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/fmt/fmt.framework/Headers"',
+      '"$(PODS_ROOT)/DoubleConversion"',
+    ])
+  end
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
+    'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
 
   if use_hermes
@@ -36,6 +56,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon'
+  s.dependency 'React-runtimescheduler'
 
   s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,cpp}', 'common/cpp/JSI/**/*.{h,cpp}']
   s.exclude_files = ['ios/JSI/Tests']

@@ -1,24 +1,24 @@
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, type ColorValue } from 'react-native';
 import { ExpoModifier } from '../../types';
 /**
  * Only for switch.
  */
 type SwitchElementColors = {
-    checkedThumbColor?: string;
-    checkedTrackColor?: string;
-    uncheckedThumbColor?: string;
-    uncheckedTrackColor?: string;
+    checkedThumbColor?: ColorValue;
+    checkedTrackColor?: ColorValue;
+    uncheckedThumbColor?: ColorValue;
+    uncheckedTrackColor?: ColorValue;
 };
 /**
  * Only for checkbox.
  */
 type CheckboxElementColors = {
-    checkedColor?: string;
-    disabledCheckedColor?: string;
-    uncheckedColor?: string;
-    disabledUncheckedColor?: string;
-    checkmarkColor?: string;
-    disabledIndeterminateColor?: string;
+    checkedColor?: ColorValue;
+    disabledCheckedColor?: ColorValue;
+    uncheckedColor?: ColorValue;
+    disabledUncheckedColor?: ColorValue;
+    checkmarkColor?: ColorValue;
+    disabledIndeterminateColor?: ColorValue;
 };
 export type SwitchProps = {
     /**
@@ -41,13 +41,9 @@ export type SwitchProps = {
      */
     onValueChange?: (value: boolean) => void;
     /**
-     * Optional style for the switch component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * Picker color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Modifiers for the component.
      */

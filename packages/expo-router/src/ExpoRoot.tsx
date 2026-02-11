@@ -20,8 +20,10 @@ import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { Screen } from './primitives';
+import { initScreensFeatureFlags } from './screensFeatureFlags';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import { parseUrlUsingCustomBase } from './utils/url';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
 import { Unmatched } from './views/Unmatched';
@@ -58,6 +60,7 @@ const documentTitle = {
  * @hidden
  */
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
+  initScreensFeatureFlags();
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
    * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
@@ -116,7 +119,7 @@ function ContextNavigator({
       };
     } else if (typeof initialLocation === 'string') {
       // The initial location is a string, so we need to parse it into a URL.
-      const url = new URL(initialLocation, 'http://placeholder.base');
+      const url = parseUrlUsingCustomBase(initialLocation);
       contextType = {
         location: {
           pathname: url.pathname,

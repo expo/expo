@@ -16,6 +16,7 @@ import {
   scrollDismissesKeyboard,
   submitLabel,
   tag,
+  buttonStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
@@ -55,37 +56,37 @@ export default function TextInputScreen() {
           />
           <HStack spacing={16}>
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.focus();
-              }}>
-              Focus
-            </Button>
+              }}
+              label="Focus"
+            />
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.blur();
                 secureRef.current?.blur();
-              }}>
-              Blur
-            </Button>
+              }}
+              label="Blur"
+            />
           </HStack>
           <HStack spacing={16}>
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.setText('Hello there!');
                 secureRef.current?.setText('123');
-              }}>
-              Set text
-            </Button>
+              }}
+              label="Set text"
+            />
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.setSelection(2, 7);
-              }}>
-              Set Selection
-            </Button>
+              }}
+              label="Set Selection"
+            />
           </HStack>
           <Text>Selection: {JSON.stringify(selection)}</Text>
         </Section>
@@ -126,9 +127,9 @@ export default function TextInputScreen() {
           <Picker
             label="Submit label"
             modifiers={[pickerStyle('menu')]}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedSubmitLabel(selection as (typeof submitLabelOptions)[number]);
-            }}>
+            onSelectionChange={(selection) =>
+              setSelectedSubmitLabel(selection as (typeof submitLabelOptions)[number])
+            }>
             {submitLabelOptions.map((option) => (
               <Text key={option} modifiers={[tag(option)]}>
                 {option}

@@ -6,8 +6,9 @@ import com.facebook.react.bridge.WritableMap
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.getUnimoduleProxy
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.putGeneric
+import expo.modules.kotlin.views.ViewFunctionHolder
 
 fun interface ViewEventCallback<T> {
   operator fun invoke(arg: T)
@@ -30,7 +31,14 @@ open class ViewEvent<T>(
         logger.warn("⚠️ Cannot get module holder for ${view::class.java}")
         return
       }
-      val callbacks = appContext.registry.getViewDefinition(holder, view::class.java)?.callbacksDefinition.ifNull {
+
+      val callbacksDefinition = if (view is ViewFunctionHolder) {
+        appContext.registry.getViewDefinition(holder, view.name)?.callbacksDefinition
+      } else {
+        appContext.registry.getViewDefinition(holder, view::class.java)?.callbacksDefinition
+      }
+
+      val callbacks = callbacksDefinition.ifNull {
         logger.warn("⚠️ Cannot get callbacks for ${holder.module::class.java}")
         return
       }
@@ -54,10 +62,10 @@ open class ViewEvent<T>(
   }
 
   private fun convertEventBody(arg: T): WritableMap? {
-    return when (val converted = JSTypeConverter.convertToJSValue(arg)) {
+    return when (val converted = JSTypeConverterProvider.convertToJSValue(arg)) {
       is Unit, null -> null
       is WritableMap -> converted
-      else -> JSTypeConverter.DefaultContainerProvider.createMap().apply {
+      else -> JSTypeConverterProvider.DefaultContainerProvider.createMap().apply {
         putGeneric("payload", converted)
       }
     }

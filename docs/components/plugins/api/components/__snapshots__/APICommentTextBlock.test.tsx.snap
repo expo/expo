@@ -22,6 +22,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
   >
     <div
       class="mb-3 flex flex-row items-start [table_&]:mb-2.5"
+      data-md="api-platforms"
     >
       <span
         class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -29,6 +30,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
       >
         <div
           class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+          data-md="platform-badge"
         >
           <svg
             class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-green12 opacity-80"
@@ -110,6 +112,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       </p>
       <pre
         class="relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle [p+&]:mt-0"
+        data-md-lang="ts"
         data-text="true"
       >
         <div

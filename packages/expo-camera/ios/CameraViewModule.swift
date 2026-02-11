@@ -195,6 +195,16 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("videoStabilizationMode") { (view, mode: VideoStabilizationMode?) in
+        if let mode, view.videoStabilizationMode != mode {
+          view.videoStabilizationMode = mode
+          return
+        }
+        if mode == nil && view.videoStabilizationMode != .auto {
+          view.videoStabilizationMode = .auto
+        }
+      }
+
       Prop("autoFocus") { (view, focusMode: FocusMode?) in
         if let focusMode, view.autoFocus != focusMode.toAVCaptureFocusMode() {
           view.autoFocus = focusMode.toAVCaptureFocusMode()
@@ -306,12 +316,12 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
 
     Class("Picture", PictureRef.self) {
-      Property("width") { (image: PictureRef) -> Int in
-        return image.ref.cgImage?.width ?? 0
+      Property("width") { (image: PictureRef) -> CGFloat in
+        return image.ref.size.width
       }
 
-      Property("height") { (image: PictureRef) -> Int in
-        return image.ref.cgImage?.height ?? 0
+      Property("height") { (image: PictureRef) -> CGFloat in
+        return image.ref.size.height
       }
 
       AsyncFunction("savePictureAsync") { (image: PictureRef, options: SavePictureOptions?) -> [String: Any?] in
@@ -325,7 +335,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
       if #available(iOS 16.0, *) {
-        await MainActor.run {
+        try await MainActor.run {
+          guard DataScannerViewController.isSupported, DataScannerViewController.isAvailable else {
+            throw CameraScannerUnavailableException()
+          }
           let delegate = VisionScannerDelegate(handler: self)
           scannerContext = ScannerContext(delegate: delegate)
           launchScanner(with: options)
@@ -425,22 +438,31 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     guard let captureDevice = ExpoCameraUtils.device(
       with: AVMediaType.video,
       preferring: AVCaptureDevice.Position.front) else {
+      session.commitConfiguration()
       return []
     }
     guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
+      session.commitConfiguration()
       return []
     }
     if session.canAddInput(deviceInput) {
       session.addInput(deviceInput)
     }
 
-    session.commitConfiguration()
-
     let movieFileOutput = AVCaptureMovieFileOutput()
-
     if session.canAddOutput(movieFileOutput) {
       session.addOutput(movieFileOutput)
     }
-    return movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
+
+    session.commitConfiguration()
+
+    let codecs = movieFileOutput.availableVideoCodecTypes.map { $0.rawValue }
+
+    session.beginConfiguration()
+    session.removeOutput(movieFileOutput)
+    session.removeInput(deviceInput)
+    session.commitConfiguration()
+
+    return codecs
   }
 }

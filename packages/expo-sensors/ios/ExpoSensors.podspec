@@ -23,9 +23,9 @@ Pod::Spec.new do |s|
   s.source_files = "**/*.{h,m,swift}"
 
   if podfile_properties['MOTION_PERMISSION'] == 'false'
-    s.ios.exclude_files  = "**/EXMotionPermissionRequester.m",
-                           "**/PedometerModule.swift"
-  else
-    s.ios.exclude_files  = "**/PedometerModuleDisabled.swift"
+    s.pod_target_xcconfig = {
+      'OTHER_SWIFT_FLAGS' => '$(inherited) -DEXPO_DISABLE_MOTION_PERMISSION',
+      'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) EXPO_DISABLE_MOTION_PERMISSION=1',
+    }
   end
 end

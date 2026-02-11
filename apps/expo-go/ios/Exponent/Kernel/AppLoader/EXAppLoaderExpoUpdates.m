@@ -2,16 +2,12 @@
 
 #import "EXAppFetcher.h"
 #import "EXAppLoaderExpoUpdates.h"
-#import "EXClientReleaseType.h"
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
-#import "EXSession.h"
 #import "EXUpdatesDatabaseManager.h"
-#import "EXVersions.h"
 
 #import "Expo_Go-Swift.h"
 
@@ -250,6 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _setOptimisticManifest:processedManifest];
   }
   _isUpToDate = isUpToDate;
+  _appLauncher = launcher;
   if (launcher.launchedUpdate.manifest.isUsingDeveloperTool) {
     // in dev mode, we need to set an optimistic manifest but nothing else
     return;
@@ -259,7 +256,6 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
-  _appLauncher = launcher;
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }

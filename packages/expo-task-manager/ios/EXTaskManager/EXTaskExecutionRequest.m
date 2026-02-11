@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXTaskManager/EXTaskExecutionRequest.h>
+#import <ExpoTaskManager/EXTaskExecutionRequest.h>
 
 @interface EXTaskExecutionRequest ()
 

@@ -9,6 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
+import { DiffBlock } from '~/ui/components/Snippet';
 
 > **important** Experimentally available in SDK 52 and later.
 
@@ -255,13 +256,7 @@ export function TabButton({ icon, children, isFocused, ...props }: TabButtonProp
 
 In Expo SDK 52 and earlier (React 18), use the legacy `forwardRef` function to access the `ref` handle.
 
-```diff
-- import { ComponentProps, Ref } from 'react';
-+ import { ComponentProps, Ref, forwardRef } from 'react';
-
-- export function TabButton({ ref }) {
-+ export const TabButton = forwardRef((props: TabButtonProps, ref: Ref<View>) => {
-```
+<DiffBlock source="/static/diffs/router/custom-tabs/forward-ref-tab-button.diff" />
 
 </Collapsible>
 

@@ -53,7 +53,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'expo-router': {
     'expect/build/matchers': 'ignore-dev', // TODO: Unsure how to replace safely. Dep/Peer won't work. Globals and `@jest/globals` unclear
-    'expo-font': 'ignore-dev', // TODO: Remove
   },
 
   '@expo/image-utils': {
@@ -75,6 +74,10 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'expo-store-review': {
     'expo-constants': 'ignore-dev', // TODO: Should probably be a peer, but it's both installed in templates and also a dep of expo (needs discussion)
+  },
+
+  '@expo/log-box': {
+    'react-dom': 'ignore-dev', // TODO: This peer dependency was removed due to this chain installing `react-dom`: `@expo/router-server -> @expo/log-box -> react-dom` which is not intended
   },
 
   'babel-preset-expo': {

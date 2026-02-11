@@ -6,38 +6,24 @@ import {
 } from '@expo/config-plugins';
 import { type ExpoConfig } from '@expo/config-types';
 
-import { withConfigureEdgeToEdgeEnforcement } from './withConfigureEdgeToEdgeEnforcement';
-import { withEdgeToEdgeEnabledGradleProperties } from './withEdgeToEdgeEnabledGradleProperties';
 import { withEnforceNavigationBarContrast } from './withEnforceNavigationBarContrast';
 import { withRestoreDefaultTheme } from './withRestoreDefaultTheme';
 
 const TAG = 'EDGE_TO_EDGE_PLUGIN';
 
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
-export type GradlePropertiesConfig = ExportedConfigWithProps<
-  AndroidConfig.Properties.PropertiesItem[]
->;
 
-export const withEdgeToEdge: ConfigPlugin<{ projectRoot: string }> = (config, { projectRoot }) => {
-  return applyEdgeToEdge(config, projectRoot);
+export const withEdgeToEdge: ConfigPlugin = (config) => {
+  return applyEdgeToEdge(config);
 };
 
-export function applyEdgeToEdge(config: ExpoConfig, projectRoot: string): ExpoConfig {
-  if (config.android?.edgeToEdgeEnabled === false) {
+export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
+  if ('edgeToEdgeEnabled' in (config.android ?? {})) {
     WarningAggregator.addWarningAndroid(
       TAG,
-      '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it is no longer be possible to disable edge-to-edge. Learn more:',
-      'https://expo.fyi/edge-to-edge-rollout'
+      '`edgeToEdgeEnabled` customization is no longer available - Android 16 makes edge-to-edge mandatory. Remove the `edgeToEdgeEnabled` entry from your app.json/app.config.js.'
     );
   }
-
-  const edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled !== false;
-
-  config = withEdgeToEdgeEnabledGradleProperties(config, { edgeToEdgeEnabled });
-  // Enable/disable edge-to-edge enforcement
-  config = withConfigureEdgeToEdgeEnforcement(config, {
-    disableEdgeToEdgeEnforcement: !edgeToEdgeEnabled,
-  });
 
   config = withEnforceNavigationBarContrast(
     config,

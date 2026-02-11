@@ -21,7 +21,6 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
-import java.util.EnumSet
 
 class FileSystemModule : Module() {
   private val context: Context
@@ -100,7 +99,9 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("pickDirectoryAsync") Coroutine { initialUri: Uri? ->
-      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY))
+      val result = filePickerLauncher.launch(
+        FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY)
+      )
       when (result) {
         is FilePickerContractResult.Success -> result.path as FileSystemDirectory
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
@@ -108,7 +109,9 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("pickFileAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
-      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, mimeType, PickerType.FILE))
+      val result = filePickerLauncher.launch(
+        FilePickerContractOptions(initialUri, mimeType, PickerType.FILE)
+      )
       when (result) {
         is FilePickerContractResult.Success -> result.path as FileSystemFile
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
@@ -117,8 +120,12 @@ class FileSystemModule : Module() {
 
     Function("info") { url: URI ->
       val file = File(url)
-      val permissions = appContext.filePermission?.getPathPermissions(appContext.reactContext, file.path)
-        ?: EnumSet.noneOf(Permission::class.java)
+      val permissions = appContext
+        .filePermission
+        .getPathPermissions(
+          appContext.reactContext ?: throw Exceptions.ReactContextLost(),
+          file.path
+        )
       if (permissions.contains(Permission.READ) && file.exists()) {
         PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
       } else {
@@ -143,18 +150,19 @@ class FileSystemModule : Module() {
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+        val append = options?.append ?: false
         if (content.`is`(String::class)) {
           content.get(String::class).let {
             if (options?.encoding == EncodingType.BASE64) {
-              file.write(Base64.decode(it, Base64.DEFAULT))
+              file.write(Base64.decode(it, Base64.DEFAULT), append)
             } else {
-              file.write(it)
+              file.write(it, append)
             }
           }
         }
         if (content.`is`(TypedArray::class)) {
           content.get(TypedArray::class).let {
-            file.write(it)
+            file.write(it, append)
           }
         }
       }
@@ -248,7 +256,7 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile ->
         FileSystemFileHandle(file)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
       Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->

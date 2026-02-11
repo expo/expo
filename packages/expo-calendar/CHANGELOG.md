@@ -6,6 +6,36 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.5 — 2026-02-08
+
+### 💡 Others
+
+- Fixed missing `@` in `@platform ios` JSDoc tag for `EntityTypes` enum. ([#42944](https://github.com/expo/expo/pull/42944) by [@brentvatne](https://github.com/brentvatne))
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS] Added support for all‑day reminders ([#39028](https://github.com/expo/expo/pull/39028)) by [@dominik-miskovic](https://github.com/dominik-miskovic)
 - [next] Implement `ExpoCalendar@next`  ([#39108](https://github.com/expo/expo/pull/39108) by [@kosmydel](https://github.com/kosmydel) and [@arturgesiarz](https://github.com/arturgesiarz))
 
@@ -16,6 +46,10 @@
 ### 💡 Others
 
 - [Android] Refactored module native code. ([#40548](https://github.com/expo/expo/pull/40548) by [@barthap](https://github.com/barthap))
+
+## 15.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 15.0.7 — 2025-09-11
 

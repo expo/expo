@@ -22,6 +22,7 @@ import expo.modules.video.utils.applyPiPParams
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculatePiPAspectRatio
 import expo.modules.video.utils.calculateRectHint
+import expo.modules.video.managers.VideoManager
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class FullscreenPlayerActivity : Activity() {
@@ -93,13 +94,16 @@ class FullscreenPlayerActivity : Activity() {
     super.onPostCreate(savedInstanceState)
     hideStatusBar()
     setupFullscreenButton()
-    playerView.applyRequiresLinearPlayback(videoPlayer?.requiresLinearPlayback ?: false)
+    val requiresLinearPlayback = videoPlayer?.requiresLinearPlayback ?: false
+    val buttonConfig = videoView.buttonOptions.copy(showBottomBar = true) // Always show bottom bar in fullscreen mode so user can exit
+    playerView.applyButtonOptions(buttonConfig, requiresLinearPlayback)
+    playerView.setTimeBarInteractive(requiresLinearPlayback)
     playerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
       // On every re-layout ExoPlayer makes the timeBar interactive.
       // We need to disable it to keep scrubbing off.
-      playerView.setTimeBarInteractive(videoPlayer?.requiresLinearPlayback ?: true)
+      playerView.setTimeBarInteractive(requiresLinearPlayback)
     }
-    playerView.setShowSubtitleButton(videoView.showsSubtitlesButton)
+    playerView.setShowSubtitleButton(videoView.buttonOptions.showSubtitles ?: videoView.currentTrackHasSubtitles)
 
     // Configure subtitle view to fix sizing issues with embedded styles (same as VideoView)
     SubtitleUtils.configureSubtitleView(playerView, this)

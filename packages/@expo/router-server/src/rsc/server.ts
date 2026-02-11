@@ -146,21 +146,3 @@ export function getContext<
   }
   return renderStore.context as RscContext;
 }
-
-/** Get the request headers used to make the server component or action request. */
-export async function unstable_headers(): Promise<Headers> {
-  const headers = (getContext()[REQUEST_HEADERS] || {}) as Record<string, string>;
-  return new ReadonlyHeaders(headers);
-}
-
-class ReadonlyHeaders extends Headers {
-  set() {
-    throw new Error('Server component Headers are read-only');
-  }
-  append() {
-    throw new Error('Server component Headers are read-only');
-  }
-  delete() {
-    throw new Error('Server component Headers are read-only');
-  }
-}

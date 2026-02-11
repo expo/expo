@@ -13,12 +13,12 @@ export default function BottomSheetScreen() {
         alignItems: 'flex-start',
         padding: 8,
       }}>
-      <Host>
+      <Host matchContents>
         <Button onPress={() => setIsOpened((h) => !h)}>Toggle</Button>
       </Host>
 
       <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
-      <Host>
+      <Host matchContents>
         <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
           <View style={{ padding: 20 }}>
             <Text>Hello world</Text>

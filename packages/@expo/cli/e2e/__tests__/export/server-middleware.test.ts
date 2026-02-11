@@ -3,148 +3,51 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { executeAsync, processFindPrefixedValue } from '../../utils/process';
-import { BackgroundServer, createBackgroundServer } from '../../utils/server';
+import { executeExpoAsync } from '../../utils/expo';
+import {
+  prepareServers,
+  RUNTIME_EXPO_SERVE,
+  RUNTIME_WORKERD,
+  setupServer,
+} from '../../utils/runtime';
 import { findProjectFiles, getHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
-const EXPRESS_SERVER = 'expo serve server';
-const WORKERD_SERVER = 'workerd server';
-
 describe('exports middleware', () => {
-  const projectRoot = getRouterE2ERoot();
-
-  describe.each([
-    {
-      name: EXPRESS_SERVER,
-      prepareDist: async () => {
-        const outputName = 'dist-server-middleware-async-expo-serve';
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
-          {
-            env: {
-              NODE_ENV: 'production',
-              EXPO_USE_STATIC: 'server',
-              E2E_ROUTER_SRC: 'server-middleware-async',
-              E2E_ROUTER_REDIRECTS: JSON.stringify([
-                { source: '/redirect', destination: 'https://expo.dev' },
-              ]),
-              E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite', destination: '/second' }]),
-              E2E_ROUTER_SERVER_MIDDLEWARE: 'true',
-            },
-          }
-        );
-
-        return [outputDir, outputName];
+  describe.each(
+    prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
+      fixtureName: 'server-middleware-async',
+      export: {
+        env: {
+          E2E_ROUTER_REDIRECTS: JSON.stringify([
+            { source: '/redirect', destination: 'https://expo.dev' },
+          ]),
+          E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite', destination: '/second' }]),
+          E2E_ROUTER_SERVER_MIDDLEWARE: 'true',
+        },
+        cliFlags: ['--source-maps'],
       },
-      createServer: () =>
-        createExpoServe({
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-            TEST_SECRET_KEY: 'test-secret-key',
-          },
-        }),
-    },
-    {
-      name: WORKERD_SERVER,
-      prepareDist: async () => {
-        const outputName = 'dist-server-middleware-async-workerd';
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
-          {
-            env: {
-              NODE_ENV: 'production',
-              EXPO_USE_STATIC: 'server',
-              E2E_ROUTER_SRC: 'server-middleware-async',
-              E2E_ROUTER_REDIRECTS: JSON.stringify([
-                { source: '/redirect', destination: 'https://expo.dev' },
-              ]),
-              E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite', destination: '/second' }]),
-              E2E_ROUTER_SERVER_MIDDLEWARE: 'true',
-            },
-          }
-        );
-
-        await executeAsync(projectRoot, [
-          'node_modules/.bin/esbuild',
-          '--bundle',
-          '--format=esm',
-          '--platform=node',
-          `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
-          path.join(projectRoot, '__e2e__/server-middleware-async/workerd/workerd.mjs'),
-        ]);
-        fs.copyFileSync(
-          path.join(projectRoot, '__e2e__/server-middleware-async/workerd/config.capnp'),
-          path.join(outputDir, 'server/config.capnp')
-        );
-
-        return [outputDir];
+      serve: {
+        env: { TEST_SECRET_KEY: 'test-secret-key' },
       },
-      createServer: () =>
-        createBackgroundServer({
-          command: [
-            'node_modules/.bin/workerd',
-            'serve',
-            path.join(
-              path.join(projectRoot, 'dist-server-middleware-async-workerd'),
-              'server/config.capnp'
-            ),
-          ],
-          host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
-          port: 8787,
-          cwd: projectRoot,
-        }),
-    },
-  ] as {
-    name: string;
-    createServer: () => BackgroundServer;
-    prepareDist: () => Promise<[string, string?]>;
-  }[])('$name requests', ({ name: _name, createServer, prepareDist }) => {
-    let outputDir: string | undefined;
-    let server: BackgroundServer;
-    beforeAll(async () => {
-      const [newOutputDir, outputName] = await prepareDist();
-      outputDir = newOutputDir;
-      server = createServer();
-      // Start a server instance that we can test against then kill it.
-      if (outputName) {
-        await server.startAsync([outputName]);
-      } else {
-        await server.startAsync();
-      }
-    });
-    afterAll(async () => {
-      await server.stopAsync();
-    });
-
-    const serverFetchAsync = (url: string, init?: RequestInit) => {
-      return server.fetchAsync(url, init, { attempts: 7 });
-    };
+    })
+  )('$name requests', (config) => {
+    const server = setupServer(config);
 
     it(`can serve up index html`, async () => {
-      expect(await serverFetchAsync('/').then((res) => res.text())).toMatch(/<div id="root">/);
+      expect(await server.fetchAsync('/').then((res) => res.text())).toMatch(/<div id="root">/);
     });
 
     it(`gets a 404`, async () => {
-      expect(await serverFetchAsync('/missing-route').then((res) => res.status)).toBe(404);
+      expect(await server.fetchAsync('/missing-route').then((res) => res.status)).toBe(404);
     });
 
-    if (_name !== WORKERD_SERVER) {
-      // NOTE(@krystofwoldrich): Bare workerd doesn't support process.env
-      it('can use environment variables', async () => {
-        const response = await serverFetchAsync('/?e2e=read-env').then((res) => res.json());
-        expect(response['TEST_SECRET_KEY']).toEqual('test-secret-key');
-      });
-    }
+    // NOTE(@krystofwoldrich): Bare workerd doesn't support process.env
+    (server.isWorkerd ? it.skip : it)('can use environment variables', async () => {
+      const response = await server.fetchAsync('/?e2e=read-env').then((res) => res.json());
+      expect(response['TEST_SECRET_KEY']).toEqual('test-secret-key');
+    });
 
     it('can perform dynamic redirects', async () => {
       const html = await server
@@ -156,22 +59,19 @@ describe('exports middleware', () => {
     });
 
     it('can perform dynamic redirects with a status code', async () => {
-      const response = await serverFetchAsync('/?e2e=redirect-301', {
-        redirect: 'manual',
-      });
+      const response = await server.fetchAsync('/?e2e=redirect-301', { redirect: 'manual' });
       expect(response.status).toBe(301);
-
       const url = new URL(response.headers.get('location')!);
       expect(url.pathname).toEqual('/second');
     });
 
     it('returns HTTP status 500 when middleware throws for a HTML route', async () => {
-      const response = await serverFetchAsync('/?e2e=error');
+      const response = await server.fetchAsync('/?e2e=error');
       expect(response.status).toBe(500);
     });
 
     it('returns HTTP status 500 when middleware throws for an API route', async () => {
-      const response = await serverFetchAsync('/api?e2e=error');
+      const response = await server.fetchAsync('/api?e2e=error');
       expect(response.status).toBe(500);
     });
 
@@ -202,27 +102,23 @@ describe('exports middleware', () => {
       expect(title).toBe('Custom response from middleware');
     });
 
-    if (_name !== WORKERD_SERVER) {
-      // NOTE(@krystofwoldrich): Importing jose in workerd crashes the server
-      // Illegal invocation: function called with incorrect `this` reference.
-      it('runs third-party libraries like jose', async () => {
-        const signJwtResponse = await serverFetchAsync('/?e2e=sign-jwt').then((res) => res.json());
-        expect(signJwtResponse).toHaveProperty('token');
+    // NOTE(@krystofwoldrich): Importing jose in workerd crashes the server
+    // Illegal invocation: function called with incorrect `this` reference.
+    (server.isWorkerd ? it.skip : it)('runs third-party libraries like jose', async () => {
+      const signJwtResponse = await server.fetchAsync('/?e2e=sign-jwt').then((res) => res.json());
+      expect(signJwtResponse).toHaveProperty('token');
 
-        const verifyJwtResponse = await server
-          .fetchAsync('/?e2e=verify-jwt', {
-            headers: {
-              Authorization: signJwtResponse.token,
-            },
-          })
-          .then((res) => res.json());
+      const verifyJwtResponse = await server
+        .fetchAsync('/?e2e=verify-jwt', {
+          headers: { Authorization: signJwtResponse.token },
+        })
+        .then((res) => res.json());
 
-        expect(verifyJwtResponse.payload).toHaveProperty('foo', 'bar');
-      });
-    }
+      expect(verifyJwtResponse.payload).toHaveProperty('foo', 'bar');
+    });
 
     it('has expected files', async () => {
-      const files = findProjectFiles(outputDir!);
+      const files = findProjectFiles(server.outputDir);
 
       // The wrapper should not be included as a route.
       expect(files).not.toContain('+html.html');
@@ -230,28 +126,27 @@ describe('exports middleware', () => {
 
       // In server mode, HTML files are in the server directory
       expect(files).toContain('server/_sitemap.html');
-
       expect(files).toContain('server/+not-found.html');
       expect(files).toContain('server/index.html');
 
       // Middleware should be bundled and referenced in routes.json
       expect(files).toContain('server/_expo/functions/+middleware.js');
       const routesJson = JSON.parse(
-        fs.readFileSync(path.join(outputDir!, 'server/_expo/routes.json'), 'utf8')
+        fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
       );
       expect(routesJson.middleware).toBeDefined();
       expect(routesJson.middleware.file).toBe('_expo/functions/+middleware.js');
     });
 
     it('has source maps', async () => {
-      const files = findProjectFiles(outputDir!);
+      const files = findProjectFiles(server.outputDir);
 
       const middlewareMapFile = 'server/_expo/functions/+middleware.js.map';
       expect(files).toContain(middlewareMapFile);
 
       // Load the sourcemap and check that the paths are relative
       const sourceMap = JSON.parse(
-        fs.readFileSync(path.join(outputDir!, middlewareMapFile), 'utf8')
+        fs.readFileSync(path.join(server.outputDir, middlewareMapFile), 'utf8')
       );
       expect(sourceMap.sources).toContain('__e2e__/server-middleware-async/app/+middleware.ts');
     });

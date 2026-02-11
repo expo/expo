@@ -18,7 +18,10 @@ function createMockContextModule(map: string[] = []) {
   return contextModule as RequireContext;
 }
 
-export function createRoutesManifest(paths: string[], options: Options): RoutesManifest | null {
+export function createRoutesManifest(
+  paths: string[],
+  options: Options
+): RoutesManifest<string> | null {
   // TODO: Drop this part for Node.js
   const routeTree = getRoutes(createMockContextModule(paths), {
     ...options,

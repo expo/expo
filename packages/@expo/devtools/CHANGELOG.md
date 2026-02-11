@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - Fixed `wss://` support. ([#40893](https://github.com/expo/expo/pull/40893) by [@kudo](https://github.com/kudo))
 
-### 💡 Others
+## 0.1.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 0.1.7 — 2025-09-11
 

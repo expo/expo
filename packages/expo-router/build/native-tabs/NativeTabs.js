@@ -5,12 +5,16 @@ exports.NativeTabs = void 0;
 // Otherwise rsc would fail
 const NativeBottomTabsNavigator_1 = require("./NativeBottomTabsNavigator");
 const NativeTabTrigger_1 = require("./NativeTabTrigger");
+const elements_1 = require("./common/elements");
+const hooks_1 = require("./hooks");
+const BottomAccessory = Object.assign(elements_1.NativeTabsBottomAccessory, {
+    usePlacement: hooks_1.usePlacement,
+});
 /**
  * The component used to create native tabs layout.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -24,6 +28,6 @@ const NativeTabTrigger_1 = require("./NativeTabTrigger");
  * ```
  */
 exports.NativeTabs = Object.assign((props) => {
-    return <NativeBottomTabsNavigator_1.NativeTabsNavigatorWithContext {...props}/>;
-}, { Trigger: NativeTabTrigger_1.NativeTabTrigger });
+    return <NativeBottomTabsNavigator_1.NativeTabsNavigatorWrapper {...props}/>;
+}, { Trigger: NativeTabTrigger_1.NativeTabTrigger, BottomAccessory });
 //# sourceMappingURL=NativeTabs.js.map

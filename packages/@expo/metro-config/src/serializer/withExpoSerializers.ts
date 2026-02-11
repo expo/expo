@@ -6,8 +6,7 @@
  */
 import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
-import { sourceMapString } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
-import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
+import type { ReadOnlyDependencies, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
@@ -17,12 +16,47 @@ import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
-import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
-import { reconcileTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
-import { treeShakeSerializer } from './treeShakeSerializerPlugin';
 import { env } from '../env';
+
+// Lazy-loaded to avoid pulling in metro-source-map and @babel/traverse at startup (~100ms savings)
+let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
+function getSourceMapString() {
+  if (!_sourceMapString) {
+    _sourceMapString =
+      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
+  }
+  return _sourceMapString;
+}
+
+// Lazy-loaded to avoid pulling in @babel/generator, @babel/core at startup
+let _reconcileTransformSerializerPlugin: typeof import('./reconcileTransformSerializerPlugin').reconcileTransformSerializerPlugin;
+function getReconcileTransformSerializerPlugin() {
+  if (!_reconcileTransformSerializerPlugin) {
+    _reconcileTransformSerializerPlugin =
+      require('./reconcileTransformSerializerPlugin').reconcileTransformSerializerPlugin;
+  }
+  return _reconcileTransformSerializerPlugin;
+}
+
+let _treeShakeSerializer: typeof import('./treeShakeSerializerPlugin').treeShakeSerializer;
+function getTreeShakeSerializer() {
+  if (!_treeShakeSerializer) {
+    _treeShakeSerializer = require('./treeShakeSerializerPlugin').treeShakeSerializer;
+  }
+  return _treeShakeSerializer;
+}
+
+// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString chain at startup
+let _baseJSBundle: typeof import('./fork/baseJSBundle').baseJSBundle;
+function getBaseJSBundle() {
+  if (!_baseJSBundle) {
+    _baseJSBundle = require('./fork/baseJSBundle').baseJSBundle;
+  }
+  return _baseJSBundle;
+}
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -47,10 +81,10 @@ export type SerializerPlugin = (
   ...props: SerializerParameters
 ) => SerializerParameters | Promise<SerializerParameters>;
 
-export function withExpoSerializers(
-  config: InputConfigT,
+export function withExpoSerializers<Config extends InputConfigT = InputConfigT>(
+  config: Config,
   options: SerializerConfigOptions = {}
-): InputConfigT {
+): Config {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
@@ -58,21 +92,21 @@ export function withExpoSerializers(
   }
 
   // Then tree-shake the modules.
-  processors.push(treeShakeSerializer);
+  processors.push(getTreeShakeSerializer());
 
   // Then finish transforming the modules from AST to JS.
-  processors.push(reconcileTransformSerializerPlugin);
+  processors.push(getReconcileTransformSerializerPlugin());
 
   return withSerializerPlugins(config, processors, options);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
-export function withSerializerPlugins(
-  config: InputConfigT,
+export function withSerializerPlugins<Config extends InputConfigT = InputConfigT>(
+  config: Config,
   processors: SerializerPlugin[],
   options: SerializerConfigOptions = {}
-): InputConfigT {
+): Config {
   const expoSerializer = createSerializerFromSerialProcessors(
     config,
     processors,
@@ -135,7 +169,7 @@ export function createDefaultExportCustomSerializer(
       }
 
       // TODO: Perform this cheaper.
-      const bundle = baseJSBundle(entryPoint, preModules, graph, {
+      const bundle = getBaseJSBundle()(entryPoint, preModules, graph, {
         ...options,
         debugId: undefined,
       });
@@ -168,7 +202,7 @@ export function createDefaultExportCustomSerializer(
         }
       }
       bundleCode = bundleToString(
-        baseJSBundle(entryPoint, premodulesToBundle, graph, {
+        getBaseJSBundle()(entryPoint, premodulesToBundle, graph, {
           ...options,
           debugId,
         })
@@ -176,7 +210,7 @@ export function createDefaultExportCustomSerializer(
     }
 
     const getEnsuredMaps = () => {
-      bundleMap ??= sourceMapString(
+      bundleMap ??= getSourceMapString()(
         [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
         {
           // TODO: Surface this somehow.
@@ -261,14 +295,26 @@ function getDefaultSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
+    const isLoaderBundle =
+      graph.transformOptions?.customTransformOptions?.isLoaderBundle === 'true';
+    const loaderPaths = isLoaderBundle ? getLoaderPaths(graph.dependencies) : new Set<string>();
+
     const options: ExpoSerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
+        // For loader bundles, append `+loader` to modules with `loaderReference`.
+        // This creates different module IDs from `render.js` for the same source file,
+        // avoiding module ID collisions when both bundles are loaded in the same runtime.
+        let pathToHash = moduleId;
+        if (isLoaderBundle && loaderPaths.has(moduleId)) {
+          pathToHash = `${moduleId}+loader`;
+        }
+
         if (props.length > 0) {
-          return inputOptions.createModuleId(moduleId, ...props);
+          return inputOptions.createModuleId(pathToHash, ...props);
         }
         return inputOptions.createModuleId(
-          moduleId,
+          pathToHash,
           // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
           context
         );
@@ -371,6 +417,22 @@ function wrapSerializerWithOriginal(original: Serializer | null, expo: Serialize
 function unwrapOriginalSerializer(serializer?: Serializer | null) {
   if (!serializer || !('__originalSerializer' in serializer)) return null;
   return serializer.__originalSerializer as Serializer | null;
+}
+
+/**
+ * Collect paths of modules that have `loaderReference` metadata.
+ * In loader bundles, these modules need different IDs to avoid collisions with `render.js`.
+ */
+function getLoaderPaths(dependencies: ReadOnlyDependencies) {
+  const loaderPaths = new Set<string>();
+  for (const module of dependencies.values()) {
+    for (const output of module.output) {
+      if ('loaderReference' in output.data && typeof output.data.loaderReference === 'string') {
+        loaderPaths.add(module.path);
+      }
+    }
+  }
+  return loaderPaths;
 }
 
 export { SerialAsset };

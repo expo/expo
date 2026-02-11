@@ -10,7 +10,7 @@ import BadgeModule from './BadgeModule';
  * @return It returns a Promise resolving to a boolean representing whether the setting of the badge succeeded.
  * @header badge
  */
-export default async function setBadgeCountAsync(badgeCount, options) {
+export async function setBadgeCountAsync(badgeCount, options) {
     if (!BadgeModule.setBadgeCountAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'setBadgeCountAsync');
     }

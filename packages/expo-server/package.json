@@ -1,6 +1,6 @@
 {
   "name": "expo-server",
-  "version": "1.0.0",
+  "version": "55.0.3",
   "description": "Server API for Expo Router projects",
   "main": "build/cjs/index.js",
   "module": "build/mjs/index.js",
@@ -60,7 +60,7 @@
   ],
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "^55.0.2",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.1.2"
   },

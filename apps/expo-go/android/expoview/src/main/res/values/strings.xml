@@ -54,11 +54,11 @@
   <string name="devmenu_performance_monitor_unavailable">Performance Monitor Unavailable</string>
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
-
+  <string name="help_dialog">Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update.</string>
 
   <string-array name="currency_array">
-      <item>Currency (optional)</item>
-      <item>Unspecified</item>
-      <item>USD</item>
+    <item>Currency (optional)</item>
+    <item>Unspecified</item>
+    <item>USD</item>
   </string-array>
 </resources>

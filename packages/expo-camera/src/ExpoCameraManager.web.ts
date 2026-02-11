@@ -146,6 +146,7 @@ export default {
       off: 'off',
       auto: 'auto',
       torch: 'torch',
+      screen: 'on',
     };
   },
   get AutoFocus() {

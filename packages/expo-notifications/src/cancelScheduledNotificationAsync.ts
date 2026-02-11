@@ -22,7 +22,7 @@ import NotificationScheduler from './NotificationScheduler';
  * ```
  * @header schedule
  */
-export default async function cancelScheduledNotificationAsync(identifier: string): Promise<void> {
+export async function cancelScheduledNotificationAsync(identifier: string): Promise<void> {
   if (!NotificationScheduler.cancelScheduledNotificationAsync) {
     throw new UnavailabilityError('Notifications', 'cancelScheduledNotificationAsync');
   }

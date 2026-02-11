@@ -11,7 +11,6 @@ exports.runWithRenderStore = exports.REQUEST_HEADERS = void 0;
 exports.defineEntries = defineEntries;
 exports.rerender = rerender;
 exports.getContext = getContext;
-exports.unstable_headers = unstable_headers;
 const node_async_hooks_1 = require("node:async_hooks");
 exports.REQUEST_HEADERS = '__expo_requestHeaders';
 function defineEntries(renderEntries, getBuildConfig, getSsrConfig) {
@@ -69,21 +68,5 @@ function getContext() {
         throw new Error('Render store is not available for accessing context');
     }
     return renderStore.context;
-}
-/** Get the request headers used to make the server component or action request. */
-async function unstable_headers() {
-    const headers = (getContext()[exports.REQUEST_HEADERS] || {});
-    return new ReadonlyHeaders(headers);
-}
-class ReadonlyHeaders extends Headers {
-    set() {
-        throw new Error('Server component Headers are read-only');
-    }
-    append() {
-        throw new Error('Server component Headers are read-only');
-    }
-    delete() {
-        throw new Error('Server component Headers are read-only');
-    }
 }
 //# sourceMappingURL=server.js.map

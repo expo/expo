@@ -1,6 +1,18 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
+
+export type AlertDialogButtonColors = {
+  /**
+   * The background color of the button.
+   */
+  containerColor?: ColorValue;
+  /**
+   * The text color of the button.
+   */
+  contentColor?: ColorValue;
+};
 
 export type AlertDialogProps = {
   /**
@@ -19,6 +31,14 @@ export type AlertDialogProps = {
    * The text of the dismiss button of the alert dialog.
    */
   dismissButtonText?: string;
+  /**
+   * The colors for the confirm button.
+   */
+  confirmButtonColors?: AlertDialogButtonColors;
+  /**
+   * The colors for the dismiss button.
+   */
+  dismissButtonColors?: AlertDialogButtonColors;
   /**
    * Whether the alert dialog is visible.
    *
@@ -51,11 +71,5 @@ const AlertDialogNativeView: React.ComponentType<NativeAlertDialogProps> = requi
  * Renders an `AlertDialog` component.
  */
 export function AlertDialog(props: AlertDialogProps) {
-  return (
-    <AlertDialogNativeView
-      {...props}
-      // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-    />
-  );
+  return <AlertDialogNativeView {...props} />;
 }

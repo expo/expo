@@ -4,6 +4,8 @@ hideFromSearch: true
 description: Learn how to send notifications with FCM and APNs.
 ---
 
+import { DiffBlock } from '~/ui/components/Snippet';
+
 You may need finer-grained control over your notifications, in which case communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo Application Services, and the `expo-notifications` API is push-service agnostic.
 
 > **Note**: This guide does not aim to be a comprehensive resource for sending notifications via FCM or APNs. We recommend you read the official documentation to make sure you're following the latest instructions.
@@ -14,13 +16,18 @@ When using Expo notification service, you use the `ExpoPushToken` obtained with 
 
 If you instead want to send notifications via FCM or APNs, you need to obtain the native device token with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
 
-```diff
-import * as Notifications from 'expo-notifications';
-...
-- const token = (await Notifications.getExpoPushTokenAsync()).data;
-+ const token = (await Notifications.getDevicePushTokenAsync()).data;
-// send token to your server
-```
+<DiffBlock
+  raw={`diff --git a/App.js b/App.js
+index 0000000..1111111 100644
+--- a/App.js
++++ b/App.js
+@@ -1,4 +1,4 @@
+ import * as Notifications from 'expo-notifications';
+ // ...
+-const token = (await Notifications.getExpoPushTokenAsync()).data;
++const token = (await Notifications.getDevicePushTokenAsync()).data;
+ // send token to your server`}
+/>
 
 ## FCMv1 server
 
@@ -218,8 +225,8 @@ request.write(
         body: 'Hello world! \uD83C\uDF10',
       },
     },
-    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
-    scopeKey: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
+    experienceId: '@yourExpoUsername/yourProjectSlug', // Required only when testing in legacy Expo Go (in SDK 52 and earlier)
+    scopeKey: '@yourExpoUsername/yourProjectSlug', // Required only when testing in legacy Expo Go (in SDK 52 and earlier)
   })
 );
 request.end();

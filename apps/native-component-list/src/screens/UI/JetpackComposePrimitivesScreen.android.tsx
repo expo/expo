@@ -1,3 +1,4 @@
+import { Host, Column, Row, Box, Text } from '@expo/ui/jetpack-compose';
 import {
   background,
   size,
@@ -8,12 +9,7 @@ import {
   clickable,
   animateContentSize,
   paddingAll,
-  Host,
-  Column,
-  Row,
-  Box,
-  Text,
-} from '@expo/ui/jetpack-compose';
+} from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 import { Button, View, StyleSheet, Text as RNText } from 'react-native';
 
@@ -131,7 +127,7 @@ export default function JetpackComposePrimitivesScreen() {
             background('#ffdddd'),
             clickable(() => setChecked((c) => !c)),
           ]}>
-          <Box modifiers={[matchParentSize(), background('#ddddff'), paddingAll(30)]} />
+          <Box modifiers={[matchParentSize(), paddingAll(30), background('#ddddff')]} />
         </Box>
       </Column>
     </Host>

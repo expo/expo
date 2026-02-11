@@ -15,7 +15,6 @@ private const val NEW_RESPONSE_EVENT_NAME = "onDidReceiveNotificationResponse"
 private const val MESSAGES_DELETED_EVENT_NAME = "onNotificationsDeleted"
 
 open class NotificationsEmitter : Module(), NotificationListener {
-  private lateinit var notificationManager: NotificationManager
   private var lastNotificationResponseBundle: Bundle? = null
 
   override fun definition() = ModuleDefinition {
@@ -28,14 +27,12 @@ open class NotificationsEmitter : Module(), NotificationListener {
     )
 
     OnCreate {
-      // Register the module as a listener in NotificationManager singleton module.
-      // Deregistration happens in onDestroy callback.
-      notificationManager = requireNotNull(appContext.legacyModuleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
-      notificationManager.addListener(this@NotificationsEmitter)
+      // Register the module as a listener in NotificationManager singleton.
+      NotificationManager.addListener(this@NotificationsEmitter)
     }
 
     OnDestroy {
-      notificationManager.removeListener(this@NotificationsEmitter)
+      NotificationManager.removeListener(this@NotificationsEmitter)
     }
 
     Function<Bundle?>("getLastNotificationResponse") {

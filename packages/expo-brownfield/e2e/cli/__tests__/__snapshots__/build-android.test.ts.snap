@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`build:android command without prebuild should display help message for --help/-h option 1`] = `
+"Usage: expo-brownfield build:android [<options>]
+
+Options:
+  --help, -h                    display help for 'build:android'
+  --debug, -d                   build in debug configuration
+  --release, -r                 build in release configuration
+  --verbose                     forward all output to the terminal
+  --all, -a                     build both debug and release configurations
+  --repository, --repo          maven repository for publishing artifacts (multiple can be passed)
+  --task, -t                    publishing task to be run (multiple can be passed)
+  --library, -l                 name of the brownfield library"
+`;
+
+exports[`build:android command without prebuild should display help message for --help/-h option 2`] = `
+"Usage: expo-brownfield build:android [<options>]
+
+Options:
+  --help, -h                    display help for 'build:android'
+  --debug, -d                   build in debug configuration
+  --release, -r                 build in release configuration
+  --verbose                     forward all output to the terminal
+  --all, -a                     build both debug and release configurations
+  --repository, --repo          maven repository for publishing artifacts (multiple can be passed)
+  --task, -t                    publishing task to be run (multiple can be passed)
+  --library, -l                 name of the brownfield library"
+`;

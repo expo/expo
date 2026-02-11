@@ -26,11 +26,12 @@ class ExpoAndroidProjectConfig {
     name;
     path;
     modules;
+    services;
     publication;
     gradleAarProjects;
     shouldUsePublicationScriptPath;
     isDefault;
-    constructor(name, path, modules, publication, gradleAarProjects, shouldUsePublicationScriptPath, 
+    constructor(name, path, modules, services, publication, gradleAarProjects, shouldUsePublicationScriptPath, 
     /**
      * Whether this project is the root one.
      */
@@ -38,6 +39,7 @@ class ExpoAndroidProjectConfig {
         this.name = name;
         this.path = path;
         this.modules = modules;
+        this.services = services;
         this.publication = publication;
         this.gradleAarProjects = gradleAarProjects;
         this.shouldUsePublicationScriptPath = shouldUsePublicationScriptPath;
@@ -129,12 +131,12 @@ class ExpoModuleConfig {
         // Adding the "root" Android project - it might not be valide.
         androidProjects.push(new ExpoAndroidProjectConfig(this.rawConfig.android?.name ?? defaultProjectName, this.rawConfig.android?.path ?? 'android', this.rawConfig.android?.modules?.map((module) => typeof module === 'string'
             ? new ExpoAndroidModuleConfig(module, null)
-            : new ExpoAndroidModuleConfig(module.class, module.name)), this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, this.rawConfig.android?.shouldUsePublicationScriptPath, !this.rawConfig.android?.path // it's default project because path is not defined
+            : new ExpoAndroidModuleConfig(module.class, module.name)), this.rawConfig.android?.services, this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, this.rawConfig.android?.shouldUsePublicationScriptPath, !this.rawConfig.android?.path // it's default project because path is not defined
         ));
         this.rawConfig.android?.projects?.forEach((project) => {
             androidProjects.push(new ExpoAndroidProjectConfig(project.name, project.path, project.modules?.map((module) => typeof module === 'string'
                 ? new ExpoAndroidModuleConfig(module, null)
-                : new ExpoAndroidModuleConfig(module.class, module.name)), project.publication, project.gradleAarProjects, project.shouldUsePublicationScriptPath));
+                : new ExpoAndroidModuleConfig(module.class, module.name)), project.services, project.publication, project.gradleAarProjects, project.shouldUsePublicationScriptPath));
         });
         return androidProjects;
     }

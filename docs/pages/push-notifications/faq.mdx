@@ -87,7 +87,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 
 ### Notifications work in development, but not in release mode
 
-This indicates that you have either misconfigured your credentials or didn't configure them at all in your production app. Expo Go uses Expo's credentials, which allows working on notifications in development.
+This indicates that you have either misconfigured your credentials or didn't configure them at all in your production app. In SDK 53 and later, Expo Go does not support push notifications functionality, so to test push you should use a [development build](/develop/development-builds/introduction/). In SDK 52 and earlier, Expo Go used Expo's credentials, which allowed push notifications to work in development without setting up your own credentials.
 
 When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/fcm-credentials). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app results in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
 

@@ -1,6 +1,6 @@
-import { ModConfig } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-export { ExpoConfig };
+import type { ModConfig } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
+export type { ExpoConfig, Web as ExpoConfigWeb, Android as ExpoConfigAndroid, IOS as ExpoConfigIOS, Splash as ExpoConfigSplash, IOSIcons as ExpoConfigIOSIcons, AndroidIntentFiltersData as ExpoConfigAndroidIntentFiltersData, } from '@expo/config-types';
 export type PackageJSONConfig = {
     dependencies?: Record<string, string>;
     [key: string]: any;

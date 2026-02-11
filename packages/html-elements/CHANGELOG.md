@@ -10,7 +10,23 @@
 
 ### 💡 Others
 
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+
+## 0.13.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 0.13.7 — 2025-09-11
 

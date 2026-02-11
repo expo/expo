@@ -5,7 +5,6 @@ description: A command-line tool to create a new Expo and React Native project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 
 `create-expo-app` is a command-line tool to create and set up a new Expo and React Native project. This tool simplifies the initialization process by providing various templates to get started quickly without the need for manual configuration.
 
@@ -13,33 +12,14 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 To create a new project, run the following command:
 
-<Tabs>
-
-<Tab label="npm">
-
-<Terminal cmd={['$ npx create-expo-app@latest']} />
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal cmd={['$ yarn create expo-app']} />
-
-</Tab>
-
-<Tab label="pnpm">
-
-<Terminal cmd={['$ pnpm create expo-app']} />
-
-</Tab>
-
-<Tab label="Bun">
-
-<Terminal cmd={['$ bun create expo']} />
-
-</Tab>
-
-</Tabs>
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
+  }}
+/>
 
 Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
 
@@ -156,7 +136,7 @@ By default, a project created with `create-expo-app` and pnpm uses [`node-linker
 node-linker=hoisted
 ```
 
-> **info** From **SDK 54**, Expo supports isolated installations, and you can delete the `node-linker` setting if you prefer to use isolated dependencies.
+> **info** In **SDK 54** and later, Expo supports isolated installations, and you can delete the `node-linker` setting if you prefer to use isolated dependencies.
 
 #### EAS installation
 

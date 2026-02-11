@@ -40,30 +40,41 @@ exports.LinkPreview = LinkPreview;
 exports.LinkTrigger = LinkTrigger;
 const react_1 = __importStar(require("react"));
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
+const NativeMenuContext_1 = require("./NativeMenuContext");
+const primitives_1 = require("../primitives");
 const HrefPreview_1 = require("./preview/HrefPreview");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
 const native_1 = require("./preview/native");
 const Slot_1 = require("../ui/Slot");
+const link_apple_zoom_1 = require("./zoom/link-apple-zoom");
+const children_1 = require("../utils/children");
 /**
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
  *
- * > **Note**: You can use the alias `Link.MenuAction` for this component.
- *
  * @platform ios
  */
 function LinkMenuAction(props) {
-    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
+    const identifier = (0, react_1.useId)();
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(NativeMenuContext_1.NativeMenuContext)) {
         return null;
     }
-    const { unstable_keepPresented, onPress, ...rest } = props;
-    return (<native_1.NativeLinkPreviewAction {...rest} onSelected={onPress} keepPresented={unstable_keepPresented}/>);
+    const { unstable_keepPresented, onPress, children, title, ...rest } = props;
+    const areChildrenString = typeof children === 'string';
+    const label = areChildrenString
+        ? children
+        : (0, children_1.getFirstChildOfType)(children, primitives_1.Label)?.props.children;
+    const iconComponent = !props.icon && !areChildrenString ? (0, children_1.getFirstChildOfType)(children, primitives_1.Icon) : undefined;
+    const icon = props.icon ??
+        (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
+    const sf = typeof icon === 'string' ? icon : undefined;
+    return (<native_1.NativeLinkPreviewAction {...rest} identifier={identifier} icon={sf} title={label ?? title ?? ''} keepPresented={unstable_keepPresented} onSelected={() => onPress?.()}/>);
 }
 /**
  * Groups context menu actions for a link.
  *
  * If multiple `Link.Menu` components are used within a single `Link`, only the first will be rendered.
- * Only `Link.MenuAction` and `LinkMenuAction` components are allowed as children.
+ * Only `Link.MenuAction` and `Link.Menu` components are allowed as children.
  *
  * @example
  * ```tsx
@@ -73,16 +84,17 @@ function LinkMenuAction(props) {
  * </Link.Menu>
  * ```
  *
- * > **Note**: You can use the alias `Link.Menu` for this component.
- *
  * @platform ios
  */
 const LinkMenu = (props) => {
-    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
+    const identifier = (0, react_1.useId)();
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(NativeMenuContext_1.NativeMenuContext)) {
         return null;
     }
     const children = react_1.default.Children.toArray(props.children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === LinkMenuAction || child.type === exports.LinkMenu));
-    return (<native_1.NativeLinkPreviewAction {...props} title={props.title ?? ''} onSelected={() => { }} children={children}/>);
+    const displayAsPalette = props.palette ?? props.displayAsPalette;
+    const displayInline = props.inline ?? props.displayInline;
+    return (<native_1.NativeLinkPreviewAction {...props} displayAsPalette={displayAsPalette} displayInline={displayInline} preferredElementSize={props.elementSize} title={props.title ?? ''} onSelected={() => { }} children={children} identifier={identifier}/>);
 };
 exports.LinkMenu = LinkMenu;
 /**
@@ -109,8 +121,6 @@ exports.LinkMenu = LinkMenu;
  *   <Link.Preview />
  * </Link>
  * ```
- *
- * > **Note**: You can use the alias `Link.Preview` for this component.
  *
  * @platform ios
  */
@@ -152,11 +162,9 @@ function LinkPreview(props) {
  * </Link>
  * ```
  *
- * > **Note**: You can use the alias `Link.Trigger` for this component.
- *
  * @platform ios
  */
-function LinkTrigger(props) {
+function LinkTrigger({ withAppleZoom, ...props }) {
     if (react_1.default.Children.count(props.children) > 1 || !(0, react_1.isValidElement)(props.children)) {
         // If onPress is passed, this means that Link passed props to this component.
         // We can assume that asChild is used, so we throw an error, because link will not work in this case.
@@ -165,6 +173,10 @@ function LinkTrigger(props) {
         }
         return props.children;
     }
-    return <Slot_1.Slot {...props}/>;
+    const content = <Slot_1.Slot {...props}/>;
+    if (withAppleZoom) {
+        return <link_apple_zoom_1.LinkAppleZoom>{content}</link_apple_zoom_1.LinkAppleZoom>;
+    }
+    return content;
 }
 //# sourceMappingURL=elements.js.map

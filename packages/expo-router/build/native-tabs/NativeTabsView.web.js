@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabsView = NativeTabsView;
 const react_tabs_1 = require("@radix-ui/react-tabs");
 const react_1 = __importStar(require("react"));
-const native_tabs_module_css_1 = __importDefault(require("../../../assets/native-tabs.module.css"));
+const native_tabs_module_css_1 = __importDefault(require("../../assets/native-tabs.module.css"));
 function NativeTabsView(props) {
     const { tabs, focusedIndex } = props;
     const currentTab = tabs[focusedIndex];

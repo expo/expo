@@ -55,10 +55,6 @@ Object.defineProperty(mockNativeModules, 'LinkingManager', {
 
 const expoModules = merge(publicExpoModules, merge(thirdPartyModules, internalExpoModules));
 
-// Mock the experience URL in development mode for asset setup
-expoModules.NativeUnimoduleProxy.modulesConstants.mockDefinition.ExponentConstants.experienceUrl.mock =
-  'exp://192.168.1.200:8081';
-
 function mock(property, customMock) {
   const propertyType = property.type;
   let mockValue;

@@ -1,16 +1,14 @@
 ---
 title: Apple Handoff
 description: Learn how to seamlessly continue app navigation across Apple devices with Expo Router and Apple Handoff.
+platforms: ['ios*', 'web']
 ---
 
-import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Terminal } from '~/ui/components/Snippet';
 
 Apple Handoff is a feature that enables users to continue browsing your app or website on another device. Expo Router automates all of the runtime routing for this feature. However, the one-time configuration must be set up manually.
 
 In Expo Router, the underlying iOS API (`NSUserActivity`) requires a `webpageUrl` which the OS recommends as the current URL for switching to your app. The `expo-router/head` component has an optional native module that can automatically set the `webpageUrl` to the currently focused route in Expo Router.
-
-<PlatformsSection ios web />
 
 ## Setup
 

@@ -10,7 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { TabsGroup, Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
@@ -130,22 +130,9 @@ In another terminal window, compile and run the example app:
 
 Add the native dependencies to the module by editing the **expo-radial-chart/android/build.gradle** and **expo-radial-chart/ios/ExpoRadialChart.podspec** files:
 
-```diff android/build.gradle
-dependencies {
-  implementation project(':expo-modules-core')
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-+ implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-}
-```
+<DiffBlock source="/static/diffs/third-party-library/android-mpandroidchart-dependency.diff" />
 
-```diff ios/ExpoRadialChart.podspec
-  s.static_framework = true
-
-  s.dependency 'ExpoModulesCore'
-+ s.dependency 'DGCharts', '~> 5.1.0'
-
-  # Swift/Objective-C compatibility
-```
+<DiffBlock source="/static/diffs/third-party-library/ios-dgcharts-dependency.diff" />
 
 <Collapsible summary={<>Are you trying to use a <CODE>.aar</CODE> dependency?</>}>
 
@@ -153,49 +140,21 @@ dependencies {
   <Tab label="SDK 52 and later">
     Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the file as a Gradle project from autolinking:
 
-```diff expo-module.config.json
-    "android": {
-+     "gradleAarProjects": [
-+       {
-+         "name": "test-aar",
-+         "aarFilePath": "android/libs/test.aar"
-+       }
-+     ],
-    "modules": [
-```
+<DiffBlock source="/static/diffs/third-party-library/expo-module-config-gradle-aar.diff" />
 
     Finally, add the dependency to the `dependencies` list in the **android/build.gradle** file, using the dependency's specified name with `${project.name}$` prefix:
 
-```diff android/build.gradle
-dependencies {
-  implementation project(':expo-modules-core')
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-+ implementation project(":${project.name}\$test-aar")
-}
-```
+<DiffBlock source="/static/diffs/third-party-library/android-build-gradle-aar-project.diff" />
 
   </Tab>
   <Tab label="SDK 51 and earlier">
     Inside the **android** directory, create another directory called **libs** and place the **.aar** file inside it. Then, add the directory as a repository:
 
-```diff android/build.gradle
-  repositories {
-    mavenCentral()
-+   flatDir {
-+       dirs 'libs'
-+   }
-  }
-```
+<DiffBlock source="/static/diffs/third-party-library/android-build-gradle-flatdir.diff" />
 
 Finally, add the dependency to the `dependencies` list. Instead of the filename, use the package path, which includes the `@aar` at the end:
 
-```diff android/build.gradle
-dependencies {
-  implementation project(':expo-modules-core')
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-+ implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0@aar'
-}
-```
+<DiffBlock source="/static/diffs/third-party-library/android-build-gradle-mpandroidchart-aar.diff" />
 
   </Tab>
 </Tabs>
@@ -206,12 +165,7 @@ dependencies {
 
 On iOS, you can also use dependencies bundled as a framework by using the `vendored_frameworks` config option.
 
-```diff ios/ExpoRadialChart.podspec
-    s.static_framework = true
-    s.dependency 'ExpoModulesCore'
-+   s.vendored_frameworks = 'Frameworks/MyFramework.framework'
-    # Swift/Objective-C compatibility
-```
+<DiffBlock source="/static/diffs/third-party-library/ios-podspec-vendored-framework.diff" />
 
 > **info** **Note**: The file pattern used to specify the path to the framework is relative to the podspec file,
 > and doesn't support traversing the parent directory (`..`), meaning you need to place the framework inside the **ios** directory
@@ -219,10 +173,7 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 
 Once the framework is added, make sure that the `source_files` option file pattern doesn't match any files inside the framework. One way to achieve this is to move your iOS source Swift files (that is `ExpoRadialChartView.swift` and `ExpoRadialChartModule.swift`) into a **src** directory separate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
 
-```diff ios/ExpoRadialChart.podspec
-- s.source_files = '**/*.{h,m,mm,swift,hpp,cpp}'
-+ s.source_files = 'src/**/*.{h,m,mm,swift,hpp,cpp}'
-```
+<DiffBlock source="/static/diffs/third-party-library/ios-podspec-source-files-src.diff" />
 
 Your **ios** directory should end up with a file structure similar to this:
 

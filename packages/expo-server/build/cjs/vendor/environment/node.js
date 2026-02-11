@@ -44,10 +44,12 @@ function createNodeEnv(params) {
         readText,
         readJson,
         loadModule,
+        isDevelopment: params.isDevelopment ?? false,
     });
 }
 function createNodeRequestScope(scopeDefinition, params) {
     return (0, runtime_1.createRequestScope)(scopeDefinition, (request) => ({
+        requestHeaders: request.headers,
         origin: request.headers.get('Origin') || 'null',
         environment: params.environment ?? process.env.NODE_ENV,
     }));

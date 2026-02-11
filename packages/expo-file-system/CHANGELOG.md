@@ -6,15 +6,62 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [Android] Fix bundle directory listing returning incorrect names, URIs and trailing slashes for files. ([#42882](https://github.com/expo/expo/pull/42882) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+## 55.0.5 — 2026-02-08
+
+### 🎉 New features
+
+- Add `append` option to write methods. ([#42778](https://github.com/expo/expo/pull/42778) by [@aleqsio](https://github.com/aleqsio))
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- [file-system] Fix package exports for Typescript projects ([#39543](https://github.com/expo/expo/pull/39543) by [@smoores-dev](https://github.com/smoores-dev))
+
+### 💡 Others
+
+- [Android] Add `android:maxSdkVersion` annotation to `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+- [Android] Removed references to legacy native modules API. ([#41791](https://github.com/expo/expo/pull/41791) by [@lukmccall](https://github.com/lukmccall))
+
+## 19.0.20 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.19 - 2025-11-18
+
+### 🎉 New features
+
 - [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
 - [iOS] Add missing `createFile` and `createDirectory` methods. ([#40314](https://github.com/expo/expo/pull/40314) by [@jakex7](https://github.com/jakex7))
 
-### 💡 Others
+## 19.0.18 - 2025-11-17
 
-- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+_This version does not introduce any user-facing changes._
 
 ## 19.0.17 - 2025-10-09
 

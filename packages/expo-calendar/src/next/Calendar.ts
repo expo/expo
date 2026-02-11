@@ -198,7 +198,7 @@ export function getDefaultCalendarSync(): ExpoCalendar {
   }
   const defaultCalendar = InternalExpoCalendar.getDefaultCalendarSync();
   Object.setPrototypeOf(defaultCalendar, ExpoCalendar.prototype);
-  return defaultCalendar;
+  return defaultCalendar as ExpoCalendar;
 }
 
 /**

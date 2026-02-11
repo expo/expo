@@ -4,6 +4,7 @@ import * as queryString from 'query-string';
 
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
+import { parseUrlUsingCustomBase } from '../utils/url';
 
 export type ExpoOptions = {
   previousSegments?: string[];
@@ -43,33 +44,36 @@ export function safelyDecodeURIComponent(str: string) {
   }
 }
 
+interface UrlWithReactNavigationConcessions {
+  path: string;
+  nonstandardPathname: string;
+  hash: string;
+  pathWithoutGroups: string;
+}
+
 export function getUrlWithReactNavigationConcessions(
   path: string,
   baseUrl: string | undefined = process.env.EXPO_BASE_URL
-) {
-  let parsed: URL;
-  try {
-    parsed = new URL(path, 'https://phony.example');
-  } catch {
-    // Do nothing with invalid URLs.
-    return {
-      path,
-      cleanUrl: '',
-      nonstandardPathname: '',
-      url: new URL('https://phony.example'),
-    };
-  }
-
-  const pathname = parsed.pathname;
-  const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
+): UrlWithReactNavigationConcessions {
   const pathWithoutGroups = stripGroupSegmentsFromPath(stripBaseUrl(path, baseUrl));
 
-  // Make sure there is a trailing slash
+  let pathname = '';
+  let hash = '';
+  try {
+    const parsed = parseUrlUsingCustomBase(path);
+    pathname = parsed.pathname;
+    hash = parsed.hash;
+  } catch {
+    // Do nothing with invalid URLs.
+  }
+
+  const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
   return {
-    // The slashes are at the end, not the beginning
     path,
+    // Make sure there is a trailing slash
+    // The slashes are at the end, not the beginning
     nonstandardPathname: withoutBaseUrl.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
-    url: parsed,
+    hash,
     pathWithoutGroups,
   };
 }
@@ -436,7 +440,7 @@ export function parseQueryParams(
   parseConfig?: Record<string, (value: string) => any>,
   hash?: string
 ) {
-  const searchParams = new URL(path, 'https://phony.example').searchParams;
+  const searchParams = parseUrlUsingCustomBase(path).searchParams;
   const params: Record<string, string | string[]> = Object.create(null);
 
   if (hash) {

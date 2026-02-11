@@ -2,7 +2,6 @@ package expo.modules.notifications.notifications.handling
 
 import android.os.Handler
 import android.os.HandlerThread
-import expo.modules.core.ModuleRegistry
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -23,9 +22,6 @@ import expo.modules.notifications.notifications.model.RemoteNotificationContent
  * for all of them and a proxy through which app responds with the behavior.
  */
 open class NotificationsHandler : Module(), NotificationListener {
-  private lateinit var notificationManager: NotificationManager
-  private lateinit var moduleRegistry: ModuleRegistry
-
   /**
    * [HandlerThread] which is the host to the notifications handler.
    */
@@ -47,19 +43,16 @@ open class NotificationsHandler : Module(), NotificationListener {
     )
 
     OnCreate {
-      moduleRegistry = appContext.legacyModuleRegistry
-
-      // Register the module as a listener in NotificationManager singleton module.
+      // Register the module as a listener in NotificationManager singleton.
       // Deregistration happens in onDestroy callback.
-      notificationManager = requireNotNull(moduleRegistry.getSingletonModule("NotificationManager", NotificationManager::class.java))
-      notificationManager.addListener(this@NotificationsHandler)
+      NotificationManager.addListener(this@NotificationsHandler)
       notificationsHandlerThread = HandlerThread("NotificationsHandlerThread - " + this.javaClass.toString())
       notificationsHandlerThread.start()
       handler = Handler(notificationsHandlerThread.looper)
     }
 
     OnDestroy {
-      notificationManager.removeListener(this@NotificationsHandler)
+      NotificationManager.removeListener(this@NotificationsHandler)
 
       tasksMap.values.forEach(SingleNotificationHandlerTask::stop)
 

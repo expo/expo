@@ -1,5 +1,6 @@
 package expo.modules.kotlin.views
 
+import android.annotation.SuppressLint
 import android.view.View
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -12,12 +13,19 @@ import expo.modules.kotlin.AppContext
 /**
  * An ExpoComposeView for [AndroidView] wrapping with existing view
  */
-internal class ExpoComposeAndroidView(private val view: View, appContext: AppContext) : ExpoComposeView<ComposeProps>(view.context, appContext) {
+@SuppressLint("ViewConstructor")
+internal class ExpoComposeAndroidView(
+  private val view: View,
+  appContext: AppContext
+) : ExpoComposeView<ComposeProps>(view.context, appContext) {
   @Composable
   override fun ComposableScope.Content() {
     AndroidView(
       factory = { view },
-      modifier = Modifier.size(view.width.toFloat().pxToDp().dp, view.height.toFloat().pxToDp().dp)
+      modifier = Modifier.size(
+        view.width.toFloat().pxToDp().dp,
+        view.height.toFloat().pxToDp().dp
+      )
     )
   }
 }

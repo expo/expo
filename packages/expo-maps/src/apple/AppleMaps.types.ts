@@ -15,8 +15,16 @@ export type AppleMapsMarker = {
 
   /**
    * The SF Symbol to display for the marker.
+   * This is mutually exclusive with `monogram`. If both are provided, `systemImage` takes precedence.
    */
   systemImage?: string;
+
+  /**
+   * A short text (typically initials or 1-2 characters) to display on the marker balloon.
+   * This is mutually exclusive with `systemImage`. If both are provided, `systemImage` takes precedence.
+   * @platform ios 17.0+
+   */
+  monogram?: string;
 
   /**
    * The coordinates of the marker.
@@ -124,6 +132,25 @@ export enum AppleMapsMapStyleEmphasis {
    * A muted emphasis style, that deemphasizes the map’s imagery.
    */
   MUTED = 'MUTED',
+}
+
+/**
+ * Controls the color scheme (appearance) of the map.
+ * @platform ios
+ */
+export enum AppleMapsColorScheme {
+  /**
+   * The map follows the app's color scheme (light/dark mode).
+   */
+  AUTOMATIC = 'AUTOMATIC',
+  /**
+   * The map is always displayed in light mode.
+   */
+  LIGHT = 'LIGHT',
+  /**
+   * The map is always displayed in dark mode.
+   */
+  DARK = 'DARK',
 }
 
 /**
@@ -419,6 +446,13 @@ export type AppleMapsViewProps = {
   style?: StyleProp<ViewStyle>;
 
   /**
+   * Controls the color scheme (appearance) of the map.
+   * Use this to force the map to display in light or dark mode.
+   * @default AppleMapsColorScheme.AUTOMATIC
+   */
+  colorScheme?: AppleMapsColorScheme;
+
+  /**
    * The initial camera position of the map.
    */
   cameraPosition?: CameraPosition;
@@ -493,6 +527,8 @@ export type AppleMapsViewProps = {
    */
   onCameraMove?: (event: {
     coordinates: Coordinates;
+    latitudeDelta: number;
+    longitudeDelta: number;
     zoom: number;
     tilt: number;
     bearing: number;

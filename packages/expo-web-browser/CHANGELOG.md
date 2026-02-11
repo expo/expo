@@ -8,9 +8,49 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `dismissBrowser` hanging when called with no browser open. ([#40799](https://github.com/expo/expo/pull/40799) by [@alanjhughes](https://github.com/alanjhughes))
+### 💡 Others
+
+## 55.0.5 — 2026-02-08
 
 ### 💡 Others
+
+- Fixed missing word in `warmUpAsync` JSDoc. ([#42944](https://github.com/expo/expo/pull/42944) by [@brentvatne](https://github.com/brentvatne))
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix the browser closing after the app is backgrounded by adding a new option to use a proxy activity to launch custom tabs. ([#41457](https://github.com/expo/expo/pull/41457) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- [Android] Remove `experimentalLauncherActivity` config plugin option as it was replaced with the `useProxyActivity` option on `openBrowserAsync` and `openAuthSessionAsync` methods. ([#41535](https://github.com/expo/expo/pull/41535) by [@lukmccall](https://github.com/lukmccall))
+
+## 15.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.9 - 2025-11-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `dismissBrowser` hanging when called with no browser open. ([#40799](https://github.com/expo/expo/pull/40799) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.8 - 2025-10-01
 

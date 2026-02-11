@@ -1,7 +1,46 @@
 /**
+ * Shared build configuration fields that can be set at the top level
+ * or overridden per-platform. Platform-specific values take precedence.
+ */
+export interface SharedBuildConfigFields {
+    /**
+     * Enable building React Native from source. Turning this on will significantly increase the build times.
+     *
+     * On iOS, this controls support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+     * Setting this value to `true` will enable building React Native from source and disable the use of precompiled xcframeworks.
+     * This feature is available from React Native 0.80 and later when using the new architecture.
+     * From React Native 0.81, this setting will also control the use of a precompiled React Native Core (`React.xcframework`).
+     *
+     * @default false
+     * @see [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
+     */
+    buildReactNativeFromSource?: boolean;
+    /**
+     * The React Native release level to use for the project.
+     * This can be used to enable different sets of internal React Native feature flags.
+     *
+     * @default 'stable'
+     */
+    reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+    /**
+     * Enable the experimental Hermes V1 engine.
+     *
+     * In React Native 0.83, using Hermes V1 requires building React Native from source.
+     * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+     *
+     * @default false
+     */
+    useHermesV1?: boolean;
+}
+/**
+ * Resolves a shared config value with platform-specific override.
+ * Platform-specific values take precedence over top-level values.
+ */
+export declare function resolveConfigValue<K extends keyof SharedBuildConfigFields>(config: PluginConfigType, platform: 'android' | 'ios', key: K): SharedBuildConfigFields[K];
+/**
  * Interface representing base build properties configuration.
  */
-export interface PluginConfigType {
+export interface PluginConfigType extends SharedBuildConfigFields {
     /**
      * Interface representing available configuration for Android native build properties.
      * @platform android
@@ -17,14 +56,7 @@ export interface PluginConfigType {
  * Interface representing available configuration for Android native build properties.
  * @platform android
  */
-export interface PluginConfigTypeAndroid {
-    /**
-     * Enable React Native New Architecture for Android platform.
-     *
-     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-     * app config file instead.
-     */
-    newArchEnabled?: boolean;
+export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
     /**
      * Override the default `minSdkVersion` version number in **build.gradle**.
      * */
@@ -150,7 +182,6 @@ export interface PluginConfigTypeAndroid {
      * @default false
      */
     enableBundleCompression?: boolean;
-    buildReactNativeFromSource?: boolean;
     /**
      * Enable building React Native from source. Turning this on will significantly increase the build times.
      * @deprecated Use `buildReactNativeFromSource` instead.
@@ -177,13 +208,6 @@ export interface PluginConfigTypeAndroid {
      * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
      */
     exclusiveMavenMirror?: string;
-    /**
-     * The React Native release level to use for the project.
-     * This can be used to enable different sets of internal React Native feature flags.
-     *
-     * @default 'stable'
-     */
-    reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 /**
  * @platform android
@@ -259,14 +283,7 @@ export type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCr
  * Interface representing available configuration for iOS native build properties.
  * @platform ios
  */
-export interface PluginConfigTypeIos {
-    /**
-     * Enable React Native New Architecture for iOS platform.
-     *
-     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-     * app config file instead.
-     */
-    newArchEnabled?: boolean;
+export interface PluginConfigTypeIos extends SharedBuildConfigFields {
     /**
      * Override the default iOS "Deployment Target" version in the following projects:
      *  - in CocoaPods projects,
@@ -335,24 +352,6 @@ export interface PluginConfigTypeIos {
      * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
      */
     privacyManifestAggregationEnabled?: boolean;
-    /**
-     * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-     * Setting this value to `true` will enable building React Native from source and disable the use of precompiled xcframeworks.
-     * This feature is available from React Native 0.80 and later when using the new architecture.
-     * From React Native 0.81, this setting will also control the use of a precompiled React Native Core (`React.xcframework`).
-     *
-     * @default false
-     * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
-     * @experimental
-     */
-    buildReactNativeFromSource?: boolean;
-    /**
-     * The React Native release level to use for the project.
-     * This can be used to enable different sets of internal React Native feature flags.
-     *
-     * @default 'stable'
-     */
-    reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 /**
  * Interface representing extra CocoaPods dependency.
@@ -531,4 +530,4 @@ export interface PluginConfigTypeAndroidQueriesData {
 /**
  * @ignore
  */
-export declare function validateConfig(config: any): PluginConfigType;
+export declare function validateConfig(config: unknown, projectRoot?: string): PluginConfigType;

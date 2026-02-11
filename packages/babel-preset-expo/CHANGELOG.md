@@ -6,7 +6,56 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.4 — 2026-02-08
+
+### 🎉 New features
+
+- Add babel plugin for `expo-widgets`. ([#42941](https://github.com/expo/expo/pull/42941) by [@jakex7](https://github.com/jakex7))
+
+## 55.0.3 — 2026-02-03
+
+### 💡 Others
+
+- Add missing support for inlining environment variables as optional member expressions ([#42752](https://github.com/expo/expo/pull/42752) by [@kitten](https://github.com/kitten))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Improve performance of Expo Router babel plugins. ([#41693](https://github.com/expo/expo/pull/41693) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+- Add support for server data loaders in server export mode ([#41934](https://github.com/expo/expo/pull/41934) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Resolve app root for each file to support bun monorepos. ([#42315](https://github.com/expo/expo/pull/42315) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.7 - 2025-11-07
 
 ### 🐛 Bug fixes
 
@@ -15,10 +64,6 @@
 ### 💡 Others
 
 - Add `enableReactFastRefresh` option to allow force-disabling `react-refresh` ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
-
-### ⚠️ Notices
-
-- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 54.0.6 - 2025-10-21
 

@@ -7,10 +7,22 @@ exports.Tutorial = Tutorial;
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const createEntryFile_1 = require("./createEntryFile");
 const exports_1 = require("../exports");
+const getDevServer_1 = require("../getDevServer");
 const Pressable_1 = require("../views/Pressable");
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
+function createEntryFileAsync() {
+    if (process.env.NODE_ENV === 'production') {
+        // No dev server
+        console.warn('createEntryFile() cannot be used in production');
+        return;
+    }
+    // Pings middleware in the Expo CLI dev server.
+    return fetch((0, getDevServer_1.getDevServer)().url + '_expo/touch', {
+        method: 'POST',
+        body: JSON.stringify({ type: 'router_index' }),
+    });
+}
 function Tutorial() {
     react_1.default.useEffect(() => {
         if (react_native_1.Platform.OS === 'web') {
@@ -69,18 +81,18 @@ function Tutorial() {
     </react_native_safe_area_context_1.SafeAreaView>);
 }
 function getRootDir() {
-    const dir = process.env.EXPO_ROUTER_ABS_APP_ROOT;
-    if (dir.match(/\/src\/app$/)) {
+    const dir = process.env.EXPO_ROUTER_APP_ROOT ?? '';
+    if (/[\\/]src[\\/]app$/.test(dir)) {
         return 'src/app';
     }
-    else if (dir.match(/\/app$/)) {
+    else if (/[\\/]app$/.test(dir)) {
         return 'app';
     }
-    return dir.split('/').pop() ?? dir;
+    return dir.split(/[\\/]/).pop() ?? '';
 }
 function Button() {
     return (<Pressable_1.Pressable onPress={() => {
-            (0, createEntryFile_1.createEntryFileAsync)();
+            createEntryFileAsync();
         }} style={styles.button}>
       {({ pressed, hovered }) => (<react_native_1.View style={[
                 styles.buttonContainer,
@@ -106,8 +118,7 @@ function Button() {
                         native: { color: '#000' },
                     }),
             ]}>
-            <react_native_1.Text style={styles.textSecondary}>$</react_native_1.Text> touch {getRootDir()}
-            /index.tsx
+            <react_native_1.Text style={styles.textSecondary}>$</react_native_1.Text> touch {`${getRootDir()}/index.tsx`}
           </react_native_1.Text>
         </react_native_1.View>)}
     </Pressable_1.Pressable>);

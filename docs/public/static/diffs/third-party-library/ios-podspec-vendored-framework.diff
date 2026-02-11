@@ -1,0 +1,9 @@
+diff --git a/ios/ExpoRadialChart.podspec b/ios/ExpoRadialChart.podspec
+index 0000000..1111111 100644
+--- a/ios/ExpoRadialChart.podspec
++++ b/ios/ExpoRadialChart.podspec
+@@ -1,3 +1,4 @@
+   s.static_framework = true
+   s.dependency 'ExpoModulesCore'
++  s.vendored_frameworks = 'Frameworks/MyFramework.framework'
+   # Swift/Objective-C compatibility

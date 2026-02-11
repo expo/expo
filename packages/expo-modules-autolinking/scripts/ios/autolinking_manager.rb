@@ -172,9 +172,7 @@ module Expo
       return @options.fetch(:appRoot, @options.fetch(:projectRoot, nil))
     end
 
-    # privates
-
-    private def resolve
+    public def resolve
       json = []
 
       IO.popen(resolve_command_args) do |data|
@@ -216,7 +214,8 @@ module Expo
         'node',
         '--no-warnings',
         '--eval',
-        'require(require.resolve(\'expo-modules-autolinking\', { paths: [\'' +  __dir__ + '\'] }))(process.argv.slice(1))',
+        'require(\'expo/bin/autolinking\')',
+        'expo-modules-autolinking',
         command_name,
         '--platform',
         'apple'

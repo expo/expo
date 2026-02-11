@@ -87,6 +87,7 @@ export async function getExpoPackagesAsync(expoRepoPath: string): Promise<Packag
         '**/__fixtures__/**',
         '**/e2e/**',
         '**/build/**',
+        '@expo/cli/local-template/**',
       ],
     })
   );

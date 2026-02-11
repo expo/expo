@@ -13,6 +13,7 @@ import {
   PermissionStatus,
   Camera,
   FocusMode,
+  VideoStabilization,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system/legacy';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -27,18 +28,27 @@ const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 const flashModeOrder: Record<string, FlashMode> = {
   off: 'on',
   on: 'auto',
-  auto: 'off',
+  auto: 'screen',
+  screen: 'off',
 };
 
 const flashIcons: Record<string, string> = {
   off: 'flash-off',
   on: 'flash',
   auto: 'flash-outline',
+  screen: 'sunny',
 };
 
 const volumeIcons: Record<string, string> = {
   on: 'volume-high',
   off: 'volume-mute',
+};
+
+const videoStabilizationModeOrder: Record<string, VideoStabilization> = {
+  off: 'standard',
+  standard: 'cinematic',
+  cinematic: 'auto',
+  auto: 'off',
 };
 
 const photos: CameraCapturedPicture[] = [];
@@ -67,6 +77,7 @@ interface State {
   showMoreOptions: boolean;
   mode: CameraMode;
   recording: boolean;
+  videoStabilizationMode: VideoStabilization;
 }
 
 function Gestures({ children }: { children: React.ReactNode }) {
@@ -125,6 +136,7 @@ export default function CameraScreen() {
     pictureSizeId: 0,
     mode: 'picture',
     recording: false,
+    videoStabilizationMode: 'auto',
   });
 
   useEffect(() => {
@@ -183,6 +195,12 @@ export default function CameraScreen() {
     setState((state) => ({
       ...state,
       autoFocus: state.autoFocus === 'on' ? 'off' : 'on',
+    }));
+
+  const toggleVideoStabilization = () =>
+    setState((state) => ({
+      ...state,
+      videoStabilizationMode: videoStabilizationModeOrder[state.videoStabilizationMode],
     }));
 
   const collectPictureSizes = async () => {
@@ -424,6 +442,15 @@ export default function CameraScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      <View style={styles.pictureSizeContainer}>
+        <Text style={styles.pictureQualityLabel}>Video Stabilization</Text>
+        <TouchableOpacity onPress={toggleVideoStabilization} style={styles.stabilizationButton}>
+          <Text style={{ color: 'white', textTransform: 'capitalize' }}>
+            {state.videoStabilizationMode}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -467,6 +494,7 @@ export default function CameraScreen() {
             mute={state.mute}
             zoom={state.zoom}
             videoQuality="1080p"
+            videoStabilizationMode={state.videoStabilizationMode}
             onMountError={handleMountError}
             barcodeScannerSettings={{
               barcodeTypes: ['qr', 'pdf417'],
@@ -579,6 +607,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  stabilizationButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#4630EB',
+    borderRadius: 4,
   },
   facesContainer: {
     position: 'absolute',

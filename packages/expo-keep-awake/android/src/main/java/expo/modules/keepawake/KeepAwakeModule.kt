@@ -2,14 +2,12 @@
 package expo.modules.keepawake
 
 import expo.modules.core.errors.CurrentActivityNotFoundException
-import expo.modules.core.interfaces.services.KeepAwakeManager
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 class KeepAwakeModule : Module() {
-  private val keepAwakeManager: KeepAwakeManager
-    get() = appContext.legacyModule() ?: throw MissingModuleException("KeepAwakeManager")
+  private val keepAwakeManager by lazy { ExpoKeepAwakeManager(appContext) }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoKeepAwake")

@@ -6,7 +6,15 @@ import { CodeBlock } from '~/components/base/code';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { P, CALLOUT, CODE, createPermalinkedComponent, LI, UL } from '~/ui/components/Text';
+import {
+  CALLOUT,
+  CODE,
+  createPermalinkedComponent,
+  createTextComponent,
+  LI,
+  UL,
+} from '~/ui/components/Text';
+import { TextElement } from '~/ui/components/Text/types';
 
 import { formatSchema } from './helpers';
 import { FormattedProperty, Property } from './types';
@@ -33,14 +41,30 @@ export default function AppConfigSchemaTable({ schema }: AppConfigSchemaProps) {
 
 type PropertyNameProps = { name: string; nestingLevel: number };
 
-const Anchor = createPermalinkedComponent(P, {
+const PROPERTY_HEADING_CLASSNAME = 'font-normal text-base [&_strong]:break-words';
+const PropertyHeadingH3 = createTextComponent(TextElement.H3, PROPERTY_HEADING_CLASSNAME);
+const PropertyHeadingH4 = createTextComponent(TextElement.H4, PROPERTY_HEADING_CLASSNAME);
+const PropertyHeadingH5 = createTextComponent(TextElement.H5, PROPERTY_HEADING_CLASSNAME);
+
+const AnchorH3 = createPermalinkedComponent(PropertyHeadingH3, {
+  baseNestingLevel: 3,
+  sidebarType: HeadingType.INLINE_CODE,
+});
+const AnchorH4 = createPermalinkedComponent(PropertyHeadingH4, {
+  baseNestingLevel: 3,
+  sidebarType: HeadingType.INLINE_CODE,
+});
+const AnchorH5 = createPermalinkedComponent(PropertyHeadingH5, {
   baseNestingLevel: 3,
   sidebarType: HeadingType.INLINE_CODE,
 });
 
+const PROPERTY_ANCHORS = [AnchorH3, AnchorH4, AnchorH5];
+
 function PropertyName({ name, nestingLevel }: PropertyNameProps) {
+  const Anchor = PROPERTY_ANCHORS[Math.min(nestingLevel, PROPERTY_ANCHORS.length - 1)];
   return (
-    <Anchor level={nestingLevel} data-testid={name} data-heading="true">
+    <Anchor level={nestingLevel}>
       <code className="font-medium">{name}</code>
     </Anchor>
   );
@@ -50,7 +74,6 @@ function AppConfigProperty({
   name,
   description,
   example,
-  expoKit,
   bareWorkflow,
   type,
   nestingLevel,
@@ -149,13 +172,8 @@ function AppConfigProperty({
         )}
       </div>
       <ReactMarkdown components={mdComponents}>{description}</ReactMarkdown>
-      {expoKit && (
-        <Collapsible summary="ExpoKit">
-          <ReactMarkdown components={mdComponents}>{expoKit}</ReactMarkdown>
-        </Collapsible>
-      )}
       {bareWorkflow && (
-        <Collapsible summary="Bare Workflow">
+        <Collapsible summary="Existing React Native app?">
           <ReactMarkdown components={mdComponents}>{bareWorkflow}</ReactMarkdown>
         </Collapsible>
       )}

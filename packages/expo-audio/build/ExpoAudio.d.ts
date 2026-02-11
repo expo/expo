@@ -218,11 +218,10 @@ export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
  * ```tsx
  * import { setAudioModeAsync } from 'expo-audio';
  *
- * // Configure audio for background playback
+ * // Configure audio for background playback with mixing
  * await setAudioModeAsync({
  *   playsInSilentMode: true,
  *   shouldPlayInBackground: true,
- *   interruptionModeAndroid: 'duckOthers',
  *   interruptionMode: 'mixWithOthers'
  * });
  *

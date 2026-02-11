@@ -52,6 +52,21 @@ export interface SrcIcon {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
       };
+  /**
+   * Controls how the image icon is rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon (selected/unselected states)
+   * - `'original'`: Preserves original icon colors
+   *
+   * **Default behavior:**
+   * - If tab bar icon color is configured, defaults to `'template'`
+   * - If no icon color is set, defaults to `'original'`
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  renderingMode?: 'template' | 'original';
 }
 
 export interface SFSymbolIcon {
@@ -77,6 +92,37 @@ export interface SFSymbolIcon {
   sf?: SFSymbol | { default?: SFSymbol; selected: SFSymbol };
 }
 
+export interface XcassetIcon {
+  /**
+   * The name of the iOS asset catalog image to use as an icon.
+   *
+   * Xcassets provide automatic multi-resolution (@1x/@2x/@3x), dark mode variants,
+   * and device-specific images via `[UIImage imageNamed:]`.
+   *
+   * > **Note:** The rendering mode (template vs original) is controlled by the
+   * > "Render As" setting on the image set in Xcode's asset catalog, not via props.
+   * > By default, tab bar icons are tinted. To preserve original colors, set
+   * > "Render As" to "Original Image" in the Attributes Inspector.
+   *
+   * The value can be provided in two ways:
+   * - As a string with the asset catalog image name
+   * - As an object specifying the default and selected states
+   *
+   * @example
+   * ```tsx
+   * <Icon xcasset="custom-icon" />
+   * ```
+   *
+   * @example
+   * ```tsx
+   * <Icon xcasset={{ default: "home-outline", selected: "home-filled" }} />
+   * ```
+   *
+   * @platform iOS
+   */
+  xcasset?: string | { default?: string; selected: string };
+}
+
 export interface DrawableIcon {
   /**
    * The name of the drawable resource to use as an icon.
@@ -85,7 +131,15 @@ export interface DrawableIcon {
   drawable?: string;
 }
 
+/**
+ * Material icon name for Android native tabs.
+ *
+ * @platform android
+ */
 export interface MaterialIcon {
+  /**
+   * Material icon glyph name. See the [Material icons for the complete catalog](https://fonts.google.com/icons).
+   */
   md: AndroidSymbol;
 }
 
@@ -96,6 +150,9 @@ export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps &
     | (SFSymbolIcon & DrawableIcon)
     | (SFSymbolIcon & MaterialIcon)
     | (SFSymbolIcon & SrcIcon)
+    | (XcassetIcon & DrawableIcon)
+    | (XcassetIcon & MaterialIcon)
+    | (XcassetIcon & SrcIcon)
     | (MaterialIcon & SrcIcon)
     | (DrawableIcon & SrcIcon)
     | SrcIcon
@@ -104,13 +161,18 @@ export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps &
 /**
  * Renders an icon for the tab.
  *
- * Accepts various icon sources such as SF Symbols, drawable resources, material icons, or image sources.
+ * Accepts various icon sources such as SF Symbols, xcasset images, drawable resources, material icons, or image sources.
  *
  * Acceptable props combinations:
  * - `sf` and `drawable` - `sf` will be used for iOS icon, `drawable` for Android icon
  * - `sf` and `src` - `sf` will be used for iOS icon, `src` for Android icon
+ * - `xcasset` and `drawable` - `xcasset` will be used for iOS icon, `drawable` for Android icon
+ * - `xcasset` and `md` - `xcasset` will be used for iOS icon, `md` for Android icon
+ * - `xcasset` and `src` - `xcasset` will be used for iOS icon, `src` for Android icon
  * - `src` and `drawable` - `src` will be used for iOS icon, `drawable` for Android icon
  * - `src` only - `src` will be used for both iOS and Android icons
+ *
+ * Priority on iOS: `sf` > `xcasset` > `src`. Priority on Android: `drawable` > `md` > `src`.
  *
  * @platform ios
  * @platform android
@@ -164,3 +226,32 @@ export interface NativeTabsTriggerBadgeProps {
 }
 
 export const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps> = Badge;
+
+export interface NativeTabsBottomAccessoryProps {
+  children?: React.ReactNode;
+}
+
+/**
+ * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.
+ *
+ * @example
+ * ```tsx
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ *
+ * export default Layout(){
+ *   return (
+ *     <NativeTabs>
+ *       <NativeTabs.BottomAccessory>
+ *         <YourAccessoryComponent />
+ *       </NativeTabs.BottomAccessory>
+ *       <NativeTabs.Trigger name="index" />
+ *     </NativeTabs>
+ *   );
+ * }
+ * ```
+ *
+ * @platform iOS 26+
+ */
+export const NativeTabsBottomAccessory: React.FC<NativeTabsBottomAccessoryProps> = () => {
+  return null;
+};

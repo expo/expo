@@ -223,7 +223,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
     // Don't print a giant logo...
-    this.terminal.log(chalk.dim('Starting Metro Bundler'));
+    this.terminal.log(chalk.dim('Starting Metro Bundler') + '\n');
   }
 
   shouldFilterClientLog(event: { type: 'client_log'; data: unknown[] }): boolean {
@@ -267,6 +267,15 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
 
     attachImportStackToRootMessage(error);
+
+    // NOTE(@kitten): Metro drops the stack forcefully when it finds a `SyntaxError`. However,
+    // this is really unhelpful, since it prevents debugging Babel plugins or reporting bugs
+    // in Babel plugins or a transformer entirely
+    if (error.snippet == null && error.stack != null && error instanceof SyntaxError) {
+      error.message = error.stack;
+      delete error.stack;
+    }
+
     return super._logBundlingError(error);
   }
 }

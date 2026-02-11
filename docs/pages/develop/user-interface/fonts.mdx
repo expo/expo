@@ -45,12 +45,16 @@ Copy the file into your project's **assets/fonts** directory.
 
 Two ways to use the local font file in your project:
 
-- Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-app-config).
-- Loading the font file with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously.
+- Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-app-config) (Android and iOS only).
+- Load the font file with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime (Android, iOS, and web).
 
 ### With `expo-font` config plugin
 
-The `expo-font` config plugin allows embedding one or more font files in your project's native code. It supports `ttf` and `otf` for both Android and iOS, and `woff` and `woff2` are supported on iOS only. This is the recommended method for adding fonts to your app due to its benefits:
+The `expo-font` config plugin allows embedding one or more font files in your project's native code. It supports `ttf` and `otf` for both Android and iOS, and `woff` and `woff2` are supported on iOS only.
+
+> **Note:** Config plugins only run on native platforms (Android and iOS). For web, use the [`useFonts` hook](#with-usefonts-hook) instead.
+
+This is the recommended method for adding fonts to your app due to its benefits:
 
 - Fonts are available immediately when the app starts on a device.
 - No additional code required to load fonts in a project asynchronously when the app starts.

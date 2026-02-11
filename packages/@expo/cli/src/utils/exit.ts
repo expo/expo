@@ -6,6 +6,15 @@ import { warn } from '../log';
 
 const debug = require('debug')('expo:utils:exit') as typeof console.log;
 
+// NOTE: This is an internal method, not designed to be exposed. It's also our only way to get this info
+declare global {
+  namespace NodeJS {
+    interface Process {
+      _getActiveHandles(): readonly any[];
+    }
+  }
+}
+
 type AsyncExitHook = (signal: NodeJS.Signals) => void | Promise<void>;
 
 const PRE_EXIT_SIGNALS: NodeJS.Signals[] = ['SIGHUP', 'SIGINT', 'SIGTERM', 'SIGBREAK'];
@@ -98,9 +107,19 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     return true;
   });
 
-  const canExitProcess = !unexpectedActiveResources.length;
+  // Check if only Timeouts remain (no blocking resources like ProcessWrap/PipeWrap)
+  const hasBlockingResources = unexpectedActiveResources.some(
+    (resource) => resource !== 'Timeout' && resource !== 'CloseReq'
+  );
+
+  const canExitProcess = !unexpectedActiveResources.length || !hasBlockingResources;
   if (canExitProcess) {
-    return debug('no active resources detected, process can safely exit');
+    if (unexpectedActiveResources.length && !hasBlockingResources) {
+      debug('only non-blocking resources remain (Timeout/CloseReq), process can safely exit');
+    } else {
+      debug('no active resources detected, process can safely exit');
+    }
+    return;
   } else {
     debug(
       `process is trying to exit, but is stuck on unexpected active resources:`,
@@ -121,7 +140,13 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     clearTimeout(timeoutId);
     // Check if the process can exit
     ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
-  }, 100);
+
+    // setTimeout is using the global definitions from React Native which is missing the unref method in Node.js.
+  }, 100) as unknown as NodeJS.Timeout;
+
+  // Unref the timeout so it doesn't prevent the process from exiting naturally
+  // when this timeout is the only remaining active resource
+  timeoutId.unref();
 }
 
 /**
@@ -137,16 +162,41 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
  * ```
  */
 function tryWarnActiveProcesses() {
-  let activeProcesses: string[] = [];
+  const activeProcesses: string[] = [];
+  const handleSummary: Record<string, number> = {};
+  const timeoutDetails: string[] = [];
 
   try {
-    const children: ChildProcess[] = process
-      // @ts-expect-error - This is an internal method, not designed to be exposed. It's also our only way to get this info
-      ._getActiveHandles()
-      .filter((handle: any) => handle instanceof ChildProcess);
+    const handles = process._getActiveHandles();
 
-    if (children.length) {
-      activeProcesses = children.map((child) => child.spawnargs.join(' '));
+    // Categorize handles by their constructor name
+    for (const handle of handles) {
+      const name = handle?.constructor?.name ?? 'Unknown';
+      handleSummary[name] = (handleSummary[name] ?? 0) + 1;
+
+      // Collect ChildProcess command info
+      if (handle instanceof ChildProcess) {
+        activeProcesses.push(handle.spawnargs.join(' '));
+      }
+
+      // Try to get more info about Timeout handles
+      if (name === 'Timeout') {
+        try {
+          // Attempt to get callback name or source info
+          const callback = handle._onTimeout ?? handle._repeat;
+          const callbackName = callback?.name || '<anonymous>';
+          const delay = handle._idleTimeout ?? 'unknown';
+          timeoutDetails.push(`Timeout(${delay}ms, fn: ${callbackName})`);
+        } catch {
+          timeoutDetails.push('Timeout(details unavailable)');
+        }
+      }
+    }
+
+    // Log detailed handle info when debug is enabled
+    debug('active handles by type:', handleSummary);
+    if (timeoutDetails.length) {
+      debug('timeout details:', timeoutDetails);
     }
   } catch (error) {
     debug('failed to get active process information:', error);
@@ -154,6 +204,10 @@ function tryWarnActiveProcesses() {
 
   if (!activeProcesses.length) {
     warn('Something prevented Expo from exiting, forcefully exiting now.');
+    // Log handle summary when no specific processes are identified
+    if (Object.keys(handleSummary).length > 0) {
+      debug('handle summary (use DEBUG=expo:utils:exit for details):', handleSummary);
+    }
   } else {
     const singularOrPlural =
       activeProcesses.length === 1 ? '1 process' : `${activeProcesses.length} processes`;

@@ -1,4 +1,38 @@
-import { getPathFromState } from '../getPathFromState';
+import { getPathFromState, type Options } from '../getPathFromState';
+
+it(`handles nested params.screen/params.params for dynamic routes`, () => {
+  const state = {
+    routes: [
+      {
+        name: '(group)',
+        params: {
+          screen: 'foo',
+          params: {
+            screen: '[id]/index',
+            params: { id: 'bar' },
+          },
+        },
+      },
+    ],
+  };
+
+  const config = {
+    screens: {
+      '(group)': {
+        screens: {
+          foo: {
+            screens: {
+              index: '(group)/foo',
+              '[id]/index': '(group)/foo/:id',
+            },
+          },
+        },
+      },
+    },
+  };
+
+  expect(getPathFromState(state, config as Options<object>)).toBe('/foo/bar');
+});
 
 describe('hash support', () => {
   it('appends hash to the path', () => {

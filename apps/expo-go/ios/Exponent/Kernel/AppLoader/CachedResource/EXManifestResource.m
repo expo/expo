@@ -4,8 +4,9 @@
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
 #import "EXKernelLinkingManager.h"
-#import "EXKernelUtil.h"
-#import "EXVersions.h"
+#import "EXUtil.h"
+
+#import "Expo_Go-Swift.h"
 
 #import <React/RCTConvert.h>
 
@@ -180,7 +181,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
 
 - (BOOL)_isThirdPartyHosted
 {
-  return (self.remoteUrl && ![EXKernelLinkingManager isExpoHostedUrl:self.remoteUrl]);
+  return (self.remoteUrl && ![EXUtil isExpoHostedUrl:self.remoteUrl]);
 }
 
 - (BOOL)_isManifestVerificationBypassed: (id) manifestObj

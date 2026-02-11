@@ -1,4 +1,4 @@
-import { useChat } from '@kapaai/react-sdk';
+import { type Reaction, useChat } from '@kapaai/react-sdk';
 import { useRouter } from 'next/compat/router';
 import {
   type FormEvent,
@@ -13,12 +13,7 @@ import {
 import { usePageMetadata } from '~/providers/page-metadata';
 
 import { FOOTNOTE } from '../Text';
-import type {
-  ContextMarker,
-  ContextScope,
-  FeedbackTarget,
-  GlobalSwitchStatus,
-} from './AskPageAIChat.types';
+import type { ContextMarker, ContextScope, GlobalSwitchStatus } from './AskPageAIChat.types';
 import { createMarkerMap, normalizeQuestion } from './AskPageAIChat.utils';
 import { AskPageAIChatHeader } from './AskPageAIChatHeader';
 import { AskPageAIChatInput } from './AskPageAIChatInput';
@@ -257,21 +252,6 @@ export function AskPageAIChat({
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
 
-  const feedbackTarget = useMemo<FeedbackTarget>(() => {
-    for (let index = conversation.length - 1; index >= 0; index -= 1) {
-      const entry = conversation[index];
-      if (
-        entry &&
-        entry.id &&
-        'isFeedbackSubmissionEnabled' in entry &&
-        entry.isFeedbackSubmissionEnabled
-      ) {
-        return entry;
-      }
-    }
-    return null;
-  }, [conversation]);
-
   const buildPrompt = useCallback(
     (text: string, overrideScope?: ContextScope) => {
       const scope = overrideScope ?? contextScope;
@@ -286,15 +266,14 @@ export function AskPageAIChat({
       }
       const origin = typeof window !== 'undefined' ? window.location.href : '';
       return [
-        'You are ExpoDocsExpert, an assistant that must answer strictly using the supplied Expo SDK documentation context.',
-        `The user is reading the Expo docs page titled "${contextLabel}" at ${origin || 'the latest Expo SDK docs'}.`,
-        'You only have access to the content from this page. You do not have access to other pages, past answers, or external knowledge.',
-        'Before responding, confirm that every sentence in your answer is directly supported by the provided context.',
-        `If you cannot confirm this support, respond exactly with: "${fallbackResponse}" Do not explain or apologize.`,
-        `If the question is unrelated to the provided context, respond exactly with: "${fallbackResponse}"`,
-        'Prefer concise explanations, reference relevant APIs or headings, and format instructions as short steps or bullet lists when helpful.',
-        'Whenever you share code or configuration examples, return complete, ready-to-run snippets with all required imports and setup so the user can copy and paste them into their app without additional context.',
-        'Mention the Expo SDK version when relevant (this context represents the "latest" docs).',
+        'You are ExpoDocsExpert answering only from this page’s Expo SDK docs.',
+        `Current page title: "${contextLabel}" at ${origin || 'latest Expo SDK docs'}.`,
+        'Use only this page; do not pull from other pages, memory, or prior answers.',
+        'If only part of the question is covered here, answer that part and say what is missing. Do not add details not on this page.',
+        `If nothing on this page is relevant (or the question is unrelated), respond exactly with: "${fallbackResponse}" followed by " To find this, choose 'Search Expo docs.'" Do not add anything else.`,
+        'Keep answers concise; reference headings/APIs; use short steps or bullets when helpful.',
+        'Code/config examples must be complete and ready to run with all imports/setup.',
+        'Mention the Expo SDK version when helpful (this page is "latest").',
         '',
         `User question: ${text}`,
       ].join('\n');
@@ -328,16 +307,16 @@ export function AskPageAIChat({
   }, [conversation.length, isBusy, resetLocalState, stopGeneration]);
 
   const handleFeedback = useCallback(
-    (reaction: 'upvote' | 'downvote') => {
-      if (!feedbackTarget?.isFeedbackSubmissionEnabled) {
+    (qaId: string, currentReaction: Reaction | null, reaction: Reaction) => {
+      if (!qaId) {
         return;
       }
-      if (feedbackTarget.reaction === reaction) {
+      if (currentReaction === reaction) {
         return;
       }
-      addFeedback(feedbackTarget.id!, reaction);
+      addFeedback(qaId, reaction);
     },
-    [addFeedback, feedbackTarget]
+    [addFeedback]
   );
 
   const handleNavigation = useCallback(
@@ -420,6 +399,7 @@ export function AskPageAIChat({
         question: qa.question,
         answer: qa.answer,
         sources: qa.sources,
+        reaction: 'reaction' in qa ? qa.reaction : null,
         isFeedbackSubmissionEnabled:
           'isFeedbackSubmissionEnabled' in qa ? qa.isFeedbackSubmissionEnabled : undefined,
       })),
@@ -436,8 +416,6 @@ export function AskPageAIChat({
         onSwitchToPageContext={handleSwitchBackToPageContext}
         onReset={handleConversationReset}
         onClose={handleClose}
-        feedbackTarget={feedbackTarget}
-        onFeedback={handleFeedback}
       />
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
@@ -452,9 +430,11 @@ export function AskPageAIChat({
           markersByIndex={markersByIndex}
           isBusy={isBusy}
           markdownComponents={markdownComponents}
+          basePath={basePath}
           onSearchAcrossDocs={handleSearchAcrossDocs}
           extractUserQuestion={extractUserQuestion}
           onNavigate={handleNavigation}
+          onFeedback={handleFeedback}
         />
         {error && (
           <FOOTNOTE theme="danger" className="mt-4">

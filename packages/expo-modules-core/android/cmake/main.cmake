@@ -1,18 +1,19 @@
 file(
   GLOB
-  common_sources 
+  common_sources
   "${COMMON_DIR}/*.cpp"
   "${COMMON_DIR}/fabric/*.cpp"
 )
 
 set(main_dir ${ANDROID_SRC_DIR}/main/cpp)
 file(
-  GLOB 
-  sources_android 
+  GLOB
+  sources_android
   "${main_dir}/*.cpp"
   "${main_dir}/types/*.cpp"
   "${main_dir}/javaclasses/*.cpp"
   "${main_dir}/decorators/*.cpp"
+  "${main_dir}/installers/*.cpp"
   "${main_dir}/worklets/*.cpp"
 )
 
@@ -40,6 +41,12 @@ target_include_directories(
   "${COMMON_DIR}/fabric"
 )
 
+target_compile_options(
+  expo-modules-core
+  PRIVATE
+  ${WORKLETS_INTEGRATION_COMPILE_OPTIONS}
+)
+
 if (REACT_NATIVE_WORKLETS_DIR)
   target_include_directories(
     expo-modules-core
@@ -49,7 +56,7 @@ if (REACT_NATIVE_WORKLETS_DIR)
     "${REACT_NATIVE_WORKLETS_DIR}/Common/cpp"
     "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
   )
-endif()
+endif ()
 
 target_link_libraries(
   expo-modules-core
@@ -64,11 +71,11 @@ target_link_libraries(
 if (REACT_NATIVE_WORKLETS_DIR)
   add_library(worklets SHARED IMPORTED)
 
-  if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
     set(BUILD_TYPE "debug")
-  else()
+  else ()
     set(BUILD_TYPE "release")
-  endif()
+  endif ()
 
   set_target_properties(
     worklets
@@ -82,4 +89,4 @@ if (REACT_NATIVE_WORKLETS_DIR)
     PRIVATE
     worklets
   )
-endif()
+endif ()

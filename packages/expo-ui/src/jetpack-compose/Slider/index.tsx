@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
 
@@ -8,18 +8,14 @@ import { ExpoModifier, ViewEvent } from '../../types';
  * @platform android
  */
 export type SliderElementColors = {
-  thumbColor?: string;
-  activeTrackColor?: string;
-  inactiveTrackColor?: string;
-  activeTickColor?: string;
-  inactiveTickColor?: string;
+  thumbColor?: ColorValue;
+  activeTrackColor?: ColorValue;
+  inactiveTrackColor?: ColorValue;
+  activeTickColor?: ColorValue;
+  inactiveTickColor?: ColorValue;
 };
 
 export type SliderProps = {
-  /**
-   * Custom styles for the slider component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current value of the slider.
    * @default 0
@@ -48,7 +44,7 @@ export type SliderProps = {
   /**
    * Slider color.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * Callback triggered on dragging along the slider.
    */
@@ -91,8 +87,6 @@ export function transformSliderProps(props: SliderProps): NativeSliderProps {
           }
         : undefined,
     color: props.color,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

@@ -11,6 +11,11 @@ export type LabelProps = {
      */
     systemImage?: SFSymbol;
     /**
+     * Custom icon view to be displayed in the label.
+     * When provided, this takes precedence over `systemImage`.
+     */
+    icon?: React.ReactNode;
+    /**
      * The color of the label icon.
      * @deprecated Use `foregroundStyle` modifier instead.
      */

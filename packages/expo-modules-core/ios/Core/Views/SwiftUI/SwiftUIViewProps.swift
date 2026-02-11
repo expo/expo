@@ -5,12 +5,29 @@ import SwiftUI
 internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
 
 extension ExpoSwiftUI {
+  public enum IgnoreSafeArea: String, Enumerable {
+    case all
+    case keyboard
+  }
+
+  /**
+   Protocol for view props that support controlling safe area behavior of SwiftUI content. Used by HostView
+   */
+  public protocol SafeAreaControllable {
+    var ignoreSafeArea: IgnoreSafeArea? { get set }
+  }
+
   /**
    Base implementation of the view props object for SwiftUI views.
    It's a record that can be observed by SwiftUI to re-render on its changes.
    */
   open class ViewProps: ObservableObject, Record {
     public required init() {}
+
+    public required init(rawProps: [String: Any], context: AppContext) throws {
+      appContext = context
+      try updateRawProps(rawProps, appContext: context)
+    }
 
     /**
      An array of views passed by React as children.

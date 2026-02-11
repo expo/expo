@@ -6,18 +6,66 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.6 — 2026-02-08
+
+### 🎉 New features
+
+- [iOS] Add Bonjour service discovery ([#42384](https://github.com/expo/expo/pull/42384) by [@kitten](https://github.com/kitten))
+
+## 55.0.5 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- [Android] Fix sometimes two dev menus would open. ([#42567](https://github.com/expo/expo/pull/42567) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix color of placeholder text in URL input. ([#42677](https://github.com/expo/expo/pull/42677) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Dev launcher should respond to screen rotations. ([#42799](https://github.com/expo/expo/pull/42799) by [@douglowder](https://github.com/douglowder))
+
+## 55.0.4 — 2026-01-27
+
+### 🐛 Bug fixes
+
+- [iOS] Fix issue where the header would overlap the safe area. ([#42540](https://github.com/expo/expo/pull/42540) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add brownfield support ([#40463](https://github.com/expo/expo/pull/40463) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Decouple menu from dev-launcher ([#40669](https://github.com/expo/expo/pull/40669) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add activity indicator when loading dev server URL. ([#40825](https://github.com/expo/expo/pull/40825) by [@alanjhughes](https://github.com/alanjhughes))
+- Add initial macOS support ([#41330](https://github.com/expo/expo/pull/41330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add api to change bundleUrl from JS ([#42065](https://github.com/expo/expo/pull/42065) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix launching apps in brownfield ([#40711](https://github.com/expo/expo/pull/40711) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [iOS] Fix port scanning on pysical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix RCTDevMenuConfiguration in release builds ([#40870](https://github.com/expo/expo/pull/40870) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix Safe Area being ignored on physical devices ([#41119](https://github.com/expo/expo/pull/41119) by [@betomoedano](https://github.com/betomoedano))
+- Restore config plugin `launchMode` support ([#41363](https://github.com/expo/expo/pull/41363) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Prevent some debug only artifacts from being included in release builds. ([#41378](https://github.com/expo/expo/pull/41378) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix `DevLauncherWrapperView` in SwiftUI brownfield apps ([#41431](https://github.com/expo/expo/pull/41431) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix dev server discovery cancellation. ([#41555](https://github.com/expo/expo/pull/41555) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixes an issue where a `nil` projectUrl could be passed to Expo Updates. ([#42126](https://github.com/expo/expo/pull/42126) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix launching deeplink with dev launcher. ([#42212](https://github.com/expo/expo/pull/42212) by [@jakex7](https://github.com/jakex7))
+- Fix react-native-macos 0.81 support ([#42366](https://github.com/expo/expo/pull/42366) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -26,6 +74,27 @@
 - [Android] Remove `ReactHostWrapper` ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove custom `ReactNativeFactory`. ([#41084](https://github.com/expo/expo/pull/41084) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove unused reactNativeFactory. ([#41286](https://github.com/expo/expo/pull/41286) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Switch from `ajv` to `@expo/schema-utils` ([#42221](https://github.com/expo/expo/pull/42221) by [@kitten](https://github.com/kitten))
+
+## 6.0.20 - 2025-12-05
+
+### 🐛 Bug fixes
+
+- [iOS] Fix port scanning on pysical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 6.0.19 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Restore config plugin `launchMode` support ([#41363](https://github.com/expo/expo/pull/41363) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 6.0.18 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.17 - 2025-11-05
+
+_This version does not introduce any user-facing changes._
 
 ## 6.0.16 - 2025-10-21
 

@@ -6,6 +6,30 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.4 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [android] Read projectRoot from expo-autolinking ([#40666](https://github.com/expo/expo/pull/40666) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
@@ -15,6 +39,11 @@
 ### 💡 Others
 
 - [Android] Removed unused native dependencies. ([#39763](https://github.com/expo/expo/pull/39763) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Removed references to legacy native modules API. ([#41855](https://github.com/expo/expo/pull/41855) by [@lukmccall](https://github.com/lukmccall))
+
+## 18.0.11 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 18.0.10 - 2025-10-21
 

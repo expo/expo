@@ -51,7 +51,7 @@ class AudioModule : Module() {
 
   private val players = ConcurrentHashMap<String, AudioPlayer>()
   private val recorders = ConcurrentHashMap<String, AudioRecorder>()
-  private var staysActiveInBackground = false
+  private var shouldPlayInBackground = false
   private var audioEnabled = true
   private var shouldRouteThroughEarpiece = false
   private var focusAcquired = false
@@ -116,18 +116,18 @@ class AudioModule : Module() {
   }
 
   private fun requestAudioFocus() {
-    if (focusAcquired || !audioEnabled) {
+    if (focusAcquired || !audioEnabled || interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
       return
     }
 
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val requestType = interruptionMode?.let {
         if (it == InterruptionMode.DO_NOT_MIX) {
-          AudioManager.AUDIOFOCUS_GAIN
+          AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
         } else {
           AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
         }
-      } ?: AudioManager.AUDIOFOCUS_GAIN
+      } ?: AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
       audioFocusRequest = AudioFocusRequest.Builder(requestType).run {
         setAudioAttributes(
           AudioAttributes.Builder()
@@ -143,7 +143,12 @@ class AudioModule : Module() {
       }
     } else {
       @Suppress("DEPRECATION")
-      audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+      val requestType = if (interruptionMode == InterruptionMode.DO_NOT_MIX) {
+        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+      } else {
+        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+      }
+      audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, requestType)
     }
 
     if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
@@ -177,7 +182,7 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
-      staysActiveInBackground = mode.shouldPlayInBackground
+      shouldPlayInBackground = mode.shouldPlayInBackground
       interruptionMode = mode.interruptionMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
       allowsBackgroundRecording = mode.allowsBackgroundRecording
@@ -210,7 +215,7 @@ class AudioModule : Module() {
     }
 
     OnActivityEntersBackground {
-      if (!staysActiveInBackground) {
+      if (!shouldPlayInBackground) {
         releaseAudioFocus()
         players.values.forEach { player ->
           if (player.ref.isPlaying) {
@@ -218,7 +223,8 @@ class AudioModule : Module() {
             player.ref.pause()
           }
         }
-
+      }
+      if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
           if (recorder.isRecording) {
             recorder.pauseRecording()
@@ -228,7 +234,7 @@ class AudioModule : Module() {
     }
 
     OnActivityEntersForeground {
-      if (!staysActiveInBackground) {
+      if (!shouldPlayInBackground) {
         val hasPlayersToResume = players.values.any { it.isPaused }
         if (hasPlayersToResume) {
           requestAudioFocus()
@@ -240,16 +246,16 @@ class AudioModule : Module() {
             player.ref.play()
           }
         }
-
+      }
+      if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
           if (recorder.isPaused) {
             recorder.record()
           }
         }
-
-        if (shouldRouteThroughEarpiece) {
-          updatePlaySoundThroughEarpiece(true)
-        }
+      }
+      if (shouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(true)
       }
     }
 
@@ -485,7 +491,7 @@ class AudioModule : Module() {
       }
 
       Property("currentTime") { recorder ->
-        recorder.startTime
+        recorder.getCurrentTimeSeconds()
       }
 
       AsyncFunction("prepareToRecordAsync") { recorder: AudioRecorder, options: RecordingOptions? ->

@@ -11,6 +11,7 @@
 
 #import <ExpoModulesJSI/EXJSIConversions.h>
 
+#import <React/RCTComponentViewFactory.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 using namespace expo;
@@ -143,6 +144,9 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
 {
+  if (!_eventEmitter) {
+    return;
+  }
   const auto &eventEmitter = static_cast<const ExpoViewEventEmitter &>(*_eventEmitter);
 
   eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
@@ -170,7 +174,11 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)setShadowNodeSize:(float)width height:(float)height
 {
   if (_state) {
+#if REACT_NATIVE_TARGET_VERSION >= 82
+    _state->updateState(ExpoViewState(width,height), EventQueue::UpdateMode::unstable_Immediate);
+#else
     _state->updateState(ExpoViewState(width,height));
+#endif
   }
 }
 
@@ -192,6 +200,19 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
     _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
 #endif
   }
+}
+
+#pragma mark - Component registration
+
++ (void)registerComponent:(nonnull EXViewModuleWrapper *)viewModule appContext:(nonnull EXAppContext *)appContext
+{
+  Class wrappedViewModuleClass = [EXViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appContext.appIdentifier];
+  Class viewClass = [ExpoFabricView makeViewClassForAppContext:appContext
+                                                    moduleName:[viewModule moduleName]
+                                                      viewName:[viewModule viewName]
+                                                     className:NSStringFromClass(wrappedViewModuleClass)];
+
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 }
 
 @end

@@ -5,4 +5,5 @@
 export declare function hasUrlProtocolPrefix(href: string): boolean;
 export declare function isWellKnownUri(href: string): boolean;
 export declare function shouldLinkExternally(href: string): boolean;
+export declare function parseUrlUsingCustomBase(href: string): URL;
 //# sourceMappingURL=url.d.ts.map

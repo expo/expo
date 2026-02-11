@@ -72,7 +72,10 @@ export async function fixPackagesAsync(
 
     await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
 
-    await applyPluginsAsync(projectRoot, versionedPackages);
+    await applyPluginsAsync(
+      projectRoot,
+      dependencies.map((dep) => dep.packageName)
+    );
   }
 
   if (devDependencies.length) {

@@ -50,6 +50,8 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableArray),
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableMap),
                    makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeJavaScriptArrayBuffer),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeNativeArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
                    makeNativeMethod("invokeIntArray", JavaCallback::invokeIntArray),
                    makeNativeMethod("invokeLongArray", JavaCallback::invokeLongArray),
@@ -193,6 +195,14 @@ void JavaCallback::invokeWritableMap(jni::alias_ref<react::WritableNativeMap::ja
 }
 
 void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
+  invokeJSFunction(jni::make_global(result));
+}
+
+void JavaCallback::invokeJavaScriptArrayBuffer(jni::alias_ref<JavaScriptArrayBuffer::javaobject> result) {
+  invokeJSFunction(jni::make_global(result));
+}
+
+void JavaCallback::invokeNativeArrayBuffer(jni::alias_ref<NativeArrayBuffer::javaobject> result) {
   invokeJSFunction(jni::make_global(result));
 }
 

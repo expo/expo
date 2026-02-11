@@ -52,8 +52,8 @@ jsEngine: graaljs
   ];
   if (confirmFirstRunPromptIOS) {
     contents.push(`\
-# Run once to approve the first time deeplinking prompt on iOS
-- openLink: bareexpo://test-suite/run
+# Run once to approve the first time deeplinking prompt on iOS (clearState above resets this)
+- openLink: bareexpo://test-suite/run?tests=${testCases[0]}
 - tapOn:
     text: "Open"
     optional: true
