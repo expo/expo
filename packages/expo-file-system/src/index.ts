@@ -9,7 +9,7 @@ export {
   type PathInfo,
   type DirectoryInfo,
   type DownloadOptions,
-  type FileMode,
+  FileMode,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';
