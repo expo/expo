@@ -1,11 +1,12 @@
-import { File, Directory, Paths } from 'expo-file-system';
+import Checkbox from 'expo-checkbox';
+import { File, Directory, Paths, FileMode } from 'expo-file-system';
 import type { FileHandle } from 'expo-file-system';
 import * as Contacts from 'expo-contacts';
 import * as DocumentPicker from 'expo-document-picker';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
@@ -27,6 +28,8 @@ export default function FileSystemScreen() {
   const handleRef = useRef<FileHandle | null>(null);
   const [handleInfo, setHandleInfo] = useState<string | null>(null);
   const [handleLog, setHandleLog] = useState('');
+  const [openMode, setOpenMode] = useState<FileMode>(FileMode.ReadWrite);
+  const [overwrite, setOverwrite] = useState(false);
 
   // Close handle on unmount
   useEffect(() => {
@@ -91,7 +94,7 @@ export default function FileSystemScreen() {
         <ListButton
           title="Load asset file"
           onPress={() => {
-            const file = new File(Paths.bundle, 'index.html');
+            const file = new File(Paths.bundle, 'expo-root.pem');
             setCurrentFile(file);
             Alert.alert('Loaded asset', file.uri);
           }}
@@ -278,18 +281,33 @@ export default function FileSystemScreen() {
         {/* ===== Section 5: File Handle ===== */}
         <HeadingText>File Handle (Random Access)</HeadingText>
         <Text style={styles.note}>Works on file:// and SAF content://</Text>
+        {Platform.OS === 'android' && (
+          <View style={styles.optionRow}>
+            <Text style={styles.optionLabel}>Mode:</Text>
+            {Object.entries(FileMode).map(([label, value]) => (
+              <TouchableOpacity
+                key={value}
+                style={[styles.enumButton, openMode === value && styles.enumButtonActive]}
+                onPress={() => setOpenMode(value)}>
+                <Text style={[styles.enumButtonText, openMode === value && styles.enumButtonTextActive]}>
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
         <ListButton
-          title="Open file handle"
+          title={`Open file handle${Platform.OS === 'android' ? ` (${openMode})` : ''}`}
           disabled={!currentFile}
           onPress={() => {
             try {
               if (handleRef.current) {
                 handleRef.current.close();
               }
-              const handle = currentFile!.open();
+              const handle = currentFile!.open(openMode);
               handleRef.current = handle;
               setHandleInfo(`offset=${handle.offset}, size=${handle.size}`);
-              setHandleLog('Handle opened');
+              setHandleLog(`Handle opened (mode=${openMode})`);
             } catch (e: any) {
               Alert.alert('Error', e.message);
             }
@@ -374,12 +392,16 @@ export default function FileSystemScreen() {
 
         {/* ===== Section 6: Copy & Move ===== */}
         <HeadingText>Copy & Move</HeadingText>
+        <View style={styles.optionRow}>
+          <Checkbox value={overwrite} onValueChange={setOverwrite} style={styles.checkbox} />
+          <Text style={styles.optionLabel}>overwrite</Text>
+        </View>
         <SimpleActionDemo
           title="Copy to cache dir (file://)"
           action={withCurrentFile(async (file) => {
             const dest = new Directory(Paths.cache, 'test_sandbox_copy');
             dest.create({ intermediates: true, idempotent: true });
-            file.copy(dest);
+            file.copy(dest, { overwrite });
             return dest.list().map((f) => f.name);
           })}
         />
@@ -388,7 +410,7 @@ export default function FileSystemScreen() {
           action={withCurrentFile(async (file) => {
             const dest = new Directory(Paths.document, 'test_sandbox_copy');
             dest.create({ intermediates: true, idempotent: true });
-            file.copy(dest);
+            file.copy(dest, { overwrite });
             return { destUri: dest.uri, files: dest.list().map((f) => f.name) };
           })}
         />
@@ -409,7 +431,7 @@ export default function FileSystemScreen() {
           <SimpleActionDemo
             title="Copy to destination directory"
             action={withCurrentFile(async (file) => {
-              file.copy(safDirectory);
+              file.copy(safDirectory, { overwrite });
               return safDirectory.list().map((f) => f.name);
             })}
           />
@@ -421,7 +443,7 @@ export default function FileSystemScreen() {
             const dest = new Directory(Paths.cache, 'test_sandbox_moved');
             dest.create({ intermediates: true, idempotent: true });
             const oldUri = file.uri;
-            file.move(dest);
+            file.move(dest, { overwrite });
             return { oldUri, newUri: file.uri };
           })}
         />
@@ -597,5 +619,37 @@ const styles = StyleSheet.create({
   currentFileText: {
     fontSize: 11,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 5,
+    paddingVertical: 4,
+  },
+  optionLabel: {
+    fontSize: 13,
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+  },
+  enumButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#999',
+  },
+  enumButtonActive: {
+    backgroundColor: '#4630eb',
+    borderColor: '#4630eb',
+  },
+  enumButtonText: {
+    fontSize: 11,
+    color: '#333',
+  },
+  enumButtonTextActive: {
+    color: '#fff',
   },
 });
