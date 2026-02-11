@@ -1,3 +1,4 @@
+import { loadProjectEnv } from '@expo/env';
 import chalk from 'chalk';
 import type { Command } from 'commander';
 import path from 'node:path';
@@ -13,6 +14,8 @@ import {
 
 const tasksAndroid = async (command: Command) => {
   await validatePrebuild('android');
+
+  loadProjectEnv(process.cwd());
 
   const config = resolveTasksConfigAndroid(command.opts());
   const { stdout } = await withSpinner({

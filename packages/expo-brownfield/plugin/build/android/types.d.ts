@@ -13,8 +13,11 @@ export interface LocalDirectoryPublication {
 export interface RemotePublicPublication {
     type: 'remotePublic';
     name?: string;
-    url: string;
+    url: string | EnvValue;
     allowInsecure?: boolean;
+}
+export interface RemotePublicPublicationInternal extends RemotePublicPublication {
+    url: string;
 }
 export interface RemotePrivateBasicPublication {
     type: 'remotePrivate';
