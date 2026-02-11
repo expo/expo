@@ -6,7 +6,7 @@
     "expo": "^55 || ^55.0.0-0",
     "react-dom": "19.2.3",
     "react": "19.2.3",
-    "react-native": "0.84.0-rc.5",
+    "react-native": "0.84.0",
     "react-native-web": "~0.21.0",
     "react-native-webview": "13.16.0"
   }
