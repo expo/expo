@@ -75,6 +75,17 @@ class EitherTypeConversionTest {
   }
 
   @Test
+  fun should_convert_numeric_0_and_1_as_double_not_boolean_in_either() {
+    val converted0 = convert<Either<Boolean, Double>>(DynamicFromObject(0.0))
+    Truth.assertThat(converted0.`is`(Double::class)).isTrue()
+    Truth.assertThat(converted0.`is`(Boolean::class)).isFalse()
+
+    val converted1 = convert<Either<Boolean, Double>>(DynamicFromObject(1.0))
+    Truth.assertThat(converted1.`is`(Double::class)).isTrue()
+    Truth.assertThat(converted1.`is`(Boolean::class)).isFalse()
+  }
+
+  @Test
   fun should_convert_from_shared_ref() = withSingleModule({
     Function("create") {
       SharedString("shared string")
