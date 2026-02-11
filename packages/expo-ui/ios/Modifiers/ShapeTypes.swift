@@ -16,6 +16,36 @@ internal enum RoundedCornerStyle: String, Enumerable {
   case circular
 }
 
+// MARK: - Stroke Style Types
+
+internal enum LineCap: String, Enumerable {
+  case butt
+  case round
+  case square
+
+  func toCGLineCap() -> CGLineCap {
+    switch self {
+    case .butt: return .butt
+    case .round: return .round
+    case .square: return .square
+    }
+  }
+}
+
+internal enum LineJoin: String, Enumerable {
+  case miter
+  case round
+  case bevel
+
+  func toCGLineJoin() -> CGLineJoin {
+    switch self {
+    case .miter: return .miter
+    case .round: return .round
+    case .bevel: return .bevel
+    }
+  }
+}
+
 internal struct CornerSize: Record {
   @Field var width: Int = 0
   @Field var height: Int = 0
