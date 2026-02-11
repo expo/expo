@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactNativeConfigCommand = reactNativeConfigCommand;
 const autolinkingOptions_1 = require("./autolinkingOptions");
-const memoize_1 = require("../memoize");
 const reactNativeConfig_1 = require("../reactNativeConfig");
 /** The react-native-config command (like RN CLI linking) */
 function reactNativeConfigCommand(cli) {
@@ -20,7 +19,7 @@ function reactNativeConfigCommand(cli) {
             ...commandArguments,
             searchPaths,
         });
-        const reactNativeConfig = await (0, memoize_1.createMemoizer)().withMemoizer(reactNativeConfig_1.createReactNativeConfigAsync, {
+        const reactNativeConfig = await (0, reactNativeConfig_1.createReactNativeConfigAsync)({
             autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
             appRoot: await autolinkingOptionsLoader.getAppRoot(),
             // NOTE(@kitten): This is currently not validated, and assumed to be validated later

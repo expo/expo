@@ -5,7 +5,6 @@ const autolinkingOptions_1 = require("./autolinkingOptions");
 const findModules_1 = require("../autolinking/findModules");
 const generatePackageList_1 = require("../autolinking/generatePackageList");
 const resolveModules_1 = require("../autolinking/resolveModules");
-const memoize_1 = require("../memoize");
 /** Generates a source file listing all packages to link in the runtime */
 function generateModulesProviderCommand(cli) {
     return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('generate-modules-provider [searchPaths...]'))
@@ -20,20 +19,17 @@ function generateModulesProviderCommand(cli) {
             searchPaths,
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
-        const memoizer = (0, memoize_1.createMemoizer)();
-        await memoizer.withMemoizer(async () => {
-            const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
-                autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-                appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
-            });
-            const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
-            const includeModules = new Set(commandArguments.packages ?? []);
-            const filteredModules = expoModulesResolveResults.filter((module) => includeModules.has(module.packageName));
-            await (0, generatePackageList_1.generateModulesProviderAsync)(filteredModules, {
-                platform,
-                targetPath: commandArguments.target,
-                entitlementPath: commandArguments.entitlement ?? null,
-            });
+        const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
+            autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
+            appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
+        });
+        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
+        const includeModules = new Set(commandArguments.packages ?? []);
+        const filteredModules = expoModulesResolveResults.filter((module) => includeModules.has(module.packageName));
+        await (0, generatePackageList_1.generateModulesProviderAsync)(filteredModules, {
+            platform,
+            targetPath: commandArguments.target,
+            entitlementPath: commandArguments.entitlement ?? null,
         });
     });
 }

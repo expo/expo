@@ -5,7 +5,6 @@ const autolinkingOptions_1 = require("./autolinkingOptions");
 const findModules_1 = require("../autolinking/findModules");
 const getConfiguration_1 = require("../autolinking/getConfiguration");
 const resolveModules_1 = require("../autolinking/resolveModules");
-const memoize_1 = require("../memoize");
 function hasCoreFeatures(module) {
     return module.coreFeatures !== undefined;
 }
@@ -19,48 +18,46 @@ function resolveCommand(cli) {
             ...commandArguments,
             searchPaths,
         });
-        await (0, memoize_1.createMemoizer)().withMemoizer(async () => {
-            const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
-            const appRoot = await autolinkingOptionsLoader.getAppRoot();
-            const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
-                autolinkingOptions,
-                appRoot,
-            });
-            const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
-            const extraDependencies = await (0, resolveModules_1.resolveExtraBuildDependenciesAsync)({
-                commandRoot: autolinkingOptionsLoader.getCommandRoot(),
-                platform,
-            });
-            const configuration = (0, getConfiguration_1.getConfiguration)({ autolinkingOptions });
-            const coreFeatures = [
-                ...expoModulesResolveResults.reduce((acc, module) => {
-                    if (hasCoreFeatures(module)) {
-                        const features = module.coreFeatures ?? [];
-                        for (const feature of features) {
-                            acc.add(feature);
-                        }
-                        return acc;
+        const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
+        const appRoot = await autolinkingOptionsLoader.getAppRoot();
+        const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
+            autolinkingOptions,
+            appRoot,
+        });
+        const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
+        const extraDependencies = await (0, resolveModules_1.resolveExtraBuildDependenciesAsync)({
+            commandRoot: autolinkingOptionsLoader.getCommandRoot(),
+            platform,
+        });
+        const configuration = (0, getConfiguration_1.getConfiguration)({ autolinkingOptions });
+        const coreFeatures = [
+            ...expoModulesResolveResults.reduce((acc, module) => {
+                if (hasCoreFeatures(module)) {
+                    const features = module.coreFeatures ?? [];
+                    for (const feature of features) {
+                        acc.add(feature);
                     }
                     return acc;
-                }, new Set()),
-            ];
-            if (commandArguments.json) {
-                console.log(JSON.stringify({
-                    extraDependencies,
-                    coreFeatures,
-                    modules: expoModulesResolveResults,
-                    ...(configuration ? { configuration } : {}),
-                }));
-            }
-            else {
-                console.log(require('util').inspect({
-                    extraDependencies,
-                    coreFeatures,
-                    modules: expoModulesResolveResults,
-                    ...(configuration ? { configuration } : {}),
-                }, false, null, true));
-            }
-        });
+                }
+                return acc;
+            }, new Set()),
+        ];
+        if (commandArguments.json) {
+            console.log(JSON.stringify({
+                extraDependencies,
+                coreFeatures,
+                modules: expoModulesResolveResults,
+                ...(configuration ? { configuration } : {}),
+            }));
+        }
+        else {
+            console.log(require('util').inspect({
+                extraDependencies,
+                coreFeatures,
+                modules: expoModulesResolveResults,
+                ...(configuration ? { configuration } : {}),
+            }, false, null, true));
+        }
     });
 }
 //# sourceMappingURL=resolveCommand.js.map
