@@ -12,7 +12,6 @@ target 'BrownfieldTester' do
     projectRoot: project_root,
     exclude: [
       'expo-splash-screen',
-      'expo-dev-menu'
     ],
   })
 

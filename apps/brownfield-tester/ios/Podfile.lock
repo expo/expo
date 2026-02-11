@@ -37,6 +37,35 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - expo-dev-menu (55.0.5):
+    - boost
+    - DoubleConversion
+    - expo-dev-menu/Main (= 55.0.5)
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - expo-dev-menu-interface (55.0.1)
   - ExpoAsset (55.0.5):
     - ExpoModulesCore
@@ -2951,6 +2980,7 @@ DEPENDENCIES:
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
+  - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoBrownfield (from `../../../packages/expo-brownfield/ios`)
@@ -3076,6 +3106,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-manifests/ios"
   Expo:
     :path: "../../../packages/expo"
+  expo-dev-menu:
+    :path: "../../../packages/expo-dev-menu"
   expo-dev-menu-interface:
     :path: "../../../packages/expo-dev-menu-interface/ios"
   ExpoAsset:
@@ -3388,6 +3420,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 3d56e80930898685da43cbf53b5843932df8e765
 
-PODFILE CHECKSUM: 138a890cb547592c982ba14a2a7126f821424938
+PODFILE CHECKSUM: 1ca978f73a30f65633c68b87b4dcd2037d2b9a00
 
 COCOAPODS: 1.16.2
