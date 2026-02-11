@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `Content-Type: application/json` to `/symbolicate` requests ([#43074](https://github.com/expo/expo/pull/43074) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-08
