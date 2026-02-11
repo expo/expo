@@ -8,7 +8,7 @@ import { boolish } from 'getenv';
 // This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
 const NODE_MIN = [20, 19, 4];
 const nodeVersion = process.version?.slice(1).split('.', 3).map(Number);
-if (nodeVersion.some((part, idx) => part && part < NODE_MIN[idx])) {
+if (nodeVersion[0] < NODE_MIN[0] || (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1] < NODE_MIN[1])) {
   console.error(
     chalk.red`{bold Node.js (${process.version}) is outdated and unsupported.}`
       + chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n`
