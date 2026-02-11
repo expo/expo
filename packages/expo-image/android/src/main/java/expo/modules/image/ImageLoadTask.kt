@@ -3,7 +3,6 @@ package expo.modules.image
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.core.graphics.drawable.toDrawable
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
 import expo.modules.image.records.ImageLoadOptions
