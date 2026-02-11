@@ -44,6 +44,7 @@ test.describe('router-e2e with spaces', () => {
           'babel-preset-expo',
           '@expo/metro-config',
           'expo-server',
+          '@expo/require-utils',
         ],
       }
     );

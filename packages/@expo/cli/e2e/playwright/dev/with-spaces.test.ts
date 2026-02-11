@@ -30,7 +30,7 @@ test.describe('router-e2e with spaces', () => {
       {
         // TODO(@hassankhan, @krystofwoldrich): remove linked packages after publishing
         linkExpoPackages: ['@expo/router-server', 'expo-router', '@expo/log-box'],
-        linkExpoPackagesDev: ['@expo/cli', 'expo-server'],
+        linkExpoPackagesDev: ['@expo/cli', 'expo-server', '@expo/require-utils'],
       }
     );
 
