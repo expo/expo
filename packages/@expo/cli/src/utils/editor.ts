@@ -8,7 +8,15 @@ import * as Log from '../log';
 
 const debug = require('debug')('expo:utils:editor') as typeof console.log;
 
-type Editor = (typeof EDITORS)[number];
+interface Editor {
+  id: string;
+  name: string;
+  binary: string;
+  isTerminalEditor: boolean;
+  isOSXOnly?: boolean;
+  paths: string[];
+  keywords: string[];
+}
 
 // See: https://github.com/sindresorhus/env-editor/blob/3f6aea10ff53910c877b1bf73a8e0c954a5fbf11/index.js
 // MIT License, Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
@@ -172,6 +180,9 @@ function getEditorArguments(editor: Editor, path: string, lineNumber?: number): 
 
 /** Attempt to resolve an editor against $PATH */
 async function editorExistsInPath(editor: Editor) {
+  if (process.platform !== 'darwin' && editor.isOSXOnly) {
+    return null;
+  }
   const binary = editor.binary;
   const paths = (process.env.PATH || process.env.Path || '')
     .split(path.delimiter)
@@ -210,7 +221,7 @@ async function editorExistsAtPaths(editor: Editor) {
   return null;
 }
 
-const TERMINAL_EDITORS = [
+const TERMINAL_EDITORS: (Editor & { isTerminalEditor: true })[] = [
   {
     id: 'vim',
     name: 'Vim',
@@ -245,7 +256,33 @@ const TERMINAL_EDITORS = [
   },
 ];
 
-const VISUAL_EDITORS = [
+const VISUAL_EDITORS: (Editor & { isTerminalEditor: false })[] = [
+  {
+    id: 'vscode',
+    name: 'Visual Studio Code',
+    binary: 'code',
+    isTerminalEditor: false,
+    paths: ['/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'],
+    keywords: ['vs code'],
+  },
+  {
+    id: 'vscode-insiders',
+    name: 'Visual Studio Code - Insiders',
+    binary: 'code-insiders',
+    isTerminalEditor: false,
+    paths: [
+      '/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin/code-insiders',
+    ],
+    keywords: ['vs code insiders', 'code insiders', 'insiders'],
+  },
+  {
+    id: 'vscodium',
+    name: 'VSCodium',
+    binary: 'codium',
+    isTerminalEditor: false,
+    paths: ['/Applications/VSCodium.app/Contents/Resources/app/bin/codium'],
+    keywords: [],
+  },
   {
     id: 'sublime',
     name: 'Sublime Text',
@@ -263,32 +300,6 @@ const VISUAL_EDITORS = [
     binary: 'atom',
     isTerminalEditor: false,
     paths: ['/Applications/Atom.app/Contents/Resources/app/atom.sh'],
-    keywords: [],
-  },
-  {
-    id: 'vscode-insiders',
-    name: 'Visual Studio Code - Insiders',
-    binary: 'code-insiders',
-    isTerminalEditor: false,
-    paths: [
-      '/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin/code-insiders',
-    ],
-    keywords: ['vs code insiders', 'code insiders', 'insiders'],
-  },
-  {
-    id: 'vscode',
-    name: 'Visual Studio Code',
-    binary: 'code',
-    isTerminalEditor: false,
-    paths: ['/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code'],
-    keywords: ['vs code'],
-  },
-  {
-    id: 'vscodium',
-    name: 'VSCodium',
-    binary: 'codium',
-    isTerminalEditor: false,
-    paths: ['/Applications/VSCodium.app/Contents/Resources/app/bin/codium'],
     keywords: [],
   },
   {
@@ -328,6 +339,7 @@ const VISUAL_EDITORS = [
     name: 'GNU Emacs for Mac OS X',
     binary: 'Emacs',
     isTerminalEditor: false,
+    isOSXOnly: true,
     paths: ['/Applications/Emacs.app/Contents/MacOS/Emacs'],
     keywords: [],
   },
@@ -336,6 +348,7 @@ const VISUAL_EDITORS = [
     name: 'Xcode',
     binary: 'xed',
     isTerminalEditor: false,
+    isOSXOnly: true,
     paths: [
       '/Applications/Xcode.app/Contents/MacOS/Xcode',
       '/Applications/Xcode-beta.app/Contents/MacOS/Xcode',
@@ -357,4 +370,4 @@ const VISUAL_EDITORS = [
   },
 ];
 
-const EDITORS = [...VISUAL_EDITORS, ...TERMINAL_EDITORS];
+const EDITORS: Editor[] = [...VISUAL_EDITORS, ...TERMINAL_EDITORS];
