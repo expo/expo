@@ -6,7 +6,7 @@ export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: React.RefObject<ExpoImage | null>;
     containerViewRef: React.RefObject<View | null>;
     constructor(props: ImageProps);
-    getAnimatableRef: () => View | this | null;
+    getAnimatableRef: () => this | View | null;
     /**
      * @hidden
      */
