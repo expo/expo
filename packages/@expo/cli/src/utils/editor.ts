@@ -105,8 +105,13 @@ export async function guessFallbackVisualEditor(): Promise<Editor | null> {
   return null;
 }
 
-/** Open a file path in a given editor. */
-export async function openInEditorAsync(path: string, lineNumber?: number): Promise<boolean> {
+let _cachedEditor: Editor | null | undefined;
+
+async function determineEditorAsync(): Promise<Editor | null> {
+  if (_cachedEditor !== undefined) {
+    return _cachedEditor;
+  }
+
   // First: Try to get a known editor
   let editor = guessEditor();
 
@@ -127,6 +132,13 @@ export async function openInEditorAsync(path: string, lineNumber?: number): Prom
       editor = fallback;
     }
   }
+
+  return (_cachedEditor = editor);
+}
+
+/** Open a file path in a given editor. */
+export async function openInEditorAsync(path: string, lineNumber?: number): Promise<boolean> {
+  const editor = await determineEditorAsync();
 
   if (editor && !editor.isTerminalEditor) {
     const fileReference = lineNumber ? `${path}:${lineNumber}` : path;
