@@ -152,6 +152,10 @@ export async function openInEditorAsync(path: string, lineNumber?: number): Prom
         });
         return true;
       } catch (error: any) {
+        // NOTE(@kitten): The process might explicitly request to be terminated, which is fine
+        if (error?.signal === 'SIGTERM') {
+          return true;
+        }
         debug(
           `Failed to open ${fileReference} in editor (path: ${path}, binary: ${editor.binary}):`,
           error
