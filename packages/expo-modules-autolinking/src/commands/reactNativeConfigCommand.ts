@@ -5,7 +5,6 @@ import {
   createAutolinkingOptionsLoader,
   registerAutolinkingArguments,
 } from './autolinkingOptions';
-import { createMemoizer } from '../memoize';
 import { createReactNativeConfigAsync } from '../reactNativeConfig';
 
 interface ReactNativeConfigArguments extends AutolinkingCommonArguments {
@@ -35,7 +34,7 @@ export function reactNativeConfigCommand(cli: commander.CommanderStatic) {
         searchPaths,
       });
 
-      const reactNativeConfig = await createMemoizer().withMemoizer(createReactNativeConfigAsync, {
+      const reactNativeConfig = await createReactNativeConfigAsync({
         autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
         appRoot: await autolinkingOptionsLoader.getAppRoot(),
         // NOTE(@kitten): This is currently not validated, and assumed to be validated later

@@ -8,7 +8,6 @@ import {
 import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
-import { createMemoizer } from '../memoize';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
@@ -39,27 +38,24 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
 
-        const memoizer = createMemoizer();
-        await memoizer.withMemoizer(async () => {
-          const expoModulesSearchResults = await findModulesAsync({
-            autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-            appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
-          });
-          const expoModulesResolveResults = await resolveModulesAsync(
-            expoModulesSearchResults,
-            autolinkingOptions
-          );
+        const expoModulesSearchResults = await findModulesAsync({
+          autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
+          appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
+        });
+        const expoModulesResolveResults = await resolveModulesAsync(
+          expoModulesSearchResults,
+          autolinkingOptions
+        );
 
-          const includeModules = new Set(commandArguments.packages ?? []);
-          const filteredModules = expoModulesResolveResults.filter((module) =>
-            includeModules.has(module.packageName)
-          );
+        const includeModules = new Set(commandArguments.packages ?? []);
+        const filteredModules = expoModulesResolveResults.filter((module) =>
+          includeModules.has(module.packageName)
+        );
 
-          await generateModulesProviderAsync(filteredModules, {
-            platform,
-            targetPath: commandArguments.target,
-            entitlementPath: commandArguments.entitlement ?? null,
-          });
+        await generateModulesProviderAsync(filteredModules, {
+          platform,
+          targetPath: commandArguments.target,
+          entitlementPath: commandArguments.entitlement ?? null,
         });
       }
     );
