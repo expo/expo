@@ -10,7 +10,6 @@ import remarkMDX from 'remark-mdx';
 import remarkMdxDisableExplicitJsx from 'remark-mdx-disable-explicit-jsx';
 import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
-import webpack from 'webpack';
 
 import packageJson from '~/package.json';
 
@@ -78,7 +77,7 @@ const nextConfig: NextConfig = {
     // supported by our browserslist targets (Chrome 93+, Firefox 92+, Safari 15.4+).
     if (!isServer) {
       config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(
+        new (require('webpack').NormalModuleReplacementPlugin)(
           /[/\\]polyfill-module\.js$/,
           join(__dirname, 'empty-polyfill.js')
         )
