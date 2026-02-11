@@ -12,6 +12,9 @@ internal struct DynamicBoolType: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    if Optional.isNil(value) {
+      throw Conversions.NullCastException<Bool>()
+    }
     // `as? Bool` matches any NSNumber with value 0 or 1, not just actual booleans
     // This causes `Either<Bool, Double>` to incorrectly decode numbers 0/1 as Bool instead of Double.
     if let nsNumber = value as? NSNumber {
