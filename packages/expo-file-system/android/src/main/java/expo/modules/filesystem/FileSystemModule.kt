@@ -205,12 +205,12 @@ class FileSystemModule : Module() {
         file.creationTime
       }
 
-      Function("copy") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions ->
-        file.copy(destination, options)
+      Function("copy") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions ->
-        file.move(destination, options)
+      Function("move") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { file: FileSystemFile, newName: String ->

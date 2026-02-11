@@ -72,7 +72,7 @@ internal class FileSystemPath: SharedObject {
     let destinationUrl = try getMoveOrCopyPath(to: destination)
  
     if options.overwrite && FileManager.default.fileExists(atPath: destinationUrl.path) {
-      try FileManager.default.removeItem(at: url)
+      try FileManager.default.removeItem(at: destinationUrl)
     }
 
     try FileManager.default.copyItem(at: url, to: getMoveOrCopyPath(to: destination))
@@ -84,7 +84,7 @@ internal class FileSystemPath: SharedObject {
     let destinationUrl = try getMoveOrCopyPath(to: destination)
 
     if options.overwrite && FileManager.default.fileExists(atPath: destinationUrl.path) {
-      try FileManager.default.removeItem(at: url)
+      try FileManager.default.removeItem(at: destinationUrl)
     }
 
     try FileManager.default.moveItem(at: url, to: destinationUrl)
