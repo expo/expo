@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Removed needless warning when `NativeModulesProxy` is absent. ([#43020](https://github.com/expo/expo/pull/43020) by [@tsapeta](https://github.com/tsapeta))
+
 ## 55.0.8 — 2026-02-08
 
 ### 🐛 Bug fixes
@@ -37,6 +39,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed a crash in Fabric when unmounting a view while a geometry change event is being dispatched. ([#42628](https://github.com/expo/expo/issues/42628) by [@danishshaik](https://github.com/danishshaik)) ([#42634](https://github.com/expo/expo/pull/42634) by [@danishshaik](https://github.com/danishshaik))
+- [iOS] Fix crashes when converting a single JSValue into an Array. ([#42694](https://github.com/expo/expo/pull/42694) by [@behenate](https://github.com/behenate))
 
 ## 55.0.5 — 2026-01-27
 

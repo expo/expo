@@ -24,11 +24,6 @@ import { updateAndroidProjects } from './updateAndroidProjects';
 const { cyan } = chalk;
 
 /**
- * An array of packages whose version is constrained to the SDK version.
- */
-const SDK_CONSTRAINED_PACKAGES = ['expo', 'jest-expo', '@expo/config-types'];
-const TEMPLATE_PREFIX = 'expo-template-';
-/**
  * Prepare packages to be published as canaries.
  */
 export const prepareCanaries = new Task<TaskArgs>(
@@ -38,13 +33,16 @@ export const prepareCanaries = new Task<TaskArgs>(
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     const canarySuffix = await getCurrentCanaryVersionSuffix();
+    const currentSdkVersion = await sdkVersionAsync();
+    const currentSdkMajor = semver.major(currentSdkVersion);
     const nextSdkVersion = await getNextSdkVersion();
 
     for (const parcel of parcels) {
       const { pkg, state, pkgView } = parcel;
+      // Packages whose major version matches the current SDK should be bumped
+      // to the next SDK version for canary releases (e.g. 55.0.2 → 56.0.0-canary-...).
       const baseVersion =
-        SDK_CONSTRAINED_PACKAGES.includes(pkg.packageName) ||
-        pkg.packageName.startsWith(TEMPLATE_PREFIX)
+        semver.major(pkg.packageVersion) === currentSdkMajor
           ? nextSdkVersion
           : (await resolveReleaseTypeAndVersion(parcel, options)).releaseVersion;
 

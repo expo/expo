@@ -1,4 +1,4 @@
-name: Brownfield E2E Tests (CLI + Plugin)
+name: Expo Brownfield Tests
 
 on:
   workflow_dispatch: {}
@@ -7,21 +7,80 @@ on:
     paths:
       - .github/workflows/brownfield.yml
       - packages/expo-brownfield/**
+      - packages/expo/**
+      - packages/expo-router/**
+      - packages/expo-dev-menu/**
+      - packages/expo-manifests/**
+      - packages/expo-updates/**
       - yarn.lock
       - '!**.md'
   pull_request:
     paths:
       - .github/workflows/brownfield.yml
       - packages/expo-brownfield/**
+      - packages/expo/**
+      - packages/expo-router/**
+      - packages/expo-dev-menu/**
+      - packages/expo-manifests/**
+      - packages/expo-updates/**
       - yarn.lock
+      - '!**.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  analyze-changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      all_tests: ${{ steps.filter.outputs.all_tests }}
+      cli_e2e: ${{ steps.filter.outputs.cli_e2e }}
+      plugin_e2e: ${{ steps.filter.outputs.plugin_e2e }}
+      compilation_test_android: ${{ steps.filter.outputs.compilation_test_android }}
+      compilation_test_ios: ${{ steps.filter.outputs.compilation_test_ios }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: filter
+        # TODO(pmleczek): Update paths once we wrap up Maestro tests (remove expo-brownfield/**)
+        # TODO(pmleczek): Add "- 'packages/expo-updates/**'" to the compilation test filters
+        with:
+          filters: |
+            all_tests: 
+              - '.github/workflows/brownfield.yml'
+              - 'yarn.lock'
+            cli_e2e:
+              - 'packages/expo-brownfield/bin/**'
+              - 'packages/expo-brownfield/cli/**'
+              - 'packages/expo-brownfield/e2e/cli/**'
+              - 'packages/expo-brownfield/e2e/utils/**'
+              - 'packages/expo-brownfield/package.json'
+            plugin_e2e:
+              - 'packages/expo-brownfield/plugin/**'
+              - 'packages/expo-brownfield/e2e/plugin/**'
+              - 'packages/expo-brownfield/e2e/utils/**'
+              - 'packages/expo-brownfield/app.plugin.js'
+              - 'packages/expo-brownfield/package.json'
+            compilation_test_android:
+              - 'packages/expo-brownfield/**'
+              - 'packages/expo/android/src/main/jave/expo/modules/**'
+              - 'packages/expo/android/build.gradle'
+              - 'packages/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/**'
+              - 'packages/expo-dev-menu/android/build.gradle'
+              - 'packages/expo-manifests/android/src/main/java/expo/modules/manifests/**'
+              - 'packages/expo-manifests/android/build.gradle'
+            compilation_test_ios:
+              - 'packages/expo-brownfield/**'
+              - 'packages/expo/ios/AppDelegates/**'
+              - 'packages/expo-dev-menu/ios/**'
+              - 'packages/expo-manifests/ios/EXManifests/**'
+
   jest-ubuntu-cli:
     runs-on: ubuntu-24.04
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.cli_e2e == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -87,10 +146,12 @@ jobs:
 
       - name: 🧪 E2E Test Brownfield Config Plugin
         working-directory: packages/expo-brownfield
-        run: yarn test:e2e-plugin --testPathIgnorePatterns e2e/plugin/__tests__/plugin-ios.test.ts --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }} --passWithNoTests
+        run: yarn test:e2e-plugin --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-macos-cli:
     runs-on: macos-15
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.cli_e2e == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
     steps:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
@@ -159,6 +220,97 @@ jobs:
         working-directory: packages/expo-brownfield
         run: yarn test:e2e-cli e2e/cli/__tests__/build-ios.test.ts
 
-      - name: 🧪 E2E Test Brownfield Config Plugin
-        working-directory: packages/expo-brownfield
-        run: yarn test:e2e-plugin e2e/plugin/__tests__/plugin-ios.test.ts
+  compilation-test-android:
+    runs-on: ubuntu-24.04
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.compilation_test_android == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
+    env:
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+      - name: 🔨 Use JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          gradle: 'true'
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+          react-native-gradle-downloads: 'true'
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+      - name: 🤖 Build and publish Android brownfield artifacts
+        run: |
+          npx expo prebuild --clean -p android
+          npx expo-brownfield build:android --repo MavenLocal --all --verbose
+        working-directory: apps/brownfield-tester/expo-app
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        with:
+          webhook: ${{ secrets.slack_webhook_android }}
+          channel: '#expo-android'
+          author_name: expo-brownfield Compilation Test (Android)
+
+  compilation-test-ios:
+    runs-on: macos-15
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.compilation_test_ios == 'true' || needs.analyze-changes.outputs.all_tests == 'true'
+    strategy:
+      fail-fast: true
+      matrix:
+        build-type: [debug, release]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+      - name: 🍏 Build iOS artifacts
+        run: |
+          npx expo prebuild --clean --platform ios
+          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose
+        working-directory: apps/brownfield-tester/expo-app
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        with:
+          webhook: ${{ secrets.slack_webhook_ios }}
+          channel: '#expo-ios'
+          author_name: expo-brownfield Compilation Test (iOS)
