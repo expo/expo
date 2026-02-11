@@ -12,7 +12,7 @@
     "export-prep": "node ./scripts/export-prep.js",
     "export-server": "wrangler pages dev --port 8000",
     "test:worker": "node --experimental-strip-types scripts/test-worker.ts",
-    "lint": "node scripts/lint.js --max-warnings 0",
+    "lint": "NODE_OPTIONS='--no-warnings' node scripts/lint.js --max-warnings 0",
     "lint-links": "remark -u validate-links ./pages",
     "lint-prose": "yarn vale --glob='!pages/versions/latest/**' .",
     "watch": "tsc --noEmit -w",
