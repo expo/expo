@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix blank widget preview content ([#42857](https://github.com/expo/expo/pull/42857) by [@garygcchiu](https://github.com/garygcchiu))
-- Fix duplicated warnings on start and prebuild.
+- Fix duplicated warnings on start and prebuild. ([#43072](https://github.com/expo/expo/pull/43072) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
