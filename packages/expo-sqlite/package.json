@@ -58,7 +58,7 @@
     "await-lock": "^2.2.2"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.2.0",
+    "@testing-library/react-native": "^13.3.0",
     "@types/better-sqlite3": "^7.6.6",
     "better-sqlite3": "^11.6.0",
     "expo-module-scripts": "^55.0.2",
