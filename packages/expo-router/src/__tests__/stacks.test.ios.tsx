@@ -739,11 +739,13 @@ describe('Stack.Screen types', () => {
 
   it('accepts function-form options', () => {
     expectAssignable<StackScreenProps>({
-      options: ({ route }) => ({ title: route.params?.name as string }),
+      options: ({ route }) => ({ title: (route.params as Record<string, string>)?.name }),
     });
     expectAssignable<StackScreenProps>({
       name: 'profile',
-      options: ({ route, navigation }) => ({ title: `Profile: ${route.params?.id}` }),
+      options: ({ route, navigation }) => ({
+        title: `Profile: ${(route.params as Record<string, string>)?.id}`,
+      }),
     });
   });
 });

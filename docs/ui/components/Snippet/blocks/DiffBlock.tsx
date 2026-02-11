@@ -124,7 +124,7 @@ export const DiffBlock = ({
       return null;
     }
     return (
-      <Snippet key={oldRevision + '-' + newRevision}>
+      <Snippet key={oldRevision + '-' + newRevision} data-md="diff">
         <SnippetHeaderComponent
           title={`${filenameModifier(type === 'delete' ? oldPath : newPath)}`}
           Icon={Copy07Icon}

@@ -935,6 +935,35 @@ export const submitLabel = (
   submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
 ) => createModifier('submitLabel', { submitLabel });
 
+/**
+ * Sets the content transition type for a view.
+ * Useful for animating changes in text content, especially numeric text.
+ * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
+ *
+ * @param transitionType - The type of content transition.
+ * @param params - Optional parameters.
+ * @param params.countsDown - Whether the numeric text counts down.
+ *
+ * @example
+ * ```tsx
+ * <Text modifiers={[contentTransition('numericText'), animation(Animation.default, count)]}>
+ *   {count.toString()}
+ * </Text>
+ * ```
+ *
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
+ */
+export const contentTransition = (
+  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate',
+  params?: { countsDown?: boolean }
+) =>
+  createModifier('contentTransition', {
+    transitionType,
+    countsDown: params?.countsDown,
+  });
+
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
 /**
  * Sets the style for a List view.
@@ -1039,7 +1068,8 @@ export type BuiltInModifier =
   | ReturnType<typeof datePickerStyle>
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>
-  | ReturnType<typeof listStyle>;
+  | ReturnType<typeof listStyle>
+  | ReturnType<typeof contentTransition>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

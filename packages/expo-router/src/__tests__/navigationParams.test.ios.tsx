@@ -5,6 +5,7 @@ import {
   removeInternalExpoRouterParams,
   removeParams,
   type InternalExpoRouterParamName,
+  type InternalExpoRouterParams,
 } from '../navigationParams';
 
 const NO_ANIMATION = '__internal_expo_router_no_animation' as InternalExpoRouterParamName;
@@ -15,7 +16,9 @@ describe(appendInternalExpoRouterParams, () => {
     [undefined, {}],
     [undefined, undefined],
   ])('returns undefined if params = % and expoParams = %p', (params, expoParams) => {
-    expect(appendInternalExpoRouterParams(params, expoParams)).toBeUndefined();
+    expect(
+      appendInternalExpoRouterParams(params, expoParams as InternalExpoRouterParams)
+    ).toBeUndefined();
   });
 
   it.each([NO_ANIMATION, IS_PREVIEW])('appends internal params %p to empty params', (param) => {

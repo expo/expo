@@ -64,7 +64,7 @@ function pathWithStartingSlash(url) {
  *   - Index page is always moved to the top
  *   - Matches the order of prioritized paths using "startsWith" check
  */
-function pathSortedByPriority(a, b, priorities = []) {
+export function pathSortedByPriority(a, b, priorities = []) {
   if (a === '/') {
     return -1;
   }
@@ -74,8 +74,15 @@ function pathSortedByPriority(a, b, priorities = []) {
 
   const aPriority = priorities.findIndex(prio => a.startsWith(prio));
   const bPriority = priorities.findIndex(prio => b.startsWith(prio));
-  if (aPriority >= 0 || bPriority >= 0) {
+  if (aPriority >= 0 && bPriority >= 0) {
     return aPriority - bPriority;
+  }
+  // Sort priority items before non-priority items
+  if (aPriority >= 0) {
+    return -1;
+  }
+  if (bPriority >= 0) {
+    return 1;
   }
 
   return 0;

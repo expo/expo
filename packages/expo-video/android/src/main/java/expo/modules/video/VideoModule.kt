@@ -19,6 +19,7 @@ import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.ButtonOptions
 import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.AudioTrack
@@ -410,9 +411,10 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     }
   }
   Prop("requiresLinearPlayback") { view: T, requiresLinearPlayback: Boolean? ->
-    val linearPlayback = requiresLinearPlayback ?: false
-    view.playerView.applyRequiresLinearPlayback(linearPlayback)
-    view.videoPlayer?.requiresLinearPlayback = linearPlayback
+    view.requiresLinearPlayback = requiresLinearPlayback ?: false
+  }
+  Prop("buttonOptions") { view: T, buttonOptions: ButtonOptions? ->
+    view.buttonOptions = buttonOptions ?: ButtonOptions()
   }
   Prop("useExoShutter") { view: T, useExoShutter: Boolean? ->
     view.useExoShutter = useExoShutter

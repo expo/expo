@@ -37,15 +37,15 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
     let canCache = Self.canCache(videoSource: videoSource)
 
     if saveFilePath == nil && videoSource.useCaching {
-      log.warn("Failed to create a cache file path for the provided source with uri: \(videoSource.uri?.absoluteString ?? "null")")
+      log.warn("[expo-video] Failed to create a cache file path for the provided source with uri: \(videoSource.uri?.absoluteString ?? "null")")
     }
 
     if !canCache && videoSource.useCaching {
-      log.warn("Provided source with uri: \(videoSource.uri?.absoluteString ?? "null") cannot be cached. Caching will be disabled")
+      log.warn("[expo-video] Provided source with uri: \(videoSource.uri?.absoluteString ?? "null") cannot be cached. Caching will be disabled")
     }
 
     if urlWithCustomScheme == nil && videoSource.useCaching {
-      log.warn("CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
+      log.warn("[expo-video] CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
     }
 
     guard let saveFilePath, let urlWithCustomScheme, videoSource.useCaching else {
@@ -57,6 +57,8 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
 
     // Enable caching
     useCaching = true
+    VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
+    Self.createCacheDirectoryIfNeeded()
     resourceLoaderDelegate = ResourceLoaderDelegate(url: url, saveFilePath: saveFilePath, fileExtension: fileExtension, urlRequestHeaders: urlRequestHeaders)
     super.init(url: urlWithCustomScheme, options: assetOptions)
 
@@ -64,8 +66,6 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
       self?.cachingError = error
     }
     self.resourceLoader.setDelegate(resourceLoaderDelegate, queue: VideoCacheManager.shared.cacheQueue)
-    self.createCacheDirectoryIfNeeded()
-    VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
   }
 
   deinit {
@@ -90,7 +90,7 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
       appropriateFor: nil,
       create: true)
     else {
-      log.warn("CachingPlayerItem error: Can't access default cache directory")
+      log.warn("[expo-video] CachingPlayerItem error: Can't access default cache directory")
       return nil
     }
 
@@ -107,7 +107,7 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
     return videoSource.drm == nil
   }
 
-  private func createCacheDirectoryIfNeeded() {
+  private static func createCacheDirectoryIfNeeded() {
     guard var cachesDirectory = try? FileManager.default.url(
       for: .cachesDirectory,
       in: .userDomainMask,

@@ -1,5 +1,5 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
-import { isResponse, parseParams } from '../../utils/matchers';
+import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/matchers';
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
@@ -62,7 +62,7 @@ export function createEnvironment(input) {
         };
         return ssrRenderer;
     }
-    async function executeLoader(request, route) {
+    async function executeLoader(request, route, params) {
         if (!route.loader) {
             return undefined;
         }
@@ -70,7 +70,6 @@ export function createEnvironment(input) {
         if (!loaderModule) {
             throw new Error(`Loader module not found at: ${route.loader}`);
         }
-        const params = parseParams(request, route);
         return loaderModule.loader(new ImmutableRequest(request), params);
     }
     return {
@@ -84,9 +83,15 @@ export function createEnvironment(input) {
                 let renderOptions;
                 try {
                     if (route.loader) {
-                        const result = await executeLoader(request, route);
+                        const params = parseParams(request, route);
+                        const result = await executeLoader(request, route, params);
                         const data = isResponse(result) ? await result.json() : result;
-                        renderOptions = { loader: { data: data ?? null } };
+                        renderOptions = {
+                            loader: {
+                                data: data ?? null,
+                                key: resolveLoaderContextKey(route.page, params),
+                            },
+                        };
                     }
                     return await renderer(request, renderOptions);
                 }
@@ -122,7 +127,8 @@ export function createEnvironment(input) {
             return mod;
         },
         async getLoaderData(request, route) {
-            const result = await executeLoader(request, route);
+            const params = parseParams(request, route);
+            const result = await executeLoader(request, route, params);
             if (isResponse(result)) {
                 return result;
             }

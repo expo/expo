@@ -50,6 +50,7 @@ const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const constants_1 = require("./constants");
+const routeInfo_1 = require("./global-state/routeInfo");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
@@ -58,6 +59,7 @@ const LoaderCache_1 = require("./loaders/LoaderCache");
 const ServerDataLoaderContext_1 = require("./loaders/ServerDataLoaderContext");
 const getLoaderData_1 = require("./loaders/getLoaderData");
 const utils_1 = require("./loaders/utils");
+const useScreens_1 = require("./useScreens");
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
  * of the navigator which contains the current screen.
@@ -266,23 +268,28 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
 function useLoaderData() {
     const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
     const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
-    const routeInfo = (0, router_store_1.useRouteInfo)();
-    const pathname = routeInfo.pathname || '/';
-    const searchString = routeInfo.searchParams?.toString() || '';
-    const normalizedPath = searchString ? `${pathname}?${searchString}` : pathname;
+    const stateForPath = (0, native_1.useStateForPath)();
+    const contextKey = (0, Route_1.useContextKey)();
+    const resolvedPath = (0, react_1.useMemo)(() => {
+        const routeInfo = (0, routeInfo_1.getRouteInfoFromState)(stateForPath);
+        const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
+        const resolvedPathname = `/${(0, useScreens_1.getSingularId)(contextPath, { params: routeInfo.params })}`;
+        const searchString = routeInfo.searchParams?.toString() || '';
+        return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
+    }, [contextKey, stateForPath]);
     // First invocation of this hook will happen server-side, so we look up the loaded data from context
     if (serverDataLoaderContext) {
-        return serverDataLoaderContext[normalizedPath];
+        return serverDataLoaderContext[resolvedPath];
     }
     // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
     // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
     if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-        if (globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath]) {
-            return globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath];
+        if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
+            return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
         }
     }
     const result = (0, getLoaderData_1.getLoaderData)({
-        resolvedPath: normalizedPath,
+        resolvedPath,
         cache: loaderCache,
         fetcher: utils_1.fetchLoader,
     });

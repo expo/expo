@@ -32,7 +32,12 @@ import type { GetStaticContentOptions } from '@expo/router-server/build/static/r
 import assert from 'assert';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
-import { type RouteInfo, type RoutesManifest, type ImmutableRequest } from 'expo-server/private';
+import {
+  type RouteInfo,
+  type RoutesManifest,
+  type ImmutableRequest,
+  resolveLoaderContextKey,
+} from 'expo-server/private';
 import path from 'path';
 
 import {
@@ -645,7 +650,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       const loaderData = await loaderResult.json();
-      return await getStaticContent(location, { loader: { data: loaderData } });
+      const resolvedLoaderKey = resolveLoaderContextKey(
+        resolvedLoaderRoute.contextKey,
+        resolvedLoaderRoute.params
+      );
+      return await getStaticContent(location, {
+        loader: { data: loaderData, key: resolvedLoaderKey },
+      });
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([

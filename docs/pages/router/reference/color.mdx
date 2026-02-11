@@ -117,6 +117,8 @@ function MyComponent() {
 
 Without using `useColorScheme()`, the colors may not update when the user switches between light and dark mode.
 
+> This is especially important when using React Compiler, which can memoize components and skip re-renders unless `useColorScheme()` is called.
+
 ## iOS colors
 
 Access iOS system colors through `Color.ios.*`. These map directly to UIKit's [standard colors](https://developer.apple.com/documentation/uikit/standard-colors) and [UI element colors](https://developer.apple.com/documentation/uikit/ui-element-colors).

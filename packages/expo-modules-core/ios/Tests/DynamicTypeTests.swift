@@ -43,6 +43,28 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `rejects NSNumber created from number as Bool`() {
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 0 as Int), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 1 as Int), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 0.0), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 1.0), appContext: appContext)
+      }
+    }
+
+    @Test
+    func `accepts NSNumber created from boolean as Bool`() throws {
+      #expect(try (~Bool.self).cast(NSNumber(value: true), appContext: appContext) as? Bool == true)
+      #expect(try (~Bool.self).cast(NSNumber(value: false), appContext: appContext) as? Bool == false)
+    }
+
+    @Test
     func `throws NullCastException`() {
       let value: Bool? = nil
 
@@ -205,6 +227,14 @@ struct DynamicTypeTests {
 
       #expect(result is [Double])
       #expect(result as? [Double] == [value])
+    }
+
+    @Test
+    func `arrayizes a single JS value`() throws {
+      let jsInt = try appContext.runtime.eval("67")
+      let jsString = try appContext.runtime.eval("'Expo'")
+      #expect(try (~[Int].self).cast(jsValue: jsInt, appContext: appContext) as? [Int] == [67])
+      #expect(try (~[String].self).cast(jsValue: jsString, appContext: appContext) as? [String] == ["Expo"])
     }
 
     @Test

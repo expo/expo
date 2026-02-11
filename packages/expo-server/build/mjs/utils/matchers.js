@@ -13,6 +13,41 @@ export function parseParams(request, route) {
     }
     return params;
 }
+/**
+ * Resolves a route's context key into a concrete path by substituting dynamic segments
+ * with actual param values.
+ *
+ * @example
+ * ```tsx
+ * resolveLoaderContextKey('/users/[id]`, { id: '123' }) // /users/123
+ * ```
+ *
+ * @see import('expo-router/src/utils/matchers').getSingularId
+ */
+export function resolveLoaderContextKey(contextKey, params) {
+    const normalizedKey = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
+    // TODO(@hassankhan): Extract this logic into its own function and share with getRedirectRewriteLocation() below
+    const resolved = normalizedKey
+        .split('/')
+        .map((segment) => {
+        let match;
+        if ((match = matchDeepDynamicRouteName(segment))) {
+            const value = params[match];
+            if (value == null)
+                return segment;
+            return Array.isArray(value) ? value.join('/') : value;
+        }
+        if ((match = matchDynamicName(segment))) {
+            const value = params[match];
+            if (value == null)
+                return segment;
+            return Array.isArray(value) ? value.join('/') : value;
+        }
+        return segment;
+    })
+        .join('/');
+    return `/${resolved}`;
+}
 export function getRedirectRewriteLocation(url, request, route) {
     const originalQueryParams = url.searchParams.entries();
     const params = parseParams(request, route);

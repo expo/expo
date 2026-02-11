@@ -1,4 +1,4 @@
-import { fail } from 'assert';
+import { fail } from 'node:assert';
 
 import NotificationScheduler from '../NotificationScheduler';
 import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';

@@ -25,6 +25,7 @@ export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconCol
 type AwaitedIcon =
   | {
       sf?: SFSymbol;
+      xcasset?: string;
       drawable?: string;
     }
   | {
@@ -81,6 +82,12 @@ export function convertOptionsIconToIOSPropsIcon(
     return {
       type: 'sfSymbol',
       name: icon.sf,
+    };
+  }
+  if (icon && 'xcasset' in icon && icon.xcasset) {
+    return {
+      type: 'xcasset',
+      name: icon.xcasset,
     };
   }
   if (icon && 'src' in icon && icon.src) {

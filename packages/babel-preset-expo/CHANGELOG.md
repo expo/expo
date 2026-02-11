@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add babel plugin for `expo-widgets`. ([#42941](https://github.com/expo/expo/pull/42941) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.4 — 2026-02-08
+
+### 🎉 New features
+
+- Add babel plugin for `expo-widgets`. ([#42941](https://github.com/expo/expo/pull/42941) by [@jakex7](https://github.com/jakex7))
 
 ## 55.0.3 — 2026-02-03
 
