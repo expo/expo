@@ -71,7 +71,12 @@ public final class SecureStoreModule: Module {
   }
 
   private func areDeviceCredentialsEnabled() -> Bool {
-    return LAContext().canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: nil)
+    #if os(tvOS)
+    return false
+    #else
+    var error: NSError?
+    return LAContext().canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: &error)
+    #endif
   }
 
   private func get(with key: String, options: SecureStoreOptions) throws -> String? {
