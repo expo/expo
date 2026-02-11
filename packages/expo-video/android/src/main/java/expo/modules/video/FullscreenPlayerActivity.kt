@@ -169,7 +169,7 @@ class FullscreenPlayerActivity : Activity() {
       videoView.exitFullscreen()
     }
     if (::videoViewId.isInitialized) {
-      VideoManager.unregisterFullscreenPlayerActivity(videoViewId, this)
+      VideoManager.unregisterFullscreenPlayerActivity(videoViewId)
     }
     if (::orientationHelper.isInitialized) {
       orientationHelper.stopOrientationEventListener()
