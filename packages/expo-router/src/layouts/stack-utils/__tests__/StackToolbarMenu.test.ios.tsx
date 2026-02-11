@@ -510,6 +510,82 @@ describe('StackToolbarMenu component', () => {
     );
   });
 
+  it('passes xcassetName from StackToolbarIcon xcasset child', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu>
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        icon: undefined,
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as template for xcasset menu when tintColor is set', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'template',
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as original for xcasset menu without tintColor', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu>
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
+      }),
+      undefined
+    );
+  });
+
+  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu iconRenderingMode="template" tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
+      }),
+      undefined
+    );
+  });
+
   it('passes computed label and title', () => {
     render(
       <ToolbarPlacementContext.Provider value="bottom">

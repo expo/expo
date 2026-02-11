@@ -1,5 +1,6 @@
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
+  extractIconRenderingMode,
   extractXcassetName,
 } from '../toolbar/shared';
 import {
@@ -208,7 +209,7 @@ describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
         iconRenderingMode: 'template',
       });
       expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('iconRenderingMode has no effect on xcasset icons')
+        expect.stringContaining('renderingMode has no effect on xcasset icons')
       );
     });
 
@@ -218,7 +219,25 @@ describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
         iconRenderingMode: 'original',
       });
       expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('iconRenderingMode has no effect on xcasset icons')
+        expect.stringContaining('renderingMode has no effect on xcasset icons')
+      );
+    });
+
+    it('warns when <Icon xcasset renderingMode="template"> is used', () => {
+      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" renderingMode="template" />,
+      });
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining('renderingMode has no effect on xcasset icons')
+      );
+    });
+
+    it('warns when <Icon xcasset renderingMode="original"> is used', () => {
+      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />,
+      });
+      expect(spy).toHaveBeenCalledWith(
+        expect.stringContaining('renderingMode has no effect on xcasset icons')
       );
     });
 
@@ -453,5 +472,40 @@ describe(extractXcassetName, () => {
       ],
     });
     expect(result).toBe('my-icon');
+  });
+});
+
+describe(extractIconRenderingMode, () => {
+  it('returns renderingMode from xcasset Icon child', () => {
+    const result = extractIconRenderingMode({
+      children: <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />,
+    });
+    expect(result).toBe('original');
+  });
+
+  it('returns renderingMode from src Icon child', () => {
+    const result = extractIconRenderingMode({
+      children: <StackToolbarIcon src={{ uri: 'test' }} renderingMode="template" />,
+    });
+    expect(result).toBe('template');
+  });
+
+  it('returns undefined for sf Icon child (no renderingMode)', () => {
+    const result = extractIconRenderingMode({
+      children: <StackToolbarIcon sf="star.fill" />,
+    });
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when no children provided', () => {
+    const result = extractIconRenderingMode({});
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when xcasset Icon has no renderingMode', () => {
+    const result = extractIconRenderingMode({
+      children: <StackToolbarIcon xcasset="custom-icon" />,
+    });
+    expect(result).toBeUndefined();
   });
 });

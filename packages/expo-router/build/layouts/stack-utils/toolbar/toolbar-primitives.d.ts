@@ -27,11 +27,26 @@ export type StackToolbarIconProps = {
 } | {
     /**
      * Name of an image in your Xcode asset catalog (`.xcassets`).
-     * The rendering mode is controlled by the asset catalog's "Render As" setting.
      *
      * @platform ios
      */
     xcasset: string;
+    /**
+     * Controls how the xcasset icon is rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon
+     * - `'original'`: Preserves original icon colors
+     *
+     * Defaults based on parent component's `tintColor`:
+     * - With `tintColor`: defaults to `'template'`
+     * - Without `tintColor`: defaults to `'original'`
+     *
+     * > **Note**: For `left` and `right` header items, the rendering mode is controlled by the
+     * > asset catalog's "Render As" setting, not this prop.
+     *
+     * @platform ios
+     */
+    renderingMode?: 'template' | 'original';
 };
 export declare const StackToolbarIcon: React.FC<StackToolbarIconProps>;
 export interface StackToolbarBadgeProps {

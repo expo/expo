@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.extractXcassetName = extractXcassetName;
+exports.extractIconRenderingMode = extractIconRenderingMode;
 exports.convertStackHeaderSharedPropsToRNSharedHeaderItem = convertStackHeaderSharedPropsToRNSharedHeaderItem;
 const react_1 = require("react");
 const toolbar_primitives_1 = require("./toolbar-primitives");
@@ -11,6 +12,18 @@ function extractXcassetName(props) {
     const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
     if (iconComponentProps && 'xcasset' in iconComponentProps) {
         return iconComponentProps.xcasset;
+    }
+    return undefined;
+}
+/**
+ * Extracts the rendering mode from the Icon child component (for `src` and `xcasset` variants).
+ * Returns undefined if no explicit rendering mode is set on the Icon child.
+ * @internal
+ */
+function extractIconRenderingMode(props) {
+    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+    if (iconComponentProps && 'renderingMode' in iconComponentProps) {
+        return iconComponentProps.renderingMode;
     }
     return undefined;
 }
@@ -44,8 +57,10 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
             };
         }
         if ('xcasset' in iconComponentProps) {
-            if (process.env.NODE_ENV !== 'production' && props.iconRenderingMode) {
-                console.warn('iconRenderingMode has no effect on xcasset icons in left and right toolbar placements. The rendering mode for xcasset icons is controlled by the "Render As" setting in the Xcode asset catalog.');
+            const explicitIconRenderingMode = 'renderingMode' in iconComponentProps ? iconComponentProps.renderingMode : undefined;
+            if (process.env.NODE_ENV !== 'production' &&
+                (props.iconRenderingMode || explicitIconRenderingMode)) {
+                console.warn('renderingMode has no effect on xcasset icons in left and right toolbar placements. The rendering mode for xcasset icons is controlled by the "Render As" setting in the Xcode asset catalog.');
             }
             // Type assertion needed: xcasset is supported by react-native-screens
             // but not yet typed in @react-navigation/native-stack's PlatformIconIOS

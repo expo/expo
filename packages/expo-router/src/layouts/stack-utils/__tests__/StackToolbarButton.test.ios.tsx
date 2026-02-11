@@ -300,6 +300,113 @@ describe('StackToolbarButton component', () => {
     );
   });
 
+  it('passes xcassetName from StackToolbarIcon xcasset child', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton>
+          <StackToolbarIcon xcasset="custom-icon" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        systemImageName: undefined,
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as template for xcasset icon when tintColor is set', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'template',
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as original for xcasset icon without tintColor', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton>
+          <StackToolbarIcon xcasset="custom-icon" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
+      }),
+      undefined
+    );
+  });
+
+  it('passes explicit iconRenderingMode for xcasset icon', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton iconRenderingMode="template">
+          <StackToolbarIcon xcasset="custom-icon" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'template',
+      }),
+      undefined
+    );
+  });
+
+  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton iconRenderingMode="template" tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
+      }),
+      undefined
+    );
+  });
+
+  it('Icon child renderingMode overrides parent iconRenderingMode for src icon', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton iconRenderingMode="original">
+          <StackToolbarIcon src={{ uri: 'image' }} renderingMode="template" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        imageRenderingMode: 'template',
+      }),
+      undefined
+    );
+  });
+
   it('extracts label from StackToolbarLabel child in bottom placement', () => {
     render(
       <ToolbarPlacementContext.Provider value="bottom">
