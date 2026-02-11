@@ -1,73 +1,601 @@
-import { Paths, File } from 'expo-file-system';
+import { File, Directory, Paths } from 'expo-file-system';
+import type { FileHandle } from 'expo-file-system';
+import * as Contacts from 'expo-contacts';
+import * as DocumentPicker from 'expo-document-picker';
 import * as IntentLauncher from 'expo-intent-launcher';
-import { Button, ScrollView, StyleSheet, View, Text } from 'react-native';
+import * as MediaLibrary from 'expo-media-library';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
+import ListButton from '../components/ListButton';
+import MonoText from '../components/MonoText';
+import SimpleActionDemo from '../components/SimpleActionDemo';
+
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',
 };
 
+function truncate(str: string, maxLen = 200): string {
+  if (str.length <= maxLen) return str;
+  return str.substring(0, maxLen) + `... (${str.length} chars total)`;
+}
+
 export default function FileSystemScreen() {
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
+  const [safDirectory, setSafDirectory] = useState<Directory | null>(null);
+  const handleRef = useRef<FileHandle | null>(null);
+  const [handleInfo, setHandleInfo] = useState<string | null>(null);
+  const [handleLog, setHandleLog] = useState('');
+
+  // Close handle on unmount
+  useEffect(() => {
+    return () => {
+      if (handleRef.current) {
+        try {
+          handleRef.current.close();
+        } catch { }
+        handleRef.current = null;
+      }
+    };
+  }, []);
+
+  // Close handle when currentFile changes
+  useEffect(() => {
+    if (handleRef.current) {
+      try {
+        handleRef.current.close();
+      } catch { }
+      handleRef.current = null;
+      setHandleInfo(null);
+      setHandleLog('');
+    }
+  }, [currentFile]);
+
+  function withCurrentFile(fn: (file: File) => Promise<any>) {
+    return async () => {
+      if (!currentFile) {
+        throw new Error('No file selected. Pick or create a file first.');
+      }
+      return fn(currentFile);
+    };
+  }
+
+  function appendLog(line: string) {
+    setHandleLog((prev) => (prev ? prev + '\n' + line : line));
+  }
+
   return (
     <ScrollView>
       <View style={styles.container}>
-        <HeadingText>.contentUri property</HeadingText>
-        <Button
-          title="From file"
-          onPress={async () => {
-            const file = new File(Paths.cache, 'file.txt');
-            file.write('123');
-            await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-              data: file.contentUri,
-              flags: 1,
-              type: 'text/plain',
-            });
+        {currentFile && (
+          <View style={styles.currentFileBar}>
+            <Text style={styles.currentFileText}>Current: {truncate(currentFile.uri, 80)}</Text>
+          </View>
+        )}
+
+        {/* ===== Section 1: File Sources ===== */}
+        <HeadingText>File Sources</HeadingText>
+        <Text style={styles.note}>Pick or create a file to use in sections below</Text>
+
+        <ListButton
+          title="Create local file"
+          onPress={() => {
+            const file = new File(Paths.cache, 'test_sandbox', 'test.txt');
+            file.create({ intermediates: true, overwrite: true });
+            file.write('Hello from FileSystem sandbox! Timestamp: ' + Date.now());
+            setCurrentFile(file);
+            Alert.alert('Created', file.uri);
           }}
         />
-        <Text>Open .pem certificate from BareExpo (should show modal that it's not possible)</Text>
-        <Button
-          title="From asset"
-          onPress={async () => {
-            const file = new File(Paths.bundle, 'expo-root.pem');
-            await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-              data: file.contentUri,
-              flags: 1,
-              type: 'application/x-pem-file',
-            });
+        <ListButton
+          title="Load asset file"
+          onPress={() => {
+            const file = new File(Paths.bundle, 'index.html');
+            setCurrentFile(file);
+            Alert.alert('Loaded asset', file.uri);
           }}
         />
-        <Button
-          title="From SAF"
+        <ListButton
+          title="File.pickFileAsync"
           onPress={async () => {
-            const res = await File.pickFileAsync();
-            const file = Array.isArray(res) ? res[0] : res;
-            await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
-              data: file.contentUri,
-              flags: 1,
-              type: file.type,
-            });
+            const result = await File.pickFileAsync();
+            const file = Array.isArray(result) ? result[0] : result;
+            setCurrentFile(file);
+            Alert.alert('Picked SAF file', file.uri);
           }}
+        />
+        <ListButton
+          title="Pick via DocumentPicker"
+          onPress={async () => {
+            try {
+              const result = await DocumentPicker.getDocumentAsync({
+                copyToCacheDirectory: false,
+              });
+              if (!result.canceled && result.assets?.length > 0) {
+                const file = new File(result.assets[0].uri);
+                setCurrentFile(file);
+                Alert.alert('DocumentPicker file', file.uri);
+              }
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Pick from MediaLibrary"
+          onPress={async () => {
+            try {
+              const { status } = await MediaLibrary.requestPermissionsAsync();
+              if (status !== 'granted') {
+                Alert.alert('Permission denied');
+                return;
+              }
+              const assets = await MediaLibrary.getAssetsAsync({
+                first: 1,
+                mediaType: 'photo',
+              });
+              if (assets.assets.length === 0) {
+                Alert.alert('No assets found');
+                return;
+              }
+              const assetInfo = await MediaLibrary.getAssetInfoAsync(assets.assets[0]);
+              const file = new File(assetInfo.uri);
+              setCurrentFile(file);
+              Alert.alert('MediaLibrary file', file.uri);
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Pick from Contacts"
+          onPress={async () => {
+            try {
+              const { status } = await Contacts.requestPermissionsAsync();
+              if (status !== 'granted') {
+                Alert.alert('Permission denied');
+                return;
+              }
+              const { data: contacts } = await Contacts.getContactsAsync({
+                fields: ['imageAvailable', 'image'],
+                pageSize: 100
+              });
+              if (contacts.length === 0) {
+                Alert.alert('No contacts found');
+                return;
+              }
+              const contactImageURI = contacts.find(contact => contact.imageAvailable)?.image?.uri;
+              if (!contactImageURI) {
+                Alert.alert('No contact with profile image found');
+                return;
+              }
+              const file = new File(contactImageURI);
+              setCurrentFile(file);
+              Alert.alert('Contact image', file.uri);
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Download from URL"
+          onPress={async () => {
+            try {
+              const dest = new Directory(Paths.cache, 'test_sandbox');
+              dest.create({ intermediates: true, idempotent: true });
+              const file = await File.downloadFileAsync(
+                'https://httpbin.org/robots.txt',
+                dest,
+                { idempotent: true }
+              );
+              setCurrentFile(file);
+              Alert.alert('Downloaded', file.uri);
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+
+        {/* ===== Section 2: File Info ===== */}
+        <HeadingText>File Info & Properties</HeadingText>
+        <SimpleActionDemo
+          title="Show file properties"
+          action={withCurrentFile(async (file) => ({
+            uri: file.uri,
+            name: file.name,
+            extension: file.extension,
+            exists: file.exists,
+            size: file.size,
+            type: file.type,
+            md5: file.md5,
+            modificationTime: file.modificationTime,
+            creationTime: file.creationTime,
+          }))}
+        />
+        {Platform.OS === 'android' && (
+          <SimpleActionDemo
+            title="Show contentUri (Android)"
+            action={withCurrentFile(async (file) => ({
+              original: file.uri,
+              contentUri: file.contentUri,
+            }))}
+          />
+        )}
+        <SimpleActionDemo
+          title="Show info({ md5: true })"
+          action={withCurrentFile(async (file) => file.info({ md5: true }))}
+        />
+
+        {/* ===== Section 3: Read Operations ===== */}
+        <HeadingText>Read Operations</HeadingText>
+        <SimpleActionDemo
+          title="text()"
+          action={withCurrentFile(async (file) => truncate(await file.text()))}
+        />
+        <SimpleActionDemo
+          title="base64() (first 100 chars)"
+          action={withCurrentFile(async (file) => truncate(await file.base64(), 100))}
+        />
+        <SimpleActionDemo
+          title="bytes() (length + first 20)"
+          action={withCurrentFile(async (file) => {
+            const bytes = await file.bytes();
+            return {
+              length: bytes.length,
+              first20: Array.from(bytes.slice(0, 20)),
+            };
+          })}
+        />
+
+        {/* ===== Section 4: Write Operations ===== */}
+        <HeadingText>Write Operations</HeadingText>
+        <Text style={styles.note}>Works on file:// and SAF. Throws on asset://.</Text>
+        <SimpleActionDemo
+          title="write() text"
+          action={withCurrentFile(async (file) => {
+            file.write('Written at ' + new Date().toISOString());
+            return 'OK - size is now: ' + file.size;
+          })}
+        />
+        <SimpleActionDemo
+          title="write() base64"
+          action={withCurrentFile(async (file) => {
+            // Base64 of "Hello Base64!"
+            file.write('SGVsbG8gQmFzZTY0IQ==', { encoding: 'base64' });
+            return 'OK - text() = ' + truncate(await file.text());
+          })}
+        />
+        <SimpleActionDemo
+          title="write() Uint8Array"
+          action={withCurrentFile(async (file) => {
+            const bytes = new Uint8Array([72, 101, 108, 108, 111]); // "Hello"
+            file.write(bytes);
+            return 'OK - text() = ' + file.textSync();
+          })}
+        />
+
+        {/* ===== Section 5: File Handle ===== */}
+        <HeadingText>File Handle (Random Access)</HeadingText>
+        <Text style={styles.note}>Works on file:// and SAF content://</Text>
+        <ListButton
+          title="Open file handle"
+          disabled={!currentFile}
+          onPress={() => {
+            try {
+              if (handleRef.current) {
+                handleRef.current.close();
+              }
+              const handle = currentFile!.open();
+              handleRef.current = handle;
+              setHandleInfo(`offset=${handle.offset}, size=${handle.size}`);
+              setHandleLog('Handle opened');
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Read 10 bytes"
+          disabled={!handleRef.current}
+          onPress={() => {
+            try {
+              const bytes = handleRef.current!.readBytes(10);
+              setHandleInfo(
+                `offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`
+              );
+              appendLog(`Read ${bytes.length}B: [${Array.from(bytes).join(', ')}]`);
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Write 'TEST' bytes"
+          disabled={!handleRef.current}
+          onPress={() => {
+            try {
+              handleRef.current!.writeBytes(new Uint8Array([84, 69, 83, 84]));
+              setHandleInfo(
+                `offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`
+              );
+              appendLog('Wrote 4 bytes (TEST)');
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Seek to offset 0"
+          disabled={!handleRef.current}
+          onPress={() => {
+            try {
+              handleRef.current!.offset = 0;
+              setHandleInfo(
+                `offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`
+              );
+              appendLog('Seeked to 0');
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Seek to offset 5"
+          disabled={!handleRef.current}
+          onPress={() => {
+            try {
+              handleRef.current!.offset = 5;
+              setHandleInfo(
+                `offset=${handleRef.current!.offset}, size=${handleRef.current!.size}`
+              );
+              appendLog('Seeked to 5');
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        <ListButton
+          title="Close handle"
+          disabled={!handleRef.current}
+          onPress={() => {
+            try {
+              handleRef.current!.close();
+              handleRef.current = null;
+              setHandleInfo('closed');
+              appendLog('Handle closed');
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        {handleInfo && <MonoText>Handle: {handleInfo}</MonoText>}
+        {handleLog.length > 0 && <MonoText>{handleLog}</MonoText>}
+
+        {/* ===== Section 6: Copy & Move ===== */}
+        <HeadingText>Copy & Move</HeadingText>
+        <SimpleActionDemo
+          title="Copy to cache dir (file://)"
+          action={withCurrentFile(async (file) => {
+            const dest = new Directory(Paths.cache, 'test_sandbox_copy');
+            dest.create({ intermediates: true, idempotent: true });
+            file.copy(dest);
+            return dest.list().map((f) => f.name);
+          })}
+        />
+        <SimpleActionDemo
+          title="Copy to document dir (file://)"
+          action={withCurrentFile(async (file) => {
+            const dest = new Directory(Paths.document, 'test_sandbox_copy');
+            dest.create({ intermediates: true, idempotent: true });
+            file.copy(dest);
+            return { destUri: dest.uri, files: dest.list().map((f) => f.name) };
+          })}
+        />
+
+        <ListButton
+          title="Pick destination directory"
+          onPress={async () => {
+            try {
+              const dir = await Directory.pickDirectoryAsync();
+              setSafDirectory(dir);
+              Alert.alert('SAF directory', dir.uri);
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        {safDirectory && (
+          <SimpleActionDemo
+            title="Copy to destination directory"
+            action={withCurrentFile(async (file) => {
+              file.copy(safDirectory);
+              return safDirectory.list().map((f) => f.name);
+            })}
+          />
+        )}
+
+        <SimpleActionDemo
+          title="Move to cache/moved/ (destructive!)"
+          action={withCurrentFile(async (file) => {
+            const dest = new Directory(Paths.cache, 'test_sandbox_moved');
+            dest.create({ intermediates: true, idempotent: true });
+            const oldUri = file.uri;
+            file.move(dest);
+            return { oldUri, newUri: file.uri };
+          })}
+        />
+        <SimpleActionDemo
+          title="Rename to 'renamed_test.txt'"
+          action={withCurrentFile(async (file) => {
+            const oldUri = file.uri;
+            file.rename('renamed_test.txt');
+            return { oldUri, newUri: file.uri };
+          })}
+        />
+
+        {/* ===== Section 7: Directory Operations ===== */}
+        <HeadingText>Picked Directory Operations</HeadingText>
+        <ListButton
+          title="Pick directory"
+          onPress={async () => {
+            try {
+              const dir = await Directory.pickDirectoryAsync();
+              setSafDirectory(dir);
+              Alert.alert('Picked', dir.uri);
+            } catch (e: any) {
+              Alert.alert('Error', e.message);
+            }
+          }}
+        />
+        {safDirectory && (
+          <>
+            <MonoText>SAF Dir: {truncate(safDirectory.uri, 80)}</MonoText>
+
+            <SimpleActionDemo
+              title="List directory contents"
+              action={async () =>
+                safDirectory.list().map((item) => ({
+                  name: item.name,
+                  uri: item.uri,
+                  isDir: item instanceof Directory,
+                }))
+              }
+            />
+            <SimpleActionDemo
+              title="Directory properties"
+              action={async () => ({
+                uri: safDirectory.uri,
+                name: safDirectory.name,
+                exists: safDirectory.exists,
+                size: safDirectory.size,
+              })}
+            />
+            <SimpleActionDemo
+              title="Create file 'test_created.txt' in picked dir"
+              action={async () => {
+                const file = safDirectory.createFile('test_created.txt', 'text/plain');
+                file.write('Created at ' + new Date().toISOString());
+                setCurrentFile(file);
+                return { uri: file.uri, name: file.name };
+              }}
+            />
+            <SimpleActionDemo
+              title="Create subdirectory 'test_subdir'"
+              action={async () => {
+                const subdir = safDirectory.createDirectory('test_subdir');
+                return { uri: subdir.uri, name: subdir.name, exists: subdir.exists };
+              }}
+            />
+            <SimpleActionDemo
+              title="Delete last item in picked dir"
+              action={async () => {
+                const items = safDirectory.list();
+                if (items.length === 0) throw new Error('Directory is empty');
+                const last = items[items.length - 1];
+                const name = last.name;
+                last.delete();
+                return `Deleted: ${name}`;
+              }}
+            />
+          </>
+        )}
+
+        {/* ===== Section 8: Content URI & Intents ===== */}
+        {Platform.OS === 'android' && (
+          <>
+            <HeadingText>Content URI & Intents</HeadingText>
+            <SimpleActionDemo
+              title="Get contentUri for current file"
+              action={withCurrentFile(async (file) => ({
+                original: file.uri,
+                contentUri: file.contentUri,
+                type: file.type,
+              }))}
+            />
+            <ListButton
+              title="Open current file with intent"
+              disabled={!currentFile}
+              onPress={async () => {
+                try {
+                  await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+                    data: currentFile!.contentUri,
+                    flags: 1,
+                    type: currentFile!.type || '*/*',
+                  });
+                } catch (e: any) {
+                  Alert.alert('Error', e.message);
+                }
+              }}
+            />
+            <ListButton
+              title="Open asset (expo-root.pem) with intent"
+              onPress={async () => {
+                try {
+                  const file = new File(Paths.bundle, 'expo-root.pem');
+                  await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+                    data: file.contentUri,
+                    flags: 1,
+                    type: 'application/x-pem-file',
+                  });
+                } catch (e: any) {
+                  Alert.alert('Error', e.message);
+                }
+              }}
+            />
+          </>
+        )}
+
+        {/* ===== Section 9: File Lifecycle ===== */}
+        <HeadingText>File Lifecycle</HeadingText>
+        <SimpleActionDemo
+          title="Create new file in cache"
+          action={async () => {
+            const name = `test_${Date.now()}.txt`;
+            const file = new File(Paths.cache, 'test_sandbox', name);
+            file.create({ intermediates: true });
+            file.write('Created for lifecycle test');
+            setCurrentFile(file);
+            return { uri: file.uri, exists: file.exists, size: file.size };
+          }}
+        />
+        <SimpleActionDemo
+          title="Check exists"
+          action={withCurrentFile(async (file) => ({
+            exists: file.exists,
+            uri: file.uri,
+          }))}
+        />
+        <SimpleActionDemo
+          title="Delete current file"
+          action={withCurrentFile(async (file) => {
+            file.delete();
+            return { deleted: true, existsAfter: file.exists };
+          })}
         />
       </View>
     </ScrollView>
   );
 }
+
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  languageBox: {
-    padding: 10,
-    borderWidth: 1,
-  },
-  picker: {
-    borderWidth: 1,
-    padding: 0,
-    margin: 0,
-  },
   container: {
     padding: 10,
     gap: 10,
+  },
+  note: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+    paddingHorizontal: 5,
+  },
+  currentFileBar: {
+    backgroundColor: '#e8e8ff',
+    padding: 8,
+    borderRadius: 4,
+  },
+  currentFileText: {
+    fontSize: 11,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
   },
 });
