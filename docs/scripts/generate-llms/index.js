@@ -2,24 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 
-import { compileTalksFile } from './compileTalks.js';
 import { generateLlmsEasTxt } from './llms-eas-txt.js';
 import { generateLlmsFullTxt } from './llms-full-txt.js';
 import { generateLlmsSdkTxt } from './llms-sdk.js';
 import { generateLlmsTxt } from './llms-txt.js';
-import {
-  OUTPUT_DIRECTORY_NAME,
-  OUTPUT_FILENAME_EAS_DOCS,
-  OUTPUT_FILENAME_EXPO_DOCS,
-  OUTPUT_FILENAME_LLMS_TXT,
-} from './utils.js';
+import { OUTPUT_DIRECTORY_NAME } from './shared.js';
 
-const GENERATED_LLMS_FILES = [
-  OUTPUT_FILENAME_LLMS_TXT,
-  OUTPUT_FILENAME_EXPO_DOCS,
-  OUTPUT_FILENAME_EAS_DOCS,
-  'llms-sdk.txt',
-];
+const GENERATED_LLMS_FILES = ['llms.txt', 'llms-full.txt', 'llms-eas.txt', 'llms-sdk.txt'];
 
 async function syncGeneratedLlmsToOut() {
   const outDir = path.join(process.cwd(), 'out');
@@ -41,8 +30,6 @@ async function syncGeneratedLlmsToOut() {
     })
   );
 }
-
-await compileTalksFile();
 
 const results = await Promise.allSettled([
   generateLlmsSdkTxt(),

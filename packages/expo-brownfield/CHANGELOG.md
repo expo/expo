@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [test] add compilation verification and optimize brownfield workflow in [#42894](https://github.com/expo/expo/pull/42894) by [@pmleczek](https://github.com/pmleczek)
+
 ## 55.0.7 — 2026-02-08
 
 ### 🐛 Bug fixes

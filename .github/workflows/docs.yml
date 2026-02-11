@@ -40,7 +40,6 @@ jobs:
           yarn-workspace: 'true'
           docs-api-data: 'true'
       - name: 🧶 Install workspace deps on cache miss
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --immutable
       - name: 🧶 Install tools deps on cache miss
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'

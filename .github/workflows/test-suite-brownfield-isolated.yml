@@ -83,7 +83,6 @@ jobs:
           yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🤖 Build and publish Android artifacts (apps/brownfield-tester/expo-app)
         run: |
