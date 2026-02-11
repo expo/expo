@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 
@@ -9,6 +10,8 @@ const debug = require('debug')('expo:utils:editor') as typeof console.log;
 
 type Editor = (typeof EDITORS)[number];
 
+// See: https://github.com/sindresorhus/env-editor/blob/3f6aea10ff53910c877b1bf73a8e0c954a5fbf11/index.js
+// MIT License, Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
 function getEditor(input: string | undefined): Editor | null {
   if (!input) {
     return null;
@@ -67,9 +70,37 @@ export function guessEditor(): Editor | null {
   }
 }
 
+let _cachedVisualEditor: Editor | null | undefined;
+
+export async function guessFallbackVisualEditor(): Promise<Editor | null> {
+  if (_cachedVisualEditor !== undefined) {
+    return _cachedVisualEditor;
+  }
+  for (const editor of EDITORS) {
+    if (editor.isTerminalEditor) {
+      continue;
+    }
+    const target = await editorExists(editor);
+    if (target) {
+      debug('Found visual editor fallback:', editor.name);
+      return (_cachedVisualEditor = { ...editor, binary: target });
+    }
+  }
+  return (_cachedVisualEditor = null);
+}
+
 /** Open a file path in a given editor. */
 export async function openInEditorAsync(path: string, lineNumber?: number): Promise<boolean> {
-  const editor = guessEditor();
+  let editor = guessEditor();
+
+  // Try to find a fallback visual editor, but keep the found one if we can't find a fallback
+  if (editor?.isTerminalEditor) {
+    const fallback = await guessFallbackVisualEditor();
+    if (fallback) {
+      editor = fallback;
+    }
+  }
+
   if (editor && !editor.isTerminalEditor) {
     const fileReference = lineNumber ? `${path}:${lineNumber}` : path;
     debug(
@@ -132,6 +163,64 @@ function getEditorArguments(editor: Editor, path: string, lineNumber?: number): 
       return [path];
   }
 }
+
+async function editorExists(editor: Editor) {
+  const binary = editor.binary;
+  const paths = (process.env.PATH || process.env.Path || '')
+    .split(path.delimiter)
+    .map((target) => target.trim())
+    .filter((target) => !!target);
+  const exts =
+    process.platform === 'win32'
+      ? (process.env.PATHEXT || '.EXE;.CMD;.BAT;.COM').split(path.delimiter).filter(Boolean)
+      : [''];
+  const targets = paths.flatMap((dir) => exts.map((ext) => path.join(dir, `${binary}${ext}`)));
+  for (const target of targets) {
+    try {
+      const mode = process.platform === 'win32' ? fs.constants.F_OK : fs.constants.X_OK;
+      await fs.promises.access(target, mode);
+      return target;
+    } catch {
+      // ignore not found and continue
+    }
+  }
+  return null;
+}
+
+const TERMINAL_EDITORS = [
+  {
+    id: 'vim',
+    name: 'Vim',
+    binary: 'vim',
+    isTerminalEditor: true,
+    paths: [],
+    keywords: ['vi'],
+  },
+  {
+    id: 'neovim',
+    name: 'NeoVim',
+    binary: 'nvim',
+    isTerminalEditor: true,
+    paths: [],
+    keywords: ['vim'],
+  },
+  {
+    id: 'nano',
+    name: 'GNU nano',
+    binary: 'nano',
+    isTerminalEditor: true,
+    paths: [],
+    keywords: [],
+  },
+  {
+    id: 'emacs',
+    name: 'GNU Emacs',
+    binary: 'emacs',
+    isTerminalEditor: true,
+    paths: [],
+    keywords: [],
+  },
+];
 
 const EDITORS = [
   {
@@ -204,22 +293,6 @@ const EDITORS = [
     keywords: [],
   },
   {
-    id: 'vim',
-    name: 'Vim',
-    binary: 'vim',
-    isTerminalEditor: true,
-    paths: [],
-    keywords: ['vi'],
-  },
-  {
-    id: 'neovim',
-    name: 'NeoVim',
-    binary: 'nvim',
-    isTerminalEditor: true,
-    paths: [],
-    keywords: ['vim'],
-  },
-  {
     id: 'intellij',
     name: 'IntelliJ IDEA',
     binary: 'idea',
@@ -228,28 +301,23 @@ const EDITORS = [
     keywords: ['idea', 'java', 'jetbrains', 'ide'],
   },
   {
-    id: 'nano',
-    name: 'GNU nano',
-    binary: 'nano',
-    isTerminalEditor: true,
-    paths: [],
-    keywords: [],
-  },
-  {
-    id: 'emacs',
-    name: 'GNU Emacs',
-    binary: 'emacs',
-    isTerminalEditor: true,
-    paths: [],
-    keywords: [],
-  },
-  {
     id: 'emacsforosx',
     name: 'GNU Emacs for Mac OS X',
     binary: 'Emacs',
     isTerminalEditor: false,
     paths: ['/Applications/Emacs.app/Contents/MacOS/Emacs'],
     keywords: [],
+  },
+  {
+    id: 'xcode',
+    name: 'Xcode',
+    binary: 'xed',
+    isTerminalEditor: false,
+    paths: [
+      '/Applications/Xcode.app/Contents/MacOS/Xcode',
+      '/Applications/Xcode-beta.app/Contents/MacOS/Xcode',
+    ],
+    keywords: ['xed'],
   },
   {
     id: 'android-studio',
@@ -264,15 +332,5 @@ const EDITORS = [
     ],
     keywords: ['studio'],
   },
-  {
-    id: 'xcode',
-    name: 'Xcode',
-    binary: 'xed',
-    isTerminalEditor: false,
-    paths: [
-      '/Applications/Xcode.app/Contents/MacOS/Xcode',
-      '/Applications/Xcode-beta.app/Contents/MacOS/Xcode',
-    ],
-    keywords: ['xed'],
-  },
+  ...TERMINAL_EDITORS,
 ];
