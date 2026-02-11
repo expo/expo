@@ -76,13 +76,19 @@ export async function guessFallbackVisualEditor(): Promise<Editor | null> {
   if (_cachedVisualEditor !== undefined) {
     return _cachedVisualEditor;
   }
-  for (const editor of EDITORS) {
-    if (editor.isTerminalEditor) {
-      continue;
-    }
-    const target = await editorExists(editor);
+  // We search for editors at known `editor.paths`
+  for (const editor of VISUAL_EDITORS) {
+    const target = await editorExistsAtPaths(editor);
     if (target) {
       debug('Found visual editor fallback:', editor.name);
+      return (_cachedVisualEditor = { ...editor, binary: target });
+    }
+  }
+  // We search again for a visual editor against `editor.binary` in `$PATH`
+  for (const editor of VISUAL_EDITORS) {
+    const target = await editorExistsInPath(editor);
+    if (target) {
+      debug('Found visual editor fallback in $PATH:', editor.name);
       return (_cachedVisualEditor = { ...editor, binary: target });
     }
   }
@@ -164,7 +170,8 @@ function getEditorArguments(editor: Editor, path: string, lineNumber?: number): 
   }
 }
 
-async function editorExists(editor: Editor) {
+/** Attempt to resolve an editor against $PATH */
+async function editorExistsInPath(editor: Editor) {
   const binary = editor.binary;
   const paths = (process.env.PATH || process.env.Path || '')
     .split(path.delimiter)
@@ -175,6 +182,22 @@ async function editorExists(editor: Editor) {
       ? (process.env.PATHEXT || '.EXE;.CMD;.BAT;.COM').split(path.delimiter).filter(Boolean)
       : [''];
   const targets = paths.flatMap((dir) => exts.map((ext) => path.join(dir, `${binary}${ext}`)));
+  for (const target of targets) {
+    try {
+      const mode = process.platform === 'win32' ? fs.constants.F_OK : fs.constants.X_OK;
+      await fs.promises.access(target, mode);
+      return target;
+    } catch {
+      // ignore not found and continue
+    }
+  }
+  return null;
+}
+
+/** Attempt to resolve an editor against known `paths` */
+async function editorExistsAtPaths(editor: Editor) {
+  // We can skip the path if it's not for our platform (win32 vs posix paths)
+  const targets = editor.paths.filter((target) => target.includes(path.sep));
   for (const target of targets) {
     try {
       const mode = process.platform === 'win32' ? fs.constants.F_OK : fs.constants.X_OK;
@@ -222,7 +245,7 @@ const TERMINAL_EDITORS = [
   },
 ];
 
-const EDITORS = [
+const VISUAL_EDITORS = [
   {
     id: 'sublime',
     name: 'Sublime Text',
@@ -332,5 +355,6 @@ const EDITORS = [
     ],
     keywords: ['studio'],
   },
-  ...TERMINAL_EDITORS,
 ];
+
+const EDITORS = [...VISUAL_EDITORS, ...TERMINAL_EDITORS];
