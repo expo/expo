@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.printIosConfig = exports.findWorkspace = exports.findScheme = exports.createXcframework = exports.copyHermesXcframework = exports.buildFramework = exports.cleanUpArtifacts = void 0;
+exports.printIosConfig = exports.makeArtifactsDirectory = exports.findWorkspace = exports.findScheme = exports.createXcframework = exports.copyHermesXcframework = exports.buildFramework = exports.cleanUpArtifacts = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -146,6 +146,18 @@ const findWorkspace = () => {
     }
 };
 exports.findWorkspace = findWorkspace;
+const makeArtifactsDirectory = (config) => {
+    try {
+        if (!node_fs_1.default.existsSync(config.artifacts)) {
+            node_fs_1.default.mkdirSync(config.artifacts, { recursive: true });
+        }
+    }
+    catch (error) {
+        const errorMessage = error instanceof Error ? error.message : '';
+        error_1.default.handle('ios-artifacts-directory-unknown-error', errorMessage);
+    }
+};
+exports.makeArtifactsDirectory = makeArtifactsDirectory;
 const printIosConfig = (config) => {
     console.log(chalk_1.default.bold('Resolved build configuration'));
     console.log(` - Build configuration: ${chalk_1.default.blue(config.buildConfiguration)}`);

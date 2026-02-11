@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- remove deprecated JS constants, return `null` as a replacement for deprecated native iOS methods ([#43035](https://github.com/expo/expo/pull/43035) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

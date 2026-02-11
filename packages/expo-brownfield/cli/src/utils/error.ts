@@ -3,6 +3,7 @@ type ErrorType =
   | 'android-directory-not-found'
   | 'android-library-unknown-error'
   | 'android-library-not-found'
+  | 'ios-artifacts-directory-unknown-error'
   | 'ios-directory-not-found'
   | 'ios-directory-unknown-error'
   | 'ios-scheme-not-found'
@@ -17,6 +18,7 @@ class CLIError {
     'android-directory-not-found': 'Cannot find `android` directory in the project',
     'android-library-unknown-error': 'Unknown error occured while finding brownfield library',
     'android-library-not-found': 'Could not find brownfield library in the project',
+    'ios-artifacts-directory-unknown-error': 'Unknown error occured while creating artifacts directory',
     'ios-directory-not-found': 'Cannot find `ios` directory in the project',
     'ios-directory-unknown-error': 'Unknown error occured while finding brownfield iOS scheme',
     'ios-scheme-not-found': 'Could not find brownfield iOS scheme',
