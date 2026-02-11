@@ -255,15 +255,15 @@ export async function exportFromServerAsync(
 
         if (loaderResponse !== undefined) {
           const data = await loaderResponse.json();
-          const contextKeyPath = getContextKey(route.contextKey);
-          const fileSystemPath = `_expo/loaders${contextKeyPath}`;
+          const loaderKey = getContextKey(route.contextKey);
+          const fileSystemPath = `_expo/loaders${loaderKey}`;
           files.set(fileSystemPath, {
             contents: JSON.stringify(data, null, 2),
             targetDomain: 'client',
-            loaderId: contextKeyPath,
+            loaderId: loaderKey,
           });
 
-          renderOpts = { loader: { data, contextKey: contextKeyPath } };
+          renderOpts = { loader: { data, key: loaderKey } };
         }
       }
 

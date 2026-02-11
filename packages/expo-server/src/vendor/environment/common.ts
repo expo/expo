@@ -118,7 +118,7 @@ export function createEnvironment(input: EnvironmentInput) {
             renderOptions = {
               loader: {
                 data: data ?? null,
-                contextKey: resolveLoaderContextKey(route.page, params),
+                key: resolveLoaderContextKey(route.page, params),
               },
             };
           }

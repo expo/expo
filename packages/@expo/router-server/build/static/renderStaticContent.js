@@ -83,7 +83,7 @@ async function getStaticContent(location, options) {
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
-    const loaderKey = options?.loader ? options.loader.contextKey + location.search : null;
+    const loaderKey = options?.loader ? options.loader.key + location.search : null;
     const loadedData = loaderKey
         ? {
             [loaderKey]: options?.loader?.data ?? null,

@@ -92,7 +92,7 @@ function createEnvironment(input) {
                         renderOptions = {
                             loader: {
                                 data: data ?? null,
-                                contextKey: (0, matchers_1.resolveLoaderContextKey)(route.page, params),
+                                key: (0, matchers_1.resolveLoaderContextKey)(route.page, params),
                             },
                         };
                     }

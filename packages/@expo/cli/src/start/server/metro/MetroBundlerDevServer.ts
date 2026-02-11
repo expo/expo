@@ -655,7 +655,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         resolvedLoaderRoute.params
       );
       return await getStaticContent(location, {
-        loader: { data: loaderData, contextKey: resolvedLoaderKey },
+        loader: { data: loaderData, key: resolvedLoaderKey },
       });
     };
 

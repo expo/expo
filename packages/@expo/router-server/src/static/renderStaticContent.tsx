@@ -33,8 +33,8 @@ function resetReactNavigationContexts() {
 export type GetStaticContentOptions = {
   loader?: {
     data?: any;
-    /** Context key for the route */
-    contextKey: string;
+    /** Unique key for the route. Derived from the route's contextKey */
+    key: string;
   };
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
@@ -74,7 +74,7 @@ export async function getStaticContent(
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const loaderKey = options?.loader ? options.loader.contextKey + location.search : null;
+  const loaderKey = options?.loader ? options.loader.key + location.search : null;
 
   const loadedData = loaderKey
     ? {

@@ -104,7 +104,7 @@ export type Route = RouteInfo<RegExp>;
  * @type {import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
  */
 export interface GetStaticContentOptions {
-  loader?: { data?: unknown; contextKey: string };
+  loader?: { data?: unknown; key: string };
   request?: Request;
   assets?: AssetInfo;
 }
