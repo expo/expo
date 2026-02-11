@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `overwrite` option to copy and move methods.
+- Add `overwrite` option to copy and move methods. ([#42979](https://github.com/expo/expo/pull/42979) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
