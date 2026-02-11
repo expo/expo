@@ -1,9 +1,10 @@
-import { ConfigPlugin, createRunOncePlugin, withPlugins } from 'expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin, StaticPlugin, withPlugins } from 'expo/config-plugins';
 
 import { WidgetConfig } from './types/WidgetConfig.type';
 import withAppGroupEntitlements from './withAppGroupEntitlements';
 import withAppInfoPlist from './withAppInfoPlist';
 import withEasConfig from './withEasConfig';
+import withIosWarning from './withIosWarning';
 import withPodsLinking from './withPodsLinking';
 import withPushNotifications from './withPushNotifications';
 import withWidgetSourceFiles from './withWidgetSourceFiles';
@@ -24,13 +25,20 @@ type ExpoWidgetsConfigPluginProps = {
 };
 
 const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) => {
+  let plugins: (StaticPlugin | ConfigPlugin | string)[] = [];
   const deploymentTarget = '16.2';
   const targetName = 'ExpoWidgetsTarget';
 
   let bundleIdentifier = props.bundleIdentifier;
   if (!bundleIdentifier) {
     bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
-    console.log(`No bundleIdentifier provided, fallback to: ${bundleIdentifier}`);
+    plugins.push([
+      withIosWarning,
+      {
+        property: 'bundleIdentifier',
+        warning: `Expo Widgets: No bundle identifier provided, using fallback: ${bundleIdentifier}.`,
+      },
+    ]);
   }
 
   let groupIdentifier = props.groupIdentifier;
@@ -41,7 +49,13 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) 
       );
     }
     groupIdentifier = `group.${config.ios.bundleIdentifier}`;
-    console.log(`No groupIdentifier provided, fallback to: ${groupIdentifier}`);
+    plugins.push([
+      withIosWarning,
+      {
+        property: 'groupIdentifier',
+        warning: `Expo Widgets: No group identifier provided, using fallback: ${groupIdentifier}.`,
+      },
+    ]);
   }
 
   const widgets = props.widgets ?? [];
@@ -54,7 +68,8 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) 
   };
   const getFileUris = () => sharedFiles;
 
-  return withPlugins(config, [
+  plugins = [
+    ...plugins,
     [withEasConfig, { targetName, bundleIdentifier, groupIdentifier }],
     [withPodsLinking, { targetName }],
     [withWidgetSourceFiles, { targetName, widgets, groupIdentifier, onFilesGenerated: setFiles }],
@@ -71,7 +86,9 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) 
         getFileUris,
       },
     ],
-  ]);
+  ];
+
+  return withPlugins(config, plugins);
 };
 
 export default createRunOncePlugin(withWidgets, pkg.name, pkg.version);

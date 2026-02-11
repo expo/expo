@@ -8,7 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- fix: blank widget preview content ([#42857](https://github.com/expo/expo/pull/42857) by [@garygcchiu](https://github.com/garygcchiu)
+- Fix blank widget preview content ([#42857](https://github.com/expo/expo/pull/42857) by [@garygcchiu](https://github.com/garygcchiu))
+- Fix duplicated warnings on start and prebuild.
 
 ### 💡 Others
 
