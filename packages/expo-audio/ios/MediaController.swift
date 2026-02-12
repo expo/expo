@@ -11,6 +11,7 @@ class MediaController {
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
+  private var isLiveStream = false
   
   func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
     if let previous = activePlayer, previous.id != player?.id {
@@ -19,6 +20,7 @@ class MediaController {
 
     activePlayer = player
     player?.isActiveForLockScreen = true
+    isLiveStream = options?.isLiveStream ?? false
 
     DispatchQueue.main.async {
       if let player {
@@ -37,8 +39,15 @@ class MediaController {
     }
     var nowPlayingInfo = nowPlayingInfoCenter.nowPlayingInfo ?? [String: Any]()
 
-    nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
-    nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+    if isLiveStream {
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
+      nowPlayingInfo.removeValue(forKey: MPMediaItemPropertyPlaybackDuration)
+      nowPlayingInfo.removeValue(forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime)
+    } else {
+      nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = false
+      nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = player.duration
+      nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+    }
     nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 1.0
     nowPlayingInfo[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
 
@@ -204,7 +213,7 @@ class MediaController {
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
-    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = true
+    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !(options?.isLiveStream ?? false)
     remoteCommandCenter.skipForwardCommand.isEnabled = options?.showSeekForward ?? false
     remoteCommandCenter.skipBackwardCommand.isEnabled = options?.showSeekBackward ?? false
   }

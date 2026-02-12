@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `isLiveStream` option to `AudioLockScreenOptions` to hide duration and scrub bar for live streams. ([#43088](https://github.com/expo/expo/pull/43088) by [@robrechtme](https://github.com/robrechtme))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
