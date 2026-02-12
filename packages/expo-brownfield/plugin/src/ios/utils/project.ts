@@ -139,7 +139,6 @@ const getCommonBuildSettings = (
     DEBUG_INFORMATION_FORMAT = dwarf;
     DEVELOPMENT_TEAM = ;
     GCC_C_LANGUAGE_STANDARD = gnu11;
-    LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
     MARKETING_VERSION = 1.0;
     MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
     MTL_FAST_MATH = YES;
@@ -152,6 +151,9 @@ const getCommonBuildSettings = (
     TARGETED_DEVICE_FAMILY: `"1,2"`,
     INFOPLIST_FILE: `${targetName}/Info.plist`,
     CURRENT_PROJECT_VERSION: `"${currentProjectVersion}"`,
+    LD_RUNPATH_SEARCH_PATHS:
+      '"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"',
+    DYLIB_INSTALL_NAME_BASE: '"@rpath"',
     // IPHONEOS_DEPLOYMENT_TARGET: `"${deploymentTarget}"`,
     PRODUCT_BUNDLE_IDENTIFIER: `"${bundleIdentifier}"`,
     GENERATE_INFOPLIST_FILE: `"YES"`,
