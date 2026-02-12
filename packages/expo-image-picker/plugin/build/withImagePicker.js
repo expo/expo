@@ -8,7 +8,7 @@ const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
 const withAndroidImagePickerPermissions = (config, { cameraPermission, microphonePermission } = {}) => {
-    if (microphonePermission !== false) {
+    if (microphonePermission !== false && !config.android?.disableImagePickerDefaultPermissions) {
         config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, ['android.permission.RECORD_AUDIO']);
     }
     // If the user manually sets any of the permissions to `false`, then we should block the permissions to ensure no
@@ -55,7 +55,7 @@ const withImagePicker = (config, { photosPermission, cameraPermission, microphon
         NSCameraUsageDescription: cameraPermission,
         NSMicrophoneUsageDescription: microphonePermission,
     });
-    if (microphonePermission !== false) {
+    if (microphonePermission !== false && !config.android?.disableImagePickerDefaultPermissions) {
         config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, ['android.permission.RECORD_AUDIO']);
     }
     // If the user manually sets any of the permissions to `false`, then we should block the permissions to ensure no
