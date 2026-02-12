@@ -222,7 +222,7 @@ The above configuration automatically configures the required native settings:
 
 - <PlatformTags platforms={['android']} /> Adds `FOREGROUND_SERVICE` and
   `FOREGROUND_SERVICE_MEDIA_PLAYBACK` permissions. Also declares a media playback foreground service
-  (`AudioControlsService`) in app's `AndroidManifest.xml`.
+  (`AudioControlsService`) in app's **AndroidManifest.xml**.
 - <PlatformTags platforms={['ios']} /> Adds the `audio` `UIBackgroundMode` capability
 
 #### Usage
@@ -280,12 +280,12 @@ export default function AudioPlayerScreen() {
 
 <PlatformTags platforms={['android']} />
 
-On Android, **lock screen controls are required for sustained background playback**. Without them, audio will automatically pause when the app moves to the background (typically after about 3 minutes due to OS limitations). When lock screen controls are active:
+- > **Note**: On Android, you have to enable the lockscreen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Make sure to also appropriately [configure the config-plugin](#configuration-in-app-config)
 
-- A media notification appears in the notification drawer with playback controls
-- Audio continues playing indefinitely in the background
-- Users can control playback from the lock screen and notification
-- The foreground service keeps the playback alive during playback
+* A media notification appears in the notification drawer with playback controls
+* Audio continues playing indefinitely in the background
+* Users can control playback from the lock screen and notification
+* The foreground service keeps the playback alive during playback
 
 <PlatformTags platforms={['ios']} />
 
