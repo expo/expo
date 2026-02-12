@@ -117,7 +117,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if ([self _isDevModeEnabledForHost:bundleURL]) {
     // Set the bundle url for the packager connection manually
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
-    [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
+    
+    RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
+    if (devSettings == nil) {
+      RCTLogWarn(@"Couldn't find the devSettings module when setting packager port");
+    }
+    [[devSettings packagerConnection] reconnect:packagerServerHostPort];
+    
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
 
     NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
@@ -264,7 +270,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                                     queue:(dispatch_queue_t)queue
                                 forMethod:(NSString *)method
 {
-  return [[RCTPackagerConnection sharedPackagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
+  RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
+  if (devSettings == nil) {
+    RCTLogWarn(@"Couldn't find the devSettings module when setting packager port");
+  }
+  
+  return [[devSettings packagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
 }
 
 #pragma mark - internal

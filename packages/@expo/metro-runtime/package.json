@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "types": "build",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
-  "keywords": [],
+  "keywords": [ ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "files": [
@@ -51,6 +51,6 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.3"
   }
 }
