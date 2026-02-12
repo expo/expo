@@ -40,9 +40,7 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
                       <>
                         <StatusTag status="deprecated" className="!mr-0" />
                         {(property.experimental || property.platform) && (
-                          <span className={mergeClasses(STYLES_SECONDARY)}>
-                            &ensp;&bull;&ensp;
-                          </span>
+                          <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
                         )}
                       </>
                     )}
@@ -50,9 +48,7 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
                       <>
                         <StatusTag status="experimental" className="!mr-0" />
                         {!!property.platform && (
-                          <span className={mergeClasses(STYLES_SECONDARY)}>
-                            &ensp;&bull;&ensp;
-                          </span>
+                          <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
                         )}
                       </>
                     )}
