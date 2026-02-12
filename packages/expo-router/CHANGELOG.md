@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Bump peer dependency to `@testing-library/react-native@^13.2.0` ([#43084](https://github.com/expo/expo/pull/43084) by [@hassankhan](https://github.com/hassankhan))
+
 ## 55.0.0-preview.7 — 2026-02-08
 
 ### 🐛 Bug fixes
