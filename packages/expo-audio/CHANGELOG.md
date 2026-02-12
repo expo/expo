@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Add support for `shouldRouteThroughEarpiece`. ([#43089](https://github.com/expo/expo/pull/43089) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Make it possible to add/remove the foreground service and foreground service permissions with a config plugin.
 
 ### 🐛 Bug fixes
 

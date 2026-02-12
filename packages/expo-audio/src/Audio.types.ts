@@ -496,6 +496,8 @@ export type AudioMode = {
   allowsRecording: boolean;
   /**
    * Whether the audio session stays active when the app moves to the background.
+   *
+   * **Note**: On Android you have to enable the lockscreen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Make sure to also appropriately [configure the config-plugin](#configuration-in-app-config)
    * @default false
    */
   shouldPlayInBackground: boolean;
