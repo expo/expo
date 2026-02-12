@@ -85,7 +85,7 @@
     "@expo/metro-runtime": "^55.0.5",
     "@expo/log-box": "55.0.6",
     "@react-navigation/drawer": "^7.7.2",
-    "@testing-library/react-native": ">= 13.3.0",
+    "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",
     "expo-constants": "^55.0.4",
     "expo-linking": "^55.0.4",
