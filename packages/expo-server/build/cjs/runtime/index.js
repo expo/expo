@@ -76,6 +76,17 @@ function createRequestScope(scopeDefinition, makeRequestAPISetup) {
                 throw error;
             }
         }
+        // Recreate the response with mutable headers, since the original response
+        // may have an immutable headers guard (like from `Response.redirect()`)
+        result = new Response(result.body, {
+            ...result,
+            status: result.status,
+            statusText: result.statusText,
+            headers: result.headers,
+            // Cloudflare-specific response properties
+            cf: result.cf,
+            webSocket: result.webSocket,
+        });
         deferredTasks.forEach((fn) => {
             const maybePromise = fn();
             if (maybePromise != null)
