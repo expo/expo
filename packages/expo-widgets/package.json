@@ -7,11 +7,10 @@
   "scripts": {
     "build": "expo-module build",
     "build:plugin": "expo-module build plugin",
-    "build:bundle": "tsc --build bundle",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "node bundle/build/index.js && expo-module prepare",
+    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
