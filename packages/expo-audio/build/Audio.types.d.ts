@@ -471,7 +471,9 @@ export type AudioMode = {
     shouldPlayInBackground: boolean;
     /**
      * Whether the audio should route through the earpiece.
-     * @platform android
+     * On iOS, this only has an effect when `allowsRecording` is `true` (i.e., the audio session
+     * category is `.playAndRecord`). When `false` (the default), audio is routed through the speaker.
+     * @default false
      */
     shouldRouteThroughEarpiece: boolean;
     /**
