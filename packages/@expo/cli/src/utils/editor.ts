@@ -195,6 +195,7 @@ function getEditorArguments(editor: Editor, path: string, lineNumber?: number): 
 
     case 'vscode':
     case 'vscodium':
+    case 'cursor':
       return lineNumber ? ['-g', `${path}:${lineNumber}`] : ['-g', path];
 
     default:
@@ -305,6 +306,14 @@ const VISUAL_EDITORS: (Editor & { isTerminalEditor: false })[] = [
     binary: 'codium',
     isTerminalEditor: false,
     paths: ['/Applications/VSCodium.app/Contents/Resources/app/bin/codium'],
+    keywords: [],
+  },
+  {
+    id: 'cursor',
+    name: 'Cursor',
+    binary: 'cursor',
+    isTerminalEditor: false,
+    paths: ['/Applications/Cursor.app/Contents/Resources/app/bin/codium'],
     keywords: [],
   },
   {
