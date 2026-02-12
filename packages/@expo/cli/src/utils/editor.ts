@@ -198,6 +198,11 @@ function getEditorArguments(editor: Editor, path: string, lineNumber?: number): 
     case 'cursor':
       return lineNumber ? ['-g', `${path}:${lineNumber}`] : ['-g', path];
 
+    case 'zed':
+      // '-r': Stands for "--reuse" and ensures we don't use the `zed` GUI binary, since the Zed CLI
+      // is linked as `zed` into `$PATH` when it's actually the CLI
+      return lineNumber ? ['-r', `${path}:${lineNumber}`] : ['-r', path];
+
     default:
       return [path];
   }
@@ -350,6 +355,14 @@ const VISUAL_EDITORS: (Editor & { isTerminalEditor: false })[] = [
     isTerminalEditor: false,
     paths: [],
     keywords: ['php'],
+  },
+  {
+    id: 'zed',
+    name: 'Zed',
+    binary: 'zed',
+    isTerminalEditor: false,
+    paths: ['/Applications/Zed.app/Contents/MacOS/cli'],
+    keywords: [],
   },
   {
     id: 'textmate',
