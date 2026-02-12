@@ -6,9 +6,11 @@ import type {
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
+  SetImageOptions,
 } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
+import { flattenPlatformOptions } from './utils/options';
 
 export { EventSubscription as Subscription };
 
@@ -44,7 +46,8 @@ export async function setStringAsync(
   if (!ExpoClipboard.setStringAsync) {
     throw new UnavailabilityError('Clipboard', 'setStringAsync');
   }
-  return ExpoClipboard.setStringAsync(text, options);
+  const flattenedOptions = flattenPlatformOptions(options);
+  return ExpoClipboard.setStringAsync(text, flattenedOptions);
 }
 
 /**
@@ -155,6 +158,7 @@ export async function getImageAsync(options: GetImageOptions): Promise<Clipboard
  * Sets an image in the user's clipboard.
  *
  * @param base64Image Image encoded as a base64 string, without MIME type.
+ * @param options Options for the clipboard content to be set.
  *
  * @example
  * ```tsx
@@ -165,11 +169,15 @@ export async function getImageAsync(options: GetImageOptions): Promise<Clipboard
  * await Clipboard.setImageAsync(result.base64);
  * ```
  */
-export async function setImageAsync(base64Image: string): Promise<void> {
+export async function setImageAsync(
+  base64Image: string,
+  options: SetImageOptions = {}
+): Promise<void> {
   if (!ExpoClipboard.setImageAsync) {
     throw new UnavailabilityError('Clipboard', 'setImageAsync');
   }
-  return ExpoClipboard.setImageAsync(base64Image);
+  const flattenedOptions = flattenPlatformOptions(options);
+  return ExpoClipboard.setImageAsync(base64Image, flattenedOptions);
 }
 
 /**
