@@ -160,7 +160,6 @@ export const nonLinkableTypes = [
   'UnknownOutputParams',
   'UploadProgressData',
   'UseFontHook',
-  'VectorIconProps',
   'WritingOptions',
 ];
 
@@ -361,4 +360,5 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
 
 export const packageLinks: Record<string, string> = {
   'expo-manifests': 'manifests',
+  'expo-router': 'router',
 };
