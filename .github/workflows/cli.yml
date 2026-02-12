@@ -162,10 +162,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: 🪟 Pin hermes-compiler for Windows
+        # hermes-compiler v1+ doesn't ship Windows binaries, pin to 0.14.1 which does
+        shell: bash
+        run: node -e "const p=require('./package.json'); p.resolutions['hermes-compiler']='0.14.1'; require('fs').writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n')"
+
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
         # NOTE(@kitten): --ignore-engines is needed due to Node 18 being required (see above)
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000 --ignore-engines
+        run: yarn install --prefer-offline --network-timeout 1000000 --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 

@@ -18,8 +18,12 @@ class DevMenuPackagerConnectionHandler {
     self.swizzleRCTDevMenuShow()
 
     let devSettings = self.manager?.currentBridge?.module(forName: "DevSettings") as? RCTDevSettings
+// TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
+#if !os(macOS)
     let packagerConnection = devSettings?.packagerConnection
-
+#else
+    let packagerConnection: RCTPackagerConnection? = RCTPackagerConnection.shared()
+#endif
     packagerConnection?.addNotificationHandler(
       self.sendDevCommandNotificationHandler,
       queue: DispatchQueue.main,
