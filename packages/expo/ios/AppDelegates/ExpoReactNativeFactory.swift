@@ -119,7 +119,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
         initialProperties: initialProps,
         launchOptions: launchOptions ?? [:],
         bundleConfiguration: RCTBundleConfiguration.default(),
-        devMenuConfiguration: self.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
+        devMenuConfiguration: self.devMenuConfiguration
       )
 #else
       rootView = factory.superView(
