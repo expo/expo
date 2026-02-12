@@ -1,5 +1,5 @@
 import SwiftUI
-import minimaltesterbrownfield
+import expoappbrownfield
 
 struct ContentView: View {
     var body: some View {
