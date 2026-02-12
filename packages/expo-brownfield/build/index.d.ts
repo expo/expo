@@ -57,4 +57,5 @@ export declare function removeAllMessageListeners(): void;
  * @returns The number of active message listeners.
  */
 export declare function getMessageListenerCount(): number;
+export declare function useSharedState<T extends Record<string, any> = Record<string, any>>(key: string): [T, (value: T) => void];
 //# sourceMappingURL=index.d.ts.map

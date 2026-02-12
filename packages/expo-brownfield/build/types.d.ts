@@ -9,4 +9,12 @@ export declare class ExpoBrownfieldModuleSpec extends NativeModule<ExpoBrownfiel
     setNativeBackEnabled(enabled: boolean): void;
     sendMessage(message: Record<string, any>): void;
 }
+export type StateChangeEvent = Record<string, any>;
+export type ExpoBrownfieldStateModuleEvents = {
+    onStateChange: (event: StateChangeEvent) => void;
+};
+export declare class ExpoBrownfieldStateModuleSpec extends NativeModule<ExpoBrownfieldStateModuleEvents> {
+    get<T extends Record<string, any>>(key: string): T;
+    set<T extends Record<string, any>>(key: string, value: T): T;
+}
 //# sourceMappingURL=types.d.ts.map

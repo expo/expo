@@ -7,6 +7,7 @@ import host.exp.exponent.brownfield.BrownfieldActivity
 import host.exp.exponent.brownfield.showReactNativeFragment
 import expo.modules.brownfield.BrownfieldMessage
 import expo.modules.brownfield.BrownfieldMessaging
+import expo.modules.brownfield.BrownfieldState
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import java.util.Timer
 import kotlin.concurrent.timerTask
@@ -28,6 +29,11 @@ class ReactNativeActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler 
                 showToast(message)
             }
         startMessageTimer()
+
+        BrownfieldState.subscribe("counter") { state ->
+            print("State changed")
+            Toast.makeText(this, "Count: (${state["count"]})", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onDestroy() {
@@ -41,6 +47,7 @@ class ReactNativeActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler 
         // Schedule: delay 0ms, repeat every 5000ms (5 seconds)
         messageTimer?.schedule(timerTask {
             sendMessage()
+            setTime()
         }, 0, 2500)
     }
 
@@ -69,6 +76,12 @@ class ReactNativeActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler 
             "array" to listOf("ab", 'c', false, 1, 2.45)
         )
         BrownfieldMessaging.sendMessage(nativeMessage)
+    }
+
+    private fun setTime() {
+        val timeString = java.time.LocalDateTime.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
+        BrownfieldState.set("time", mapOf("time" to timeString))
     }
 
     override fun invokeDefaultOnBackPressed() {

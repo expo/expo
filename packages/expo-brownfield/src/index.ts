@@ -1,6 +1,8 @@
 import type { EventSubscription } from 'expo-modules-core';
+import { useEffect, useState } from 'react';
 
 import ExpoBrownfieldModule from './ExpoBrownfieldModule';
+import ExpoBrownfieldStateModule from './ExpoBrownfieldStateModule';
 import type { Listener, MessageEvent } from './types';
 
 export { EventSubscription };
@@ -80,4 +82,30 @@ export function removeAllMessageListeners(): void {
  */
 export function getMessageListenerCount(): number {
   return ExpoBrownfieldModule.listenerCount('onMessage');
+}
+
+// TODO(pmleczek): Separate if we go with this
+export function useSharedState<T extends Record<string, any> = Record<string, any>>(
+  key: string
+): [T, (value: T) => void] {
+  const [currentValue, setCurrentValue] = useState<T>(ExpoBrownfieldStateModule.get<T>(key));
+
+  useEffect(() => {
+    const subscription = ExpoBrownfieldStateModule.addListener('onStateChange', (changed) => {
+      // TODO(pmleczek): Better comparison?
+      if (JSON.stringify(changed) === JSON.stringify(currentValue)) {
+        return;
+      }
+
+      setCurrentValue(changed as T);
+    });
+
+    return () => subscription.remove();
+  }, [key]);
+
+  const setValue = (value: T) => {
+    setCurrentValue(ExpoBrownfieldStateModule.set<T>(key, value));
+  };
+
+  return [currentValue, setValue];
 }

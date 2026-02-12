@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import ExpoBrownfieldModule from './ExpoBrownfieldModule';
+import ExpoBrownfieldStateModule from './ExpoBrownfieldStateModule';
 /**
  * Navigates back to the native part of the app, dismissing the React Native view.
  *
@@ -67,5 +69,23 @@ export function removeAllMessageListeners() {
  */
 export function getMessageListenerCount() {
     return ExpoBrownfieldModule.listenerCount('onMessage');
+}
+// TODO(pmleczek): Separate if we go with this
+export function useSharedState(key) {
+    const [currentValue, setCurrentValue] = useState(ExpoBrownfieldStateModule.get(key));
+    useEffect(() => {
+        const subscription = ExpoBrownfieldStateModule.addListener('onStateChange', (changed) => {
+            // TODO(pmleczek): Better comparison?
+            if (JSON.stringify(changed) === JSON.stringify(currentValue)) {
+                return;
+            }
+            setCurrentValue(changed);
+        });
+        return () => subscription.remove();
+    }, [key]);
+    const setValue = (value) => {
+        setCurrentValue(ExpoBrownfieldStateModule.set(key, value));
+    };
+    return [currentValue, setValue];
 }
 //# sourceMappingURL=index.js.map
