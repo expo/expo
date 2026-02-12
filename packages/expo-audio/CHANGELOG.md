@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add support for `shouldRouteThroughEarpiece`.
+- [iOS] Add support for `shouldRouteThroughEarpiece`. ([#43089](https://github.com/expo/expo/pull/43089) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
