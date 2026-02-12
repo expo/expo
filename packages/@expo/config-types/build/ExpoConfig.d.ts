@@ -628,10 +628,6 @@ export interface Android {
      */
     blockedPermissions?: string[];
     /**
-     * If this option is set to true, then expo-image-picker won't automatically add permissions to `AndroidManifest.xml`.
-     */
-    disableImagePickerDefaultPermissions?: boolean;
-    /**
      * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `google-services.json` file for configuring Firebase. Including this key automatically enables FCM in your standalone app.
      */
     googleServicesFile?: string;

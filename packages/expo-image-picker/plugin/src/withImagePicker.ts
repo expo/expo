@@ -37,7 +37,7 @@ export const withAndroidImagePickerPermissions: ConfigPlugin<Props | void> = (
   config,
   { cameraPermission, microphonePermission } = {}
 ) => {
-  if (microphonePermission !== false && !config.android?.disableImagePickerDefaultPermissions) {
+  if (microphonePermission !== false) {
     config = AndroidConfig.Permissions.withPermissions(config, ['android.permission.RECORD_AUDIO']);
   }
 
@@ -101,7 +101,7 @@ const withImagePicker: ConfigPlugin<Props | void> = (
     NSMicrophoneUsageDescription: microphonePermission,
   });
 
-  if (microphonePermission !== false && !config.android?.disableImagePickerDefaultPermissions) {
+  if (microphonePermission !== false) {
     config = AndroidConfig.Permissions.withPermissions(config, ['android.permission.RECORD_AUDIO']);
   }
 
