@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Added missing export of `clipboardEventName` on Web. ([#42610](https://github.com/expo/expo/pull/42610) by [@Bram-dc](https://github.com/Bram-dc))
+
 ### 💡 Others
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.4 — 2026-02-03
 

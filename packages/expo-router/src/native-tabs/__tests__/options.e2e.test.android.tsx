@@ -137,10 +137,8 @@ it('when no options are passed, default ones are used', () => {
 });
 
 describe('Icons', () => {
-  let initialConsoleWarn: typeof console.warn;
   let consoleWarnMock: jest.Mock;
   beforeEach(() => {
-    initialConsoleWarn = console.warn;
     consoleWarnMock = jest.fn();
     console.warn = consoleWarnMock;
   });
@@ -294,7 +292,7 @@ describe('Icons', () => {
   ] as (DrawableIcon &
     SrcIcon &
     SFSymbolIcon & {
-      expectedIcon: TabsScreenProps['icon']['android'];
+      expectedIcon: NonNullable<TabsScreenProps['icon']>['android'];
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
     ({ sf, src, drawable, expectedIcon }) => {
@@ -371,7 +369,7 @@ describe('Icons', () => {
     },
   ] as (MaterialIcon &
     DrawableIcon & {
-      expectedIcon: TabsScreenProps['icon']['android'];
+      expectedIcon: NonNullable<TabsScreenProps['icon']>['android'];
       numberOfRenders: number;
     })[])(
     'For <Icon md="$md" drawable="$drawable">, icon will be $expectedIcon during first render and tabs will render $numberOfRenders time(s)',
@@ -814,7 +812,7 @@ describe('Tab options', () => {
       // Type assertion to satisfy TypeScript
       if (!isValidElement(children)) throw new Error();
       expect(children.type).toBe(SafeAreaView);
-      expect(Object.keys(children.props)).toContain('edges');
+      expect(Object.keys(children.props as Record<string, unknown>)).toContain('edges');
       expect((children.props as ComponentProps<typeof SafeAreaView>).edges).toStrictEqual({
         bottom: true,
       });

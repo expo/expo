@@ -99,6 +99,7 @@ export type Route = RouteInfo<RegExp>;
 export interface GetStaticContentOptions {
     loader?: {
         data?: unknown;
+        key: string;
     };
     request?: Request;
     assets?: AssetInfo;

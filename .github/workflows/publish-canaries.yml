@@ -37,7 +37,6 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧶 Install modules in tools dir
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'

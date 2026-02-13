@@ -26,7 +26,7 @@ import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/mid
 import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
-import { setNodeEnv } from '../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
@@ -68,7 +68,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   }
 
   setNodeEnv(options.dev ? 'development' : 'production');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
   // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.

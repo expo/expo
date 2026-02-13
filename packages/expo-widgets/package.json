@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "55.0.0-alpha.5",
+  "version": "55.0.0-alpha.6",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -31,8 +31,10 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
   "dependencies": {
+    "@expo/config-plugins": "~55.0.4",
+    "@expo/config-types": "^55.0.4",
     "@expo/plist": "^0.5.2",
-    "@expo/ui": "55.0.0-preview.4"
+    "@expo/ui": "55.0.0-preview.5"
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2"

@@ -33,7 +33,7 @@ function getExpoDependencyChunks({
   includeSplashScreen: boolean;
 }) {
   return [
-    ['@expo/config-types', '@expo/env', '@expo/json-file'],
+    ['@expo/config-types', '@expo/env', '@expo/json-file', '@expo/require-utils'],
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['@expo/plist'],

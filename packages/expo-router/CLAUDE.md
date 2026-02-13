@@ -122,6 +122,12 @@ yarn test
 yarn test src/__tests__/navigation.test.ios.tsx
 ```
 
+To verify if the types used in tests are correct, run:
+
+```bash
+yarn test:types
+```
+
 ### Testing Patterns
 
 Tests use the custom `renderRouter` testing utility:
@@ -260,7 +266,8 @@ After developing a feature, run these commands in `packages/expo-router`:
 
 1. `CI=1 yarn test` - Run all tests. During development use `yarn test [test file]` for efficiency. For RSC tests: `yarn test:rsc`
 2. `yarn build` - Build and verify TypeScript correctness. If you moved or deleted files, run `yarn clean` first.
-3. `yarn lint` - Run last to find linting issues
+3. `yarn test:types` - Verify type correctness in tests
+4. `yarn lint` - Run last to find linting issues
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
 

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
+
 ### 💡 Others
 
 ## 55.0.5 — 2026-02-03

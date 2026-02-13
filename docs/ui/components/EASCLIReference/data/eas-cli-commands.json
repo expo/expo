@@ -1,15 +1,15 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-01-30T20:04:13.501Z",
-    "cliVersion": "16.32.0"
+    "fetchedAt": "2026-02-12T11:55:31.163Z",
+    "cliVersion": "18.0.1"
   },
   "totalCommands": 102,
   "commands": [
     {
       "command": "eas account:login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas account:login [-s]\n\nFLAGS\n  -s, --sso  Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
+      "usage": "USAGE\n  $ eas account:login [-s] [-b]\n\nFLAGS\n  -b, --browser  Login with your browser\n  -s, --sso      Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
     },
     {
       "command": "eas account:logout",
@@ -314,7 +314,7 @@
     {
       "command": "eas login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas login [-s]\n\nFLAGS\n  -s, --sso  Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
+      "usage": "USAGE\n  $ eas login [-s] [-b]\n\nFLAGS\n  -b, --browser  Login with your browser\n  -s, --sso      Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
     },
     {
       "command": "eas logout",

@@ -16,6 +16,18 @@ export default function VideoPlaybackControlsScreen() {
   const [playbackRateIndex, setPlaybackRateIndex] = React.useState(2);
   const [preservePitch, setPreservePitch] = React.useState(true);
   const [volume, setVolume] = React.useState(1);
+  const [requiresLinearPlayback, setRequiresLinearPlayback] = React.useState(false);
+
+  const [useDefaultControls, setUseDefaultControls] = React.useState(true);
+  const [showNext, setShowNext] = React.useState(true);
+  const [showPrevious, setShowPrevious] = React.useState(true);
+  const [showSeekForward, setShowSeekForward] = React.useState(true);
+  const [showSeekBackward, setShowSeekBackward] = React.useState(true);
+  const [showSubtitles, setShowSubtitles] = React.useState<boolean | null>(null);
+  const [showSettings, setShowSettings] = React.useState(true);
+  const [showPlayPause, setShowPlayPause] = React.useState(true);
+  const [showFullscreen, setShowFullscreen] = React.useState(true);
+  const [showBottomBar, setShowBottomBar] = React.useState(true);
 
   const player = useVideoPlayer(bigBuckBunnySource, (player) => {
     player.volume = volume;
@@ -56,7 +68,29 @@ export default function VideoPlaybackControlsScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      <VideoView style={styles.video} player={player} nativeControls={false} />
+      <VideoView
+        style={styles.video}
+        player={player}
+        nativeControls
+        requiresLinearPlayback={requiresLinearPlayback}
+        fullscreenOptions={{
+          enable: showFullscreen,
+        }}
+        buttonOptions={
+          useDefaultControls
+            ? undefined
+            : {
+                showNext,
+                showPrevious,
+                showSeekForward,
+                showSeekBackward,
+                showSubtitles,
+                showSettings,
+                showPlayPause,
+                showBottomBar,
+              }
+        }
+      />
       <ScrollView style={styles.controlsContainer}>
         <Button style={styles.button} title="Toggle" onPress={togglePlayer} />
         <Button style={styles.button} title="Seek by 10 seconds" onPress={seekBy} />
@@ -99,6 +133,114 @@ export default function VideoPlaybackControlsScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
+        <View style={styles.row}>
+          <TitledSwitch
+            title="Show Fullscreen"
+            value={showFullscreen}
+            setValue={setShowFullscreen}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+          <TitledSwitch
+            title="Linear Playback"
+            value={requiresLinearPlayback}
+            setValue={setRequiresLinearPlayback}
+            style={styles.switch}
+            titleStyle={styles.switchTitle}
+          />
+        </View>
+        {Platform.OS === 'android' && (
+          <>
+            <Text style={{ marginTop: 16, marginBottom: 8, fontWeight: 'bold' }}>
+              Button Options (Android only):
+            </Text>
+            <View style={styles.row}>
+              <TitledSwitch
+                title="Use Default Controls"
+                value={useDefaultControls}
+                setValue={setUseDefaultControls}
+                style={styles.switch}
+                titleStyle={styles.switchTitle}
+              />
+            </View>
+            {!useDefaultControls && (
+              <>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Next"
+                    value={showNext}
+                    setValue={setShowNext}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                  <TitledSwitch
+                    title="Show Previous"
+                    value={showPrevious}
+                    setValue={setShowPrevious}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Seek Forward"
+                    value={showSeekForward}
+                    setValue={setShowSeekForward}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                  <TitledSwitch
+                    title="Show Seek Backward"
+                    value={showSeekBackward}
+                    setValue={setShowSeekBackward}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Settings"
+                    value={showSettings}
+                    setValue={setShowSettings}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                  <TitledSwitch
+                    title="Show Play/Pause"
+                    value={showPlayPause}
+                    setValue={setShowPlayPause}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <TitledSwitch
+                    title="Show Bottom Bar"
+                    value={showBottomBar}
+                    setValue={setShowBottomBar}
+                    style={styles.switch}
+                    titleStyle={styles.switchTitle}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <Button
+                    style={styles.button}
+                    title={`Subtitle Button: ${showSubtitles === null ? 'Auto (when available)' : showSubtitles ? 'Always Visible' : 'Never Visible'}`}
+                    onPress={() => {
+                      if (showSubtitles === null) {
+                        setShowSubtitles(true);
+                      } else if (showSubtitles) {
+                        setShowSubtitles(false);
+                      } else {
+                        setShowSubtitles(null);
+                      }
+                    }}
+                  />
+                </View>
+              </>
+            )}
+          </>
+        )}
         {Platform.OS === 'ios' && (
           <View style={[styles.row, { alignItems: 'center', justifyContent: 'center' }]}>
             <Text style={styles.mediumText}>Share video screen:</Text>

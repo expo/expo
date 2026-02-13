@@ -20,6 +20,7 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   let node: [String: Any]
   let source: String
   let kind: WidgetsKind
+  let entryIndex: Int?
 
   let uuid = NodeIdentityWrapper(id: UUID())
   public var id: ObjectIdentifier {
@@ -30,50 +31,50 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
     self.source = source
     self.kind = kind
     self.node = node
+    self.entryIndex = nil
+  }
+
+  public init(source: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?) {
+    self.source = source
+    self.kind = kind
+    self.node = node
+    self.entryIndex = entryIndex
   }
 
   @ViewBuilder
   public var body: some View {
     switch node["type"] as? String {
-    case "Text":
-      render(TextView.self, TextViewProps.self) { props in
-        if let rawProps = node["props"] as? [String: Any] {
-          if let children = rawProps["children"] as? String {
-            props.text = children
-          } else if let childrenArray = rawProps["children"] as? [String] {
-            props.text = childrenArray.joined(separator: "")
-          }
-        }
-      }
-    case "HStack":
+    case "TextView":
+      render(TextView.self, TextViewProps.self, updateProps: updateChildren)
+    case "HStackView":
       render(HStackView.self, HStackViewProps.self, updateProps: updateChildren)
-    case "VStack":
+    case "VStackView":
       render(VStackView.self, VStackViewProps.self, updateProps: updateChildren)
-    case "ZStack":
+    case "ZStackView":
       render(ZStackView.self, ZStackViewProps.self, updateProps: updateChildren)
-    case "Rectangle":
+    case "RectangleView":
       render(RectangleView.self, RectangleViewProps.self)
-    case "RoundedRectangle":
+    case "RoundedRectangleView":
       render(RoundedRectangleView.self, RoundedRectangleViewProps.self)
-    case "Capsule":
+    case "CapsuleView":
       render(CapsuleView.self, CapsuleViewProps.self)
-    case "Circle":
+    case "CircleView":
       render(CircleView.self, CircleViewProps.self)
-    case "Image":
+    case "ImageView":
       render(ImageView.self, ImageViewProps.self)
-    case "Divider":
+    case "DividerView":
       render(DividerView.self, DividerProps.self)
-    case "Ellipse":
+    case "EllipseView":
       render(EllipseView.self, EllipseViewProps.self)
-    case "Label":
+    case "LabelView":
       render(LabelView.self, LabelViewProps.self)
-    case "Progress":
+    case "ProgressView":
       render(ProgressView.self, ProgressViewProps.self)
-    case "Spacer":
+    case "SpacerView":
       render(SpacerView.self, SpacerViewProps.self)
-    case "UnevenRoundedRectangle":
+    case "UnevenRoundedRectangleView":
       render(UnevenRoundedRectangleView.self, UnevenRoundedRectangleViewProps.self)
-    case "Gauge":
+    case "GaugeView":
       render(GaugeView.self, GaugeProps.self)
     case "Button":
       if #available(iOS 17.0, *) {
@@ -81,6 +82,7 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         case .widget:
           render(WidgetButtonView.self, ButtonProps.self) { buttonProps in
             buttonProps.source = source
+            buttonProps.entryIndex = entryIndex
           }
         case .liveActivity:
           render(LiveActivityButtonView.self, ButtonProps.self) { buttonProps in
@@ -125,9 +127,9 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [[String: Any]] {
-        initialProps.children = children.map { WidgetsDynamicView(source: source, kind: kind, node: $0) }
+        initialProps.children = children.map { WidgetsDynamicView(source: source, kind: kind, node: $0, entryIndex: entryIndex) }
       } else if let child = props["children"] as? [String: Any] {
-        initialProps.children = [WidgetsDynamicView(source: source, kind: kind, node: child)]
+        initialProps.children = [WidgetsDynamicView(source: source, kind: kind, node: child, entryIndex: entryIndex)]
       }
     }
   }

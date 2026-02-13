@@ -85,7 +85,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
 
         ForEach(props.polylines) { polyline in
-          MapPolyline(coordinates: polyline.clLocationCoordinates2D)
+          MapPolyline(
+            coordinates: polyline.clLocationCoordinates2D,
+            contourStyle: polyline.contourStyle.toContourStyle()
+          )
             .stroke(polyline.color, lineWidth: polyline.width)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
@@ -176,7 +179,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                   "id": hit.id,
                   "color": hit.color,
                   "width": hit.width,
-                  "contourStyle": hit.contourStyle,
+                  "contourStyle": hit.contourStyle.rawValue,
                   "coordinates": coords
                 ])
               }
@@ -278,7 +281,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     let threshold = props.properties.polylineTapThreshold
 
     return props.polylines.first { line in
-      let pts = line.clLocationCoordinates2D.map(MKMapPoint.init)
+      let pts = line.hitTestCoordinates.map(MKMapPoint.init)
 
       var minDist = CLLocationDistance.greatestFiniteMagnitude
       for (a, b) in zip(pts, pts.dropFirst()) {

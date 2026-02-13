@@ -6,8 +6,12 @@ import {
   convertStackToolbarMenuPropsToRNHeaderItem,
   convertStackToolbarMenuActionPropsToRNHeaderItem,
 } from '../toolbar/StackToolbarMenu';
-import { ToolbarPlacementContext } from '../toolbar/context';
-import { StackToolbarLabel, StackToolbarBadge } from '../toolbar/toolbar-primitives';
+import { ToolbarPlacementContext, type ToolbarPlacement } from '../toolbar/context';
+import {
+  StackToolbarIcon,
+  StackToolbarLabel,
+  StackToolbarBadge,
+} from '../toolbar/toolbar-primitives';
 
 jest.mock('../../../link/preview/native', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -166,12 +170,11 @@ describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
     expect(result.disabled).toBe(disabled);
   });
 
-  it('sets subtitle prop', () => {
-    // TODO(@ubax): investigate why subtitle is missing in types
+  it('sets description prop', () => {
     const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
       subtitle: 'Additional info',
     });
-    expect(result.subtitle).toBe('Additional info');
+    expect(result.description).toBe('Additional info');
   });
 
   it('sets discoverabilityLabel prop', () => {
@@ -426,6 +429,21 @@ describe('submenu conversion', () => {
       );
     });
 
+    it('warns for xcasset icons in submenu', () => {
+      convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu">
+            <StackToolbarIcon xcasset="custom-icon" />
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
+      );
+    });
+
     it('accepts SF Symbol icons in submenu', () => {
       const result = convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
@@ -450,7 +468,8 @@ describe('StackToolbarMenu component', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
       expect(() => {
         render(
-          <ToolbarPlacementContext.Provider value={placement as any}>
+          // Intentionally passing invalid placement as well
+          <ToolbarPlacementContext.Provider value={placement as ToolbarPlacement}>
             <StackToolbarMenu icon="ellipsis.circle">
               <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
             </StackToolbarMenu>
@@ -486,6 +505,82 @@ describe('StackToolbarMenu component', () => {
     expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
       expect.objectContaining({
         icon: 'ellipsis.circle',
+      }),
+      undefined
+    );
+  });
+
+  it('passes xcassetName from StackToolbarIcon xcasset child', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu>
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        icon: undefined,
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as template for xcasset menu when tintColor is set', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'template',
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as original for xcasset menu without tintColor', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu>
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
+      }),
+      undefined
+    );
+  });
+
+  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu iconRenderingMode="template" tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
       }),
       undefined
     );
@@ -578,7 +673,8 @@ describe('StackToolbarMenuAction component', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
       expect(() => {
         render(
-          <ToolbarPlacementContext.Provider value={placement as any}>
+          // Intentionally passing invalid placement as well
+          <ToolbarPlacementContext.Provider value={placement as ToolbarPlacement}>
             <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
           </ToolbarPlacementContext.Provider>
         );
