@@ -50,18 +50,20 @@ class AudioControlsService : MediaSessionService() {
   private val notificationId: Int
     get() = currentPlayer?.hashCode() ?: CHANNEL_ID.hashCode()
 
-  private lateinit var weakContext: WeakReference<AppContext>
-  var appContext: AppContext
-    get() = weakContext.get() ?: throw Exceptions.AppContextLost()
+  private var weakContext: WeakReference<AppContext>? = null
+  var appContext: AppContext?
+    get() = weakContext?.get()
     set(value) {
-      weakContext = WeakReference(value)
+      weakContext = value?.let { WeakReference(it) }
     }
 
   var playbackListener: Player.Listener? = null
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     val currentPlayerRef = currentPlayer?.ref ?: return super.onStartCommand(intent, flags, startId)
-    appContext.mainQueue.launch {
+    val context = appContext ?: return super.onStartCommand(intent, flags, startId)
+
+    context.mainQueue.launch {
       when (intent?.action) {
         ACTION_PLAY -> currentPlayerRef.play()
         ACTION_PAUSE -> currentPlayerRef.pause()
@@ -186,7 +188,7 @@ class AudioControlsService : MediaSessionService() {
           startForeground(notificationId, notification)
         }
       } catch (e: Exception) {
-        appContext.jsLogger?.error(
+        appContext?.jsLogger?.error(
           getPlaybackServiceErrorMessage("Failed to start the expo-audio foreground service for lock screen controls"),
           e
         )
@@ -205,7 +207,7 @@ class AudioControlsService : MediaSessionService() {
     metadata: Metadata? = null,
     options: AudioLockScreenOptions? = null
   ) {
-    appContext.mainQueue.launch {
+    appContext?.mainQueue?.launch {
       val playbackListener = playbackListener ?: return@launch
       currentPlayer?.ref?.removeListener(playbackListener)
     }
@@ -229,8 +231,8 @@ class AudioControlsService : MediaSessionService() {
     if (player != null) {
       mediaSession?.release()
 
-      appContext.mainQueue.launch {
-        val context = appContext.reactContext ?: return@launch
+      appContext?.mainQueue?.launch {
+        val context = appContext?.reactContext ?: return@launch
         val session = MediaSession.Builder(context, player.ref)
           .setCallback(AudioMediaSessionCallback())
           .build()
@@ -385,7 +387,7 @@ class AudioControlsService : MediaSessionService() {
   }
 
   private fun removePlayerListener() {
-    appContext.mainQueue.launch {
+    appContext?.mainQueue?.launch {
       val listener = playbackListener ?: return@launch
       currentPlayer?.ref?.removeListener(listener)
       playbackListener = null

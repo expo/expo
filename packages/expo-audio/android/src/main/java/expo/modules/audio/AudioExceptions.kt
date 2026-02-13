@@ -14,6 +14,12 @@ private const val defaultRecordingServiceTip =
 internal class AudioPermissionsException :
   CodedException("RECORD_AUDIO permission has not been granted")
 
+internal class NotificationPermissionsException :
+  CodedException(
+    "POST_NOTIFICATIONS permission has not been granted. This permission is required when using background recording (allowsBackgroundRecording: true). " +
+      "Request notification permissions using AudioModule.requestNotificationPermissionsAsync() before calling prepareRecording()."
+  )
+
 internal class GetAudioInputNotSupportedException :
   CodedException("Getting current audio input is not supported on devices running Android version lower than Android 9.0")
 

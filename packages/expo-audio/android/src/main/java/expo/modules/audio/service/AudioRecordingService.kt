@@ -29,11 +29,11 @@ class AudioRecordingService : Service() {
   @Volatile
   private var isRunningForeground = false
 
-  private lateinit var weakContext: WeakReference<AppContext>
-  var appContext: AppContext
-    get() = weakContext.get() ?: throw Exceptions.AppContextLost()
+  private var weakContext: WeakReference<AppContext>? = null
+  var appContext: AppContext?
+    get() = weakContext?.get()
     set(value) {
-      weakContext = WeakReference(value)
+      weakContext = value?.let { WeakReference(it) }
     }
 
   override fun onCreate() {
@@ -129,7 +129,7 @@ class AudioRecordingService : Service() {
       }
       isRunningForeground = true
     } catch (e: Exception) {
-      appContext.jsLogger?.error(
+      appContext?.jsLogger?.error(
         getRecordingServiceErrorMessage("Failed to start the expo-audio foreground service for background recording"),
         e
       )

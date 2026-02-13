@@ -86,6 +86,11 @@ class AudioRecorder(
     if (recorder != null || isPrepared || isRecording || isPaused) {
       throw AudioRecorderAlreadyPreparedException()
     }
+
+    if (useForegroundService && !hasNotificationPermissions()) {
+      throw NotificationPermissionsException()
+    }
+    
     val recordingOptions = options ?: this.options
     val mediaRecorder = createRecorder(recordingOptions)
     recorder = mediaRecorder
@@ -413,6 +418,14 @@ class AudioRecorder(
 
   private fun hasRecordingPermissions() =
     ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
+  private fun hasNotificationPermissions(): Boolean {
+    // POST_NOTIFICATIONS permission is only required on Android 13+ (API 33+)
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      return true
+    }
+    return ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+  }
 
   fun getAvailableInputs(audioManager: AudioManager) =
     audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->

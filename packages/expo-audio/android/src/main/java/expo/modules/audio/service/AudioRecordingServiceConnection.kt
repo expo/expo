@@ -115,6 +115,24 @@ class AudioRecordingServiceConnection(
     super.onServiceDisconnected(componentName)
   }
 
+  override fun onBindingDied(name: ComponentName?) {
+    cancelBindingTimeout()
+    bindingContinuation?.resumeWithException(
+      AudioRecordingServiceException("Service binding died")
+    )
+    bindingContinuation = null
+    super.onBindingDied(name)
+  }
+
+  override fun onNullBinding(componentName: ComponentName) {
+    cancelBindingTimeout()
+    bindingContinuation?.resumeWithException(
+      AudioRecordingServiceException("Service returned null binding")
+    )
+    bindingContinuation = null
+    super.onNullBinding(componentName)
+  }
+
   override fun onServiceDied() {
     cancelBindingTimeout()
     recordingServiceBinder = null
