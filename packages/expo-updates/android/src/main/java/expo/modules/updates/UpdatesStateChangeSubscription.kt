@@ -8,7 +8,7 @@ class DisabledUpdatesStateChangeSubscription : UpdatesStateChangeSubscription {
 
 class EnabledUpdatesStateChangeSubscription(val subscriptionId: String) : UpdatesStateChangeSubscription {
   override fun remove() {
-    val updatesController: EnabledUpdatesController? = UpdatesController.instance as EnabledUpdatesController
+    val updatesController: EnabledUpdatesController? = UpdatesController.instance as? EnabledUpdatesController
     updatesController?.unsubscribeFromUpdatesStateChanges(subscriptionId)
   }
 }

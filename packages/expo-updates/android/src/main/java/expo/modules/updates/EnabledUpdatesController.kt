@@ -324,7 +324,7 @@ class EnabledUpdatesController(
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 
-  // UpdatesEnabledInterface implementations
+  // UpdatesInterface implementations
 
   override val runtimeVersion: String?
     get() = updatesConfiguration.runtimeVersionRaw
