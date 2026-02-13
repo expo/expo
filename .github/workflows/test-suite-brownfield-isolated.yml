@@ -91,6 +91,11 @@ jobs:
           npx expo prebuild --clean -p android
           npx expo-brownfield build:android --repo MavenLocal --verbose
         working-directory: apps/brownfield-tester/expo-app
+      - name: 🏗️ Build APK
+        run: |
+          ./gradlew clean
+          ./gradlew assembleRelease --refresh-dependencies
+        working-directory: apps/brownfield-tester/android-integrated
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -101,7 +106,7 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            cd apps/brownfield-tester/android-integrated && ./gradlew clean && ./gradlew installRelease --refresh-dependencies
+            adb install -r apps/brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
             cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
