@@ -9,8 +9,7 @@ struct SliderView: ExpoSwiftUI.View {
 
   init(props: SliderProps) {
     self.props = props
-    var initialValue = props.value ?? 0.0
-    _value = State(initialValue: initialValue)
+    _value = State(initialValue: props.value ?? 0.0)
   }
 
   var body: some View {
