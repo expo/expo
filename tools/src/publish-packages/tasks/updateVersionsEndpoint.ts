@@ -10,13 +10,6 @@ import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan, green, yellow } = chalk;
 
-function normalizeSdkVersion(input: string): string {
-  if (/^\d+$/.test(input)) {
-    return `${input}.0.0`;
-  }
-  return input;
-}
-
 /**
  * Updates the versions endpoint with the published expo package version.
  * This runs after packages are published and prompts to update the `expoVersion`
@@ -44,7 +37,7 @@ export const updateVersionsEndpoint = new Task<TaskArgs>(
 
     const expoVersionValue = `~${publishedVersion}`;
     const versions = await Versions.getVersionsAsync();
-    const sdkVersions = Object.keys(versions.sdkVersions).sort(semver.rcompare);
+    const sdkVersions = Versions.getSortedSdkVersionKeys(versions);
     const recentSdks = sdkVersions.slice(0, 3);
 
     logger.info(`\n📡 Expo package published: ${green(publishedVersion)}`);
@@ -78,7 +71,7 @@ export const updateVersionsEndpoint = new Task<TaskArgs>(
           name: 'customSdk',
           message: 'Enter SDK version:',
           validate: (input) => {
-            const normalized = normalizeSdkVersion(input.trim());
+            const normalized = Versions.normalizeSdkVersion(input.trim());
             if (!semver.valid(normalized)) {
               return 'Please enter a valid SDK version (e.g., 54 or 54.0.0)';
             }
@@ -86,7 +79,7 @@ export const updateVersionsEndpoint = new Task<TaskArgs>(
           },
         },
       ]);
-      targetSdkVersion = normalizeSdkVersion(customSdk.trim());
+      targetSdkVersion = Versions.normalizeSdkVersion(customSdk.trim());
     }
 
     logger.info(
