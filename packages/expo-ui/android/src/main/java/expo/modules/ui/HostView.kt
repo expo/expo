@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package expo.modules.ui
 
 import android.annotation.SuppressLint
@@ -12,7 +14,8 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -103,7 +106,7 @@ internal class HostView(context: Context, appContext: AppContext) :
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
     CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
-      MaterialTheme(colorScheme = colorScheme) {
+      MaterialExpressiveTheme(colorScheme = colorScheme) {
         MaybeMatchContentsLayout {
           Children(this@Content)
         }
