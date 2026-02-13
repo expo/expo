@@ -16,6 +16,7 @@
 - [web] Fix route URL detection in `useLoaderData` ([#42912](https://github.com/expo/expo/pull/42912) by [@hassankhan](https://github.com/hassankhan))
 - [web] Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
 - [ios] fix immediate navigation when opening Link.Preview ([#43071](https://github.com/expo/expo/pull/43071) by [@Ubax](https://github.com/Ubax))
+- [ios] fix link preview background color ([#43120](https://github.com/expo/expo/pull/43120) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
