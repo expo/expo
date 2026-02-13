@@ -57,6 +57,7 @@ class AudioModule : Module() {
   private var focusAcquired = false
   private var interruptionMode: InterruptionMode? = null
   private var allowsBackgroundRecording = false
+  private var playsInSilentMode = true
 
   private var audioFocusRequest: AudioFocusRequest? = null
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
@@ -184,6 +185,7 @@ class AudioModule : Module() {
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
       shouldPlayInBackground = mode.shouldPlayInBackground
       interruptionMode = mode.interruptionMode
+      playsInSilentMode = mode.playsInSilentMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
       allowsBackgroundRecording = mode.allowsBackgroundRecording
 
@@ -389,6 +391,9 @@ class AudioModule : Module() {
       Function("play") { player: AudioPlayer ->
         if (!audioEnabled) {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+          return@Function
+        }
+        if (!playsInSilentMode && audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
           return@Function
         }
         runOnMain {

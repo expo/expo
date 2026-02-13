@@ -464,8 +464,9 @@ export type RecordingOptionsAndroid = {
 export type AudioMode = {
   /**
    * Determines if audio playback is allowed when the device is in silent mode.
+   * On Android, when `false`, playback is suppressed when the ringer mode is silent or vibrate.
    *
-   * @platform ios
+   * @default true
    */
   playsInSilentMode: boolean;
   /**

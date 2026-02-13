@@ -16,7 +16,8 @@ class AudioMode(
   @Field val shouldPlayInBackground: Boolean = false,
   @Field val shouldRouteThroughEarpiece: Boolean?,
   @Field val interruptionMode: InterruptionMode?,
-  @Field val allowsBackgroundRecording: Boolean = false
+  @Field val allowsBackgroundRecording: Boolean = false,
+  @Field val playsInSilentMode: Boolean = true
 ) : Record
 
 // Data class because we want `equals`
