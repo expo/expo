@@ -180,7 +180,8 @@ const getCustomMaestroFlowsAsync = async (
 
   const yamlFiles = await Array.fromAsync(fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore }));
 
-  if (platform === 'ios') {
+  if (platform === 'ios' && process.env.CI) {
+    // when running locally, we assume the app can open without confirmation
     yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
   }
 

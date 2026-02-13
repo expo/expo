@@ -23,7 +23,7 @@ export const seekOptimizedSource: VideoSource = {
 
 const bigBuckBunnySource: VideoSource = {
   // backup at https://github.com/vonovak/expo-video-tests/releases/tag/v0
-  uri: 'https://dn721905.ca.archive.org/0/items/big-buck-bunny-1440p-60-fps-vp-8/Big%20Buck%20Bunny%20360p%2030FPS.mp4',
+  uri: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4',
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',

@@ -1,3 +1,4 @@
+import { useEvent } from 'expo';
 import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
@@ -28,6 +29,10 @@ export default function VideoChangePlayerOutputScreen() {
     { ref: player, viewIndex: 0 },
     { ref: player2, viewIndex: 1 },
   ]);
+  const { status: status1 } = useEvent(player, 'statusChange', { status: player.status });
+  const { status: status2 } = useEvent(player2, 'statusChange', { status: player2.status });
+  const bothReady = status1 === 'readyToPlay' && status2 === 'readyToPlay';
+
   const [viewPlayers, setViewPlayers] = useState([player, player2, null, null]);
 
   const advancePlayer = useCallback(
@@ -90,6 +95,11 @@ export default function VideoChangePlayerOutputScreen() {
         style={screenStyles.switch}
         titleStyle={styles.switchTitle}
       />
+      {bothReady ? (
+        <Text testID="players-ready">Players ready</Text>
+      ) : (
+        <Text>Players not yet ready</Text>
+      )}
       <Button
         id="e2e-prepare"
         title="Prepare for e2e"
