@@ -76,7 +76,14 @@ class UpdatesStateMachine(
       is UpdatesStateEvent.CheckError -> mapOf("type" to "checkError", "errorMessage" to event.error.message)
       is UpdatesStateEvent.DownloadError -> mapOf("type" to "downloadError", "errorMessage" to event.error.message)
       is UpdatesStateEvent.DownloadProgress -> mapOf("type" to "downloadProgress", "progress" to event.progress)
-      else -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.Check -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.CheckCompleteUnavailable -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.Download -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.DownloadComplete -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.DownloadCompleteWithRollback -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.Restart -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.StartStartup -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.EndStartup -> mapOf("type" to event.type.type)
     }
   }
 

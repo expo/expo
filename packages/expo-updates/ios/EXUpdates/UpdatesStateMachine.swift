@@ -100,7 +100,21 @@ internal enum UpdatesStateEvent {
       return ["type": "downloadError", "errorMessage": errorMessage]
     case .downloadProgress(progress: let progress):
       return ["type": "downloadProgress", "progress": progress]
-    default:
+    case .check:
+      fallthrough
+    case .checkCompleteUnavailable:
+      fallthrough
+    case .download:
+      fallthrough
+    case .downloadComplete:
+      fallthrough
+    case .downloadCompleteWithRollback:
+      fallthrough
+    case .restart:
+      fallthrough
+    case .startStartup:
+      fallthrough
+    case .endStartup:
       return ["type": "\(type)"]
     }
   }
