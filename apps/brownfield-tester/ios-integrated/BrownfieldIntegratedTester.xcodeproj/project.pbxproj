@@ -42,18 +42,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		877C6FAF2F3F6F1F00C3B2B7 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		C0AD19E82F180368005A1DBD = {
 			isa = PBXGroup;
 			children = (
 				C0AD19F32F180368005A1DBD /* BrownfieldIntegratedTester */,
-				877C6FAF2F3F6F1F00C3B2B7 /* Frameworks */,
 				C0AD19F22F180368005A1DBD /* Products */,
 			);
 			sourceTree = "<group>";
