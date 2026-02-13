@@ -22,7 +22,8 @@ export const seekOptimizedSource: VideoSource = {
 };
 
 const bigBuckBunnySource: VideoSource = {
-  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  // backup at https://github.com/vonovak/expo-video-tests/releases/tag/v0
+  uri: 'https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v',
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
@@ -32,7 +33,8 @@ const bigBuckBunnySource: VideoSource = {
 };
 
 const elephantsDreamSource: VideoSource = {
-  uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  // backup at https://github.com/vonovak/expo-video-tests/releases/tag/v0
+  uri: 'https://archive.org/download/ElephantsDream/ed_1024.mp4',
   metadata: {
     title: 'Elephants Dream',
     artist: 'Blender Foundation',
