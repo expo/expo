@@ -4,8 +4,11 @@ appId: dev.expo.BrownfieldIntegratedTester
 
 - tapOn:
     id: apis-tab
-- assertVisible: Communication
-- assertVisible: Navigation API
+
+- assertVisible:
+    id: apis-communication
+- assertVisible:
+    id: apis-navigation
 
 - tapOn:
     id: apis-navigation
@@ -15,13 +18,21 @@ appId: dev.expo.BrownfieldIntegratedTester
 - assertVisible:
     id: navigation-disable-native-back
 
-- back
+- swipe:
+    direction: RIGHT
+- swipe:
+    direction: RIGHT
+
 - assertVisible:
     id: openReactNativeButton
 
 - tapOn:
     id: openReactNativeButton
-- assertVisible: Navigation
+- assertVisible: Expo + Brownfield = 🖤
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
 - assertVisible:
     id: navigation-pop-to-native
 
@@ -29,5 +40,7 @@ appId: dev.expo.BrownfieldIntegratedTester
     id: header-back-button
 - tapOn:
     id: header-back-button
-- assertVisible: Communication
-- assertVisible: Navigation API
+- assertVisible:
+    id: apis-communication
+- assertVisible:
+    id: apis-navigation
