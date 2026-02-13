@@ -17,7 +17,7 @@
 ### 💡 Others
 
 - [Android] Improve event handling. ([#43121](https://github.com/expo/expo/pull/43121) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Rework native audio service handling.
+- [Android] Rework native audio service handling. ([#43015](https://github.com/expo/expo/pull/43015) by [@behenate](https://github.com/behenate))
 
 ## 55.0.5 — 2026-02-08
 
