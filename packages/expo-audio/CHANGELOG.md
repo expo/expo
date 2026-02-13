@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+[android] Add support for playsInSilentMode ([#43117](https://github.com/expo/expo/pull/43117) by [@blazejkustra](https://github.com/blazejkustra))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
