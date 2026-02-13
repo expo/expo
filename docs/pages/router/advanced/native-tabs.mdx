@@ -359,13 +359,11 @@ Pass a string with the asset name to use the same icon for both default and sele
 ```tsx app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
-const { Icon } = NativeTabs.Trigger;
-
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon xcasset="home-icon" />
+        <NativeTabs.Trigger.Icon xcasset="home-icon" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -377,13 +375,16 @@ To use different icons for default and selected states, pass an object:
 ```tsx app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
-const { Icon } = NativeTabs.Trigger;
-
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon xcasset={{ default: 'home-outline', selected: 'home-filled' }} />
+        <NativeTabs.Trigger.Icon
+          xcasset={{
+            default: 'home-outline',
+            selected: 'home-filled',
+          }}
+        />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
