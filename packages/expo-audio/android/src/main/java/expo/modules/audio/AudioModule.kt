@@ -100,6 +100,9 @@ class AudioModule : Module() {
 
         AudioManager.AUDIOFOCUS_GAIN -> {
           focusAcquired = true
+          if (!shouldPlayInSilentMode()) {
+            return@OnAudioFocusChangeListener
+          }
           players.values.forEach { player ->
             player.setVolume(player.previousVolume)
             if (player.isPaused) {
@@ -114,6 +117,10 @@ class AudioModule : Module() {
 
   private fun shouldReleaseFocus(): Boolean {
     return players.values.none { it.ref.isPlaying }
+  }
+
+  private fun shouldPlayInSilentMode(): Boolean {
+    return playsInSilentMode || audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL
   }
 
   private fun requestAudioFocus() {
@@ -237,6 +244,9 @@ class AudioModule : Module() {
 
     OnActivityEntersForeground {
       if (!shouldPlayInBackground) {
+        if (!shouldPlayInSilentMode()) {
+          return@OnActivityEntersForeground
+        }
         val hasPlayersToResume = players.values.any { it.isPaused }
         if (hasPlayersToResume) {
           requestAudioFocus()
@@ -393,7 +403,7 @@ class AudioModule : Module() {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
-        if (!playsInSilentMode && audioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+        if (!shouldPlayInSilentMode()) {
           return@Function
         }
         runOnMain {
@@ -418,6 +428,9 @@ class AudioModule : Module() {
             mediaSource?.let {
               player.setMediaSource(it)
               if (wasPlaying) {
+                if (!shouldPlayInSilentMode()) {
+                  return@Function
+                }
                 if (!focusAcquired) {
                   requestAudioFocus()
                 }
