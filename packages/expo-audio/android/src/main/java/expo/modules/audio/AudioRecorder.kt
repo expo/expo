@@ -90,7 +90,7 @@ class AudioRecorder(
     if (useForegroundService && !hasNotificationPermissions()) {
       throw NotificationPermissionsException()
     }
-    
+
     val recordingOptions = options ?: this.options
     val mediaRecorder = createRecorder(recordingOptions)
     recorder = mediaRecorder

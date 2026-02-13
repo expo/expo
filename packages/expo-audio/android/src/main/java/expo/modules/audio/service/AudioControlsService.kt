@@ -26,7 +26,6 @@ import expo.modules.audio.AudioPlayer
 import expo.modules.audio.Metadata
 import expo.modules.audio.getPlaybackServiceErrorMessage
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

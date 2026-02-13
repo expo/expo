@@ -15,7 +15,6 @@ import androidx.core.app.NotificationCompat
 import expo.modules.audio.AudioRecorder
 import expo.modules.audio.getRecordingServiceErrorMessage
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import java.lang.ref.WeakReference
 
 private const val TAG = "AudioRecordingService"
