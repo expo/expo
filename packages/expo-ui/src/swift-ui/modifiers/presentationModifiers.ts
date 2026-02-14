@@ -32,11 +32,12 @@ export const presentationDetents = (
 ): ModifierConfig => {
   const params = { detents, selection: options?.selection };
 
-  if (options?.onSelectionChange) {
+  const { onSelectionChange } = options ?? {};
+  if (onSelectionChange) {
     return createModifierWithEventListener(
       'presentationDetents',
       (args: { detent: PresentationDetent }) => {
-        options.onSelectionChange!(args.detent);
+        onSelectionChange(args.detent);
       },
       params
     );
