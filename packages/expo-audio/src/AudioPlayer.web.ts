@@ -8,8 +8,11 @@ import {
 import { AudioLockScreenOptions } from './AudioConstants';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE } from './AudioEventKeys';
 import { AudioPlayer, AudioEvents } from './AudioModule.types';
+import { isAudioActive } from './AudioModule.web';
 import { getAudioContext, getSourceUri, getStatusFromMedia, nextId } from './AudioUtils.web';
 import { mediaSessionController } from './MediaSessionController.web';
+
+export const activePlayers = new Set<AudioPlayerWeb>();
 
 export class AudioPlayerWeb
   extends globalThis.expo.SharedObject<AudioEvents>
@@ -22,6 +25,7 @@ export class AudioPlayerWeb
     this.interval = Math.max(updateInterval, 1);
     this.crossOrigin = crossOrigin;
     this.media = this._createMediaElement();
+    activePlayers.add(this);
   }
 
   id: number = nextId();
@@ -98,6 +102,9 @@ export class AudioPlayerWeb
   }
 
   play(): void {
+    if (!isAudioActive) {
+      return;
+    }
     this.media.play();
     this.isPlaying = true;
     this.startSampling();
@@ -251,7 +258,7 @@ export class AudioPlayerWeb
     this.media.pause();
     this.media.removeAttribute('src');
     this.media.load();
-    getStatusFromMedia(this.media, this.id);
+    activePlayers.delete(this);
   }
 
   setActiveForLockScreen(

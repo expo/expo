@@ -1,6 +1,7 @@
 import { AudioMetadata, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectionQuality } from './Audio.types';
 import { AudioLockScreenOptions } from './AudioConstants';
 import { AudioPlayer, AudioEvents } from './AudioModule.types';
+export declare const activePlayers: Set<AudioPlayerWeb>;
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
     constructor(source: AudioSource, options?: AudioPlayerOptions);
     id: number;

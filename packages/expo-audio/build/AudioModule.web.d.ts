@@ -2,6 +2,7 @@ import { PermissionResponse } from 'expo-modules-core';
 import { AudioMode } from './Audio.types';
 export { AudioPlayerWeb } from './AudioPlayer.web';
 export { AudioRecorderWeb } from './AudioRecorder.web';
+export declare let isAudioActive: boolean;
 export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;
 export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
 export declare function getRecordingPermissionsAsync(): Promise<PermissionResponse>;

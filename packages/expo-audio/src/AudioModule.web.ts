@@ -1,10 +1,13 @@
 import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 import { AudioMode } from './Audio.types';
+import { activePlayers } from './AudioPlayer.web';
 import { getUserMedia } from './AudioUtils.web';
 
 export { AudioPlayerWeb } from './AudioPlayer.web';
 export { AudioRecorderWeb } from './AudioRecorder.web';
+
+export let isAudioActive = true;
 
 async function getPermissionWithQueryAsync(
   name: PermissionNameWithAdditionalValues
@@ -28,7 +31,16 @@ async function getPermissionWithQueryAsync(
 }
 
 export async function setAudioModeAsync(mode: AudioMode) {}
-export async function setIsAudioActiveAsync(active: boolean) {}
+export async function setIsAudioActiveAsync(active: boolean) {
+  isAudioActive = active;
+  if (!active) {
+    for (const player of activePlayers) {
+      if (player.playing) {
+        player.pause();
+      }
+    }
+  }
+}
 
 export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
   const maybeStatus = await getPermissionWithQueryAsync('microphone');
