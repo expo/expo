@@ -63,18 +63,10 @@ static SEL whenInUseAuthorizationSelector;
     }
   }
   
-  NSString *accuracy = @"full";
-  if (@available(iOS 14, *)) {
-    CLLocationManager *manager = [[CLLocationManager alloc] init];
-    if (manager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy) {
-      accuracy = @"reduced";
-    }
-  }
-
   return @{
            @"status": @(status),
            @"scope": scope,
-           @"accuracy": accuracy
+           @"accuracy": [self accuracyAuthorizationString]
            };
 }
 

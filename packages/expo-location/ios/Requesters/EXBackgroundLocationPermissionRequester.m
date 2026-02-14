@@ -151,15 +151,7 @@ static SEL alwaysAuthorizationSelector;
     }
   }
   
-  NSString *accuracy = @"full";
-  if (@available(iOS 14, *)) {
-    CLLocationManager *manager = [[CLLocationManager alloc] init];
-    if (manager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy) {
-      accuracy = @"reduced";
-    }
-  }
-
-  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none"), @"accuracy": accuracy };
+  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none"), @"accuracy": [self accuracyAuthorizationString] };
 }
 
 @end

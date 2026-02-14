@@ -450,7 +450,7 @@ export type PermissionDetailsLocationIOS = {
      * "Precise Location" in Settings.
      * @platform ios 14+
      */
-    accuracy: 'full' | 'reduced';
+    accuracy?: 'full' | 'reduced';
 };
 export type PermissionDetailsLocationAndroid = {
     /**

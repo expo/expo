@@ -54,14 +54,7 @@ static SEL whenInUseAuthorizationSelector;
     }
   }
   NSString *scope = @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none");
-
-  NSString *accuracy = @"full";
-  if (@available(iOS 14, *)) {
-    CLLocationManager *manager = [[CLLocationManager alloc] init];
-    if (manager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy) {
-      accuracy = @"reduced";
-    }
-  }
+  NSString *accuracy = [self accuracyAuthorizationString];
 
   return @{ @"status": @(status),
             @"ios": @{
