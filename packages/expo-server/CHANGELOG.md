@@ -10,6 +10,7 @@
 
 - Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
 - Fix `setResponseHeaders()` failing on responses with immutable headers ([#43111](https://github.com/expo/expo/pull/43111) by [@hassankhan](https://github.com/hassankhan))
+- Fix `origin()` to properly default to `null` and use `request.url` in development ([#43143](https://github.com/expo/expo/pull/43143) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
