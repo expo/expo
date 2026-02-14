@@ -78,7 +78,7 @@ export function createWorkerdRequestScope<Env = unknown>(
 ) {
   const makeRequestAPISetup = (request: Request, _env: Env, ctx: ExecutionContext) => ({
     requestHeaders: request.headers,
-    origin: request.headers.get('Origin') || 'null',
+    origin: request.headers.get('Origin') || null,
     environment: params.environment ?? null,
     waitUntil: ctx.waitUntil?.bind(ctx),
   });

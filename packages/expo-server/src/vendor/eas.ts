@@ -22,7 +22,7 @@ export function createRequestHandler<Env = unknown>(
   setup?: RequestHandlerParams
 ): RequestHandler<Env> {
   const makeRequestAPISetup = (request: Request, _env: Env, ctx: ExecutionContext) => ({
-    origin: request.headers.get('Origin') || 'null',
+    origin: request.headers.get('Origin') || null,
     environment: request.headers.get('eas-environment') || null,
     waitUntil: ctx.waitUntil?.bind(ctx),
   });
