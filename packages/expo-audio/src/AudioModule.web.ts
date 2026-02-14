@@ -487,6 +487,10 @@ export class AudioRecorderWeb
   private mediaRecorderUptimeOfLastStartResume = 0;
   private mediaRecorderIsRecording = false;
   private timeoutIds: number[] = [];
+  private cachedInputs: RecordingInput[] = [];
+  private selectedDeviceId: string | null = null;
+  private stream: MediaStream | null = null;
+  private handleDeviceChange: (() => void) | null = null;
 
   get isRecording(): boolean {
     return this.mediaRecorder?.state === 'recording';
@@ -526,15 +530,23 @@ export class AudioRecorderWeb
   }
 
   getAvailableInputs(): RecordingInput[] {
-    return [];
+    return this.cachedInputs;
   }
 
   getCurrentInput(): Promise<RecordingInput> {
-    return Promise.resolve({
-      type: 'Default',
-      name: 'Default',
-      uid: 'Default',
-    });
+    const deviceId =
+      this.selectedDeviceId ?? this.stream?.getAudioTracks()[0]?.getSettings().deviceId;
+    const matched = this.cachedInputs.find((input) => input.uid === deviceId);
+    if (matched) {
+      return Promise.resolve(matched);
+    }
+    return Promise.resolve(
+      this.cachedInputs[0] ?? {
+        type: 'Default',
+        name: 'Default',
+        uid: 'Default',
+      }
+    );
   }
 
   async prepareToRecordAsync(): Promise<void> {
@@ -566,7 +578,12 @@ export class AudioRecorderWeb
     this.record({ forDuration: seconds });
   }
 
-  setInput(input: string): void {}
+  setInput(input: string): void {
+    if (!this.cachedInputs.some((cached) => cached.uid === input)) {
+      throw new Error(`No audio input device found for uid: ${input}`);
+    }
+    this.selectedDeviceId = input;
+  }
 
   startRecordingAtTime(seconds: number): void {
     this.record({ atTime: seconds });
@@ -614,7 +631,18 @@ export class AudioRecorderWeb
     this.mediaRecorderUptimeOfLastStartResume = 0;
     this.currentTime = 0;
 
-    const stream = await getUserMedia({ audio: true });
+    const audioConstraints = this.selectedDeviceId
+      ? { deviceId: { exact: this.selectedDeviceId } }
+      : true;
+    const stream = await getUserMedia({ audio: audioConstraints });
+    this.stream = stream;
+
+    await this.updateCachedInputs();
+
+    this.handleDeviceChange = () => {
+      this.updateCachedInputs();
+    };
+    navigator.mediaDevices.addEventListener('devicechange', this.handleDeviceChange);
 
     const defaults = RecordingPresets.HIGH_QUALITY.web;
     const mediaRecorderOptions: MediaRecorderOptions = {};
@@ -653,12 +681,29 @@ export class AudioRecorderWeb
     mediaRecorder?.addEventListener('stop', () => {
       this.currentTime = 0;
       this.mediaRecorderIsRecording = false;
+      this.stream = null;
+
+      if (this.handleDeviceChange) {
+        navigator.mediaDevices?.removeEventListener('devicechange', this.handleDeviceChange);
+        this.handleDeviceChange = null;
+      }
 
       // Clears recording icon in Chrome tab
       stream.getTracks().forEach((track) => track.stop());
     });
 
     return mediaRecorder;
+  }
+
+  private async updateCachedInputs() {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    this.cachedInputs = devices
+      .filter((device) => device.kind === 'audioinput')
+      .map((device) => ({
+        uid: device.deviceId,
+        name: device.label || 'Unknown Device',
+        type: device.deviceId === 'default' ? 'Default' : 'Unknown',
+      }));
   }
 
   private getAudioRecorderDurationMillis() {

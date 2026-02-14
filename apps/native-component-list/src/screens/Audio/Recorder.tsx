@@ -233,7 +233,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
           {_formatTime(recorderState.durationMillis / 1000)}
         </Text>
       </View>
-      <AudioInputSelector recorder={audioRecorder} />
+      <AudioInputSelector recorder={audioRecorder} canRecord={recorderState.canRecord} />
       {maybeRenderErrorOverlay()}
     </View>
   );
