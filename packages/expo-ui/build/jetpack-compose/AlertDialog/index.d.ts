@@ -36,6 +36,21 @@ export type AlertDialogProps = {
      */
     dismissButtonColors?: AlertDialogButtonColors;
     /**
+     * Background color of the dialog container.
+     * @platform android
+     */
+    containerColor?: ColorValue;
+    /**
+     * Color of the title text.
+     * @platform android
+     */
+    titleColor?: ColorValue;
+    /**
+     * Color of the body text.
+     * @platform android
+     */
+    textColor?: ColorValue;
+    /**
      * Whether the alert dialog is visible.
      *
      * @default false

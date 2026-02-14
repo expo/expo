@@ -34,10 +34,11 @@ class ExpoUIModule : Module() {
     //region Expo UI views
 
     ExpoUIView("BottomSheetView", events = {
-      Events("onIsOpenedChange")
+      Events("onIsOpenedChange", "onSelectedDetentChange")
     }) { props: BottomSheetProps ->
       val onIsOpenedChange by remember { EventDispatcher<IsOpenedChangeEvent>() }
-      BottomSheetContent(props) { onIsOpenedChange(it) }
+      val onSelectedDetentChange by remember { EventDispatcher<SelectedDetentChangeEvent>() }
+      BottomSheetContent(props, { onIsOpenedChange(it) }, { onSelectedDetentChange(it) })
     }
 
     // Defines a single view for now – a single choice segmented control
