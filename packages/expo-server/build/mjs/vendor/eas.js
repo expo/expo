@@ -9,7 +9,7 @@ const STORE = new AsyncLocalStorage();
  */
 export function createRequestHandler(params, setup) {
     const makeRequestAPISetup = (request, _env, ctx) => ({
-        origin: request.headers.get('Origin') || 'null',
+        origin: request.headers.get('Origin') || null,
         environment: request.headers.get('eas-environment') || null,
         waitUntil: ctx.waitUntil?.bind(ctx),
     });

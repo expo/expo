@@ -14,7 +14,7 @@ const STORE = new node_async_hooks_1.AsyncLocalStorage();
  */
 function createRequestHandler(params, setup) {
     const makeRequestAPISetup = (request, _env, ctx) => ({
-        origin: request.headers.get('Origin') || 'null',
+        origin: request.headers.get('Origin') || null,
         environment: request.headers.get('eas-environment') || null,
         waitUntil: ctx.waitUntil?.bind(ctx),
     });
