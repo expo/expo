@@ -379,6 +379,10 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     selectedDeviceId = null;
     stream = null;
     handleDeviceChange = null;
+    analyser = null;
+    analyserBuffer = null;
+    analyserSource = null;
+    meteringEnabled = false;
     get isRecording() {
         return this.mediaRecorder?.state === 'recording';
     }
@@ -425,13 +429,17 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         return this.setup();
     }
     getStatus() {
-        return {
+        const status = {
             canRecord: this.mediaRecorder?.state === 'recording' || this.mediaRecorder?.state === 'inactive',
             isRecording: this.mediaRecorder?.state === 'recording',
             durationMillis: this.getAudioRecorderDurationMillis(),
             mediaServicesDidReset: false,
             url: this.uri,
         };
+        if (this.meteringEnabled && this.mediaRecorderIsRecording) {
+            status.metering = this.getMeteringLevel();
+        }
+        return status;
     }
     pause() {
         if (this.mediaRecorder === null) {
@@ -488,6 +496,18 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             this.updateCachedInputs();
         };
         navigator.mediaDevices.addEventListener('devicechange', this.handleDeviceChange);
+        if (options.isMeteringEnabled) {
+            const ctx = getAudioContext();
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+            this.analyserSource = ctx.createMediaStreamSource(stream);
+            this.analyser = ctx.createAnalyser();
+            this.analyser.fftSize = 2048;
+            this.analyserSource.connect(this.analyser);
+            this.analyserBuffer = new Float32Array(this.analyser.frequencyBinCount);
+            this.meteringEnabled = true;
+        }
         const defaults = RecordingPresets.HIGH_QUALITY.web;
         const mediaRecorderOptions = {};
         const mimeType = options.mimeType ?? defaults.mimeType;
@@ -521,6 +541,15 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             this.currentTime = 0;
             this.mediaRecorderIsRecording = false;
             this.stream = null;
+            if (this.analyserSource) {
+                this.analyserSource.disconnect();
+                this.analyserSource = null;
+            }
+            if (this.analyser) {
+                this.analyser.disconnect();
+                this.analyser = null;
+                this.analyserBuffer = null;
+            }
             if (this.handleDeviceChange) {
                 navigator.mediaDevices?.removeEventListener('devicechange', this.handleDeviceChange);
                 this.handleDeviceChange = null;
@@ -539,6 +568,23 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
             name: device.label || 'Unknown Device',
             type: device.deviceId === 'default' ? 'Default' : 'Unknown',
         }));
+    }
+    // Compute the metering level in dBFS using the same RMS-to-decibel formula as
+    // native (20 * log10(rms)). -160 represents silence / no signal.
+    getMeteringLevel() {
+        if (!this.analyser || !this.analyserBuffer) {
+            return -160;
+        }
+        this.analyser.getFloatTimeDomainData(this.analyserBuffer);
+        let sumSquares = 0;
+        for (let i = 0; i < this.analyserBuffer.length; i++) {
+            sumSquares += this.analyserBuffer[i] * this.analyserBuffer[i];
+        }
+        const rms = Math.sqrt(sumSquares / this.analyserBuffer.length);
+        if (rms === 0) {
+            return -160;
+        }
+        return 20 * Math.log10(rms);
     }
     getAudioRecorderDurationMillis() {
         let duration = this.currentTime;
