@@ -4,6 +4,7 @@ jsEngine: graaljs
 - openLink: bareexpo://components/video/video-view-surface-type
 
 - tapOn: "e2e setup"
+- assertVisible: "Players ready"
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:

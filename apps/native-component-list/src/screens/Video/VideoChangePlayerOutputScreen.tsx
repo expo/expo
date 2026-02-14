@@ -22,6 +22,7 @@ export default function VideoChangePlayerOutputScreen() {
   // this by displaying the video in the last `VideoView` to use it.
   const [useIncorrectReplace, setUseIncorrectReplace] = useState(false);
   const [nativeControls, setNativeControls] = useState(true);
+  const [e2eSetupDone, setE2eSetupDone] = useState(false);
 
   const player = useVideoPlayer(bigBuckBunnySource, playerFactory);
   const player2 = useVideoPlayer(elephantsDreamSource, playerFactory);
@@ -95,11 +96,6 @@ export default function VideoChangePlayerOutputScreen() {
         style={screenStyles.switch}
         titleStyle={styles.switchTitle}
       />
-      {bothReady ? (
-        <Text testID="players-ready">Players ready</Text>
-      ) : (
-        <Text>Players not yet ready</Text>
-      )}
       <Button
         id="e2e-prepare"
         title="Prepare for e2e"
@@ -109,8 +105,10 @@ export default function VideoChangePlayerOutputScreen() {
           player2.pause();
           player.currentTime = 10;
           player2.currentTime = 10;
+          setE2eSetupDone(true);
         }}
       />
+      {e2eSetupDone && bothReady && <Text>Players ready</Text>}
     </View>
   );
 }
