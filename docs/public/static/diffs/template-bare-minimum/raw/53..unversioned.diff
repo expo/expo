@@ -1,15 +1,3 @@
-diff --git a/templates/expo-template-bare-minimum/.npmignore b/templates/expo-template-bare-minimum/.npmignore
-index a12b9e9eeb2..c5366ea9a59 100644
---- a/templates/expo-template-bare-minimum/.npmignore
-+++ b/templates/expo-template-bare-minimum/.npmignore
-@@ -7,6 +7,7 @@
- .expo
- .npmignore
- .vscode
-+.cursor
- package-lock.json
- yarn.lock
- yarn-error.log
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
 index 34b96c71c33..fc185e53bc3 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
@@ -457,15 +445,15 @@ index 29503ff0cc1..03484edf156 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 870e8456316..4067929d5a2 100644
+index 911f7ee9a53..01e53f014e3 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "53.0.40",
-+  "version": "55.0.4",
+-  "version": "53.0.41",
++  "version": "55.0.8",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -473,15 +461,15 @@ index 870e8456316..4067929d5a2 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~53.0.24",
+-    "expo": "~53.0.26",
 -    "expo-status-bar": "~2.2.3",
 -    "react": "19.0.0",
 -    "react-native": "0.79.6"
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~55.0.0-preview.5",
-+    "expo-status-bar": "~55.0.1",
++    "expo": "~55.0.0-preview.9",
++    "expo-status-bar": "~55.0.2",
 +    "react": "19.2.0",
 +    "react-native": "0.83.1"
    }

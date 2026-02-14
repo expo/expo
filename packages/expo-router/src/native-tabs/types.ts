@@ -93,6 +93,11 @@ export type SymbolOrImageSource =
        */
       sf?: SFSymbol;
       /**
+       * The name of the iOS asset catalog image to use as an icon.
+       * @platform iOS
+       */
+      xcasset?: string;
+      /**
        * The name of the drawable resource to use as an icon.
        * @platform android
        */

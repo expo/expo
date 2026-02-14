@@ -53,6 +53,19 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   }, []);
 
   const audioRecorder = useAudioRecorder(recorderOptions, (status) => {
+    if (status.mediaServicesDidReset) {
+      console.warn('[Recorder] Media services were reset');
+      Alert.alert(
+        'Recording Interrupted',
+        status.hasError
+          ? 'The system interrupted your recording and recovery failed.'
+          : 'The system interrupted your recording. Tap the mic to start a new recording.',
+        [{ text: 'OK' }]
+      );
+      setState(status);
+      return;
+    }
+
     setState(status);
 
     // Handle automatic recording completion (from forDuration or atTime+forDuration)
@@ -110,12 +123,21 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     setState((state) => ({ ...state, options: undefined, durationMillis: 0 }));
   };
 
+  const clearError = () => {
+    setState((prev) => ({ ...prev, error: null, hasError: false }));
+  };
+
   const maybeRenderErrorOverlay = () => {
     if (state.error) {
       return (
-        <ScrollView style={styles.errorMessage}>
-          <Text style={styles.errorText}>{state.error}</Text>
-        </ScrollView>
+        <View style={styles.errorMessage}>
+          <ScrollView style={styles.errorScroll}>
+            <Text style={styles.errorText}>{state.error}</Text>
+          </ScrollView>
+          <TouchableOpacity style={styles.dismissButton} onPress={clearError}>
+            <Text style={styles.dismissButtonText}>Dismiss</Text>
+          </TouchableOpacity>
+        </View>
       );
     }
     return null;
@@ -274,11 +296,30 @@ const styles = StyleSheet.create({
   errorMessage: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.errorBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorScroll: {
+    maxHeight: '60%',
   },
   errorText: {
     margin: 8,
     fontWeight: 'bold',
     color: Colors.errorText,
+    textAlign: 'center',
+  },
+  dismissButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    backgroundColor: 'white',
+    borderRadius: 8,
+  },
+  dismissButtonText: {
+    color: Colors.errorText,
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   bigRoundButton: {
     width: 100,

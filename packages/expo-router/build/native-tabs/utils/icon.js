@@ -60,6 +60,12 @@ function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
             name: icon.sf,
         };
     }
+    if (icon && 'xcasset' in icon && icon.xcasset) {
+        return {
+            type: 'xcasset',
+            name: icon.xcasset,
+        };
+    }
     if (icon && 'src' in icon && icon.src) {
         const effectiveRenderingMode = icon.renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
         if (effectiveRenderingMode === 'original') {

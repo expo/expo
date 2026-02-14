@@ -46,7 +46,9 @@ export function PagePackageVersion({
   return (
     <div className={mergeClasses('flex items-center gap-2', className)}>
       {versionRange && (
-        <div className="flex items-center justify-center gap-1.5 text-xs text-secondary">
+        <div
+          data-md="skip"
+          className="flex items-center justify-center gap-1.5 text-xs text-secondary">
           <PackageIcon className="icon-sm text-icon-secondary" />
           Bundled version:
           <Tag name={versionRange} className="select-auto" />

@@ -42,6 +42,7 @@ exports.BaseExpoRouterLink = BaseExpoRouterLink;
 // `to` / `action` support removed.
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
 const href_1 = require("./href");
 const useLinkHooks_1 = require("./useLinkHooks");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
@@ -67,6 +68,7 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         event = 'REPLACE';
     if (dismissTo)
         event = 'POP_TO';
+    const previewContext = (0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext);
     const props = (0, useLinkToPathProps_1.default)({
         href: resolvedHref,
         event,
@@ -75,6 +77,9 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         dangerouslySingular: singular,
     });
     const onPress = (e) => {
+        if (previewContext?.blockPressRef.current) {
+            return;
+        }
         if ('onPress' in rest) {
             rest.onPress?.(e);
         }

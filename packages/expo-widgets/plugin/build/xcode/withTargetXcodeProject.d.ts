@@ -3,6 +3,7 @@ type TargetXcodeProjectProps = {
     targetName: string;
     bundleIdentifier: string;
     deploymentTarget: string;
+    appleTeamId?: string;
     getFileUris: () => string[];
 };
 declare const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps>;

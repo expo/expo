@@ -29,6 +29,7 @@ const RouterToolbarItemView: React.ComponentType<
     identifier: string;
     title?: string;
     systemImageName?: SFSymbol;
+    xcassetName?: string;
     image?: number;
     imageRenderingMode?: 'template' | 'original';
     type?: string;

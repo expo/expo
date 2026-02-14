@@ -6,11 +6,22 @@
 
 ### 🎉 New features
 
+- [iOS] - Support `Section` `footer` prop with `title` prop. ([#42966](https://github.com/expo/expo/pull/42966) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `contentTransition` modifier. ([#42980](https://github.com/expo/expo/pull/42980) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix rendering `0` in SwiftUI Text. ([#43036](https://github.com/expo/expo/pull/43036) by [@jakex7](https://github.com/jakex7))
+- [iOS] Set initial state in `init` instead of `onAppear` in `DatePicker`, `Section`, `DisclosureGroup`, `Popover`, and `ColorPicker` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+## 55.0.0-preview.5 — 2026-02-08
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixed missing dependency on RCTFabric in ExpoUI podspec. ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
-
-### 💡 Others
+- [iOS] Fix initial state not being set in `Picker`, `Slider`, `Toggle`, and `List` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.0-preview.4 — 2026-02-03
 

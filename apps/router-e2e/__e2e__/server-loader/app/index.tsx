@@ -41,6 +41,7 @@ const IndexScreen = () => {
         <SiteLink href="/posts/static-post-1">Go to static Post 1</SiteLink>
         <SiteLink href="/posts/static-post-2">Go to static Post 2</SiteLink>
         <SiteLink href="/error">Go to Error</SiteLink>
+        <SiteLink href="/(group)">Go to Grouped Index</SiteLink>
       </SiteLinks>
     </>
   );

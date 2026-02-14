@@ -1,8 +1,27 @@
+import semver from 'semver';
+
 import logger from './Logger';
 
 /**
  * Utilities for versions API.
  */
+
+/**
+ * Normalizes an SDK version string - e.g. "54" becomes "54.0.0".
+ */
+export function normalizeSdkVersion(input: string): string {
+  if (/^\d+$/.test(input)) {
+    return `${input}.0.0`;
+  }
+  return input;
+}
+
+/**
+ * Returns sorted SDK version keys from a versions schema, in descending order.
+ */
+export function getSortedSdkVersionKeys(versions: VersionsSchema): string[] {
+  return Object.keys(versions.sdkVersions).sort(semver.rcompare);
+}
 
 export enum VersionsApiHost {
   PRODUCTION = 'api.expo.dev',

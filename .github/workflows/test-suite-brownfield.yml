@@ -69,7 +69,6 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🍏 Build iOS Project
         working-directory: ./apps/brownfield-tester
@@ -127,7 +126,6 @@ jobs:
           yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🤖 Build Android project
         run: |

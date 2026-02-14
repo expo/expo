@@ -5,6 +5,7 @@ interface AddXCConfigurationListProps {
     bundleIdentifier: string;
     deploymentTarget: string;
     marketingVersion?: string;
+    appleTeamId?: string;
 }
 export declare function addXCConfigurationList(xcodeProject: XcodeProject, props: AddXCConfigurationListProps): any;
 export {};

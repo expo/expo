@@ -135,7 +135,7 @@ function endsInNull(path: string) {
   return path.endsWith('/null');
 }
 
-// Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
+// Simple remapping of renamed pages, similar to public/_redirects but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating Home pages and route

@@ -210,6 +210,10 @@ class AudioModule : Module() {
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
 
+    AsyncFunction("requestNotificationPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.POST_NOTIFICATIONS)
+    }
+
     AsyncFunction("getRecordingPermissionsAsync") { promise: Promise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }

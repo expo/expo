@@ -299,6 +299,7 @@ struct SettingsTabView: View {
 
         Divider()
 
+        #if os(iOS)
         Button {
           if let url = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(url)
@@ -312,6 +313,7 @@ struct SettingsTabView: View {
           }
         }
         .padding()
+        #endif
       }
       .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)

@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for `shouldRouteThroughEarpiece`. ([#43089](https://github.com/expo/expo/pull/43089) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Make it possible to add/remove the foreground service and foreground service permissions with a config plugin. ([#43014](https://github.com/expo/expo/pull/43014) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix memory leaks when refreshing the app. ([#42785](https://github.com/expo/expo/pull/42785) by [@behenate](https://github.com/behenate))
+- [iOS] Fixes `mediaServicesDidReset` not being correctly implemented. ([#42898](https://github.com/expo/expo/pull/42898) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.4 — 2026-02-03
 

@@ -189,8 +189,7 @@ export abstract class BundlerDevServer {
   private async startHeadlessAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
     if (!options.port)
       throw new CommandError('HEADLESS_SERVER', 'headless dev server requires a port option');
-    this.urlCreator = this.getUrlCreator(options);
-
+    await this.initUrlCreator(options);
     return {
       // Create a mock server
       server: {
@@ -316,6 +315,9 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
+    // Reset url creator
+    this.urlCreator = undefined;
+
     // Stop file watching.
     this.notifier?.stopObserving();
 
@@ -367,14 +369,22 @@ export abstract class BundlerDevServer {
     );
   }
 
-  public getUrlCreator(options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}) {
-    if (!this.urlCreator) {
-      assert(options?.port, 'Dev server instance not found');
-      this.urlCreator = new UrlCreator(options.location, {
-        port: options.port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      });
-    }
+  // TODO(@kitten): This should be created top-down rather than bottom up from implementors
+  protected async initUrlCreator(
+    options: Partial<Pick<BundlerStartOptions, 'port' | 'location'>> = {}
+  ) {
+    assert(options?.port, 'Dev server instance not found');
+    assert(!this.urlCreator, 'Dev server is already initialized');
+    const urlCreator = await UrlCreator.init(options.location, {
+      port: options.port,
+      getTunnelUrl: this.getTunnelUrl.bind(this),
+    });
+    this.urlCreator = urlCreator;
+    return urlCreator;
+  }
+
+  public getUrlCreator() {
+    assert(this.urlCreator, 'Dev server is uninitialized');
     return this.urlCreator;
   }
 

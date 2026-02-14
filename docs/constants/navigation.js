@@ -435,6 +435,7 @@ export const eas = [
   ),
   makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
+    makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),

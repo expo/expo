@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "55.0.0-preview.4",
+  "version": "55.0.0-preview.5",
   "description": "A collection of UI components",
   "sideEffects": false,
   "exports": {
