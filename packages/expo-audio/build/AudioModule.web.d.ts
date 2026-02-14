@@ -1,5 +1,6 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
+import { AudioMetadata, AudioMode, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
+import { AudioLockScreenOptions } from './AudioConstants';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
     constructor(source: AudioSource, options?: AudioPlayerOptions);
@@ -38,8 +39,8 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     setAudioSamplingEnabled(enabled: boolean): void;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;
-    setActiveForLockScreen(active: boolean, metadata: Record<string, any>): void;
-    updateLockScreenMetadata(metadata: Record<string, any>): void;
+    setActiveForLockScreen(active: boolean, metadata?: AudioMetadata, options?: AudioLockScreenOptions): void;
+    updateLockScreenMetadata(metadata: AudioMetadata): void;
     clearLockScreenControls(): void;
     _isCrossOrigin(): boolean;
     _createMediaElement(): HTMLAudioElement;

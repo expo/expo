@@ -2,6 +2,7 @@ import { Asset } from 'expo-asset';
 import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 import {
+  AudioMetadata,
   AudioMode,
   AudioPlayerOptions,
   AudioSource,
@@ -13,12 +14,14 @@ import {
   RecordingOptionsWeb,
   RecordingStartOptions,
 } from './Audio.types';
+import { AudioLockScreenOptions } from './AudioConstants';
 import {
   AUDIO_SAMPLE_UPDATE,
   PLAYBACK_STATUS_UPDATE,
   RECORDING_STATUS_UPDATE,
 } from './AudioEventKeys';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
+import { mediaSessionController } from './MediaSessionController.web';
 import { RecordingPresets } from './RecordingConstants';
 
 const nextId = (() => {
@@ -212,6 +215,7 @@ export class AudioPlayerWeb
   replace(source: AudioSource): void {
     const wasPlaying = this.isPlaying;
     const wasSampling = this.samplingEnabled;
+    const mediaSessionState = mediaSessionController.getActiveState(this);
 
     // we need to remove the current media element and create a new one
     this.remove();
@@ -223,6 +227,14 @@ export class AudioPlayerWeb
 
     if (wasSampling) {
       this.setAudioSamplingEnabled(true);
+    }
+
+    if (mediaSessionState) {
+      mediaSessionController.setActivePlayer(
+        this,
+        mediaSessionState.metadata ?? undefined,
+        mediaSessionState.options ?? undefined
+      );
     }
 
     // Resume playback if it was playing before
@@ -310,9 +322,12 @@ export class AudioPlayerWeb
     this.media.playbackRate = second;
     this.shouldCorrectPitch = pitchCorrectionQuality === 'high';
     this.media.preservesPitch = this.shouldCorrectPitch;
+    mediaSessionController.updatePositionState(this);
   }
 
   remove(): void {
+    mediaSessionController.clear(this);
+
     if (this.samplingFrameId != null) {
       cancelAnimationFrame(this.samplingFrameId);
       this.samplingFrameId = null;
@@ -335,9 +350,25 @@ export class AudioPlayerWeb
     getStatusFromMedia(this.media, this.id);
   }
 
-  setActiveForLockScreen(active: boolean, metadata: Record<string, any>): void {}
-  updateLockScreenMetadata(metadata: Record<string, any>): void {}
-  clearLockScreenControls(): void {}
+  setActiveForLockScreen(
+    active: boolean,
+    metadata?: AudioMetadata,
+    options?: AudioLockScreenOptions
+  ): void {
+    if (active) {
+      mediaSessionController.setActivePlayer(this, metadata, options);
+    } else {
+      mediaSessionController.clear(this);
+    }
+  }
+
+  updateLockScreenMetadata(metadata: AudioMetadata): void {
+    mediaSessionController.updateMetadata(this, metadata);
+  }
+
+  clearLockScreenControls(): void {
+    mediaSessionController.clear(this);
+  }
 
   _isCrossOrigin(): boolean {
     try {
@@ -367,6 +398,7 @@ export class AudioPlayerWeb
       if (now - lastEmitTime >= intervalSec) {
         lastEmitTime = now;
         this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+        mediaSessionController.updatePositionState(this);
       }
     };
 
@@ -377,6 +409,8 @@ export class AudioPlayerWeb
         ...getStatusFromMedia(media, this.id),
         playing: this.isPlaying,
       });
+      mediaSessionController.updatePlaybackState(this);
+      mediaSessionController.updatePositionState(this);
     };
 
     media.onpause = () => {
@@ -386,15 +420,19 @@ export class AudioPlayerWeb
         ...getStatusFromMedia(media, this.id),
         playing: this.isPlaying,
       });
+      mediaSessionController.updatePlaybackState(this);
+      mediaSessionController.updatePositionState(this);
     };
 
     media.onseeked = () => {
       lastEmitTime = media.currentTime;
       this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+      mediaSessionController.updatePositionState(this);
     };
 
     media.onended = () => {
       lastEmitTime = 0;
+      mediaSessionController.updatePlaybackState(this);
     };
 
     media.onloadeddata = () => {
@@ -404,6 +442,7 @@ export class AudioPlayerWeb
         ...getStatusFromMedia(media, this.id),
         isLoaded: this.loaded,
       });
+      mediaSessionController.updatePositionState(this);
     };
 
     return media;
