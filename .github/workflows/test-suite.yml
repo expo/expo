@@ -379,11 +379,7 @@ jobs:
             ./e2e/image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
             echo $! > /tmp/image-server.pid
             sleep 2
-            if ! kill -0 $(cat /tmp/image-server.pid) 2>/dev/null; then
-              echo "Image comparison server failed to start. Logs:"
-              cat ~/.maestro/tests/screenshot-server-logs
-              exit 1
-            fi
+            kill -0 $(cat /tmp/image-server.pid) 2>/dev/null || { echo "Image comparison server failed to start. Logs:"; cat ~/.maestro/tests/screenshot-server-logs; exit 1; }
             # Run the actual tests
             ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
