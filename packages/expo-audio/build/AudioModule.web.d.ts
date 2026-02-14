@@ -13,6 +13,10 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private isPlaying;
     private loaded;
     private crossOrigin?;
+    private analyser;
+    private sourceNode;
+    private samplingFrameId;
+    private samplingEnabled;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
@@ -37,6 +41,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     setActiveForLockScreen(active: boolean, metadata: Record<string, any>): void;
     updateLockScreenMetadata(metadata: Record<string, any>): void;
     clearLockScreenControls(): void;
+    _isCrossOrigin(): boolean;
     _createMediaElement(): HTMLAudioElement;
 }
 export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {

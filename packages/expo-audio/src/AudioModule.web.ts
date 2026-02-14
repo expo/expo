@@ -13,7 +13,11 @@ import {
   RecordingOptionsWeb,
   RecordingStartOptions,
 } from './Audio.types';
-import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
+import {
+  AUDIO_SAMPLE_UPDATE,
+  PLAYBACK_STATUS_UPDATE,
+  RECORDING_STATUS_UPDATE,
+} from './AudioEventKeys';
 import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 import { RecordingPresets } from './RecordingConstants';
 
@@ -21,6 +25,15 @@ const nextId = (() => {
   let id = 0;
   return () => id++;
 })();
+
+let audioContext: AudioContext | null = null;
+
+function getAudioContext(): AudioContext {
+  if (!audioContext) {
+    audioContext = new AudioContext();
+  }
+  return audioContext;
+}
 
 async function getPermissionWithQueryAsync(
   name: PermissionNameWithAdditionalValues
@@ -125,6 +138,10 @@ export class AudioPlayerWeb
   private isPlaying = false;
   private loaded = false;
   private crossOrigin?: 'anonymous' | 'use-credentials';
+  private analyser: AnalyserNode | null = null;
+  private sourceNode: MediaElementAudioSourceNode | null = null;
+  private samplingFrameId: number | null = null;
+  private samplingEnabled = false;
 
   get playing(): boolean {
     return this.isPlaying;
@@ -194,6 +211,7 @@ export class AudioPlayerWeb
 
   replace(source: AudioSource): void {
     const wasPlaying = this.isPlaying;
+    const wasSampling = this.samplingEnabled;
 
     // we need to remove the current media element and create a new one
     this.remove();
@@ -202,6 +220,10 @@ export class AudioPlayerWeb
     this.isPlaying = false;
     this.loaded = false;
     this.media = this._createMediaElement();
+
+    if (wasSampling) {
+      this.setAudioSamplingEnabled(true);
+    }
 
     // Resume playback if it was playing before
     if (wasPlaying) {
@@ -217,9 +239,71 @@ export class AudioPlayerWeb
     this.media.currentTime = seconds;
   }
 
-  // Not supported on web
   setAudioSamplingEnabled(enabled: boolean): void {
-    this.isAudioSamplingSupported = false;
+    if (enabled) {
+      if (!this.media.crossOrigin && this._isCrossOrigin()) {
+        this.isAudioSamplingSupported = false;
+        return;
+      }
+
+      if (this.analyser) {
+        return;
+      }
+
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      if (!this.sourceNode) {
+        this.sourceNode = ctx.createMediaElementSource(this.media);
+      }
+
+      this.analyser = ctx.createAnalyser();
+      this.analyser.fftSize = 2048;
+
+      this.sourceNode.disconnect();
+      this.sourceNode.connect(this.analyser);
+      this.analyser.connect(ctx.destination);
+
+      const buffer = new Float32Array(this.analyser.frequencyBinCount);
+
+      const sampleLoop = () => {
+        if (!this.analyser) {
+          return;
+        }
+        if (this.isPlaying) {
+          this.analyser.getFloatTimeDomainData(buffer);
+          this.emit(AUDIO_SAMPLE_UPDATE, {
+            channels: [{ frames: Array.from(buffer) }],
+            timestamp: this.media.currentTime,
+          });
+        }
+        this.samplingFrameId = requestAnimationFrame(sampleLoop);
+      };
+      this.samplingFrameId = requestAnimationFrame(sampleLoop);
+
+      this.samplingEnabled = true;
+      this.isAudioSamplingSupported = true;
+    } else {
+      if (this.samplingFrameId != null) {
+        cancelAnimationFrame(this.samplingFrameId);
+        this.samplingFrameId = null;
+      }
+
+      if (this.analyser) {
+        this.analyser.disconnect();
+        this.analyser = null;
+      }
+
+      if (this.sourceNode) {
+        const ctx = getAudioContext();
+        this.sourceNode.disconnect();
+        this.sourceNode.connect(ctx.destination);
+      }
+
+      this.samplingEnabled = false;
+    }
   }
 
   setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void {
@@ -229,6 +313,22 @@ export class AudioPlayerWeb
   }
 
   remove(): void {
+    if (this.samplingFrameId != null) {
+      cancelAnimationFrame(this.samplingFrameId);
+      this.samplingFrameId = null;
+    }
+
+    if (this.analyser) {
+      this.analyser.disconnect();
+      this.analyser = null;
+    }
+
+    if (this.sourceNode) {
+      this.sourceNode.disconnect();
+      this.sourceNode = null;
+    }
+
+    this.samplingEnabled = false;
     this.media.pause();
     this.media.removeAttribute('src');
     this.media.load();
@@ -238,6 +338,14 @@ export class AudioPlayerWeb
   setActiveForLockScreen(active: boolean, metadata: Record<string, any>): void {}
   updateLockScreenMetadata(metadata: Record<string, any>): void {}
   clearLockScreenControls(): void {}
+
+  _isCrossOrigin(): boolean {
+    try {
+      return new URL(this.media.src).origin !== window.location.origin;
+    } catch {
+      return false;
+    }
+  }
 
   _createMediaElement(): HTMLAudioElement {
     const newSource = getSourceUri(this.src);
