@@ -6,11 +6,30 @@
 
 ### 🎉 New features
 
+- [ios] Add xcasset icon support to native tabs ([#42867](https://github.com/expo/expo/pull/42867) by [@Ubax](https://github.com/Ubax))
+- [ios] activate `iosPreventReattachmentOfDismissedScreens` by default ([#43001](https://github.com/expo/expo/pull/43001) by [@Ubax](https://github.com/Ubax))
+- [ios] support xcasset in header items ([#43046](https://github.com/expo/expo/pull/43046) by [@Ubax](https://github.com/Ubax))
+- [ios] support xcassets in bottom toolbar ([#43068](https://github.com/expo/expo/pull/43068) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [web] Fix route URL detection in `useLoaderData` ([#42912](https://github.com/expo/expo/pull/42912) by [@hassankhan](https://github.com/hassankhan))
+- [web] Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
+
+### 💡 Others
+
+- Bump peer dependency to `@testing-library/react-native@^13.2.0` ([#43084](https://github.com/expo/expo/pull/43084) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.0-preview.7 — 2026-02-08
+
 ### 🐛 Bug fixes
 
 - Use `useRouteInfo()` instead of `useRoute()` to construct loader lookup key ([#42874](https://github.com/expo/expo/pull/42874) by [@hassankhan](https://github.com/hassankhan))
+- fix Stack.Screen types ([#42897](https://github.com/expo/expo/pull/42897) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
+
+- add `yarn test:types` for checking types in jest tests ([#42935](https://github.com/expo/expo/pull/42935) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.0-preview.6 — 2026-02-03
 

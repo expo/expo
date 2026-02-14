@@ -42,7 +42,6 @@ jest.mock('../NativeTabsView', () => {
 });
 
 jest.mock('react-native-safe-area-context', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actualModule = jest.requireActual(
     'react-native-safe-area-context'
   ) as typeof import('react-native-safe-area-context');
@@ -805,7 +804,7 @@ it('when nesting NativeTabs, it throws an Error', () => {
 });
 
 describe('Native props validation', () => {
-  let warn;
+  let warn: jest.SpyInstance;
   beforeEach(() => {
     warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
@@ -821,8 +820,8 @@ describe('Native props validation', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].standardAppearance.tabBarBlurEffect).toBe(blurEffect);
-    expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarBlurEffect).toBe('none');
+    expect(TabsScreen.mock.calls[0][0].standardAppearance?.tabBarBlurEffect).toBe(blurEffect);
+    expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
   });
   it.each(['test', 'wrongValue', ...SUPPORTED_BLUR_EFFECTS.map((x) => x.toUpperCase())])(
     'warns when unsupported %s blur effect is used',
@@ -841,8 +840,8 @@ describe('Native props validation', () => {
         `Unsupported blurEffect: ${blurEffect}. Supported values are: ${SUPPORTED_BLUR_EFFECTS.map((effect) => `"${effect}"`).join(', ')}`
       );
       expect(TabsScreen).toHaveBeenCalledTimes(1);
-      expect(TabsScreen.mock.calls[0][0].standardAppearance.tabBarBlurEffect).toBe(undefined);
-      expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarBlurEffect).toBe('none');
+      expect(TabsScreen.mock.calls[0][0].standardAppearance?.tabBarBlurEffect).toBe(undefined);
+      expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance?.tabBarBlurEffect).toBe('none');
     }
   );
   it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(

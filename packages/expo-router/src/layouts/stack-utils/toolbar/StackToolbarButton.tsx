@@ -8,6 +8,8 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import { useToolbarPlacement } from './context';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
+  extractIconRenderingMode,
+  extractXcassetName,
   type StackHeaderItemSharedProps,
 } from './shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
@@ -208,12 +210,15 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
   const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+  const xcassetName = extractXcassetName(props);
+  const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
   return (
     <NativeToolbarButton
       {...sharedProps}
       icon={icon}
+      xcassetName={xcassetName}
       image={props.image}
-      imageRenderingMode={props.iconRenderingMode}
+      imageRenderingMode={imageRenderingMode}
     />
   );
 };
@@ -244,6 +249,7 @@ interface NativeToolbarButtonProps {
   hidden?: boolean;
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
+  xcassetName?: string;
   image?: ImageRef;
   imageRenderingMode?: 'template' | 'original';
   onPress?: () => void;
@@ -280,6 +286,7 @@ const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) => {
       selected={props.selected}
       sharesBackground={!props.separateBackground}
       systemImageName={props.icon}
+      xcassetName={props.xcassetName}
       title={props.label}
       tintColor={props.tintColor}
       titleStyle={StyleSheet.flatten(props.style)}

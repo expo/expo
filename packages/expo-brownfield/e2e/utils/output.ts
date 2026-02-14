@@ -4,7 +4,7 @@ import path from 'node:path';
  * Help messages
  */
 export const HELP_MESSAGE = {
-  GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`
+  GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`,
 };
 
 /**
@@ -90,6 +90,7 @@ export const ERROR = {
   ) => `Error: Command ${command} doesn't support additional commands
 For all available options please use the help command:
 npx expo-brownfield ${command} --help`,
+  MISSING_TASKS_OR_REPOSITORIES: () => `Error: At least one task or repository must be specified`,
   UNKNOWN_COMMAND: () => `Error: unknown command
 Supported commands: build:android, build:ios, tasks:android`,
   UNKNOWN_OPTION: (option: string) => `Error: unknown or unexpected option: ${option}`,

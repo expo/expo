@@ -1,4 +1,6 @@
 'use client';
+import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
+import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { Children, isValidElement, useMemo, type PropsWithChildren, type ReactNode } from 'react';
 
@@ -10,12 +12,65 @@ import {
   appendStackScreenBackButtonPropsToOptions,
 } from './screen';
 import { StackToolbar, appendStackToolbarPropsToOptions, type StackToolbarProps } from './toolbar';
+import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 import { getAllChildrenOfType, isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
 
+type StackBaseScreenProps = BaseScreenProps<
+  NativeStackNavigationOptions,
+  StackNavigationState<ParamListBase>,
+  NativeStackNavigationEventMap
+>;
+
 export interface StackScreenProps extends PropsWithChildren {
-  name?: string;
-  options?: NativeStackNavigationOptions;
+  /** Name is required when used inside a Layout component. */
+  name?: StackBaseScreenProps['name'];
+
+  /**
+   * Options to configure the screen.
+   *
+   * Accepts an object or a function returning an object.
+   * The function form `options={({ route }) => ({})}` is only supported when used inside a Layout component.
+   * When used inside a page component, pass an options object directly.
+   */
+  options?: StackBaseScreenProps['options'];
+
+  /**
+   * Redirect to the nearest sibling route.
+   * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
+   *
+   * Only supported when used inside a Layout component.
+   */
+  redirect?: StackBaseScreenProps['redirect'];
+
+  /**
+   * Initial params to pass to the route.
+   *
+   * Only supported when used inside a Layout component.
+   */
+  initialParams?: StackBaseScreenProps['initialParams'];
+
+  /**
+   * Listeners for navigation events.
+   *
+   * Only supported when used inside a Layout component.
+   */
+  listeners?: StackBaseScreenProps['listeners'];
+
+  /**
+   * Function to determine a unique ID for the screen.
+   * @deprecated Use `dangerouslySingular` instead.
+   *
+   * Only supported when used inside a Layout component.
+   */
+  getId?: StackBaseScreenProps['getId'];
+
+  /**
+   * When enabled, the navigator will reuse an existing screen instead of pushing a new one.
+   *
+   * Only supported when used inside a Layout component.
+   */
+  dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
 }
 
 function extractBottomToolbars(children: ReactNode): React.ReactElement<StackToolbarProps>[] {
@@ -69,9 +124,15 @@ function extractBottomToolbars(children: ReactNode): React.ReactElement<StackToo
 export const StackScreen = Object.assign(
   function StackScreen({ children, options, ...rest }: StackScreenProps) {
     // This component will only render when used inside a page.
+    if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
+      console.warn(
+        'Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.'
+      );
+    }
+
     const updatedOptions = useMemo(
       () =>
-        appendScreenStackPropsToOptions(options ?? {}, {
+        appendScreenStackPropsToOptions(typeof options === 'function' ? {} : (options ?? {}), {
           children,
         }),
       [options, children]

@@ -707,7 +707,7 @@ internal struct AnimationConfig: Record {
 
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
-  @Field var animatedValue: Either<Bool, Double>?
+  @Field var animatedValue: Either<Double, Bool>?
 
   func body(content: Content) -> some View {
     let animationValue = parseAnimation(animation)
@@ -1923,6 +1923,10 @@ extension ViewModifierRegistry {
 
     register("environment") { params, appContext, _ in
       return try EnvironmentModifier(from: params, appContext: appContext)
+    }
+
+    register("contentTransition") { params, appContext, _ in
+      return try ContentTransitionModifier(from: params, appContext: appContext)
     }
   }
 }

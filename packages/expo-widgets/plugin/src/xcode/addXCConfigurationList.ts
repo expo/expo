@@ -6,6 +6,7 @@ interface AddXCConfigurationListProps {
   bundleIdentifier: string;
   deploymentTarget: string;
   marketingVersion?: string;
+  appleTeamId?: string;
 }
 
 export function addXCConfigurationList(
@@ -27,6 +28,7 @@ export function addXCConfigurationList(
     SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
     CODE_SIGN_ENTITLEMENTS: `"${props.targetName}/${props.targetName}.entitlements"`,
     APPLICATION_EXTENSION_API_ONLY: '"YES"',
+    ...(props.appleTeamId ? { DEVELOPMENT_TEAM: props.appleTeamId } : {}),
   };
 
   const buildConfigurationsList = [

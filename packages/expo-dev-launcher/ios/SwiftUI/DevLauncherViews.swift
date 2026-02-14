@@ -5,12 +5,38 @@ import SwiftUI
 public struct DevLauncherRootView: View {
   @ObservedObject var viewModel: DevLauncherViewModel
   @State private var showingUserProfile = false
+  @State private var hasCompletedPermissionFlow: Bool
 
   init(viewModel: DevLauncherViewModel) {
     self.viewModel = viewModel
+    let shouldSkipPermissionFlow = Self.isSimulator 
+      || UserDefaults.standard.bool(forKey: "expo.devlauncher.hasCompletedNetworkPermissionFlow")
+    _hasCompletedPermissionFlow = State(initialValue: shouldSkipPermissionFlow)
+  }
+  
+  private static var isSimulator: Bool {
+    #if targetEnvironment(simulator)
+    return true
+    #else
+    return false
+    #endif
   }
 
   public var body: some View {
+    if !hasCompletedPermissionFlow {
+      LocalNetworkPermissionView(
+        viewModel: viewModel,
+        onPermissionGranted: {
+          hasCompletedPermissionFlow = true
+        }
+      )
+    } else {
+      mainContent
+    }
+  }
+  
+  @ViewBuilder
+  private var mainContent: some View {
     let tabView = TabView {
       HomeTabView()
         .tabItem {

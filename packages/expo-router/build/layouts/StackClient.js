@@ -415,9 +415,11 @@ function mapProtectedScreen(props) {
         children: react_1.Children.toArray(props.children)
             .map((child, index) => {
             if ((0, children_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
-                const options = (0, stack_utils_1.appendScreenStackPropsToOptions)({}, child.props);
-                const { children, ...rest } = child.props;
-                return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
+                const { children, options: childOptions, ...rest } = child.props;
+                const options = typeof childOptions === 'function'
+                    ? (...params) => (0, stack_utils_1.appendScreenStackPropsToOptions)(childOptions(...params), { children })
+                    : (0, stack_utils_1.appendScreenStackPropsToOptions)(childOptions ?? {}, { children });
+                return <Screen_1.Screen key={rest.name} {...rest} options={options}/>;
             }
             else if ((0, children_1.isChildOfType)(child, Protected_1.Protected)) {
                 return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;

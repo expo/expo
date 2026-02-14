@@ -23,6 +23,9 @@ public class RouterToolbarModule: Module {
       Prop("systemImageName") { (view: RouterToolbarItemView, systemImageName: String?) in
         view.systemImageName = systemImageName
       }
+      Prop("xcassetName") { (view: RouterToolbarItemView, xcassetName: String?) in
+        view.xcassetName = xcassetName
+      }
       Prop("image") { (view: RouterToolbarItemView, image: SharedRef<UIImage>?) in
         view.customImage = image
       }

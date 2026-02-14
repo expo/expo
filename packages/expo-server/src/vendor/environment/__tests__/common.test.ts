@@ -397,7 +397,7 @@ describe('getHtml', () => {
     expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
-        loader: { data: loaderData },
+        loader: { key: '/index', data: loaderData },
       })
     );
   });

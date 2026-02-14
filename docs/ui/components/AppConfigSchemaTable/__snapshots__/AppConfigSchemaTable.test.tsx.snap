@@ -75,6 +75,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <details
         class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        data-md="collapsible"
         id="existing-react-native-app"
       >
         <summary
@@ -227,6 +228,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <details
         class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        data-md="collapsible"
         id="existing-react-native-app-1"
       >
         <summary
@@ -648,6 +650,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <details
         class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        data-md="collapsible"
         id="existing-react-native-app-2"
       >
         <summary

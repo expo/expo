@@ -129,6 +129,7 @@ export const home = [
       ],
       { expanded: false }
     ),
+    makePage('develop/database.mdx'),
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
@@ -358,6 +359,7 @@ export const general = [
     ]),
     makeGroup('CMS', [makePage('guides/using-a-cms.mdx')]),
     makeGroup('Database and SDKs', [
+      makePage('guides/using-convex.mdx'),
       makePage('guides/using-firebase.mdx'),
       makePage('guides/using-supabase.mdx'),
     ]),
@@ -433,6 +435,7 @@ export const eas = [
   ),
   makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
+    makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),

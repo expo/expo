@@ -163,7 +163,7 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
           .replace("\"%%WEBVIEW_ID%%\"", webViewId.toString())
           .replace("\"%%SOURCE%%\"", source)
         try {
-          val result = appContext.hostingRuntimeContext.eval(wrappedSource)
+          val result = appContext.runtime.eval(wrappedSource)
           continuation.resume(result.getString())
         } catch (e: Exception) {
           continuation.resumeWithException(e)

@@ -44,7 +44,7 @@ class SimpleViewManagerWrapper(
     viewWrapperDelegate.onDestroy(view)
   }
 
-  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
     val expoEvent = viewWrapperDelegate.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
     return super.getExportedCustomDirectEventTypeConstants()?.plus(expoEvent) ?: expoEvent
   }

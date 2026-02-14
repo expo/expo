@@ -241,6 +241,7 @@ not appear on the screen.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -406,6 +407,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             <a
@@ -486,6 +488,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             <a
@@ -567,6 +570,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             number
@@ -650,6 +654,7 @@ for more details.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             <span
@@ -750,6 +755,7 @@ in here.
            
           <code
             class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
+            data-md="type-sig"
             data-text="true"
           >
             StyleProp
@@ -1037,6 +1043,7 @@ properties.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 fullName
@@ -1080,6 +1087,7 @@ properties.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 formatStyle
@@ -1135,6 +1143,7 @@ properties.
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1277,6 +1286,7 @@ properties.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 user
@@ -1337,6 +1347,7 @@ This should come from the user field of an
 
       <blockquote
         class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -1387,6 +1398,7 @@ This should come from the user field of an
       </blockquote>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1540,6 +1552,7 @@ value depending on the state of the credential.
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1716,6 +1729,7 @@ value depending on the state of the credential.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 options
@@ -1779,6 +1793,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -1967,6 +1982,7 @@ refresh operation.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 options
@@ -2076,6 +2092,7 @@ the user, since this remains the same for apps released by the same developer.
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -2264,6 +2281,7 @@ sign-in operation.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 options
@@ -2361,6 +2379,7 @@ from using
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -2584,6 +2603,7 @@ sign-out operation.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 listener
@@ -2615,6 +2635,7 @@ sign-out operation.
     >
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -2864,6 +2885,7 @@ After calling this function, the listener will no longer receive any events from
         </p>
         <div
           class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+          data-md="api-returns"
         >
           <div
             class="flex flex-row items-center gap-2"
@@ -3044,6 +3066,7 @@ which contains all of the pertinent user and credential information.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -3975,6 +3998,7 @@ may be
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -4165,6 +4189,7 @@ You must include the ID string of the user whose credentials you'd like to refre
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -4496,6 +4521,7 @@ None of these options are required.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -4847,6 +4873,7 @@ You must include the ID string of the user to sign out.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -5615,6 +5642,7 @@ OAuth 2.0 protocol
         </h4>
         <div
           class="flex flex-row items-start [table_&]:mb-2.5 mb-1"
+          data-md="api-platforms"
         >
           <span
             class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -5622,6 +5650,7 @@ OAuth 2.0 protocol
           >
             <div
               class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+              data-md="platform-badge"
             >
               <svg
                 class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
@@ -5741,6 +5770,7 @@ OAuth 2.0 protocol
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -6434,6 +6464,7 @@ for more details.
 
       <blockquote
         class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -6479,6 +6510,7 @@ You will still need to handle null values for any fields you request.
       </blockquote>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -6723,6 +6755,7 @@ for more details.
       </p>
       <blockquote
         class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [&_code]:bg-element bg-default [&_p]:!mb-0 shadow-none !mb-2.5 [table_&]:last:mb-0 [table_&]:mt-2"
+        data-md="callout"
         data-testid="callout-container"
       >
         <svg
@@ -7095,6 +7128,7 @@ exports[`APISection expo-pedometer 1`] = `
       </p>
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7206,6 +7240,7 @@ exports[`APISection expo-pedometer 1`] = `
       </h3>
       <div
         class="flex flex-row items-start [table_&]:mb-2.5 mb-0"
+        data-md="api-platforms"
       >
         <span
           class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] inline-flex items-center"
@@ -7213,6 +7248,7 @@ exports[`APISection expo-pedometer 1`] = `
         >
           <div
             class="mr-2 inline-flex min-h-[21px] select-none items-center gap-1 rounded-full border px-[7px] py-0.5 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-blue3 text-palette-blue12 border-palette-blue4"
+            data-md="platform-badge"
           >
             <svg
               class="translate-z icon-2xs mt-[-0.5px] shrink-0 text-palette-blue12 opacity-80"
@@ -7277,6 +7313,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 start
@@ -7322,6 +7359,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 end
@@ -7374,6 +7412,7 @@ exports[`APISection expo-pedometer 1`] = `
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7480,6 +7519,7 @@ exports[`APISection expo-pedometer 1`] = `
 
           <blockquote
             class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-md="callout"
             data-testid="callout-container"
           >
             <svg
@@ -7590,6 +7630,7 @@ a start date that is more than seven days in the past returns only the available
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7733,6 +7774,7 @@ available on this device.
       </p>
       <div
         class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -7881,6 +7923,7 @@ available on this device.
             >
               <span
                 class="leading-[1.6154] text-default font-medium"
+                data-md="api-param-name"
                 data-text="true"
               >
                 callback
@@ -7944,6 +7987,7 @@ provided with a single argument that is
       </p>
       <div
         class="flex flex-row items-start gap-2"
+        data-md="api-returns"
       >
         <div
           class="flex flex-row items-center gap-2"
@@ -8016,6 +8060,7 @@ provided with a single argument that is
 
           <blockquote
             class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:!mb-0 shadow-none mb-2.5 [table_&]:last:mb-0"
+            data-md="callout"
             data-testid="callout-container"
           >
             <svg
@@ -8296,6 +8341,7 @@ After calling this function, the listener will no longer receive any events from
         </p>
         <div
           class="flex flex-row items-start gap-2 mb-2.5 [table_&]:last:mb-0"
+          data-md="api-returns"
         >
           <div
             class="flex flex-row items-center gap-2"
@@ -8604,6 +8650,7 @@ After calling this function, the listener will no longer receive any events from
               >
                 <span
                   class="leading-[1.6154] text-default font-medium"
+                  data-md="api-param-name"
                   data-text="true"
                 >
                   result

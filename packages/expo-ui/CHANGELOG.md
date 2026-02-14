@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
+- [iOS] - Support `Section` `footer` prop with `title` prop. ([#42966](https://github.com/expo/expo/pull/42966) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `contentTransition` modifier. ([#42980](https://github.com/expo/expo/pull/42980) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `selection` and `onSelectionChange` to `presentationDetents` modifier for programmatic control of bottom sheet detents. ([#42910](https://github.com/expo/expo/pull/42910) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix rendering `0` in SwiftUI Text. ([#43036](https://github.com/expo/expo/pull/43036) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
+
+## 55.0.0-preview.5 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing dependency on RCTFabric in ExpoUI podspec. ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.0-preview.4 — 2026-02-03
 

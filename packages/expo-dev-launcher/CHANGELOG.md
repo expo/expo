@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- fixes to error handling ([#42873](https://github.com/expo/expo/pull/42873) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 55.0.6 — 2026-02-08
+
+### 🎉 New features
+
+- [iOS] Add Bonjour service discovery ([#42384](https://github.com/expo/expo/pull/42384) by [@kitten](https://github.com/kitten))
 
 ## 55.0.5 — 2026-02-03
 

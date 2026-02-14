@@ -222,8 +222,8 @@ describe('expo-router integration', () => {
       'with-router',
       {
         reuseExisting: false,
-        // TODO(@hassankhan): remove @expo/router-server after publishing
-        linkExpoPackages: ['expo-router', '@expo/router-server'],
+        // TODO(@hassankhan): remove @expo/router-server & require-utils after publishing
+        linkExpoPackages: ['expo-router', '@expo/router-server', '@expo/require-utils'],
       }
     );
 
