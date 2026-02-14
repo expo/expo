@@ -2,6 +2,7 @@
 import { useRoute } from '@react-navigation/native';
 import { isValidElement, ReactElement, ReactNode } from 'react';
 
+import { StackScreen } from '../layouts/stack-utils/StackScreen';
 import { useNavigation } from '../useNavigation';
 import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 import { isRoutePreloadedInStack } from '../utils/stack';
@@ -48,7 +49,7 @@ export function isScreen(
   child: ReactNode,
   contextKey?: string
 ): child is ReactElement<ScreenProps & { name: string }> {
-  if (isValidElement(child) && child && child.type === Screen) {
+  if (isValidElement(child) && child && (child.type === Screen || child.type === StackScreen)) {
     if (
       typeof child.props === 'object' &&
       child.props &&

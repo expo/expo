@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fix `isScreen` not recognizing `StackScreen` when `EXPO_UNSTABLE_WEB_MODAL` is enabled, causing `Stack.Screen` options to be ignored ([#43147](https://github.com/expo/expo/pull/43147) by [@marco2216](https://github.com/marco2216))
 - [web] Fix route URL detection in `useLoaderData` ([#42912](https://github.com/expo/expo/pull/42912) by [@hassankhan](https://github.com/hassankhan))
 - [web] Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
 - [ios] fix immediate navigation when opening Link.Preview ([#43071](https://github.com/expo/expo/pull/43071) by [@Ubax](https://github.com/Ubax))

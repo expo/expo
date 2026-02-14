@@ -5,6 +5,7 @@ exports.Screen = Screen;
 exports.isScreen = isScreen;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
+const StackScreen_1 = require("../layouts/stack-utils/StackScreen");
 const useNavigation_1 = require("../useNavigation");
 const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
 const stack_1 = require("../utils/stack");
@@ -29,7 +30,7 @@ function Screen({ name, options }) {
     return null;
 }
 function isScreen(child, contextKey) {
-    if ((0, react_1.isValidElement)(child) && child && child.type === Screen) {
+    if ((0, react_1.isValidElement)(child) && child && (child.type === Screen || child.type === StackScreen_1.StackScreen)) {
         if (typeof child.props === 'object' &&
             child.props &&
             'name' in child.props &&
