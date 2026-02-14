@@ -72,13 +72,22 @@ export interface ExecutionContext {
   props?: any;
 }
 
+const getRequestURLOrigin = (request: Request) => {
+  try {
+    // NOTE: We don't trust any headers on incoming requests in "raw" environments
+    return new URL(request.url).origin || null;
+  } catch {
+    return null;
+  }
+};
+
 export function createWorkerdRequestScope<Env = unknown>(
   scopeDefinition: ScopeDefinition,
   params: WorkerdEnvParams
 ) {
   const makeRequestAPISetup = (request: Request, _env: Env, ctx: ExecutionContext) => ({
     requestHeaders: request.headers,
-    origin: request.headers.get('Origin') || null,
+    origin: getRequestURLOrigin(request),
     environment: params.environment ?? null,
     waitUntil: ctx.waitUntil?.bind(ctx),
   });

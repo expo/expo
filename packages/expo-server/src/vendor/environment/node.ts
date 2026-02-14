@@ -51,10 +51,19 @@ export function createNodeEnv(params: NodeEnvParams) {
   });
 }
 
+const getRequestURLOrigin = (request: Request) => {
+  try {
+    // NOTE: We don't trust any headers on incoming requests in "raw" environments
+    return new URL(request.url).origin || null;
+  } catch {
+    return null;
+  }
+};
+
 export function createNodeRequestScope(scopeDefinition: ScopeDefinition, params: NodeEnvParams) {
   return createRequestScope(scopeDefinition, (request: Request) => ({
     requestHeaders: request.headers,
-    origin: request.headers.get('Origin') || null,
+    origin: getRequestURLOrigin(request),
     environment: params.environment ?? process.env.NODE_ENV,
   }));
 }
