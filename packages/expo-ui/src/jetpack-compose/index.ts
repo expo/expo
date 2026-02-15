@@ -14,5 +14,8 @@ export * from './TextInput';
 export * from './Shape';
 export * from './BottomSheet';
 export * from './Carousel';
+export * from './Section';
+export * from './ListItem';
+export * from './List';
 
 export * from './layout';
