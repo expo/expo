@@ -1182,4 +1182,33 @@ describe('redirects', () => {
       type: 'layout',
     });
   });
+
+  it('should ignore files inside _ prefixed directories', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+          './(app)/settings/_lib/helpers': () => null,
+          './(app)/settings/_lib/SettingsForm': () => null,
+          './(app)/settings/_utils/format': () => null,
+        }),
+        { internal_stripLoadRoute: true, skipGenerated: true, ignoreEntryPoints: true }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          route: '(app)/index',
+          type: 'route',
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
 });

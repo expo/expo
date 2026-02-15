@@ -198,6 +198,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   // Always ignore middleware files in regular route processing
   ignoreList.push(/\+middleware$/, /\+middleware\.[tj]sx?$/);
 
+  // Ignore files inside directories that start with `_` (e.g. `_lib/`, `_utils/`).
+  // These are treated as private/non-route directories. This does not affect `_layout`
+  // or `_sitemap` files since those are filenames (no trailing `/`).
+  ignoreList.push(/\/_[^/]+\//);
+
   const rootDirectory: DirectoryNode = {
     files: new Map(),
     subdirectories: new Map(),
