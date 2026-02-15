@@ -16,6 +16,7 @@
 - Add `Symbol.toStringTag` to `expo/fetch` `Response` so it identifies as a standard `Response` object ([#44806](https://github.com/expo/expo/pull/44806) by [@zoontek](https://github.com/zoontek))
 - Prevent `original*` globals from being enumerable or from being created for globals with getters, since these may be side-effectful ([#44407](https://github.com/expo/expo/pull/44407) by [@kitten](https://github.com/kitten))
 - Resolve paths relative to project root instead of server root in `expo/scripts/resolveAppEntry.js` ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+- Fixed DOM Components rendering issues on Android 9 devices. ([#43156](https://github.com/expo/expo/pull/43156) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
