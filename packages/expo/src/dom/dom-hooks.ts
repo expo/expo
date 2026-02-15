@@ -17,9 +17,7 @@ export function useDOMImperativeHandle<T extends DOMImperativeFactory>(
   deps?: DependencyList
 ) {
   const isTargetWeb =
-    // @ts-expect-error: Added via react-native-webview
     typeof window.ReactNativeWebView === 'undefined' &&
-    // @ts-expect-error: Added via expo/dom
     typeof window.$$EXPO_INITIAL_PROPS === 'undefined';
 
   const stubHandlerFactory = useCallback(() => ({}) as T, deps ?? []);
@@ -31,8 +29,6 @@ export function useDOMImperativeHandle<T extends DOMImperativeFactory>(
   useEffect(() => {
     if (!isTargetWeb) {
       globalThis._domRefProxy = init();
-      // TODO(@kitten): Type `ReactNativeWebView` and the message data
-      // @ts-expect-error: Added via react-native-webview
       window.ReactNativeWebView.postMessage(
         JSON.stringify({
           type: REGISTER_DOM_IMPERATIVE_HANDLE_PROPS,

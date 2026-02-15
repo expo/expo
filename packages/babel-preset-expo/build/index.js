@@ -33,6 +33,7 @@ function babelPresetExpo(api, options = {}) {
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
     const isHermesV1 = api.caller(common_1.getIsHermesV1);
+    const isDomComponent = api.caller(common_1.getIsDomComponent);
     const metroSourceType = api.caller(common_1.getMetroSourceType);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
@@ -46,9 +47,11 @@ function babelPresetExpo(api, options = {}) {
     if (!platform && isWebpack) {
         platform = 'web';
     }
-    // Use the simpler babel preset for web and server environments (both web and native SSR).
-    const isModernEngine = platform === 'web' || isServerEnv;
     const platformOptions = getOptions(options, platform);
+    // Use the simpler babel preset for web and server environments (both web and native SSR).
+    // For DOM components, the webview may be an Android factory WebView that doesn't support many modern JavaScript features,
+    // so we need to use the more compatible preset for web regardless.
+    const isModernEngine = (platform === 'web' || isServerEnv) && !isDomComponent;
     // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
     // adds extra dependencies (requires/imports) we need to disable it
     if (metroSourceType === 'script') {
@@ -67,7 +70,7 @@ function babelPresetExpo(api, options = {}) {
             platformOptions.disableImportExportTransform = supportsStaticESM ?? false;
         }
     }
-    if (platformOptions.unstable_transformProfile == null) {
+    if (platformOptions.unstable_transformProfile == null && !isDomComponent) {
         platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
     }
     // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),

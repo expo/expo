@@ -3,16 +3,14 @@ import { DOM_EVENT, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
 
 const IS_DOM =
   typeof window !== 'undefined' &&
-  // @ts-expect-error: Added via expo/dom
   typeof window.$$EXPO_INITIAL_PROPS !== 'undefined' &&
-  // @ts-expect-error: Added via react-native-webview
   typeof window.ReactNativeWebView !== 'undefined';
 
 const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
   if (!IS_DOM) {
     return;
   }
-  (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
+  window.ReactNativeWebView.postMessage(JSON.stringify(message));
 };
 
 export const addEventListener = <TData extends JSONValue>(
