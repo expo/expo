@@ -168,5 +168,20 @@ export function createEnvironment(input: EnvironmentInput) {
 
       return Response.json(result ?? null);
     },
+
+    async preload() {
+      if (input.isDevelopment) {
+        return;
+      }
+      const manifest = await getCachedRoutesManifest();
+      const requests: string[] = [];
+      if (manifest.middleware) requests.push(manifest.middleware.file);
+      if (manifest.rendering) requests.push(manifest.rendering.file);
+      for (const apiRoute of manifest.apiRoutes) requests.push(apiRoute.file);
+      for (const htmlRoute of manifest.htmlRoutes) {
+        if (htmlRoute.loader) requests.push(htmlRoute.loader);
+      }
+      await Promise.all(requests.map((request) => input.loadModule(request)));
+    },
   };
 }
