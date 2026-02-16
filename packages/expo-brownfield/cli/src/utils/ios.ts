@@ -71,15 +71,20 @@ export const copyHermesXcframework = async (config: IosConfig) => {
     return;
   }
 
+  const sourcePath = `./ios/${config.hermesFrameworkPath}`;
+  if (!fs.existsSync(sourcePath)) {
+    CLIError.handle('ios-hermes-framework-not-found', sourcePath);
+  }
+
   return withSpinner({
     operation: async () =>
-      fs.cpSync(`./ios/${config.hermesFrameworkPath}`, `${config.artifacts}/hermes.xcframework`, {
+      fs.cpSync(sourcePath, `${config.artifacts}/hermesvm.xcframework`, {
         force: true,
         recursive: true,
       }),
-    loaderMessage: 'Copying hermes.xcframework to the artifacts directory...',
-    successMessage: 'Copying hermes.xcframework to the artifacts directory succeeded',
-    errorMessage: 'Copying hermes.xcframework to the artifacts directory failed',
+    loaderMessage: 'Copying hermesvm.xcframework to the artifacts directory...',
+    successMessage: 'Copying hermesvm.xcframework to the artifacts directory succeeded',
+    errorMessage: 'Copying hermesvm.xcframework to the artifacts directory failed',
     verbose: config.verbose,
   });
 };

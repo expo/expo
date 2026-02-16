@@ -6,6 +6,7 @@ type ErrorType =
   | 'ios-artifacts-directory-unknown-error'
   | 'ios-directory-not-found'
   | 'ios-directory-unknown-error'
+  | 'ios-hermes-framework-not-found'
   | 'ios-scheme-not-found'
   | 'ios-workspace-not-found'
   | 'ios-workspace-unknown-error'
@@ -22,6 +23,7 @@ class CLIError {
       'Unknown error occurred while creating artifacts directory',
     'ios-directory-not-found': 'Cannot find `ios` directory in the project',
     'ios-directory-unknown-error': 'Unknown error occurred while finding brownfield iOS scheme',
+    'ios-hermes-framework-not-found': 'Could not find hermes framework in the project at path',
     'ios-scheme-not-found': 'Could not find brownfield iOS scheme',
     'ios-workspace-not-found': 'Could not find brownfield iOS workspace',
     'ios-workspace-unknown-error': 'Unknown error occurred while finding brownfield iOS workspace',
