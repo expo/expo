@@ -55,7 +55,10 @@ class AuthenticationService: ObservableObject {
 
   func loadUserInfo() async {
     guard isAuthenticated else { return }
+    await fetchUserInfo()
+  }
 
+  private func fetchUserInfo() async {
     do {
       let response: MeUserActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
       user = response.data.meUserActor
@@ -68,28 +71,31 @@ class AuthenticationService: ObservableObject {
     }
   }
 
-  func signIn() async throws {
-    isAuthenticating = true
-    defer { isAuthenticating = false }
-
-    if let sessionSecret = try await performAuthentication(isSignUp: false) {
-      UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
-      await APIClient.shared.setSession(sessionSecret)
-      isAuthenticated = true
-      await loadUserInfo()
-    }
-  }
-
   func signUp() async throws {
     isAuthenticating = true
     defer { isAuthenticating = false }
 
-    if let sessionSecret = try await performAuthentication(isSignUp: true) {
-      UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
-      await APIClient.shared.setSession(sessionSecret)
-      isAuthenticated = true
-      await loadUserInfo()
+    if let sessionSecret = try await performAuthentication(path: "signup") {
+      await completeLogin(with: sessionSecret)
     }
+  }
+
+  func ssoLogin() async throws {
+    isAuthenticating = true
+    defer { isAuthenticating = false }
+
+    if let sessionSecret = try await performAuthentication(path: "sso-login") {
+      await completeLogin(with: sessionSecret)
+    }
+  }
+
+  func completeLogin(with sessionSecret: String) async {
+    UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+    await APIClient.shared.setSession(sessionSecret)
+    // Fetch user info before setting isAuthenticated so account data is ready
+    // when the UI switches to the account selector
+    await fetchUserInfo()
+    isAuthenticated = true
   }
 
   func signOut() {
@@ -108,16 +114,15 @@ class AuthenticationService: ObservableObject {
     UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
   }
 
-  private func performAuthentication(isSignUp: Bool) async throws -> String? {
+  private func performAuthentication(path: String) async throws -> String? {
     let scheme = try getURLScheme()
     let websiteOrigin = APIClient.shared.websiteOrigin
 
     return try await withCheckedThrowingContinuation { continuation in
-      let authType = isSignUp ? "signup" : "login"
       let redirectBase = "\(scheme)://auth"
 
       guard let encodedRedirectURI = redirectBase.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-            let url = URL(string: "\(websiteOrigin)/\(authType)?confirm_account=1&app_redirect_uri=\(encodedRedirectURI)") else {
+            let url = URL(string: "\(websiteOrigin)/\(path)?confirm_account=1&app_redirect_uri=\(encodedRedirectURI)") else {
         continuation.resume(throwing: ExpoGoError.invalidURL)
         return
       }
@@ -142,7 +147,7 @@ class AuthenticationService: ObservableObject {
       }
 
       session.presentationContextProvider = presentationContext
-      session.prefersEphemeralWebBrowserSession = true
+      session.prefersEphemeralWebBrowserSession = false
       session.start()
     }
   }

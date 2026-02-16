@@ -7,7 +7,7 @@ ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '15.1'
+platform :ios, '16.0'
 
 inhibit_all_warnings!
 
@@ -125,7 +125,7 @@ target 'Expo Go' do
       end
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
       end
 
       # On iOS, the Stripe dependency StripePaymentsUI can't seem to find a header that should be there.

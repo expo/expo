@@ -17,6 +17,7 @@ struct Queries {
         accounts {
           id
           name
+          profileImageUrl
           ownerUserActor {
             id
             username
@@ -141,6 +142,7 @@ struct Queries {
             accounts {
               id
               name
+              profileImageUrl
               ownerUserActor {
                 id
                 username

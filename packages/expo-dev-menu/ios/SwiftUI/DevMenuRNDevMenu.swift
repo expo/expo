@@ -12,8 +12,7 @@ struct DevMenuRNDevMenu: View {
         .foregroundColor(.primary)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-    .background(Color.expoSecondarySystemBackground)
-    .cornerRadius(18)
+    .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))
   }
 }
 

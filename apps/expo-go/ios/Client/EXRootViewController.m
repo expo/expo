@@ -5,6 +5,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 
 #import "EXAbstractLoader.h"
+#import "EXAppLoadingCancelView.h"
 #import "EXAppViewController.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
@@ -25,13 +26,15 @@ NSString * const kEXIsLocalNetworkAccessGrantedKey = @"EXIsLocalNetworkAccessGra
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXRootViewController () <EXAppBrowserController>
+@interface EXRootViewController () <EXAppBrowserController, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
 @property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
 @property (nonatomic, strong) HomeViewController *homeViewController;
 @property (nonatomic, strong) NSURL *pendingInitialHomeURL;
+@property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingOverlay;
+@property (nonatomic, assign) BOOL isPendingDelayedDismiss;
 
 @end
 
@@ -170,6 +173,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveHomeToVisible
 {
   [DevMenuManager.shared hideMenu];
+  [self _removeAppLoadingOverlay];  // Always dismiss immediately when going home
+  _homeViewController.initialURL = nil;
   [self _showHomeViewController];
 }
 
@@ -201,6 +206,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (!manifestUrl || !manifest) {
     return;
+  }
+
+  // Skip snack/playground URLs - they use ephemeral channels that won't work when reopened from history
+  NSURLComponents *components = [NSURLComponents componentsWithURL:manifestUrl resolvingAgainstBaseURL:NO];
+  for (NSURLQueryItem *item in components.queryItems) {
+    if ([item.name isEqualToString:@"snack"] || [item.name isEqualToString:@"snack-channel"]) {
+      return;
+    }
   }
 
   NSString *appName = nil;
@@ -271,6 +284,97 @@ NS_ASSUME_NONNULL_BEGIN
   [self _applySupportedInterfaceOrientations];
 }
 
+- (void)showAppLoadingOverlayWithStatusText:(nullable NSString *)statusText
+{
+  [self showAppLoadingOverlayWithStatusText:statusText iconImage:nil dismissDelay:0 fixedDismissDelay:0];
+}
+
+- (void)showAppLoadingOverlayWithStatusText:(nullable NSString *)statusText iconImage:(nullable UIImage *)iconImage dismissDelay:(NSTimeInterval)minimumDisplayDuration fixedDismissDelay:(NSTimeInterval)fixedDismissDelay
+{
+  if (_appLoadingOverlay) {
+    // Already visible or animating in - just make sure it stays visible
+    [_appLoadingOverlay.layer removeAllAnimations];
+    _appLoadingOverlay.alpha = 1.0;
+    if (statusText) {
+      _appLoadingOverlay.statusText = statusText;
+    }
+    if (iconImage) {
+      _appLoadingOverlay.iconImage = iconImage;
+    }
+    if (minimumDisplayDuration > 0) {
+      _appLoadingOverlay.minimumDisplayDuration = minimumDisplayDuration;
+    }
+    if (fixedDismissDelay > 0) {
+      _appLoadingOverlay.fixedDismissDelay = fixedDismissDelay;
+    }
+    return;
+  }
+
+  _appLoadingOverlay = [[EXAppLoadingCancelView alloc] init];
+  _appLoadingOverlay.delegate = self;
+  _appLoadingOverlay.frame = self.view.bounds;
+  _appLoadingOverlay.backgroundColor = [UIColor whiteColor];
+  _appLoadingOverlay.shownAt = CFAbsoluteTimeGetCurrent();
+  _appLoadingOverlay.minimumDisplayDuration = minimumDisplayDuration;
+  _appLoadingOverlay.fixedDismissDelay = fixedDismissDelay;
+  if (statusText) {
+    _appLoadingOverlay.statusText = statusText;
+  }
+  if (iconImage) {
+    _appLoadingOverlay.iconImage = iconImage;
+  }
+  [self.view addSubview:_appLoadingOverlay];
+  [self.view bringSubviewToFront:_appLoadingOverlay];
+}
+
+- (void)hideAppLoadingOverlay
+{
+  if (!_appLoadingOverlay || _isPendingDelayedDismiss) {
+    return;
+  }
+
+  // Calculate how long to wait before dismissing
+  NSTimeInterval delay = _appLoadingOverlay.fixedDismissDelay;  // always added
+  if (delay <= 0) {
+    // Use minimum display duration: only wait if we haven't been visible long enough
+    NSTimeInterval minDuration = _appLoadingOverlay.minimumDisplayDuration;
+    if (minDuration > 0) {
+      NSTimeInterval elapsed = CFAbsoluteTimeGetCurrent() - _appLoadingOverlay.shownAt;
+      delay = MAX(0, minDuration - elapsed);
+    }
+  }
+
+  if (delay > 0) {
+    _isPendingDelayedDismiss = YES;
+    __weak typeof(self) weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      weakSelf.isPendingDelayedDismiss = NO;
+      [weakSelf _removeAppLoadingOverlay];
+    });
+  } else {
+    [self _removeAppLoadingOverlay];
+  }
+}
+
+- (void)_removeAppLoadingOverlay
+{
+  _isPendingDelayedDismiss = NO;
+  if (_appLoadingOverlay) {
+    [_appLoadingOverlay.layer removeAllAnimations];
+    [_appLoadingOverlay removeFromSuperview];
+    _appLoadingOverlay = nil;
+  }
+}
+
+#pragma mark - EXAppLoadingCancelViewDelegate
+
+- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view
+{
+  [self hideAppLoadingOverlay];
+  // Cancel any pending app load by going back to home
+  [self moveHomeToVisible];
+}
+
 #pragma mark - internal
 
 - (void)_foregroundAppRecord:(EXKernelAppRecord *)appRecord
@@ -322,6 +426,10 @@ NS_ASSUME_NONNULL_BEGIN
   }
   [self.view addSubview:viewController.view];
   [self addChildViewController:viewController];
+  // Keep loading overlay on top of child view controllers
+  if (_appLoadingOverlay) {
+    [self.view bringSubviewToFront:_appLoadingOverlay];
+  }
 }
 
 - (void)_detachChildViewController:(UIViewController *)viewController isHidingHome:(BOOL)isHidingHome
@@ -350,29 +458,12 @@ NS_ASSUME_NONNULL_BEGIN
     [viewController didMoveToParentViewController:self];
     self.contentViewController = viewController;
 
-    if (isShowingApp && appRecord.appManager.reactHost) {
-      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
-      [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
-
-      DevMenuConfiguration *config = [DevMenuManager shared].configuration;
-
-      BOOL isDev = appRecord.appLoader.manifest.isDevelopmentMode || appRecord.appLoader.manifest.isUsingDeveloperTool;
-      BOOL isSnack = [self _isSnackURL:appRecord.appLoader.manifestUrl];
-
-      if (!isDev) {
-        config.showDebuggingTip = NO;
-        config.showFastRefresh = NO;
-        config.showHostUrl = isSnack;
-      } else {
-        config.showDebuggingTip = YES;
-        config.showFastRefresh = YES;
-        config.showHostUrl = NO;
-      }
-    }
+    // Dev menu configuration is set in EXReactAppManager where manifest is available
   }
 
   if (isShowingApp) {
     [self.view setNeedsLayout];
+    // Loading overlay is hidden by EXAppViewController when manifest loads
   }
 
   _isAnimatingAppTransition = NO;
@@ -391,6 +482,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
   BOOL shouldAnimate = fromViewController != nil && toViewController != nil;
   if (!shouldAnimate) {
+    completion();
+    return;
+  }
+
+  // Skip fade animation when leaving home (going to an app) to avoid flicker
+  // from loading state resetting while still visible
+  BOOL isLeavingHome = fromViewController == _homeViewController;
+  if (isLeavingHome) {
+    toViewController.view.alpha = 1.0f;
     completion();
     return;
   }

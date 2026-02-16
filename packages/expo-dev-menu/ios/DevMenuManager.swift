@@ -23,6 +23,21 @@ public class DevMenuConfiguration: NSObject {
   /// Whether to show the Fast Refresh toggle
   @objc public var showFastRefresh: Bool = true
 
+  /// Whether to show the Toggle Performance Monitor button
+  @objc public var showPerformanceMonitor: Bool = true
+
+  /// Whether to show the Toggle Element Inspector button
+  @objc public var showElementInspector: Bool = true
+
+  /// Whether to show the runtime/SDK version in the header and app info
+  @objc public var showRuntimeVersion: Bool = true
+
+  /// Whether to show the SYSTEM section (version, runtime version, copy system info)
+  @objc public var showSystemSection: Bool = true
+
+  /// Override the app name shown in the header. When set, this takes precedence over the manifest name.
+  @objc public var appNameOverride: String?
+
   /// Custom title for the onboarding text. Use to replace "development builds" with e.g. "Expo Go".
   /// When nil, the default "development builds" text is used.
   @objc public var onboardingAppName: String?
@@ -74,9 +89,15 @@ open class DevMenuManager: NSObject {
 
   @objc public var configuration = DevMenuConfiguration()
 
+  /// Whether the current app is a lesson-like session (official lesson, playground, or demo project).
+  /// Set by the host app (Expo Go) when opening an app. When true, the FAB is always shown
+  /// regardless of the user's preference.
+  @objc public var isLessonLikeSession: Bool = false
+
   static public var wasInitilized = false
 
   private var contentDidAppearObserver: NSObjectProtocol?
+  private var bridgeDetectionObserver: NSObjectProtocol?
 
   /**
    Shared singleton instance.
@@ -103,11 +124,17 @@ open class DevMenuManager: NSObject {
 
   private var isNavigatingHome = false
 
+  /// Track if user tried to open menu before bridge was ready
+  private var pendingMenuOpen = false
+
   weak var hostDelegate: DevMenuHostDelegate?
 
   @objc
   public private(set) var currentBridge: RCTBridge? {
     didSet {
+      if currentBridge == nil {
+        pendingMenuOpen = false
+      }
       updateAutoLaunchObserver()
 
       if let currentBridge {
@@ -131,10 +158,27 @@ open class DevMenuManager: NSObject {
       object: nil,
       queue: .main
     ) { [weak self] _ in
-      self?.updateFABVisibility()
-      if let observer = self?.contentDidAppearObserver {
+      guard let self else { return }
+
+      // RCTContentDidAppear is the most reliable signal that JS is executing
+      // If bridge wasn't set explicitly by host app, try to get it now
+      if self.currentBridge == nil {
+        if let bridge = RCTBridge.current() {
+          self.currentBridge = bridge
+        }
+      }
+
+      // If user tried to open menu before bridge was ready, open it now
+      if self.pendingMenuOpen {
+        self.pendingMenuOpen = false
+        self.openMenu()
+      } else {
+        self.updateFABVisibility()
+      }
+
+      if let observer = self.contentDidAppearObserver {
         NotificationCenter.default.removeObserver(observer)
-        self?.contentDidAppearObserver = nil
+        self.contentDidAppearObserver = nil
       }
     }
   }
@@ -205,6 +249,7 @@ open class DevMenuManager: NSObject {
   public func updateCurrentManifest(_ manifest: Manifest?, manifestURL: URL?) {
     currentManifest = manifest
     currentManifestURL = manifestURL
+    // Session setup now happens in ExpoGoHomeBridge before the app loads
   }
 
   @objc
@@ -249,15 +294,43 @@ open class DevMenuManager: NSObject {
 
   override init() {
     super.init()
-    self.window = Dispatch.mainSync { DevMenuWindow(manager: self) }
+    self.window = DevMenuWindow(manager: self)
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
     DevMenuPreferences.setup()
     self.readAutoLaunchDisabledState()
+    self.setupBridgeDetectionObserver()
+  }
+
+  /// Persistent observer for RCTContentDidAppear to auto-detect bridge if not set explicitly.
+  private func setupBridgeDetectionObserver() {
+    bridgeDetectionObserver = NotificationCenter.default.addObserver(
+      forName: NSNotification.Name.RCTContentDidAppear,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      guard let self else { return }
+
+      // If bridge wasn't set explicitly, try to get it now
+      if self.currentBridge == nil {
+        if let bridge = RCTBridge.current() {
+          self.currentBridge = bridge
+        }
+      }
+
+      // Fulfill pending menu open if there was one
+      if self.pendingMenuOpen && self.currentBridge != nil {
+        self.pendingMenuOpen = false
+        self.openMenu()
+      }
+    }
   }
 
   deinit {
     NotificationCenter.default.removeObserver(self)
+    if let observer = bridgeDetectionObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
   }
 
   /**
@@ -350,6 +423,8 @@ open class DevMenuManager: NSObject {
     }
 
     isNavigatingHome = true
+    isLessonLikeSession = false
+    pendingMenuOpen = false
 
     #if !os(macOS) && !os(tvOS)
     fabWindow?.setVisible(false, animated: false)
@@ -394,9 +469,15 @@ open class DevMenuManager: NSObject {
       return false
     }
 
+    // Don't allow dev menu to open when on the home screen
+    if visible && isNavigatingHome {
+      return false
+    }
+
     // Don't allow dev menu to open when there's no active React Native bridge
     // This prevents the menu from appearing when the dev-launcher UI is visible
     if visible && currentBridge == nil {
+      pendingMenuOpen = true
       return false
     }
 
@@ -505,6 +586,18 @@ open class DevMenuManager: NSObject {
   }
 
   func reload() {
+    SourceMapService.clearCache()
+
+    #if !os(macOS) && !os(tvOS)
+    fabWindow?.setVisible(false, animated: false)
+    #endif
+
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuReload)) {
+      delegate.devMenuReload?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.reload()
   }
@@ -547,9 +640,13 @@ open class DevMenuManager: NSObject {
     fabWindow = DevMenuFABWindow(manager: self, windowScene: windowScene)
   }
 
+  @objc public func hideFAB() {
+    fabWindow?.setVisible(false, animated: false)
+  }
+
   public func updateFABVisibility() {
     DispatchQueue.main.async { [weak self] in
-      guard let self else { return }
+      guard let self = self else { return }
 
       if self.fabWindow == nil {
         if let windowScene = UIApplication.shared.connectedScenes
@@ -558,7 +655,7 @@ open class DevMenuManager: NSObject {
         }
       }
 
-      let shouldShow = DevMenuPreferences.showFloatingActionButton
+      let shouldShow = (DevMenuPreferences.showFloatingActionButton || self.isLessonLikeSession)
         && !self.isVisible
         && self.currentBridge != nil
         && !self.isNavigatingHome

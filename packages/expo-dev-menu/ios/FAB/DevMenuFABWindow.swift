@@ -30,6 +30,12 @@ class DevMenuFABWindow: UIWindow {
     isHidden = true
     alpha = 0
 
+    recreateFABView()
+  }
+
+  /// Recreates the FAB view to pick up new session state.
+  /// Called when the FAB becomes visible to ensure it reads current session configuration.
+  private func recreateFABView() {
     let fabView = DevMenuFABView(
       onOpenMenu: { [weak self] in
         self?.manager?.openMenu()
@@ -68,6 +74,10 @@ class DevMenuFABWindow: UIWindow {
     targetVisibility = visible
 
     if visible {
+      // Recreate the FAB view to pick up new session state
+      // This ensures the FAB reads current session state when switching between apps
+      recreateFABView()
+
       isHidden = false
       alpha = 0
       transform = edgeTranslation
@@ -99,8 +109,7 @@ class DevMenuFABWindow: UIWindow {
   }
 
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    let hitArea = fabFrame.insetBy(dx: -10, dy: -10)
-    if hitArea.contains(point) {
+    if fabFrame.contains(point) {
       return super.hitTest(point, with: event)
     }
 

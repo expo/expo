@@ -74,11 +74,13 @@ struct UserActor: Codable {
 struct Account: Codable {
   let id: String
   let name: String
+  let profileImageUrl: String?
   let ownerUserActor: UserActorSimple?
 
   enum CodingKeys: String, CodingKey {
     case id
     case name
+    case profileImageUrl
     case ownerUserActor
   }
 }

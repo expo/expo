@@ -1,0 +1,449 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+import Foundation
+import Combine
+
+/// Manages the active snack editing session.
+/// This singleton bridges Expo Go (which opens snacks) and the dev menu (which edits them).
+/// When a published snack is opened, Expo Go sets up a session here that the dev menu can use.
+///
+/// @MainActor ensures all property access is on the main thread for thread safety.
+/// SwiftUI views can observe @Published properties directly.
+@MainActor
+public class SnackEditingSession: ObservableObject {
+  public static let shared = SnackEditingSession()
+
+  /// Notification posted when session state changes (ready/cleared)
+  public static let sessionDidChangeNotification = Notification.Name("SnackEditingSessionDidChange")
+
+  /// Notification posted when code has been edited
+  public static let codeDidChangeNotification = Notification.Name("SnackEditingSessionCodeDidChange")
+
+  // MARK: - Published Properties (UI-affecting, observed by SwiftUI)
+
+  /// Whether the session is ready to respond to RESEND_CODE
+  @Published public private(set) var isReady: Bool = false
+
+  /// The snack display name (fetched from API)
+  @Published public private(set) var snackName: String?
+
+  /// Whether this session is a lesson (for Expo Go Learn tab)
+  @Published public private(set) var isLesson: Bool = false
+
+  /// The lesson ID if this is a lesson session
+  @Published public private(set) var lessonId: Int?
+
+  /// The lesson description if this is a lesson session
+  @Published public private(set) var lessonDescription: String?
+
+  // MARK: - Non-Published Properties (internal state)
+
+  /// The current channel ID
+  public private(set) var channel: String?
+
+  /// The snack identifier (e.g., @username/snackname)
+  public private(set) var snackId: String?
+
+  /// The session client connected to Snackpub
+  public private(set) var sessionClient: SnackSessionClient?
+
+  /// Error if session setup failed
+  public private(set) var setupError: Error?
+
+  /// Whether this is an embedded session (lessons, playground, demo) that uses direct native transport
+  public private(set) var isEmbeddedSession: Bool = false
+
+  /// Files stored locally for embedded sessions (no SnackSessionClient)
+  private var embeddedFiles: [String: SnackSessionClient.SnackFile]?
+
+  /// Original files for embedded sessions (for reset-to-original support)
+  private var originalEmbeddedFiles: [String: SnackSessionClient.SnackFile]?
+
+  /// Dependencies stored locally for embedded sessions
+  private var embeddedDependencies: [String: [String: Any]] = [:]
+
+  private init() {}
+
+  // MARK: - Public Methods
+
+  /// Sets up a new editing session for a published snack.
+  /// This fetches code from the Snack API and sets up a host session.
+  /// - Parameters:
+  ///   - snackId: The snack identifier (e.g., @username/snackname)
+  ///   - channel: The generated channel ID
+  ///   - isStaging: Whether to use staging Snackpub
+  ///   - name: Optional display name (if known, e.g., from GraphQL)
+  public func setupSession(snackId: String, channel: String, isStaging: Bool, name: String? = nil) async {
+    // Clear any existing session first (before fetch, in case fetch fails)
+    clearSession()
+
+    // Set these early so they're available even if fetch fails
+    self.snackId = snackId
+    self.channel = channel
+    self.snackName = name
+
+    do {
+      // Fetch snack code and dependencies from API
+      let (files, dependencies, fetchedName) = try await fetchSnackCode(snackId: snackId, isStaging: isStaging)
+
+      // Use provided name, or fall back to fetched name from API
+      if self.snackName == nil {
+        self.snackName = fetchedName
+      }
+
+      // Set up session with fetched code (pass clearFirst: false since we already cleared)
+      await setupSessionWithCode(
+        snackId: snackId,
+        code: files,
+        dependencies: dependencies,
+        channel: channel,
+        isStaging: isStaging,
+        clearFirst: false
+      )
+    } catch {
+      self.setupError = error
+    }
+  }
+
+  /// Sets up an editing session with provided code.
+  /// This is the core method - setupSession calls this after fetching code from API.
+  /// - Parameters:
+  ///   - snackId: Optional snack ID (use "new" for new playgrounds)
+  ///   - code: The code files to host
+  ///   - dependencies: Dependencies to include (empty for new playgrounds)
+  ///   - channel: The generated channel ID
+  ///   - isStaging: Whether to use staging Snackpub
+  ///   - clearFirst: Whether to clear existing session (false when called from setupSession which already cleared)
+  ///   - isLesson: Whether this is a lesson session from Expo Go Learn tab
+  ///   - lessonId: The lesson ID if this is a lesson session
+  ///   - isEmbedded: Whether to use direct native transport instead of Snackpub WebSocket
+  public func setupSessionWithCode(
+    snackId: String = "new",
+    code: [String: SnackSessionClient.SnackFile],
+    dependencies: [String: [String: Any]] = [:],
+    channel: String,
+    isStaging: Bool = false,
+    clearFirst: Bool = true,
+    isLesson: Bool = false,
+    lessonId: Int? = nil,
+    lessonDescription: String? = nil,
+    isEmbedded: Bool = false
+  ) async {
+    // Clear any existing session (unless caller already did)
+    if clearFirst {
+      clearSession()
+    }
+
+    self.snackId = snackId
+    self.channel = channel
+    self.setupError = nil
+    self.isLesson = isLesson
+    self.lessonId = lessonId
+    self.lessonDescription = lessonDescription
+
+    if isEmbedded {
+      // Embedded session: store files locally, skip Snackpub WebSocket entirely.
+      // The snack runtime will communicate via SnackDirectTransport native module.
+      self.isEmbeddedSession = true
+      self.originalEmbeddedFiles = code
+      self.embeddedFiles = code
+      self.embeddedDependencies = dependencies
+      self.isReady = true
+      // Set the static flag before createNewApp() starts React Native,
+      // so the SnackDirectTransport module reads it as true during init.
+      SnackDirectTransport.isEmbeddedSessionAvailable = true
+      return
+    }
+
+    // Create session client in host mode with provided code
+    let client = SnackSessionClient(
+      channel: channel,
+      isStaging: isStaging,
+      hostedFiles: code,
+      hostedDependencies: dependencies
+    )
+
+    self.sessionClient = client
+
+    // Connect to Snackpub
+    // Use a flag to ensure the continuation is only resumed once.
+    // Both onReady and onError can fire, and onError can fire after onReady
+    // if the WebSocket disconnects later - we only want the first callback to resume.
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      var hasResumed = false
+      client.connectAsHost(
+        onReady: {
+          guard !hasResumed else { return }
+          hasResumed = true
+          self.isReady = true
+          continuation.resume()
+        },
+        onError: { error in
+          guard !hasResumed else { return }
+          hasResumed = true
+          self.setupError = error
+          continuation.resume()
+        }
+      )
+    }
+  }
+
+  /// Gets the current files in the session
+  public var currentFiles: [String: SnackSessionClient.SnackFile]? {
+    if isEmbeddedSession {
+      return embeddedFiles
+    }
+    return sessionClient?.currentFiles
+  }
+
+  /// Whether the code has been edited since session started
+  public var hasBeenEdited: Bool {
+    if isEmbeddedSession {
+      return embeddedHasBeenEdited
+    }
+    return sessionClient?.hasBeenEdited ?? false
+  }
+
+  private var embeddedHasBeenEdited: Bool = false
+
+  /// The display name for this snack, extracted from snackName or snackId
+  public var displayName: String {
+    // Prefer the fetched display name
+    if let name = snackName, !name.isEmpty {
+      return name
+    }
+    // Extract from snack ID
+    if let id = snackId {
+      if id == "new" {
+        return "Playground"
+      }
+      if let lastSlash = id.lastIndex(of: "/") {
+        return String(id[id.index(after: lastSlash)...])
+      }
+      return id
+    }
+    return "Playground"
+  }
+
+  /// Whether this is a lesson-like session (official lesson or snack with "lesson"/"learn"/"playground" in name)
+  /// Official lessons don't need to wait for Snackpub connection - the lesson info is set upfront.
+  /// For snacks detected by name, we need the session to be ready to have the display name.
+  public var isLessonLikeSession: Bool {
+    // Official lessons are known immediately (set before Snackpub connects)
+    if isLesson { return true }
+    // For name-based detection, need session to be ready
+    guard isReady else { return false }
+    return displayName.localizedCaseInsensitiveContains("lesson") ||
+           displayName.localizedCaseInsensitiveContains("learn") ||
+           displayName.localizedCaseInsensitiveContains("playground")
+  }
+
+  /// Resets files to original (discards edits). Call this on app reload.
+  public func resetFiles() {
+    if isEmbeddedSession {
+      if let originals = originalEmbeddedFiles {
+        embeddedFiles = originals
+      }
+      embeddedHasBeenEdited = false
+      return
+    }
+    sessionClient?.resetToOriginalFiles()
+  }
+
+  /// Resets files to original and broadcasts to the runtime (no reload needed)
+  public func resetAndBroadcast() {
+    if isEmbeddedSession {
+      if let originals = originalEmbeddedFiles {
+        embeddedFiles = originals
+      }
+      embeddedHasBeenEdited = false
+      if let codeMessage = buildCodeMessage() {
+        SnackDirectTransport.shared?.sendCodeUpdate(codeMessage)
+      }
+      NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+      return
+    }
+    sessionClient?.resetAndBroadcast()
+  }
+
+  /// Clears the current session.
+  /// Should be called when the snack is closed or a new snack is opened.
+  public func clearSession() {
+    sessionClient?.disconnect()
+    sessionClient = nil
+    channel = nil
+    snackId = nil
+    setupError = nil
+
+    // Clear embedded session state
+    isEmbeddedSession = false
+    SnackDirectTransport.isEmbeddedSessionAvailable = false
+    embeddedFiles = nil
+    originalEmbeddedFiles = nil
+    embeddedDependencies = [:]
+    embeddedHasBeenEdited = false
+
+    // Clear @Published properties - SwiftUI will batch these updates
+    snackName = nil
+    isReady = false
+    isLesson = false
+    lessonId = nil
+    lessonDescription = nil
+
+    // Post notification for non-SwiftUI observers
+    NotificationCenter.default.post(name: Self.sessionDidChangeNotification, object: nil)
+  }
+
+  /// Checks if there's an active session for the given channel
+  func hasActiveSession(forChannel channel: String) -> Bool {
+    return self.channel == channel && isReady && (sessionClient != nil || isEmbeddedSession)
+  }
+
+  // MARK: - Embedded Session Methods
+
+  /// Builds a CODE message from the stored embedded files and dependencies.
+  /// Returns nil if this isn't an embedded session or has no files.
+  func buildCodeMessage() -> [String: Any]? {
+    guard let files = embeddedFiles else { return nil }
+
+    var allDiffs: [String: String] = [:]
+    var s3urls: [String: String] = [:]
+
+    for (path, file) in files {
+      let isS3Url = file.contents.hasPrefix("https://snack-code-uploads.s3")
+
+      if file.isAsset || isS3Url {
+        allDiffs[path] = ""
+        s3urls[path] = file.contents
+      } else {
+        allDiffs[path] = SnackSessionClient.generateUnifiedDiff(oldContents: "", newContents: file.contents)
+      }
+    }
+
+    return [
+      "type": "CODE",
+      "diff": allDiffs,
+      "s3url": s3urls,
+      "dependencies": embeddedDependencies,
+      "metadata": [:] as [String: Any]
+    ]
+  }
+
+  /// Updates a file in an embedded session and broadcasts the change via direct transport.
+  func updateEmbeddedFile(path: String, oldContents: String, newContents: String) {
+    guard isEmbeddedSession, embeddedFiles != nil else { return }
+
+    // Update the stored file
+    embeddedFiles?[path] = SnackSessionClient.SnackFile(path: path, contents: newContents, isAsset: false)
+
+    // Build and send updated CODE message via direct transport
+    if let codeMessage = buildCodeMessage() {
+      SnackDirectTransport.shared?.sendCodeUpdate(codeMessage)
+    }
+
+    // Mark as edited and notify observers
+    if !embeddedHasBeenEdited {
+      embeddedHasBeenEdited = true
+      NotificationCenter.default.post(name: Self.codeDidChangeNotification, object: nil)
+    }
+  }
+
+  // MARK: - Private Methods
+
+  /// Fetches snack code from the Snack API
+  private func fetchSnackCode(snackId: String, isStaging: Bool) async throws -> (files: [String: SnackSessionClient.SnackFile], dependencies: [String: [String: Any]], name: String?) {
+    let apiHost = isStaging ? "https://staging.exp.host" : "https://exp.host"
+
+    // Handle @snack/ prefix
+    let cleanId = snackId.hasPrefix("@snack/") ? String(snackId.dropFirst(7)) : snackId
+
+    guard let apiURL = URL(string: "\(apiHost)/--/api/v2/snack/\(cleanId)") else {
+      throw SnackEditingSessionError.invalidURL
+    }
+
+    var request = URLRequest(url: apiURL)
+    request.setValue("3.0.0", forHTTPHeaderField: "Snack-Api-Version")
+    request.setValue("expo-go/1.0", forHTTPHeaderField: "User-Agent")
+
+    let (data, response) = try await URLSession.shared.data(for: request)
+
+    if let httpResponse = response as? HTTPURLResponse,
+       !(200...299).contains(httpResponse.statusCode) {
+      throw SnackEditingSessionError.httpError(httpResponse.statusCode)
+    }
+
+    let snackResponse = try JSONDecoder().decode(SnackApiResponse.self, from: data)
+
+    // Convert to SnackFile format
+    var files: [String: SnackSessionClient.SnackFile] = [:]
+    for (path, file) in snackResponse.code {
+      files[path] = SnackSessionClient.SnackFile(
+        path: path,
+        contents: file.contents,
+        isAsset: file.type == "ASSET"
+      )
+    }
+
+    // Convert dependencies to full objects for CODE message protocol
+    // Format: { name: { version, resolved, handle } }
+    var dependencies: [String: [String: Any]] = [:]
+    if let deps = snackResponse.dependencies {
+      for (name, dep) in deps {
+        var depObj: [String: Any] = ["version": dep.version]
+        if let handle = dep.handle {
+          depObj["handle"] = handle
+          // Extract resolved version from handle (format: snackager-X/package@version)
+          if let atIndex = handle.lastIndex(of: "@") {
+            let resolved = String(handle[handle.index(after: atIndex)...])
+            depObj["resolved"] = resolved
+          } else {
+            depObj["resolved"] = dep.version
+          }
+        }
+        dependencies[name] = depObj
+      }
+    }
+
+    return (files, dependencies, snackResponse.name)
+  }
+}
+
+// MARK: - Error Types
+
+enum SnackEditingSessionError: LocalizedError {
+  case invalidURL
+  case httpError(Int)
+  case noFilesReceived
+
+  var errorDescription: String? {
+    switch self {
+    case .invalidURL:
+      return "Invalid Snack API URL"
+    case .httpError(let code):
+      return "Snack API returned error: \(code)"
+    case .noFilesReceived:
+      return "No files received from Snack API"
+    }
+  }
+}
+
+// MARK: - API Response Types
+
+private struct SnackApiResponse: Codable {
+  let id: String
+  let hashId: String
+  let name: String?
+  let code: [String: SnackApiFile]
+  let dependencies: [String: SnackDependency]?
+
+  struct SnackApiFile: Codable {
+    let type: String  // "CODE" or "ASSET"
+    let contents: String
+  }
+
+  struct SnackDependency: Codable {
+    let version: String
+    let handle: String?
+    let peerDependencies: [String: String]?
+  }
+}

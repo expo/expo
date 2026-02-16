@@ -4,7 +4,12 @@ import SwiftUI
 
 struct ProjectRow: View {
   let project: ExpoProject
+  var isLoading: Bool = false
   let onTap: () -> Void
+
+  private var hasUpdates: Bool {
+    project.firstTwoBranches.contains { !$0.updates.isEmpty }
+  }
 
   var body: some View {
     Button {
@@ -16,6 +21,7 @@ struct ProjectRow: View {
             .font(.body)
             .fontWeight(.semibold)
             .foregroundColor(.primary)
+            .opacity(hasUpdates ? 1 : 0.5)
 
           Text(project.fullName)
             .font(.caption)
@@ -24,9 +30,13 @@ struct ProjectRow: View {
 
         Spacer()
 
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+        if isLoading {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
