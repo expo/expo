@@ -6,15 +6,15 @@ import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/ma
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
     ...manifest,
-    htmlRoutes: manifest.htmlRoutes.map((route) => ({
+    htmlRoutes: manifest.htmlRoutes?.map((route) => ({
       ...route,
       namedRegex: new RegExp(route.namedRegex),
     })),
-    apiRoutes: manifest.apiRoutes.map((route) => ({
+    apiRoutes: manifest.apiRoutes?.map((route) => ({
       ...route,
       namedRegex: new RegExp(route.namedRegex),
     })),
-    notFoundRoutes: manifest.notFoundRoutes.map((route) => ({
+    notFoundRoutes: manifest.notFoundRoutes?.map((route) => ({
       ...route,
       namedRegex: new RegExp(route.namedRegex),
     })),
@@ -37,7 +37,7 @@ interface EnvironmentInput {
 }
 
 export interface CommonEnvironment {
-  getRoutesManifest(): Promise<Manifest>;
+  getRoutesManifest(): Promise<Manifest | null>;
   getHtml(request: Request, route: Route): Promise<string | Response | null>;
   getApiRoute(route: Route): Promise<unknown>;
   getMiddleware(middleware: MiddlewareInfo): Promise<any>;
@@ -47,13 +47,13 @@ export interface CommonEnvironment {
 
 export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
   // Cached manifest and SSR renderer, initialized on first request
-  let cachedManifest: Manifest | null = null;
+  let cachedManifest: Manifest | null | undefined;
   let ssrRenderer: SsrRenderFn | null = null;
 
-  async function getRoutesManifest(): Promise<Manifest> {
-    if (!cachedManifest || input.isDevelopment) {
+  async function getRoutesManifest(): Promise<Manifest | null> {
+    if (cachedManifest === undefined || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
-      cachedManifest = initManifestRegExp(json as RawManifest);
+      cachedManifest = json ? initManifestRegExp(json as RawManifest) : null;
     }
     return cachedManifest;
   }
@@ -64,7 +64,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
     }
 
     const manifest = await getRoutesManifest();
-    if (manifest.rendering?.mode !== 'ssr') {
+    if (manifest?.rendering?.mode !== 'ssr') {
       return null;
     }
 
@@ -181,14 +181,16 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
         return;
       }
       const manifest = await getRoutesManifest();
-      const requests: string[] = [];
-      if (manifest.middleware) requests.push(manifest.middleware.file);
-      if (manifest.rendering) requests.push(manifest.rendering.file);
-      for (const apiRoute of manifest.apiRoutes) requests.push(apiRoute.file);
-      for (const htmlRoute of manifest.htmlRoutes) {
-        if (htmlRoute.loader) requests.push(htmlRoute.loader);
+      if (manifest) {
+        const requests: string[] = [];
+        if (manifest.middleware) requests.push(manifest.middleware.file);
+        if (manifest.rendering) requests.push(manifest.rendering.file);
+        for (const apiRoute of manifest.apiRoutes) requests.push(apiRoute.file);
+        for (const htmlRoute of manifest.htmlRoutes) {
+          if (htmlRoute.loader) requests.push(htmlRoute.loader);
+        }
+        await Promise.all(requests.map((request) => input.loadModule(request)));
       }
-      await Promise.all(requests.map((request) => input.loadModule(request)));
     },
   };
 }
