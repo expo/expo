@@ -42,7 +42,7 @@ program
 // tasks:android
 program
     .command('tasks:android')
-    .description('List available publishing tasks and repositories for android')
+    .description('List available publishing tasks and repositories for Android')
     .option('--verbose', 'forward all output to the terminal')
     .option('-l, --library <library>', 'name of the brownfield library')
     .option('--dry-run', 'only print the commands without executing them')

@@ -74,7 +74,8 @@ export const processTasks = (stdout: string): string[] => {
       .split('\n')
       .map((line) => regex.exec(line)?.[0])
       // Remove duplicate maven local tasks
-      .filter((task) => task && !task.includes('MavenLocalRepository')) as string[]
+      .filter((task) => task !== undefined)
+      .filter((task) => !task.includes('MavenLocalRepository'))
   );
 };
 
