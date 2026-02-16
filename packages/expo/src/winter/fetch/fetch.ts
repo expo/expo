@@ -6,7 +6,7 @@ import { normalizeBodyInitAsync, normalizeHeadersInit, overrideHeaders } from '.
 import type { FetchRequestInit } from './fetch.types';
 
 // TODO(@kitten): Do we really want to use our own types for web standards?
-export async function fetch(url: string, init?: FetchRequestInit): Promise<FetchResponse> {
+export async function fetch(url: string | URL, init?: FetchRequestInit): Promise<FetchResponse> {
   let abortSubscription: AbortSubscriptionCleanupFunction | null = null;
 
   const response = new FetchResponse(() => {
@@ -35,7 +35,7 @@ export async function fetch(url: string, init?: FetchRequestInit): Promise<Fetch
     request.cancel();
   });
   try {
-    await request.start(url, nativeRequestInit, requestBody);
+    await request.start(`${url}`, nativeRequestInit, requestBody);
   } catch (e: unknown) {
     if (e instanceof Error) {
       throw FetchError.createFromError(e);
