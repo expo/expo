@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Render widgets in JSC. ([#42987](https://github.com/expo/expo/pull/42987) by [@jakex7](https://github.com/jakex7))
+- Create widgets runtime bundle at build time. ([#43170](https://github.com/expo/expo/pull/43170) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
