@@ -43,12 +43,12 @@ const elephantsDreamSource: VideoSource = {
 };
 
 export const hlsSource: VideoSource = {
-  uri: 'https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+  uri: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8',
   metadata: {
-    title: 'Sintel',
-    artist: 'Blender Foundation',
+    title: 'Becoming You Trailer',
+    artist: 'Apple',
     artwork:
-      'https://bookshow.blurb.com/bookshow/cache/P14464689/md/cover_2.jpeg?access_key=a096a6a606efe615ac87edc04766c661',
+      'https://www.apple.com/tv-pr/shows-and-films/b/becoming-you/images/show-home-graphic-header/4x1/Apple_TV_Becoming_You_key_art_graphic_header_4_1_show_home.jpg.og.jpg?1659052681724',
   },
 };
 
@@ -110,7 +110,7 @@ const videoLabels: string[] = [
   'Big Buck Bunny',
   'Elephants Dream',
   'For Bigger Blazes',
-  'Sintel (HLS)',
+  'Becoming You (HLS)',
   'Cute Doggo (local video)',
   'Null Source',
   'Audio Track',
