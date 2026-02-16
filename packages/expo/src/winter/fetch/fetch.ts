@@ -24,7 +24,7 @@ export async function fetch(url: string | URL, init?: FetchRequestInit): Promise
   const nativeRequestInit: NativeRequestInit = {
     credentials: init?.credentials ?? 'include',
     headers,
-    method: init?.method ?? 'GET',
+    method: init?.method?.toUpperCase() ?? 'GET',
     redirect: init?.redirect ?? 'follow',
   };
 
