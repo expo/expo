@@ -321,7 +321,6 @@ export default function HeaderItemsScreen() {
           {/* Xcasset icon buttons */}
           <Stack.Toolbar.Button
             hidden={!showXcassetButton1}
-            tintColor={Color.ios.systemTeal}
             onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
             <Stack.Toolbar.Icon xcasset="expo-logo" />
           </Stack.Toolbar.Button>
@@ -333,10 +332,7 @@ export default function HeaderItemsScreen() {
           </Stack.Toolbar.Button>
 
           {/* Xcasset icon menus */}
-          <Stack.Toolbar.Menu
-            hidden={!showXcassetMenu1}
-            title="Xcasset Menu 1"
-            tintColor={Color.ios.systemTeal}>
+          <Stack.Toolbar.Menu hidden={!showXcassetMenu1} title="Xcasset Menu 1">
             <Stack.Toolbar.Icon xcasset="expo-logo" />
             <Stack.Toolbar.Label>Expo Logo</Stack.Toolbar.Label>
             <Stack.Toolbar.MenuAction

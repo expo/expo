@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [ios] add support for renderingMode of xcassets in header items and bottom tabs ([#43185](https://github.com/expo/expo/pull/43185) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
