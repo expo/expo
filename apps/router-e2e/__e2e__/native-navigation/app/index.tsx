@@ -25,6 +25,8 @@ const HomeIndex = () => {
       <CaseLink href="/tabs" text="Native Tabs" />
       <CaseLink href="/toolbar" text="Toolbar" />
       <CaseLink href="/header-items" text="Header Items" />
+      <CaseLink href="/composition-lifecycle" text="Composition Lifecycle" />
+      <CaseLink href="/composition-conflicts" text="Composition Conflicts" />
       <CaseLink href="/modals" text="Modals" />
       <CaseLink href="/params" text="Params" />
     </ScrollView>

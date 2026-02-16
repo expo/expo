@@ -38,6 +38,7 @@ const native_1 = require("@react-navigation/native");
 const native_stack_1 = require("@react-navigation/native-stack");
 const expo_glass_effect_1 = require("expo-glass-effect");
 const React = __importStar(require("react"));
+const composition_options_1 = require("./composition-options");
 const descriptors_context_1 = require("./descriptors-context");
 const usePreviewTransition_1 = require("./usePreviewTransition");
 const navigationParams_1 = require("../../navigationParams");
@@ -112,20 +113,25 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         }
         return needsNewMap ? result : computedDescriptors;
     }, [computedDescriptors]);
+    const { registry, contextValue } = (0, composition_options_1.useCompositionRegistry)();
+    const mergeCacheRef = React.useRef(new Map());
+    const mergedDescriptors = React.useMemo(() => (0, composition_options_1.mergeOptions)(finalDescriptors, registry, computedState, mergeCacheRef.current), [finalDescriptors, computedState, registry]);
     // END FORK
     return (
     // START FORK
     <descriptors_context_1.DescriptorsContext value={descriptors}>
       {/* END FORK */}
       <NavigationContent>
-        <native_stack_1.NativeStackView {...rest} 
+        <composition_options_1.CompositionContext value={contextValue}>
+          <native_stack_1.NativeStackView {...rest} 
     // START FORK
-    state={computedState} navigation={navigationWrapper} descriptors={finalDescriptors} 
+    state={computedState} navigation={navigationWrapper} descriptors={mergedDescriptors} 
     // state={state}
     // navigation={navigation}
     // descriptors={descriptors}
     // END FORK
     describe={describe}/>
+        </composition_options_1.CompositionContext>
       </NavigationContent>
       {/* START FORK */}
     </descriptors_context_1.DescriptorsContext>

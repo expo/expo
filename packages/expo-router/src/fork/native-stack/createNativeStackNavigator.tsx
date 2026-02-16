@@ -22,6 +22,12 @@ import {
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 
+import {
+  CompositionContext,
+  mergeOptions,
+  useCompositionRegistry,
+  type MergeOptionsCache,
+} from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
 import { usePreviewTransition } from './usePreviewTransition';
 import {
@@ -132,6 +138,14 @@ function NativeStackNavigator({
     }
     return needsNewMap ? result : computedDescriptors;
   }, [computedDescriptors]);
+  const { registry, contextValue } = useCompositionRegistry();
+
+  const mergeCacheRef = React.useRef<MergeOptionsCache>(new Map());
+
+  const mergedDescriptors = React.useMemo(
+    () => mergeOptions(finalDescriptors, registry, computedState, mergeCacheRef.current),
+    [finalDescriptors, computedState, registry]
+  );
   // END FORK
 
   return (
@@ -139,18 +153,20 @@ function NativeStackNavigator({
     <DescriptorsContext value={descriptors}>
       {/* END FORK */}
       <NavigationContent>
-        <NativeStackView
-          {...rest}
-          // START FORK
-          state={computedState}
-          navigation={navigationWrapper}
-          descriptors={finalDescriptors}
-          // state={state}
-          // navigation={navigation}
-          // descriptors={descriptors}
-          // END FORK
-          describe={describe}
-        />
+        <CompositionContext value={contextValue}>
+          <NativeStackView
+            {...rest}
+            // START FORK
+            state={computedState}
+            navigation={navigationWrapper}
+            descriptors={mergedDescriptors}
+            // state={state}
+            // navigation={navigation}
+            // descriptors={descriptors}
+            // END FORK
+            describe={describe}
+          />
+        </CompositionContext>
       </NavigationContent>
       {/* START FORK */}
     </DescriptorsContext>
