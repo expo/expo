@@ -21,10 +21,12 @@ export interface FetchRequestInit {
  * A fetch Request compatible structure.
  */
 export interface FetchRequestLike {
-  url: string;
-  body: BodyInit | null;
-  credentials?: RequestCredentials;
-  method: string;
-  signal?: AbortSignal;
-  redirect?: RequestRedirect;
+  readonly url: string;
+  readonly body: BodyInit | null;
+  readonly method: string;
+
+  // Not always supported, marked as optional
+  readonly credentials?: RequestCredentials;
+  readonly signal?: AbortSignal;
+  readonly redirect?: RequestRedirect;
 }
