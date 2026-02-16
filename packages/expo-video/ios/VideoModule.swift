@@ -143,8 +143,7 @@ public final class VideoModule: Module {
     }
 
     Class(VideoPlayer.self) {
-      // playerBuilderOptions - NOOP on iOS
-      Constructor { (source: VideoSource?, useSynchronousReplace: Bool?, _: [String: Any?]?) -> VideoPlayer in
+      Constructor { (source: VideoSource?, useSynchronousReplace: Bool?, /* playerBuilderOptions - Android only */ _: [String: Any?]?) -> VideoPlayer in
         let useSynchronousReplace = useSynchronousReplace ?? false
         let player = AVPlayer()
         let videoPlayer = try VideoPlayer(player, initialSource: source, useSynchronousReplace: useSynchronousReplace)

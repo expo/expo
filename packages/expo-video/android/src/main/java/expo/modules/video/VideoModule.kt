@@ -74,8 +74,7 @@ class VideoModule : Module() {
     }
 
     Class(VideoPlayer::class) {
-      // @param _ - useSynchronousReplace - iOS-only
-      Constructor { source: VideoSource?, _: Boolean?, playerBuilderOptions: PlayerBuilderOptions? ->
+      Constructor { source: VideoSource?, /* useSynchronousReplace - iOS-only */ _: Boolean?, playerBuilderOptions: PlayerBuilderOptions? ->
         val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source, playerBuilderOptions)
         appContext.mainQueue.launch {
           player.prepare()

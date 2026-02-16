@@ -53,6 +53,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
@@ -71,16 +72,18 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
   val trackSelector = DefaultTrackSelector(context)
 
-  val player = ExoPlayer.Builder(context, renderersFactory).apply {
-    setLooper(context.mainLooper)
-    setLoadControl(loadControl)
-    playerBuilderOptions?.seekBackwardIncrement?.let {
-      setSeekBackIncrementMs((it * 1000).toLong().coerceIn(1, 999_000))
-    }
-    playerBuilderOptions?.seekForwardIncrement?.let {
-      setSeekForwardIncrementMs((it * 1000).toLong().coerceIn(1, 999_000))
-    }
-  }.build()
+  val player = ExoPlayer
+    .Builder(context, renderersFactory)
+    .apply {
+      setLooper(context.mainLooper)
+      setLoadControl(loadControl)
+      playerBuilderOptions?.seekBackwardIncrement?.let {
+        setSeekBackIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+      playerBuilderOptions?.seekForwardIncrement?.let {
+        setSeekForwardIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+    }.build()
 
   internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
