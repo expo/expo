@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `ColorPicker` `onSelectionChange` callback never firing due to native event name mismatch. ([#43180](https://github.com/expo/expo/pull/43180) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `clipShape` and `mask` modifiers silently falling through to `Rectangle()` for `capsule` and `ellipse` shapes. ([#43158](https://github.com/expo/expo/pull/43158) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Fix rendering `0` in SwiftUI Text. ([#43036](https://github.com/expo/expo/pull/43036) by [@jakex7](https://github.com/jakex7))
 - [iOS] Set initial state in `init` instead of `onAppear` in `DatePicker`, `Section`, `DisclosureGroup`, `Popover`, and `ColorPicker` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
