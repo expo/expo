@@ -17,6 +17,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private sourceNode;
     private samplingFrameId;
     private samplingEnabled;
+    private samplingBuffer;
     get playing(): boolean;
     get muted(): boolean;
     set muted(value: boolean);
@@ -36,6 +37,8 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     replace(source: AudioSource): void;
     seekTo(seconds: number, toleranceMillisBefore?: number, toleranceMillisAfter?: number): Promise<void>;
     setAudioSamplingEnabled(enabled: boolean): void;
+    private startSampling;
+    private stopSampling;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;
     setActiveForLockScreen(active: boolean, metadata?: AudioMetadata, options?: AudioLockScreenOptions): void;
