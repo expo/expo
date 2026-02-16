@@ -346,7 +346,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
     formattedMessage = rawMessage; // No compatible experience found at ${originalUrl}. Only ${currentSdkVersions} are supported.
   } else if ([errorCode isEqualToString:@"EXPERIENCE_NOT_VIEWABLE"]) {
-    formattedMessage = @"The experience you requested is not viewable by you."; 
+    formattedMessage = @"The project you requested is not viewable by you."; 
     fixInstructions = @"You need to log in. If the snack is still unavailable after logging in, ask the owner to grant you access.";
   } else if ([errorCode isEqualToString:@"USER_SNACK_NOT_FOUND"] || [errorCode isEqualToString:@"SNACK_NOT_FOUND"]) {
     formattedMessage = [NSString stringWithFormat:@"No snack found at %@.", self.originalUrl];

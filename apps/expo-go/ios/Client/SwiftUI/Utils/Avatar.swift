@@ -2,14 +2,21 @@
 
 import SwiftUI
 
-// Gravatar urls do not work with AsyncImage. We need to download the image ourselves
+// Gravatar URLs do not work with AsyncImage because React Native registers
+// custom URL protocol handlers that intercept the requests. We bypass them
+// with an ephemeral session that has no custom protocol classes.
+private let avatarImageSession: URLSession = {
+  let config = URLSessionConfiguration.ephemeral
+  config.protocolClasses = []
+  return URLSession(configuration: config)
+}()
+
 struct Avatar<Content: View, Placeholder: View>: View {
   let url: URL
   let content: (Image) -> Content
   let placeholder: () -> Placeholder
 
   @State private var image: UIImage?
-  @State private var isLoading = false
 
   init(
     url: URL,
@@ -35,32 +42,14 @@ struct Avatar<Content: View, Placeholder: View>: View {
   }
 
   private func loadImage() async {
-    guard !isLoading else {
-      return
-    }
-    isLoading = true
-
     do {
-      let config = URLSessionConfiguration.ephemeral
-      config.protocolClasses = []
-      let session = URLSession(configuration: config)
-
-      let (data, _) = try await session.data(from: url)
+      let (data, _) = try await avatarImageSession.data(from: url)
 
       if let uiImage = UIImage(data: data) {
-        await MainActor.run {
-          self.image = uiImage
-          self.isLoading = false
-        }
-      } else {
-        await MainActor.run {
-          self.isLoading = false
-        }
+        self.image = uiImage
       }
     } catch {
-      await MainActor.run {
-        self.isLoading = false
-      }
+      // Image load failed or was cancelled
     }
   }
 }

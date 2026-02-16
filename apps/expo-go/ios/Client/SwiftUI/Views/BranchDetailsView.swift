@@ -7,6 +7,7 @@ struct BranchDetailsView: View {
   let branchName: String
   @StateObject private var viewModel: BranchDetailsViewModel
   @EnvironmentObject var homeViewModel: HomeViewModel
+  @State private var loadingUpdateId: String?
 
   init(projectId: String, branchName: String) {
     self.projectId = projectId
@@ -39,9 +40,11 @@ struct BranchDetailsView: View {
               VStack(spacing: 6) {
                 ForEach(branch.updates) { update in
                   let compatible = isSDKCompatible(update.expoGoSDKVersion)
-                  UpdateRow(update: update, isCompatible: compatible) {
+                  UpdateRow(update: update, isCompatible: compatible, isLoading: loadingUpdateId == update.id) {
+                    loadingUpdateId = update.id
                     openUpdate(update)
                   }
+                  .disabled(homeViewModel.isLoadingApp)
                 }
               }
             }
@@ -70,6 +73,11 @@ struct BranchDetailsView: View {
     }
     .task {
       await viewModel.loadBranch()
+    }
+    .onChange(of: homeViewModel.isLoadingApp) { isLoading in
+      if !isLoading {
+        loadingUpdateId = nil
+      }
     }
   }
 
