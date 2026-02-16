@@ -1,4 +1,4 @@
-import { createEnvironment } from './common';
+import { type CommonEnvironment, createEnvironment } from './common';
 import { createRequestScope } from '../../runtime';
 import type { ScopeDefinition } from '../../runtime/scope';
 
@@ -28,7 +28,7 @@ interface WorkerdEnvParams {
   isDevelopment?: boolean;
 }
 
-export function createWorkerdEnv(params: WorkerdEnvParams) {
+export function createWorkerdEnv(params: WorkerdEnvParams): CommonEnvironment {
   const build = params.build || '.';
   const importCached = createCachedImport();
 

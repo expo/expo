@@ -36,12 +36,21 @@ interface EnvironmentInput {
   isDevelopment: boolean;
 }
 
-export function createEnvironment(input: EnvironmentInput) {
+export interface CommonEnvironment {
+  getRoutesManifest(): Promise<Manifest>;
+  getHtml(request: Request, route: Route): Promise<string | Response | null>;
+  getApiRoute(route: Route): Promise<unknown>;
+  getMiddleware(middleware: MiddlewareInfo): Promise<any>;
+  getLoaderData(request: Request, route: Route): Promise<Response>;
+  preload(): Promise<void>;
+}
+
+export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
   // Cached manifest and SSR renderer, initialized on first request
   let cachedManifest: Manifest | null = null;
   let ssrRenderer: SsrRenderFn | null = null;
 
-  async function getCachedRoutesManifest(): Promise<Manifest> {
+  async function getRoutesManifest(): Promise<Manifest> {
     if (!cachedManifest || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
       cachedManifest = initManifestRegExp(json as RawManifest);
@@ -54,7 +63,7 @@ export function createEnvironment(input: EnvironmentInput) {
       return ssrRenderer;
     }
 
-    const manifest = await getCachedRoutesManifest();
+    const manifest = await getRoutesManifest();
     if (manifest.rendering?.mode !== 'ssr') {
       return null;
     }
@@ -100,11 +109,9 @@ export function createEnvironment(input: EnvironmentInput) {
   }
 
   return {
-    async getRoutesManifest(): Promise<Manifest> {
-      return getCachedRoutesManifest();
-    },
+    getRoutesManifest,
 
-    async getHtml(request: Request, route: Route): Promise<string | Response | null> {
+    async getHtml(request, route) {
       // SSR path: Render at runtime if SSR module is available
       const renderer = await getServerRenderer();
       if (renderer) {
@@ -146,11 +153,11 @@ export function createEnvironment(input: EnvironmentInput) {
       return null;
     },
 
-    async getApiRoute(route: Route): Promise<unknown> {
+    async getApiRoute(route) {
       return input.loadModule(route.file);
     },
 
-    async getMiddleware(middleware: MiddlewareInfo): Promise<any> {
+    async getMiddleware(middleware) {
       const mod = (await input.loadModule(middleware.file)) as any;
       if (typeof mod?.default !== 'function') {
         return null;
@@ -158,7 +165,7 @@ export function createEnvironment(input: EnvironmentInput) {
       return mod;
     },
 
-    async getLoaderData(request: Request, route: Route): Promise<Response> {
+    async getLoaderData(request, route) {
       const params = parseParams(request, route);
       const result = await executeLoader(request, route, params);
 
@@ -173,7 +180,7 @@ export function createEnvironment(input: EnvironmentInput) {
       if (input.isDevelopment) {
         return;
       }
-      const manifest = await getCachedRoutesManifest();
+      const manifest = await getRoutesManifest();
       const requests: string[] = [];
       if (manifest.middleware) requests.push(manifest.middleware.file);
       if (manifest.rendering) requests.push(manifest.rendering.file);

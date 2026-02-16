@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { createEnvironment } from './common';
+import { type CommonEnvironment, createEnvironment } from './common';
 import { assertRuntimeFetchAPISupport } from '../../ImmutableRequest';
 import { createRequestScope } from '../../runtime';
 import type { ScopeDefinition } from '../../runtime/scope';
@@ -12,7 +12,7 @@ interface NodeEnvParams {
   isDevelopment?: boolean;
 }
 
-export function createNodeEnv(params: NodeEnvParams) {
+export function createNodeEnv(params: NodeEnvParams): CommonEnvironment {
   assertRuntimeFetchAPISupport();
 
   async function readText(request: string) {
