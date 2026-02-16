@@ -131,7 +131,7 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            adb install -r apps/brownfield-tester/android-integrated/*.apk
+            adb install -r apps/brownfield-tester/android-integrated/apk/*.apk
             cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
