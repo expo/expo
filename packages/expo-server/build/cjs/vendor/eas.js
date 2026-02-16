@@ -19,10 +19,12 @@ function createRequestHandler(params, setup) {
         waitUntil: ctx.waitUntil?.bind(ctx),
     });
     const run = (0, runtime_1.createRequestScope)(STORE, makeRequestAPISetup);
-    const onRequest = (0, abstract_1.createRequestHandler)({
-        ...(0, workerd_1.createWorkerdEnv)(params),
-        ...setup,
-    });
-    return (request, env, ctx) => run(onRequest, request, env, ctx);
+    const common = (0, workerd_1.createWorkerdEnv)(params);
+    const onRequest = (0, abstract_1.createRequestHandler)({ ...common, ...setup });
+    function handler(request, env, ctx) {
+        return run(onRequest, request, env, ctx);
+    }
+    handler.preload = common.preload;
+    return handler;
 }
 //# sourceMappingURL=eas.js.map
