@@ -2,11 +2,11 @@
  * A fetch RequestInit compatible structure.
  */
 export interface FetchRequestInit {
-  body?: BodyInit;
+  body?: BodyInit | null;
   credentials?: RequestCredentials; // same-origin is not supported
   headers?: HeadersInit;
   method?: string;
-  signal?: AbortSignal;
+  signal?: AbortSignal | null;
   redirect?: RequestRedirect;
 
   // Not supported fields
@@ -22,9 +22,9 @@ export interface FetchRequestInit {
  */
 export interface FetchRequestLike {
   url: string;
-  body: BodyInit;
+  body: BodyInit | null;
   credentials?: RequestCredentials;
-  method?: string;
+  method: string;
   signal?: AbortSignal;
   redirect?: RequestRedirect;
 }
