@@ -8,12 +8,14 @@ import host.exp.exponent.brownfield.showReactNativeFragment
 import expo.modules.brownfield.BrownfieldMessage
 import expo.modules.brownfield.BrownfieldMessaging
 import expo.modules.brownfield.BrownfieldState
+import expo.modules.brownfield.Removable
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import java.util.Timer
 import kotlin.concurrent.timerTask
 
 class ReactNativeActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
     private var listenerId: String? = null
+    private var stateListener: Removable? = null
     private var messageTimer: Timer? = null
     private var messageCounter = 0
 
@@ -30,9 +32,13 @@ class ReactNativeActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler 
             }
         startMessageTimer()
 
-        BrownfieldState.subscribe("counter") { state ->
-            print("State changed")
-            Toast.makeText(this, "Count: (${state["count"]})", Toast.LENGTH_LONG).show()
+        BrownfieldState.subscribe("counter") { state: Any? ->
+            val count = state as? Double
+            if (count == null) {
+                println("Failed to parse state update as a double")
+                return@subscribe
+            }
+            BrownfieldState.set("counter-duplicated", count * 2)
         }
     }
 
@@ -40,15 +46,15 @@ class ReactNativeActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler 
         super.onDestroy()
         listenerId?.let { BrownfieldMessaging.removeListener(it) }
         stopMessageTimer()
+        stateListener?.remove()
     }
 
     private fun startMessageTimer() {
         messageTimer = Timer()
-        // Schedule: delay 0ms, repeat every 5000ms (5 seconds)
         messageTimer?.schedule(timerTask {
             sendMessage()
             setTime()
-        }, 0, 2500)
+        }, 0, 1000)
     }
 
     private fun stopMessageTimer() {

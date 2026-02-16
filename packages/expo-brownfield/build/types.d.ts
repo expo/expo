@@ -14,7 +14,7 @@ export type ExpoBrownfieldStateModuleEvents = {
     onStateChange: (event: StateChangeEvent) => void;
 };
 export declare class ExpoBrownfieldStateModuleSpec extends NativeModule<ExpoBrownfieldStateModuleEvents> {
-    get<T extends Record<string, any>>(key: string): T;
-    set<T extends Record<string, any>>(key: string, value: T): T;
+    getSharedState(key: string): any;
+    deleteSharedState(key: string): void;
 }
 //# sourceMappingURL=types.d.ts.map
