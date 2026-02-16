@@ -65,6 +65,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
       isDev: true,
       bundler: 'metro',
       engine: undefined,
+      isHermesV1: false,
       name: 'metro',
       platform: 'ios',
       baseUrl: '',
