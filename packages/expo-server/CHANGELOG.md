@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Add internal `preload` method to EAS and workerd request handlers ([#43171](https://github.com/expo/expo/pull/43171) by [@kitten](https://github.com/kitten))
+
 ## 55.0.3 — 2026-02-03
 
 ### 🎉 New features
