@@ -34,10 +34,11 @@ class ExpoUIModule : Module() {
     //region Expo UI views
 
     ExpoUIView("BottomSheetView", events = {
-      Events("onIsOpenedChange")
+      Events("onIsOpenedChange", "onSelectedDetentChange")
     }) { props: BottomSheetProps ->
       val onIsOpenedChange by remember { EventDispatcher<IsOpenedChangeEvent>() }
-      BottomSheetContent(props) { onIsOpenedChange(it) }
+      val onSelectedDetentChange by remember { EventDispatcher<SelectedDetentChangeEvent>() }
+      BottomSheetContent(props, { onIsOpenedChange(it) }, { onSelectedDetentChange(it) })
     }
 
     // Defines a single view for now – a single choice segmented control
@@ -168,6 +169,24 @@ class ExpoUIModule : Module() {
       val onPress by remember { EventDispatcher<ChipPressedEvent>() }
       val onDismiss by remember { EventDispatcher<ChipPressedEvent>() }
       ChipContent(props, { onPress(it) }, { onDismiss(it) })
+    }
+
+    ExpoUIView("SectionView", events = {
+      Events("onIsExpandedChange")
+    }) { props: SectionProps ->
+      val onIsExpandedChange by remember { EventDispatcher<IsExpandedChangeEvent>() }
+      SectionContent(props) { onIsExpandedChange(it) }
+    }
+
+    ExpoUIView("ListItemView", events = {
+      Events("onPress")
+    }) { props: ListItemProps ->
+      val onPress by remember { EventDispatcher<ListItemPressedEvent>() }
+      ListItemContent(props) { onPress(it) }
+    }
+
+    ExpoUIView("ListView") { props: ListProps ->
+      ListContent(props)
     }
 
     //endregion Expo UI views

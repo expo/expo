@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android] Added `detents`, `selectedDetent`, `onSelectedDetentChange`, and `fitToContents` props to `BottomSheet` for controlling initial height and tracking detent changes. ([#43145](https://github.com/expo/expo/pull/43145) by [@kimchi-developer](https://github.com/kimchi-developer))
 - [iOS] - Support `Section` `footer` prop with `title` prop. ([#42966](https://github.com/expo/expo/pull/42966) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `contentTransition` modifier. ([#42980](https://github.com/expo/expo/pull/42980) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `selection` and `onSelectionChange` to `presentationDetents` modifier for programmatic control of bottom sheet detents. ([#42910](https://github.com/expo/expo/pull/42910) by [@nishan](https://github.com/intergalacticspacehighway))
