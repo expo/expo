@@ -120,7 +120,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: expo-brownfield-android-release
-          path: apps/brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
+          path: apps/brownfield-tester/android-integrated/apk
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -131,7 +131,7 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            adb install -r apps/brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
+            adb install -r apps/brownfield-tester/android-integrated/*.apk
             cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
