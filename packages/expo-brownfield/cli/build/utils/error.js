@@ -5,14 +5,14 @@ class CLIError {
     static errorMessages = {
         'android-task-repo': 'At least one task or repository must be specified',
         'android-directory-not-found': 'Cannot find `android` directory in the project',
-        'android-library-unknown-error': 'Unknown error occured while finding brownfield library',
+        'android-library-unknown-error': 'Unknown error occurred while finding brownfield library',
         'android-library-not-found': 'Could not find brownfield library in the project',
-        'ios-artifacts-directory-unknown-error': 'Unknown error occured while creating artifacts directory',
+        'ios-artifacts-directory-unknown-error': 'Unknown error occurred while creating artifacts directory',
         'ios-directory-not-found': 'Cannot find `ios` directory in the project',
-        'ios-directory-unknown-error': 'Unknown error occured while finding brownfield iOS scheme',
+        'ios-directory-unknown-error': 'Unknown error occurred while finding brownfield iOS scheme',
         'ios-scheme-not-found': 'Could not find brownfield iOS scheme',
         'ios-workspace-not-found': 'Could not find brownfield iOS workspace',
-        'ios-workspace-unknown-error': 'Unknown error occured while finding brownfield iOS workspace',
+        'ios-workspace-unknown-error': 'Unknown error occurred while finding brownfield iOS workspace',
         'prebuild-cancelled': 'Brownfield cannot be built without prebuilding the native project',
     };
     static handle(error, errorMessage = '', fatal = true) {

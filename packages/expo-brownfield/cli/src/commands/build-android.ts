@@ -17,9 +17,9 @@ const buildAndroid = async (command: Command) => {
   }
   printAndroidConfig(config);
 
-  config.tasks.forEach(async (task) => {
+  for (const task of config.tasks) {
     await runTask(task, config.verbose, config.dryRun);
-  });
+  }
 };
 
 export default buildAndroid;

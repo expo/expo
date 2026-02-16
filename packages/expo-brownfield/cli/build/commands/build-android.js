@@ -8,8 +8,8 @@ const buildAndroid = async (command) => {
         utils_1.CLIError.handle('android-task-repo');
     }
     (0, utils_1.printAndroidConfig)(config);
-    config.tasks.forEach(async (task) => {
+    for (const task of config.tasks) {
         await (0, utils_1.runTask)(task, config.verbose, config.dryRun);
-    });
+    }
 };
 exports.default = buildAndroid;

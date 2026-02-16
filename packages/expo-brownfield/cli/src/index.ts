@@ -24,7 +24,7 @@ program
     'repository to publish to (multiple can be passed)'
   )
   .option('--dry-run', 'only print the commands without executing them')
-  .action(async function () {
+  .action(async function (this: Command) {
     await buildAndroid(this);
   });
 
@@ -39,7 +39,7 @@ program
   .option('-x, --xcworkspace <xcworkspace>', 'path to the Xcode workspace (.xcworkspace)')
   .option('-a, --artifacts <artifacts>', 'path to the artifacts directory')
   .option('--dry-run', 'only print the commands without executing them')
-  .action(async function () {
+  .action(async function (this: Command) {
     await buildIos(this);
   });
 
@@ -50,7 +50,7 @@ program
   .option('--verbose', 'forward all output to the terminal')
   .option('-l, --library <library>', 'name of the brownfield library')
   .option('--dry-run', 'only print the commands without executing them')
-  .action(async function () {
+  .action(async function (this: Command) {
     await tasksAndroid(this);
   });
 
