@@ -11,6 +11,7 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
+      - '!**/*.web.*'
       # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - apps/test-suite/**
       - packages/**
       - yarn.lock
+      - '!**/*.web.*'
       # Ignore Expo CLI for now...
       - '!packages/@expo/cli/**'
 
