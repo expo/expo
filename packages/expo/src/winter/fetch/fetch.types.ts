@@ -16,3 +16,15 @@ export interface FetchRequestInit {
   referrer?: string;
   window?: any;
 }
+
+/**
+ * A fetch Request compatible structure.
+ */
+export interface FetchRequestLike {
+  url: string;
+  body: BodyInit;
+  credentials?: RequestCredentials;
+  method?: string;
+  signal?: AbortSignal;
+  redirect?: RequestRedirect;
+}
