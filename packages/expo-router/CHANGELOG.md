@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- extract usePreviewTransition from NativeStackNavigator ([#43182](https://github.com/expo/expo/pull/43182) by [@Ubax](https://github.com/Ubax))
+
 ## 55.0.0-preview.8 — 2026-02-16
 
 ### 🎉 New features
