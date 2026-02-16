@@ -187,6 +187,8 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 
   var body: some View {
     let baseView = text
+      .contentShape(Rectangle())
+      .onTapGesture { isFocused = true }
       .onAppear {
         textManager.text = props.defaultValue
         if props.autoFocus {
