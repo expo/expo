@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix TextField multiline tap area hit-testing when using frame with minHeight. ([#43167](https://github.com/expo/expo/pull/43167) by [@d1coach](https://github.com/d1coach))
 - [iOS] Fix rendering `0` in SwiftUI Text. ([#43036](https://github.com/expo/expo/pull/43036) by [@jakex7](https://github.com/jakex7))
 - [iOS] Set initial state in `init` instead of `onAppear` in `DatePicker`, `Section`, `DisclosureGroup`, `Popover`, and `ColorPicker` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
 
