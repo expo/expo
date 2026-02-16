@@ -9,9 +9,51 @@ export interface QROutput {
   print(): void;
 }
 
+/** Stringifies URLSearchParameters but leaves them un-URI-encoded, if possible */
+function buildSearchString(params: URLSearchParams) {
+  let search = '';
+  for (let [key, value] of params) {
+    if (/[=&]/.test(value)) {
+      // If the value contains special query characters, we back off and percentage encode the value
+      value = encodeURIComponent(value);
+    } else if (key === 'url') {
+      try {
+        const url = new URL(value);
+        // We can strip off a single slash to form an empty pathname
+        url.pathname = url.pathname !== '/' ? url.pathname : '';
+        // If we have a URL as a search parameter, we can discard the hash
+        url.hash = '';
+        value = url.href.replace(/ /g, '+');
+      } catch {}
+    }
+    if (search) search += '&';
+    search += `${key}=${value}`;
+  }
+  return search;
+}
+
+/** Shrink the URL by re-stringifying the search params manually */
+function shrinkURL(input: string) {
+  try {
+    const url = new URL(input);
+    const search = buildSearchString(url.searchParams);
+    // We can strip off a single slash to form an empty pathname
+    url.pathname = url.pathname !== '/' ? url.pathname : '';
+    if (search) {
+      url.search = '';
+      url.hash = '';
+      return `${url.href}?${search}`;
+    } else {
+      return url.href;
+    }
+  } catch {
+    return input;
+  }
+}
+
 /** Print the world famous 'Expo QR Code'. */
 export function printQRCode(url: string): QROutput {
-  const qr = toQR(url);
+  const qr = toQR(shrinkURL(url));
   const output = supportsSextants() ? createSextantOutput(qr) : createHalfblockOutput(qr);
   return {
     lines: output.split('\n').length,
