@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- [jetpack-compose] Use `MaterialExpressiveTheme` instead of `MaterialTheme` in `HostView` for M3 Expressive support. by [@kimchi-developer](https://github.com/kimchi-developer) ([#43128](https://github.com/expo/expo/pull/43128) by [@kimchi-developer](https://github.com/kimchi-developer))
+
 ## 55.0.0-preview.5 — 2026-02-08
 
 ### 🐛 Bug fixes
