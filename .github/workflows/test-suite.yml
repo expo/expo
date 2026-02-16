@@ -9,19 +9,51 @@ on:
       - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
-      - packages/**
+      # Core infrastructure that affects all native modules
+      - packages/expo-modules-core/**
+      - packages/expo-modules-autolinking/**
+      # Packages that have e2e tests (see apps/bare-expo/e2e/)
+      - packages/expo/**
+      - packages/expo-constants/**
+      - packages/expo-crypto/**
+      - packages/expo-file-system/**
+      - packages/expo-haptics/**
+      - packages/expo-image/**
+      - packages/expo-keep-awake/**
+      - packages/expo-linear-gradient/**
+      - packages/expo-localization/**
+      - packages/expo-sqlite/**
+      - packages/expo-video/**
       - yarn.lock
-      # When adding new paths, also update the paths of the "Get the base commit" step below
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+      # Note: the "Get the base commit" steps intentionally use broad `packages` path for fingerprinting
   pull_request:
     paths:
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
-      - packages/**
+      # Core infrastructure that affects all native modules
+      - packages/expo-modules-core/**
+      - packages/expo-modules-autolinking/**
+      # Packages that have e2e tests (see apps/bare-expo/e2e/)
+      - packages/expo/**
+      - packages/expo-constants/**
+      - packages/expo-crypto/**
+      - packages/expo-file-system/**
+      - packages/expo-haptics/**
+      - packages/expo-image/**
+      - packages/expo-keep-awake/**
+      - packages/expo-linear-gradient/**
+      - packages/expo-localization/**
+      - packages/expo-sqlite/**
+      - packages/expo-video/**
       - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -53,7 +85,19 @@ jobs:
             .github/actions/use-android-emulator/action.yml,
             "apps/bare-expo/**",
             "apps/test-suite/**",
-            "packages/**",
+            "packages/expo-modules-core/**",
+            "packages/expo-modules-autolinking/**",
+            "packages/expo/**",
+            "packages/expo-constants/**",
+            "packages/expo-crypto/**",
+            "packages/expo-file-system/**",
+            "packages/expo-haptics/**",
+            "packages/expo-image/**",
+            "packages/expo-keep-awake/**",
+            "packages/expo-linear-gradient/**",
+            "packages/expo-localization/**",
+            "packages/expo-sqlite/**",
+            "packages/expo-video/**",
             yarn.lock,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"

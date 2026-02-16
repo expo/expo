@@ -10,6 +10,9 @@ on:
       - packages/expo-modules-core/**
       - packages/expo-dev-client/**
       - packages/expo-updates/**
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

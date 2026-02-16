@@ -14,6 +14,8 @@ on:
       - packages/expo-updates/**
       - yarn.lock
       - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
   pull_request:
     paths:
       - .github/workflows/brownfield.yml
@@ -25,6 +27,8 @@ on:
       - packages/expo-updates/**
       - yarn.lock
       - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
