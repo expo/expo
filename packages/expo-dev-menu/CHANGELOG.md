@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Ensures DevMenuWindow is created in the main thread ([#43078](https://github.com/expo/expo/pull/43078) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 55.0.6 — 2026-02-16
 
 ### 🐛 Bug fixes
