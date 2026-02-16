@@ -76,6 +76,13 @@ declare namespace globalThis {
   let __requireCycleIgnorePatterns: readonly RegExp[] | undefined;
 }
 
+type TLS = {
+  key: string | Buffer;
+  cert: string | Buffer;
+  ca: string | Buffer;
+  requestCert: boolean;
+};
+
 function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
 }
@@ -359,6 +366,18 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
+  // Support HTTPS based on the metro's tls server config
+  // TODO: remove the casting once Metro is updated to a version that supports the tls config
+  const tls = (metroConfig.server as typeof metroConfig.server & { tls?: TLS })?.tls;
+  const secureServerOptions = tls
+    ? {
+        key: tls.key,
+        cert: tls.cert,
+        ca: tls.ca,
+        requestCert: tls.requestCert,
+      }
+    : undefined;
+
   const { address, server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
@@ -366,6 +385,7 @@ export async function instantiateMetroAsync(
       host: options.host,
       websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
+      secureServerOptions,
     },
     {
       mockServer: isExporting,
