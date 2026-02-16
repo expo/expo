@@ -14,7 +14,7 @@ inputs:
     description: 'Paths to ignore for all platforms'
     required: false
     default: >-
-      "!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}"
+      "!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore,**/*.web.*}"
 
 outputs:
   should_run_android:

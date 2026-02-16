@@ -71,11 +71,55 @@ struct ExpoAppleMapPolyline: Record, Identifiable {
   @Field var coordinates: [Coordinate]
   @Field var color: Color = .blue
   @Field var width: Double = 4
-  @Field var contourStyle: String = "straight"
+  @Field var contourStyle: MapContourStyle = .straight
 
   var clLocationCoordinates2D: [CLLocationCoordinate2D] {
     return coordinates.map {
       CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude)
+    }
+  }
+
+  /// Coordinates used for tap hit-testing. For geodesic polylines, this interpolates
+  /// points along the great circle arc so the hit area matches the rendered curve.
+  var hitTestCoordinates: [CLLocationCoordinate2D] {
+    let coords = clLocationCoordinates2D
+    guard contourStyle == .geodesic else { return coords }
+    return zip(coords, coords.dropFirst()).flatMap { start, end in
+      Self.interpolateGreatCircle(from: start, to: end).dropLast()
+    } + [coords.last].compactMap { $0 }
+  }
+
+  /// Interpolates points along the great circle arc between two coordinates.
+  /// See: https://www.edwilliams.org/avform147.htm#Intermediate
+  private static func interpolateGreatCircle(
+    from start: CLLocationCoordinate2D,
+    to end: CLLocationCoordinate2D,
+    segments: Int = 30
+  ) -> [CLLocationCoordinate2D] {
+    let lat1 = start.latitude * .pi / 180
+    let lon1 = start.longitude * .pi / 180
+    let lat2 = end.latitude * .pi / 180
+    let lon2 = end.longitude * .pi / 180
+
+    let d = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1))
+    // Points are (nearly) coincident — no arc to interpolate.
+    guard d > 1e-10 else { return [start, end] }
+
+    let sinD = sin(d)
+
+    return (0...segments).map { i in
+      let f = Double(i) / Double(segments)
+      let A = sin((1 - f) * d) / sinD
+      let B = sin(f * d) / sinD
+      let x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2)
+      let y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2)
+      let z = A * sin(lat1) + B * sin(lat2)
+      let lat = atan2(z, sqrt(x * x + y * y))
+      let lon = atan2(y, x)
+      return CLLocationCoordinate2D(
+        latitude: lat * 180 / .pi,
+        longitude: lon * 180 / .pi
+      )
     }
   }
 
@@ -164,11 +208,9 @@ enum MapContourStyle: String, Enumerable {
 
   @available(iOS 17.0, *)
   func toContourStyle() -> MapPolyline.ContourStyle {
-    switch self {
-    case .straight:
-      return .straight
-    case .geodesic:
-      return .geodesic
+    return switch self {
+    case .straight: .straight
+    case .geodesic: .geodesic
     }
   }
 }
@@ -180,13 +222,10 @@ enum MapStyleElevation: String, Enumerable {
 
   @available(iOS 17.0, *)
   func toMapStyleElevation() -> MapStyle.Elevation {
-    switch self {
-    case .flat:
-      return .flat
-    case .realistic:
-      return .realistic
-    default:
-      return .automatic
+    return switch self {
+    case .flat: .flat
+    case .realistic: .realistic
+    default: .automatic
     }
   }
 }
@@ -197,11 +236,9 @@ enum MapStyleEmphasis: String, Enumerable {
 
   @available(iOS 17.0, *)
   func toMapStyleEmphasis() -> MapStyle.StandardEmphasis {
-    switch self {
-    case .muted:
-      return .muted
-    default:
-      return .automatic
+    return switch self {
+    case .muted: .muted
+    default: .automatic
     }
   }
 }
@@ -212,13 +249,10 @@ enum MapColorScheme: String, Enumerable {
   case dark = "DARK"
 
   func toColorScheme() -> ColorScheme? {
-    switch self {
-    case .light:
-      return .light
-    case .dark:
-      return .dark
-    case .automatic:
-      return nil
+    return switch self {
+    case .light: .light
+    case .dark: .dark
+    case .automatic: nil
     }
   }
 }
@@ -236,19 +270,19 @@ enum MapType: String, Enumerable {
     let pointsOfInterest = properties.pointsOfInterest.toMapPointOfInterestCategories()
     let showsTraffic = properties.isTrafficEnabled
 
-    switch mapType {
+    return switch mapType {
     case .hybrid:
-      return .hybrid(
+      .hybrid(
         elevation: elevation,
         pointsOfInterest: pointsOfInterest,
         showsTraffic: showsTraffic
       )
     case .imagery:
-      return .imagery(
+      .imagery(
         elevation: elevation
       )
     default:
-      return .standard(
+      .standard(
         elevation: elevation,
         emphasis: emphasis,
         pointsOfInterest: pointsOfInterest,

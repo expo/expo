@@ -53,10 +53,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
+class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?, playerBuilderOptions: expo.modules.video.records.PlayerBuilderOptions? = null) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
@@ -73,9 +74,16 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
-    .setLooper(context.mainLooper)
-    .setLoadControl(loadControl)
-    .build()
+    .apply {
+      setLooper(context.mainLooper)
+      setLoadControl(loadControl)
+      playerBuilderOptions?.seekBackwardIncrement?.let {
+        setSeekBackIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+      playerBuilderOptions?.seekForwardIncrement?.let {
+        setSeekForwardIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+    }.build()
 
   internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)

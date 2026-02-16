@@ -87,6 +87,12 @@ module.exports = {
         unstable_useServerRendering: process.env.E2E_ROUTER_SERVER_RENDERING === 'true',
       },
     ],
+    [
+      'expo-asset',
+      {
+        assets: ['./assets/expo-logo.png', './assets/expo-transparent.png'],
+      },
+    ],
   ],
 };
 

@@ -25,7 +25,7 @@ export type WidgetBase<T extends object = object> = {
 } & T;
 export type ExpoTimelineEntry = {
     timestamp: number;
-    content: ReactNode;
+    props: Record<string, any>;
 };
 /**
  * Defines the layout sections for an iOS Live Activity.

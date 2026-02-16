@@ -29,6 +29,8 @@ export declare namespace AppleMaps {
     type MapStyleElevation = AppleTypes.AppleMapsMapStyleElevation;
     const MapColorScheme: typeof AppleTypes.AppleMapsColorScheme;
     type MapColorScheme = AppleTypes.AppleMapsColorScheme;
+    const ContourStyle: typeof AppleTypes.AppleMapsContourStyle;
+    type ContourStyle = AppleTypes.AppleMapsContourStyle;
     type Marker = AppleTypes.AppleMapsMarker;
     type MapUISettings = AppleTypes.AppleMapsUISettings;
     type MapProperties = AppleTypes.AppleMapsProperties;

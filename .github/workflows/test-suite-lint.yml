@@ -32,7 +32,6 @@ jobs:
         with:
           yarn-workspace: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🚨 Lint test-suite files
         run: yarn lint --max-warnings 0

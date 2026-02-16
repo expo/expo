@@ -8,6 +8,7 @@ import {
   MarkerType,
   BackgroundVariant,
 } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 import React from 'react';
 
 type ConfigPluginHierarchyProps = {

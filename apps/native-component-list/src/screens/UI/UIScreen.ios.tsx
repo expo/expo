@@ -171,6 +171,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Content Transition',
+    route: 'ui/content-transition',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContentTransitionScreen'));
+    },
+  },
+  {
     name: 'Glass Effect',
     route: 'ui/glass-effect',
     options: {},

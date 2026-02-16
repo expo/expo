@@ -46,42 +46,26 @@ public final class WidgetsModule: Module {
       pushToStartTokenObserverTask = nil
     }
 
-    Function("reloadWidget") { (timeline: String?) in
-      if let timeline = timeline {
-        WidgetCenter.shared.reloadTimelines(ofKind: timeline)
+    Function("reloadWidget") { (name: String?) in
+      if let name = name {
+        WidgetCenter.shared.reloadTimelines(ofKind: name)
       } else {
         WidgetCenter.shared.reloadAllTimelines()
       }
     }
 
-    Function("updateWidget") { (name: String, data: String, props: [String: Any]?, updateFunction: String?) in
-      WidgetsStorage.set(data, forKey: "__expo_widgets_\(name)")
-      if let props {
-        WidgetsStorage.set(props, forKey: "__expo_widgets_\(name)_props")
-      }
-      if let updateFunction {
-        WidgetsStorage.set(updateFunction, forKey: "__expo_widgets_\(name)_updateFunction")
-      }
-    }
-
-    Function("startLiveActivity") { (name: String, nodes: String, url: URL?) throws -> String in
+    Function("startLiveActivity") { (name: String, props: String, url: URL?) throws -> String in
       guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
       guard ActivityAuthorizationInfo().areActivitiesEnabled else {
         throw LiveActivitiesNotSupportedException()
       }
 
-      let nodesData = nodes.data(using: .utf8)
-      guard let compressedData = try nodesData?.brotliCompressed() else {
-        throw LiveActivitiesNotSupportedException()
-      }
-
-      WidgetsStorage.set(compressedData, forKey: "__expo_widgets_live_activity_\(name)")
       if let url {
         WidgetsStorage.set(url.absoluteString, forKey: "__expo_widgets_live_activity_\(name)_url")
       }
 
       do {
-        let initialState = LiveActivityAttributes.ContentState(name: name)
+        let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
 
         let activity = try Activity.request(
           attributes: LiveActivityAttributes(),
@@ -99,21 +83,14 @@ public final class WidgetsModule: Module {
       }
     }
 
-    Function("updateLiveActivity") { (id: String, name: String, nodes: String) throws in
+    Function("updateLiveActivity") { (id: String, name: String, props: String) throws in
       guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
       guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id })
       else { throw LiveActivityNotFoundException(id) }
 
-      let nodesData = nodes.data(using: .utf8)
-      guard let compressedData = try nodesData?.brotliCompressed() else {
-        throw LiveActivitiesNotSupportedException()
-      }
-
-      WidgetsStorage.set(compressedData, forKey: "__expo_widgets_live_activity_\(name)")
-
       Task {
-        let newState = LiveActivityAttributes.ContentState(name: name)
+        let newState = LiveActivityAttributes.ContentState(name: name, props: props)
         await activity.update(ActivityContent(state: newState, staleDate: nil))
       }
     }
@@ -158,6 +135,21 @@ public final class WidgetsModule: Module {
           LiveActivityInfo(id: activity.id, pushToken: activity.pushToken?.reduce("") { $0 + String(format: "%02x", $1) })
         }
       }
+    }
+
+    Function("registerLiveActivityLayout") { (name: String, layout: String) in
+      WidgetsStorage.set(layout, forKey: "__expo_widgets_live_activity_\(name)_layout")
+    }
+
+    Function("registerWidgetLayout") { (name: String, layout: String) in
+      WidgetsStorage.set(layout, forKey: "__expo_widgets_\(name)_layout")
+    }
+
+    Function("updateWidgetTimeline") { (name: String, entries: [WidgetsJSTimelineEntry]) in
+      if WidgetsStorage.getString(forKey: "__expo_widgets_\(name)_layout") == nil {
+        throw UpdatedTimelineWithoutLayout(name)
+      }
+      WidgetsStorage.set(entries.map { $0.toDictionary()}, forKey: "__expo_widgets_\(name)_timeline")
     }
   }
 

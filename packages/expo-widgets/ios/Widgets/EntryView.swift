@@ -13,10 +13,10 @@ public struct WidgetsEntryView: View {
   public var body: some View {
     if let node = entry.node {
       if #available(iOS 17.0, *) {
-        WidgetsDynamicView(source: entry.source, kind: .widget, node: node)
+        WidgetsDynamicView(source: entry.source, kind: .widget, node: node, entryIndex: entry.entryIndex)
           .containerBackground(.clear, for: .widget)
       } else {
-        WidgetsDynamicView(source: entry.source, kind: .widget, node: node)
+        WidgetsDynamicView(source: entry.source, kind: .widget, node: node, entryIndex: entry.entryIndex)
       }
     } else {
       EmptyView()

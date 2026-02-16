@@ -32,4 +32,38 @@ Pod::Spec.new do |s|
   else
     s.source_files = "**/*.{h,m,swift}"
   end
+
+  build_bundle_script = {
+    :name => 'Build ExpoWidgets Bundle',
+    :script => %Q{
+      echo "Building ExpoWidgets.bundle..."
+      #{__dir__}/../scripts/with-node.sh #{__dir__}/../scripts/build-bundle.mjs
+    },
+    :execution_position => :before_compile,
+    # NOTE(@krystofwoldrich): Ideally we would specify `__dir__/**/*`, but Xcode doesn't support patterns
+    :input_files  => ["#{__dir__}/../package.json"],
+    :output_files  => ["#{__dir__}/../bundle/build/ExpoWidgets.bundle"],
+  }
+  copy_bundle_script = {
+    :name => 'Prepare ExpoWidgets Resources',
+    :script => %Q{
+      echo "Preparing ExpoWidgets.bundle..."
+      source="#{__dir__}/../bundle/build/ExpoWidgets.bundle"
+      dest="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoWidgets.bundle"
+      echo "Copying ${source} to ${dest}"
+      cp "${source}" "${dest}"
+    },
+    :execution_position => :before_compile,
+    :input_files  => ["#{__dir__}/../bundle/build/ExpoWidgets.bundle"]
+  }
+  # :always_out_of_date is only available in CocoaPods 1.13.0 and later
+  if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
+    # always run the script without warning
+    copy_bundle_script[:always_out_of_date] = "1"
+  end
+  s.script_phases = [build_bundle_script, copy_bundle_script]
+  s.resource_bundles = {
+    'ExpoWidgets' => [],
+  }
+
 end

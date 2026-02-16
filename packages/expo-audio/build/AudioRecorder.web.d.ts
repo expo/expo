@@ -1,0 +1,40 @@
+import { RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
+import { AudioRecorder, RecordingEvents } from './AudioModule.types';
+export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {
+    constructor(options: Partial<RecordingOptions>);
+    setup(): Promise<void>;
+    id: number;
+    currentTime: number;
+    uri: string | null;
+    private options;
+    private mediaRecorder;
+    private mediaRecorderUptimeOfLastStartResume;
+    private mediaRecorderIsRecording;
+    private timeoutIds;
+    private cachedInputs;
+    private selectedDeviceId;
+    private stream;
+    private handleDeviceChange;
+    private analyser;
+    private analyserBuffer;
+    private analyserSource;
+    private meteringEnabled;
+    get isRecording(): boolean;
+    record(options?: RecordingStartOptions): void;
+    private startActualRecording;
+    getAvailableInputs(): RecordingInput[];
+    getCurrentInput(): Promise<RecordingInput>;
+    prepareToRecordAsync(): Promise<void>;
+    getStatus(): RecorderState;
+    pause(): void;
+    recordForDuration(seconds: number): void;
+    setInput(input: string): void;
+    startRecordingAtTime(seconds: number): void;
+    stop(): Promise<void>;
+    clearTimeouts(): void;
+    private createMediaRecorder;
+    private updateCachedInputs;
+    private getMeteringLevel;
+    private getAudioRecorderDurationMillis;
+}
+//# sourceMappingURL=AudioRecorder.web.d.ts.map

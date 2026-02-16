@@ -255,9 +255,14 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    *
    * @param source The source of the video to be played.
    * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
+   * @param playerBuilderOptions Options to apply to the player builder before the native constructor is invoked.
    * @hidden
    */
-  constructor(source: VideoSource, useSynchronousReplace?: boolean);
+  constructor(
+    source: VideoSource,
+    useSynchronousReplace?: boolean,
+    playerBuilderOptions?: PlayerBuilderOptions
+  );
 
   /**
    * Resumes the player.
@@ -746,4 +751,24 @@ export type ScrubbingModeOptions = {
    * @default true
    */
   allowSkippingMediaCodecFlush?: boolean;
+};
+
+/**
+ * Options to apply to the player builder before the native constructor is invoked
+ * @platform android
+ */
+export type PlayerBuilderOptions = {
+  /**
+   * Seek backward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekBackwardIncrement?: number;
+
+  /**
+   * Seek forward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekForwardIncrement?: number;
 };

@@ -4,18 +4,27 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.6 — 2026-02-16
+
+### 🛠 Breaking changes
+
 - [Android] The next and previous buttons are now hidden by default in the native `VideoView` controls. ([#42875](https://github.com/expo/expo/pull/42875) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
 - [Android] Add `buttonConfiguration` prop to `VideoView`. ([#42875](https://github.com/expo/expo/pull/42875) by [@behenate](https://github.com/behenate))
+- [Android] Add `PlayerBuilderOptions` parameter to `useVideoPlayer` hook to configure seek backward/forward increments. ([#43043](https://github.com/expo/expo/pull/43043) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix only one player getting released when reloading with multiple players present. ([#42780](https://github.com/expo/expo/pull/42780) by [@behenate](https://github.com/behenate))
 - [iOS] Fix data getting corrupted when caching is enabled. ([#42621](https://github.com/expo/expo/pull/42621) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 55.0.5 — 2026-02-08
 

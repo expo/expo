@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 55.0.8 — 2026-02-16
+
+### 🛠 Breaking changes
+
+- [cli] update copied hermes framework name to hermesvm.xcframework ([#43138](https://github.com/expo/expo/pull/43138) by [@pmleczek](https://github.com/pmleczek))
+
+### 🐛 Bug fixes
+
+- [iOS] fix framework search paths settings ([#43106](https://github.com/expo/expo/pull/43106) by [@pmleczek](https://github.com/pmleczek))
+
+### 💡 Others
+
 - [test] add compilation verification and optimize brownfield workflow in [#42894](https://github.com/expo/expo/pull/42894) by [@pmleczek](https://github.com/pmleczek)
 - [cli] cli refactor ([#42921](https://github.com/expo/expo/pull/42921) by [@pmleczek](https://github.com/pmleczek))
 

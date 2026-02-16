@@ -18,6 +18,10 @@ export default function HeaderItemsScreen() {
   const [showRightMenu1, setShowRightMenu1] = useState(!!params.rightMenu1);
   const [showRightMenu2, setShowRightMenu2] = useState(false);
   const [showSearchButton, setShowSearchButton] = useState(!!params.searchButton);
+  const [showXcassetButton1, setShowXcassetButton1] = useState(false);
+  const [showXcassetButton2, setShowXcassetButton2] = useState(false);
+  const [showXcassetMenu1, setShowXcassetMenu1] = useState(false);
+  const [showXcassetMenu2, setShowXcassetMenu2] = useState(false);
 
   // State for menu items
   const [emailsArchived, setEmailsArchived] = useState(false);
@@ -313,6 +317,46 @@ export default function HeaderItemsScreen() {
             icon="magnifyingglass"
             onPress={handleSearchPress}
           />
+
+          {/* Xcasset icon buttons */}
+          <Stack.Toolbar.Button
+            hidden={!showXcassetButton1}
+            tintColor={Color.ios.systemTeal}
+            onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
+            <Stack.Toolbar.Icon xcasset="expo-logo" />
+          </Stack.Toolbar.Button>
+          <Stack.Toolbar.Button
+            hidden={!showXcassetButton2}
+            tintColor={Color.ios.systemTeal}
+            onPress={() => Alert.alert('Xcasset Button', 'expo-transparent pressed')}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+          </Stack.Toolbar.Button>
+
+          {/* Xcasset icon menus */}
+          <Stack.Toolbar.Menu
+            hidden={!showXcassetMenu1}
+            title="Xcasset Menu 1"
+            tintColor={Color.ios.systemTeal}>
+            <Stack.Toolbar.Icon xcasset="expo-logo" />
+            <Stack.Toolbar.Label>Expo Logo</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from expo-logo menu')}>
+              <Stack.Toolbar.Label>Logo Action</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="star" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+          <Stack.Toolbar.Menu
+            hidden={!showXcassetMenu2}
+            title="Xcasset Menu 2"
+            tintColor={Color.ios.systemTeal}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+            <Stack.Toolbar.Label>Expo Transparent</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from expo-transparent menu')}>
+              <Stack.Toolbar.Label>Transparent Action</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="star" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
         </Stack.Toolbar>
       </Stack.Screen>
 
@@ -420,6 +464,42 @@ export default function HeaderItemsScreen() {
               testID="toggle-search-button"
               value={showSearchButton}
               onValueChange={setShowSearchButton}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Button (expo-logo)</Text>
+            <Switch
+              testID="toggle-xcasset-button-1"
+              value={showXcassetButton1}
+              onValueChange={setShowXcassetButton1}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Button (expo-transparent)</Text>
+            <Switch
+              testID="toggle-xcasset-button-2"
+              value={showXcassetButton2}
+              onValueChange={setShowXcassetButton2}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Menu (expo-logo)</Text>
+            <Switch
+              testID="toggle-xcasset-menu-1"
+              value={showXcassetMenu1}
+              onValueChange={setShowXcassetMenu1}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Menu (expo-transparent)</Text>
+            <Switch
+              testID="toggle-xcasset-menu-2"
+              value={showXcassetMenu2}
+              onValueChange={setShowXcassetMenu2}
             />
           </View>
         </View>

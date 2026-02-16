@@ -1,0 +1,47 @@
+import { AudioMetadata, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectionQuality } from './Audio.types';
+import { AudioLockScreenOptions } from './AudioConstants';
+import { AudioPlayer, AudioEvents } from './AudioModule.types';
+export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
+    constructor(source: AudioSource, options?: AudioPlayerOptions);
+    id: number;
+    isAudioSamplingSupported: boolean;
+    isBuffering: boolean;
+    shouldCorrectPitch: boolean;
+    private src;
+    private media;
+    private interval;
+    private isPlaying;
+    private loaded;
+    private crossOrigin?;
+    private analyser;
+    private sourceNode;
+    private samplingFrameId;
+    private samplingEnabled;
+    get playing(): boolean;
+    get muted(): boolean;
+    set muted(value: boolean);
+    get loop(): boolean;
+    set loop(value: boolean);
+    get duration(): number;
+    get currentTime(): number;
+    get paused(): boolean;
+    get isLoaded(): boolean;
+    get playbackRate(): number;
+    set playbackRate(value: number);
+    get volume(): number;
+    set volume(value: number);
+    get currentStatus(): AudioStatus;
+    play(): void;
+    pause(): void;
+    replace(source: AudioSource): void;
+    seekTo(seconds: number, toleranceMillisBefore?: number, toleranceMillisAfter?: number): Promise<void>;
+    setAudioSamplingEnabled(enabled: boolean): void;
+    setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
+    remove(): void;
+    setActiveForLockScreen(active: boolean, metadata?: AudioMetadata, options?: AudioLockScreenOptions): void;
+    updateLockScreenMetadata(metadata: AudioMetadata): void;
+    clearLockScreenControls(): void;
+    _isCrossOrigin(): boolean;
+    _createMediaElement(): HTMLAudioElement;
+}
+//# sourceMappingURL=AudioPlayer.web.d.ts.map

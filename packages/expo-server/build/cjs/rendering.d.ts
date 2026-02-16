@@ -12,6 +12,7 @@ export interface ServerRenderModule {
 export interface RenderOptions {
     loader?: {
         data: unknown;
+        key: string;
     };
 }
 export type SsrRenderFn = (request: Request, options?: RenderOptions) => Promise<string>;
