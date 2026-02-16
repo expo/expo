@@ -20,7 +20,7 @@ class VideoPlayerItem: AVPlayerItem {
       return nil
     }
     self.videoSource = videoSource
-    self.isHls = videoSource.uri?.pathExtension == "m3u8" || videoSource.contentType == .hls
+    self.isHls = videoSource.uri?.isHLS == true || videoSource.contentType == .hls
 
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
@@ -33,7 +33,7 @@ class VideoPlayerItem: AVPlayerItem {
       return nil
     }
     self.videoSource = videoSource
-    self.isHls = videoSource.uri?.pathExtension == "m3u8" || videoSource.contentType == .hls
+    self.isHls = videoSource.uri?.isHLS == true || videoSource.contentType == .hls
 
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
@@ -130,5 +130,13 @@ class VideoPlayerItem: AVPlayerItem {
     return zip(lines, lines.dropFirst()).compactMap { line, nextLine in
       VideoTrack.from(hlsHeaderLine: line, idLine: nextLine, mainUrl: mainUrl)
     }
+  }
+}
+
+private extension URL {
+  var isHLS: Bool {
+    // https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8
+    // Above is a valid link, even though the path extension is an empty string, we can use a more primitive suffix method as a fallback
+    return self.pathExtension.lowercased() == "m3u8" || self.absoluteString.lowercased().hasSuffix("m3u8")
   }
 }
