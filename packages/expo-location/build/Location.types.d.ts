@@ -446,11 +446,10 @@ export type PermissionDetailsLocationIOS = {
     /**
      * The accuracy authorization granted by the user.
      * `'full'` means the user has granted precise location access, `'reduced'` means the app
-     * can only access approximate location. Check this to detect when a user has disabled
-     * "Precise Location" in Settings.
+     * can only access approximate location. Below iOS 14 always returns `'full'`.
      * @platform ios 14+
      */
-    accuracy?: 'full' | 'reduced';
+    accuracy: 'full' | 'reduced';
 };
 export type PermissionDetailsLocationAndroid = {
     /**
