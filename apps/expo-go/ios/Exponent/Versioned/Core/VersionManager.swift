@@ -3,6 +3,7 @@
 import React
 import ExpoModulesCore
 import EXManifests
+import EXDevMenu
 
 /**
  Manages the React Native app opened in Expo Go. As opposed to ``EXReactAppManager``,
@@ -122,6 +123,7 @@ final class VersionManager: EXVersionManagerObjC {
       return
     }
     appContext.moduleRegistry.register(module: ExpoGoModule(appContext: appContext, manifest: manifest), name: nil)
+    appContext.moduleRegistry.register(module: SnackDirectTransport(appContext: appContext), name: nil)
 
     guard let updatesKernelService = kernelServices["EXUpdatesManager"] as? UpdatesBindingDelegate else {
       log.error("Unable to register Expo modules, the app context or kernel services is unavailable")

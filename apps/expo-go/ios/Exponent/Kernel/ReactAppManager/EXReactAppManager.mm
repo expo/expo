@@ -139,6 +139,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
     RCTHost *host = (RCTHost *)self.reactHost;
     if (host) {
+      [self configureDevMenuForManifest:_appRecord.appLoader.manifest manifestURL:_appRecord.appLoader.manifestUrl];
       [DevMenuManager.shared updateCurrentManifest:_appRecord.appLoader.manifest
                                        manifestURL:_appRecord.appLoader.manifestUrl];
     }
@@ -339,12 +340,12 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
-    // Update expo-dev-menu with the current bridge and manifest
-    if ([self enablesDeveloperTools]) {
-      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
-      [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
-                                         manifestURL:_appRecord.appLoader.manifestUrl];
-    }
+    // Always update dev menu bridge - needed for all projects (dev and published)
+    // to enable features like "Go to Home" and reload
+    [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
+    [self configureDevMenuForManifest:_appRecord.appLoader.manifest manifestURL:_appRecord.appLoader.manifestUrl];
+    [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
+                                       manifestURL:_appRecord.appLoader.manifestUrl];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
@@ -421,6 +422,52 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     return manifest.isUsingDeveloperTool || manifest.isDevelopmentMode;
   }
   return false;
+}
+
+- (BOOL)isSnackURL:(NSURL *)url
+{
+  if (!url) {
+    return NO;
+  }
+  NSString *query = [url query];
+  return query && ([query containsString:@"snack"] || [query containsString:@"snack-channel"]);
+}
+
+- (void)configureDevMenuForManifest:(EXManifestsManifest *)manifest manifestURL:(NSURL *)manifestURL
+{
+  DevMenuConfiguration *config = [DevMenuManager shared].configuration;
+  BOOL isDev = manifest.isDevelopmentMode || manifest.isUsingDeveloperTool;
+  BOOL isSnack = [self isSnackURL:manifestURL];
+
+  if (isSnack) {
+    // Snacks: hide dev tools, show snack-specific tools (source explorer, undo)
+    config.showDebuggingTip = NO;
+    config.showFastRefresh = NO;
+    config.showPerformanceMonitor = NO;
+    config.showElementInspector = NO;
+    config.showRuntimeVersion = NO;
+    config.showHostUrl = NO;
+    config.showSystemSection = NO;
+    config.appNameOverride = @"Playground";
+  } else if (!isDev) {
+    config.showDebuggingTip = NO;
+    config.showFastRefresh = NO;
+    config.showPerformanceMonitor = NO;
+    config.showElementInspector = NO;
+    config.showRuntimeVersion = NO;
+    config.showHostUrl = NO;
+    config.showSystemSection = YES;
+    config.appNameOverride = nil;
+  } else {
+    config.showDebuggingTip = YES;
+    config.showFastRefresh = YES;
+    config.showPerformanceMonitor = YES;
+    config.showElementInspector = YES;
+    config.showRuntimeVersion = YES;
+    config.showHostUrl = NO;
+    config.showSystemSection = YES;
+    config.appNameOverride = nil;
+  }
 }
 
 - (BOOL)requiresValidManifests

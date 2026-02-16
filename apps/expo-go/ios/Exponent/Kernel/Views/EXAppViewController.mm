@@ -5,7 +5,6 @@
 #import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
-#import "EXAppLoadingCancelView.h"
 #import "Expo_Go-Swift.h"
 #import "EXEnvironment.h"
 #import "EXErrorView.h"
@@ -47,7 +46,7 @@ const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
-  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate, EXAppLoadingCancelViewDelegate>
+  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
 @property (atomic, assign) BOOL isHostAlreadyLoading;
@@ -73,12 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewController *managedSplashScreenController;
-
-/*
- * This view is available in managed apps run in Expo Go only.
- * It is shown only before any managed app manifest is delivered by the app loader.
- */
-@property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
 
 @end
 
@@ -109,10 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
 
-  self.appLoadingCancelView = [EXAppLoadingCancelView new];
-  self.appLoadingCancelView.delegate = self;
-  [self.view addSubview:self.appLoadingCancelView];
-  [self.view bringSubviewToFront:self.appLoadingCancelView];
+  // Loading overlay is now managed by EXRootViewController (browserController)
+  // to show immediately when user taps a project
 
   self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:YES];
 
@@ -139,9 +130,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
-  if (_appLoadingCancelView) {
-    _appLoadingCancelView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-  }
   if (_contentView) {
     _contentView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
@@ -389,6 +377,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideLoadingProgressWindow
 {
   [self.appLoadingProgressWindowController hide];
+  // Hide our loading overlay now that the app is fully loaded
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+  }
   if (self.managedSplashScreenController) {
     [self.managedSplashScreenController startSplashScreenVisibleTimer];
   }
@@ -398,19 +390,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
-  if (_appLoadingCancelView) {
-    EX_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      EX_ENSURE_STRONGIFY(self);
-      [self.appLoadingCancelView removeFromSuperview];
-      self.appLoadingCancelView = nil;
-    });
-  }
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
+    // Only hide loading overlay if manifest has an app icon to show.
+    // Otherwise keep it visible until app is fully loaded (hideLoadingProgressWindow).
+    if ([manifest iosAppIconUrl] != nil) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+      });
+    }
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   [self _rebuildHost];
 }
 
@@ -439,10 +430,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didFailWithError:(NSError *)error
 {
-  if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
-    [_appRecord.appManager appLoaderFailedWithError:error];
-  }
-  [self maybeShowError:error];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Hide the loading overlay on error
+    if ([EXKernel sharedInstance].browserController) {
+      [[EXKernel sharedInstance].browserController hideAppLoadingOverlay];
+    }
+    if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
+      [self->_appRecord.appManager appLoaderFailedWithError:error];
+    }
+    [self maybeShowError:error];
+  });
 }
 
 - (void)appLoader:(EXAbstractLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
@@ -755,14 +752,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (_tmrAutoReloadDebounce) {
     [_tmrAutoReloadDebounce invalidate];
     _tmrAutoReloadDebounce = nil;
-  }
-}
-
-#pragma mark - EXAppLoadingCancelViewDelegate
-
-- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view {
-  if ([EXKernel sharedInstance].browserController) {
-    [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
 }
 

@@ -63,7 +63,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
     [DevMenuManager.shared setDelegate:self];
     [DevMenuManager shared].configuration.onboardingAppName = @"Expo Go";
-    [[DevMenuManager shared] setShowFloatingActionButton:YES];
 
     // Register keyboard commands (e.g., Cmd+D) for simulator
     [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
@@ -148,6 +147,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)reloadVisibleApp
 {
+  // Hide FAB immediately to avoid jank during reload
+  [[DevMenuManager shared] hideFAB];
+
   if (_browserController) {
     [EXUtil performSynchronouslyOnMainThread:^{
       [self->_browserController reloadVisibleApp];
@@ -293,6 +295,11 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)devMenuNavigateHome {
   [self switchTasks];
+}
+
+- (void)devMenuReload {
+  [DevMenuManager.shared hideMenu];
+  [self reloadVisibleApp];
 }
 
 - (void)devMenuTogglePerformanceMonitor {

@@ -1,0 +1,525 @@
+{
+  "id": "local-1770841570947",
+  "createdAt": "2026-02-11T20:26:10.947Z",
+  "runtimeVersion": "exposdk:unknown",
+  "metadata": {
+    "source": "local-build",
+    "sourceDir": "/Users/brent/code/snack/runtime"
+  },
+  "extra": {
+    "expoClient": {
+      "name": "Snack",
+      "slug": "snack",
+      "owner": "exponent",
+      "platforms": [
+        "android",
+        "ios",
+        "web"
+      ],
+      "runtimeVersion": {
+        "policy": "sdkVersion"
+      }
+    }
+  },
+  "bundleUrl": "file://SnackRuntime/snack-runtime.hbc",
+  "launchAsset": {
+    "key": "local-bundle",
+    "contentType": "application/javascript",
+    "url": "file://SnackRuntime/snack-runtime.hbc",
+    "nsBundleDir": "SnackRuntime",
+    "nsBundleFilename": "snack-runtime",
+    "type": "hbc"
+  },
+  "assets": [
+    {
+      "key": "19cbaa9ed24b8c3c3fdd031eeb73c1af",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "19cbaa9ed24b8c3c3fdd031eeb73c1af",
+      "type": "png"
+    },
+    {
+      "key": "3f78af31cca60105799838a1a7a59fbd",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3f78af31cca60105799838a1a7a59fbd",
+      "type": "ttf"
+    },
+    {
+      "key": "31b5ffea3daddc69dd01a1f3d6cf63c5",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "31b5ffea3daddc69dd01a1f3d6cf63c5",
+      "type": "ttf"
+    },
+    {
+      "key": "140c53a7643ea949007aa9a282153849",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "140c53a7643ea949007aa9a282153849",
+      "type": "ttf"
+    },
+    {
+      "key": "ca4b48e04dc1ce10bfbddb262c8b835f",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "ca4b48e04dc1ce10bfbddb262c8b835f",
+      "type": "ttf"
+    },
+    {
+      "key": "b49ae8ab2dbccb02c4d11caaacf09eab",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "b49ae8ab2dbccb02c4d11caaacf09eab",
+      "type": "ttf"
+    },
+    {
+      "key": "b06871f281fee6b241d60582ae9369b9",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "b06871f281fee6b241d60582ae9369b9",
+      "type": "ttf"
+    },
+    {
+      "key": "1f77739ca9ff2188b539c36f30ffa2be",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1f77739ca9ff2188b539c36f30ffa2be",
+      "type": "ttf"
+    },
+    {
+      "key": "605ed7926cf39a2ad5ec2d1f9d391d3d",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "605ed7926cf39a2ad5ec2d1f9d391d3d",
+      "type": "ttf"
+    },
+    {
+      "key": "3b89dd103490708d19a95adcae52210e",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3b89dd103490708d19a95adcae52210e",
+      "type": "ttf"
+    },
+    {
+      "key": "370dd5af19f8364907b6e2c41f45dbbf",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "370dd5af19f8364907b6e2c41f45dbbf",
+      "type": "ttf"
+    },
+    {
+      "key": "adec7d6f310bc577f05e8fe06a5daccf",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "adec7d6f310bc577f05e8fe06a5daccf",
+      "type": "ttf"
+    },
+    {
+      "key": "56c8d80832e37783f12c05db7c8849e2",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "56c8d80832e37783f12c05db7c8849e2",
+      "type": "ttf"
+    },
+    {
+      "key": "e20945d7c929279ef7a6f1db184a4470",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "e20945d7c929279ef7a6f1db184a4470",
+      "type": "ttf"
+    },
+    {
+      "key": "b4eb097d35f44ed943676fd56f6bdc51",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "b4eb097d35f44ed943676fd56f6bdc51",
+      "type": "ttf"
+    },
+    {
+      "key": "6e435534bd35da5fef04168860a9b8fa",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "6e435534bd35da5fef04168860a9b8fa",
+      "type": "ttf"
+    },
+    {
+      "key": "4e85bc9ebe07e0340c9c4fc2f6c38908",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "4e85bc9ebe07e0340c9c4fc2f6c38908",
+      "type": "ttf"
+    },
+    {
+      "key": "871378c6eab492a3e689a9385dc45a12",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "871378c6eab492a3e689a9385dc45a12",
+      "type": "ttf"
+    },
+    {
+      "key": "d2285965fe34b05465047401b8595dd0",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d2285965fe34b05465047401b8595dd0",
+      "type": "ttf"
+    },
+    {
+      "key": "1681f34aaca71b8dfb70756bca331eb2",
+      "contentType": "font/ttf",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1681f34aaca71b8dfb70756bca331eb2",
+      "type": "ttf"
+    },
+    {
+      "key": "2e38e3ef2dc9c7aafd21c14df3a1cdb8",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "2e38e3ef2dc9c7aafd21c14df3a1cdb8",
+      "type": "png"
+    },
+    {
+      "key": "7d40544b395c5949f4646f5e150fe020",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "7d40544b395c5949f4646f5e150fe020",
+      "type": "png"
+    },
+    {
+      "key": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "type": "png"
+    },
+    {
+      "key": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "type": "png"
+    },
+    {
+      "key": "2d0a9133e39524f138be6d4db9f4851f",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "2d0a9133e39524f138be6d4db9f4851f",
+      "type": "png"
+    },
+    {
+      "key": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "61ca7e64b7d605716c57706cef640b9a",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "61ca7e64b7d605716c57706cef640b9a",
+      "type": "png"
+    },
+    {
+      "key": "aff2c65b39a296d4f7e96d0f58169170",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "aff2c65b39a296d4f7e96d0f58169170",
+      "type": "png"
+    },
+    {
+      "key": "d8e7601e3df962f83c62371ac14964d8",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d8e7601e3df962f83c62371ac14964d8",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "d84e297c3b3e49a614248143d53e40ca",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d84e297c3b3e49a614248143d53e40ca",
+      "type": "png"
+    },
+    {
+      "key": "1190ab078c57159f4245a328118fcd9a",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1190ab078c57159f4245a328118fcd9a",
+      "type": "png"
+    },
+    {
+      "key": "78c625386b4d0690b421eb0fc78f7b9c",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "78c625386b4d0690b421eb0fc78f7b9c",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "d62ddc38b69aff346c20a28774933d6a",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d62ddc38b69aff346c20a28774933d6a",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "d1ea1496f9057eb392d5bbf3732a61b7",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d1ea1496f9057eb392d5bbf3732a61b7",
+      "type": "png"
+    },
+    {
+      "key": "19eeb73b9593a38f8e9f418337fc7d10",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "19eeb73b9593a38f8e9f418337fc7d10",
+      "type": "png"
+    },
+    {
+      "key": "ab19f4cbc543357183a20571f68380a3",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "ab19f4cbc543357183a20571f68380a3",
+      "type": "png"
+    },
+    {
+      "key": "d8b800c443b8972542883e0b9de2bdc6",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d8b800c443b8972542883e0b9de2bdc6",
+      "type": "png"
+    },
+    {
+      "key": "412dd9275b6b48ad28f5e3d81bb1f626",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "412dd9275b6b48ad28f5e3d81bb1f626",
+      "type": "png"
+    },
+    {
+      "key": "017bc6ba3fc25503e5eb5e53826d48a8",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "017bc6ba3fc25503e5eb5e53826d48a8",
+      "type": "png"
+    },
+    {
+      "key": "20e71bdf79e3a97bf55fd9e164041578",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "20e71bdf79e3a97bf55fd9e164041578",
+      "type": "png"
+    },
+    {
+      "key": "7d40544b395c5949f4646f5e150fe020",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "7d40544b395c5949f4646f5e150fe020",
+      "type": "png"
+    },
+    {
+      "key": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "a132ecc4ba5c1517ff83c0fb321bc7fc",
+      "type": "png"
+    },
+    {
+      "key": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0ea69b5077e7c4696db85dbcba75b0e1",
+      "type": "png"
+    },
+    {
+      "key": "2d0a9133e39524f138be6d4db9f4851f",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "2d0a9133e39524f138be6d4db9f4851f",
+      "type": "png"
+    },
+    {
+      "key": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "61ca7e64b7d605716c57706cef640b9a",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "61ca7e64b7d605716c57706cef640b9a",
+      "type": "png"
+    },
+    {
+      "key": "aff2c65b39a296d4f7e96d0f58169170",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "aff2c65b39a296d4f7e96d0f58169170",
+      "type": "png"
+    },
+    {
+      "key": "d8e7601e3df962f83c62371ac14964d8",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d8e7601e3df962f83c62371ac14964d8",
+      "type": "png"
+    },
+    {
+      "key": "3cd68ccdb8938e3711da2e8831b85493",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "3cd68ccdb8938e3711da2e8831b85493",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "d84e297c3b3e49a614248143d53e40ca",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d84e297c3b3e49a614248143d53e40ca",
+      "type": "png"
+    },
+    {
+      "key": "1190ab078c57159f4245a328118fcd9a",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "1190ab078c57159f4245a328118fcd9a",
+      "type": "png"
+    },
+    {
+      "key": "78c625386b4d0690b421eb0fc78f7b9c",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "78c625386b4d0690b421eb0fc78f7b9c",
+      "type": "png"
+    },
+    {
+      "key": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0747a1317bbe9c6fc340b889ef8ab3ae",
+      "type": "png"
+    },
+    {
+      "key": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "dad2fa9f4394a630f0f9a0d6dabd44bc",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "d62ddc38b69aff346c20a28774933d6a",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "d62ddc38b69aff346c20a28774933d6a",
+      "type": "png"
+    },
+    {
+      "key": "f3a81967828232c893d547162e922764",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "f3a81967828232c893d547162e922764",
+      "type": "png"
+    },
+    {
+      "key": "a4e0725c66112486cc6f4ab4e0025528",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "a4e0725c66112486cc6f4ab4e0025528",
+      "type": "png"
+    },
+    {
+      "key": "92342ace2ac52e29a7fce51b89c2cbd0",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "92342ace2ac52e29a7fce51b89c2cbd0",
+      "type": "png"
+    },
+    {
+      "key": "7c519c6f00d65602c16b98bdffddc6f4",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "7c519c6f00d65602c16b98bdffddc6f4",
+      "type": "png"
+    },
+    {
+      "key": "ccb993f31c04afbcca02178df04f4170",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "ccb993f31c04afbcca02178df04f4170",
+      "type": "png"
+    }
+  ]
+}

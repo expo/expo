@@ -33,7 +33,9 @@ struct DevMenuMainView: View {
           )
         }
 
-        DevMenuAppInfo()
+        if viewModel.configuration.showSystemSection {
+          DevMenuAppInfo()
+        }
 
         if viewModel.shouldShowReactNativeDevMenu {
           DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)

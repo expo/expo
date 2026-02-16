@@ -5,6 +5,7 @@ import UIKit
 
 enum HomeTab: Hashable {
   case home
+  case learn
   case diagnostics
   case settings
 }
@@ -23,6 +24,7 @@ struct HomeRootView: View {
       NavigationView {
         HomeTabView()
       }
+      .navigationViewStyle(.stack)
       .tabItem {
         Image(systemName: "house.fill")
         Text("Home")
@@ -30,8 +32,19 @@ struct HomeRootView: View {
       .tag(HomeTab.home)
 
       NavigationView {
+        LearnTabView()
+      }
+      .navigationViewStyle(.stack)
+      .tabItem {
+        Image(systemName: "book.fill")
+        Text("Learn")
+      }
+      .tag(HomeTab.learn)
+
+      NavigationView {
         DiagnosticsTabView()
       }
+      .navigationViewStyle(.stack)
       .tabItem {
         Image(systemName: "stethoscope")
         Text("Diagnostics")

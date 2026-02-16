@@ -33,7 +33,7 @@ private struct OnboardingOverlay: View {
           .cornerRadius(12)
 
         VStack(spacing: 12) {
-          Text("This is the developer menu. It gives you access to useful tools in \(appName).")
+          Text("This is the tools menu. Inside of this menu, you can reload your project, go back home, and access other useful utilities.")
             .frame(maxWidth: .infinity, alignment: .leading)
             .font(.callout)
 

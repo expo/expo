@@ -10,11 +10,30 @@ class SettingsManager: ObservableObject {
   @Published var threeFingerLongPressEnabled = true
   @Published var selectedTheme = 0
   @Published var buildInfo: [String: Any] = [:]
+  @Published var completedLessons: Set<Int> = []
+
+  private static let completedLessonsKey = "ExpoGoCompletedLessons"
 
   init() {
     loadDevSettings()
     loadThemeSettings()
     loadBuildInfo()
+    loadCompletedLessons()
+  }
+
+  // MARK: - Lesson Completion
+
+  func isLessonCompleted(_ lessonId: Int) -> Bool {
+    completedLessons.contains(lessonId)
+  }
+
+  func refreshCompletedLessons() {
+    loadCompletedLessons()
+  }
+
+  private func loadCompletedLessons() {
+    let ids = UserDefaults.standard.array(forKey: Self.completedLessonsKey) as? [Int] ?? []
+    completedLessons = Set(ids)
   }
 
   func updateShakeGesture(_ enabled: Bool) {
