@@ -109,6 +109,7 @@ class VectorIconLoader(
       val response = okHttpClient.newCall(request).execute()
       if (!response.isSuccessful) {
         Log.e(TAG, "Failed to download icon from $url: ${response.code}")
+        response.close()
         return null
       }
 

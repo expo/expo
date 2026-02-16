@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { Children } from 'react';
 
 import { type ExpoModifier, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -46,14 +45,12 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
 );
 
 export function DockedSearchBarPlaceholder(props: PlaceholderProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="placeholder">{props.children}</SlotNativeView>;
 }
-DockedSearchBarPlaceholder.tag = 'Placeholder';
 
 export function DockedSearchBarLeadingIcon(props: LeadingIconProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="leadingIcon">{props.children}</SlotNativeView>;
 }
-DockedSearchBarLeadingIcon.tag = 'LeadingIcon';
 
 function transformDockedSearchBarProps(props: DockedSearchBarProps): NativeDockedSearchBarProps {
   const { modifiers, onQueryChange, ...restProps } = props;
@@ -68,29 +65,9 @@ function transformDockedSearchBarProps(props: DockedSearchBarProps): NativeDocke
 }
 
 function DockedSearchBar(props: DockedSearchBarProps) {
-  let placeholderContent: React.ReactNode = null;
-  let leadingIconContent: React.ReactNode = null;
-  const regularChildren: React.ReactNode[] = [];
-
-  Children.forEach(props.children as any, (child) => {
-    if (child?.type?.tag === DockedSearchBarPlaceholder.tag) {
-      placeholderContent = child.props.children;
-    } else if (child?.type?.tag === DockedSearchBarLeadingIcon.tag) {
-      leadingIconContent = child.props.children;
-    } else {
-      regularChildren.push(child);
-    }
-  });
-
   return (
     <DockedSearchBarNativeView {...transformDockedSearchBarProps(props)}>
-      {regularChildren}
-      {placeholderContent && (
-        <SlotNativeView slotName="placeholder">{placeholderContent}</SlotNativeView>
-      )}
-      {leadingIconContent && (
-        <SlotNativeView slotName="leadingIcon">{leadingIconContent}</SlotNativeView>
-      )}
+      {props.children}
     </DockedSearchBarNativeView>
   );
 }

@@ -29,9 +29,6 @@ export type FloatingActionButtonProps = {
  * This component marks its children to be rendered in the FAB slot.
  */
 export declare function HorizontalFloatingToolbarFloatingActionButton(props: FloatingActionButtonProps): import("react").JSX.Element;
-export declare namespace HorizontalFloatingToolbarFloatingActionButton {
-    var tag: string;
-}
 /**
  * Renders a `HorizontalFloatingToolbar` component.
  * A horizontal toolbar that floats above content, typically used for action buttons.

@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { Children } from 'react';
 
 import { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -56,17 +55,15 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
  * Leading icon slot for FilterChip.
  */
 function FilterChipLeadingIcon(props: SlotChildProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="leadingIcon">{props.children}</SlotNativeView>;
 }
-FilterChipLeadingIcon.tag = 'LeadingIcon';
 
 /**
  * Trailing icon slot for FilterChip.
  */
 function FilterChipTrailingIcon(props: SlotChildProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
 }
-FilterChipTrailingIcon.tag = 'TrailingIcon';
 
 /**
  * A filter chip component following Material 3 design guidelines.
@@ -75,29 +72,13 @@ FilterChipTrailingIcon.tag = 'TrailingIcon';
 function FilterChipComponent(props: FilterChipProps) {
   const { children, modifiers, onPress, ...restProps } = props;
 
-  let leadingIconContent: React.ReactNode = null;
-  let trailingIconContent: React.ReactNode = null;
-
-  Children.forEach(children as any, (child) => {
-    if (child?.type?.tag === FilterChipLeadingIcon.tag) {
-      leadingIconContent = child.props.children;
-    } else if (child?.type?.tag === FilterChipTrailingIcon.tag) {
-      trailingIconContent = child.props.children;
-    }
-  });
-
   return (
     <FilterChipNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
       onPress={onPress}>
-      {leadingIconContent && (
-        <SlotNativeView slotName="leadingIcon">{leadingIconContent}</SlotNativeView>
-      )}
-      {trailingIconContent && (
-        <SlotNativeView slotName="trailingIcon">{trailingIconContent}</SlotNativeView>
-      )}
+      {children}
     </FilterChipNativeView>
   );
 }

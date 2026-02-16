@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { Children } from 'react';
 
 import { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -56,9 +55,12 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
  * This component marks its children to be rendered in the FAB slot.
  */
 export function HorizontalFloatingToolbarFloatingActionButton(props: FloatingActionButtonProps) {
-  return <>{props.children}</>;
+  return (
+    <SlotNativeView slotName="floatingActionButton" onSlotEvent={props.onPress}>
+      {props.children}
+    </SlotNativeView>
+  );
 }
-HorizontalFloatingToolbarFloatingActionButton.tag = 'FloatingActionButton';
 
 function transformHorizontalFloatingToolbarProps(
   props: HorizontalFloatingToolbarProps
@@ -76,28 +78,9 @@ function transformHorizontalFloatingToolbarProps(
  * A horizontal toolbar that floats above content, typically used for action buttons.
  */
 function HorizontalFloatingToolbar(props: HorizontalFloatingToolbarProps) {
-  // Separate FloatingActionButton from regular children
-  let floatingActionButtonContent: React.ReactNode = null;
-  let floatingActionButtonOnPress: (() => void) | undefined = undefined;
-  const regularChildren: React.ReactNode[] = [];
-
-  Children.forEach(props.children as any, (child) => {
-    if (child?.type?.tag === HorizontalFloatingToolbarFloatingActionButton.tag) {
-      floatingActionButtonContent = child.props.children;
-      floatingActionButtonOnPress = child.props.onPress;
-    } else {
-      regularChildren.push(child);
-    }
-  });
-
   return (
     <HorizontalFloatingToolbarNativeView {...transformHorizontalFloatingToolbarProps(props)}>
-      {regularChildren}
-      {floatingActionButtonContent && (
-        <SlotNativeView slotName="floatingActionButton" onSlotEvent={floatingActionButtonOnPress}>
-          {floatingActionButtonContent}
-        </SlotNativeView>
-      )}
+      {props.children}
     </HorizontalFloatingToolbarNativeView>
   );
 }

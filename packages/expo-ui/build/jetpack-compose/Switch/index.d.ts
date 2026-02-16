@@ -82,9 +82,6 @@ type ThumbContentProps = {
  * @platform android
  */
 export declare function SwitchThumbContent(props: ThumbContentProps): import("react").JSX.Element;
-export declare namespace SwitchThumbContent {
-    var tag: string;
-}
 declare function SwitchComponent(props: SwitchProps): import("react").JSX.Element;
 declare namespace SwitchComponent {
     var ThumbContent: typeof SwitchThumbContent;

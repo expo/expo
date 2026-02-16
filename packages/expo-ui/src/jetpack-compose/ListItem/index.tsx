@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { Children } from 'react';
 import { type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
@@ -87,17 +86,15 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
  * Leading content slot for ListItem.
  */
 export function ListItemLeading(props: LeadingProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="leading">{props.children}</SlotNativeView>;
 }
-ListItemLeading.tag = 'Leading';
 
 /**
  * Trailing content slot for ListItem.
  */
 export function ListItemTrailing(props: TrailingProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="trailing">{props.children}</SlotNativeView>;
 }
-ListItemTrailing.tag = 'Trailing';
 
 /**
  * Custom supporting content slot for ListItem.
@@ -105,9 +102,8 @@ ListItemTrailing.tag = 'Trailing';
  * @platform android
  */
 export function ListItemSupportingContent(props: SupportingContentProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="supportingContent">{props.children}</SlotNativeView>;
 }
-ListItemSupportingContent.tag = 'SupportingContent';
 
 /**
  * A list item component following Material 3 design guidelines.
@@ -115,31 +111,13 @@ ListItemSupportingContent.tag = 'SupportingContent';
 function ListItemComponent(props: ListItemProps) {
   const { children, modifiers, onPress, ...restProps } = props;
 
-  let leadingContent: React.ReactNode = null;
-  let trailingContent: React.ReactNode = null;
-  let supportingContent: React.ReactNode = null;
-
-  Children.forEach(children as any, (child) => {
-    if (child?.type?.tag === ListItemLeading.tag) {
-      leadingContent = child.props.children;
-    } else if (child?.type?.tag === ListItemTrailing.tag) {
-      trailingContent = child.props.children;
-    } else if (child?.type?.tag === ListItemSupportingContent.tag) {
-      supportingContent = child.props.children;
-    }
-  });
-
   return (
     <ListItemNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
       onPress={onPress}>
-      {leadingContent && <SlotNativeView slotName="leading">{leadingContent}</SlotNativeView>}
-      {trailingContent && <SlotNativeView slotName="trailing">{trailingContent}</SlotNativeView>}
-      {supportingContent && (
-        <SlotNativeView slotName="supportingContent">{supportingContent}</SlotNativeView>
-      )}
+      {children}
     </ListItemNativeView>
   );
 }

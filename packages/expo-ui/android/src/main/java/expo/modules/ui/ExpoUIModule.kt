@@ -20,10 +20,25 @@ import expo.modules.ui.menu.ContextMenuContent
 import expo.modules.ui.menu.ContextMenuProps
 import expo.modules.ui.menu.ContextMenuSwitchValueChangeEvent
 import expo.modules.ui.menu.ExpandedChangedEvent
+import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
+  var okHttpClient: OkHttpClient? = null
+    private set
+
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")
+
+    OnCreate {
+      okHttpClient = OkHttpClient.Builder().build()
+    }
+
+    OnDestroy {
+      okHttpClient?.dispatcher?.executorService?.shutdown()
+      okHttpClient?.connectionPool?.evictAll()
+      okHttpClient?.cache?.close()
+      okHttpClient = null
+    }
 
     //region Views use expo-modules-core DSL for uncommon features
 

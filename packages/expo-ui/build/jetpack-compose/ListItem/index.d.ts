@@ -58,25 +58,16 @@ type SupportingContentProps = {
  * Leading content slot for ListItem.
  */
 export declare function ListItemLeading(props: LeadingProps): import("react").JSX.Element;
-export declare namespace ListItemLeading {
-    var tag: string;
-}
 /**
  * Trailing content slot for ListItem.
  */
 export declare function ListItemTrailing(props: TrailingProps): import("react").JSX.Element;
-export declare namespace ListItemTrailing {
-    var tag: string;
-}
 /**
  * Custom supporting content slot for ListItem.
  * When provided, this takes precedence over the `supportingText` prop.
  * @platform android
  */
 export declare function ListItemSupportingContent(props: SupportingContentProps): import("react").JSX.Element;
-export declare namespace ListItemSupportingContent {
-    var tag: string;
-}
 /**
  * A list item component following Material 3 design guidelines.
  */

@@ -30,17 +30,11 @@ type ExpandedFullScreenSearchBarProps = {
  * This component marks its children to be rendered in the placeholder slot.
  */
 export declare function SearchBarPlaceholder(props: PlaceholderProps): import("react").JSX.Element;
-export declare namespace SearchBarPlaceholder {
-    var tag: string;
-}
 /**
  * ExpandedFullScreenSearchBar component for SearchBar.
  * This component marks its children to be rendered in the expanded full-screen search bar.
  */
 export declare function ExpandedFullScreenSearchBar(props: ExpandedFullScreenSearchBarProps): import("react").JSX.Element;
-export declare namespace ExpandedFullScreenSearchBar {
-    var tag: string;
-}
 /**
  * Renders a `SearchBar` component.
  */

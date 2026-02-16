@@ -32,16 +32,10 @@ type SlotChildProps = {
  * Leading icon slot for FilterChip.
  */
 declare function FilterChipLeadingIcon(props: SlotChildProps): import("react").JSX.Element;
-declare namespace FilterChipLeadingIcon {
-    var tag: string;
-}
 /**
  * Trailing icon slot for FilterChip.
  */
 declare function FilterChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
-declare namespace FilterChipTrailingIcon {
-    var tag: string;
-}
 /**
  * A filter chip component following Material 3 design guidelines.
  * Supports slot-based `LeadingIcon` and `TrailingIcon` children.

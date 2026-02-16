@@ -31,10 +31,10 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.ui.ExpoUIModule
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
-import okhttp3.OkHttpClient
 
 data class Source(
   @Field val uri: String,
@@ -57,9 +57,11 @@ class IconView(context: Context, appContext: AppContext) :
   override val props = IconProps()
 
   private val iconLoader by lazy {
+    val module = appContext.registry.getModule<ExpoUIModule>()
+    val okHttpClient = requireNotNull(module?.okHttpClient) { "ExpoUIModule.okHttpClient is not initialized" }
     VectorIconLoader(
       context = context,
-      okHttpClient = OkHttpClient.Builder().build()
+      okHttpClient = okHttpClient
     )
   }
 

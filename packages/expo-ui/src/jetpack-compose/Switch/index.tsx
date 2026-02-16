@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { Children } from 'react';
 import { NativeSyntheticEvent, type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
@@ -120,9 +119,8 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
  * @platform android
  */
 export function SwitchThumbContent(props: ThumbContentProps) {
-  return <>{props.children}</>;
+  return <SlotNativeView slotName="thumbContent">{props.children}</SlotNativeView>;
 }
-SwitchThumbContent.tag = 'ThumbContent';
 
 function getElementColors(props: SwitchProps) {
   if (props.variant === 'button') {
@@ -158,21 +156,7 @@ function transformSwitchProps(props: SwitchProps): Omit<NativeSwitchProps, 'chil
 }
 
 function SwitchComponent(props: SwitchProps) {
-  const { children } = props;
-
-  let thumbContent: React.ReactNode = null;
-
-  Children.forEach(children as any, (child) => {
-    if (child?.type?.tag === SwitchThumbContent.tag) {
-      thumbContent = child.props.children;
-    }
-  });
-
-  return (
-    <SwitchNativeView {...transformSwitchProps(props)}>
-      {thumbContent && <SlotNativeView slotName="thumbContent">{thumbContent}</SlotNativeView>}
-    </SwitchNativeView>
-  );
+  return <SwitchNativeView {...transformSwitchProps(props)}>{props.children}</SwitchNativeView>;
 }
 
 SwitchComponent.ThumbContent = SwitchThumbContent;

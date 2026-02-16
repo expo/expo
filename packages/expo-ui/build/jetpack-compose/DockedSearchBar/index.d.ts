@@ -20,13 +20,7 @@ type LeadingIconProps = {
     children: React.ReactNode;
 };
 export declare function DockedSearchBarPlaceholder(props: PlaceholderProps): import("react").JSX.Element;
-export declare namespace DockedSearchBarPlaceholder {
-    var tag: string;
-}
 export declare function DockedSearchBarLeadingIcon(props: LeadingIconProps): import("react").JSX.Element;
-export declare namespace DockedSearchBarLeadingIcon {
-    var tag: string;
-}
 declare function DockedSearchBar(props: DockedSearchBarProps): import("react").JSX.Element;
 declare namespace DockedSearchBar {
     var Placeholder: typeof DockedSearchBarPlaceholder;
