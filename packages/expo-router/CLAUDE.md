@@ -190,8 +190,12 @@ jest.mock('react-native-screens', () => {
 
 ```ts
 let spy: jest.SpyInstance;
-beforeEach(() => { spy = jest.spyOn(Module, 'fn'); }); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
-afterEach(() => { spy.mockRestore(); });
+beforeEach(() => {
+  spy = jest.spyOn(Module, 'fn');
+}); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
+afterEach(() => {
+  spy.mockRestore();
+});
 ```
 
 **Mock call assertions:** Use array index access. Comment non-zero indices:
@@ -300,6 +304,12 @@ To run the docs site locally run `yarn dev` in the `docs/` directory of the mono
 - http://localhost:3002/versions/unversioned/sdk/router-native-tabs/ for native tabs
 - http://localhost:3002/versions/unversioned/sdk/router-split-view/ for split view
 - http://localhost:3002/versions/unversioned/sdk/router-ui/ for headless tabs
+
+## Coding style
+
+- Always use latest React 19 hooks and patterns - `use` instead of `useContext`, `useId`, etc.
+- Make sure the code works with and without React Compiler enabled.
+- Don't use `any` types, unless strictly necessary. Use `unknown` instead and narrow types as much as possible.
 
 ## Maintaining This Document
 
