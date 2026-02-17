@@ -11,17 +11,29 @@ class SharedState : SharedObject() {
   private val listeners = mutableListOf<(Any?) -> Unit>()
 
   fun get(): Any? {
-    return value
+    synchronized(this) {
+      return value
+    }
   }
 
   fun set(newValue: Any?) {
-    value = newValue
+    val listenersSnapshot: List<(Any?) -> Unit>
+    synchronized(this) {
+      value = newValue
+      listenersSnapshot = listeners.toList()
+    }
     emit("change", mapOf("value" to newValue))
-    listeners.forEach { it(newValue) }
+    listenersSnapshot.forEach { it(newValue) }
   }
 
   fun addListener(listener: ((Any?) -> Unit)): Removable {
-    listeners.add(listener)
-    return Removable { listeners.remove(listener) }
+    synchronized(this) {
+      listeners.add(listener)
+    }
+    return Removable {
+      synchronized(this) {
+        listeners.remove(listener)
+      }
+    }
   }
 }
