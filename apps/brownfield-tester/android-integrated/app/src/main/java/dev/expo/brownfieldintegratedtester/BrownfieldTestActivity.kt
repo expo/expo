@@ -1,5 +1,6 @@
 package dev.expo.brownfieldintegratedtester
 
+import android.util.Log
 import android.widget.Toast
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import expo.modules.brownfield.BrownfieldMessage
@@ -23,8 +24,8 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
     // Messaging
     messagingListenerId =
         BrownfieldMessaging.addListener { message ->
-          println("Message from React Native received:")
-          println(message)
+          Log.i("BrownfieldTestActivity", "Message from React Native received:")
+          Log.i("BrownfieldTestActivity", message.toString())
           showToast(message)
         }
 
@@ -33,7 +34,7 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
         BrownfieldState.subscribe("counter") { state: Any? ->
           val count = state as? Double
           if (count == null) {
-            println("Failed to parse state update as a double")
+            Log.i("BrownfieldTestActivity", "Failed to parse state update as a double")
             return@subscribe
           }
           // Return (synchronize) duplicated value to JS
