@@ -1,4 +1,3 @@
-import { loadProjectEnv } from '@expo/env';
 import type { Command } from 'commander';
 
 import {
@@ -12,17 +11,15 @@ import {
 const buildAndroid = async (command: Command) => {
   await validatePrebuild('android');
 
-  loadProjectEnv(process.cwd());
-
   const config = resolveBuildConfigAndroid(command.opts());
   if (!config.tasks.length) {
     CLIError.handle('android-task-repo');
   }
   printAndroidConfig(config);
 
-  config.tasks.forEach(async (task) => {
+  for (const task of config.tasks) {
     await runTask(task, config.verbose, config.dryRun);
-  });
+  }
 };
 
 export default buildAndroid;

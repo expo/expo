@@ -143,7 +143,6 @@ async function findElementByTestID(
   platform: 'ios' | 'android',
   displayScaleFactor: number
 ): Promise<ElementProperties> {
-  // For iOS, try dylib first (fast path)
   if (platform === 'ios') {
     const dylibBounds = await getCoordinatesViaDylib(testID, displayScaleFactor);
     if (dylibBounds) {
@@ -151,8 +150,11 @@ async function findElementByTestID(
         resource_id: testID,
         bounds: dylibBounds,
       };
+    } else {
+      throw new Error(
+        `Failed to get coordinates for testID "${testID}" using dylib method on iOS.`
+      );
     }
-    console.log('⚠️  Falling back to maestro for iOS coordinate lookup');
   }
 
   // Fallback to maestro (or primary method for Android)

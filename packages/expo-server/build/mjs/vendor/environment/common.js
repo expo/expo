@@ -1,38 +1,38 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
-import { isResponse, parseParams } from '../../utils/matchers';
+import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/matchers';
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
-        htmlRoutes: manifest.htmlRoutes.map((route) => ({
+        htmlRoutes: manifest.htmlRoutes?.map((route) => ({
             ...route,
             namedRegex: new RegExp(route.namedRegex),
-        })),
-        apiRoutes: manifest.apiRoutes.map((route) => ({
+        })) ?? [],
+        apiRoutes: manifest.apiRoutes?.map((route) => ({
             ...route,
             namedRegex: new RegExp(route.namedRegex),
-        })),
-        notFoundRoutes: manifest.notFoundRoutes.map((route) => ({
+        })) ?? [],
+        notFoundRoutes: manifest.notFoundRoutes?.map((route) => ({
             ...route,
             namedRegex: new RegExp(route.namedRegex),
-        })),
+        })) ?? [],
         redirects: manifest.redirects?.map((route) => ({
             ...route,
             namedRegex: new RegExp(route.namedRegex),
-        })),
+        })) ?? [],
         rewrites: manifest.rewrites?.map((route) => ({
             ...route,
             namedRegex: new RegExp(route.namedRegex),
-        })),
+        })) ?? [],
     };
 }
 export function createEnvironment(input) {
     // Cached manifest and SSR renderer, initialized on first request
-    let cachedManifest = null;
+    let cachedManifest;
     let ssrRenderer = null;
-    async function getCachedRoutesManifest() {
-        if (!cachedManifest || input.isDevelopment) {
+    async function getRoutesManifest() {
+        if (cachedManifest === undefined || input.isDevelopment) {
             const json = await input.readJson('_expo/routes.json');
-            cachedManifest = initManifestRegExp(json);
+            cachedManifest = json ? initManifestRegExp(json) : null;
         }
         return cachedManifest;
     }
@@ -40,8 +40,8 @@ export function createEnvironment(input) {
         if (ssrRenderer && !input.isDevelopment) {
             return ssrRenderer;
         }
-        const manifest = await getCachedRoutesManifest();
-        if (manifest.rendering?.mode !== 'ssr') {
+        const manifest = await getRoutesManifest();
+        if (manifest?.rendering?.mode !== 'ssr') {
             return null;
         }
         // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
@@ -62,7 +62,7 @@ export function createEnvironment(input) {
         };
         return ssrRenderer;
     }
-    async function executeLoader(request, route) {
+    async function executeLoader(request, route, params) {
         if (!route.loader) {
             return undefined;
         }
@@ -70,13 +70,10 @@ export function createEnvironment(input) {
         if (!loaderModule) {
             throw new Error(`Loader module not found at: ${route.loader}`);
         }
-        const params = parseParams(request, route);
         return loaderModule.loader(new ImmutableRequest(request), params);
     }
     return {
-        async getRoutesManifest() {
-            return getCachedRoutesManifest();
-        },
+        getRoutesManifest,
         async getHtml(request, route) {
             // SSR path: Render at runtime if SSR module is available
             const renderer = await getServerRenderer();
@@ -84,9 +81,15 @@ export function createEnvironment(input) {
                 let renderOptions;
                 try {
                     if (route.loader) {
-                        const result = await executeLoader(request, route);
+                        const params = parseParams(request, route);
+                        const result = await executeLoader(request, route, params);
                         const data = isResponse(result) ? await result.json() : result;
-                        renderOptions = { loader: { data: data ?? null } };
+                        renderOptions = {
+                            loader: {
+                                data: data ?? null,
+                                key: resolveLoaderContextKey(route.page, params),
+                            },
+                        };
                     }
                     return await renderer(request, renderOptions);
                 }
@@ -122,11 +125,32 @@ export function createEnvironment(input) {
             return mod;
         },
         async getLoaderData(request, route) {
-            const result = await executeLoader(request, route);
+            const params = parseParams(request, route);
+            const result = await executeLoader(request, route, params);
             if (isResponse(result)) {
                 return result;
             }
             return Response.json(result ?? null);
+        },
+        async preload() {
+            if (input.isDevelopment) {
+                return;
+            }
+            const manifest = await getRoutesManifest();
+            if (manifest) {
+                const requests = [];
+                if (manifest.middleware)
+                    requests.push(manifest.middleware.file);
+                if (manifest.rendering)
+                    requests.push(manifest.rendering.file);
+                for (const apiRoute of manifest.apiRoutes)
+                    requests.push(apiRoute.file);
+                for (const htmlRoute of manifest.htmlRoutes) {
+                    if (htmlRoute.loader)
+                        requests.push(htmlRoute.loader);
+                }
+                await Promise.all(requests.map((request) => input.loadModule(request)));
+            }
         },
     };
 }

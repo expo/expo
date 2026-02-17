@@ -20,6 +20,7 @@ import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.hls.HlsManifest
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
@@ -53,10 +54,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
+class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?, playerBuilderOptions: expo.modules.video.records.PlayerBuilderOptions? = null) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
@@ -73,9 +75,16 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
-    .setLooper(context.mainLooper)
-    .setLoadControl(loadControl)
-    .build()
+    .apply {
+      setLooper(context.mainLooper)
+      setLoadControl(loadControl)
+      playerBuilderOptions?.seekBackwardIncrement?.let {
+        setSeekBackIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+      playerBuilderOptions?.seekForwardIncrement?.let {
+        setSeekForwardIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+    }.build()
 
   internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
@@ -241,7 +250,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       val newAudioTracks = audioTracks.availableAudioTracks
       val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
       val newCurrentAudioTrack = audioTracks.currentAudioTrack
-      availableVideoTracks = tracks.toVideoTracks()
+      val hlsManifest = player.currentManifest as? HlsManifest
+      availableVideoTracks = tracks.toVideoTracks(hlsManifest)
       refreshPlaybackInfo()
 
       if (isLoadingNewSource) {
@@ -562,17 +572,23 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 // Extension functions
 
 @OptIn(UnstableApi::class)
-private fun Tracks.toVideoTracks(): List<VideoTrack> {
+private fun Tracks.toVideoTracks(sourceManifest: HlsManifest?): List<VideoTrack> {
   val videoTracks = mutableListOf<VideoTrack?>()
   for (group in this.groups) {
     for (i in 0 until group.length) {
       val format = group.getTrackFormat(i)
       val isSupported = group.isTrackSupported(i)
+      val hlsVariant = sourceManifest?.multivariantPlaylist?.variants?.firstOrNull {
+        it.format.id == format.id
+      }
+
+      // We provide the variant url only for HLS sources
+      val variantUrl = hlsVariant?.url
 
       if (!MimeTypes.isVideo(format.sampleMimeType)) {
         continue
       }
-      videoTracks.add(VideoTrack.fromFormat(format, isSupported))
+      videoTracks.add(VideoTrack.fromFormat(format, isSupported, variantUrl))
     }
   }
   return videoTracks.filterNotNull()

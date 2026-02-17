@@ -62,9 +62,9 @@ export const processRepositories = (tasks: string[]): string[] => {
         .map((task) => {
           return splitRegex.exec(task)?.[1];
         })
-        .filter((repo) => repo)
+        .filter((repo) => repo !== undefined)
     )
-  ) as string[];
+  );
 };
 
 export const processTasks = (stdout: string): string[] => {
@@ -74,7 +74,8 @@ export const processTasks = (stdout: string): string[] => {
       .split('\n')
       .map((line) => regex.exec(line)?.[0])
       // Remove duplicate maven local tasks
-      .filter((task) => task && !task.includes('MavenLocalRepository')) as string[]
+      .filter((task) => task !== undefined)
+      .filter((task) => !task.includes('MavenLocalRepository'))
   );
 };
 

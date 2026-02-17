@@ -59,16 +59,17 @@ const processRepositories = (tasks) => {
         .map((task) => {
         return splitRegex.exec(task)?.[1];
     })
-        .filter((repo) => repo)));
+        .filter((repo) => repo !== undefined)));
 };
 exports.processRepositories = processRepositories;
 const processTasks = (stdout) => {
     const regex = /^publishBrownfield[a-zA-Z0-9_-]*/i;
-    return stdout
+    return (stdout
         .split('\n')
         .map((line) => regex.exec(line)?.[0])
         // Remove duplicate maven local tasks
-        .filter((task) => task && !task.includes('MavenLocalRepository'));
+        .filter((task) => task !== undefined)
+        .filter((task) => !task.includes('MavenLocalRepository')));
 };
 exports.processTasks = processTasks;
 const runTask = async (task, verbose, dryRun) => {

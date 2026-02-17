@@ -19,6 +19,7 @@ import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.PlayerBuilderOptions
 import expo.modules.video.records.ButtonOptions
 import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.records.SubtitleTrack
@@ -73,8 +74,8 @@ class VideoModule : Module() {
     }
 
     Class(VideoPlayer::class) {
-      Constructor { source: VideoSource? ->
-        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source)
+      Constructor { source: VideoSource?, /* useSynchronousReplace - iOS-only */ _: Boolean?, playerBuilderOptions: PlayerBuilderOptions? ->
+        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source, playerBuilderOptions)
         appContext.mainQueue.launch {
           player.prepare()
         }

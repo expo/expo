@@ -1,38 +1,55 @@
 import WidgetKit
+import Foundation
 
 func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [WidgetsTimelineEntry] {
-  var json = WidgetsStorage.getString(forKey: "__expo_widgets_\(name)") ?? ""
-  let props = WidgetsStorage.getDictionary(forKey: "__expo_widgets_\(name)_props") ?? [:]
-
-  // Inject props
-  for (key, value) in props {
-    let placeholder = "{{\(key)}}"
-    if let stringValue = value as? String {
-      json = json.replacingOccurrences(of: placeholder, with: stringValue)
-    } else if let numberValue = value as? NSNumber {
-      json = json.replacingOccurrences(of: placeholder, with: numberValue.stringValue)
+  let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(name)_layout") ?? ""
+  let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") ?? []
+  
+  let entries: [WidgetsTimelineEntry?] = timeline.enumerated().map { (index, entry) in
+    if let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] {
+      let node = evaluateLayout(layout: layout, props: props, timestamp: timestamp, family: family)
+      return WidgetsTimelineEntry(
+        date: Date(timeIntervalSince1970: Double(timestamp) / 1000),
+        source: name,
+        node: node,
+        entryIndex: index
+      )
     }
+    return nil
   }
-
-  guard let data = try? JSONSerialization.jsonObject(with: json.data(using: .utf8)!) as? [String: Any] else {
-    return []
-  }
-  guard let dataForFamily = data[getKeyFor(widgetFamily: family)] as? [[String: Any]] else {
-    return []
-  }
-
-  return dataForFamily.map {
-    WidgetsTimelineEntry(
-      date: Date(timeIntervalSince1970: Double($0["timestamp"] as? Int ?? 0) / 1000.0),
-      source: name, node: $0["content"] as? [String: Any]
-    )
-  }
+  
+  return entries.compactMap(\.self)
 }
 
-func getLiveActivityNodes(forName name: String) -> [String: Any] {
-  let data = WidgetsStorage.getData(forKey: "__expo_widgets_live_activity_\(name)")
-  let decompressedData = try? data?.brotliDecompressed() ?? Data()
-  return (try? JSONSerialization.jsonObject(with: decompressedData!) as? [String: Any]) ?? [:]
+func evaluateLayout(
+  layout: String,
+  props: [String: Any],
+  timestamp: Int,
+  family: WidgetFamily
+) -> [String: Any]? {
+  guard let context = createWidgetContext(layout: layout, props: props) else {
+    return nil
+  }
+  let familyKey: String? = getKeyFor(widgetFamily: family)
+
+  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
+    withArguments: [timestamp, familyKey as Any]
+  )
+  return result?.toObject() as? [String: Any]
+}
+
+func getLiveActivityNodes(forName name: String, props: String = "{}") -> [String: Any] {
+  let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
+  let propsData = props.data(using: .utf8)
+  let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] }
+  guard let context = createWidgetContext(layout: layout, props: propsDict ?? [:]) else {
+    return [:]
+  }
+
+  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
+    withArguments: [Int(Date.now.timeIntervalSince1970 * 1000)]
+  )
+  return result?.toObject() as? [String: Any] ?? [:]
 }
 
 func getLiveActivityUrl(forName name: String) -> URL? {

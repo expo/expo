@@ -21,6 +21,7 @@ const server :Workerd.Worker = (
     (name = "_expo/loaders/nullish/[value].js", commonJsModule = embed "_expo/loaders/nullish/[value].js"),
     (name = "_expo/loaders/request.js", commonJsModule = embed "_expo/loaders/request.js"),
     (name = "_expo/loaders/response.js", commonJsModule = embed "_expo/loaders/response.js"),
+    (name = "_expo/loaders/(group)/index.js", commonJsModule = embed "_expo/loaders/(group)/index.js"),
   ],
   bindings = [
     (name = "TEST_SECRET_RUNTIME_KEY", text = "runtime-secret-value"),

@@ -3,13 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const env_1 = require("@expo/env");
 const chalk_1 = __importDefault(require("chalk"));
 const node_path_1 = __importDefault(require("node:path"));
 const utils_1 = require("../utils");
 const tasksAndroid = async (command) => {
     await (0, utils_1.validatePrebuild)('android');
-    (0, env_1.loadProjectEnv)(process.cwd());
     const config = (0, utils_1.resolveTasksConfigAndroid)(command.opts());
     const { stdout } = await (0, utils_1.withSpinner)({
         operation: () => (0, utils_1.runCommand)('./gradlew', [`${config.library}:tasks`, '--group', 'publishing'], {

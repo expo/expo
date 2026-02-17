@@ -186,7 +186,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--debug'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          BUILD_ANDROID.BUILD_VARIANT_DEBUG,
           `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
         ],
       });
@@ -194,7 +194,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--debug'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          BUILD_ANDROID.BUILD_VARIANT_DEBUG,
           `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
         ],
       });
@@ -202,7 +202,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-d'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          BUILD_ANDROID.BUILD_VARIANT_DEBUG,
           `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
         ],
       });
@@ -218,7 +218,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--release'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
+          BUILD_ANDROID.BUILD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
         ],
       });
@@ -226,7 +226,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-r'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
+          BUILD_ANDROID.BUILD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
         ],
       });
@@ -235,7 +235,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-r'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
+          BUILD_ANDROID.BUILD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
         ],
       });
@@ -252,7 +252,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--all'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_ALL,
+          BUILD_ANDROID.BUILD_VARIANT_ALL,
           `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
         ],
       });
@@ -262,7 +262,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '-a'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_ALL,
+          BUILD_ANDROID.BUILD_VARIANT_ALL,
           `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
         ],
       });
@@ -272,7 +272,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--dry-run', '--release', '-d'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_ALL,
+          BUILD_ANDROID.BUILD_VARIANT_ALL,
           `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
         ],
       });
@@ -351,7 +351,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'MavenLocal', '--debug', '--dry-run'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_DEBUG,
+          BUILD_ANDROID.BUILD_VARIANT_DEBUG,
           `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
         ],
       });
@@ -359,7 +359,7 @@ describe('build:android command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--repo', 'CustomDir', '--repository', 'CustomLocal', '--release', '--dry-run'],
         stdout: [
-          BUILD_ANDROID.BUILLD_VARIANT_RELEASE,
+          BUILD_ANDROID.BUILD_VARIANT_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToCustomDirRepository`,
           `./gradlew publishBrownfieldReleasePublicationToCustomLocalRepository`,
         ],

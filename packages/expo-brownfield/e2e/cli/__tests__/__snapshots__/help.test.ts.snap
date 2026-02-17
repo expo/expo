@@ -11,7 +11,7 @@ Commands:
   build:android [options]  Build and publish Android brownfield artifacts
   build:ios [options]      Build and publish iOS brownfield artifacts
   tasks:android [options]  List available publishing tasks and repositories for
-                           android
+                           Android
   help [command]           display help for command"
 `;
 
@@ -26,7 +26,7 @@ Commands:
   build:android [options]  Build and publish Android brownfield artifacts
   build:ios [options]      Build and publish iOS brownfield artifacts
   tasks:android [options]  List available publishing tasks and repositories for
-                           android
+                           Android
   help [command]           display help for command"
 `;
 
@@ -41,6 +41,6 @@ Commands:
   build:android [options]  Build and publish Android brownfield artifacts
   build:ios [options]      Build and publish iOS brownfield artifacts
   tasks:android [options]  List available publishing tasks and repositories for
-                           android
+                           Android
   help [command]           display help for command"
 `;

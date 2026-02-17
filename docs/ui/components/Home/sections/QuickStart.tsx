@@ -60,7 +60,7 @@ export function QuickStart() {
             Create a universal Android, iOS, and web app
           </h2>
           <HomeButton
-            className="border-palette-blue10 bg-palette-blue10 hocus:bg-palette-blue9 dark:text-palette-blue2"
+            className="border-palette-blue11 bg-palette-blue11 text-palette-white hocus:bg-palette-blue10 dark:text-palette-blue2"
             href="/tutorial/introduction/"
             rightSlot={<ArrowRightIcon className="icon-md" />}>
             Start Tutorial

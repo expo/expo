@@ -373,18 +373,24 @@ internal struct BorderModifier: ViewModifier, Record {
 }
 
 internal struct ClipShapeModifier: ViewModifier, Record {
-  @Field var shape: String = "rectangle"
+  @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 8
+  @Field var roundedCornerStyle: RoundedCornerStyle?
+  @Field var cornerSize: CornerSize?
 
   @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
-    case "circle":
+    case .capsule:
+      content.clipShape(makeCapsule(style: roundedCornerStyle))
+    case .circle:
       content.clipShape(Circle())
-    case "roundedRectangle":
-      content.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-    default:
+    case .ellipse:
+      content.clipShape(Ellipse())
+    case .rectangle:
       content.clipShape(Rectangle())
+    case .roundedRectangle:
+      content.clipShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
     }
   }
 }
@@ -587,18 +593,24 @@ internal struct ClippedModifier: ViewModifier, Record {
 }
 
 internal struct MaskModifier: ViewModifier, Record {
-  @Field var shape: String = "rectangle"
+  @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 8
+  @Field var roundedCornerStyle: RoundedCornerStyle?
+  @Field var cornerSize: CornerSize?
 
   @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
-    case "circle":
+    case .capsule:
+      content.mask(makeCapsule(style: roundedCornerStyle))
+    case .circle:
       content.mask(Circle())
-    case "roundedRectangle":
-      content.mask(RoundedRectangle(cornerRadius: cornerRadius))
-    default:
+    case .ellipse:
+      content.mask(Ellipse())
+    case .rectangle:
       content.mask(Rectangle())
+    case .roundedRectangle:
+      content.mask(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
     }
   }
 }
@@ -707,7 +719,7 @@ internal struct AnimationConfig: Record {
 
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
-  @Field var animatedValue: Either<Bool, Double>?
+  @Field var animatedValue: Either<Double, Bool>?
 
   func body(content: Content) -> some View {
     let animationValue = parseAnimation(animation)
@@ -1188,6 +1200,18 @@ internal struct ListSectionMargins: ViewModifier, Record {
 internal enum AxisOptions: String, Enumerable {
   case horizontal
   case vertical
+  case both
+  
+  func toAxis() -> Axis.Set {
+    switch self {
+    case .vertical:
+      return .vertical
+    case .horizontal:
+      return .horizontal
+    case .both:
+      return [.vertical, .horizontal]
+    }
+  }
 }
 
 internal struct GridCellUnsizedAxes: ViewModifier, Record {
@@ -1196,12 +1220,7 @@ internal struct GridCellUnsizedAxes: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       if let axes {
-        switch axes {
-        case .horizontal:
-          content.gridCellUnsizedAxes(.horizontal)
-        case .vertical:
-          content.gridCellUnsizedAxes(.vertical)
-        }
+        content.gridCellUnsizedAxes(axes.toAxis())
       } else {
         content
       }
@@ -1893,8 +1912,8 @@ extension ViewModifierRegistry {
       return try GaugeStyleModifier(from: params, appContext: appContext)
     }
 
-    register("presentationDetents") { params, appContext, _ in
-      return try PresentationDetentsModifier(from: params, appContext: appContext)
+    register("presentationDetents") { params, appContext, eventDispatcher in
+      return try PresentationDetentsModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
     register("presentationDragIndicator") { params, appContext, _ in
@@ -1923,6 +1942,10 @@ extension ViewModifierRegistry {
 
     register("environment") { params, appContext, _ in
       return try EnvironmentModifier(from: params, appContext: appContext)
+    }
+
+    register("contentTransition") { params, appContext, _ in
+      return try ContentTransitionModifier(from: params, appContext: appContext)
     }
   }
 }

@@ -259,6 +259,31 @@ export declare function setAudioModeAsync(mode: Partial<AudioMode>): Promise<voi
  */
 export declare function requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
 /**
+ * Requests permission to record audio from the microphone.
+ *
+ * This function prompts the user for microphone access permission, which is required
+ * for audio recording functionality. On iOS, this will show the system permission dialog.
+ * On Android, this requests the `RECORD_AUDIO` permission.
+ *
+ * @returns A Promise that resolves to a `PermissionResponse` object containing the permission status.
+ *
+ * @example
+ * ```tsx
+ * import { requestRecordingPermissionsAsync } from 'expo-audio';
+ *
+ * const checkPermissions = async () => {
+ *   const { status, granted } = await requestRecordingPermissionsAsync();
+ *
+ *   if (granted) {
+ *     console.log('Recording permission granted');
+ *   } else {
+ *     console.log('Recording permission denied:', status);
+ *   }
+ * };
+ * ```
+ */
+export declare function requestNotificationPermissionsAsync(): Promise<PermissionResponse>;
+/**
  * Checks the current status of recording permissions without requesting them.
  *
  * This function returns the current permission status for microphone access

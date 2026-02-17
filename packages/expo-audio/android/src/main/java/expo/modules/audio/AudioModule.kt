@@ -28,10 +28,10 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import expo.modules.audio.service.AudioControlsService
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -210,6 +210,10 @@ class AudioModule : Module() {
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
 
+    AsyncFunction("requestNotificationPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.POST_NOTIFICATIONS)
+    }
+
     AsyncFunction("getRecordingPermissionsAsync") { promise: Promise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
@@ -269,8 +273,6 @@ class AudioModule : Module() {
         recorders.values.forEach {
           it.stopRecording()
         }
-
-        AudioControlsService.clearSession()
       }
     }
 
@@ -494,7 +496,7 @@ class AudioModule : Module() {
         recorder.getCurrentTimeSeconds()
       }
 
-      AsyncFunction("prepareToRecordAsync") { recorder: AudioRecorder, options: RecordingOptions? ->
+      AsyncFunction("prepareToRecordAsync") Coroutine { recorder: AudioRecorder, options: RecordingOptions? ->
         checkRecordingPermission()
         recorder.prepareRecording(options)
       }

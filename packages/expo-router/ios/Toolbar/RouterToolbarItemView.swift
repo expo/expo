@@ -10,6 +10,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
   // Properties allowing in-place updates
   @ReactiveProp var title: String?
   @ReactiveProp var systemImageName: String?
+  @ReactiveProp var xcassetName: String?
   var customImage: SharedRef<UIImage>? {
     didSet {
       performUpdate()
@@ -140,6 +141,9 @@ class RouterToolbarItemView: RouterViewWithLogger {
         // Use the UIImage from the SharedRef
         let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
         item.image = customImage.ref.withRenderingMode(renderingMode)
+      } else if let xcassetName {
+        let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+        item.image = UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
       } else if let systemImageName {
         // Fallback to SF Symbol
         item.image = UIImage(systemName: systemImageName)

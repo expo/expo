@@ -29,14 +29,21 @@ export default function VideoPlaybackControlsScreen() {
   const [showFullscreen, setShowFullscreen] = React.useState(true);
   const [showBottomBar, setShowBottomBar] = React.useState(true);
 
-  const player = useVideoPlayer(bigBuckBunnySource, (player) => {
-    player.volume = volume;
-    player.loop = loop;
-    player.preservesPitch = preservePitch;
-    player.showNowPlayingNotification = false;
-    player.allowsExternalPlayback = true;
-    player.play();
-  });
+  const player = useVideoPlayer(
+    bigBuckBunnySource,
+    (player) => {
+      player.volume = volume;
+      player.loop = loop;
+      player.preservesPitch = preservePitch;
+      player.showNowPlayingNotification = false;
+      player.allowsExternalPlayback = true;
+      player.play();
+    },
+    {
+      seekBackwardIncrement: 6,
+      seekForwardIncrement: 7,
+    }
+  );
 
   const togglePlayer = useCallback(() => {
     if (player.playing) {

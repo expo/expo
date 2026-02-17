@@ -191,6 +191,33 @@ describe('setResponseHeaders', () => {
     expect(result.headers.get('X-Test')).toBe('true');
   });
 
+  it('updates response headers when using `Response.redirect()`', async () => {
+    const run = createRequestScope(STORE, () => ({}));
+    const result = await run(async () => {
+      setResponseHeaders({
+        'X-Test': 'true',
+      });
+      return Response.redirect('http://test.local/second', 302);
+    });
+    expect(result).toBeInstanceOf(Response);
+    expect(result.status).toBe(302);
+    expect(result.headers.get('location')).toBe('http://test.local/second');
+    expect(result.headers.get('X-Test')).toBe('true');
+  });
+
+  it('updates response headers when the response is thrown', async () => {
+    const run = createRequestScope(STORE, () => ({}));
+    const result = await run(async () => {
+      setResponseHeaders({
+        'X-Test': 'true',
+      });
+      throw new Response(null, { status: 204 });
+    });
+    expect(result).toBeInstanceOf(Response);
+    expect(result.status).toBe(204);
+    expect(result.headers.get('X-Test')).toBe('true');
+  });
+
   it('can mutate response headers when setResponseHeaders is called with function', async () => {
     const run = createRequestScope(STORE, () => ({}));
     const result = await run(async () => {

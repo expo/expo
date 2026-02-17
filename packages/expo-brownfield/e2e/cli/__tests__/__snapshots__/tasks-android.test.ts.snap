@@ -3,7 +3,7 @@
 exports[`tasks:android command without prebuild should display help message for --help/-h/help <command> option 1`] = `
 "Usage: expo-brownfield tasks:android [options]
 
-List available publishing tasks and repositories for android
+List available publishing tasks and repositories for Android
 
 Options:
   --verbose                forward all output to the terminal
@@ -15,7 +15,7 @@ Options:
 exports[`tasks:android command without prebuild should display help message for --help/-h/help <command> option 2`] = `
 "Usage: expo-brownfield tasks:android [options]
 
-List available publishing tasks and repositories for android
+List available publishing tasks and repositories for Android
 
 Options:
   --verbose                forward all output to the terminal
@@ -27,7 +27,7 @@ Options:
 exports[`tasks:android command without prebuild should display help message for --help/-h/help <command> option 3`] = `
 "Usage: expo-brownfield tasks:android [options]
 
-List available publishing tasks and repositories for android
+List available publishing tasks and repositories for Android
 
 Options:
   --verbose                forward all output to the terminal

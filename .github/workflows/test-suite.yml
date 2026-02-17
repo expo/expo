@@ -198,6 +198,12 @@ jobs:
           mkdir -p ~/.maestro/tests
           ./image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
           echo $! > /tmp/image-server.pid
+          sleep 2
+          if ! kill -0 $(cat /tmp/image-server.pid) 2>/dev/null; then
+            echo "Image comparison server failed to start. Logs:"
+            cat ~/.maestro/tests/screenshot-server-logs
+            exit 1
+          fi
         working-directory: apps/bare-expo/e2e
       - name: 🧪 Run e2e tests (bare-expo)
         run: ./scripts/start-ios-e2e-test.ts --test
@@ -369,9 +375,10 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           script: |
             # Start image comparison server (needs adb from use-android-emulator)
+            # Kill any leftover server from a previous retry
+            fuser -k 7123/tcp 2>/dev/null || true
             mkdir -p ~/.maestro/tests
-            ./e2e/image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
-            echo $! > /tmp/image-server.pid
+            LOG=~/.maestro/tests/screenshot-server-logs-$(date +%s); ./e2e/image-comparison/src/server.ts > "$LOG" 2>&1 & echo $! > /tmp/image-server.pid; sleep 2; kill -0 $(cat /tmp/image-server.pid) 2>/dev/null || { echo "Image comparison server failed to start. Logs:"; cat "$LOG"; exit 1; }
             # Run the actual tests
             ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
