@@ -54,15 +54,17 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
   }
 
   private fun startMessageTimer() {
-    messageTimer = Timer()
-    messageTimer?.schedule(
-        timerTask {
-          sendMessage()
-          setTime()
-        },
-        0,
-        1000,
-    )
+    messageTimer =
+        Timer().apply {
+          schedule(
+              timerTask {
+                sendMessage()
+                setTime()
+              },
+              0,
+              1000,
+          )
+        }
   }
 
   private fun stopMessageTimer() {
