@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] fixed crash when returning from notification settings after disabling notification permissions
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-16
