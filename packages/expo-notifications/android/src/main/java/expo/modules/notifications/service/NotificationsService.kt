@@ -79,6 +79,13 @@ open class NotificationsService : BroadcastReceiver() {
     const val NOTIFICATION_REQUESTS_KEY = "notificationRequests"
     const val NOTIFICATION_ACTION_KEY = "notificationAction"
 
+    // Byte array keys used as fallback when Parcelable extras fail to deserialize.
+    // On some Android versions (especially 11/12), custom Parcelable extras placed in a
+    // PendingIntent can come back as null when delivered through NotificationForwarderActivity.
+    // See https://github.com/expo/expo/issues/38908
+    internal const val NOTIFICATION_BYTES_KEY = "notificationBytes"
+    internal const val NOTIFICATION_ACTION_BYTES_KEY = "notificationActionBytes"
+
     /**
      * A helper function for dispatching a "fetch all displayed notifications" command to the service.
      *
@@ -452,6 +459,12 @@ open class NotificationsService : BroadcastReceiver() {
         intent.putExtra(EVENT_TYPE_KEY, RECEIVE_RESPONSE_TYPE)
         intent.putExtra(NOTIFICATION_KEY, notification)
         intent.putExtra(NOTIFICATION_ACTION_KEY, action as Parcelable)
+        // Also store as byte arrays for resilience against Parcelable deserialization failures.
+        // On some Android versions (especially 11/12), custom Parcelable extras in a PendingIntent
+        // come back as null when delivered through NotificationForwarderActivity.
+        // See https://github.com/expo/expo/issues/38908
+        marshalObject(notification)?.let { intent.putExtra(NOTIFICATION_BYTES_KEY, it) }
+        marshalObject(action)?.let { intent.putExtra(NOTIFICATION_ACTION_BYTES_KEY, it) }
       }
 
       // Starting from Android 12,
@@ -478,12 +491,13 @@ open class NotificationsService : BroadcastReceiver() {
      */
     fun createNotificationResponseBroadcastIntent(context: Context, intent: Intent?): Intent {
       val extras = intent?.extras
-      val notification = extras?.getParcelable<Notification>(NOTIFICATION_KEY)
-      val action = extras?.getParcelable<NotificationAction>(NOTIFICATION_ACTION_KEY)
+      // Fallback to byte arrays when Parcelable extras are null (see https://github.com/expo/expo/issues/38908)
+      val notification = extras?.getParcelable<Notification>(NOTIFICATION_KEY) ?: unmarshalObject(Notification.CREATOR, extras?.getByteArray(NOTIFICATION_BYTES_KEY))
+      val action = extras?.getParcelable<NotificationAction>(NOTIFICATION_ACTION_KEY) ?: unmarshalObject(NotificationAction.CREATOR, extras?.getByteArray(NOTIFICATION_ACTION_BYTES_KEY))
       if (notification == null || action == null) {
         throw IllegalArgumentException("notification ($notification) and action ($action) should not be null")
       }
-      val textResponse = RemoteInput.getResultsFromIntent(intent)?.getString(USER_TEXT_RESPONSE_KEY)
+      val textResponse = intent?.let { RemoteInput.getResultsFromIntent(it) }?.getString(USER_TEXT_RESPONSE_KEY)
       val isTextInputResponse = textResponse != null && action is TextInputNotificationAction
       val backgroundAction = if (isTextInputResponse) {
         TextInputNotificationAction(action.identifier, action.title, false, action.placeholder)
@@ -518,8 +532,12 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     fun getNotificationResponseFromBroadcastIntent(intent: Intent): NotificationResponse {
-      val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY) ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
-      val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY) ?: throw IllegalArgumentException("$NOTIFICATION_ACTION_KEY not found in the intent extras.")
+      val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)
+        ?: unmarshalObject(Notification.CREATOR, intent.getByteArrayExtra(NOTIFICATION_BYTES_KEY))
+        ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
+      val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)
+        ?: unmarshalObject(NotificationAction.CREATOR, intent.getByteArrayExtra(NOTIFICATION_ACTION_BYTES_KEY))
+        ?: throw IllegalArgumentException("$NOTIFICATION_ACTION_KEY not found in the intent extras.")
       val response = if (action is TextInputNotificationAction) {
         val userText = RemoteInput.getResultsFromIntent(intent)?.getString(USER_TEXT_RESPONSE_KEY) ?: ""
         TextInputNotificationResponse(action, notification, userText)
