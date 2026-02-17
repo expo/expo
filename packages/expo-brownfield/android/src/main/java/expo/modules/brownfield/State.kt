@@ -1,7 +1,9 @@
 package expo.modules.brownfield
 
+import java.util.concurrent.ConcurrentHashMap
+
 object BrownfieldState {
-  private val registry = mutableMapOf<String, SharedState>()
+  private val registry = ConcurrentHashMap<String, SharedState>()
 
   fun getOrCreate(key: String): SharedState {
     return registry.getOrPut(key) { SharedState() }
