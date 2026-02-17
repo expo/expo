@@ -111,7 +111,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   const packageManager = resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
-    : await downloadPackageAsync(targetDir, options.local);
+    : await downloadPackageAsync(targetDir, options.local, options.authToken);
 
   await logEventAsync(eventCreateExpoModule(packageManager, options));
 
@@ -251,15 +251,21 @@ async function getTemplateVersion(isLocal: boolean) {
 /**
  * Downloads the template from NPM registry.
  */
-async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
+async function downloadPackageAsync(targetDir: string, isLocal = false, authToken?: string): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
     const templateVersion = await getTemplateVersion(isLocal);
     const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
+    const getOpts = authToken ? {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    } : undefined
 
     try {
       await downloadAndExtractTarball({
         url: await getNpmTarballUrl(packageName, templateVersion),
         dir: targetDir,
+        getOpts,
       });
     } catch {
       console.log();
@@ -271,6 +277,7 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
       await downloadAndExtractTarball({
         url: await getNpmTarballUrl(packageName, 'latest'),
         dir: targetDir,
+        getOpts,
       });
     }
 
@@ -499,6 +506,10 @@ program
     '--local',
     'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.',
     false
+  )
+  .option(
+    '--auth-token <string>',
+    'Use a specific authentication token when connecting to the registry, typically only needed for third-party registries'
   )
   .action(main);
 

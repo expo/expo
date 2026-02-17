@@ -122,6 +122,7 @@ export function eventCreateExpoModule(packageManager: string, options: CommandOp
       withChangelog: options.withChangelog,
       withExample: options.example,
       local: !!options.local,
+      authToken: options.authToken ? '[TOKEN]' : undefined,
     },
   };
 }
