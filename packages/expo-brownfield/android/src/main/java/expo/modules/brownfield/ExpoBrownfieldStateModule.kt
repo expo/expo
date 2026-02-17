@@ -14,17 +14,13 @@ class ExpoBrownfieldStateModule : Module() {
         return@Function state.get()
       }
 
-      Function("set") { state: SharedState, value: Any? ->
-        state.set(value)
-      }
+      Function("set") { state: SharedState, value: Any? -> state.set(value) }
     }
 
     Function("getSharedState") { key: String ->
       return@Function BrownfieldState.getOrCreate(key)
     }
 
-    Function("deleteSharedState") { key: String ->
-      BrownfieldState.delete(key)
-    }
+    Function("deleteSharedState") { key: String -> BrownfieldState.delete(key) }
   }
 }

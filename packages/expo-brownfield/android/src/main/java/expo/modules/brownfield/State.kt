@@ -16,7 +16,7 @@ object BrownfieldState {
     state.set(value)
   }
 
-  fun subscribe(key: String, callback: (Any?) -> Unit): Removable? {
+  fun subscribe(key: String, callback: (Any?) -> Unit): Removable {
     val state = registry.getOrPut(key) { SharedState() }
     return state.addListener(callback)
   }

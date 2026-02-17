@@ -6,7 +6,7 @@ fun interface Removable {
   fun remove()
 }
 
-class SharedState: SharedObject() {
+class SharedState : SharedObject() {
   private var value: Any? = null
   private val listeners = mutableListOf<(Any?) -> Unit>()
 
@@ -22,8 +22,6 @@ class SharedState: SharedObject() {
 
   fun addListener(listener: ((Any?) -> Unit)): Removable {
     listeners.add(listener)
-    return Removable {
-      listeners.remove(listener)
-    }
+    return Removable { listeners.remove(listener) }
   }
 }
