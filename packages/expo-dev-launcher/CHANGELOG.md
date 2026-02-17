@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [android] fixed crash when returning from notification settings after disabling notification permissions
+- [android] fixed crash when returning from notification settings after disabling notification permissions ([#43217](https://github.com/expo/expo/pull/43217) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
