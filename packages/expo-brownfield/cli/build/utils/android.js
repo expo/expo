@@ -59,7 +59,7 @@ const processRepositories = (tasks) => {
         .map((task) => {
         return splitRegex.exec(task)?.[1];
     })
-        .filter((repo) => repo)));
+        .filter((repo) => repo !== undefined)));
 };
 exports.processRepositories = processRepositories;
 const processTasks = (stdout) => {

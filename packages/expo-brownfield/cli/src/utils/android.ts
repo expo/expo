@@ -62,9 +62,9 @@ export const processRepositories = (tasks: string[]): string[] => {
         .map((task) => {
           return splitRegex.exec(task)?.[1];
         })
-        .filter((repo) => repo)
+        .filter((repo) => repo !== undefined)
     )
-  ) as string[];
+  );
 };
 
 export const processTasks = (stdout: string): string[] => {
