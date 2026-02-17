@@ -4,7 +4,7 @@ import {
   EnvValue,
   LocalDirectoryPublication,
   Publication,
-  RemotePrivateBasicPublication,
+  RemotePrivatePublication,
   RemotePublicPublication,
 } from '../types';
 
@@ -29,11 +29,7 @@ const repositoryTemplates = {
       '    }',
     ];
   },
-  remotePrivate: (
-    count: number,
-    publication: RemotePrivateBasicPublication,
-    _projectRoot: string
-  ) => {
+  remotePrivate: (count: number, publication: RemotePrivatePublication, _projectRoot: string) => {
     const nameOrPlaceholder = publication.name ?? `remotePrivate${count + 1}`;
     return [
       `    ${nameOrPlaceholder} {`,
