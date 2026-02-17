@@ -24,6 +24,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     sourceNode = null;
     samplingFrameId = null;
     samplingEnabled = false;
+    samplingBuffer = null;
     get playing() {
         return this.isPlaying;
     }
@@ -69,10 +70,12 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     play() {
         this.media.play();
         this.isPlaying = true;
+        this.startSampling();
     }
     pause() {
         this.media.pause();
         this.isPlaying = false;
+        this.stopSampling();
     }
     replace(source) {
         const wasPlaying = this.isPlaying;
@@ -119,29 +122,15 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
             this.sourceNode.disconnect();
             this.sourceNode.connect(this.analyser);
             this.analyser.connect(ctx.destination);
-            const buffer = new Float32Array(this.analyser.frequencyBinCount);
-            const sampleLoop = () => {
-                if (!this.analyser) {
-                    return;
-                }
-                if (this.isPlaying) {
-                    this.analyser.getFloatTimeDomainData(buffer);
-                    this.emit(AUDIO_SAMPLE_UPDATE, {
-                        channels: [{ frames: Array.from(buffer) }],
-                        timestamp: this.media.currentTime,
-                    });
-                }
-                this.samplingFrameId = requestAnimationFrame(sampleLoop);
-            };
-            this.samplingFrameId = requestAnimationFrame(sampleLoop);
+            this.samplingBuffer = new Float32Array(this.analyser.frequencyBinCount);
             this.samplingEnabled = true;
+            if (this.isPlaying) {
+                this.startSampling();
+            }
             this.isAudioSamplingSupported = true;
         }
         else {
-            if (this.samplingFrameId != null) {
-                cancelAnimationFrame(this.samplingFrameId);
-                this.samplingFrameId = null;
-            }
+            this.stopSampling();
             if (this.analyser) {
                 this.analyser.disconnect();
                 this.analyser = null;
@@ -151,7 +140,31 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
                 this.sourceNode.disconnect();
                 this.sourceNode.connect(ctx.destination);
             }
+            this.samplingBuffer = null;
             this.samplingEnabled = false;
+        }
+    }
+    startSampling() {
+        if (!this.samplingEnabled || !this.analyser || !this.samplingBuffer) {
+            return;
+        }
+        const sampleLoop = () => {
+            if (!this.analyser || !this.samplingBuffer) {
+                return;
+            }
+            this.analyser.getFloatTimeDomainData(this.samplingBuffer);
+            this.emit(AUDIO_SAMPLE_UPDATE, {
+                channels: [{ frames: Array.from(this.samplingBuffer) }],
+                timestamp: this.media.currentTime,
+            });
+            this.samplingFrameId = requestAnimationFrame(sampleLoop);
+        };
+        this.samplingFrameId = requestAnimationFrame(sampleLoop);
+    }
+    stopSampling() {
+        if (this.samplingFrameId != null) {
+            cancelAnimationFrame(this.samplingFrameId);
+            this.samplingFrameId = null;
         }
     }
     setPlaybackRate(second, pitchCorrectionQuality) {
@@ -162,10 +175,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     }
     remove() {
         mediaSessionController.clear(this);
-        if (this.samplingFrameId != null) {
-            cancelAnimationFrame(this.samplingFrameId);
-            this.samplingFrameId = null;
-        }
+        this.stopSampling();
         if (this.analyser) {
             this.analyser.disconnect();
             this.analyser = null;

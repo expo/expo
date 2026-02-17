@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- [cli] update copied hermes framework name to hermesvm.xcframework ([#43138](https://github.com/expo/expo/pull/43138) by [@pmleczek](https://github.com/pmleczek))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.8 — 2026-02-16
+
+### 🛠 Breaking changes
+
+- [cli] update copied hermes framework name to hermesvm.xcframework ([#43138](https://github.com/expo/expo/pull/43138) by [@pmleczek](https://github.com/pmleczek))
 
 ### 🐛 Bug fixes
 

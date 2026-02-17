@@ -4,14 +4,15 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 platform :ios, '15.1'
 
 prepare_react_native_project!
-project_root = File.join(__dir__, '../../minimal-tester')
+project_root = File.join(__dir__, '../expo-app')
 ENV['PROJECT_ROOT'] = project_root
 
 target 'BrownfieldTester' do
   use_expo_modules!({
     projectRoot: project_root,
     exclude: [
-      'expo-splash-screen'
+      'expo-splash-screen',
+      'expo-dev-menu'
     ],
   })
 

@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * Colors for picker's core elements.
@@ -63,12 +64,12 @@ const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
 
 type NativePickerProps = PickerProps;
 
-/**
- * @hidden
- */
-export function transformPickerProps(props: PickerProps): NativePickerProps {
+function transformPickerProps(props: PickerProps): NativePickerProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     variant: props.variant ?? 'segmented',
     elementColors: props.elementColors
       ? props.elementColors

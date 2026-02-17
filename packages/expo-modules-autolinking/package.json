@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "55.0.3",
+  "version": "55.0.5",
   "description": "Scripts that autolink Expo modules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

@@ -1200,6 +1200,18 @@ internal struct ListSectionMargins: ViewModifier, Record {
 internal enum AxisOptions: String, Enumerable {
   case horizontal
   case vertical
+  case both
+  
+  func toAxis() -> Axis.Set {
+    switch self {
+    case .vertical:
+      return .vertical
+    case .horizontal:
+      return .horizontal
+    case .both:
+      return [.vertical, .horizontal]
+    }
+  }
 }
 
 internal struct GridCellUnsizedAxes: ViewModifier, Record {
@@ -1208,12 +1220,7 @@ internal struct GridCellUnsizedAxes: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       if let axes {
-        switch axes {
-        case .horizontal:
-          content.gridCellUnsizedAxes(.horizontal)
-        case .vertical:
-          content.gridCellUnsizedAxes(.vertical)
-        }
+        content.gridCellUnsizedAxes(axes.toAxis())
       } else {
         content
       }

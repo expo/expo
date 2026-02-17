@@ -6,7 +6,15 @@
 
 ### 🎉 New features
 
+- improve custom sound validation ([#43189](https://github.com/expo/expo/pull/43189) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
+
+- Fixed crash in `NotificationForwarderActivity` on Android 11/12 when Parcelable extras fail to deserialize by using byte array serialization as fallback. ([#43203](https://github.com/expo/expo/pull/43203) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+## 55.0.7 — 2026-02-16
 
 ### 💡 Others
 

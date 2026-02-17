@@ -83,7 +83,8 @@ export function extractIconRenderingMode(
 }
 
 export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
-  props: StackHeaderItemSharedProps
+  props: StackHeaderItemSharedProps,
+  isBottomPlacement: boolean = false
 ): RNSharedHeaderItem {
   const { children, style, separateBackground, icon, ...rest } = props;
   const stringChildren = Children.toArray(children)
@@ -102,8 +103,17 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
     if (!iconComponentProps) {
       return undefined;
     }
-    if ('src' in iconComponentProps) {
-      // Get explicit renderingMode from icon component props, or use iconRenderingMode from shared props
+    // Bottom placement xcasset uses native xcasset type
+    if ('xcasset' in iconComponentProps && isBottomPlacement) {
+      return {
+        type: 'xcasset',
+        name: iconComponentProps.xcasset,
+      } as unknown as NativeStackHeaderItemButton['icon'];
+    }
+    // Unified image path for src and xcasset (non-bottom)
+    if ('src' in iconComponentProps || 'xcasset' in iconComponentProps) {
+      const source =
+        'src' in iconComponentProps ? iconComponentProps.src : { uri: iconComponentProps.xcasset };
       const explicitRenderingMode =
         'renderingMode' in iconComponentProps ? iconComponentProps.renderingMode : undefined;
       const effectiveRenderingMode =
@@ -112,27 +122,9 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
         (props.tintColor ? 'template' : 'original');
       return {
         type: 'image',
-        source: iconComponentProps.src,
+        source,
         tinted: effectiveRenderingMode === 'template',
       };
-    }
-    if ('xcasset' in iconComponentProps) {
-      const explicitIconRenderingMode =
-        'renderingMode' in iconComponentProps ? iconComponentProps.renderingMode : undefined;
-      if (
-        process.env.NODE_ENV !== 'production' &&
-        (props.iconRenderingMode || explicitIconRenderingMode)
-      ) {
-        console.warn(
-          'renderingMode has no effect on xcasset icons in left and right toolbar placements. The rendering mode for xcasset icons is controlled by the "Render As" setting in the Xcode asset catalog.'
-        );
-      }
-      // Type assertion needed: xcasset is supported by react-native-screens
-      // but not yet typed in @react-navigation/native-stack's PlatformIconIOS
-      return {
-        type: 'xcasset',
-        name: iconComponentProps.xcasset,
-      } as unknown as NativeStackHeaderItemButton['icon'];
     }
     return {
       type: 'sfSymbol',

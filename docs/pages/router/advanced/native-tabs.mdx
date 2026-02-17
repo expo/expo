@@ -285,7 +285,7 @@ export default function TabLayout() {
 
 > **important** Icon rendering mode is available in SDK 55 and later.
 
-When using the `src` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
+When using the `src` or `xcasset` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
 
 - **`template` (default)**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
 - **`original`**: The icon is rendered with its original colors preserved. This is useful for icons with gradients or multiple colors.
@@ -391,7 +391,7 @@ export default function TabLayout() {
 }
 ```
 
-> **info** The rendering mode for asset catalog icons is controlled in Xcode's asset catalog using the **Render As** setting on the image set, not via props.
+> **info** Asset catalog icons support the `renderingMode` prop, just like `src` icons. When `iconColor` is set, icons default to `template` rendering. Otherwise, they default to `original`.
 
 ### Label
 

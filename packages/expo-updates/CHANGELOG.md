@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.8 — 2026-02-16
+
+### 🎉 New features
+
 - Full native interface for updates. ([#42981](https://github.com/expo/expo/pull/42981) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - [IOS] Fix optional value handling for asset hash in ExpoUpdatesUpdate. ([#43093](https://github.com/expo/expo/pull/43093) by [@billysutomo](https://github.com/billysutomo))
-
-### 💡 Others
 
 ## 55.0.7 — 2026-02-08
 

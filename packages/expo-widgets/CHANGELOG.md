@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0-alpha.7 — 2026-02-16
+
+### 🎉 New features
+
 - Render widgets in JSC. ([#42987](https://github.com/expo/expo/pull/42987) by [@jakex7](https://github.com/jakex7))
 - Create widgets runtime bundle at build time. ([#43170](https://github.com/expo/expo/pull/43170) by [@jakex7](https://github.com/jakex7))
 
@@ -13,8 +21,6 @@
 
 - Fix blank widget preview content ([#42857](https://github.com/expo/expo/pull/42857) by [@garygcchiu](https://github.com/garygcchiu))
 - Fix duplicated warnings on start and prebuild. ([#43072](https://github.com/expo/expo/pull/43072) by [@jakex7](https://github.com/jakex7))
-
-### 💡 Others
 
 ## 55.0.0-alpha.6 — 2026-02-08
 

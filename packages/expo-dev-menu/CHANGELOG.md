@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- update labels for consistency ([#42825](https://github.com/expo/expo/pull/42825) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 55.0.6 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- update labels for consistency ([#42825](https://github.com/expo/expo/pull/42825) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.5 — 2026-02-08
 

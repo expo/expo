@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-16
+
+### 💡 Others
+
 - Replace `require-from-string` and `sucrase` with `@expo/require-utils` ([#42884](https://github.com/expo/expo/pull/42884) by [@kitten](https://github.com/kitten))
 
 ## 55.0.4 — 2026-02-03

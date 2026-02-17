@@ -51,10 +51,6 @@ export interface ChipProps {
     onDismiss?: () => void;
 }
 /**
- * @hidden
- */
-export declare function transformChipProps(props: ChipProps): ChipProps;
-/**
  * Displays a native chip component.
  */
 export declare function Chip(props: ChipProps): React.JSX.Element;
