@@ -50,8 +50,8 @@ class FileSystemModule : Module() {
       File(context.filesDir.path).freeSpace
     }
 
-    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUuid: String? ->
-      downloadFileWithStore(url, to, options, downloadUuid, downloadStore) { uuid, bytesWritten, totalBytes ->
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->
+      downloadFileWithStore(url, to, options, downloadUUID, downloadStore) { uuid, bytesWritten, totalBytes ->
         sendEvent(
           "downloadProgress",
           mapOf(

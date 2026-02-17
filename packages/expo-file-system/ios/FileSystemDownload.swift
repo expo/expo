@@ -2,25 +2,74 @@
 
 import ExpoModulesCore
 
-/// Manages active download tasks and their delegates.
-/// Used by `FileSystemModule` to track downloads that support progress reporting and cancellation.
+/// Manages active download tasks and their delegates, and acts as the shared URLSession delegate
+/// that multiplexes callbacks to per-task `DownloadDelegate` instances.
+///
+/// All access to the internal dictionaries is serialized through a serial dispatch queue
+/// so that concurrent calls from URLSession delegate callbacks and the main thread are safe.
 @available(iOS 14, tvOS 14, *)
-class DownloadTaskStore {
+class DownloadTaskStore: NSObject, URLSessionDownloadDelegate {
+  private let queue = DispatchQueue(label: "expo.modules.filesystem.DownloadTaskStore")
   private var tasks: [String: URLSessionDownloadTask] = [:]
-  private var delegates: [String: DownloadDelegate] = [:]
+  private var delegatesByTaskId: [Int: DownloadDelegate] = [:]
+
+  lazy var session: URLSession = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
 
   func store(task: URLSessionDownloadTask, delegate: DownloadDelegate, forUuid uuid: String) {
-    tasks[uuid] = task
-    delegates[uuid] = delegate
+    queue.sync {
+      tasks[uuid] = task
+      delegatesByTaskId[task.taskIdentifier] = delegate
+    }
   }
 
   func cancel(uuid: String) {
-    tasks[uuid]?.cancel()
+    queue.sync {
+      tasks[uuid]?.cancel()
+    }
   }
 
   func remove(uuid: String) {
-    tasks.removeValue(forKey: uuid)
-    delegates.removeValue(forKey: uuid)
+    queue.sync {
+      if let task = tasks.removeValue(forKey: uuid) {
+        delegatesByTaskId.removeValue(forKey: task.taskIdentifier)
+      }
+    }
+  }
+
+  private func delegate(for task: URLSessionTask) -> DownloadDelegate? {
+    queue.sync {
+      delegatesByTaskId[task.taskIdentifier]
+    }
+  }
+
+  // MARK: - URLSessionDownloadDelegate
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didWriteData bytesWritten: Int64,
+    totalBytesWritten: Int64,
+    totalBytesExpectedToWrite: Int64
+  ) {
+    delegate(for: downloadTask)?.urlSession(
+      session,
+      downloadTask: downloadTask,
+      didWriteData: bytesWritten,
+      totalBytesWritten: totalBytesWritten,
+      totalBytesExpectedToWrite: totalBytesExpectedToWrite
+    )
+  }
+
+  func urlSession(
+    _ session: URLSession,
+    downloadTask: URLSessionDownloadTask,
+    didFinishDownloadingTo location: URL
+  ) {
+    delegate(for: downloadTask)?.urlSession(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
+  }
+
+  func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    delegate(for: task)?.urlSession(session, task: task, didCompleteWithError: error)
   }
 }
 
@@ -28,7 +77,7 @@ class DownloadTaskStore {
 
 /// Executes a file download with optional progress reporting and cancellation.
 ///
-/// When `downloadUuid` is non-nil, uses a delegate-based `URLSession` that reports progress
+/// When `downloadUuid` is non-nil, uses a shared delegate-based `URLSession` that reports progress
 /// and supports cancellation via the `downloadStore`. When nil, uses `URLSession.shared` with
 /// a simple completion handler.
 @available(iOS 14, tvOS 14, *)
@@ -63,8 +112,7 @@ func downloadFileWithStore(
         downloadStore.remove(uuid: downloadUuid)
       }
     )
-    let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
-    let task = session.downloadTask(with: request)
+    let task = downloadStore.session.downloadTask(with: request)
     downloadStore.store(task: task, delegate: delegate, forUuid: downloadUuid)
     task.resume()
   } else {
@@ -183,7 +231,6 @@ class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
   ) {
     defer {
       cleanup()
-      session.finishTasksAndInvalidate()
     }
 
     guard let httpResponse = downloadTask.response as? HTTPURLResponse else {
@@ -220,9 +267,6 @@ class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
   // MARK: Error
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    defer {
-      session.finishTasksAndInvalidate()
-    }
     guard let error else {
       return
     }
