@@ -259,7 +259,7 @@ struct SettingsTabView: View {
         HStack {
           Text("First Launch Check")
           Spacer()
-          Text(viewModel.isFirstPermissionCheck ? "Pending" : "Completed")
+          Text(viewModel.hasGrantedNetworkPermission ? "Granted" : "Pending")
             .foregroundColor(.secondary)
         }
         .padding()
@@ -327,20 +327,18 @@ struct SettingsTabView: View {
   private func checkNetworkPermission() {
     isCheckingPermission = true
     permissionCheckResult = "Checking..."
-    viewModel.startDiscoveryForPermissionCheck()
+    viewModel.stopServerDiscovery()
+    viewModel.startServerDiscovery()
   }
-  
+
   private func updatePermissionResultFromStatus() {
     isCheckingPermission = false
-    switch viewModel.permissionStatus {
-    case .granted:
+    if viewModel.hasGrantedNetworkPermission {
       permissionCheckResult = "✅ Granted"
-    case .denied:
+    } else if viewModel.permissionStatus == .denied {
       permissionCheckResult = "❌ Denied"
-    case .unknown:
+    } else {
       permissionCheckResult = "⚠️ Unknown"
-    case .checking:
-      permissionCheckResult = "🔄 Checking"
     }
   }
 

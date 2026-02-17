@@ -9,8 +9,8 @@ public struct DevLauncherRootView: View {
 
   init(viewModel: DevLauncherViewModel) {
     self.viewModel = viewModel
-    let shouldSkipPermissionFlow = Self.isSimulator 
-      || UserDefaults.standard.bool(forKey: "expo.devlauncher.hasCompletedNetworkPermissionFlow")
+    let shouldSkipPermissionFlow = Self.isSimulator
+      || UserDefaults.standard.bool(forKey: "expo.devlauncher.hasGrantedNetworkPermission")
     _hasCompletedPermissionFlow = State(initialValue: shouldSkipPermissionFlow)
   }
   
@@ -24,12 +24,9 @@ public struct DevLauncherRootView: View {
 
   public var body: some View {
     if !hasCompletedPermissionFlow {
-      LocalNetworkPermissionView(
-        viewModel: viewModel,
-        onPermissionGranted: {
-          hasCompletedPermissionFlow = true
-        }
-      )
+      LocalNetworkPermissionView {
+        hasCompletedPermissionFlow = true
+      }
     } else {
       mainContent
     }

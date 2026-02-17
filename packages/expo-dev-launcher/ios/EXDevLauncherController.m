@@ -197,13 +197,13 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   };
 
 #if TARGET_OS_SIMULATOR
-  BOOL hasCompletedPermissionFlow = YES;
+  BOOL hasGrantedNetworkPermission = YES;
 #else
-  BOOL hasCompletedPermissionFlow = [[NSUserDefaults standardUserDefaults] boolForKey:@"expo.devlauncher.hasCompletedNetworkPermissionFlow"];
+  BOOL hasGrantedNetworkPermission = [[NSUserDefaults standardUserDefaults] boolForKey:@"expo.devlauncher.hasGrantedNetworkPermission"];
 #endif
 
   NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
-  if (initialUrl && hasCompletedPermissionFlow) {
+  if (initialUrl && hasGrantedNetworkPermission) {
     [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
     return;
   }
@@ -211,7 +211,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
 
-  if (!hasCompletedPermissionFlow) {
+  if (!hasGrantedNetworkPermission) {
     shouldTryToLaunchLastOpenedBundle = NO;
   }
   
