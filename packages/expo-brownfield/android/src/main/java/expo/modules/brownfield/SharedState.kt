@@ -1,17 +1,14 @@
 package expo.modules.brownfield
 
 import expo.modules.kotlin.sharedobjects.SharedObject
-import kotlin.concurrent.Volatile
-import java.util.concurrent.CopyOnWriteArrayList
 
 fun interface Removable {
   fun remove()
 }
 
 class SharedState : SharedObject() {
-  @Volatile
   private var value: Any? = null
-  private val listeners = CopyOnWriteArrayList<(Any?) -> Unit>()
+  private val listeners = mutableListOf<(Any?) -> Unit>()
 
   fun get(): Any? {
     return value
