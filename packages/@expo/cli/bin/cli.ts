@@ -6,6 +6,10 @@ import { boolish } from 'getenv';
 
 import { installEventLogger } from '../src/events';
 
+// Setup event logger output
+// NOTE: Done before any console output
+installEventLogger();
+
 // Check Node.js version and issue a loud warning if it's too outdated
 // This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
 const NODE_MIN = [20, 19, 4];
@@ -17,9 +21,6 @@ if (nodeVersion[0] < NODE_MIN[0] || (nodeVersion[0] === NODE_MIN[0] && nodeVersi
       + chalk.red`Go to: https://nodejs.org/en/download\n`
   );
 }
-
-// Setup event logger output
-installEventLogger();
 
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {
