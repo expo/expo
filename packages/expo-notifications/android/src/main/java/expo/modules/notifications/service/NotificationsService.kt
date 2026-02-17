@@ -64,6 +64,10 @@ open class NotificationsService : BroadcastReceiver() {
     const val EXCEPTION_KEY = "exception"
     const val RECEIVER_KEY = "receiver"
 
+    // FCM always includes this key in intent extras for push notifications.
+    // Used to distinguish real notification intents from OEM-injected extras.
+    const val GOOGLE_MESSAGE_ID_KEY = "google.message_id"
+
     // Specific messages parts
     const val NOTIFICATION_KEY = "notification"
     const val NOTIFICATION_RESPONSE_KEY = "notificationResponse"
