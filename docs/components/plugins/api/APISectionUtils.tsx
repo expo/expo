@@ -239,11 +239,13 @@ export const resolveTypeName = (
           sdkVersion,
         });
       } else if (type === 'array') {
-        return resolveTypeName(elementType, sdkVersion) + '[]';
+        return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
       }
       return elementType.name + type;
+    } else if (type === 'rest' && elementType) {
+      return <>...{resolveTypeName(elementType, sdkVersion)}</>;
     } else if (elementType?.type === 'array') {
-      return resolveTypeName(elementType, sdkVersion) + '[]';
+      return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
     } else if (elementType?.declaration) {
       if (type === 'array') {
         const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
@@ -395,8 +397,6 @@ export const resolveTypeName = (
       return operator ?? 'undefined';
     } else if (type === 'intrinsic') {
       return name ?? 'undefined';
-    } else if (type === 'rest' && elementType) {
-      return <>...{resolveTypeName(elementType, sdkVersion)}</>;
     } else if (value === null) {
       return 'null';
     }
