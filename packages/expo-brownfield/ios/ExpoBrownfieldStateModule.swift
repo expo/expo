@@ -8,13 +8,12 @@ public class ExpoBrownfieldStateModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoBrownfieldStateModule")
 
-    Function("get") { (key: String) in
-      return self.stores[key]
+    Function("getSharedState") { (key: String) -> Any? in
+      return nil
     }
 
-    Function("set") { (key: String, value: Map<String, Any?>) in
-      self.stores[key] = value
-      return value
+    Function("deleteSharedState") { (key: String) -> Void in
+      self.stores.removeValue(forKey: key)
     }
   }
 }
