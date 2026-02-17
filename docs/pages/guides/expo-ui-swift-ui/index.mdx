@@ -195,7 +195,7 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
       Toggle,
       Text,
     } from '@expo/ui/swift-ui';
-    import { background, buttonStyle, clipShape, frame } from '@expo/ui/swift-ui/modifiers';
+    import { background, buttonStyle, foregroundStyle, clipShape, frame } from '@expo/ui/swift-ui/modifiers';
     import { Link } from 'expo-router';
     import { useState } from 'react';
 
@@ -236,7 +236,7 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
                         clipShape('roundedRectangle'),
                       ]}
                     />
-                    {/* When text wrapped in Link, the color needs to be specified explicitly */}
+                    {/* When Text is wrapped in a Link, the color needs to be specified explicitly */}
                     <Text modifiers={[foregroundStyle({type: 'color', color: 'black'})]}>Wi-Fi</Text>
                     <Spacer />
                     <Image systemName="chevron.right" size={14} color="secondary" />
@@ -263,11 +263,13 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
 
 ### Secondary text styling
 
-There are several approaches for styling secondary or muted text. You can use `opacity` for a simple muted effect, or `foregroundStyle` for more control over the color. At this point, the [hierarchical styles](/versions/v55.0.0/sdk/ui/swift-ui/modifiers/#foregroundstylestyle) do not work for Text.
+There are several approaches for styling secondary or muted text. You can use `opacity` for a simple muted effect, or `foregroundStyle` for more control over the color. At this point, the [hierarchical styles](/versions/v55.0.0/sdk/ui/swift-ui/modifiers/#foregroundstylestyle) do not work for `Text`.
 
 <Tabs>
-  <Tab label="Code">
-    ```tsx Secondary text styling
+  
+<Tab label="Code">
+    
+```tsx Secondary text styling
   import {
     Button,
     Form,
