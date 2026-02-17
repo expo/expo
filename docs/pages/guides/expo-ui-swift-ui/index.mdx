@@ -270,29 +270,16 @@ There are several approaches for styling secondary or muted text. You can use `o
 <Tab label="Code">
 
 ```tsx Secondary text styling
-  import {
-    Button,
-    Form,
-    Host,
-    HStack,
-    Image,
-    List,
-    Section,
-    Spacer,
-    Text,
-  } from '@expo/ui/swift-ui';
-    import { buttonStyle, font, foregroundStyle, opacity, padding } from '@expo/ui/swift-ui/modifiers';
+import { Button, Form, Host, HStack, Image, List, Section, Spacer, Text } from '@expo/ui/swift-ui';
+import { buttonStyle, font, foregroundStyle, opacity, padding } from '@expo/ui/swift-ui/modifiers';
 
-    export default function SecondaryTextExample() {
-    return (
+export default function SecondaryTextExample() {
+  return (
     <Host style={{ flex: 1 }}>
       <Form>
         <Section>
           <List>
-            <Button
-              onPress={() => console.log('Navigate')}
-              modifiers={[buttonStyle('plain')]}
-            >
+            <Button onPress={() => console.log('Navigate')} modifiers={[buttonStyle('plain')]}>
               <HStack>
                 <Text>Night Shift</Text>
                 <Spacer />
@@ -301,8 +288,7 @@ There are several approaches for styling secondary or muted text. You can use `o
                   modifiers={[
                     foregroundStyle({ type: 'color', color: '#8E8E93' }),
                     padding({ trailing: 8 }),
-                  ]}
-                >
+                  ]}>
                   22:00 to 07:00
                 </Text>
                 <Image systemName="chevron.right" size={14} color="#C7C7CC" />
@@ -312,17 +298,15 @@ There are several approaches for styling secondary or muted text. You can use `o
           <List>
             {/* Using opacity for muted secondary text */}
             <Text modifiers={[opacity(0.6), font({ size: 14 })]}>
-              Save up to 280.7 MB. This will permanently delete all photos and
-              videos kept in the "Recently Deleted" album.
+              Save up to 280.7 MB. This will permanently delete all photos and videos kept in the
+              "Recently Deleted" album.
             </Text>
           </List>
         </Section>
       </Form>
     </Host>
-    );
-
+  );
 }
-
 ```
 
 </Tab>
@@ -357,9 +341,9 @@ A common pattern for brightness or volume controls is to flank a `Slider` with i
   } from '@expo/ui/swift-ui';
   import { padding } from '@expo/ui/swift-ui/modifiers';
 
-  export default function SliderWithIconsExample() {
-    const [brightness, setBrightness] = useState(0.5);
-    const [trueToneEnabled, setTrueToneEnabled] = useState(true);
+export default function SliderWithIconsExample() {
+const [brightness, setBrightness] = useState(0.5);
+const [trueToneEnabled, setTrueToneEnabled] = useState(true);
 
     return (
       <Host style={{ flex: 1 }}>
@@ -392,16 +376,18 @@ A common pattern for brightness or volume controls is to flank a `Slider` with i
         </Form>
       </Host>
     );
-  }
-  ```
+
+}
+
+````
 
 </Tab>
 <Tab label="Preview">
-  <ContentSpotlight
-    alt="Slider with icons"
-    src="/static/images/expo-ui/swift-ui-guide/slider-with-icons.png"
-    className="max-w-[480px]"
-  />
+<ContentSpotlight
+alt="Slider with icons"
+src="/static/images/expo-ui/swift-ui-guide/slider-with-icons.png"
+className="max-w-[480px]"
+/>
 </Tab>
 </Tabs>
 
@@ -411,63 +397,63 @@ Use `VStack` with `alignment="leading"` for list items with title and subtitle.
 
 <Tabs>
 <Tab label="Code">
-  ```tsx Multi-line list item
-  import {
-    Button,
-    Form,
-    Host,
-    HStack,
-    Image,
-    List,
-    Section,
-    Spacer,
-    Text,
-    VStack,
-  } from '@expo/ui/swift-ui';
-  import { buttonStyle, font, foregroundStyle, opacity, padding } from '@expo/ui/swift-ui/modifiers';
+```tsx Multi-line list item
+import {
+Button,
+Form,
+Host,
+HStack,
+Image,
+List,
+Section,
+Spacer,
+Text,
+VStack,
+} from '@expo/ui/swift-ui';
+import { buttonStyle, font, foregroundStyle, opacity, padding } from '@expo/ui/swift-ui/modifiers';
 
-  export default function MultiLineListItemExample() {
-    return (
-      <Host style={{ flex: 1 }}>
-        <Form>
-          <Section>
-            <List>
-              <HStack>
-                <Image
-                  systemName="safari"
-                  size={22}
-                  modifiers={[padding({ trailing: 6 })]}
-                />
-                <Spacer />
-                <Button
-                  onPress={() => console.log('Navigate')}
-                  modifiers={[buttonStyle('plain'), padding({ vertical: 6 })]}
-                >
-                  <VStack spacing={4} alignment="leading">
-                    <Text>Chrome</Text>
-                    <Text modifiers={[opacity(0.6), font({ size: 14 })]}>
-                      Last used: Today
-                    </Text>
-                  </VStack>
-                  <Spacer />
-                  <Text
-                    modifiers={[
-                      foregroundStyle({ type: 'color', color: '#8E8E93' }),
-                      font({ size: 16 }),
-                    ]}
-                  >
-                    1.57 GB
-                  </Text>
-                  <Image systemName="chevron.right" size={14} color="#C7C7CC" />
-                </Button>
-              </HStack>
-            </List>
-          </Section>
-        </Form>
-      </Host>
-    );
-  }
-  ```
+export default function MultiLineListItemExample() {
+return (
+  <Host style={{ flex: 1 }}>
+    <Form>
+      <Section>
+        <List>
+          <HStack>
+            <Image
+              systemName="safari"
+              size={22}
+              modifiers={[padding({ trailing: 6 })]}
+            />
+            <Spacer />
+            <Button
+              onPress={() => console.log('Navigate')}
+              modifiers={[buttonStyle('plain'), padding({ vertical: 6 })]}
+            >
+              <VStack spacing={4} alignment="leading">
+                <Text>Chrome</Text>
+                <Text modifiers={[opacity(0.6), font({ size: 14 })]}>
+                  Last used: Today
+                </Text>
+              </VStack>
+              <Spacer />
+              <Text
+                modifiers={[
+                  foregroundStyle({ type: 'color', color: '#8E8E93' }),
+                  font({ size: 16 }),
+                ]}
+              >
+                1.57 GB
+              </Text>
+              <Image systemName="chevron.right" size={14} color="#C7C7CC" />
+            </Button>
+          </HStack>
+        </List>
+      </Section>
+    </Form>
+  </Host>
+);
+}
+````
 
 </Tab>
 <Tab label="Preview">
