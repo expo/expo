@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fix gestureEnabled: false when using zoom transition ([#43202](https://github.com/expo/expo/pull/43202) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 55.0.0-preview.8 — 2026-02-16
@@ -57,7 +59,7 @@
 
 ### 💡 Others
 
-- Consolidate native toolbar components into StackToolbar* files ([#42712](https://github.com/expo/expo/pull/42712) by [@Ubax](https://github.com/Ubax))
+- Consolidate native toolbar components into StackToolbar\* files ([#42712](https://github.com/expo/expo/pull/42712) by [@Ubax](https://github.com/Ubax))
 - remove warnings from Color API ([#42790](https://github.com/expo/expo/pull/42790) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.0-preview.5 — 2026-02-03
