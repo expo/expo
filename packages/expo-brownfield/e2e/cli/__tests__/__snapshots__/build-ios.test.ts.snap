@@ -1,27 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`build:ios command without prebuild should display help message for --help/-h option 1`] = `
-"Usage: expo-brownfield build:ios [<options>]
+exports[`build:ios command without prebuild should display help message for --help/-h/help <command> option 1`] = `
+"Usage: expo-brownfield build:ios [options]
+
+Build and publish iOS brownfield artifacts
 
 Options:
-  --help, -h                    display help for 'build:ios'
-  --debug, -d                   build in debug configuration
-  --release, -r                 build in release configuration
-  --verbose                     forward all output to the terminal
-  --artifacts, -a               path to artifacts directory
-  --scheme, -s                  scheme to be built
-  --xcworkspace, -x             path to Xcode workspace (.xcworkspace)"
+  -d, --debug                      build debug configuration
+  -r, --release                    build release configuration
+  --verbose                        forward all output to the terminal
+  -s, --scheme <scheme>            name of the iOS scheme
+  -x, --xcworkspace <xcworkspace>  path to the Xcode workspace (.xcworkspace)
+  -a, --artifacts <artifacts>      path to the artifacts directory
+  --dry-run                        only print the commands without executing
+                                   them
+  -h, --help                       display help for command"
 `;
 
-exports[`build:ios command without prebuild should display help message for --help/-h option 2`] = `
-"Usage: expo-brownfield build:ios [<options>]
+exports[`build:ios command without prebuild should display help message for --help/-h/help <command> option 2`] = `
+"Usage: expo-brownfield build:ios [options]
+
+Build and publish iOS brownfield artifacts
 
 Options:
-  --help, -h                    display help for 'build:ios'
-  --debug, -d                   build in debug configuration
-  --release, -r                 build in release configuration
-  --verbose                     forward all output to the terminal
-  --artifacts, -a               path to artifacts directory
-  --scheme, -s                  scheme to be built
-  --xcworkspace, -x             path to Xcode workspace (.xcworkspace)"
+  -d, --debug                      build debug configuration
+  -r, --release                    build release configuration
+  --verbose                        forward all output to the terminal
+  -s, --scheme <scheme>            name of the iOS scheme
+  -x, --xcworkspace <xcworkspace>  path to the Xcode workspace (.xcworkspace)
+  -a, --artifacts <artifacts>      path to the artifacts directory
+  --dry-run                        only print the commands without executing
+                                   them
+  -h, --help                       display help for command"
+`;
+
+exports[`build:ios command without prebuild should display help message for --help/-h/help <command> option 3`] = `
+"Usage: expo-brownfield build:ios [options]
+
+Build and publish iOS brownfield artifacts
+
+Options:
+  -d, --debug                      build debug configuration
+  -r, --release                    build release configuration
+  --verbose                        forward all output to the terminal
+  -s, --scheme <scheme>            name of the iOS scheme
+  -x, --xcworkspace <xcworkspace>  path to the Xcode workspace (.xcworkspace)
+  -a, --artifacts <artifacts>      path to the artifacts directory
+  --dry-run                        only print the commands without executing
+                                   them
+  -h, --help                       display help for command"
 `;

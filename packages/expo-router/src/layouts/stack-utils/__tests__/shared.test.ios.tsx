@@ -106,10 +106,24 @@ describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
       expect(result.icon).toBeUndefined();
     });
 
-    it('extracts xcasset icon from StackToolbarIcon child with xcasset prop', () => {
+    it('extracts xcasset icon as image source from StackToolbarIcon child with xcasset prop', () => {
       const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
         children: <StackToolbarIcon xcasset="custom-icon" />,
       });
+      expect(result.icon).toEqual({
+        type: 'image',
+        source: { uri: 'custom-icon' },
+        tinted: false,
+      });
+    });
+
+    it('extracts xcasset icon as native xcasset type for bottom placement', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem(
+        {
+          children: <StackToolbarIcon xcasset="custom-icon" />,
+        },
+        true
+      );
       expect(result.icon).toEqual({
         type: 'xcasset',
         name: 'custom-icon',
@@ -194,74 +208,74 @@ describe(convertStackHeaderSharedPropsToRNSharedHeaderItem, () => {
     });
   });
 
-  describe('xcasset iconRenderingMode warning', () => {
-    let spy: jest.SpyInstance;
-    beforeEach(() => {
-      spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    });
-    afterEach(() => {
-      spy.mockRestore();
-    });
-
-    it('warns when iconRenderingMode=template with xcasset icon', () => {
-      convertStackHeaderSharedPropsToRNSharedHeaderItem({
-        children: <StackToolbarIcon xcasset="custom-icon" />,
-        iconRenderingMode: 'template',
-      });
-      expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('renderingMode has no effect on xcasset icons')
-      );
-    });
-
-    it('warns when iconRenderingMode=original with xcasset icon', () => {
-      convertStackHeaderSharedPropsToRNSharedHeaderItem({
-        children: <StackToolbarIcon xcasset="custom-icon" />,
-        iconRenderingMode: 'original',
-      });
-      expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('renderingMode has no effect on xcasset icons')
-      );
-    });
-
-    it('warns when <Icon xcasset renderingMode="template"> is used', () => {
-      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+  describe('xcasset iconRenderingMode', () => {
+    it('uses explicit template renderingMode from StackToolbarIcon', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
         children: <StackToolbarIcon xcasset="custom-icon" renderingMode="template" />,
       });
-      expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('renderingMode has no effect on xcasset icons')
-      );
+      expect(result.icon).toEqual({
+        type: 'image',
+        source: { uri: 'custom-icon' },
+        tinted: true,
+      });
     });
 
-    it('warns when <Icon xcasset renderingMode="original"> is used', () => {
-      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+    it('uses explicit original renderingMode from StackToolbarIcon', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
         children: <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />,
       });
-      expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining('renderingMode has no effect on xcasset icons')
-      );
+      expect(result.icon).toEqual({
+        type: 'image',
+        source: { uri: 'custom-icon' },
+        tinted: false,
+      });
     });
 
-    it('does not warn when iconRenderingMode is undefined with xcasset icon', () => {
-      convertStackHeaderSharedPropsToRNSharedHeaderItem({
+    it('uses iconRenderingMode prop when StackToolbarIcon has no renderingMode', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" />,
+        iconRenderingMode: 'template',
+      });
+      expect(result.icon).toEqual({
+        type: 'image',
+        source: { uri: 'custom-icon' },
+        tinted: true,
+      });
+    });
+
+    it('defaults to template when tintColor is set', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" />,
+        tintColor: 'blue',
+      });
+      expect(result.icon).toEqual({
+        type: 'image',
+        source: { uri: 'custom-icon' },
+        tinted: true,
+      });
+    });
+
+    it('defaults to original when no tintColor is set', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
         children: <StackToolbarIcon xcasset="custom-icon" />,
       });
-      expect(spy).not.toHaveBeenCalled();
+      expect(result.icon).toEqual({
+        type: 'image',
+        source: { uri: 'custom-icon' },
+        tinted: false,
+      });
     });
 
-    it('does not warn when iconRenderingMode is set with src icon', () => {
-      convertStackHeaderSharedPropsToRNSharedHeaderItem({
-        children: <StackToolbarIcon src={{ uri: 'https://example.com/icon.png' }} />,
-        iconRenderingMode: 'template',
+    it('explicit renderingMode overrides tintColor-based default', () => {
+      const result = convertStackHeaderSharedPropsToRNSharedHeaderItem({
+        children: <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />,
+        tintColor: 'blue',
       });
-      expect(spy).not.toHaveBeenCalled();
-    });
-
-    it('does not warn when iconRenderingMode is set with sf icon', () => {
-      convertStackHeaderSharedPropsToRNSharedHeaderItem({
-        children: <StackToolbarIcon sf="star.fill" />,
-        iconRenderingMode: 'template',
+      expect(result.icon).toEqual({
+        type: 'image',
+        source: { uri: 'custom-icon' },
+        tinted: false,
       });
-      expect(spy).not.toHaveBeenCalled();
     });
   });
 

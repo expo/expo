@@ -8,11 +8,17 @@ on:
       - .github/workflows/test-suite-brownfield-isolated.yml
       - apps/brownfield-tester/expo-app/**
       - packages/expo-brownfield/**
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
   pull_request:
     paths:
       - .github/workflows/test-suite-brownfield-isolated.yml
       - apps/brownfield-tester/expo-app/**
       - packages/expo-brownfield/**
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -46,13 +52,10 @@ jobs:
             "packages/expo-brownfield/src/**",
             "packages/expo-brownfield/e2e/maestro/**"
 
-  android-e2e:
+  android-build:
     runs-on: ubuntu-24.04
     needs: detect-platform-for-e2e
     if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
-    strategy:
-      matrix:
-        api-level: [36]
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
@@ -96,6 +99,34 @@ jobs:
           ./gradlew clean
           ./gradlew assembleRelease --refresh-dependencies
         working-directory: apps/brownfield-tester/android-integrated
+      - name: 💾 Store APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: expo-brownfield-android-release
+          path: apps/brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
+
+  android-e2e:
+    runs-on: ubuntu-24.04
+    needs: android-build
+    strategy:
+      matrix:
+        api-level: [36]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+      - name: 🌠 Download builds
+        uses: actions/download-artifact@v4
+        with:
+          name: expo-brownfield-android-release
+          path: apps/brownfield-tester/android-integrated/apk
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -106,7 +137,7 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            adb install -r apps/brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
+            adb install -r apps/brownfield-tester/android-integrated/apk/*.apk
             cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify

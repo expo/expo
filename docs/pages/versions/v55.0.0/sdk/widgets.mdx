@@ -1,6 +1,6 @@
 ---
 title: Widgets
-description: A library that enables creation of iOS home screen widgets and Live Activities using Expo UI components.
+description: A library to build iOS home screen widgets and Live Activities using Expo UI components.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-widgets'
 packageName: 'expo-widgets'
 platforms: ['ios']
@@ -148,20 +148,21 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
 
 ### Widgets
 
-#### Basic widget
+#### Prerequisite: Registering widget layout
 
-The simplest way to create a widget is using `updateWidgetSnapshot`. This creates a widget with a single timeline entry that displays immediately.
+Widget components must be registered once using `registerWidgetLayout` and marked with the `'widget'` directive.
 
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
 import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
-import { updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
+import { registerWidgetLayout, WidgetBase } from 'expo-widgets';
 
 type MyWidgetProps = {
   count: number;
 };
 
 const MyWidget = (props: WidgetBase<MyWidgetProps>) => {
+  'widget';
   return (
     <VStack>
       <Text modifiers={[font({ weight: 'bold', size: 16 }), foregroundStyle('#000000')]}>
@@ -171,37 +172,39 @@ const MyWidget = (props: WidgetBase<MyWidgetProps>) => {
   );
 };
 
-// Update the widget
-updateWidgetSnapshot('MyWidget', MyWidget, { count: 5 });
+registerWidgetLayout('MyWidget', MyWidget);
 ```
 
 The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
+
+#### Basic widget
+
+The simplest way to create a widget is to update it using `updateWidgetSnapshot`. This creates a widget with a single timeline entry that displays immediately.
+
+The example below continues from [Registering widget layout](#registering-widget-layout).
+
+```tsx
+import { updateWidgetSnapshot } from 'expo-widgets';
+
+// Update the widget
+updateWidgetSnapshot('MyWidget', { count: 5 });
+```
 
 #### Timeline widget
 
 Use `updateWidgetTimeline` to schedule widget updates at specific time. System will automatically update the widget based on the timeline.
 
+The example below continues from [Registering widget layout](#registering-widget-layout).
+
 ```tsx
-import { Text, VStack } from '@expo/ui/swift-ui';
-import { updateWidgetTimeline, WidgetBase } from 'expo-widgets';
+import { updateWidgetTimeline } from 'expo-widgets';
 
-const TimeWidget = (props: WidgetBase) => {
-  return (
-    <VStack>
-      <Text>{props.date.toLocaleTimeString()}</Text>
-    </VStack>
-  );
-};
-
-// Schedule updates for the next 3 hours
-const dates = [
-  new Date(),
-  new Date(Date.now() + 3600000), // 1 hour from now
-  new Date(Date.now() + 7200000), // 2 hours from now
-  new Date(Date.now() + 10800000), // 3 hours from now
-];
-
-updateWidgetTimeline('TimeWidget', dates, TimeWidget);
+updateWidgetTimeline('MyWidget', [
+  { date: new Date(), props: { count: 1 } },
+  { date: new Date(Date.now() + 3600000), props: { count: 2 } }, // 1 hour from now
+  { date: new Date(Date.now() + 7200000), props: { count: 3 } }, // 2 hours from now
+  { date: new Date(Date.now() + 10800000), props: { count: 4 } }, // 3 hours from now
+]);
 ```
 
 #### Responsive widget
@@ -210,7 +213,7 @@ Widget component receives a `family` prop indicating which size is being rendere
 
 ```tsx
 import { HStack, Text, VStack } from '@expo/ui/swift-ui';
-import { updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
+import { registerWidgetLayout, updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
 
 type WeatherWidgetProps = {
   temperature: number;
@@ -218,6 +221,7 @@ type WeatherWidgetProps = {
 };
 
 const WeatherWidget = (props: WidgetBase<WeatherWidgetProps>) => {
+  'widget';
   // Render different layouts based on size
   if (props.family === 'systemSmall') {
     return (
@@ -246,7 +250,9 @@ const WeatherWidget = (props: WidgetBase<WeatherWidgetProps>) => {
   );
 };
 
-updateWidgetSnapshot('WeatherWidget', WeatherWidget, {
+registerWidgetLayout('WeatherWidget', WeatherWidget);
+
+updateWidgetSnapshot('WeatherWidget', {
   temperature: 72,
   condition: 'Sunny',
 });
@@ -256,48 +262,75 @@ updateWidgetSnapshot('WeatherWidget', WeatherWidget, {
 
 Live Activities display real-time information on the Lock Screen and in the Dynamic Island on supported devices.
 
-#### Starting a Live Activity
+#### Prerequisite: Registering Live Activity layout
+
+Live Activity layouts must be registered once using `registerLiveActivityLayout` and marked with the `'widget'` directive.
 
 ```tsx
 import { Image, Text, VStack } from '@expo/ui/swift-ui';
-import { font, padding } from '@expo/ui/swift-ui/modifiers';
-import { LiveActivityComponent, startLiveActivity } from 'expo-widgets';
-import { Button, View } from 'react-native';
+import { font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+import { registerLiveActivityLayout } from 'expo-widgets';
 
-const DeliveryActivity: LiveActivityComponent = () => ({
-  banner: (
-    <VStack modifiers={[padding({ all: 12 })]}>
-      <Text modifiers={[font({ weight: 'bold' })]}>Your delivery is on the way</Text>
-      <Text>Estimated arrival: 15 minutes</Text>
-    </VStack>
-  ),
-  compactLeading: <Image systemName="box.truck.fill" color="#007AFF" />,
-  compactTrailing: <Text>15 min</Text>,
-  minimal: <Image systemName="box.truck.fill" color="#007AFF" />,
-  expandedLeading: (
-    <VStack modifiers={[padding({ all: 12 })]}>
-      <Image systemName="box.truck.fill" color="#007AFF" />
-      <Text modifiers={[font({ size: 12 })]}>Delivering</Text>
-    </VStack>
-  ),
-  expandedTrailing: (
-    <VStack modifiers={[padding({ all: 12 })]}>
-      <Text modifiers={[font({ weight: 'bold', size: 20 })]}>15</Text>
-      <Text modifiers={[font({ size: 12 })]}>minutes</Text>
-    </VStack>
-  ),
-  expandedBottom: (
-    <VStack modifiers={[padding({ all: 12 })]}>
-      <Text>Driver: John Smith</Text>
-      <Text>Order #12345</Text>
-    </VStack>
-  ),
-});
+type DeliveryActivityProps = {
+  etaMinutes: number;
+  status: string;
+};
+
+const DeliveryActivity = (props: DeliveryActivityProps) => {
+  'widget';
+  return {
+    banner: (
+      <VStack modifiers={[padding({ all: 12 })]}>
+        <Text modifiers={[font({ weight: 'bold' }), foregroundStyle('#007AFF')]}>
+          {props.status}
+        </Text>
+        <Text>Estimated arrival: {props.etaMinutes} minutes</Text>
+      </VStack>
+    ),
+    compactLeading: <Image systemName="box.truck.fill" color="#007AFF" />,
+    compactTrailing: <Text>{props.etaMinutes} min</Text>,
+    minimal: <Image systemName="box.truck.fill" color="#007AFF" />,
+    expandedLeading: (
+      <VStack modifiers={[padding({ all: 12 })]}>
+        <Image systemName="box.truck.fill" color="#007AFF" />
+        <Text modifiers={[font({ size: 12 })]}>Delivering</Text>
+      </VStack>
+    ),
+    expandedTrailing: (
+      <VStack modifiers={[padding({ all: 12 })]}>
+        <Text modifiers={[font({ weight: 'bold', size: 20 })]}>{props.etaMinutes}</Text>
+        <Text modifiers={[font({ size: 12 })]}>minutes</Text>
+      </VStack>
+    ),
+    expandedBottom: (
+      <VStack modifiers={[padding({ all: 12 })]}>
+        <Text>Driver: John Smith</Text>
+        <Text>Order #12345</Text>
+      </VStack>
+    ),
+  };
+};
+
+registerLiveActivityLayout('DeliveryActivity', DeliveryActivity);
+```
+
+#### Starting a Live Activity
+
+The example below continues from [Registering Live Activity layout](#registering-live-activity-layout).
+
+```tsx
+import { Image, Text, VStack } from '@expo/ui/swift-ui';
+import { font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+import { startLiveActivity } from 'expo-widgets';
+import { Button, View } from 'react-native';
 
 function App() {
   const startDeliveryTracking = () => {
     // Start the Live Activity
-    const activityId = startLiveActivity('DeliveryActivity', DeliveryActivity);
+    const activityId = startLiveActivity('DeliveryActivity', {
+      etaMinutes: 15,
+      status: 'Your delivery is on the way',
+    });
     console.log('Started Live Activity:', activityId);
 
     // Store activityId for later updates
@@ -314,30 +347,16 @@ export default App;
 
 #### Updating a Live Activity
 
-```tsx
-import { updateLiveActivity, LiveActivityComponent } from 'expo-widgets';
+The example below continues from [Starting a Live Activity](#starting-a-live-activity).
 
-const UpdatedDeliveryActivity: LiveActivityComponent = () => ({
-  banner: (
-    <VStack modifiers={[padding({ all: 12 })]}>
-      <Text modifiers={[font({ weight: 'bold' }), foregroundStyle('#00FF00')]}>
-        Delivery arriving soon!
-      </Text>
-      <Text>Estimated arrival: 2 minutes</Text>
-    </VStack>
-  ),
-  compactLeading: <Image systemName="checkmark.circle.fill" color="#00FF00" />,
-  compactTrailing: <Text>2 min</Text>,
-  expandedTrailing: (
-    <VStack modifiers={[padding(12)]}>
-      <Text modifiers={[font({ weight: 'bold', size: 20 })]}>2</Text>
-      <Text modifiers={[font({ size: 12 })]}>minutes</Text>
-    </VStack>
-  ),
-});
+```tsx
+import { updateLiveActivity } from 'expo-widgets';
 
 function updateDelivery(activityId: string) {
-  updateLiveActivity(activityId, 'DeliveryActivity', UpdatedDeliveryActivity);
+  updateLiveActivity(activityId, 'DeliveryActivity', {
+    etaMinutes: 2,
+    status: 'Delivery arriving soon!',
+  });
 }
 ```
 
@@ -345,7 +364,7 @@ function updateDelivery(activityId: string) {
 
 {/* prettier-ignore */}
 ```tsx
-import { updateWidgetSnapshot, updateWidgetTimeline, WidgetBase, WidgetFamily, updateLiveActivity, LiveActivityComponent } from 'expo-widgets';
+import * as ExpoWidgets from 'expo-widgets';
 ```
 
 <APISection packageName="expo-widgets" />

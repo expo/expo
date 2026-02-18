@@ -21,6 +21,7 @@ export declare class NativeAudioModule extends NativeModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
   setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
   requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
+  requestNotificationPermissionsAsync(): Promise<PermissionResponse>;
   getRecordingPermissionsAsync(): Promise<PermissionResponse>;
 
   readonly AudioPlayer: typeof AudioPlayer;

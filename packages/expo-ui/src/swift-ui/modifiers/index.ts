@@ -9,7 +9,7 @@ import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
 import { contentShape } from './contentShape';
-import { createModifier, ModifierConfig } from './createModifier';
+import { createModifier, createModifierWithEventListener, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
@@ -17,17 +17,6 @@ import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
-
-/**
- * Creates a modifier with an event listener.
- */
-function createModifierWithEventListener(
-  type: string,
-  eventListener: (args: any) => void,
-  params: Record<string, any> = {}
-): ModifierConfig {
-  return { $type: type, ...params, eventListener };
-}
 
 // =============================================================================
 // Built-in Modifier Functions
@@ -222,7 +211,7 @@ export const opacity = (value: number) => createModifier('opacity', { value });
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
 export const clipShape = (
-  shape: 'rectangle' | 'circle' | 'roundedRectangle',
+  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
   cornerRadius?: number
 ) => createModifier('clipShape', { shape, cornerRadius });
 
@@ -611,8 +600,10 @@ export const layoutPriority = (priority: number) => createModifier('layoutPriori
  * @param cornerRadius - Corner radius for rounded rectangle (default: `8`).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
-export const mask = (shape: 'rectangle' | 'circle' | 'roundedRectangle', cornerRadius?: number) =>
-  createModifier('mask', { shape, cornerRadius });
+export const mask = (
+  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  cornerRadius?: number
+) => createModifier('mask', { shape, cornerRadius });
 
 /**
  * Overlays another view on top.

@@ -38,7 +38,7 @@ fun ToolsSection(
         },
         content = {
           NewText(
-            text = "Performance monitor"
+            text = "Toggle performance monitor"
           )
         },
         onClick = {
@@ -58,7 +58,7 @@ fun ToolsSection(
         },
         content = {
           NewText(
-            text = "Element inspector"
+            text = "Toggle element inspector"
           )
         },
         onClick = {
@@ -71,14 +71,14 @@ fun ToolsSection(
       NewMenuButton(
         withSurface = false,
         icon = {
-          MenuIcons.Bug(
+          MenuIcons.Code(
             size = 20.dp,
             tint = NewAppTheme.colors.icon.tertiary
           )
         },
         content = {
           NewText(
-            text = "JS debugger"
+            text = "Open DevTools"
           )
         },
         onClick = {
@@ -126,7 +126,7 @@ fun ToolsSection(
           },
           content = {
             NewText(
-              text = "Action button"
+              text = "Show dev menu button"
             )
           },
           rightComponent = {

@@ -10,7 +10,12 @@ private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 private let BONJOUR_TYPE = "_expo._tcp"
-private let networkPermissionFlowKey = "expo.devlauncher.hasCompletedNetworkPermissionFlow"
+private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPermission"
+
+enum LocalNetworkPermissionStatus: Equatable, Sendable {
+  case unknown
+  case denied
+}
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
@@ -205,41 +210,22 @@ class DevLauncherViewModel: ObservableObject {
       return
     }
 
-    let hasCompletedPermissionFlow = UserDefaults.standard.bool(
-      forKey: networkPermissionFlowKey
-    )
-
-    #if targetEnvironment(simulator)
-    // Simulators don't need permission, continue
-    #else
-    if !hasCompletedPermissionFlow {
-      return
-    }
-    #endif
-
-    stopServerDiscovery()
-    startDevServerBrowser()
-    startLocalDevServerScanner()
-  }
-
-  func startDiscoveryForPermissionCheck() {
-    permissionStatus = .checking
     stopServerDiscovery()
     startDevServerBrowser()
     startLocalDevServerScanner()
   }
   
-  func markPermissionFlowCompleted() {
-    UserDefaults.standard.set(true, forKey: networkPermissionFlowKey)
+  func markNetworkPermissionGranted() {
+    UserDefaults.standard.set(true, forKey: networkPermissionGrantedKey)
   }
 
   func resetPermissionFlowState() {
-    UserDefaults.standard.removeObject(forKey: networkPermissionFlowKey)
+    UserDefaults.standard.removeObject(forKey: networkPermissionGrantedKey)
     permissionStatus = .unknown
   }
 
-  var isFirstPermissionCheck: Bool {
-    !UserDefaults.standard.bool(forKey: networkPermissionFlowKey)
+  var hasGrantedNetworkPermission: Bool {
+    UserDefaults.standard.bool(forKey: networkPermissionGrantedKey)
   }
 
   func stopServerDiscovery() {
@@ -283,7 +269,7 @@ class DevLauncherViewModel: ObservableObject {
         guard let self else { return }
         switch state {
         case .ready:
-          self.permissionStatus = .granted
+          self.markNetworkPermissionGranted()
         case .waiting(let error):
           if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
             self.permissionStatus = .denied

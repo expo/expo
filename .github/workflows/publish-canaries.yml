@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'schedule' && 'sdk-56' || github.ref }}
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:

@@ -1,70 +1,119 @@
-import type { Result, Spec } from 'arg';
-import path from 'path';
+import type { OptionValues } from 'commander';
+import path from 'node:path';
 
+import { buildPublishingTask, findBrownfieldLibrary } from './android';
+import { findScheme, findWorkspace } from './ios';
 import type {
-  BuildConfigAndroid,
-  BuildConfigCommon,
-  BuildConfigIos,
-  BuildTypeAndroid,
-  BuildTypeCommon,
+  AndroidConfig,
+  BuildConfiguration,
+  BuildVariant,
+  CommonConfig,
+  IosConfig,
+  TasksConfigAndroid,
 } from './types';
-import { Defaults } from '../constants';
-import { inferAndroidLibrary, inferScheme, inferXCWorkspace } from './infer';
 
-export const getCommonConfig = (args: Result<Spec>): BuildConfigCommon => {
+export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
+  const variant = resolveVariant(options);
   return {
-    dryRun: !!args['--dry-run'],
-    help: !!args['--help'],
-    verbose: !!args['--verbose'],
+    ...resolveCommonConfig(options),
+    library: resolveLibrary(options),
+    tasks: resolveTaskArray(options, variant),
+    variant,
   };
 };
 
-export const getAndroidConfig = async (args: Result<Spec>): Promise<BuildConfigAndroid> => {
-  return {
-    ...getCommonConfig(args),
-    buildType: getBuildTypeAndroid(args),
-    libraryName: args['--library'] || (await inferAndroidLibrary()),
-    repositories: args['--repository'] || [],
-    tasks: args['--task'] || [],
-  };
-};
+export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
+  let artifacts = options.artifacts || './artifacts';
+  if (!path.isAbsolute(artifacts)) {
+    artifacts = path.join(process.cwd(), artifacts);
+  }
 
-export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> => {
-  const buildType = getBuildTypeCommon(args);
   const derivedDataPath = path.join(process.cwd(), 'ios/build');
   const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
 
+  const buildConfiguration = resolveBuildConfiguration(options);
+  const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
+  const simulator = path.join(
+    buildProductsPath,
+    `${buildConfiguration.toLowerCase()}-iphonesimulator`
+  );
+
+  const hermesFrameworkPath =
+    'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
+
   return {
-    ...getCommonConfig(args),
-    artifacts: path.join(process.cwd(), args['--artifacts'] || Defaults.artifactsPath),
-    buildType,
+    ...resolveCommonConfig(options),
+    artifacts,
+    buildConfiguration,
     derivedDataPath,
-    device: path.join(buildProductsPath, `${buildType}-iphoneos`),
-    simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
-    hermesFrameworkPath: args['--hermes-framework'] || Defaults.hermesFrameworkPath,
-    scheme: args['--scheme'] || (await inferScheme()),
-    workspace: args['--xcworkspace'] || (await inferXCWorkspace()),
+    device,
+    simulator,
+    hermesFrameworkPath,
+    scheme: resolveScheme(options),
+    workspace: resolveWorkspace(options),
   };
 };
 
-export const getTasksAndroidConfig = async (args: Result<Spec>) => {
-  const commonConfig = getCommonConfig(args);
-  const libraryName = !commonConfig.help ? args['--library'] || (await inferAndroidLibrary()) : '';
-
+export const resolveTasksConfigAndroid = (options: OptionValues): TasksConfigAndroid => {
   return {
-    ...commonConfig,
-    libraryName,
+    ...resolveCommonConfig(options),
+    library: resolveLibrary(options),
   };
 };
 
-export const getBuildTypeCommon = (args: Result<Spec>): BuildTypeCommon => {
-  return !args['--release'] && args['--debug'] ? 'debug' : 'release';
+const resolveCommonConfig = (options: OptionValues): CommonConfig => {
+  return {
+    dryRun: !!options.dryRun,
+    verbose: !!options.verbose,
+  };
 };
 
-export const getBuildTypeAndroid = (args: Result<Spec>): BuildTypeAndroid => {
-  if ((args['--debug'] && args['--release']) || (!args['--debug'] && !args['--release'])) {
-    return 'all';
+// SECTION: Android Helpers
+
+const resolveLibrary = (options: OptionValues): string => {
+  return options.library || findBrownfieldLibrary();
+};
+
+const resolveTaskArray = (options: OptionValues, variant: BuildVariant): string[] => {
+  const tasks: string[] = options.task ?? [];
+  const repoTasks = (options.repository ?? []).map((repo: string) =>
+    buildPublishingTask(variant, repo)
+  );
+
+  return Array.from(new Set([...tasks, ...repoTasks]));
+};
+
+const resolveVariant = (options: OptionValues): BuildVariant => {
+  let variant: BuildVariant = 'All';
+  if (options.release && !options.debug) {
+    variant = 'Release';
+  }
+  if (options.debug && !options.release) {
+    variant = 'Debug';
   }
 
-  return getBuildTypeCommon(args);
+  return variant;
 };
+
+// END SECTION: Android Helpers
+
+// SECTION: iOS Helpers
+
+const resolveBuildConfiguration = (options: OptionValues): BuildConfiguration => {
+  let buildConfiguration: BuildConfiguration = 'Release';
+  if (options.debug && !options.release) {
+    buildConfiguration = 'Debug';
+  }
+
+  return buildConfiguration;
+};
+
+const resolveScheme = (options: OptionValues): string => {
+  return options.scheme || findScheme();
+};
+
+const resolveWorkspace = (options: OptionValues): string => {
+  return options.xcworkspace || findWorkspace();
+};
+
+// END SECTION: iOS Helpers

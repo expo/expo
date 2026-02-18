@@ -4,7 +4,7 @@ export type UpdateResponseHeaders =
   | ((headers: Headers) => Headers | void);
 
 export interface RequestAPI {
-  origin?: string;
+  origin?: string | null;
   environment?: string | null;
   requestHeaders?: Headers;
   waitUntil?(promise: Promise<unknown>): void;

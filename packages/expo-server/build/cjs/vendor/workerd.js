@@ -13,10 +13,12 @@ const STORE = new node_async_hooks_1.AsyncLocalStorage();
  */
 function createRequestHandler(params, setup) {
     const run = (0, workerd_1.createWorkerdRequestScope)(STORE, params);
-    const onRequest = (0, abstract_1.createRequestHandler)({
-        ...(0, workerd_1.createWorkerdEnv)(params),
-        ...setup,
-    });
-    return (request, env, ctx) => run(onRequest, request, env, ctx);
+    const common = (0, workerd_1.createWorkerdEnv)(params);
+    const onRequest = (0, abstract_1.createRequestHandler)({ ...common, ...setup });
+    function handler(request, env, ctx) {
+        return run(onRequest, request, env, ctx);
+    }
+    handler.preload = common.preload;
+    return handler;
 }
 //# sourceMappingURL=workerd.js.map

@@ -4,18 +4,31 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- [Android][iOS] Add `url` field to HLS video tracks. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Update HLS video track fetching for iOS 26+. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
+
+## 55.0.6 — 2026-02-16
+
+### 🛠 Breaking changes
+
 - [Android] The next and previous buttons are now hidden by default in the native `VideoView` controls. ([#42875](https://github.com/expo/expo/pull/42875) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
 
 - [Android] Add `buttonConfiguration` prop to `VideoView`. ([#42875](https://github.com/expo/expo/pull/42875) by [@behenate](https://github.com/behenate))
+- [Android] Add `PlayerBuilderOptions` parameter to `useVideoPlayer` hook to configure seek backward/forward increments. ([#43043](https://github.com/expo/expo/pull/43043) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix only one player getting released when reloading with multiple players present. ([#42780](https://github.com/expo/expo/pull/42780) by [@behenate](https://github.com/behenate))
 - [iOS] Fix data getting corrupted when caching is enabled. ([#42621](https://github.com/expo/expo/pull/42621) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 55.0.5 — 2026-02-08
 
@@ -53,6 +66,7 @@ _This version does not introduce any user-facing changes._
 - [Android][iOS] Add `seek tolerance` and `scrubbingModeOptions` properties to the player. ([#40203](https://github.com/expo/expo/pull/40203) by [@behenate](https://github.com/behenate))
 - Allow assigning `null` value to the `player` prop of the `VideoView` ([#40860](https://github.com/expo/expo/pull/40860) by [@behenate](https://github.com/behenate))
 - [Android][iOS] Add `averageBitrate` and `peakBitrate` for video tracks. ([#41532](https://github.com/expo/expo/pull/41532) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add `url` field to HLS video tracks. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
@@ -72,6 +86,7 @@ _This version does not introduce any user-facing changes._
 - Add extract the object `VideoSource` type into separate `VideoSourceObject` type. ([#41514](https://github.com/expo/expo/pull/41514) by [@behenate](https://github.com/behenate))
 - [Android] Set property values on calling thread. ([#41533](https://github.com/expo/expo/pull/41533) by [@behenate](https://github.com/behenate))
 - Mark the video track `bitrate` field as deprecated. ([#41532](https://github.com/expo/expo/pull/41532) by [@behenate](https://github.com/behenate))
+- Update HLS video track fetching for iOS 26+. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
 
 ## 3.0.15 - 2025-12-05
 

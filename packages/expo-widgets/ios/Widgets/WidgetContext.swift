@@ -13,7 +13,14 @@ func createWidgetContext(layout: String, props: [String: Any]) -> JSContext? {
   }
 
   // Inject ExpoUI bundle
-  context.evaluateScript(expoUIBundleJS)
+  guard let bundleURL = Bundle.main.url(forResource: "ExpoWidgets", withExtension: "bundle"),
+        let bundle = Bundle(url: bundleURL),
+        let url = bundle.url(forResource: "ExpoWidgets", withExtension: "bundle"),
+        let bundleJS = try? String(contentsOf: url, encoding: .utf8) else {
+    print("[ExpoWidgets] Missing ExpoWidgets.bundle")
+    return nil
+  }
+  context.evaluateScript(bundleJS)
 
   // Inject layout and props
   let layoutValue = context.evaluateScript("(\(layout))")
@@ -21,4 +28,3 @@ func createWidgetContext(layout: String, props: [String: Any]) -> JSContext? {
   context.setObject(props, forKeyedSubscript: "__expoWidgetProps" as NSString)
   return context
 }
-

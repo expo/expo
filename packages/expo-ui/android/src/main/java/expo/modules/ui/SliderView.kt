@@ -59,6 +59,6 @@ fun FunctionalComposableScope.SliderContent(props: SliderProps) {
       activeTickColor = colors.activeTickColor.compose,
       inactiveTickColor = colors.inactiveTickColor.compose
     ),
-    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   )
 }

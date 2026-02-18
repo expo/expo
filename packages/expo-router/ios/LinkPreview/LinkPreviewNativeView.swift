@@ -139,7 +139,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
         container: superview, center: self.convert(triggerView.center, to: superview))
 
       let parameters = UIPreviewParameters()
-      parameters.backgroundColor = .clear
+      parameters.backgroundColor = triggerView.backgroundColor ?? .clear
 
       return UITargetedPreview(view: triggerView, parameters: parameters, target: target)
     }

@@ -14,6 +14,11 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.typeOf
 
+/**
+ * The name for the global event dispatcher
+ */
+internal const val GLOBAL_EVENT_NAME = "onGlobalEvent"
+
 open class ModuleDefinitionBuilderWithCompose(
   module: Module? = null
 ) : InternalModuleDefinitionBuilder(module) {
@@ -54,7 +59,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
   val propsClass: KClass<Props>,
   val viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
 ) {
-  private var callbacksDefinition: CallbacksDefinition? = null
+  private var callbacksDefinition: CallbacksDefinition = CallbacksDefinition(arrayOf(GLOBAL_EVENT_NAME))
 
   fun build(): ViewManagerDefinition {
     return ViewManagerDefinition(
@@ -80,7 +85,9 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
    * Defines prop names that should be treated as callbacks.
    */
   fun Events(vararg callbacks: String) {
-    callbacksDefinition = CallbacksDefinition(callbacks)
+    callbacksDefinition = CallbacksDefinition(
+      arrayOf(GLOBAL_EVENT_NAME, *callbacks)
+    )
   }
 
   /**
@@ -88,6 +95,8 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
    */
   @JvmName("EventsWithArray")
   fun Events(callbacks: Array<String>) {
-    callbacksDefinition = CallbacksDefinition(callbacks)
+    callbacksDefinition = CallbacksDefinition(
+      arrayOf(GLOBAL_EVENT_NAME, *callbacks)
+    )
   }
 }
