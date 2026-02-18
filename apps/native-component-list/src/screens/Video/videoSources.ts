@@ -17,38 +17,43 @@ export const seekOptimizedSource: VideoSource = {
   metadata: {
     title: 'Tola running (seek optimized)',
     artist:
-      "This video has been optimized for seeking by exoirting all of it's frames as keyframes",
+      "This video has been optimized for seeking by exporting all of it's frames as keyframes",
   },
 };
 
 const bigBuckBunnySource: VideoSource = {
-  // backup at https://github.com/vonovak/expo-video-tests/releases/tag/v0
-  uri: 'https://archive.org/download/BigBuckBunny_124/Content/big_buck_bunny_720p_surround.mp4',
+  uri: 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4',
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
-    artwork:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/1200px-Big_buck_bunny_poster_big.jpg',
+    artwork: 'https://expo-test-media.com/big_buck_bunny/artwork.jpg',
   },
 };
 
 const elephantsDreamSource: VideoSource = {
-  // backup at https://github.com/vonovak/expo-video-tests/releases/tag/v0
-  uri: 'https://archive.org/download/ElephantsDream/ed_1024.mp4',
+  uri: 'https://expo-test-media.com/elephants_dream/ed_720p.mp4',
   metadata: {
     title: 'Elephants Dream',
     artist: 'Blender Foundation',
-    artwork: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/ElephantsDreamPoster.jpg',
+    artwork: 'https://expo-test-media.com/elephants_dream/artwork.jpg',
   },
 };
 
 export const hlsSource: VideoSource = {
-  uri: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8',
+  uri: 'https://expo-test-media.com/tos_hls/master.m3u8',
   metadata: {
-    title: 'Becoming You Trailer',
-    artist: 'Apple',
-    artwork:
-      'https://www.apple.com/tv-pr/shows-and-films/b/becoming-you/images/show-home-graphic-header/4x1/Apple_TV_Becoming_You_key_art_graphic_header_4_1_show_home.jpg.og.jpg?1659052681724',
+    title: 'Tears Of Steel',
+    artist: 'Blender Foundation',
+    artwork: 'https://expo-test-media.com/tos_hls/artwork.jpg',
+  },
+};
+
+export const dashSource: VideoSource = {
+  uri: 'https://expo-video-videos-private.uk/tos_dash/manifest.mpd',
+  metadata: {
+    title: 'Tears Of Steel',
+    artist: 'Blender Foundation',
+    artwork: 'https://expo-video-videos-private.uk/tos_dash/artwork.jpg',
   },
 };
 
@@ -103,14 +108,18 @@ const forBiggerBlazesSource: VideoSource = {
 
 // source: https://reference.dashif.org/dash.js/latest/samples/drm/widevine.html
 const androidDrmSource: VideoSource = {
-  uri: 'https://bitmovin-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+  uri: 'https://expo-test-media.com/tos_widevine/manifest.mpd',
+  drm: {
+    licenseServer: 'https://cwip-shaka-proxy.appspot.com/no_auth',
+    type: 'widevine',
+  },
 };
 
 const videoLabels: string[] = [
   'Big Buck Bunny',
   'Elephants Dream',
   'For Bigger Blazes',
-  'Becoming You (HLS)',
+  'Tears Of Steel (HLS)',
   'Cute Doggo (local video)',
   'Null Source',
   'Audio Track',
