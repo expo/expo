@@ -24,7 +24,7 @@ public struct DevLauncherRootView: View {
 
   public var body: some View {
     if !hasCompletedPermissionFlow {
-      LocalNetworkPermissionView {
+      LocalNetworkPermissionView(viewModel: viewModel) {
         hasCompletedPermissionFlow = true
       }
     } else {
