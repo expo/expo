@@ -16,28 +16,8 @@ public class ExpoBrownfieldStateModule: Module {
       }
       
       // Overload for dictionary/object
-      Function("set") { (state: SharedState, value: [String: Any]?) in
-        state.set(value)
-      }
-      
-      // Overload for string
-      Function("set") { (state: SharedState, value: String?) in
-        state.set(value)
-      }
-      
-      // Overload for number
-      Function("set") { (state: SharedState, value: Double?) in
-        state.set(value)
-      }
-      
-      // Overload for bool
-      Function("set") { (state: SharedState, value: Bool?) in
-        state.set(value)
-      }
-      
-      // Overload for array
-      Function("set") { (state: SharedState, value: [Any]?) in
-        state.set(value)
+      Function("set") { (state: SharedState, value: JavaScriptValue?) in
+        state.set(value?.getRaw())
       }
     }
 
