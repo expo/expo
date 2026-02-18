@@ -10,6 +10,7 @@ export type CommandOptions = {
   withChangelog: boolean;
   example: boolean;
   local: boolean;
+  includeGhConfig: boolean;
 };
 
 /**
@@ -25,6 +26,13 @@ export type SubstitutionData = {
     moduleName: string;
     viewName: string;
   };
+  features: {
+    view: boolean;
+    platforms: string[];
+    ios: boolean;
+    android: boolean;
+    web: boolean;
+  };
   author: string;
   license: string;
   repo: string;
@@ -35,9 +43,17 @@ export type LocalSubstitutionData = {
   project: {
     slug: string;
     name: string;
+    description: string;
     package: string;
     moduleName: string;
     viewName: string;
+  };
+  features: {
+    view: boolean;
+    platforms: string[];
+    ios: boolean;
+    android: boolean;
+    web: boolean;
   };
   type: 'local';
 };
