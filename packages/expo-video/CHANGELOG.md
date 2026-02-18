@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android][iOS] Add `url` field to HLS video tracks. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add `name`, `isDefault` and `autoSelect` fields to `AudioTrack` and `SubtitleTrack`. ([#43250](https://github.com/expo/expo/pull/43250) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

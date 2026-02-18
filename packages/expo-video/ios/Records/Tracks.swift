@@ -11,25 +11,55 @@ internal struct SubtitleTrack: Record {
   @Field
   var label: String? = nil
 
-  static func from(mediaSelectionOption option: AVMediaSelectionOption) -> SubtitleTrack? {
+  @Field
+  var name: String? = nil
+
+  @Field
+  var isDefault: Bool = false
+
+  @Field
+  var autoSelect: Bool = false
+
+  static func from(mediaSelectionOption option: AVMediaSelectionOption, in group: AVMediaSelectionGroup? = nil) -> SubtitleTrack? {
     guard let identifier = option.locale?.identifier else {
       return nil
     }
 
-    return SubtitleTrack(language: identifier, label: option.displayName)
+    let isDefault = group?.defaultOption == option
+    let autoSelect = option.hasMediaCharacteristic(.isAuxiliaryContent) == false
+
+    return SubtitleTrack(
+      language: identifier,
+      label: option.displayName,
+      name: option.commonMetadata.first(where: { $0.commonKey == .commonKeyTitle })?.stringValue,
+      isDefault: isDefault,
+      autoSelect: autoSelect
+    )
   }
 }
 
 internal struct AudioTrack: Record {
   @Field var language: String? = nil
   @Field var label: String? = nil
+  @Field var name: String? = nil
+  @Field var isDefault: Bool = false
+  @Field var autoSelect: Bool = false
 
-  static func from(mediaSelectionOption option: AVMediaSelectionOption) -> AudioTrack? {
+  static func from(mediaSelectionOption option: AVMediaSelectionOption, in group: AVMediaSelectionGroup? = nil) -> AudioTrack? {
     guard let identifier = option.locale?.identifier else {
       return nil
     }
 
-    return AudioTrack(language: identifier, label: option.displayName)
+    let isDefault = group?.defaultOption == option
+    let autoSelect = option.hasMediaCharacteristic(.isAuxiliaryContent) == false
+
+    return AudioTrack(
+      language: identifier,
+      label: option.displayName,
+      name: option.commonMetadata.first(where: { $0.commonKey == .commonKeyTitle })?.stringValue,
+      isDefault: isDefault,
+      autoSelect: autoSelect
+    )
   }
 }
 

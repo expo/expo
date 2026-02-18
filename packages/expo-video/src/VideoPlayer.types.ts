@@ -585,6 +585,27 @@ export type SubtitleTrack = {
    * Label of the subtitle track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the subtitle track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default subtitle track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -674,6 +695,27 @@ export type AudioTrack = {
    * Label of the audio track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the audio track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default audio track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
