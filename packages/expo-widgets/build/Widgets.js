@@ -15,7 +15,7 @@ export class Widget {
         this.nativeWidgetObject.reload();
     }
     /**
-     * Schedules a series of updates for the widget's content.
+     * Schedules a series of updates for the widget's content and reloads the widget.
      * @param entries Timeline entries, each specifying a date and the props to display at that time.
      */
     updateTimeline(entries) {
@@ -60,6 +60,22 @@ export class LiveActivity {
      */
     end(dismissalPolicy) {
         this.nativeLiveActivity.end(dismissalPolicy);
+    }
+    /**
+     * Returns the push token for this Live Activity, used to send push notification updates via APNs.
+     * Returns `null` if push notifications are not enabled or the token is not yet available.
+     */
+    getPushToken() {
+        return this.nativeLiveActivity.getPushToken();
+    }
+    /**
+     * Adds a listener for push token update events on this Live Activity instance.
+     * The token can be used to send content updates to this specific activity via APNs.
+     * @param listener Callback invoked when a new push token is available.
+     * @returns An event subscription that can be used to remove the listener.
+     */
+    addPushTokenListener(listener) {
+        return this.nativeLiveActivity.addListener('onExpoWidgetsTokenReceived', listener);
     }
 }
 /**

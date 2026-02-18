@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, WidgetBase, WidgetTimelineEntry } from './Widgets.types';
+import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, PushTokenEvent, WidgetBase, WidgetTimelineEntry } from './Widgets.types';
 /**
  * Represents a widget instance. Provides methods to manage the widget's timeline.
  */
@@ -12,7 +12,7 @@ export declare class Widget<T extends object = object> {
      */
     reload(): void;
     /**
-     * Schedules a series of updates for the widget's content.
+     * Schedules a series of updates for the widget's content and reloads the widget.
      * @param entries Timeline entries, each specifying a date and the props to display at that time.
      */
     updateTimeline(entries: WidgetTimelineEntry<T>[]): void;
@@ -43,6 +43,18 @@ export declare class LiveActivity<T extends object = object> {
      * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
      */
     end(dismissalPolicy?: LiveActivityDismissalPolicy): void;
+    /**
+     * Returns the push token for this Live Activity, used to send push notification updates via APNs.
+     * Returns `null` if push notifications are not enabled or the token is not yet available.
+     */
+    getPushToken(): Promise<string | null>;
+    /**
+     * Adds a listener for push token update events on this Live Activity instance.
+     * The token can be used to send content updates to this specific activity via APNs.
+     * @param listener Callback invoked when a new push token is available.
+     * @returns An event subscription that can be used to remove the listener.
+     */
+    addPushTokenListener(listener: (event: PushTokenEvent) => void): EventSubscription;
 }
 /**
  * Manages Live Activity instances of a specific type. Use it to start new activities and retrieve currently active ones.
