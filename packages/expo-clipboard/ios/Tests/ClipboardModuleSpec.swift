@@ -152,7 +152,8 @@ class ClipboardModuleSpec: ExpoSpec {
 
     describe("setImageAsync") {
       it("copies image to clipboard") {
-        testModuleFunction("setImageAsync", args: [testImageBase64]) { (_: Any?) in
+        let options = [:]
+        testModuleFunction("setImageAsync", args: [testImageBase64, options]) { (_: Any?) in
           let pasteboardImgData = UIPasteboard.general.image?.pngData()?.base64EncodedString()
           expect(UIPasteboard.general.hasImages) == true
           // compare first 10 characters only as UIImage can optimize the data so it differs
@@ -162,7 +163,8 @@ class ClipboardModuleSpec: ExpoSpec {
 
       it("throws when given invalid base64") {
         let base64 = "invalid"
-        expectModuleFunctionThrows("setImageAsync", args: [base64], exception: InvalidImageException.self)
+        let options = [:]
+        expectModuleFunctionThrows("setImageAsync", args: [base64, options], exception: InvalidImageException.self)
       }
     }
 
