@@ -2,17 +2,17 @@ import ExpoModulesCore
 import ActivityKit
 
 final class LiveActivityFactory: SharedObject {
-  public let name: String
-  
+  let name: String
+
   static var pushNotificationsEnabled: Bool {
     Bundle.main.object(forInfoDictionaryKey: pushNotificationsEnabledKey) as? Bool ?? false
   }
-  
+
   init(name: String, layout: String) {
     self.name = name
     WidgetsStorage.set(layout, forKey: "__expo_widgets_live_activity_\(name)_layout")
   }
-  
+
   func start(props: String, url: URL?) throws -> LiveActivity {
     guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
     guard ActivityAuthorizationInfo().areActivitiesEnabled else {
@@ -38,10 +38,10 @@ final class LiveActivityFactory: SharedObject {
       throw StartLiveActivityException(error.localizedDescription)
     }
   }
-  
+
   func getInstances() throws -> [LiveActivity] {
     guard #available(iOS 16.1, *) else { throw LiveActivitiesNotSupportedException() }
-    
+
     return Activity<LiveActivityAttributes>.activities.map { activity in
       LiveActivity(id: activity.id, name: name)
     }

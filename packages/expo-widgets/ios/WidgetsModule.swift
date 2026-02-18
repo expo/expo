@@ -39,7 +39,7 @@ public final class WidgetsModule: Module {
         observePushToStartToken()
       }
     }
-    
+
     OnStopObserving(onPushToStartTokenReceived) {
       pushToStartTokenObserverTask?.cancel()
       pushToStartTokenObserverTask = nil
@@ -61,7 +61,7 @@ public final class WidgetsModule: Module {
       Function("updateTimeline") { (widget: WidgetObject, entries: [WidgetsJSTimelineEntry]) in
         try widget.updateTimeline(entries: entries)
       }
-      
+
       Function("getTimeline") { (widget: WidgetObject) in
         try widget.getTimeline()
       }
@@ -75,7 +75,7 @@ public final class WidgetsModule: Module {
       Function("start") { (liveActivity: LiveActivityFactory, props: String, url: URL?) in
         try liveActivity.start(props: props, url: url)
       }
-      
+
       Function("getInstances") { (liveActivity: LiveActivityFactory) in
         try liveActivity.getInstances()
       }
@@ -102,12 +102,12 @@ public final class WidgetsModule: Module {
     else { return }
     self.sendEvent(onUserInteraction, eventData)
   }
-  
+
   private func sendPushToStartToken(activityPushToStartToken: String) {
     sendEvent(
       onPushToStartTokenReceived,
       [
-        "activityPushToStartToken": activityPushToStartToken,
+        "activityPushToStartToken": activityPushToStartToken
       ]
     )
   }

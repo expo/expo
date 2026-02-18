@@ -2,8 +2,8 @@ import ExpoModulesCore
 import ActivityKit
 
 final class LiveActivity: SharedObject {
-  public let id: String
-  public let name: String
+  let id: String
+  let name: String
   private var pushTokenObserverTask: Task<Void, Never>?
 
   init(id: String, name: String) {
@@ -66,7 +66,7 @@ final class LiveActivity: SharedObject {
         let token = data.reduce("") { $0 + String(format: "%02x", $1) }
         emit(event: onTokenReceived, arguments: [
           "activityId": activity.id,
-          "pushToken": token,
+          "pushToken": token
         ])
       }
     }
