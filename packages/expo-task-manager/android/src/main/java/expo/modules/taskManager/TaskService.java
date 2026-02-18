@@ -366,7 +366,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   public void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback) {
-    TaskManagerInterface taskManager = getTaskManager(task.getAppScopeKey());
+    String appScopeKey = task.getAppScopeKey();
+    TaskManagerInterface taskManager = getTaskManager(appScopeKey);
     Bundle body = createExecutionEventBody(task, data, error);
     Bundle executionInfo = body.getBundle("executionInfo");
 
@@ -376,7 +377,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
 
     String eventId = executionInfo.getString("eventId");
-    String appScopeKey = task.getAppScopeKey();
 
     if (callback != null) {
       sTaskCallbacks.put(eventId, callback);

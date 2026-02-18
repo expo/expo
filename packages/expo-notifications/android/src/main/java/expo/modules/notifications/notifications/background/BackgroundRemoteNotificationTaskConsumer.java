@@ -53,6 +53,7 @@ public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer imple
 
   @Override
   public void didUnregister() {
+    FirebaseMessagingDelegate.Companion.removeBackgroundTaskConsumer(this);
     mTask = null;
   }
 
