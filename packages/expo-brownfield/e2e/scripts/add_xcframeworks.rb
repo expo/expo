@@ -5,7 +5,7 @@ workspace_root = ENV['GITHUB_WORKSPACE']
 frameworks_path = File.join(workspace_root, 'artifacts')
 
 # Ensure all needed frameworks exist
-frameworks = ["expoappbrownfield.xcframework", "hermes.xcframework"]
+frameworks = ["expoappbrownfield.xcframework", "hermesvm.xcframework"]
 for framework in frameworks do
   framework_path = File.join(frameworks_path, framework)
   unless File.exist?(framework_path)
