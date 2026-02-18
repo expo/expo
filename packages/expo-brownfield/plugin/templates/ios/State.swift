@@ -1,5 +1,21 @@
 internal import ExpoBrownfield
 
+public protocol StateRemovable {
+  func remove()
+}
+
+private final class RemovableWrapper: StateRemovable {
+  private let wrapped: any ExpoBrownfield.Removable
+  
+  init(_ removable: any ExpoBrownfield.Removable) {
+    self.wrapped = removable
+  }
+  
+  public func remove() {
+    wrapped.remove()
+  }
+}
+
 public struct BrownfieldState {
   public static func get(_ key: String) -> Any? {
     return BrownfieldStateInternal.get(key)
@@ -13,8 +29,8 @@ public struct BrownfieldState {
   public static func subscribe(
     _ key: String, 
     _ callback: @escaping (Any?) -> Void
-  ) -> Removable {
-    return BrownfieldStateInternal.subscribe(key, callback)
+  ) -> StateRemovable {
+    return RemovableWrapper(BrownfieldStateInternal.subscribe(key, callback))
   }
 
   public static func delete(_ key: String) -> Any? {
