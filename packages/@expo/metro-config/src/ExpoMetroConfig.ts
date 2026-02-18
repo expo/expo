@@ -312,6 +312,8 @@ export function getDefaultConfig(
         // This prevents unwanted fast refresh on the declaration files changes.
         /\.expo[\\/]types/,
       ].concat(metroDefaultValues.resolver.blockList ?? []),
+
+      useWatchman: undefined,
     },
     cacheStores: [cacheStore],
     watcher: {
