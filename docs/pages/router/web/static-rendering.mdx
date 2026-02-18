@@ -51,6 +51,8 @@ You can test the production build locally by running the following command and o
 
 <Terminal cmd={['$ npx serve dist']} />
 
+> **warning** Avoid creating the directory `/public/assets/`. The path `/assets` is reserved by Metro and will cause file access errors during development.
+
 This project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (for example, **app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
 
 ## Dynamic Routes
@@ -122,6 +124,8 @@ export async function generateStaticParams(params: {
 ```
 
 </PaddedAPIBox>
+
+> **warning** Avoid creating a top-level route named `assets` (like `/app/assets.tsx` or `/app/assets/[other-pages].tsx`). The path `/assets` is reserved by Metro and will cause errors when trying to access it from the URL.
 
 ### Read files using `process.cwd()`
 
@@ -226,6 +230,8 @@ Expo CLI supports a root **public** directory that gets copied to the **dist** d
 <FileTree
   files={['public/favicon.ico', 'public/logo.png', 'public/.well-known/apple-app-site-association']}
 />
+
+> **warning** Avoid creating the directory `/public/assets/`. The path `/assets` is reserved by Metro and will cause file access errors during development.
 
 These files will be copied to the **dist** directory during static rendering:
 
