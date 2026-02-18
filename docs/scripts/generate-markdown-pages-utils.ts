@@ -26,6 +26,9 @@ export function findMdxSource(htmlPath: string, outDir: string, pagesDir: string
 /**
  * Frontmatter fields that only affect the docs website UI (sidebar, TOC, search ranking)
  * and carry no semantic value for LLM or MCP consumers. Stripped during markdown generation.
+ *
+ * Note: `packageName` is intentionally kept because the Expo docs MCP tool uses it
+ * to map pages to their npm packages.
  */
 const UI_ONLY_FRONTMATTER_FIELDS = new Set([
   'hideTOC',
