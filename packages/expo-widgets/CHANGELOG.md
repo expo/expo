@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- New API based on shared objects. ([#43243](https://github.com/expo/expo/pull/43243) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
