@@ -459,6 +459,22 @@ export default function ModifiersScreen() {
             />
           </Section>
 
+          {/* Hierarchical Foreground Style */}
+          <Section title="Hierarchical Foreground Style">
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'primary' })]}>
+              Primary
+            </Text>
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              Secondary
+            </Text>
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'tertiary' })]}>
+              Tertiary
+            </Text>
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'quaternary' })]}>
+              Quaternary
+            </Text>
+          </Section>
+
           {/* New Modifier System Demo Section */}
           <Section title="SwiftUI Modifiers Demo">
             {/* Basic Appearance Modifiers */}

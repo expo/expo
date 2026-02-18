@@ -173,98 +173,6 @@ internal struct ItalicModifier: ViewModifier, Record {
   }
 }
 
-internal enum ForegroundStyleType: String, Enumerable {
-  case color
-  case hierarchical
-  case linearGradient
-  case radialGradient
-  case angularGradient
-}
-
-internal enum ForegroundHierarchicalStyleType: String, Enumerable {
-  case primary
-  case secondary
-  case tertiary
-  case quaternary
-  case quinary
-}
-
-internal struct ForegroundStyleModifier: ViewModifier, Record {
-  @Field var styleType: ForegroundStyleType = .color
-  @Field var hierarchicalStyle: ForegroundHierarchicalStyleType = .primary
-  @Field var color: Color?
-  @Field var colors: [Color]?
-  @Field var startPoint: UnitPoint?
-  @Field var endPoint: UnitPoint?
-  @Field var center: UnitPoint?
-  @Field var startRadius: CGFloat?
-  @Field var endRadius: CGFloat?
-
-  func body(content: Content) -> some View {
-    switch styleType {
-    case .color:
-      if let color {
-        content.foregroundStyle(color)
-      } else {
-        content
-      }
-    case .hierarchical:
-      switch hierarchicalStyle {
-      case .primary:
-        content.foregroundStyle(.primary)
-      case .secondary:
-        content.foregroundStyle(.secondary)
-      case .tertiary:
-        content.foregroundStyle(.tertiary)
-      case .quaternary:
-        content.foregroundStyle(.quaternary)
-      case .quinary:
-        if #available(iOS 16.0, tvOS 17.0, *) {
-          content.foregroundStyle(.quinary)
-        } else {
-          content.foregroundStyle(.quaternary)
-        }
-      }
-    case .linearGradient:
-      if let colors, let startPoint, let endPoint {
-        content.foregroundStyle(
-          LinearGradient(
-            colors: colors,
-            startPoint: startPoint,
-            endPoint: endPoint
-          )
-        )
-      } else {
-        content
-      }
-    case .radialGradient:
-      if let colors, let center, let startRadius, let endRadius {
-        content.foregroundStyle(
-          RadialGradient(
-            colors: colors,
-            center: center,
-            startRadius: startRadius,
-            endRadius: endRadius
-          )
-        )
-      } else {
-        content
-      }
-    case .angularGradient:
-      if let colors, let center {
-        content.foregroundStyle(
-          AngularGradient(
-            colors: colors,
-            center: center
-          )
-        )
-      } else {
-        content
-      }
-    }
-  }
-}
-
 internal struct TintModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -1424,14 +1332,11 @@ public class ViewModifierRegistry {
       return text.foregroundColor(color)
     case "foregroundStyle":
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
-      if modifier.styleType == .color, let color = modifier.color {
-        if #available(iOS 17.0, tvOS 17.0, *) {
-          return text.foregroundStyle(color)
-        } else {
-          // Fallback for earlier version
+      if #available(iOS 17.0, tvOS 17.0, *) {
+        return applyForegroundStyle(modifier, to: text)
+      } else if modifier.styleType == .color, let color = modifier.color {
           return text.foregroundColor(color)
-        }
-      }
+      } 
       return text
     default:
       #if DEBUG
