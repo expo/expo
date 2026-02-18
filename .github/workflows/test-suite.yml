@@ -33,16 +33,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  detect-platform-for-build:
+  detect-platform-changes:
     runs-on: ubuntu-24.04
     outputs:
-      should_build_ios: ${{ steps.changes.outputs.should_run_ios }}
-      should_build_android: ${{ steps.changes.outputs.should_run_android }}
+      should_build_ios: ${{ steps.build.outputs.should_run_ios }}
+      should_build_android: ${{ steps.build.outputs.should_run_android }}
+      should_test_ios: ${{ steps.e2e.outputs.should_run_ios }}
+      should_test_android: ${{ steps.e2e.outputs.should_run_android }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
       - name: 🧐 Detect build-relevant platform changes
-        id: changes
+        id: build
         uses: ./.github/actions/detect-platform-change
         with:
           android-paths: >-
@@ -63,16 +65,8 @@ jobs:
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
 
-  detect-platform-for-e2e:
-    runs-on: ubuntu-24.04
-    outputs:
-      should_test_ios: ${{ steps.changes.outputs.should_run_ios }}
-      should_test_android: ${{ steps.changes.outputs.should_run_android }}
-    steps:
-      - name: 👀 Checkout
-        uses: actions/checkout@v5
-      - name: 🧐 Detect e2e-relevant platform changes
-        id: changes
+      - name: 🧐 Detect e2e-test relevant platform changes
+        id: e2e
         uses: ./.github/actions/detect-platform-change
         with:
           android-paths: >-
@@ -130,8 +124,8 @@ jobs:
             "!apps/bare-expo/**/{ios,android}/**"
   ios-build:
     runs-on: macos-15
-    needs: detect-platform-for-build
-    if: needs.detect-platform-for-build.outputs.should_build_ios == 'true'
+    needs: detect-platform-changes
+    if: needs.detect-platform-changes.outputs.should_build_ios == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -218,8 +212,8 @@ jobs:
           author_name: Test Suite e2e (iOS)
 
   ios-test-e2e:
-    needs: [ios-build, detect-platform-for-e2e]
-    if: needs.detect-platform-for-e2e.outputs.should_test_ios == 'true'
+    needs: [ios-build, detect-platform-changes]
+    if: needs.detect-platform-changes.outputs.should_test_ios == 'true'
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
@@ -320,8 +314,8 @@ jobs:
 
   android-build:
     runs-on: ubuntu-24.04
-    needs: detect-platform-for-build
-    if: needs.detect-platform-for-build.outputs.should_build_android == 'true'
+    needs: detect-platform-changes
+    if: needs.detect-platform-changes.outputs.should_build_android == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -405,8 +399,8 @@ jobs:
           author_name: Test Suite e2e (Android)
 
   android-test-e2e:
-    needs: [android-build, detect-platform-for-e2e]
-    if: needs.detect-platform-for-e2e.outputs.should_test_android == 'true'
+    needs: [android-build, detect-platform-changes]
+    if: needs.detect-platform-changes.outputs.should_test_android == 'true'
     runs-on: ubuntu-24.04
     strategy:
       matrix:
