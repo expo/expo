@@ -102,10 +102,7 @@ internal func applyForegroundStyle(_ modifier: ForegroundStyleModifier, to text:
     case .quaternary:
       return text.foregroundStyle(.quaternary)
     case .quinary:
-      if #available(iOS 16.0, tvOS 17.0, *) {
-        return text.foregroundStyle(.quinary)
-      }
-      return text
+      return text.foregroundStyle(.quinary)
     }
   case .linearGradient:
     if let colors = modifier.colors, let startPoint = modifier.startPoint, let endPoint = modifier.endPoint {
