@@ -5,6 +5,13 @@
 #import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesCore/Swift.h>
 
+@interface RCTBridge ()
+- (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue;
+@end
+
+extern dispatch_queue_t RCTJSThread;
+static NSString *const EXJavaScriptThreadName = @"com.facebook.react.runtime.JavaScript";
+
 @implementation ExpoBridgeModule
 
 @synthesize bridge = _bridge;
@@ -44,17 +51,37 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   if (!_bridge) {
     return;
   }
-  EXRuntime *runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge];
 
-  // If `global.expo` is defined, the app context has already been initialized from `ExpoReactNativeFactory`.
-  // The factory was introduced in SDK 55 and requires migration in bare workflow projects.
-  // We keep this as an alternative way during the transitional period.
-  if (runtime && ![[runtime global] hasProperty:@"expo"]) {
+  _appContext.reactBridge = _bridge;
+  __weak __typeof(self) weakSelf = self;
+  void (^setupAppContext)(void) = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf->_bridge || strongSelf->_appContext._runtime) {
+      return;
+    }
+
+    EXRuntime *runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:strongSelf->_bridge];
+    if (!runtime || [[runtime global] hasProperty:@"expo"]) {
+      return;
+    }
+
     NSLog(@"Expo is being initialized from the deprecated ExpoBridgeModule, make sure to migrate to ExpoReactNativeFactory in your project");
+    strongSelf->_appContext._runtime = runtime;
+    if ([NSThread isMainThread]) {
+      [strongSelf->_appContext registerNativeModules];
+    } else {
+      // Registering native modules must happen on main for UI-backed modules,
+      // but synchronously to prevent JS from accessing modules before registration.
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        [strongSelf->_appContext registerNativeModules];
+      });
+    }
+  };
 
-    _appContext.reactBridge = _bridge;
-    _appContext._runtime = runtime;
-    [_appContext registerNativeModules];
+  if ([[NSThread currentThread].name isEqualToString:EXJavaScriptThreadName]) {
+    setupAppContext();
+  } else {
+    [_bridge dispatchBlock:setupAppContext queue:RCTJSThread];
   }
 }
 
