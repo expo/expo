@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Support loading configs from `app.config.{mts,cts,mjs,cjs}` ([#43243](https://github.com/expo/expo/pull/43242))
+
 ## 55.0.6 — 2026-02-16
 
 _This version does not introduce any user-facing changes._
