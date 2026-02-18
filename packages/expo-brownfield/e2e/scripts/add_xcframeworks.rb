@@ -1,12 +1,10 @@
 require 'xcodeproj'
 require 'pathname'
 
-# TODO(pmleczek): Extract below code into reusable function(s)
-
 workspace_root = ENV['GITHUB_WORKSPACE']
 frameworks_path = File.join(workspace_root, 'artifacts')
 
-# Ensure all frameworks exist
+# Ensure all needed frameworks exist
 frameworks = ["expoappbrownfield.xcframework", "hermes.xcframework"]
 for framework in frameworks do
   framework_path = File.join(frameworks_path, framework)
