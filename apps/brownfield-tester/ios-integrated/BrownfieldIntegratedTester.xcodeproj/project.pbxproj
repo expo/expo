@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		87CFC9542F460DAA00AE56E3 /* expoappbrownfield.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87CFC9532F460DAA00AE56E3 /* expoappbrownfield.xcframework */; };
+		87CFC9552F460DAA00AE56E3 /* expoappbrownfield.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 87CFC9532F460DAA00AE56E3 /* expoappbrownfield.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		87CFC9572F460DB400AE56E3 /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87CFC9562F460DB400AE56E3 /* hermes.xcframework */; };
+		87CFC9582F460DB400AE56E3 /* hermes.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 87CFC9562F460DB400AE56E3 /* hermes.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		877C6FB32F3F6F2000C3B2B7 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -13,6 +20,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				87CFC9552F460DAA00AE56E3 /* expoappbrownfield.xcframework in Embed Frameworks */,
+				87CFC9582F460DB400AE56E3 /* hermes.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -20,6 +29,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		87CFC9532F460DAA00AE56E3 /* expoappbrownfield.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = expoappbrownfield.xcframework; path = ../../../artifacts/expoappbrownfield.xcframework; sourceTree = "<group>"; };
+		87CFC9562F460DB400AE56E3 /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = ../../../artifacts/hermes.xcframework; sourceTree = "<group>"; };
 		C0AD19F12F180368005A1DBD /* BrownfieldIntegratedTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrownfieldIntegratedTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -36,16 +47,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87CFC9542F460DAA00AE56E3 /* expoappbrownfield.xcframework in Frameworks */,
+				87CFC9572F460DB400AE56E3 /* hermes.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		87CFC9522F460DAA00AE56E3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				87CFC9562F460DB400AE56E3 /* hermes.xcframework */,
+				87CFC9532F460DAA00AE56E3 /* expoappbrownfield.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C0AD19E82F180368005A1DBD = {
 			isa = PBXGroup;
 			children = (
 				C0AD19F32F180368005A1DBD /* BrownfieldIntegratedTester */,
+				87CFC9522F460DAA00AE56E3 /* Frameworks */,
 				C0AD19F22F180368005A1DBD /* Products */,
 			);
 			sourceTree = "<group>";
