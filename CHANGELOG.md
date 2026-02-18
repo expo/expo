@@ -7,9 +7,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- **`create-expo-module`**
-  - Allow specifying authentication token for third party npm registries
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
