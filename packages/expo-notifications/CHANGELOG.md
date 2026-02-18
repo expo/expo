@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- [Android] migrate several Java files to Kotlin
+
 ## 55.0.7 — 2026-02-16
 
 ### 💡 Others

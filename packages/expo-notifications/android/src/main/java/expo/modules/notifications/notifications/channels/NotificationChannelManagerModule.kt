@@ -36,8 +36,7 @@ open class NotificationChannelManagerModule : Module(), NotificationsChannelProv
 
     AsyncFunction("getNotificationChannelAsync") { channelId: String ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val notificationChannel = channelManager.getNotificationChannel(channelId)
-        channelSerializer.toBundle(notificationChannel)
+        channelManager.getNotificationChannel(channelId)?.let { channelSerializer.toBundle(it) }
       } else {
         null
       }
