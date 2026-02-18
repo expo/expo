@@ -4,39 +4,36 @@ import SwiftUI
 
 struct LocalNetworkPermissionView: View {
   let onContinue: () -> Void
+  let width = UIScreen.main.bounds.width
 
   var body: some View {
     VStack(spacing: 0) {
       Spacer()
 
       VStack(spacing: 24) {
-        Image(systemName: "wifi")
-          .font(.system(size: 64))
-          .foregroundColor(.accentColor)
+        Text("Finding Dev Servers")
+          .font(.title)
+          .fontWeight(.bold)
+        
+        Image("sandbox", bundle: getDevLauncherBundle())
+          .resizable()
+          .scaledToFit()
+          .frame(width: width * 0.9)
+          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .overlay(
+            RoundedRectangle(cornerRadius: 12)
+              .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+          )
+        
+        Text("Expo Dev Launcher needs to access your local network to discover development servers running on your computer.")
+          .font(.body)
+          .foregroundColor(.secondary)
+          .multilineTextAlignment(.center)
+      }
 
-        VStack(spacing: 12) {
-          Text("Find Dev Servers")
-            .font(.title)
-            .fontWeight(.bold)
+      Spacer()
 
-          Text("Expo Dev Launcher needs to access your local network to discover development servers running on your computer.")
-            .font(.body)
-            .foregroundColor(.secondary)
-            .multilineTextAlignment(.center)
-        }
-
-        HStack(alignment: .center, spacing: 8) {
-          Image(systemName: "info.circle")
-          Text("You'll see a system prompt asking for local network access.\nTap \"Allow\" to continue.")
-            .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.expoSecondarySystemBackground)
-        .cornerRadius(12)
-        .font(.callout)
-        .foregroundColor(.secondary)
-
+      VStack(spacing: 12) {
         Button {
           onContinue()
         } label: {
@@ -45,19 +42,12 @@ struct LocalNetworkPermissionView: View {
             .frame(maxWidth: .infinity)
             .padding()
         }
-        .background(Color.accentColor)
-        .foregroundColor(.white)
+        .background(Color.expoSecondarySystemBackground)
+        .foregroundColor(.primary)
         .cornerRadius(12)
-      }
 
-      Spacer()
-
-      VStack(spacing: 4) {
-        Text("Why is this needed?")
+        Text("When system prompt pops up, tap \u{201C}Allow\u{201D} to continue.")
           .font(.footnote)
-          .fontWeight(.medium)
-        Text("Dev servers advertise themselves on your local network using Bonjour. This permission allows the app to discover them automatically.")
-          .font(.caption)
           .foregroundColor(.secondary)
           .multilineTextAlignment(.center)
       }
