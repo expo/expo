@@ -1393,6 +1393,7 @@ describe('extractFrontmatter', () => {
         'searchRank: 10',
         'searchPosition: 5',
         'hasVideoLink: true',
+        'packageName: expo-camera',
         'isDeprecated: true',
         'isAlpha: true',
         '---',
@@ -1458,6 +1459,7 @@ describe('extractFrontmatter', () => {
     expect(result).toContain('description: A camera component.');
     expect(result).toContain('isDeprecated: true');
     expect(result).toContain('isAlpha: true');
+    expect(result).toContain('packageName: expo-camera');
     // UI-only fields are stripped
     expect(result).not.toContain('hideTOC');
     expect(result).not.toContain('maxHeadingDepth');
