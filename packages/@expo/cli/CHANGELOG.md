@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Force `forceNodeFilesystemAPI` when watchman is enabled (the default) but not present ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+
 ## 55.0.9 — 2026-02-16
 
 _This version does not introduce any user-facing changes._

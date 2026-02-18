@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Set default `resolver.useWatchman: undefined` value (enables it by default, as before) ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+
 ## 55.0.6 — 2026-02-16
 
 _This version does not introduce any user-facing changes._
