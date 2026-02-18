@@ -5,6 +5,7 @@ on:
   push:
     branches: [main, 'sdk-*']
     paths:
+      - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
@@ -17,6 +18,7 @@ on:
       - '!**/__mocks__/**'
   pull_request:
     paths:
+      - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**

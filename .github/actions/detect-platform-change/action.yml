@@ -41,3 +41,14 @@ runs:
           ios: [ ${{ inputs.ios-paths }}, ${{ inputs.shared-ignores }} ]
           android: [ ${{ inputs.android-paths }}, ${{ inputs.shared-ignores }} ]
           common: [ ${{ inputs.common-paths }}, ${{ inputs.shared-ignores }} ]
+    - name: 📋 Print detection summary
+      shell: bash
+      run: |
+        echo "### Platform detection results"
+        echo ""
+        echo "**iOS-specific changed files:** ${{ steps.changes.outputs.ios_all_changed_files || '(none)' }}"
+        echo "**Android-specific changed files:** ${{ steps.changes.outputs.android_all_changed_files || '(none)' }}"
+        echo "**Common changed files:** ${{ steps.changes.outputs.common_all_changed_files || '(none)' }}"
+        echo ""
+        echo "**should_run_ios:** ${{ steps.changes.outputs.ios_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}"
+        echo "**should_run_android:** ${{ steps.changes.outputs.android_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}"
