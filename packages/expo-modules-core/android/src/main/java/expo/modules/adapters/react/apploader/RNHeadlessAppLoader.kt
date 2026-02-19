@@ -12,7 +12,7 @@ import expo.modules.core.interfaces.DoNotStrip
 
 private val appRecords: MutableMap<String, ReactContext> = mutableMapOf()
 
-class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) : HeadlessAppLoader {
+class RNHeadlessAppLoader @DoNotStrip constructor() : HeadlessAppLoader {
 
   //region HeadlessAppLoader
 
