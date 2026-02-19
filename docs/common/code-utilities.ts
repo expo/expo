@@ -239,13 +239,30 @@ export function getCodeData(value: string, className?: string) {
   }
 
   const rawHtml = Prism.highlight(value, grammar, lang);
+  const normalizedHtml = normalizeHighlightedHtml(rawHtml);
   if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
-    return replaceHashCommentsWithAnnotations(rawHtml);
+    return replaceHashCommentsWithAnnotations(normalizedHtml);
   } else if (['xml', 'html'].includes(lang)) {
-    return replaceXmlCommentsWithAnnotations(rawHtml);
+    return replaceXmlCommentsWithAnnotations(normalizedHtml);
   } else if (value.includes('tut')) {
-    return replaceSlashCommentsWithAnnotationsForTutorial(rawHtml);
+    return replaceSlashCommentsWithAnnotationsForTutorial(normalizedHtml);
   } else {
-    return replaceSlashCommentsWithAnnotations(rawHtml);
+    return replaceSlashCommentsWithAnnotations(normalizedHtml);
   }
+}
+
+/**
+ * Prism may add language-specific alias classes (for example `module` on `keyword`)
+ * in one runtime but not the other. We normalize those unstable aliases to keep
+ * SSR and client hydration markup identical.
+ */
+export function normalizeHighlightedHtml(html: string) {
+  return html.replace(/class="([^"]+)"/g, (_match, className: string) => {
+    const classes = className.trim().split(/\s+/);
+    if (!classes.includes('token') || !classes.includes('keyword') || !classes.includes('module')) {
+      return `class="${className}"`;
+    }
+
+    return `class="${classes.filter(part => part !== 'module').join(' ')}"`;
+  });
 }
