@@ -4,8 +4,6 @@ import androidx.core.net.toUri
 import androidx.media3.datasource.ByteArrayDataSource
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
-import androidx.media3.datasource.DefaultDataSource
-import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -15,9 +13,8 @@ import java.util.concurrent.ConcurrentHashMap
 object AudioPreloadManager {
   private val store = ConcurrentHashMap<String, ByteArray>()
 
-  suspend fun preload(context: Context, uri: String, upstreamFactory: DataSource.Factory? = null) =
+  suspend fun preload(uri: String, factory: DataSource.Factory) =
     withContext(Dispatchers.IO) {
-      val factory = upstreamFactory ?: DefaultDataSource.Factory(context)
       val dataSource = factory.createDataSource()
       val dataSpec = DataSpec.Builder().setUri(uri.toUri()).build()
 

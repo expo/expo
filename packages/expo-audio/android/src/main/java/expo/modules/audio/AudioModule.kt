@@ -228,7 +228,7 @@ class AudioModule : Module() {
         "http", "https" -> httpDataSourceFactory(source.headers)
         else -> DefaultDataSource.Factory(context)
       }
-      AudioPreloadManager.preload(context, uri, upstreamFactory)
+      AudioPreloadManager.preload(uri, upstreamFactory)
     }
 
     AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
@@ -791,9 +791,11 @@ class AudioModule : Module() {
     val preloadedBytes = AudioPreloadManager.get(uriString)
     val factory: DataSource.Factory = if (preloadedBytes != null) {
       InMemoryDataSourceFactory(preloadedBytes)
-    } else when (uri.scheme) {
-      "http", "https" -> httpDataSourceFactory(source.headers)
-      else -> DefaultDataSource.Factory(context)
+    } else {
+      when (uri.scheme) {
+        "http", "https" -> httpDataSourceFactory(source.headers)
+        else -> DefaultDataSource.Factory(context)
+      }
     }
     return buildMediaSourceFactory(factory, mediaItem)
   }
