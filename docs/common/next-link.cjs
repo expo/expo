@@ -1,7 +1,7 @@
 'use strict';
 
-var React = require('react');
-var useRouter = require('next/router').useRouter;
+const { useRouter } = require('next/router');
+const React = require('react');
 
 /**
  * Minimal next/link replacement that renders consistent href values between
@@ -19,42 +19,77 @@ var useRouter = require('next/router').useRouter;
  * When dropping, also remove the webpack alias in next.config.ts.
  */
 function normalize(href) {
-  if (typeof href !== 'string' || !href.startsWith('/') || href === '/') return href;
-  var hashIdx = href.indexOf('#');
-  var queryIdx = href.indexOf('?');
-  var end = hashIdx > -1 ? hashIdx : queryIdx > -1 ? queryIdx : href.length;
-  var path = href.slice(0, end);
-  var suffix = href.slice(end);
+  if (typeof href !== 'string' || !href.startsWith('/') || href === '/') {
+    return href;
+  }
+  const hashIdx = href.indexOf('#');
+  const queryIdx = href.indexOf('?');
+  const end = hashIdx > -1 ? hashIdx : queryIdx > -1 ? queryIdx : href.length;
+  const path = href.slice(0, end);
+  const suffix = href.slice(end);
   return (path.endsWith('/') ? path.slice(0, -1) : path) + suffix;
 }
 
-var Link = React.forwardRef(function Link(
-  { href, as, prefetch, replace, shallow, scroll, locale, onNavigate, onClick, onMouseEnter, onTouchStart, ...rest },
+const Link = React.forwardRef(function Link(
+  {
+    href,
+    as,
+    prefetch,
+    replace,
+    shallow,
+    scroll,
+    locale,
+    onNavigate,
+    onClick,
+    onMouseEnter,
+    onTouchStart,
+    ...rest
+  },
   ref
 ) {
-  var router = useRouter();
-  var normalizedHref = normalize(typeof href === 'string' ? href : '');
+  const router = useRouter();
+  const normalizedHref = normalize(typeof href === 'string' ? href : '');
 
   return React.createElement('a', {
     ...rest,
     ref,
     href: normalizedHref,
-    onClick: function (e) {
-      if (onClick) onClick(e);
-      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      var t = e.currentTarget.getAttribute('target');
-      if ((t && t !== '_self') || e.currentTarget.hasAttribute('download') || !normalizedHref.startsWith('/')) return;
-      e.preventDefault();
+    onClick(event) {
+      if (onClick) {
+        onClick(event);
+      }
+      if (
+        event.defaultPrevented ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+      const target = event.currentTarget.getAttribute('target');
+      if (
+        (target && target !== '_self') ||
+        event.currentTarget.hasAttribute('download') ||
+        !normalizedHref.startsWith('/')
+      ) {
+        return;
+      }
+      event.preventDefault();
       router[replace ? 'replace' : 'push'](normalizedHref, undefined, { scroll: scroll !== false });
     },
-    onMouseEnter: function (e) {
-      if (onMouseEnter) onMouseEnter(e);
+    onMouseEnter(event) {
+      if (onMouseEnter) {
+        onMouseEnter(event);
+      }
       if (prefetch !== false && normalizedHref.startsWith('/') && router.prefetch) {
         router.prefetch(normalizedHref).catch(function () {});
       }
     },
-    onTouchStart: function (e) {
-      if (onTouchStart) onTouchStart(e);
+    onTouchStart(event) {
+      if (onTouchStart) {
+        onTouchStart(event);
+      }
       if (prefetch !== false && normalizedHref.startsWith('/') && router.prefetch) {
         router.prefetch(normalizedHref).catch(function () {});
       }
