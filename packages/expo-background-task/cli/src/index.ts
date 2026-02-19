@@ -1,9 +1,10 @@
 import { queryAllInspectorAppsAsync, runCliExtension, sendCliMessageAsync } from '@expo/devtools';
-import chalk from 'chalk';
 
 const PLUGIN_NAME = 'expo-background-task-cli-extension';
 const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
 const TRIGGER_TASKS = 'triggerBackgroundTasks';
+
+const blue = (s: string) => `\x1b[34m${s}\x1b[0m`;
 
 runCliExtension<{
   list: Record<string, never>;
@@ -20,7 +21,7 @@ runCliExtension<{
       const response = await sendCliMessageAsync(GET_REGISTERED_TASKS, PLUGIN_NAME, apps);
       Object.keys(response).forEach((appId) => {
         const app = apps.find((a) => a.id === appId);
-        console.info(`${chalk.blue(app?.title ?? appId)}: ${response[appId] ?? ''}`);
+        console.info(`${blue(app?.title ?? appId)}: ${response[appId] ?? ''}`);
       });
     } catch (error) {
       throw new Error('An error occured connecting to the app.', { cause: error });
@@ -31,7 +32,7 @@ runCliExtension<{
       const response = await sendCliMessageAsync(TRIGGER_TASKS, PLUGIN_NAME, apps);
       Object.keys(response).forEach((appId) => {
         const app = apps.find((a) => a.id === appId);
-        console.info(`${chalk.blue(app?.title ?? appId)}: ${response[appId] ?? ''}`);
+        console.info(`${blue(app?.title ?? appId)}: ${response[appId] ?? ''}`);
       });
     } catch (error) {
       throw new Error('An error occured connecting to the app.', { cause: error });
