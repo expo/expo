@@ -5,7 +5,6 @@ import SwiftUI
 struct LocalNetworkPermissionView: View {
   @ObservedObject var viewModel: DevLauncherViewModel
   let onContinue: () -> Void
-  let width = UIScreen.main.bounds.width
 
   @State private var hasRequestedPermission = false
   @State private var isCheckingAccess = false
@@ -22,40 +21,41 @@ struct LocalNetworkPermissionView: View {
       Spacer()
 
       VStack(spacing: 24) {
+        Image("radar-icon", bundle: getDevLauncherBundle())
+          .resizable()
+          .scaledToFit()
+          .frame(width: 80, height: 80)
+
         Text("Finding Dev Servers")
           .font(.title)
           .fontWeight(.bold)
-
-        Image("sandbox", bundle: getDevLauncherBundle())
-          .resizable()
-          .scaledToFit()
-          .frame(width: width * 0.9)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
-          .overlay(
-            RoundedRectangle(cornerRadius: 12)
-              .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
-          )
 
         Text("Expo Dev Launcher needs to access your local network to discover development servers running on your computer.")
           .font(.body)
           .foregroundColor(.secondary)
           .multilineTextAlignment(.center)
+        
+        VStack(spacing: 12) {
+          if !hasRequestedPermission {
+            continueButton
+          } else if isDenied || showNoAccessMessage {
+            noAccessButtons
+          } else {
+            postRequestButtons
+          }
+        }
       }
 
       Spacer()
-
-      VStack(spacing: 12) {
-        if !hasRequestedPermission {
-          continueButton
-        } else if isDenied || showNoAccessMessage {
-          noAccessButtons
-        } else {
-          postRequestButtons
-        }
+      
+      HStack(alignment: .firstTextBaseline) {
+        Image(systemName: "info.circle")
+        Text("Dev servers advertise themselves on your local network using Bonjour. This permission allows the development client to discover them automatically.")
+          .fontWeight(.semibold)
       }
+      .foregroundColor(.secondary)
     }
-    .padding(.horizontal, 24)
-    .padding(.vertical, 32)
+    .padding()
     .background(Color.expoSystemBackground)
     .alert("Permission Not Granted", isPresented: $showTryAgainFailedAlert) {
       Button("Open Settings") {
@@ -72,11 +72,10 @@ struct LocalNetworkPermissionView: View {
         onContinue()
       }
     } message: {
-      Text("Local network access is already enabled. You\u{2019}re all set!")
+      Text("Local network access is already enabled. You're all set!")
+        .multilineTextAlignment(.center)
     }
   }
-
-  // MARK: - Initial state
 
   private var continueButton: some View {
     Group {
@@ -93,7 +92,7 @@ struct LocalNetworkPermissionView: View {
       .foregroundColor(.white)
       .cornerRadius(12)
 
-      Text("When system prompt pops up, tap \u{201C}Allow\u{201D} to continue.")
+      Text("When the system prompt pops up, tap \"Allow\" to continue.")
         .font(.footnote)
         .foregroundColor(.secondary)
         .multilineTextAlignment(.center)

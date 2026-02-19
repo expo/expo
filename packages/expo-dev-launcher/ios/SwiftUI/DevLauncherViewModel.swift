@@ -222,11 +222,6 @@ class DevLauncherViewModel: ObservableObject {
     permissionStatus = .granted
   }
 
-  func resetPermissionFlowState() {
-    UserDefaults.standard.removeObject(forKey: networkPermissionGrantedKey)
-    permissionStatus = .unknown
-  }
-
   var hasGrantedNetworkPermission: Bool {
     UserDefaults.standard.bool(forKey: networkPermissionGrantedKey)
   }

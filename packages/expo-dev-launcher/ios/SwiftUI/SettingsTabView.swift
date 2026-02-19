@@ -53,8 +53,6 @@ struct SettingsTabView: View {
           copyToClipboardButton
         }
 
-
-
         if isAdminUser {
           debugSettings
           easUpdateConfig
@@ -245,7 +243,7 @@ struct SettingsTabView: View {
       VStack(spacing: 0) {
         Toggle("Local Network", isOn: .constant(viewModel.permissionStatus == .granted))
           .disabled(true)
-        .padding()
+          .padding()
 
         if viewModel.permissionStatus == .denied {
           Divider()
