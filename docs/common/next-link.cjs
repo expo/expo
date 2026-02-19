@@ -25,8 +25,12 @@ function normalize(href) {
   const hashIdx = href.indexOf('#');
   const queryIdx = href.indexOf('?');
   const end = hashIdx > -1 ? hashIdx : queryIdx > -1 ? queryIdx : href.length;
-  const path = href.slice(0, end);
+  let path = href.slice(0, end);
   const suffix = href.slice(end);
+  // Resolve ".." and "." segments (MDX links can produce paths like /../../../workflow/overview)
+  if (path.includes('..') || path.includes('./')) {
+    path = new URL(path, 'http://localhost').pathname;
+  }
   return (path.endsWith('/') ? path.slice(0, -1) : path) + suffix;
 }
 
