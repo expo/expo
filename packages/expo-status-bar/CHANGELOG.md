@@ -10,8 +10,8 @@
 
 ### 💡 Others
 
-- Deprecated and turned into no-ops the `backgroundColor` and `networkActivityIndicatorVisible` props, as well as the `setStatusBarBackgroundColor` and `setStatusBarTranslucent` functions, which no longer have any effect due to Android edge-to-edge enforcement. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@zoontek](https://github.com/zoontek))
-- Deprecated and turned into no-ops the `networkActivityIndicatorVisible` prop and the `setStatusBarNetworkActivityIndicatorVisible` function, which are not supported on iOS 13 and later. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@zoontek](https://github.com/zoontek))
+- Deprecated and turned into no-ops the `backgroundColor` and `networkActivityIndicatorVisible` props, as well as the `setStatusBarBackgroundColor` and `setStatusBarTranslucent` functions, which no longer have any effect due to Android edge-to-edge enforcement. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+- Deprecated and turned into no-ops the `networkActivityIndicatorVisible` prop and the `setStatusBarNetworkActivityIndicatorVisible` function, which are not supported on iOS 13 and later. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.3 — 2026-02-16
 
