@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Uses shared cookie jar for image requests.
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27
