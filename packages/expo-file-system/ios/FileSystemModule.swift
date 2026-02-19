@@ -8,6 +8,8 @@ public final class FileSystemModule: Module {
   private lazy var filePickingHandler = FilePickingHandler(module: self)
   #endif
 
+  private let downloadStore = DownloadTaskStore()
+
   var documentDirectory: URL? {
     return appContext?.config.documentDirectory
   }
@@ -35,6 +37,8 @@ public final class FileSystemModule: Module {
   public func definition() -> ModuleDefinition {
     Name("FileSystem")
 
+    Events("downloadProgress")
+
     Constant("documentDirectory") {
       return documentDirectory?.absoluteString
     }
@@ -59,55 +63,22 @@ public final class FileSystemModule: Module {
       return availableDiskSpace
     }
 
-    // swiftlint:disable:next closure_body_length
-    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptions?, promise: Promise) in
-      try to.validatePermission(.write)
+    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptions?, downloadUuid: String?, promise: Promise) in
+      try downloadFileWithStore(
+        url: url,
+        to: to,
+        options: options,
+        downloadUuid: downloadUuid,
+        downloadStore: self.downloadStore,
+        promise: promise,
+        sendEvent: { [weak self] name, body in
+          self?.sendEvent(name, body)
+        }
+      )
+    }
 
-      var request = URLRequest(url: url)
-
-      if let headers = options?.headers {
-        headers.forEach { key, value in
-          request.addValue(value, forHTTPHeaderField: key)
-        }
-      }
-
-      let downloadTask = URLSession.shared.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
-        guard errorOrNil == nil else {
-          return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
-        }
-        guard let httpResponse = responseOrNil as? HTTPURLResponse else {
-          return promise.reject(UnableToDownloadException("no response"))
-        }
-        guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
-          return promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
-        }
-        guard let fileURL = urlOrNil else {
-          return promise.reject(UnableToDownloadException("no file url"))
-        }
-
-        do {
-          let destination: URL
-          if let to = to as? FileSystemDirectory {
-            let filename = httpResponse.suggestedFilename ?? url.lastPathComponent
-            destination = to.url.appendingPathComponent(filename)
-          } else {
-            destination = to.url
-          }
-          if FileManager.default.fileExists(atPath: destination.path) {
-            if options?.idempotent == true {
-              try FileManager.default.removeItem(at: destination)
-            } else {
-              throw DestinationAlreadyExistsException()
-            }
-          }
-          try FileManager.default.moveItem(at: fileURL, to: destination)
-          // TODO: Remove .url.absoluteString once returning shared objects works
-          promise.resolve(destination.absoluteString)
-        } catch {
-          promise.reject(error)
-        }
-      }
-      downloadTask.resume()
+    Function("cancelDownloadAsync") { (downloadUuid: String) in
+      self.downloadStore.cancel(uuid: downloadUuid)
     }
 
     AsyncFunction("pickDirectoryAsync") { (initialUri: URL?, promise: Promise) in
@@ -371,3 +342,4 @@ public final class FileSystemModule: Module {
     return result
   }
 }
+

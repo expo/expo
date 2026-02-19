@@ -21,13 +21,15 @@ export function info(url: URL): any {}
 export async function downloadFileAsync(
   url: URL,
   to: FileSystemPath,
-  options: DownloadOptions | undefined
+  options: DownloadOptions | undefined,
+  uuid: string | undefined
 ): Promise<any> {}
 
 export async function pickDirectoryAsync(initialUri?: string): Promise<any> {}
 
 export async function pickFileAsync(initialUri?: string, mimeType?: string): Promise<any> {}
 
+export function cancelDownloadAsync(uuid: string): void {}
 export class FileSystemFile {
   uri: string;
   exists: boolean = false;

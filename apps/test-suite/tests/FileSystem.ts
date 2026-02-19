@@ -1013,6 +1013,190 @@ export async function test({ describe, expect, it, ...t }) {
         src.write(await response.bytes());
         expect(src.md5).toEqual(md5);
       });
+
+      it('reports download progress via onProgress callback', async () => {
+        // Use a ~100KB file so progress events fire reliably
+        const url = 'https://httpbingo.org/bytes/102400';
+        const file = new File(testDirectory, 'progress_test.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        const output = await File.downloadFileAsync(url, file, {
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+        // Should have received at least one progress update
+        expect(progressUpdates.length).toBeGreaterThan(0);
+        // Each update should have numeric fields
+        for (const update of progressUpdates) {
+          expect(typeof update.bytesWritten).toBe('number');
+          expect(typeof update.totalBytes).toBe('number');
+          expect(update.bytesWritten).toBeGreaterThan(0);
+        }
+        // The last update should have bytesWritten equal to file size
+        const lastUpdate = progressUpdates[progressUpdates.length - 1];
+        expect(lastUpdate.bytesWritten).toBe(file.size);
+      });
+
+      it('reports monotonically increasing bytesWritten in progress', async () => {
+        const url = 'https://httpbingo.org/bytes/102400';
+        const file = new File(testDirectory, 'progress_monotonic.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        await File.downloadFileAsync(url, file, {
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(progressUpdates.length).toBeGreaterThan(0);
+        for (let i = 1; i < progressUpdates.length; i++) {
+          expect(progressUpdates[i].bytesWritten).toBeGreaterThanOrEqual(
+            progressUpdates[i - 1].bytesWritten
+          );
+        }
+      });
+
+      it('totalBytes matches content-length when server provides it', async () => {
+        const url = 'https://httpbingo.org/bytes/51200';
+        const file = new File(testDirectory, 'progress_total.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        await File.downloadFileAsync(url, file, {
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(progressUpdates.length).toBeGreaterThan(0);
+        // httpbingo sets content-length, so totalBytes should equal the requested size
+        for (const update of progressUpdates) {
+          expect(update.totalBytes).toBe(51200);
+        }
+      });
+
+      it('downloads with onProgress and custom headers together', async () => {
+        const url = 'https://httpbingo.org/bytes/10240';
+        const file = new File(testDirectory, 'progress_headers.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        const output = await File.downloadFileAsync(url, file, {
+          headers: { 'X-Custom-Header': 'test-value' },
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+        expect(progressUpdates.length).toBeGreaterThan(0);
+      });
+
+      it('can cancel a download with AbortSignal', async () => {
+        // Use a large file to ensure we have time to cancel
+        const url = 'https://httpbingo.org/bytes/5242880';
+        const file = new File(testDirectory, 'cancel_test.bin');
+        const controller = new AbortController();
+
+        // Cancel after a short delay
+        setTimeout(() => controller.abort(), 50);
+
+        let error: any;
+        try {
+          await File.downloadFileAsync(url, file, {
+            signal: controller.signal,
+          });
+        } catch (e) {
+          error = e;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.message).toBe('The operation was aborted.');
+      });
+
+      it('rejects immediately when signal is already aborted', async () => {
+        const url = 'https://httpbingo.org/bytes/1024';
+        const file = new File(testDirectory, 'already_aborted.bin');
+        const controller = new AbortController();
+        controller.abort();
+
+        let error: any;
+        try {
+          await File.downloadFileAsync(url, file, {
+            signal: controller.signal,
+          });
+        } catch (e) {
+          error = e;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.message).toBe('The operation was aborted.');
+        // File should not have been created
+        expect(file.exists).toBe(false);
+      });
+
+      it('can use onProgress and signal together', async () => {
+        const url = 'https://httpbingo.org/bytes/524288';
+        const file = new File(testDirectory, 'progress_and_cancel.bin');
+        const controller = new AbortController();
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        // Cancel after we get the first progress event
+        const cancelAfterProgress = (data: { bytesWritten: number; totalBytes: number }) => {
+          progressUpdates.push({ ...data });
+          if (progressUpdates.length >= 1) {
+            controller.abort();
+          }
+        };
+
+        let error: any;
+        try {
+          await File.downloadFileAsync(url, file, {
+            signal: controller.signal,
+            onProgress: cancelAfterProgress,
+          });
+        } catch (e) {
+          error = e;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.message).toBe('The operation was aborted.');
+        // Should have received at least one progress update before cancellation
+        expect(progressUpdates.length).toBeGreaterThanOrEqual(1);
+      });
+
+      it('downloads without progress when no onProgress is set', async () => {
+        // Ensure the basic path still works when no options are provided
+        const url = 'https://picsum.photos/id/237/200/300';
+        const file = new File(testDirectory, 'no_progress.jpeg');
+        const output = await File.downloadFileAsync(url, file);
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+      });
+
+      it('overwrites existing file with idempotent and onProgress', async () => {
+        const url = 'https://httpbingo.org/bytes/10240';
+        const file = new File(testDirectory, 'idempotent_progress.bin');
+        file.create();
+        file.write('existing content');
+
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        const output = await File.downloadFileAsync(url, file, {
+          idempotent: true,
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+        expect(file.size).toBe(10240);
+        expect(progressUpdates.length).toBeGreaterThan(0);
+      });
     });
 
     describe('Computes file properties', () => {

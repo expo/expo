@@ -1,3 +1,5 @@
+import { uuid, type EventSubscription } from 'expo-modules-core';
+
 import ExpoFileSystem from './ExpoFileSystem';
 import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
@@ -128,14 +130,57 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 }
 
+function createAbortError(reason?: string): Error {
+  const error = new Error(reason ?? 'The operation was aborted.');
+  error.name = 'AbortError';
+  return error;
+}
+
 // Cannot use `static` keyword in class declaration because of a runtime error.
 File.downloadFileAsync = async function downloadFileAsync(
   url: string,
   to: File | Directory,
   options?: DownloadOptions
 ) {
-  const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options);
-  return new File(outputURI);
+  const needsUuid = options?.onProgress || options?.signal;
+  const downloadUuid = needsUuid ? uuid.v4() : undefined;
+
+  let subscription: EventSubscription | undefined;
+  let abortHandler: (() => void) | undefined;
+
+  try {
+    if (options?.signal?.aborted) {
+      throw createAbortError(options.signal.reason);
+    }
+
+    if (downloadUuid && options?.onProgress) {
+      subscription = ExpoFileSystem.addListener('downloadProgress', (event) => {
+        if (event.uuid === downloadUuid) {
+          options.onProgress!(event.data);
+        }
+      });
+    }
+
+    if (downloadUuid && options?.signal) {
+      abortHandler = () => {
+        ExpoFileSystem.cancelDownloadAsync(downloadUuid);
+      };
+      options.signal.addEventListener('abort', abortHandler, { once: true });
+    }
+
+    const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options, downloadUuid);
+    return new File(outputURI);
+  } catch (error: any) {
+    if (options?.signal?.aborted) {
+      throw createAbortError(options.signal.reason);
+    }
+    throw error;
+  } finally {
+    subscription?.remove();
+    if (abortHandler && options?.signal) {
+      options.signal.removeEventListener('abort', abortHandler);
+    }
+  }
 };
 
 File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {

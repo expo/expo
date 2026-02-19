@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `onProgress` callback and `AbortSignal` support to `File.downloadFileAsync()`. ([#43053](https://github.com/expo/expo/pull/43053) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
 
 - Fix Jest mock to support new `File`/`Directory`/`Paths` API. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))

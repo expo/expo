@@ -1,15 +1,27 @@
 import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
-import type { Directory, File, DownloadOptions, PathInfo } from './ExpoFileSystem.types';
+import type {
+  Directory,
+  File,
+  DownloadOptions,
+  DownloadProgress,
+  PathInfo,
+} from './ExpoFileSystem.types';
 
-declare class ExpoFileSystemModule extends NativeModule {
+type FileSystemEvents = {
+  downloadProgress: (data: { uuid: string; data: DownloadProgress }) => void;
+};
+
+declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
   FileSystemDirectory: typeof Directory;
   FileSystemFile: typeof File;
   downloadFileAsync(
     url: string,
     destination: File | Directory,
-    options?: DownloadOptions
+    options?: DownloadOptions,
+    uuid?: string
   ): Promise<string>;
+  cancelDownloadAsync(uuid: string): void;
   pickDirectoryAsync(initialUri?: string): Promise<Directory>;
   pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
   info(uri: string): PathInfo;

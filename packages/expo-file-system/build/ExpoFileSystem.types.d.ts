@@ -138,6 +138,19 @@ export declare class Directory {
      */
     static pickDirectoryAsync(initialUri?: string): Promise<Directory>;
 }
+/**
+ * Data provided to the `onProgress` callback during a file download.
+ */
+export type DownloadProgress = {
+    /**
+     * The number of bytes written so far.
+     */
+    bytesWritten: number;
+    /**
+     * The total number of bytes expected to be downloaded. `-1` if the server did not provide a `Content-Length` header.
+     */
+    totalBytes: number;
+};
 export type DownloadOptions = {
     /**
      * The headers to send with the request.
@@ -155,6 +168,15 @@ export type DownloadOptions = {
      * @default false
      */
     idempotent?: boolean;
+    /**
+     * A callback that is invoked with progress updates during the download.
+     */
+    onProgress?: (data: DownloadProgress) => void;
+    /**
+     * An `AbortSignal` that can be used to cancel the download.
+     * When the signal is aborted, the download is cancelled and the promise rejects with an `AbortError`.
+     */
+    signal?: AbortSignal;
 };
 /**
  * Represents a file on the file system.
