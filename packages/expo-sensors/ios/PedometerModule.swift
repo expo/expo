@@ -137,11 +137,9 @@ public final class PedometerModule: Module {
         guard let data else {
           return
         }
-        self?.sendEvent(
-          EVENT_PEDOMETER_UPDATE,
-          [
-            "steps": data.numberOfSteps
-          ])
+        self?.sendEvent(EVENT_PEDOMETER_UPDATE, [
+          "steps": data.numberOfSteps
+        ])
       }
 
       pedometer.startUpdates(from: startDate, withHandler: handler)

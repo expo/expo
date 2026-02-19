@@ -173,14 +173,14 @@ class PedometerModule : Module() {
 
     Name("ExponentPedometer")
 
-    Events(EventNameEvent)
-
     UseSensorProxy(
       this@PedometerModule,
       Sensor.TYPE_STEP_COUNTER,
       EventName,
-      listenerDecorator = { stepsAtTheBeginning = null }
+      listenerDecorator = { stepsAtTheBeginning = null },
+      onModuleDestroy = { stopActivityTransitionUpdates() }
     ) { sensorProxy }
+    Events(EventName, EventNameEvent)
 
     AsyncFunction("getPermissionsAsync") { promise: Promise ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -268,7 +268,7 @@ class PedometerModule : Module() {
 
     AsyncFunction("unsubscribeRecording") {
       if (!isRecordingAvailable()) {
-        return@AsyncFunction
+        return@AsyncFunction null
       }
 
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
@@ -314,8 +314,5 @@ class PedometerModule : Module() {
       mapOf("steps" to sum.toLong())
     }
 
-    OnDestroy {
-      stopActivityTransitionUpdates()
-    }
   }
 }
