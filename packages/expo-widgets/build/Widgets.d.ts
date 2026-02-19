@@ -37,12 +37,12 @@ export declare class LiveActivity<T extends object = object> {
      * Updates the Live Activity's content. The UI reflects the new properties immediately.
      * @param props The updated content properties.
      */
-    update(props: T): void;
+    update(props: T): Promise<void>;
     /**
      * Ends the Live Activity.
      * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
      */
-    end(dismissalPolicy?: LiveActivityDismissalPolicy): void;
+    end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void>;
     /**
      * Returns the push token for this Live Activity, used to send push notification updates via APNs.
      * Returns `null` if push notifications are not enabled or the token is not yet available.

@@ -183,7 +183,7 @@ export declare class NativeLiveActivityFactory extends SharedObject {
 }
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
-  update(props: string): void;
-  end(dismissalPolicy?: LiveActivityDismissalPolicy): void;
+  update(props: string): Promise<void>;
+  end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void>;
   getPushToken(): Promise<string | null>;
 }

@@ -73,16 +73,16 @@ export class LiveActivity<T extends object = object> {
    * Updates the Live Activity's content. The UI reflects the new properties immediately.
    * @param props The updated content properties.
    */
-  update(props: T) {
-    this.nativeLiveActivity.update(JSON.stringify(props));
+  update(props: T): Promise<void> {
+    return this.nativeLiveActivity.update(JSON.stringify(props));
   }
 
   /**
    * Ends the Live Activity.
    * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
    */
-  end(dismissalPolicy?: LiveActivityDismissalPolicy) {
-    this.nativeLiveActivity.end(dismissalPolicy);
+  end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void> {
+    return this.nativeLiveActivity.end(dismissalPolicy);
   }
 
   /**

@@ -52,14 +52,14 @@ export class LiveActivity {
      * @param props The updated content properties.
      */
     update(props) {
-        this.nativeLiveActivity.update(JSON.stringify(props));
+        return this.nativeLiveActivity.update(JSON.stringify(props));
     }
     /**
      * Ends the Live Activity.
      * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
      */
     end(dismissalPolicy) {
-        this.nativeLiveActivity.end(dismissalPolicy);
+        return this.nativeLiveActivity.end(dismissalPolicy);
     }
     /**
      * Returns the push token for this Live Activity, used to send push notification updates via APNs.

@@ -82,12 +82,12 @@ public final class WidgetsModule: Module {
     }
 
     Class("LiveActivity", LiveActivity.self) {
-      Function("update") { (instance: LiveActivity, props: String) in
-        try instance.update(props: props)
+      AsyncFunction("update") { (instance: LiveActivity, props: String) in
+        try await instance.update(props: props)
       }
 
-      Function("end") { (instance: LiveActivity, dismissalPolicy: String?) in
-        try instance.end(dismissalPolicy: dismissalPolicy)
+      AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: String?) in
+        try await instance.end(dismissalPolicy: dismissalPolicy)
       }
 
       AsyncFunction("getPushToken") { (instance: LiveActivity) in
