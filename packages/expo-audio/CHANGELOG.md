@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [android] Make in-memory preload cache. ([#43293](https://github.com/expo/expo/pull/43293) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 55.0.6 — 2026-02-16
 
 ### 🎉 New features

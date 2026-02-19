@@ -224,11 +224,11 @@ class AudioModule : Module() {
 
     AsyncFunction("preload") Coroutine { source: AudioSource, _: Double ->
       val uri = source.uri ?: return@Coroutine
-      val upstreamFactory = when (uri.toUri().scheme) {
+      val factory = when (uri.toUri().scheme) {
         "http", "https" -> httpDataSourceFactory(source.headers)
         else -> DefaultDataSource.Factory(context)
       }
-      AudioPreloadManager.preload(uri, upstreamFactory)
+      AudioPreloadManager.preload(uri, factory)
     }
 
     AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
@@ -302,7 +302,7 @@ class AudioModule : Module() {
         recorders.values.forEach {
           it.stopRecording()
         }
-        AudioPreloadManager.release()
+        AudioPreloadManager.clearAll()
       }
     }
 

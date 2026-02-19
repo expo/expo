@@ -46,10 +46,6 @@ object AudioPreloadManager {
     store.clear()
   }
 
-  fun release() {
-    store.clear()
-  }
-
   fun getPreloadedSources(): List<String> = store.keys().toList()
 }
 
