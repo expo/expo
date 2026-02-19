@@ -7,15 +7,14 @@ public class ExpoBrownfieldStateModule: Module {
     Name("ExpoBrownfieldStateModule")
 
     Class(SharedState.self) {
-      Constructor {
-        return SharedState()
+      Constructor { (key: String) in
+        return SharedState(key: key)
       }
 
       Function("get") { (state: SharedState) -> Any? in
         return state.get()
       }
       
-      // Overload for dictionary/object
       Function("set") { (state: SharedState, value: JavaScriptValue?) in
         state.set(value?.getRaw())
       }

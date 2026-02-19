@@ -8,7 +8,7 @@ class ExpoBrownfieldStateModule : Module() {
     Name("ExpoBrownfieldStateModule")
 
     Class(SharedState::class) {
-      Constructor { SharedState() }
+      Constructor { key: String -> SharedState(key) }
 
       Function("get") { state: SharedState ->
         return@Function state.get()

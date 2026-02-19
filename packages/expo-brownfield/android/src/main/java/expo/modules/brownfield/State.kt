@@ -1,39 +1,59 @@
 package expo.modules.brownfield
 
+fun interface Removable {
+  fun remove()
+}
+
 object BrownfieldState {
   private val registry = mutableMapOf<String, SharedState>()
+  private val subscriptions = mutableMapOf<String, MutableList<(Any?) -> Unit>>()
 
   fun getOrCreate(key: String): SharedState {
     synchronized(this) {
-      return registry.getOrPut(key) { SharedState() }
+      return registry.getOrPut(key) { SharedState(key) }
     }
   }
 
   fun get(key: String): Any? {
+    val state: SharedState?
     synchronized(this) {
-      return registry[key]?.get()
+      state = registry[key]
     }
+    return state?.get()
   }
 
   fun set(key: String, value: Any?) {
     val state: SharedState
     synchronized(this) {
-      state = registry.getOrPut(key) { SharedState() }
+      state = registry.getOrPut(key) { SharedState(key) }
     }
     state.set(value)
   }
 
   fun subscribe(key: String, callback: (Any?) -> Unit): Removable {
-    val state: SharedState
     synchronized(this) {
-      state = registry.getOrPut(key) { SharedState() }
+      subscriptions.getOrPut(key) { mutableListOf() }.add(callback)
     }
-    return state.addListener(callback)
+    return Removable {
+      synchronized(this@BrownfieldState) {
+        subscriptions[key]?.remove(callback)
+      }
+    }
   }
 
   fun delete(key: String): Any? {
+    val state: SharedState?
     synchronized(this) {
-      return registry.remove(key)?.get()
+      state = registry.remove(key)
     }
+    return state?.get()
+  }
+
+  fun notifySubscribers(key: String, value: Any?) {
+    var snapshot: List<(Any?) -> Unit>
+    synchronized(this) {
+      snapshot = subscriptions[key]?.toList() ?: emptyList()
+    }
+    snapshot.forEach { it(value) }
   }
 }
