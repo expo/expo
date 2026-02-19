@@ -117,11 +117,10 @@ public class PersistentFileLog {
 
   private func appendTextToFile(text: String) throws {
     if let data = text.data(using: .utf8) {
-      if let fileHandle = FileHandle(forWritingAtPath: filePath) {
-        fileHandle.seekToEndOfFile()
-        try fileHandle.write(data)
-        fileHandle.closeFile()
-      }
+      let fileURL = URL(fileURLWithPath: filePath)
+      var existingData = (try? Data(contentsOf: fileURL)) ?? Data()
+      existingData.append(data)
+      try existingData.write(to: fileURL, options: .atomic)
     }
   }
 
