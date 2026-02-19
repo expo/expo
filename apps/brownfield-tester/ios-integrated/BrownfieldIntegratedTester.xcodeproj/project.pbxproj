@@ -6,15 +6,21 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		C0AD1A072F180C2B005A1DBD /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0AD1A052F180C2B005A1DBD /* hermes.xcframework */; };
-		C0AD1A0E2F182AAA005A1DBD /* minimaltesterbrownfield.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0AD1A0D2F182AAA005A1DBD /* minimaltesterbrownfield.xcframework */; };
-/* End PBXBuildFile section */
+/* Begin PBXCopyFilesBuildPhase section */
+		87F31DDB2F47363100B37DF8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		C0AD19F12F180368005A1DBD /* BrownfieldIntegratedTester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrownfieldIntegratedTester.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C0AD1A052F180C2B005A1DBD /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = hermes.xcframework; sourceTree = "<group>"; };
-		C0AD1A0D2F182AAA005A1DBD /* minimaltesterbrownfield.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = minimaltesterbrownfield.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -30,8 +36,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C0AD1A0E2F182AAA005A1DBD /* minimaltesterbrownfield.xcframework in Frameworks */,
-				C0AD1A072F180C2B005A1DBD /* hermes.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,8 +47,6 @@
 			children = (
 				C0AD19F32F180368005A1DBD /* BrownfieldIntegratedTester */,
 				C0AD19F22F180368005A1DBD /* Products */,
-				C0AD1A052F180C2B005A1DBD /* hermes.xcframework */,
-				C0AD1A0D2F182AAA005A1DBD /* minimaltesterbrownfield.xcframework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -66,6 +68,7 @@
 				C0AD19ED2F180368005A1DBD /* Sources */,
 				C0AD19EE2F180368005A1DBD /* Frameworks */,
 				C0AD19EF2F180368005A1DBD /* Resources */,
+				87F31DDB2F47363100B37DF8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
