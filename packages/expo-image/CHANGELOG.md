@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Uses shared cookie jar for image requests.
+- [Android] Uses shared cookie jar for image requests. ([#43257](https://github.com/expo/expo/pull/43257) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
