@@ -24,6 +24,7 @@ export interface FetchRequestLike {
   readonly url: string;
   readonly body: BodyInit | null;
   readonly method: string;
+  readonly headers: Headers;
 
   // Not always supported, marked as optional
   readonly credentials?: RequestCredentials;

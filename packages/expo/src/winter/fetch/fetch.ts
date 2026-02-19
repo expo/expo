@@ -2,11 +2,16 @@ import { ExpoFetchModule } from './ExpoFetchModule';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import { NativeRequest, NativeRequestInit } from './NativeRequest';
-import { normalizeBodyInitAsync, normalizeHeadersInit, overrideHeaders } from './RequestUtils';
+import {
+  normalizeBodyInitAsync,
+  normalizeHeadersInit,
+  overrideHeaders,
+  normalizeMethod,
+} from './RequestUtils';
 import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
 
 /** Returns if `input` is a Request object */
-const isRequest = (input: any): input is Request =>
+const isRequest = (input: any): input is FetchRequestLike =>
   input != null && typeof input === 'object' && 'body' in input;
 
 // TODO(@kitten): Do we really want to use our own types for web standards?
@@ -16,13 +21,15 @@ export async function fetch(
 ): Promise<FetchResponse> {
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
-  const body = initFromRequest ? input.body : init?.body || null;
-  const signal = initFromRequest ? input.signal : init?.signal || undefined;
-  const redirect = initFromRequest ? input.redirect : init?.redirect;
-  const method = initFromRequest ? input.method : init?.method;
-  const credentials = initFromRequest ? input.credentials : init?.credentials;
+  const body = init?.body ?? (initFromRequest ? input.body : null);
+  const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
+  const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
+  const method = init?.method ?? (initFromRequest ? input.method : undefined);
+  const credentials = init?.credentials ?? (initFromRequest ? input.credentials : undefined);
 
-  let headers = normalizeHeadersInit(initFromRequest ? input.headers : init?.headers);
+  let headers = normalizeHeadersInit(
+    init?.headers ?? (initFromRequest ? input.headers : undefined)
+  );
 
   let abortSubscription: AbortSubscriptionCleanupFunction | null = null;
 
@@ -40,7 +47,7 @@ export async function fetch(
   const nativeRequestInit: NativeRequestInit = {
     credentials: credentials ?? 'include',
     headers,
-    method: method?.toUpperCase() ?? 'GET',
+    method: method != null ? normalizeMethod(method) : 'GET',
     redirect: redirect ?? 'follow',
   };
 
