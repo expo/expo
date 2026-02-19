@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix potential `nan` duration.
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-16

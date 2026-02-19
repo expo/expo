@@ -15,6 +15,7 @@ import {
   getStatusFromMedia,
   nextId,
   preloadCache,
+  safeDuration,
 } from './AudioUtils.web';
 import { mediaSessionController } from './MediaSessionController.web';
 
@@ -72,7 +73,7 @@ export class AudioPlayerWeb
   }
 
   get duration(): number {
-    return this.media.duration;
+    return safeDuration(this.media.duration);
   }
 
   get currentTime(): number {

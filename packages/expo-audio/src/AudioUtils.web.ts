@@ -46,6 +46,10 @@ export function getUserMedia(constraints: MediaStreamConstraints): Promise<Media
   });
 }
 
+export function safeDuration(duration: number): number {
+  return isNaN(duration) || !isFinite(duration) ? 0 : duration;
+}
+
 export function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioStatus {
   const isPlaying = !!(
     media.currentTime > 0 &&
@@ -57,7 +61,7 @@ export function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioSt
   const status: AudioStatus = {
     id,
     isLoaded: true,
-    duration: media.duration,
+    duration: safeDuration(media.duration),
     currentTime: media.currentTime,
     playbackState: '',
     timeControlStatus: isPlaying ? 'playing' : 'paused',

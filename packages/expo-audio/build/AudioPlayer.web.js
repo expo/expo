@@ -1,6 +1,6 @@
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE } from './AudioEventKeys';
 import { isAudioActive } from './AudioModule.web';
-import { getAudioContext, getSourceUri, getStatusFromMedia, nextId, preloadCache, } from './AudioUtils.web';
+import { getAudioContext, getSourceUri, getStatusFromMedia, nextId, preloadCache, safeDuration, } from './AudioUtils.web';
 import { mediaSessionController } from './MediaSessionController.web';
 export const activePlayers = new Set();
 export class AudioPlayerWeb extends globalThis.expo.SharedObject {
@@ -44,7 +44,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.loop = value;
     }
     get duration() {
-        return this.media.duration;
+        return safeDuration(this.media.duration);
     }
     get currentTime() {
         return this.media.currentTime;
