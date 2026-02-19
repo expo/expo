@@ -114,7 +114,6 @@ export function Code({ className, children, title }: CodeProps) {
           {...attributes}>
           <div className="w-fit p-4">
             <code
-              suppressHydrationWarning
               className="text-2xs text-default"
               dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
             />
@@ -139,7 +138,6 @@ export function Code({ className, children, title }: CodeProps) {
       {...attributes}>
       <div className="w-fit p-4">
         <code
-          suppressHydrationWarning
           className="text-2xs text-default"
           dangerouslySetInnerHTML={{ __html: highlightedHtml }}
         />

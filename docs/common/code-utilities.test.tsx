@@ -1,4 +1,4 @@
-import { cleanCopyValue, normalizeHighlightedHtml } from './code-utilities';
+import { cleanCopyValue } from './code-utilities';
 
 describe(cleanCopyValue, () => {
   it('SlashComments - preserves the fully annotated line', () => {
@@ -112,17 +112,5 @@ describe(cleanCopyValue, () => {
   container: {`)
     ).toBe(`const styles = StyleSheet.create({
   container: {`);
-  });
-});
-
-describe(normalizeHighlightedHtml, () => {
-  it('removes unstable Prism `module` alias when combined with `token keyword`', () => {
-    const html = '<span class="token keyword module">import</span>';
-    expect(normalizeHighlightedHtml(html)).toBe('<span class="token keyword">import</span>');
-  });
-
-  it('keeps unrelated class names untouched', () => {
-    const html = '<span class="token function">npx</span>';
-    expect(normalizeHighlightedHtml(html)).toBe(html);
   });
 });

@@ -1,6 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
+import { Language, Prism } from 'prism-react-renderer';
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { CODE } from '~/ui/components/Text';
@@ -274,11 +275,6 @@ function cmdMapper(line: string, index: number) {
   }
 
   if (line.startsWith('$')) {
-    const command = line.slice(1).trim();
-    const spaceIdx = command.indexOf(' ');
-    const binary = spaceIdx > -1 ? command.slice(0, spaceIdx) : command;
-    const args = spaceIdx > -1 ? command.slice(spaceIdx) : '';
-
     return (
       <div key={key} className="w-fit">
         <CODE
@@ -286,11 +282,16 @@ function cmdMapper(line: string, index: number) {
           className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
           -&nbsp;
         </CODE>
-        <CODE className="whitespace-pre !border-none !bg-transparent text-default">
-          {/* eslint-disable-next-line tailwindcss/no-custom-classname */}
-          <span className="token function">{binary}</span>
-          {args}
-        </CODE>
+        <CODE
+          className="whitespace-pre !border-none !bg-transparent text-default"
+          dangerouslySetInnerHTML={{
+            __html: Prism.highlight(
+              line.slice(1).trim(),
+              Prism.languages['bash'],
+              'bash' as Language
+            ),
+          }}
+        />
       </div>
     );
   }
