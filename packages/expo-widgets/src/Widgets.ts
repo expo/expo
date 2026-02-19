@@ -89,7 +89,7 @@ export class LiveActivity<T extends object = object> {
    * Returns the push token for this Live Activity, used to send push notification updates via APNs.
    * Returns `null` if push notifications are not enabled or the token is not yet available.
    */
-  getPushToken() {
+  getPushToken(): Promise<string | null> {
     return this.nativeLiveActivity.getPushToken();
   }
 

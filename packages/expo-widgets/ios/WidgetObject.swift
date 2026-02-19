@@ -22,8 +22,7 @@ final class WidgetObject: SharedObject {
   }
 
   func getTimeline() throws -> [WidgetsJSTimelineEntry] {
-    guard let entries = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline"),
-          let entries = entries as? [[String: Any]],
+    guard let entries = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") as? [[String: Any]],
           let appContext else {
       return []
     }
