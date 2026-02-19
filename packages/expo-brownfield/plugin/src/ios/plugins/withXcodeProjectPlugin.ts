@@ -84,7 +84,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       pluginConfig.targetName,
       config.ios?.buildNumber || '1',
       pluginConfig.bundleIdentifier,
-      config.ios?.version || config.version,
+      config.ios?.version || config.version
     );
 
     return config;
