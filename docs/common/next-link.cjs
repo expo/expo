@@ -31,7 +31,11 @@ function normalize(href) {
   if (path.includes('..') || path.includes('./')) {
     path = new URL(path, 'http://localhost').pathname;
   }
-  return (path.endsWith('/') ? path.slice(0, -1) : path) + suffix;
+  // Keep `/path/#hash` shape intact so in-page anchors keep their canonical format.
+  if (path.endsWith('/') && !suffix.startsWith('#')) {
+    path = path.slice(0, -1);
+  }
+  return path + suffix;
 }
 
 const Link = React.forwardRef(function Link(
