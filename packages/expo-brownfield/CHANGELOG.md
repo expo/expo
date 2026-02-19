@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] improve security of env injection in publishing in [#43059](https://github.com/expo/expo/pull/43059) by [@pmleczek](https://github.com/pmleczek)
+- [ios] pass additional settings to generate CFBundleShortVersionString ([#43289](https://github.com/expo/expo/pull/43289) by [@pmleczek](https://github.com/pmleczek))
 
 ### 💡 Others
 
