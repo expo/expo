@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect return types for `File` and `Directory` static methods. ([#43201](https://github.com/expo/expo/issues/43201) by [@alanhughes](https://github.com/alanhughes))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-20
