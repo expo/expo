@@ -21,6 +21,7 @@ export interface FetchRequestLike {
     readonly url: string;
     readonly body: BodyInit | null;
     readonly method: string;
+    readonly headers: Headers;
     readonly credentials?: RequestCredentials;
     readonly signal?: AbortSignal;
     readonly redirect?: RequestRedirect;
