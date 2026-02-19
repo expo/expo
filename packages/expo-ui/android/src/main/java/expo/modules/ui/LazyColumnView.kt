@@ -1,5 +1,3 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.ui
 
 import android.annotation.SuppressLint
@@ -17,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
