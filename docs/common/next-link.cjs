@@ -8,8 +8,8 @@ const React = require('react');
  * SSR and client hydration. The built-in next/link with trailingSlash: true
  * normalizes hrefs differently on server vs client, causing hydration errors.
  *
- * This shim strips trailing slashes from internal paths so both environments
- * produce identical markup.
+ * This shim normalizes internal page paths to trailing-slash form so both
+ * environments produce identical markup.
  *
  * DROP THIS SHIM when any of these happen:
  * - Migrate from Pages Router to App Router (App Router handles trailing slashes consistently)
@@ -24,16 +24,25 @@ function normalize(href) {
   }
   const hashIdx = href.indexOf('#');
   const queryIdx = href.indexOf('?');
-  const end = hashIdx > -1 ? hashIdx : queryIdx > -1 ? queryIdx : href.length;
+  const end =
+    hashIdx > -1 && queryIdx > -1
+      ? Math.min(hashIdx, queryIdx)
+      : hashIdx > -1
+        ? hashIdx
+        : queryIdx > -1
+          ? queryIdx
+          : href.length;
   let path = href.slice(0, end);
   const suffix = href.slice(end);
   // Resolve ".." and "." segments (MDX links can produce paths like /../../../workflow/overview)
   if (path.includes('..') || path.includes('./')) {
     path = new URL(path, 'http://localhost').pathname;
   }
-  // Keep `/path/#hash` shape intact so in-page anchors keep their canonical format.
-  if (path.endsWith('/') && !suffix.startsWith('#')) {
-    path = path.slice(0, -1);
+  // Keep file-like paths unchanged (e.g. /favicon.ico) and normalize page-like
+  // paths to trailing-slash form, including hash/query variants.
+  const hasFileExtension = /\/[^/]+\.[^/]+$/.test(path);
+  if (!path.endsWith('/') && !hasFileExtension) {
+    path += '/';
   }
   return path + suffix;
 }
