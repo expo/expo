@@ -67,7 +67,7 @@ struct LocalNetworkPermissionView: View {
       }
       Button("OK", role: .cancel) {}
     } message: {
-      Text("Local network access is still disabled. Enable it in Settings \u{2192} Privacy & Security \u{2192} Local Network to discover dev servers.")
+      Text("Local network access is still disabled. To discover dev servers, enable it in Settings \u{2192} Privacy & Security \u{2192} Local Network.")
     }
     .alert("Permission Already Granted", isPresented: $showAlreadyGrantedAlert) {
       Button("OK") {
