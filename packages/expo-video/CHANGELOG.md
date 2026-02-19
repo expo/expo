@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Added a warning for when the video plays before the component mounts in web. ([#33840](https://github.com/expo/expo/pull/33840) by [@zereight(https://github.com/zereight)])
+
 ### 💡 Others
 
 - Update HLS video track fetching for iOS 26+. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
