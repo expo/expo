@@ -88,11 +88,9 @@ private object SharedCookieJar : CookieJar {
     return cookieString.split(";").mapNotNull { Cookie.parse(url, it.trim()) }
   }
 
-  private fun getCookieManager(): CookieManager? = try {
+  private fun getCookieManager(): CookieManager? = runCatching {
     CookieManager.getInstance()
-  } catch (e: Exception) {
-    null
-  }
+  }.getOrNull()
 }
 
 @GlideModule
