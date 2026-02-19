@@ -112,15 +112,6 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
       value: '[selected from image picker]',
     },
     {
-      name: 'quality',
-      type: 'enum',
-      values: [
-        { name: 'RAW', value: 1.0 },
-        { name: '0.5', value: 0.5 },
-        { name: '0', value: 0 },
-      ],
-    },
-    {
       name: 'options',
       type: 'object',
       properties: [
@@ -140,7 +131,18 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
       ],
     },
   ],
-  actions: async (_, quality, options: { android?: { isSensitive?: boolean } }) => {
+  additionalParameters: [
+    {
+      name: 'quality',
+      type: 'enum',
+      values: [
+        { name: 'RAW', value: 1.0 },
+        { name: '0.5', value: 0.5 },
+        { name: '0', value: 0 },
+      ],
+    },
+  ],
+  actions: async (_, options: { android?: { isSensitive?: boolean } }, quality) => {
     const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (granted) {
       const result = await ImagePicker.launchImageLibraryAsync({
