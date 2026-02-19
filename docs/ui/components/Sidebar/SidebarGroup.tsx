@@ -101,6 +101,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
         })}
         {allChaptersCompleted && (
           <Button
+            skipNextLink
             onClick={resetTutorial}
             theme="secondary"
             className="flex w-full items-center justify-center"
@@ -173,6 +174,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
         })}
         {allGetStartedChaptersCompleted && (
           <Button
+            skipNextLink
             onClick={resetGetStartedTutorial}
             theme="secondary"
             className="flex w-full items-center justify-center"

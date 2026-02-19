@@ -79,7 +79,7 @@ const Error = () => {
               correct and try again.
             </P>
           )}
-          <Button theme="secondary" href="/">
+          <Button theme="secondary" skipNextLink href="/">
             Return Home
           </Button>
         </>

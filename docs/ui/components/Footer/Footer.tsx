@@ -70,6 +70,7 @@ export const Footer = ({
           data-nosnippet>
           {previousPage ? (
             <LinkBase
+              skipNextLink
               href={previousPage.href}
               className={mergeClasses(
                 'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
@@ -88,6 +89,7 @@ export const Footer = ({
           )}
           {nextPage ? (
             <LinkBase
+              skipNextLink
               href={nextPage.href}
               className={mergeClasses(
                 'flex w-full items-center justify-between gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
