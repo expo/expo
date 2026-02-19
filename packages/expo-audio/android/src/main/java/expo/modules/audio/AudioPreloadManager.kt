@@ -1,0 +1,62 @@
+package expo.modules.audio
+
+import androidx.core.net.toUri
+import androidx.media3.datasource.ByteArrayDataSource
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.DefaultDataSource
+import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import java.util.concurrent.ConcurrentHashMap
+
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+object AudioPreloadManager {
+  private val store = ConcurrentHashMap<String, ByteArray>()
+
+  suspend fun preload(context: Context, uri: String, upstreamFactory: DataSource.Factory? = null) =
+    withContext(Dispatchers.IO) {
+      val factory = upstreamFactory ?: DefaultDataSource.Factory(context)
+      val dataSource = factory.createDataSource()
+      val dataSpec = DataSpec.Builder().setUri(uri.toUri()).build()
+
+      val outputStream = ByteArrayOutputStream()
+      try {
+        dataSource.open(dataSpec)
+        val buffer = ByteArray(8 * 1024)
+        generateSequence {
+          dataSource.read(buffer, 0, buffer.size).takeIf {
+            it != -1
+          }
+        }.forEach {
+          outputStream.write(buffer, 0, it)
+        }
+      } finally {
+        dataSource.close()
+      }
+
+      store[uri] = outputStream.toByteArray()
+    }
+
+  fun get(uri: String): ByteArray? = store[uri]
+
+  fun clearSource(uri: String) {
+    store.remove(uri)
+  }
+
+  fun clearAll() {
+    store.clear()
+  }
+
+  fun release() {
+    store.clear()
+  }
+
+  fun getPreloadedSources(): List<String> = store.keys().toList()
+}
+
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+class InMemoryDataSourceFactory(private val data: ByteArray) : DataSource.Factory {
+  override fun createDataSource(): DataSource = ByteArrayDataSource(data)
+}

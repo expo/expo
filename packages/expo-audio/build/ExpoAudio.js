@@ -609,8 +609,8 @@ export async function clearAllPreloadedSources() {
 /**
  * Returns the URIs of all currently preloaded audio sources.
  *
- * Sources are removed from this list when consumed by `useAudioPlayer()` or `createAudioPlayer()`,
- * or when explicitly cleared with `clearPreloadedSource()` / `clearAllPreloadedSources()`.
+ * On iOS, sources are removed from this list when consumed by `useAudioPlayer()`, `createAudioPlayer()`, or `player.replace()`.
+ * On Android and web, sources remain until explicitly cleared with `clearPreloadedSource()` / `clearAllPreloadedSources()`.
  *
  * @returns An array of URI strings for sources currently in the preload cache.
  */
