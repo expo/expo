@@ -59,9 +59,11 @@ struct LocalNetworkPermissionView: View {
     .background(Color.expoSystemBackground)
     .alert("Permission Not Granted", isPresented: $showTryAgainFailedAlert) {
       Button("Open Settings") {
+        #if os(iOS)
         if let url = URL(string: UIApplication.openSettingsURLString) {
           UIApplication.shared.open(url)
         }
+        #endif
       }
       Button("OK", role: .cancel) {}
     } message: {
@@ -132,9 +134,11 @@ struct LocalNetworkPermissionView: View {
         .multilineTextAlignment(.center)
 
       Button {
+        #if os(iOS)
         if let url = URL(string: UIApplication.openSettingsURLString) {
           UIApplication.shared.open(url)
         }
+        #endif
       } label: {
         Text("Open Settings")
           .fontWeight(.semibold)

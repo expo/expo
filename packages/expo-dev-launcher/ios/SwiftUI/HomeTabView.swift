@@ -85,9 +85,11 @@ struct HomeTabView: View {
 struct NetworkPermissionsBanner: View {
   var body: some View {
     Button {
+#if os(iOS)
       if let url = URL(string: UIApplication.openSettingsURLString) {
         UIApplication.shared.open(url)
       }
+#endif
     } label: {
       HStack {
         Image(systemName: "wifi.exclamationmark")

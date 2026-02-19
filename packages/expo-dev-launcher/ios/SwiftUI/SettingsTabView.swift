@@ -67,7 +67,7 @@ struct SettingsTabView: View {
     #if !os(macOS)
     .navigationBarHidden(true)
     #endif
-    #if !targetEnvironment(simulator)
+    #if os(iOS) && !targetEnvironment(simulator)
     .task {
       viewModel.refreshPermissionStatus()
     }
