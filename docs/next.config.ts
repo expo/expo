@@ -114,6 +114,12 @@ const nextConfig: NextConfig = {
 
     // Fix inline or browser MDX usage
     config.resolve.fallback = { fs: false, path: 'path-browserify' };
+    // Replace next/link with a shim that renders consistent href values between
+    // SSR and client hydration (avoids trailingSlash normalization mismatch).
+    config.resolve.alias = {
+      ...(config.resolve.alias ?? {}),
+      'next/link$': join(__dirname, 'common/next-link.cjs'),
+    };
 
     config.output.environment = { ...config.output.environment, asyncFunction: true };
     config.experiments = { ...config.experiments, topLevelAwait: true };
