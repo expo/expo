@@ -180,7 +180,7 @@ export declare function getBehaviorAsync(): Promise<NavigationBarBehavior>;
  * > - The `enforceNavigationBarContrast` option of the `react-native-edge-to-edge` plugin is set to `false`.
  * > - The device is using the three-button navigation bar.
  *
- * > Due to a bug in the Android emulator this function may have no effect. Try a physical device or an emulator with a different version of Android.
+ * > Due to a bug in the Android 15 emulator this function may have no effect. Try a physical device or an emulator with a different version of Android.
  *
  * @platform android
  */
