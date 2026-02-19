@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import expoappbrownfield
 
@@ -7,7 +8,7 @@ struct ContentView: View {
     @State private var showAlert: Bool = false
     @State private var messageTimer: Timer?
     @State private var messageCounter = 0
-    @State private var stateSubscription: StateRemovable?
+    @State private var stateSubscription: AnyCancellable?
     
     var body: some View {
         NavigationStack {
@@ -56,6 +57,7 @@ struct ContentView: View {
         }
         messageTimer?.invalidate()
         messageTimer = nil
+        stateSubscription?.cancel()
     }
     
     private func sendMessage() {

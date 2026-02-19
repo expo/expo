@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 
 public final class BrownfieldStateInternal {
@@ -42,7 +43,7 @@ public final class BrownfieldStateInternal {
   public static func subscribe(
     _ key: String,
     _ callback: @escaping (Any?) -> Void
-  ) -> Removable {
+  ) -> AnyCancellable {
     let state: SharedState
     lock.lock()
 

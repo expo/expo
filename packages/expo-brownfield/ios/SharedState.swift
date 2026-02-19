@@ -1,21 +1,5 @@
+import Combine
 import ExpoModulesCore
-
-public protocol Removable {
-  func remove()
-}
-
-public class Subscription: Removable {
-  private var handler: (() -> Void)?
-
-  init(_ handler: @escaping () -> Void) {
-    self.handler = handler
-  }
-
-  public func remove() {
-    handler?()
-    handler = nil
-  }
-}
 
 public final class SharedState: SharedObject {
   private let lock = NSLock()
@@ -40,12 +24,12 @@ public final class SharedState: SharedObject {
     listenersSnapshot.forEach { $0(newValue) }
   }
 
-  public func addListener(_ listener: @escaping (Any?) -> Void) -> Removable {
+  public func addListener(_ listener: @escaping (Any?) -> Void) -> AnyCancellable {
     lock.lock()
     listeners.append(listener)
     lock.unlock()
 
-    return Subscription { [weak self] in
+    return AnyCancellable { [weak self] in
       guard let self = self else { return }
       self.lock.lock()
       self.listeners.removeAll { ObjectIdentifier($0 as AnyObject) == ObjectIdentifier(listener as AnyObject) }
