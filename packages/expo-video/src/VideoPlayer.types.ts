@@ -400,6 +400,42 @@ export type VideoSourceObject = {
    * @platform ios
    */
   contentType?: ContentType;
+
+  /**
+   * Specifies external subtitle tracks to be loaded alongside the video.
+   *
+   * On iOS, subtitles are composed with the video using `AVMutableComposition`, which allows sidecar
+   * subtitle files (WebVTT `.vtt`) to be used with non-HLS video sources.
+   * On Android, subtitles are added via `MediaItem.SubtitleConfiguration` (ExoPlayer).
+   *
+   * > For HLS sources on iOS the subtitles embedded in the manifest are already available and do not
+   * > need to be specified here. This field is primarily intended for progressive video sources.
+   *
+   * @platform android
+   * @platform ios
+   */
+  subtitles?: SubtitleSource[];
+};
+
+/**
+ * Describes an external subtitle track that can be sideloaded with a video source.
+ */
+export type SubtitleSource = {
+  /**
+   * The URI of the subtitle file. WebVTT (`.vtt`) files are supported on both Android and iOS.
+   * SubRip (`.srt`) files are supported on Android only.
+   */
+  uri: string;
+
+  /**
+   * BCP-47 language tag for this subtitle track. For example `'en'`, `'fr'`, `'de'`.
+   */
+  language?: string;
+
+  /**
+   * Human-readable label for this subtitle track shown in the track picker.
+   */
+  label?: string;
 };
 
 /**

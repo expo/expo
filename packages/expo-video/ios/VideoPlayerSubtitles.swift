@@ -41,8 +41,18 @@ class VideoPlayerSubtitles {
     }
 
     if let group = currentItem.asset.mediaSelectionGroup(forMediaCharacteristic: .legible) {
-      let option = group.options.first {
-        $0.displayName == subtitleTrack?.label && $0.locale?.identifier == subtitleTrack?.language
+      let option: AVMediaSelectionOption?
+      if let subtitleTrack {
+        // Match by language identifier first; fall back to display name so that composition-based
+        // tracks (whose locale comes from the `extendedLanguageTag` we set) are also found.
+        option = group.options.first {
+          ($0.locale?.identifier == subtitleTrack.language || $0.extendedLanguageTag == subtitleTrack.language)
+            && ($0.displayName == subtitleTrack.label || subtitleTrack.label == nil)
+        } ?? group.options.first {
+          $0.locale?.identifier == subtitleTrack.language || $0.extendedLanguageTag == subtitleTrack.language
+        }
+      } else {
+        option = nil
       }
       currentItem.select(option, in: group)
     }

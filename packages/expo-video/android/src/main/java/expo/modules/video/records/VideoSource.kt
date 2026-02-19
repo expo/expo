@@ -26,7 +26,8 @@ class VideoSource(
   @Field var metadata: VideoMetadata? = null,
   @Field var headers: Map<String, String>? = null,
   @Field var useCaching: Boolean = false,
-  @Field val contentType: ContentType = ContentType.AUTO
+  @Field val contentType: ContentType = ContentType.AUTO,
+  @Field val subtitles: List<SubtitleSource>? = null
 ) : Record, Serializable {
   private fun toMediaId(): String {
     return "uri:${this.uri}" +
@@ -72,6 +73,24 @@ class VideoSource(
           }
         }.build()
       )
+      subtitles?.forEach { subtitleSource ->
+        subtitleSource.uri?.let { subtitleUri ->
+          val subtitleConfig = MediaItem.SubtitleConfiguration.Builder(subtitleUri).apply {
+            // WebVTT is the most widely supported sidecar subtitle format on Android.
+            // Fall back to WebVTT as the default when the URI extension is not recognised.
+            val mimeType = when (subtitleUri.lastPathSegment?.substringAfterLast(".")?.lowercase()) {
+              "srt" -> androidx.media3.common.MimeTypes.APPLICATION_SUBRIP
+              "ttml", "xml", "dfxp" -> androidx.media3.common.MimeTypes.APPLICATION_TTML
+              "ssa", "ass" -> androidx.media3.common.MimeTypes.TEXT_SSA
+              else -> androidx.media3.common.MimeTypes.TEXT_VTT
+            }
+            setMimeType(mimeType)
+            subtitleSource.language?.let { setLanguage(it) }
+            subtitleSource.label?.let { setLabel(it) }
+          }.build()
+          addSubtitleConfiguration(subtitleConfig)
+        }
+      }
     }
     .build()
 

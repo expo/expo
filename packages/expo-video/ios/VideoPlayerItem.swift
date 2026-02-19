@@ -45,7 +45,17 @@ class VideoPlayerItem: AVPlayerItem {
         // Catch block is intentionally left empty
     }
 
-    super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
+    // When the source provides external subtitle files and the content is not HLS (which already
+    // embeds its own subtitle tracks in the manifest), build an AVMutableComposition that mixes in
+    // the sidecar subtitle tracks. This makes the external subtitles appear in the player's
+    // `mediaSelectionGroup(forMediaCharacteristic: .legible)` just like embedded ones.
+    if let externalSubtitles = videoSource.subtitles, !externalSubtitles.isEmpty, !self.isHls {
+      let composition = await Self.buildComposition(videoAsset: asset, subtitleSources: externalSubtitles)
+      super.init(asset: composition, automaticallyLoadedAssetKeys: nil)
+    } else {
+      super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
+    }
+
     self.createTracksLoadingTask()
   }
 
@@ -73,6 +83,121 @@ class VideoPlayerItem: AVPlayerItem {
       let hlsTracks = await loadHlsTracks(mainUrl: mainUrl)
       return tracks + hlsTracks
     }
+  }
+
+  // MARK: - Composition builder
+
+  /// Builds an `AVMutableComposition` containing the video and audio tracks from `videoAsset`
+  /// together with text subtitle tracks loaded from each `SubtitleSource`.
+  ///
+  /// The resulting composition is used as the backing asset for the `AVPlayerItem` so that
+  /// external WebVTT subtitle files appear in the player's media-selection group alongside any
+  /// subtitles embedded in the stream.
+  static func buildComposition(
+    videoAsset: AVURLAsset,
+    subtitleSources: [SubtitleSource]
+  ) async -> AVMutableComposition {
+    let composition = AVMutableComposition()
+
+    // Determine duration from the video asset (fall back to .indefinite if unavailable).
+    let duration = (try? await videoAsset.load(.duration)) ?? .indefinite
+    let timeRange = CMTimeRange(start: .zero, duration: duration)
+
+    // Copy video tracks.
+    if let videoTracks = try? await videoAsset.loadTracks(withMediaType: .video) {
+      for track in videoTracks {
+        if let compositionTrack = composition.addMutableTrack(
+          withMediaType: .video,
+          preferredTrackID: kCMPersistentTrackID_Invalid
+        ) {
+          try? compositionTrack.insertTimeRange(timeRange, of: track, at: .zero)
+        }
+      }
+    }
+
+    // Copy audio tracks.
+    if let audioTracks = try? await videoAsset.loadTracks(withMediaType: .audio) {
+      for track in audioTracks {
+        if let compositionTrack = composition.addMutableTrack(
+          withMediaType: .audio,
+          preferredTrackID: kCMPersistentTrackID_Invalid
+        ) {
+          try? compositionTrack.insertTimeRange(timeRange, of: track, at: .zero)
+        }
+      }
+    }
+
+    // Add external subtitle tracks.
+    for subtitleSource in subtitleSources {
+      guard let subtitleURL = subtitleSource.uri else {
+        continue
+      }
+
+      let subtitleAsset = AVURLAsset(url: subtitleURL)
+
+      // WebVTT files are loaded as .text tracks; closed-caption files as .closedCaption.
+      let textTracks = (try? await subtitleAsset.loadTracks(withMediaType: .text)) ?? []
+      let ccTracks = (try? await subtitleAsset.loadTracks(withMediaType: .closedCaption)) ?? []
+      let allSubtitleTracks = textTracks + ccTracks
+
+      guard !allSubtitleTracks.isEmpty else {
+        log.warn("[expo-video] No subtitle tracks found in: \(subtitleURL.absoluteString)")
+        continue
+      }
+
+      for subtitleTrack in allSubtitleTracks {
+        let mediaType = (try? await subtitleTrack.load(.mediaType)) ?? .text
+        guard let compositionTrack = composition.addMutableTrack(
+          withMediaType: mediaType,
+          preferredTrackID: kCMPersistentTrackID_Invalid
+        ) else {
+          continue
+        }
+
+        let subtitleDuration = (try? await subtitleAsset.load(.duration)) ?? duration
+        let subtitleRange = CMTimeRange(start: .zero, duration: subtitleDuration)
+        try? compositionTrack.insertTimeRange(subtitleRange, of: subtitleTrack, at: .zero)
+
+        // Attach locale metadata so that AVFoundation exposes this track through
+        // `mediaSelectionGroup(forMediaCharacteristic: .legible)`.
+        compositionTrack.metadata = Self.makeSubtitleMetadata(
+          language: subtitleSource.language,
+          label: subtitleSource.label
+        )
+
+        // Set the BCP-47 language tag so AVFoundation can resolve a Locale for this track.
+        if let language = subtitleSource.language {
+          compositionTrack.extendedLanguageTag = language
+        }
+      }
+    }
+
+    return composition
+  }
+
+  /// Builds the AVMetadataItem array that associates a language and optional label with a
+  /// composition subtitle track, enabling AVFoundation to surface it via media selection.
+  private static func makeSubtitleMetadata(language: String?, label: String?) -> [AVMetadataItem] {
+    var items: [AVMetadataItem] = []
+
+    if let language {
+      let langItem = AVMutableMetadataItem()
+      langItem.keySpace = .common
+      langItem.key = AVMetadataKey.commonKeyLanguage as NSString
+      langItem.value = language as NSString
+      langItem.locale = Locale(identifier: language)
+      items.append(langItem)
+    }
+
+    if let label {
+      let titleItem = AVMutableMetadataItem()
+      titleItem.keySpace = .common
+      titleItem.key = AVMetadataKey.commonKeyTitle as NSString
+      titleItem.value = label as NSString
+      items.append(titleItem)
+    }
+
+    return items
   }
 
   // MARK: - HLS Helpers

@@ -21,5 +21,8 @@ internal struct VideoSource: Record {
 
   @Field
   var contentType: ContentType = .auto
+
+  @Field
+  var subtitles: [SubtitleSource]? = nil
 }
 // swiftlint:enable redundant_optional_initialization
