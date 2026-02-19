@@ -40,7 +40,8 @@ export declare function watchStepCount(callback: PedometerUpdateCallback): Event
  * > Event delivery is best-effort and generally only while the app is running.
  * > Do not rely on it while the app is in the background or terminated.
  * > On Android, events are derived from walking/running activity transitions.
- * @platform android ios
+ * @platform android
+ * @platform ios
  */
 export declare function watchEventUpdates(callback: PedometerEventCallback): EventSubscription;
 /**
@@ -56,12 +57,14 @@ export declare function isRecordingAvailableAsync(): Promise<boolean>;
 /**
  * Start pedometer pause/resume event tracking.
  * Resolves to `false` when the platform does not support pedometer events.
- * @platform android ios
+ * @platform android
+ * @platform ios
  */
 export declare function startEventUpdatesAsync(): Promise<boolean>;
 /**
  * Stop pedometer pause/resume event tracking.
- * @platform android ios
+ * @platform android
+ * @platform ios
  */
 export declare function stopEventUpdatesAsync(): Promise<void>;
 /**

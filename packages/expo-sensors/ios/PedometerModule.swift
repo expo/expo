@@ -138,11 +138,9 @@ public final class PedometerModule: Module {
         guard let data else {
           return
         }
-        self?.sendEvent(
-          EVENT_PEDOMETER_UPDATE,
-          [
-            "steps": data.numberOfSteps
-          ])
+        self?.sendEvent(EVENT_PEDOMETER_UPDATE, [
+          "steps": data.numberOfSteps
+        ])
       }
 
       pedometer.startUpdates(from: startDate, withHandler: handler)
@@ -177,8 +175,7 @@ public final class PedometerModule: Module {
   private func stopUpdates() {
     guard watchHandler != nil,
       let permissions = appContext?.permissions,
-      permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self)
-    else {
+      permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) else {
       return
     }
 

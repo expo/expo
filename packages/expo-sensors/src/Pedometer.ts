@@ -63,7 +63,8 @@ export function watchStepCount(callback: PedometerUpdateCallback): EventSubscrip
  * > Event delivery is best-effort and generally only while the app is running.
  * > Do not rely on it while the app is in the background or terminated.
  * > On Android, events are derived from walking/running activity transitions.
- * @platform android ios
+ * @platform android
+ * @platform ios
  */
 export function watchEventUpdates(callback: PedometerEventCallback): EventSubscription {
   if (!ExponentPedometer.addListener) {
@@ -83,17 +84,18 @@ export function watchEventUpdates(callback: PedometerEventCallback): EventSubscr
  * > On Android, this checks whether the required Play Services Recording API components are available.
  * > Step history is only accessible while there is an active `subscribeRecording()` subscription.
  */
-export function isRecordingAvailableAsync(): Promise<boolean> {
+export async function isRecordingAvailableAsync(): Promise<boolean> {
   if (!ExponentPedometer.isRecordingAvailableAsync) {
-    return Promise.resolve(false);
+    return false;
   }
-  return ExponentPedometer.isRecordingAvailableAsync();
+  return await ExponentPedometer.isRecordingAvailableAsync();
 }
 
 /**
  * Start pedometer pause/resume event tracking.
  * Resolves to `false` when the platform does not support pedometer events.
- * @platform android ios
+ * @platform android
+ * @platform ios
  */
 export async function startEventUpdatesAsync(): Promise<boolean> {
   if (!ExponentPedometer.startEventUpdates) {
@@ -104,7 +106,8 @@ export async function startEventUpdatesAsync(): Promise<boolean> {
 
 /**
  * Stop pedometer pause/resume event tracking.
- * @platform android ios
+ * @platform android
+ * @platform ios
  */
 export async function stopEventUpdatesAsync(): Promise<void> {
   if (!ExponentPedometer.stopEventUpdates) {
