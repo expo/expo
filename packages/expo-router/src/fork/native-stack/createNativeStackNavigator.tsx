@@ -22,12 +22,7 @@ import {
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 
-import {
-  CompositionContext,
-  mergeOptions,
-  useCompositionRegistry,
-  type MergeOptionsCache,
-} from './composition-options';
+import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
 import { usePreviewTransition } from './usePreviewTransition';
 import {
@@ -140,10 +135,8 @@ function NativeStackNavigator({
   }, [computedDescriptors]);
   const { registry, contextValue } = useCompositionRegistry();
 
-  const mergeCacheRef = React.useRef<MergeOptionsCache>(new Map());
-
   const mergedDescriptors = React.useMemo(
-    () => mergeOptions(finalDescriptors, registry, computedState, mergeCacheRef.current),
+    () => mergeOptions(finalDescriptors, registry, computedState),
     [finalDescriptors, computedState, registry]
   );
   // END FORK

@@ -1,5 +1,4 @@
 export { mergeOptions } from './mergeOptions';
-export type { MergeOptionsCache } from './mergeOptions';
 export {
   CompositionContext,
   useCompositionRegistry,

@@ -1,5 +1,5 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { useMemo, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
@@ -107,10 +107,27 @@ export interface StackHeaderProps {
  * > **Note:** If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
  */
-export function StackHeaderComponent(props: StackHeaderProps) {
-  // This component will only render when used inside a page
-  const updatedOptions = useMemo(() => appendStackHeaderPropsToOptions({}, props), [props]);
-  useCompositionOption(updatedOptions);
+export function StackHeaderComponent({
+  children,
+  hidden,
+  asChild,
+  transparent,
+  blurEffect,
+  style,
+  largeStyle,
+}: StackHeaderProps) {
+  useCompositionOption(
+    () =>
+      appendStackHeaderPropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        { children, hidden, asChild, transparent, blurEffect, style, largeStyle } satisfies Record<
+          keyof StackHeaderProps,
+          unknown
+        >
+      ),
+    [children, hidden, asChild, transparent, blurEffect, style, largeStyle]
+  );
   return null;
 }
 

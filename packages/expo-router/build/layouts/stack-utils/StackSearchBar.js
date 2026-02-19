@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackSearchBar = StackSearchBar;
 exports.appendStackSearchBarPropsToOptions = appendStackSearchBarPropsToOptions;
-const react_1 = require("react");
 const composition_options_1 = require("../../fork/native-stack/composition-options");
 /**
  * A search bar component that integrates with the native stack header.
@@ -30,9 +29,63 @@ const composition_options_1 = require("../../fork/native-stack/composition-optio
  * }
  * ```
  */
-function StackSearchBar(props) {
-    const updatedOptions = (0, react_1.useMemo)(() => appendStackSearchBarPropsToOptions({}, props), [props]);
-    (0, composition_options_1.useCompositionOption)(updatedOptions);
+function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColor, cancelButtonText, disableBackButtonOverride, hideNavigationBar, hideWhenScrolling, inputType, obscureBackground, onBlur, onCancelButtonPress, onChangeText, onClose, onFocus, onOpen, onSearchButtonPress, placeholder, placement, allowToolbarIntegration, textColor, hintTextColor, headerIconColor, shouldShowHintSearchIcon, }) {
+    (0, composition_options_1.useCompositionOption)(() => appendStackSearchBarPropsToOptions({}, 
+    // satisfies ensures every prop is listed here; a missing prop would silently be
+    // undefined and absent from the dependency array below.
+    {
+        ref,
+        autoCapitalize,
+        autoFocus,
+        barTintColor,
+        tintColor,
+        cancelButtonText,
+        disableBackButtonOverride,
+        hideNavigationBar,
+        hideWhenScrolling,
+        inputType,
+        obscureBackground,
+        onBlur,
+        onCancelButtonPress,
+        onChangeText,
+        onClose,
+        onFocus,
+        onOpen,
+        onSearchButtonPress,
+        placeholder,
+        placement,
+        allowToolbarIntegration,
+        textColor,
+        hintTextColor,
+        headerIconColor,
+        shouldShowHintSearchIcon,
+    }), [
+        ref,
+        autoCapitalize,
+        autoFocus,
+        barTintColor,
+        tintColor,
+        cancelButtonText,
+        disableBackButtonOverride,
+        hideNavigationBar,
+        hideWhenScrolling,
+        inputType,
+        obscureBackground,
+        onBlur,
+        onCancelButtonPress,
+        onChangeText,
+        onClose,
+        onFocus,
+        onOpen,
+        onSearchButtonPress,
+        placeholder,
+        placement,
+        allowToolbarIntegration,
+        textColor,
+        hintTextColor,
+        headerIconColor,
+        shouldShowHintSearchIcon,
+    ]);
     return null;
 }
 function appendStackSearchBarPropsToOptions(options, props) {

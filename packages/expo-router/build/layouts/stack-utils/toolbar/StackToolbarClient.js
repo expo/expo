@@ -37,7 +37,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbar = void 0;
 exports.appendStackToolbarPropsToOptions = appendStackToolbarPropsToOptions;
 const react_1 = __importStar(require("react"));
-const react_2 = require("react");
 const StackToolbarButton_1 = require("./StackToolbarButton");
 const StackToolbarMenu_1 = require("./StackToolbarMenu");
 const StackToolbarSearchBarSlot_1 = require("./StackToolbarSearchBarSlot");
@@ -133,8 +132,10 @@ const StackToolbarHeader = ({ children, placement, asChild }) => {
     if (placement !== 'left' && placement !== 'right') {
         throw new Error(`Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`);
     }
-    const updatedOptions = (0, react_2.useMemo)(() => appendStackToolbarPropsToOptions({}, { children, placement, asChild }), [children, placement, asChild]);
-    (0, composition_options_1.useCompositionOption)(updatedOptions);
+    (0, composition_options_1.useCompositionOption)(() => appendStackToolbarPropsToOptions({}, 
+    // satisfies ensures every prop is listed here; a missing prop would silently be
+    // undefined and absent from the dependency array below.
+    { children, placement, asChild }), [children, placement, asChild]);
     return null;
 };
 function convertToolbarChildrenToUnstableItems(children, side) {

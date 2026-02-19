@@ -37,7 +37,7 @@ describe('useCompositionOption', () => {
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
-      renderHook(() => useCompositionOption({ title: 'Test' }));
+      renderHook(() => useCompositionOption(() => ({ title: 'Test' }), []));
     }).toThrow(
       'useCompositionOption must be used within a RouterCompositionOptionsProvider. This is likely a bug in Expo Router.'
     );
@@ -48,7 +48,7 @@ describe('useCompositionOption', () => {
   it('registers options on mount', () => {
     const context = createMockContext();
 
-    renderHook(() => useCompositionOption({ title: 'Hello' }), {
+    renderHook(() => useCompositionOption(() => ({ title: 'Hello' }), []), {
       wrapper: createWrapper(context),
     });
 
@@ -61,7 +61,7 @@ describe('useCompositionOption', () => {
   it('unregisters on unmount', () => {
     const context = createMockContext();
 
-    const { unmount } = renderHook(() => useCompositionOption({ title: 'Hello' }), {
+    const { unmount } = renderHook(() => useCompositionOption(() => ({ title: 'Hello' }), []), {
       wrapper: createWrapper(context),
     });
 
@@ -73,34 +73,35 @@ describe('useCompositionOption', () => {
     expect(context.unregister).toHaveBeenCalledWith('test-route', expect.any(String));
   });
 
-  it('skips re-assigning when options are deepEqual', () => {
+  it('skips re-assigning when dependencies are stable', () => {
     const context = createMockContext();
 
     const { rerender } = renderHook(
-      ({ options }: { options: Record<string, unknown> }) => useCompositionOption(options),
+      ({ title }: { title: string }) =>
+        useCompositionOption(() => ({ title, headerShown: true }), [title]),
       {
         wrapper: createWrapper(context),
-        initialProps: { options: { title: 'Same', headerShown: true } },
+        initialProps: { title: 'Same' },
       }
     );
 
     expect(context.setOptionsFor).toHaveBeenCalledTimes(1);
 
-    // Re-render with deeply equal but different reference
-    rerender({ options: { title: 'Same', headerShown: true } });
+    // Re-render with the same dependency value
+    rerender({ title: 'Same' });
 
     // Should not call setOptionsFor again
     expect(context.setOptionsFor).toHaveBeenCalledTimes(1);
   });
 
-  it('re-assigns when options change', () => {
+  it('re-assigns when dependencies change', () => {
     const context = createMockContext();
 
     const { rerender } = renderHook(
-      ({ options }: { options: Record<string, unknown> }) => useCompositionOption(options),
+      ({ title }: { title: string }) => useCompositionOption(() => ({ title }), [title]),
       {
         wrapper: createWrapper(context),
-        initialProps: { options: { title: 'First' } },
+        initialProps: { title: 'First' },
       }
     );
 
@@ -109,7 +110,7 @@ describe('useCompositionOption', () => {
       title: 'First',
     });
 
-    rerender({ options: { title: 'Second' } });
+    rerender({ title: 'Second' });
 
     expect(context.setOptionsFor).toHaveBeenCalledTimes(2);
     expect(context.setOptionsFor).toHaveBeenLastCalledWith('test-route', expect.any(String), {

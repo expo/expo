@@ -1,5 +1,5 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
@@ -109,9 +109,25 @@ export type StackScreenTitleProps = {
  * > **Note:** If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
  */
-export function StackScreenTitle(props: StackScreenTitleProps) {
-  const updatedOptions = useMemo(() => appendStackScreenTitlePropsToOptions({}, props), [props]);
-  useCompositionOption(updatedOptions);
+export function StackScreenTitle({
+  children,
+  asChild,
+  style,
+  largeStyle,
+  large,
+}: StackScreenTitleProps) {
+  useCompositionOption(
+    () =>
+      appendStackScreenTitlePropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        { children, asChild, style, largeStyle, large } satisfies Record<
+          keyof StackScreenTitleProps,
+          unknown
+        >
+      ),
+    [children, asChild, style, largeStyle, large]
+  );
   return null;
 }
 

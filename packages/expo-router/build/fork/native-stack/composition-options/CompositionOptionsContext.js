@@ -7,7 +7,6 @@ exports.useCompositionRegistry = useCompositionRegistry;
 exports.useCompositionOption = useCompositionOption;
 const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
-const utils_1 = require("../../../link/preview/utils");
 const useSafeLayoutEffect_1 = require("../../../views/useSafeLayoutEffect");
 /** @internal */
 exports.CompositionContext = (0, react_1.createContext)(null);
@@ -16,10 +15,6 @@ function registryReducer(state, action) {
     if (action.type === 'set') {
         const { routeKey, componentId, options } = action;
         const existingRouteMap = state.get(routeKey);
-        const existingOptions = existingRouteMap?.get(componentId);
-        if (existingOptions && (0, utils_1.deepEqual)(existingOptions, options)) {
-            return state;
-        }
         const newRouteMap = new Map(existingRouteMap);
         newRouteMap.set(componentId, options);
         const newState = new Map(state);
@@ -69,15 +64,15 @@ function useCompositionRegistry() {
  * Hook used by composition components to register their options in the composition registry.
  *
  * Registers options on mount/update via useSafeLayoutEffect, and unregisters on unmount.
+ * The factory is only called when dependencies change (like `useMemo`).
  */
-function useCompositionOption(options) {
+function useCompositionOption(factory, dependencies) {
     const context = (0, react_1.use)(exports.CompositionContext);
     if (!context) {
         throw new Error('useCompositionOption must be used within a RouterCompositionOptionsProvider. This is likely a bug in Expo Router.');
     }
     const componentId = (0, react_1.useId)();
     const route = (0, native_1.useRoute)();
-    const previousOptionsRef = (0, react_1.useRef)({});
     const { setOptionsFor, unregister } = context;
     (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
         return () => {
@@ -85,11 +80,7 @@ function useCompositionOption(options) {
         };
     }, [route.key, componentId, unregister]);
     (0, useSafeLayoutEffect_1.useSafeLayoutEffect)(() => {
-        if ((0, utils_1.deepEqual)(previousOptionsRef.current, options)) {
-            return;
-        }
-        setOptionsFor(route.key, componentId, options);
-        previousOptionsRef.current = options;
-    }, [route.key, componentId, options, setOptionsFor, unregister]);
+        setOptionsFor(route.key, componentId, factory());
+    }, [route.key, componentId, setOptionsFor, ...dependencies]);
 }
 //# sourceMappingURL=CompositionOptionsContext.js.map

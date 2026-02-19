@@ -114,8 +114,7 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         return needsNewMap ? result : computedDescriptors;
     }, [computedDescriptors]);
     const { registry, contextValue } = (0, composition_options_1.useCompositionRegistry)();
-    const mergeCacheRef = React.useRef(new Map());
-    const mergedDescriptors = React.useMemo(() => (0, composition_options_1.mergeOptions)(finalDescriptors, registry, computedState, mergeCacheRef.current), [finalDescriptors, computedState, registry]);
+    const mergedDescriptors = React.useMemo(() => (0, composition_options_1.mergeOptions)(finalDescriptors, registry, computedState), [finalDescriptors, computedState, registry]);
     // END FORK
     return (
     // START FORK

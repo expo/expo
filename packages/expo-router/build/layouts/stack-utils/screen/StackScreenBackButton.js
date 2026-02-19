@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackScreenBackButton = StackScreenBackButton;
 exports.appendStackScreenBackButtonPropsToOptions = appendStackScreenBackButtonPropsToOptions;
-const react_1 = require("react");
 const composition_options_1 = require("../../../fork/native-stack/composition-options");
 /**
  * Component to configure the back button.
@@ -41,9 +40,11 @@ const composition_options_1 = require("../../../fork/native-stack/composition-op
  * > **Note:** If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
  */
-function StackScreenBackButton(props) {
-    const updatedOptions = (0, react_1.useMemo)(() => appendStackScreenBackButtonPropsToOptions({}, props), [props]);
-    (0, composition_options_1.useCompositionOption)(updatedOptions);
+function StackScreenBackButton({ children, style, withMenu, displayMode, hidden, src, }) {
+    (0, composition_options_1.useCompositionOption)(() => appendStackScreenBackButtonPropsToOptions({}, 
+    // satisfies ensures every prop is listed here; a missing prop would silently be
+    // undefined and absent from the dependency array below.
+    { children, style, withMenu, displayMode, hidden, src }), [children, style, withMenu, displayMode, hidden, src]);
     return null;
 }
 function appendStackScreenBackButtonPropsToOptions(options, props) {

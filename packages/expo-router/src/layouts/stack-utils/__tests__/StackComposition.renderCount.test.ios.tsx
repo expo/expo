@@ -269,7 +269,7 @@ describe('Stack composition components render count', () => {
     expect(indexRender).toHaveBeenCalledTimes(1);
 
     // ScreenStackItem should NOT be called — composition options unchanged
-    // The deepEqual guard in useCompositionOption prevents re-registration
+    // The dependency array in useCompositionOption prevents re-registration
     expect(ScreenStackItem).not.toHaveBeenCalled();
   });
 
@@ -391,11 +391,7 @@ describe('Stack composition components render count', () => {
             </>
           )}
           <Text testID="content">Content</Text>
-          <Button
-            testID="nextSuite"
-            title="Next"
-            onPress={() => setSuite((s) => (s + 1) % 3)}
-          />
+          <Button testID="nextSuite" title="Next" onPress={() => setSuite((s) => (s + 1) % 3)} />
         </>
       );
     }

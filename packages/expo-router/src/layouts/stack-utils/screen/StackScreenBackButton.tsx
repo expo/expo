@@ -1,5 +1,4 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { useMemo } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
@@ -73,12 +72,26 @@ export interface StackScreenBackButtonProps {
  * > **Note:** If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
  */
-export function StackScreenBackButton(props: StackScreenBackButtonProps) {
-  const updatedOptions = useMemo(
-    () => appendStackScreenBackButtonPropsToOptions({}, props),
-    [props]
+export function StackScreenBackButton({
+  children,
+  style,
+  withMenu,
+  displayMode,
+  hidden,
+  src,
+}: StackScreenBackButtonProps) {
+  useCompositionOption(
+    () =>
+      appendStackScreenBackButtonPropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        { children, style, withMenu, displayMode, hidden, src } satisfies Record<
+          keyof StackScreenBackButtonProps,
+          unknown
+        >
+      ),
+    [children, style, withMenu, displayMode, hidden, src]
   );
-  useCompositionOption(updatedOptions);
   return null;
 }
 

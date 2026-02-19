@@ -55,21 +55,6 @@ describe('registryReducer', () => {
       expect(result.get('route-1')!.get('comp-1')).toEqual({ title: 'New' });
     });
 
-    it('returns same state reference when options are deepEqual', () => {
-      const state: CompositionRegistry = new Map([
-        ['route-1', new Map([['comp-1', { title: 'Same', headerShown: true }]])],
-      ]);
-
-      const result = registryReducer(state, {
-        type: 'set',
-        routeKey: 'route-1',
-        componentId: 'comp-1',
-        options: { title: 'Same', headerShown: true },
-      });
-
-      expect(result).toBe(state);
-    });
-
     it('creates both outer and inner Maps for first registration', () => {
       const state: CompositionRegistry = new Map();
 

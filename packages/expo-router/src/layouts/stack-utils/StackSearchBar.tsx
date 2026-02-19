@@ -1,5 +1,4 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { useMemo } from 'react';
 import type { SearchBarProps } from 'react-native-screens';
 
 import { useCompositionOption } from '../../fork/native-stack/composition-options';
@@ -35,9 +34,94 @@ export interface StackSearchBarProps extends SearchBarProps {}
  * }
  * ```
  */
-export function StackSearchBar(props: StackSearchBarProps) {
-  const updatedOptions = useMemo(() => appendStackSearchBarPropsToOptions({}, props), [props]);
-  useCompositionOption(updatedOptions);
+export function StackSearchBar({
+  ref,
+  autoCapitalize,
+  autoFocus,
+  barTintColor,
+  tintColor,
+  cancelButtonText,
+  disableBackButtonOverride,
+  hideNavigationBar,
+  hideWhenScrolling,
+  inputType,
+  obscureBackground,
+  onBlur,
+  onCancelButtonPress,
+  onChangeText,
+  onClose,
+  onFocus,
+  onOpen,
+  onSearchButtonPress,
+  placeholder,
+  placement,
+  allowToolbarIntegration,
+  textColor,
+  hintTextColor,
+  headerIconColor,
+  shouldShowHintSearchIcon,
+}: StackSearchBarProps) {
+  useCompositionOption(
+    () =>
+      appendStackSearchBarPropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        {
+          ref,
+          autoCapitalize,
+          autoFocus,
+          barTintColor,
+          tintColor,
+          cancelButtonText,
+          disableBackButtonOverride,
+          hideNavigationBar,
+          hideWhenScrolling,
+          inputType,
+          obscureBackground,
+          onBlur,
+          onCancelButtonPress,
+          onChangeText,
+          onClose,
+          onFocus,
+          onOpen,
+          onSearchButtonPress,
+          placeholder,
+          placement,
+          allowToolbarIntegration,
+          textColor,
+          hintTextColor,
+          headerIconColor,
+          shouldShowHintSearchIcon,
+        } satisfies Record<keyof StackSearchBarProps, unknown>
+      ),
+    [
+      ref,
+      autoCapitalize,
+      autoFocus,
+      barTintColor,
+      tintColor,
+      cancelButtonText,
+      disableBackButtonOverride,
+      hideNavigationBar,
+      hideWhenScrolling,
+      inputType,
+      obscureBackground,
+      onBlur,
+      onCancelButtonPress,
+      onChangeText,
+      onClose,
+      onFocus,
+      onOpen,
+      onSearchButtonPress,
+      placeholder,
+      placement,
+      allowToolbarIntegration,
+      textColor,
+      hintTextColor,
+      headerIconColor,
+      shouldShowHintSearchIcon,
+    ]
+  );
   return null;
 }
 

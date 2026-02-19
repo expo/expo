@@ -10,28 +10,18 @@ export type MergeOptionsCacheEntry = {
   result: NativeStackDescriptorMap[string];
 };
 
-export type MergeOptionsCache = Map<string, MergeOptionsCacheEntry>;
-
 /**
  * Merges composition component options into navigation descriptors.
- *
- * Does not mutate `descriptors`, `registry`, or `state`.
- * The `cache` parameter **is** mutated as a side effect for memoization purposes.
  *
  * For each descriptor:
  * 1. If no composition options registered → pass through unchanged
  * 2. If route is preloaded AND not focused → skip composition (pass through)
  * 3. Otherwise → merge descriptor.options with composition options (composition wins)
- *
- * Per-route results are memoized in cache by reference
- * equality on `descriptor` and `routeOptions`. Stale entries (routes no longer
- * present) are pruned after each call.
  */
 export function mergeOptions(
   descriptors: NativeStackDescriptorMap,
   registry: CompositionRegistry,
-  state: StackNavigationState<ParamListBase>,
-  cache: MergeOptionsCache
+  state: StackNavigationState<ParamListBase>
 ): NativeStackDescriptorMap {
   const result: NativeStackDescriptorMap = {};
   const focusedKey = state.routes[state.index]?.key;
@@ -43,9 +33,6 @@ export function mergeOptions(
     // No composition options or empty map → pass through
     if (!routeOptions || routeOptions.size === 0) {
       result[key] = descriptor;
-      if (cache) {
-        cache.set(key, { descriptor, routeOptions: undefined, result: descriptor });
-      }
       continue;
     }
 
@@ -53,24 +40,11 @@ export function mergeOptions(
     const isPreloaded = state.preloadedRoutes?.some((r) => r.key === key) ?? false;
     if (isPreloaded && key !== focusedKey) {
       result[key] = descriptor;
-      if (cache) {
-        cache.set(key, { descriptor, routeOptions: undefined, result: descriptor });
-      }
-      continue;
-    }
-
-    // Cache hit: reuse previous result when descriptor and routeOptions refs are unchanged
-    const cached = cache.get(key);
-    if (cached && cached.descriptor === descriptor && cached.routeOptions === routeOptions) {
-      result[key] = cached.result;
       continue;
     }
 
     // Merge: descriptor options as base, composition options override
-    const mergedOptions = { ...descriptor.options };
-    for (const [, componentOptions] of routeOptions) {
-      Object.assign(mergedOptions, componentOptions);
-    }
+    const mergedOptions = Object.assign({}, descriptor.options, ...routeOptions.values());
 
     const merged = {
       ...descriptor,
@@ -78,15 +52,6 @@ export function mergeOptions(
     };
 
     result[key] = merged;
-
-    cache.set(key, { descriptor, routeOptions, result: merged });
-  }
-
-  // Prune stale cache entries for routes no longer in descriptors
-  for (const key of cache.keys()) {
-    if (!(key in descriptors)) {
-      cache.delete(key);
-    }
   }
 
   return result;

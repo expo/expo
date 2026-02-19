@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackHeaderComponent = StackHeaderComponent;
 exports.appendStackHeaderPropsToOptions = appendStackHeaderPropsToOptions;
-const react_1 = require("react");
 const react_native_1 = require("react-native");
 const composition_options_1 = require("../../fork/native-stack/composition-options");
 /**
@@ -47,10 +46,11 @@ const composition_options_1 = require("../../fork/native-stack/composition-optio
  * > **Note:** If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
  */
-function StackHeaderComponent(props) {
-    // This component will only render when used inside a page
-    const updatedOptions = (0, react_1.useMemo)(() => appendStackHeaderPropsToOptions({}, props), [props]);
-    (0, composition_options_1.useCompositionOption)(updatedOptions);
+function StackHeaderComponent({ children, hidden, asChild, transparent, blurEffect, style, largeStyle, }) {
+    (0, composition_options_1.useCompositionOption)(() => appendStackHeaderPropsToOptions({}, 
+    // satisfies ensures every prop is listed here; a missing prop would silently be
+    // undefined and absent from the dependency array below.
+    { children, hidden, asChild, transparent, blurEffect, style, largeStyle }), [children, hidden, asChild, transparent, blurEffect, style, largeStyle]);
     return null;
 }
 function appendStackHeaderPropsToOptions(options, props) {

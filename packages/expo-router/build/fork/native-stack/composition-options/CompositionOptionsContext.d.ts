@@ -1,4 +1,5 @@
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import { type DependencyList } from 'react';
 import type { CompositionContextValue, CompositionRegistry } from './types';
 /** @internal */
 export declare const CompositionContext: import("react").Context<CompositionContextValue | null>;
@@ -32,7 +33,8 @@ export declare function useCompositionRegistry(): {
  * Hook used by composition components to register their options in the composition registry.
  *
  * Registers options on mount/update via useSafeLayoutEffect, and unregisters on unmount.
+ * The factory is only called when dependencies change (like `useMemo`).
  */
-export declare function useCompositionOption(options: Partial<NativeStackNavigationOptions>): void;
+export declare function useCompositionOption(factory: () => Partial<NativeStackNavigationOptions>, dependencies: DependencyList): void;
 export {};
 //# sourceMappingURL=CompositionOptionsContext.d.ts.map

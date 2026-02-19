@@ -2,10 +2,9 @@
 
 import { useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { createContext, use, useCallback, useId, useReducer, useRef } from 'react';
+import { createContext, use, useCallback, useId, useReducer, type DependencyList } from 'react';
 
 import type { CompositionContextValue, CompositionRegistry } from './types';
-import { deepEqual } from '../../../link/preview/utils';
 import { useSafeLayoutEffect } from '../../../views/useSafeLayoutEffect';
 
 /** @internal */
@@ -28,10 +27,6 @@ export function registryReducer(
   if (action.type === 'set') {
     const { routeKey, componentId, options } = action;
     const existingRouteMap = state.get(routeKey);
-    const existingOptions = existingRouteMap?.get(componentId);
-    if (existingOptions && deepEqual(existingOptions, options)) {
-      return state;
-    }
     const newRouteMap = new Map(existingRouteMap);
     newRouteMap.set(componentId, options);
     const newState = new Map(state);
@@ -89,8 +84,12 @@ export function useCompositionRegistry() {
  * Hook used by composition components to register their options in the composition registry.
  *
  * Registers options on mount/update via useSafeLayoutEffect, and unregisters on unmount.
+ * The factory is only called when dependencies change (like `useMemo`).
  */
-export function useCompositionOption(options: Partial<NativeStackNavigationOptions>) {
+export function useCompositionOption(
+  factory: () => Partial<NativeStackNavigationOptions>,
+  dependencies: DependencyList
+) {
   const context = use(CompositionContext);
   if (!context) {
     throw new Error(
@@ -101,7 +100,6 @@ export function useCompositionOption(options: Partial<NativeStackNavigationOptio
   const componentId = useId();
 
   const route = useRoute();
-  const previousOptionsRef = useRef<Partial<NativeStackNavigationOptions>>({});
   const { setOptionsFor, unregister } = context;
 
   useSafeLayoutEffect(() => {
@@ -111,10 +109,6 @@ export function useCompositionOption(options: Partial<NativeStackNavigationOptio
   }, [route.key, componentId, unregister]);
 
   useSafeLayoutEffect(() => {
-    if (deepEqual(previousOptionsRef.current, options)) {
-      return;
-    }
-    setOptionsFor(route.key, componentId, options);
-    previousOptionsRef.current = options;
-  }, [route.key, componentId, options, setOptionsFor, unregister]);
+    setOptionsFor(route.key, componentId, factory());
+  }, [route.key, componentId, setOptionsFor, ...dependencies]);
 }
