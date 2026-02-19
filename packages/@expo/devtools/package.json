@@ -2,7 +2,6 @@
   "name": "@expo/devtools",
   "version": "55.0.2",
   "description": "DevTools plugin helpers for Expo",
-  "type": "module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -14,7 +13,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-module build && ncc build src/index.node.ts -o build/ncc-node && mv build/ncc-node/index.js build/index.node.js && rm -rf build/ncc-node",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -48,6 +47,7 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
+    "@vercel/ncc": "^0.38.3",
     "expo-module-scripts": "^55.0.2",
     "ws": "^8.18.0"
   },
