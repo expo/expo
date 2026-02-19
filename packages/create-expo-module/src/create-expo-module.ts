@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import ejs from 'ejs';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import prompts from 'prompts';
 
@@ -23,7 +24,7 @@ import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './tele
 import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
 import { env } from './utils/env';
 import { newStep } from './utils/ora';
-import { downloadAndExtractTarball } from './utils/tar';
+import { extractLocalTarball } from './utils/tar';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -204,12 +205,41 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
 }
 
 /**
- * Asks NPM registry for the url to the tarball.
+ * Downloads a package tarball using `npm pack` and returns the filename.
  */
-async function getNpmTarballUrl(packageName: string, version: string = 'latest'): Promise<string> {
-  debug(`Using module template ${chalk.bold(packageName)}@${chalk.bold(version)}`);
-  const { stdout } = await spawnAsync('npm', ['view', `${packageName}@${version}`, 'dist.tarball']);
-  return stdout.trim();
+async function npmPackAsync(packageName: string, cwd: string): Promise<string> {
+  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  const cmd = ['pack', packageName, '--json'];
+  const cmdString = `${npm} ${cmd.join(' ')}`;
+  debug('Run:', cmdString, `(cwd: ${cwd})`);
+
+  let results: string;
+  try {
+    results = (await spawnAsync(npm, cmd, { cwd })).stdout?.trim();
+  } catch (error: any) {
+    if (error?.stderr?.match(/npm ERR! code E404/)) {
+      const pkg =
+        error.stderr.match(/npm ERR! 404\s+'(.*)' is not in this registry\./)?.[1] ?? error.stderr;
+      throw new Error(`NPM package not found: ` + pkg);
+    }
+    throw error;
+  }
+
+  if (!results) {
+    throw new Error(`No output from "${cmdString}"`);
+  }
+
+  try {
+    const json = JSON.parse(results);
+    if (!Array.isArray(json) || !json[0]?.filename) {
+      throw new Error(`Invalid response from npm: ${results}`);
+    }
+    return json[0].filename;
+  } catch (error: any) {
+    throw new Error(
+      `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
+    );
+  }
 }
 
 /**
@@ -255,12 +285,13 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
   return await newStep('Downloading module template from npm', async (step) => {
     const templateVersion = await getTemplateVersion(isLocal);
     const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
+    const tmpDir = path.join(os.tmpdir(), '.create-expo-module');
 
+    await fs.promises.mkdir(tmpDir, { recursive: true });
+
+    let filename: string;
     try {
-      await downloadAndExtractTarball({
-        url: await getNpmTarballUrl(packageName, templateVersion),
-        dir: targetDir,
-      });
+      filename = await npmPackAsync(`${packageName}@${templateVersion}`, tmpDir);
     } catch {
       console.log();
       console.warn(
@@ -268,11 +299,15 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
           "Couldn't download the versioned template from npm, falling back to the latest version."
         )
       );
-      await downloadAndExtractTarball({
-        url: await getNpmTarballUrl(packageName, 'latest'),
-        dir: targetDir,
-      });
+      filename = await npmPackAsync(`${packageName}@latest`, tmpDir);
     }
+
+    await extractLocalTarball({
+      filePath: path.join(tmpDir, filename),
+      dir: targetDir,
+    });
+
+    await fs.promises.rm(tmpDir, { recursive: true, force: true });
 
     step.succeed('Downloaded module template from npm registry.');
 
