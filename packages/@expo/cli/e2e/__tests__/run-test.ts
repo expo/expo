@@ -21,6 +21,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/run').expoRun`);
   expect(modules).toStrictEqual([
+    '@expo/cli/build/src/events/index.js',
+    '@expo/cli/build/src/events/stream.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/run/hints.js',
     '@expo/cli/build/src/run/index.js',
