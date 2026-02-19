@@ -236,7 +236,7 @@ Let's learn what the above code does:
 
 In the previous step, we triggered the `onStart()` callback for the tap gesture chained to the `Gesture.Tap()` method. For the pan gesture, specify an `onChange()` callback, which runs when the gesture is active and moving.
 
-1. Create a `drag` object to handle the pan gesture. The `onChange()` callback accepts `event` as a parameter. `changeX` and `changeY` properties hold the change in position since the last event. and update the values stored in `translateX` and `translateY`.
+1. Create a `drag` object to handle the pan gesture. The `onChange()` callback accepts `event` as a parameter. `changeX` and `changeY` properties hold the change in position since the last event and update the values stored in `translateX` and `translateY`.
 2. Define the `containerStyle` object using the `useAnimatedStyle()` hook. It will return an array of transforms. For the `<Animated.View>` component, we need to set the `transform` property to the `translateX` and `translateY` values. This will change the sticker's position when the gesture is active.
 
 ```tsx components/EmojiSticker.tsx
