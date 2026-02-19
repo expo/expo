@@ -69,13 +69,13 @@ export class Paths extends PathUtilities {
  * ```
  */
 export class File extends ExpoFileSystem.FileSystemFile implements Blob {
-  declare static downloadFileAsync: (
+  static downloadFileAsync: (
     url: string,
     destination: Directory | File,
     options?: DownloadOptions
   ) => Promise<File>;
 
-  declare static pickFileAsync: (initialUri?: string, mimeType?: string) => Promise<File | File[]>;
+  static pickFileAsync: (initialUri?: string, mimeType?: string) => Promise<File | File[]>;
 
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
@@ -163,7 +163,7 @@ File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
  * ```
  */
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
-  declare static pickDirectoryAsync: (initialUri?: string) => Promise<Directory>;
+  static pickDirectoryAsync: (initialUri?: string) => Promise<Directory>;
 
   /**
    * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
