@@ -6,7 +6,7 @@ import Button from '../../components/Button';
 
 export default function ContactApiScreen() {
   const [contact, setContact] = useState<Contact | null>(null);
-  const [status, setStatus] = useState<string>('');
+  const [result, setResult] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -17,10 +17,10 @@ export default function ContactApiScreen() {
     setLoading(true);
     try {
       const result = await fn();
-      setStatus(JSON.stringify(result ?? null, null, 2));
+      setResult(JSON.stringify(result ?? null, null, 2));
     } catch (error: any) {
       console.error(error);
-      setStatus(JSON.stringify({ error: error.message }, null, 2));
+      setResult(JSON.stringify({ error: error.message }, null, 2));
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,7 @@ export default function ContactApiScreen() {
     <View style={styles.container}>
       <View style={styles.outputContainer}>
         <ScrollView nestedScrollEnabled>
-          <Text style={styles.status}>{loading ? 'Loading...' : status}</Text>
+          <Text style={styles.result}>{loading ? 'Loading...' : result}</Text>
         </ScrollView>
       </View>
 
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     padding: 10,
   },
-  status: {
+  result: {
     fontSize: 12,
     fontFamily: 'monospace',
   },
