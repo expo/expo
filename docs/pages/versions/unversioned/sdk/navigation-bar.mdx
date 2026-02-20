@@ -108,44 +108,12 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add the following configuration to your native project:
 
-- To apply `backgroundColor` to the navigation bar, add `navigationBarColor` to **android/app/src/main/res/values/colors.xml**:
+- To apply `visibility` to the navigation bar, add `expo_navigation_bar_visibility` to **android/app/src/main/res/values/strings.xml**:
 
   ```xml
   <resources>
     <!-- ... -->
-    <color name="navigationBarColor">#0f172a</color>
-  </resources>
-  ```
-
-  Then, apply `android:navigationBarColor` to **android/app/src/main/res/values/styles.xml**:
-
-  ```xml
-  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-    <!-- ... -->
-    <item name="android:navigationBarColor">@color/navigationBarColor</item>
-  </style>
-  ```
-
-- To apply `borderColor`, `visibility`, `position`, and `behavior` to the navigation bar, add `expo_navigation_bar_border_color`, `expo_navigation_bar_visibility`, `expo_navigation_bar_position`, and `expo_navigation_bar_behavior` to **android/app/src/main/res/values/strings.xml**:
-
-  ```xml
-  <resources>
-    <!-- ... -->
-    <!-- For `expo_navigation_bar_border_color`, convert the color string to a 32-bit integer. -->
-    <string name="expo_navigation_bar_border_color"
-    translatable="false">-14735049</string>
     <string name="expo_navigation_bar_visibility" translatable="false">visible</string>
-    <string name="expo_navigation_bar_position" translatable="false">relative</string>
-    <string name="expo_navigation_bar_behavior" translatable="false">inset-swipe</string>
-  </resources>
-  ```
-
-- To apply `legacyVisible` to the navigation bar, add `expo_navigation_bar_legacy_visible` to **android/app/src/main/res/values/strings.xml**:
-
-  ```xml
-  <resources>
-    <!-- ... -->
-    <string name="expo_navigation_bar_legacy_visible" translatable="false">immersive</string>
   </resources>
   ```
 
