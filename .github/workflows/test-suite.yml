@@ -13,6 +13,9 @@ on:
       - packages/**
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!packages/create-expo/**'
+      - '!packages/create-expo-nightly/**'
+      - '!packages/create-expo-module/**'
       - '!**.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
@@ -26,6 +29,9 @@ on:
       - packages/**
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!packages/create-expo/**'
+      - '!packages/create-expo-nightly/**'
+      - '!packages/create-expo-module/**'
       - '!**.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
@@ -63,6 +69,8 @@ jobs:
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/**",
+            "!packages/@expo/cli/**",
+            "!packages/{create-expo,create-expo-nightly,create-expo-module}/**""
             yarn.lock,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
