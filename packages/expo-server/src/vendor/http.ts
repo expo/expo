@@ -123,21 +123,34 @@ export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Header
   return headers;
 }
 
-export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
-  res.statusMessage = expoRes.statusText;
-  res.statusCode = expoRes.status;
+interface RespondOptions {
+  signal?: AbortSignal;
+}
 
-  if (typeof res.setHeaders === 'function') {
-    res.setHeaders(expoRes.headers);
+export async function respond(
+  nodeResponse: http.ServerResponse,
+  webResponse: Response,
+  options?: RespondOptions
+): Promise<void> {
+  nodeResponse.statusMessage = webResponse.statusText;
+  nodeResponse.statusCode = webResponse.status;
+
+  if (typeof nodeResponse.setHeaders === 'function') {
+    nodeResponse.setHeaders(webResponse.headers);
   } else {
-    for (const [key, value] of expoRes.headers.entries()) {
-      res.appendHeader(key, value);
+    for (const [key, value] of webResponse.headers.entries()) {
+      nodeResponse.appendHeader(key, value);
     }
   }
 
-  if (expoRes.body) {
-    await pipeline(Readable.fromWeb(expoRes.body as NodeReadableStream), res);
+  if (nodeResponse.writableEnded || nodeResponse.destroyed) {
+    return;
+  }
+
+  if (webResponse.body && !options?.signal?.aborted) {
+    const body = Readable.fromWeb(webResponse.body as NodeReadableStream);
+    await pipeline(body, nodeResponse, { signal: options?.signal });
   } else {
-    res.end();
+    nodeResponse.end();
   }
 }
