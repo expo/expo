@@ -123,6 +123,26 @@ export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Header
   return headers;
 }
 
+/** Assign Headers to a Node.js OutgoingMessage (request) */
+const assignOutgoingMessageHeaders = (outgoing: http.OutgoingMessage, headers: Headers) => {
+  // Preassemble array headers, mostly only for Set-Cookie
+  // We're avoiding `getSetCookie` since support is unclear in Node 18
+  const collection: Record<string, string | string[]> = {};
+  for (const [key, value] of headers) {
+    if (Array.isArray(collection[key])) {
+      collection[key].push(value);
+    } else if (collection[key] != null) {
+      collection[key] = [collection[key], value];
+    } else {
+      collection[key] = value;
+    }
+  }
+  // We don't use `setHeaders` due to a Bun bug (Fix: https://github.com/oven-sh/bun/pull/27050)
+  for (const key in collection) {
+    outgoing.setHeader(key, collection[key]);
+  }
+};
+
 interface RespondOptions {
   signal?: AbortSignal;
 }
@@ -132,20 +152,13 @@ export async function respond(
   webResponse: Response,
   options?: RespondOptions
 ): Promise<void> {
-  nodeResponse.statusMessage = webResponse.statusText;
-  nodeResponse.statusCode = webResponse.status;
-
-  if (typeof nodeResponse.setHeaders === 'function') {
-    nodeResponse.setHeaders(webResponse.headers);
-  } else {
-    for (const [key, value] of webResponse.headers.entries()) {
-      nodeResponse.appendHeader(key, value);
-    }
-  }
-
   if (nodeResponse.writableEnded || nodeResponse.destroyed) {
     return;
   }
+
+  nodeResponse.statusMessage = webResponse.statusText;
+  nodeResponse.statusCode = webResponse.status;
+  assignOutgoingMessageHeaders(nodeResponse, webResponse.headers);
 
   if (webResponse.body && !options?.signal?.aborted) {
     const body = Readable.fromWeb(webResponse.body as NodeReadableStream);
