@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `monospacedDigit` modifier. ([#43328](https://github.com/expo/expo/pull/43328) by [@axeelz](https://github.com/axeelz))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

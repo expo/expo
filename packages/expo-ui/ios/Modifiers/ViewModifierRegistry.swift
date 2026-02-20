@@ -174,6 +174,16 @@ internal struct ItalicModifier: ViewModifier, Record {
   }
 }
 
+internal struct MonospacedDigitModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *) {
+      content.monospacedDigit()
+    } else {
+      content
+    }
+  }
+}
+
 internal struct TintModifier: ViewModifier, Record {
   @Field var color: Color?
 
@@ -1324,6 +1334,11 @@ public class ViewModifierRegistry {
       return text.bold()
     case "italic":
       return text.italic()
+    case "monospacedDigit":
+      if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *) {
+        return text.monospacedDigit()
+      }
+      return text
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
       if let family = modifier.family {
@@ -1520,6 +1535,10 @@ extension ViewModifierRegistry {
 
     register("italic") { params, appContext, _ in
       return try ItalicModifier(from: params, appContext: appContext)
+    }
+
+    register("monospacedDigit") { params, appContext, _ in
+      return try MonospacedDigitModifier(from: params, appContext: appContext)
     }
 
     register("tint") { params, appContext, _ in
