@@ -90,6 +90,7 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   const controller = new AbortController();
   res.once('close', () => controller.abort());
   res.once('error', (err) => controller.abort(err));
+  req.once('error', (err) => controller.abort(err));
 
   const init: RequestInit = {
     method: req.method,
