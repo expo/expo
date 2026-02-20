@@ -8,13 +8,18 @@ struct ContentView: View {
     @State private var showAlert: Bool = false
     @State private var messageTimer: Timer?
     @State private var messageCounter = 0
-    @State private var stateSubscription: AnyCancellable?
+    @State private var stateSubscriptions: [AnyCancellable?] = []
     
     var body: some View {
         NavigationStack {
             NavigationLink(destination: ReactNativeView(moduleName: "main"), label: {
                 Text("Open React Native App")
                     .accessibilityIdentifier("openReactNativeButton")
+                    .font(.largeTitle)
+            })
+            NavigationLink(destination: StateView(), label: {
+                Text("Open Shared State screen")
+                    .accessibilityIdentifier("openStateScreen")
                     .font(.largeTitle)
             })
         }
@@ -44,11 +49,35 @@ struct ContentView: View {
             setTime()
         }
         
-        stateSubscription = BrownfieldState.subscribe("counter") { count in
-            if let count = count as? Double {
-                BrownfieldState.set("counter-duplicated", count * 2)
+        stateSubscriptions.append(
+            BrownfieldState.subscribe("number", as: Double.self) { number in
+                BrownfieldState.set("number", number * 2)
             }
-        }
+        )
+        stateSubscriptions.append(
+            BrownfieldState.subscribe("string", as: String.self) { string in
+                BrownfieldState.set("string", string + "po")
+            }
+        )
+        stateSubscriptions.append(
+            BrownfieldState.subscribe("boolean", as: Bool.self) { bool in
+                BrownfieldState.set("boolean", !bool)
+            }
+        )
+        stateSubscriptions.append(
+            BrownfieldState.subscribe("array", as: [Any?].self) { array in
+                let additions: [Any?] = [4, 5.6, false, nil, ["test": "test"]]
+                BrownfieldState.set("array", array + additions)
+            }
+        )
+        stateSubscriptions.append(
+            BrownfieldState.subscribe("object", as: [String: Any?].self) { object in
+                var updated = object
+                updated["native"] = true
+                updated["nested"] = ["key": "value", "nums": [1, 2.3, nil]] as [String: Any]
+                BrownfieldState.set("object", updated)
+            }
+        )
     }
     
     private func onDisappear() {
@@ -57,7 +86,9 @@ struct ContentView: View {
         }
         messageTimer?.invalidate()
         messageTimer = nil
-        stateSubscription?.cancel()
+        stateSubscriptions.forEach { sub in
+            sub?.cancel()
+        }
     }
     
     private func sendMessage() {
