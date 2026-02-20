@@ -25,6 +25,15 @@ function memoize(fn) {
 const memoizeWarning = memoize((message) => {
     debug(message);
 });
+function getIsHermesV1() {
+    try {
+        const { version } = require('hermes-compiler/package.json');
+        return typeof version === 'string' && version.startsWith('250829098');
+    }
+    catch {
+        return false;
+    }
+}
 function getBabelCaller({ filename, options, }) {
     const isNodeModule = filename.includes('node_modules');
     const isReactServer = options.customTransformOptions?.environment === 'react-server';
@@ -62,6 +71,8 @@ function getBabelCaller({ filename, options, }) {
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: stringOrUndefined(options.customTransformOptions?.engine),
+        // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
+        isHermesV1: getIsHermesV1(),
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
         isNodeModule,

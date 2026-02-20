@@ -33,6 +33,7 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   projectRoot: string;
   /** When true, indicates this bundle should contain only the loader export */
   isLoaderBundle?: boolean;
+  isHermesV1?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -57,6 +58,15 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 const memoizeWarning = memoize((message: string) => {
   debug(message);
 });
+
+function getIsHermesV1(): boolean {
+  try {
+    const { version } = require('hermes-compiler/package.json');
+    return typeof version === 'string' && version.startsWith('250829098');
+  } catch {
+    return false;
+  }
+}
 
 function getBabelCaller({
   filename,
@@ -110,6 +120,8 @@ function getBabelCaller({
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
     engine: stringOrUndefined(options.customTransformOptions?.engine),
+    // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
+    isHermesV1: getIsHermesV1(),
 
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,
