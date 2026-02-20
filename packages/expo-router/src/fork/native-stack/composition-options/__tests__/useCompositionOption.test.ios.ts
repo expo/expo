@@ -37,7 +37,7 @@ describe('useCompositionOption', () => {
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
-      renderHook(() => useCompositionOption(() => ({ title: 'Test' }), []));
+      renderHook(() => useCompositionOption({ title: 'Test' }));
     }).toThrow(
       'useCompositionOption must be used within a RouterCompositionOptionsProvider. This is likely a bug in Expo Router.'
     );
@@ -48,7 +48,7 @@ describe('useCompositionOption', () => {
   it('registers options on mount', () => {
     const context = createMockContext();
 
-    renderHook(() => useCompositionOption(() => ({ title: 'Hello' }), []), {
+    renderHook(() => useCompositionOption({ title: 'Hello' }), {
       wrapper: createWrapper(context),
     });
 
@@ -61,7 +61,7 @@ describe('useCompositionOption', () => {
   it('unregisters on unmount', () => {
     const context = createMockContext();
 
-    const { unmount } = renderHook(() => useCompositionOption(() => ({ title: 'Hello' }), []), {
+    const { unmount } = renderHook(() => useCompositionOption({ title: 'Hello' }), {
       wrapper: createWrapper(context),
     });
 
@@ -73,32 +73,28 @@ describe('useCompositionOption', () => {
     expect(context.unregister).toHaveBeenCalledWith('test-route', expect.any(String));
   });
 
-  it('skips re-assigning when dependencies are stable', () => {
+  it('skips re-assigning when options reference is stable', () => {
     const context = createMockContext();
+    const stableOptions = { title: 'Same', headerShown: true as const };
 
-    const { rerender } = renderHook(
-      ({ title }: { title: string }) =>
-        useCompositionOption(() => ({ title, headerShown: true }), [title]),
-      {
-        wrapper: createWrapper(context),
-        initialProps: { title: 'Same' },
-      }
-    );
+    const { rerender } = renderHook(() => useCompositionOption(stableOptions), {
+      wrapper: createWrapper(context),
+    });
 
     expect(context.setOptionsFor).toHaveBeenCalledTimes(1);
 
-    // Re-render with the same dependency value
-    rerender({ title: 'Same' });
+    // Re-render with the same options reference
+    rerender({});
 
     // Should not call setOptionsFor again
     expect(context.setOptionsFor).toHaveBeenCalledTimes(1);
   });
 
-  it('re-assigns when dependencies change', () => {
+  it('re-assigns when options reference changes', () => {
     const context = createMockContext();
 
     const { rerender } = renderHook(
-      ({ title }: { title: string }) => useCompositionOption(() => ({ title }), [title]),
+      ({ title }: { title: string }) => useCompositionOption({ title }),
       {
         wrapper: createWrapper(context),
         initialProps: { title: 'First' },

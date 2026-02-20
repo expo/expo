@@ -2,15 +2,16 @@ import type { NativeStackNavigationOptions } from '@react-navigation/native-stac
 /**
  * Registry mapping route keys to composition component options.
  *
- * Structure: Map<routeKey, Map<componentId, options>>
+ * Structure: Record<routeKey, Record<componentId, options>>
  *
  * Each composition component (Title, BackButton, Header, Toolbar) registers
  * its options under a unique componentId (from React's useId).
- * Map preserves insertion order, so later registrations override earlier ones.
+ * Object property order is guaranteed for string keys,
+ * so later registrations override earlier ones.
  *
  * @internal
  */
-export type CompositionRegistry = Map<string, Map<string, Partial<NativeStackNavigationOptions>>>;
+export type CompositionRegistry = Record<string, Record<string, Partial<NativeStackNavigationOptions>>>;
 /** @internal */
 export interface CompositionContextValue {
     /**

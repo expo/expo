@@ -1,6 +1,6 @@
 'use client';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { Fragment, isValidElement, type ReactNode } from 'react';
+import React, { Fragment, isValidElement, useMemo, type ReactNode } from 'react';
 
 import {
   convertStackToolbarButtonPropsToRNHeaderItem,
@@ -144,7 +144,7 @@ const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps)
     );
   }
 
-  useCompositionOption(
+  const options = useMemo(
     () =>
       appendStackToolbarPropsToOptions(
         {},
@@ -153,6 +153,7 @@ const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps)
       ),
     [children, placement, asChild]
   );
+  useCompositionOption(options);
 
   return null;
 };

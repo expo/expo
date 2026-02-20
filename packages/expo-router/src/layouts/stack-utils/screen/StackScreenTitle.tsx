@@ -1,5 +1,5 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
@@ -116,7 +116,7 @@ export function StackScreenTitle({
   largeStyle,
   large,
 }: StackScreenTitleProps) {
-  useCompositionOption(
+  const options = useMemo(
     () =>
       appendStackScreenTitlePropsToOptions(
         {},
@@ -128,6 +128,7 @@ export function StackScreenTitle({
       ),
     [children, asChild, style, largeStyle, large]
   );
+  useCompositionOption(options);
   return null;
 }
 

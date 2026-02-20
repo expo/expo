@@ -1,5 +1,5 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
@@ -116,7 +116,7 @@ export function StackHeaderComponent({
   style,
   largeStyle,
 }: StackHeaderProps) {
-  useCompositionOption(
+  const options = useMemo(
     () =>
       appendStackHeaderPropsToOptions(
         {},
@@ -128,6 +128,7 @@ export function StackHeaderComponent({
       ),
     [children, hidden, asChild, transparent, blurEffect, style, largeStyle]
   );
+  useCompositionOption(options);
   return null;
 }
 

@@ -132,10 +132,10 @@ const StackToolbarHeader = ({ children, placement, asChild }) => {
     if (placement !== 'left' && placement !== 'right') {
         throw new Error(`Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`);
     }
-    (0, composition_options_1.useCompositionOption)(() => appendStackToolbarPropsToOptions({}, 
-    // satisfies ensures every prop is listed here; a missing prop would silently be
-    // undefined and absent from the dependency array below.
+    const options = (0, react_1.useMemo)(() => appendStackToolbarPropsToOptions({}, 
+    // satisfies ensures every prop is listed here
     { children, placement, asChild }), [children, placement, asChild]);
+    (0, composition_options_1.useCompositionOption)(options);
     return null;
 };
 function convertToolbarChildrenToUnstableItems(children, side) {

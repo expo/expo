@@ -1,14 +1,7 @@
 import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 
 import type { NativeStackDescriptorMap } from '../descriptors-context';
 import type { CompositionRegistry } from './types';
-
-export type MergeOptionsCacheEntry = {
-  descriptor: NativeStackDescriptorMap[string];
-  routeOptions: Map<string, Partial<NativeStackNavigationOptions>> | undefined;
-  result: NativeStackDescriptorMap[string];
-};
 
 /**
  * Merges composition component options into navigation descriptors.
@@ -26,12 +19,12 @@ export function mergeOptions(
   const result: NativeStackDescriptorMap = {};
   const focusedKey = state.routes[state.index]?.key;
 
-  for (const key of Object.keys(descriptors)) {
+  for (const key in descriptors) {
     const descriptor = descriptors[key];
-    const routeOptions = registry.get(key);
+    const routeOptions = registry[key];
 
-    // No composition options or empty map → pass through
-    if (!routeOptions || routeOptions.size === 0) {
+    // No composition options or empty object → pass through
+    if (!routeOptions || Object.keys(routeOptions).length === 0) {
       result[key] = descriptor;
       continue;
     }
@@ -44,7 +37,7 @@ export function mergeOptions(
     }
 
     // Merge: descriptor options as base, composition options override
-    const mergedOptions = Object.assign({}, descriptor.options, ...routeOptions.values());
+    const mergedOptions = Object.assign({}, descriptor.options, ...Object.values(routeOptions));
 
     const merged = {
       ...descriptor,

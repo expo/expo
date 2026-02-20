@@ -1,5 +1,4 @@
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { type DependencyList } from 'react';
 import type { CompositionContextValue, CompositionRegistry } from './types';
 /** @internal */
 export declare const CompositionContext: import("react").Context<CompositionContextValue | null>;
@@ -18,8 +17,8 @@ export declare function registryReducer(state: CompositionRegistry, action: Regi
 /**
  * Provides the composition registry to descendant composition components.
  *
- * Uses useReducer with immutable Map updates for React Compiler compatibility.
- * Each setOptionsFor/unregister call produces a new Map reference, which
+ * Uses useReducer with immutable object updates for React Compiler compatibility.
+ * Each setOptionsFor/unregister call produces a new object reference, which
  * the compiler can track as a reactive dependency.
  */
 export declare function useCompositionRegistry(): {
@@ -33,8 +32,8 @@ export declare function useCompositionRegistry(): {
  * Hook used by composition components to register their options in the composition registry.
  *
  * Registers options on mount/update via useSafeLayoutEffect, and unregisters on unmount.
- * The factory is only called when dependencies change (like `useMemo`).
+ * Callers should memoize the options object to avoid unnecessary re-registrations.
  */
-export declare function useCompositionOption(factory: () => Partial<NativeStackNavigationOptions>, dependencies: DependencyList): void;
+export declare function useCompositionOption(options: Partial<NativeStackNavigationOptions>): void;
 export {};
 //# sourceMappingURL=CompositionOptionsContext.d.ts.map

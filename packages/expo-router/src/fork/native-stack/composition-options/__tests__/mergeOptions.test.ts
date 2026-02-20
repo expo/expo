@@ -34,7 +34,7 @@ describe('mergeOptions', () => {
     const descriptors: NativeStackDescriptorMap = {
       'route-1': createMockDescriptor({ title: 'Original' }),
     };
-    const registry: CompositionRegistry = new Map();
+    const registry: CompositionRegistry = {};
     const state = createMockState();
 
     const result = mergeOptions(descriptors, registry, state);
@@ -48,9 +48,9 @@ describe('mergeOptions', () => {
     const descriptors: NativeStackDescriptorMap = {
       'route-1': createMockDescriptor({ title: 'Original', headerShown: true }),
     };
-    const registry: CompositionRegistry = new Map([
-      ['route-1', new Map([['comp-1', { title: 'Composed Title' }]])],
-    ]);
+    const registry: CompositionRegistry = {
+      'route-1': { 'comp-1': { title: 'Composed Title' } },
+    };
     const state = createMockState();
 
     const result = mergeOptions(descriptors, registry, state);
@@ -66,9 +66,9 @@ describe('mergeOptions', () => {
     const descriptors: NativeStackDescriptorMap = {
       'route-1': createMockDescriptor({ title: 'Static', headerShown: false }),
     };
-    const registry: CompositionRegistry = new Map([
-      ['route-1', new Map([['comp-1', { title: 'Dynamic', headerShown: true }]])],
-    ]);
+    const registry: CompositionRegistry = {
+      'route-1': { 'comp-1': { title: 'Dynamic', headerShown: true } },
+    };
     const state = createMockState();
 
     const result = mergeOptions(descriptors, registry, state);
@@ -82,11 +82,13 @@ describe('mergeOptions', () => {
     const descriptors: NativeStackDescriptorMap = {
       'route-1': createMockDescriptor({ title: 'Base' }),
     };
-    const routeMap = new Map<string, Partial<any>>();
-    routeMap.set('title-comp', { title: 'First Title' });
-    routeMap.set('header-comp', { headerShown: false });
-    routeMap.set('title-comp-2', { title: 'Second Title' });
-    const registry: CompositionRegistry = new Map([['route-1', routeMap]]);
+    const registry: CompositionRegistry = {
+      'route-1': {
+        'title-comp': { title: 'First Title' },
+        'header-comp': { headerShown: false },
+        'title-comp-2': { title: 'Second Title' },
+      },
+    };
     const state = createMockState();
 
     const result = mergeOptions(descriptors, registry, state);
@@ -102,10 +104,10 @@ describe('mergeOptions', () => {
       'route-1': createMockDescriptor({ title: 'Focused' }),
       'route-preloaded': createMockDescriptor({ title: 'Preloaded Static' }),
     };
-    const registry: CompositionRegistry = new Map([
-      ['route-1', new Map([['comp-1', { title: 'Composed Focused' }]])],
-      ['route-preloaded', new Map([['comp-2', { title: 'Should Not Apply' }]])],
-    ]);
+    const registry: CompositionRegistry = {
+      'route-1': { 'comp-1': { title: 'Composed Focused' } },
+      'route-preloaded': { 'comp-2': { title: 'Should Not Apply' } },
+    };
     const state = createMockState({
       index: 0,
       routes: [{ key: 'route-1', name: 'index', params: undefined }],
@@ -126,9 +128,9 @@ describe('mergeOptions', () => {
       'route-1': createMockDescriptor({ title: 'Original' }),
       'route-preloaded': createMockDescriptor({ title: 'Preloaded Static' }),
     };
-    const registry: CompositionRegistry = new Map([
-      ['route-preloaded', new Map([['comp-1', { title: 'Preloaded Composed' }]])],
-    ]);
+    const registry: CompositionRegistry = {
+      'route-preloaded': { 'comp-1': { title: 'Preloaded Composed' } },
+    };
     // Preloaded route that is also focused (e.g., during preview transition)
     const state = createMockState({
       index: 1,
@@ -149,9 +151,9 @@ describe('mergeOptions', () => {
     const descriptors: NativeStackDescriptorMap = {
       'route-1': createMockDescriptor(originalOptions),
     };
-    const registry: CompositionRegistry = new Map([
-      ['route-1', new Map([['comp-1', { title: 'Modified' }]])],
-    ]);
+    const registry: CompositionRegistry = {
+      'route-1': { 'comp-1': { title: 'Modified' } },
+    };
     const state = createMockState();
 
     const result = mergeOptions(descriptors, registry, state);
@@ -170,9 +172,9 @@ describe('mergeOptions', () => {
       'route-1': createMockDescriptor({ title: 'One' }),
       'route-2': createMockDescriptor({ title: 'Two' }),
     };
-    const registry: CompositionRegistry = new Map([
-      ['route-1', new Map([['comp-1', { title: 'Modified One' }]])],
-    ]);
+    const registry: CompositionRegistry = {
+      'route-1': { 'comp-1': { title: 'Modified One' } },
+    };
     const state = createMockState({
       index: 1,
       routes: [
@@ -188,11 +190,11 @@ describe('mergeOptions', () => {
     expect(result['route-2']).toBe(descriptors['route-2']);
   });
 
-  it('handles empty route map (all components unregistered)', () => {
+  it('handles empty route entry (all components unregistered)', () => {
     const descriptors: NativeStackDescriptorMap = {
       'route-1': createMockDescriptor({ title: 'Original' }),
     };
-    const registry: CompositionRegistry = new Map([['route-1', new Map()]]);
+    const registry: CompositionRegistry = { 'route-1': {} };
     const state = createMockState();
 
     const result = mergeOptions(descriptors, registry, state);
@@ -213,9 +215,9 @@ describe('mergeOptions', () => {
         route: mockRoute,
       },
     };
-    const registry: CompositionRegistry = new Map([
-      ['route-1', new Map([['comp-1', { title: 'Modified' }]])],
-    ]);
+    const registry: CompositionRegistry = {
+      'route-1': { 'comp-1': { title: 'Modified' } },
+    };
     const state = createMockState();
 
     const result = mergeOptions(descriptor, registry, state);

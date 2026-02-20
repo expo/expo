@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackSearchBar = StackSearchBar;
 exports.appendStackSearchBarPropsToOptions = appendStackSearchBarPropsToOptions;
+const react_1 = require("react");
 const composition_options_1 = require("../../fork/native-stack/composition-options");
 /**
  * A search bar component that integrates with the native stack header.
@@ -30,9 +31,8 @@ const composition_options_1 = require("../../fork/native-stack/composition-optio
  * ```
  */
 function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColor, cancelButtonText, disableBackButtonOverride, hideNavigationBar, hideWhenScrolling, inputType, obscureBackground, onBlur, onCancelButtonPress, onChangeText, onClose, onFocus, onOpen, onSearchButtonPress, placeholder, placement, allowToolbarIntegration, textColor, hintTextColor, headerIconColor, shouldShowHintSearchIcon, }) {
-    (0, composition_options_1.useCompositionOption)(() => appendStackSearchBarPropsToOptions({}, 
-    // satisfies ensures every prop is listed here; a missing prop would silently be
-    // undefined and absent from the dependency array below.
+    const options = (0, react_1.useMemo)(() => appendStackSearchBarPropsToOptions({}, 
+    // satisfies ensures every prop is listed here
     {
         ref,
         autoCapitalize,
@@ -86,6 +86,7 @@ function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColo
         headerIconColor,
         shouldShowHintSearchIcon,
     ]);
+    (0, composition_options_1.useCompositionOption)(options);
     return null;
 }
 function appendStackSearchBarPropsToOptions(options, props) {
