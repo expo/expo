@@ -65,7 +65,7 @@ export function createRequestHandler(
     try {
       const request = convertRequest(req, res);
       const response = await requestHandler(request);
-      await respond(res, response);
+      await respond(res, response, { signal: request.signal });
     } catch (error: unknown) {
       // http doesn't support async functions, so we have to pass along the
       // error manually using next().
@@ -86,9 +86,11 @@ function convertRawHeaders(requestHeaders: readonly string[]): Headers {
 export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request {
   const url = new URL(req.url!, `http://${req.headers.host}`);
 
-  // Abort action/loaders once we can no longer write a response
+  // Abort action/loaders once we can no longer write a response or request aborts
   const controller = new AbortController();
   res.on('close', () => controller.abort());
+  req.once('close', () => controller.abort());
+  req.once('error', (err) => controller.abort(err));
 
   const init: RequestInit = {
     method: req.method,
