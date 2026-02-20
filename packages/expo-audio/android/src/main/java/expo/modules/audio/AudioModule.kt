@@ -17,7 +17,6 @@ import androidx.media3.common.C.CONTENT_TYPE_HLS
 import androidx.media3.common.C.CONTENT_TYPE_OTHER
 import androidx.media3.common.C.CONTENT_TYPE_SS
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
@@ -28,20 +27,23 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import expo.modules.audio.service.AudioControlsService
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.min
 
+@DelicateCoroutinesApi
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
   private lateinit var audioManager: AudioManager
@@ -51,12 +53,16 @@ class AudioModule : Module() {
 
   private val players = ConcurrentHashMap<String, AudioPlayer>()
   private val recorders = ConcurrentHashMap<String, AudioRecorder>()
-  private var staysActiveInBackground = false
+  private val playlists = ConcurrentHashMap<String, AudioPlaylist>()
+  private var shouldPlayInBackground = false
   private var audioEnabled = true
   private var shouldRouteThroughEarpiece = false
   private var focusAcquired = false
   private var interruptionMode: InterruptionMode? = null
   private var allowsBackgroundRecording = false
+
+  private val allPlayables: Sequence<Playable>
+    get() = players.values.asSequence() + playlists.values.asSequence()
 
   private var audioFocusRequest: AudioFocusRequest? = null
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
@@ -64,34 +70,32 @@ class AudioModule : Module() {
       when (focusChange) {
         AudioManager.AUDIOFOCUS_LOSS -> {
           focusAcquired = false
-          players.values.forEach { player ->
-            player.ref.pause()
-          }
+          allPlayables.forEach { it.pause() }
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
           focusAcquired = false
-          players.values.forEach { player ->
-            if (player.ref.isPlaying) {
-              player.isPaused = true
-              player.ref.pause()
+          allPlayables.forEach { playable ->
+            if (playable.isPlaying) {
+              playable.isPaused = true
+              playable.pause()
             }
           }
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
           if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
-            players.values.forEach { player ->
-              if (player.previousVolume != player.ref.volume) {
-                player.previousVolume = player.ref.volume
+            allPlayables.forEach { playable ->
+              if (playable.previousVolume != playable.volume) {
+                playable.previousVolume = playable.volume
               }
-              player.ref.volume = player.previousVolume * 0.5f
+              playable.setVolume(playable.previousVolume * 0.5f)
             }
           } else {
-            players.values.forEach { player ->
-              if (player.ref.isPlaying) {
-                player.isPaused = true
-                player.ref.pause()
+            allPlayables.forEach { playable ->
+              if (playable.isPlaying) {
+                playable.isPaused = true
+                playable.pause()
               }
             }
           }
@@ -99,11 +103,11 @@ class AudioModule : Module() {
 
         AudioManager.AUDIOFOCUS_GAIN -> {
           focusAcquired = true
-          players.values.forEach { player ->
-            player.setVolume(player.previousVolume)
-            if (player.isPaused) {
-              player.isPaused = false
-              player.ref.play()
+          allPlayables.forEach { playable ->
+            playable.setVolume(playable.previousVolume)
+            if (playable.isPaused) {
+              playable.isPaused = false
+              playable.play()
             }
           }
         }
@@ -112,7 +116,7 @@ class AudioModule : Module() {
   }
 
   private fun shouldReleaseFocus(): Boolean {
-    return players.values.none { it.ref.isPlaying }
+    return allPlayables.none { it.isPlaying }
   }
 
   private fun requestAudioFocus() {
@@ -182,7 +186,7 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
-      staysActiveInBackground = mode.shouldPlayInBackground
+      shouldPlayInBackground = mode.shouldPlayInBackground
       interruptionMode = mode.interruptionMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
       allowsBackgroundRecording = mode.allowsBackgroundRecording
@@ -197,9 +201,9 @@ class AudioModule : Module() {
       if (!enabled) {
         releaseAudioFocus()
         runOnMain {
-          players.values.forEach {
-            if (it.ref.isPlaying) {
-              it.ref.pause()
+          allPlayables.forEach {
+            if (it.isPlaying) {
+              it.pause()
             }
           }
         }
@@ -210,20 +214,44 @@ class AudioModule : Module() {
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
 
+    AsyncFunction("requestNotificationPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.POST_NOTIFICATIONS)
+    }
+
     AsyncFunction("getRecordingPermissionsAsync") { promise: Promise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
 
+    AsyncFunction("preload") Coroutine { source: AudioSource, _: Double ->
+      val uri = source.uri ?: return@Coroutine
+      val upstreamFactory = httpDataSourceFactory(source.headers)
+      AudioPreloadCache.preload(context, uri, upstreamFactory)
+    }
+
+    AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
+      val uri = source.uri ?: return@Coroutine
+      AudioPreloadCache.clearSource(context, uri)
+    }
+
+    AsyncFunction("clearAllPreloadedSources") Coroutine { ->
+      AudioPreloadCache.clearAll(context)
+    }
+
+    AsyncFunction("getPreloadedSources") {
+      AudioPreloadCache.getPreloadedSources()
+    }
+
     OnActivityEntersBackground {
-      if (!staysActiveInBackground) {
+      if (!shouldPlayInBackground) {
         releaseAudioFocus()
-        players.values.forEach { player ->
-          if (player.ref.isPlaying) {
-            player.isPaused = true
-            player.ref.pause()
+        allPlayables.forEach { playable ->
+          if (playable.isPlaying) {
+            playable.isPaused = true
+            playable.pause()
           }
         }
-
+      }
+      if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
           if (recorder.isRecording) {
             recorder.pauseRecording()
@@ -233,55 +261,59 @@ class AudioModule : Module() {
     }
 
     OnActivityEntersForeground {
-      if (!staysActiveInBackground) {
-        val hasPlayersToResume = players.values.any { it.isPaused }
-        if (hasPlayersToResume) {
+      if (!shouldPlayInBackground) {
+        if (allPlayables.any { it.isPaused }) {
           requestAudioFocus()
         }
 
-        players.values.forEach { player ->
-          if (player.isPaused) {
-            player.isPaused = false
-            player.ref.play()
+        allPlayables.forEach { playable ->
+          if (playable.isPaused) {
+            playable.isPaused = false
+            playable.play()
           }
         }
-
+      }
+      if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
           if (recorder.isPaused) {
             recorder.record()
           }
         }
-
-        if (shouldRouteThroughEarpiece) {
-          updatePlaySoundThroughEarpiece(true)
-        }
+      }
+      if (shouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(true)
       }
     }
 
     OnDestroy {
-      appContext.mainQueue.launch {
+      GlobalScope.launch(Dispatchers.Main) {
         releaseAudioFocus()
         players.values.forEach {
+          it.ref.stop()
+        }
+
+        playlists.values.forEach {
           it.ref.stop()
         }
 
         recorders.values.forEach {
           it.stopRecording()
         }
-
-        AudioControlsService.clearSession()
+        AudioPreloadCache.release()
       }
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double ->
         val mediaSource = createMediaItem(source)
+        val bufferDurationMs = (preferredForwardBufferDuration * 1000).toLong()
         runOnMain {
           val player = AudioPlayer(
             context,
             appContext,
             mediaSource,
-            updateInterval
+            updateInterval,
+            bufferDurationMs
           )
           player.onPlaybackStateChange = { isPlaying ->
             if (!isPlaying && shouldReleaseFocus()) {
@@ -452,9 +484,7 @@ class AudioModule : Module() {
 
       Function("setPlaybackRate") { player: AudioPlayer, rate: Float ->
         appContext.mainQueue.launch {
-          val playbackRate = if (rate <= 0) 0.1f else min(rate, 2.0f)
-          val pitch = if (player.preservesPitch) 1f else playbackRate
-          player.ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
+          player.setPlaybackRate(rate)
         }
       }
 
@@ -493,7 +523,7 @@ class AudioModule : Module() {
         recorder.getCurrentTimeSeconds()
       }
 
-      AsyncFunction("prepareToRecordAsync") { recorder: AudioRecorder, options: RecordingOptions? ->
+      AsyncFunction("prepareToRecordAsync") Coroutine { recorder: AudioRecorder, options: RecordingOptions? ->
         checkRecordingPermission()
         recorder.prepareRecording(options)
       }
@@ -549,6 +579,200 @@ class AudioModule : Module() {
         }
       }
     }
+
+    Class(AudioPlaylist::class) {
+      Constructor { sources: List<AudioSource>, updateInterval: Double, loop: LoopMode ->
+        runOnMain {
+          val playlist = AudioPlaylist(
+            context,
+            appContext,
+            sources,
+            updateInterval,
+            DefaultDataSource.Factory(context)
+          )
+          playlist.loopMode = loop
+          playlist.setMediaItemCreator { source ->
+            source.uri?.let { uriString ->
+              val uri = uriString.toUri()
+              when {
+                isRawResource(uri) -> {
+                  val file = getResourceName(uri, uriString)
+                  MediaItem.fromUri(getRawResourceURI(file))
+                }
+                else -> MediaItem.fromUri(uri)
+              }
+            }
+          }
+          playlist.loadInitialPlaylist()
+          playlist.onPlaybackStateChange = { isPlaying ->
+            if (!isPlaying && shouldReleaseFocus()) {
+              releaseAudioFocus()
+            }
+          }
+          playlists[playlist.id] = playlist
+          playlist
+        }
+      }
+
+      Property("id") { playlist ->
+        playlist.id
+      }
+
+      Property("currentIndex") { playlist ->
+        runOnMain {
+          playlist.currentTrackIndex
+        }
+      }
+
+      Property("trackCount") { playlist ->
+        runOnMain {
+          playlist.trackCount
+        }
+      }
+
+      Property("sources") { playlist ->
+        playlist.getSources()
+      }
+
+      Property("playing") { playlist ->
+        runOnMain {
+          playlist.ref.isPlaying
+        }
+      }
+
+      Property("muted") { playlist ->
+        playlist.isMuted
+      }.set { playlist, muted: Boolean? ->
+        val newMuted = muted ?: false
+        playlist.isMuted = newMuted
+        playlist.setVolume(if (newMuted) 0f else playlist.previousVolume)
+      }
+
+      Property("isLoaded") { playlist ->
+        runOnMain {
+          playlist.ref.playbackState == Player.STATE_READY
+        }
+      }
+
+      Property("isBuffering") { playlist ->
+        runOnMain {
+          playlist.ref.playbackState == Player.STATE_BUFFERING
+        }
+      }
+
+      Property("currentTime") { playlist ->
+        runOnMain {
+          playlist.currentTime
+        }
+      }
+
+      Property("duration") { playlist ->
+        runOnMain {
+          playlist.duration
+        }
+      }
+
+      Property("volume") { playlist ->
+        runOnMain {
+          playlist.ref.volume
+        }
+      }.set { playlist, volume: Float? ->
+        playlist.setVolume(volume)
+      }
+
+      Property("playbackRate") { playlist ->
+        runOnMain {
+          playlist.ref.playbackParameters.speed
+        }
+      }.set { playlist, rate: Float ->
+        appContext.mainQueue.launch {
+          playlist.setPlaybackRate(rate)
+        }
+      }
+
+      Property("loop") { playlist ->
+        playlist.loopMode.value
+      }.set { playlist, mode: LoopMode ->
+        runOnMain {
+          playlist.loopMode = mode
+        }
+      }
+
+      Property("currentStatus") { playlist ->
+        runOnMain {
+          playlist.currentStatus()
+        }
+      }
+
+      Function("play") { playlist: AudioPlaylist ->
+        if (!audioEnabled) {
+          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+          return@Function
+        }
+        runOnMain {
+          if (!focusAcquired) {
+            requestAudioFocus()
+          }
+          playlist.ref.play()
+        }
+      }
+
+      Function("pause") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.ref.pause()
+        }
+      }
+
+      Function("next") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.next()
+        }
+      }
+
+      Function("previous") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.previous()
+        }
+      }
+
+      Function("skipTo") { playlist: AudioPlaylist, index: Int ->
+        runOnMain {
+          playlist.skipTo(index)
+        }
+      }
+
+      AsyncFunction("seekTo") { playlist: AudioPlaylist, seconds: Double ->
+        playlist.seekTo(seconds)
+      }.runOnQueue(Queues.MAIN)
+
+      Function("add") { playlist: AudioPlaylist, source: AudioSource ->
+        runOnMain {
+          playlist.add(source)
+        }
+      }
+
+      Function("insert") { playlist: AudioPlaylist, source: AudioSource, index: Int ->
+        runOnMain {
+          playlist.insert(source, index)
+        }
+      }
+
+      Function("remove") { playlist: AudioPlaylist, index: Int ->
+        runOnMain {
+          playlist.remove(index)
+        }
+      }
+
+      Function("clear") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.clear()
+        }
+      }
+
+      Function("destroy") { playlist: AudioPlaylist ->
+        playlists.remove(playlist.id)
+      }
+    }
   }
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
@@ -562,7 +786,9 @@ class AudioModule : Module() {
     }
 
     val factory = when (uri.scheme) {
-      "http", "https" -> httpDataSourceFactory(source.headers)
+      "http", "https" -> {
+        AudioPreloadCache.createCacheDataSourceFactory(context, httpDataSourceFactory(source.headers))
+      }
       else -> DefaultDataSource.Factory(context)
     }
     return buildMediaSourceFactory(factory, mediaItem)

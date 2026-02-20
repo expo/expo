@@ -1,51 +1,82 @@
 import AVFoundation
 import Foundation
 
+protocol DeviceDiscoveryDelegate: AnyObject {
+  func deviceDiscovery(_ discovery: DeviceDiscovery, didUpdateDevices devices: [AVCaptureDevice])
+}
+
 class DeviceDiscovery {
   private let frontCameraDiscoverySession: AVCaptureDevice.DiscoverySession
   private let backCameraDiscoverySession: AVCaptureDevice.DiscoverySession
 
-  private var allDeviceTypes: [AVCaptureDevice.DeviceType] = [
-    // Suitable for general-purpose use.
-    .builtInWideAngleCamera,
-    // Longer focal length than wide angle camera
-    .builtInTelephotoCamera,
-    // Shorter focal length than wide angle camera
-    .builtInUltraWideCamera,
-    // Infrared camera provides high-quality depth information that’s synchronized and perspective corrected to the frame the YUV camera produces.
-    .builtInTrueDepthCamera,
-    // Virtual cameras
-    // Type that consists of a wide-angle and telephoto camera.
-    .builtInDualCamera,
-    // Type that consists of two cameras of fixed focal length, one ultrawide angle and one wide angle.
-    .builtInDualWideCamera,
-    // Type that consists of three cameras of fixed focal length, one ultrawide angle, one wide angle, and one telephoto.
-    .builtInTripleCamera
-  ]
+  weak var delegate: DeviceDiscoveryDelegate?
 
-  init() {
-    if #available(iOS 17, *) {
-      allDeviceTypes.append(.continuityCamera)
-    }
+  private var frontDevicesObservation: NSKeyValueObservation?
+  private var backDevicesObservation: NSKeyValueObservation?
+
+  private static var allDeviceTypes: [AVCaptureDevice.DeviceType] {
+    var types: [AVCaptureDevice.DeviceType] = [
+      // Primary camera - suitable for general-purpose use
+      .builtInWideAngleCamera,
+      // Longer focal length than wide angle camera
+      .builtInTelephotoCamera,
+      // Shorter focal length than wide angle camera
+      .builtInUltraWideCamera,
+      // TrueDepth camera for Face ID devices
+      .builtInTrueDepthCamera,
+      // Virtual cameras - these combine multiple physical cameras
+      // Triple camera (ultrawide + wide + telephoto)
+      .builtInTripleCamera,
+      // Dual camera (wide + telephoto)
+      .builtInDualCamera,
+      // Dual wide camera (ultrawide + wide)
+      .builtInDualWideCamera
+    ]
+
     if #available(iOS 15.4, *) {
       // LiDAR camera provides high-quality, high-accuracy depth information by measuring the round trip of an artificial light signal that a laser emits.
-      allDeviceTypes.append(.builtInLiDARDepthCamera)
+      types.append(.builtInLiDARDepthCamera)
     }
 
+    return types
+  }
+
+  init() {
     backCameraDiscoverySession = AVCaptureDevice.DiscoverySession(
-      deviceTypes: allDeviceTypes,
+      deviceTypes: Self.allDeviceTypes,
       mediaType: .video,
       position: .back)
     frontCameraDiscoverySession = AVCaptureDevice.DiscoverySession(
-      deviceTypes: allDeviceTypes,
+      deviceTypes: Self.allDeviceTypes,
       mediaType: .video,
       position: .front)
+
+    setupDeviceObservation()
 
     if #available(iOS 17.0, *) {
       if AVCaptureDevice.systemPreferredCamera == nil {
         AVCaptureDevice.userPreferredCamera = backCameraDiscoverySession.devices.first
       }
     }
+  }
+
+  deinit {
+    frontDevicesObservation?.invalidate()
+    backDevicesObservation?.invalidate()
+  }
+
+  private func setupDeviceObservation() {
+    backDevicesObservation = backCameraDiscoverySession.observe(\.devices, options: [.new]) { [weak self] _, _ in
+      self?.notifyDevicesChanged()
+    }
+
+    frontDevicesObservation = frontCameraDiscoverySession.observe(\.devices, options: [.new]) { [weak self] _, _ in
+      self?.notifyDevicesChanged()
+    }
+  }
+
+  private func notifyDevicesChanged() {
+    delegate?.deviceDiscovery(self, didUpdateDevices: cameras)
   }
 
   private var cameras: [AVCaptureDevice] {
@@ -59,7 +90,8 @@ class DeviceDiscovery {
     }
 #endif
 
-    return Array(Set(cameras))
+    var seen = Set<String>()
+    return cameras.filter { seen.insert($0.uniqueID).inserted }
   }
 
   var frontCameraLenses: [AVCaptureDevice] {
@@ -75,6 +107,12 @@ class DeviceDiscovery {
   }
 
   var defaultBackCamera: AVCaptureDevice? {
+    if let standardBack = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
+      if self.backCameraLenses.contains(standardBack) {
+        return standardBack
+      }
+    }
+
     // iOS 17+: Check system preferred camera
     if #available(iOS 17.0, *) {
       if let preferred = AVCaptureDevice.systemPreferredCamera, preferred.position == .back {

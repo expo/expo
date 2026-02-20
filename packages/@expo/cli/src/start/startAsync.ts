@@ -16,6 +16,9 @@ import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { maybeCreateMCPServerAsync } from './server/MCP';
+import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
+
+const debug = require('debug')('expo:start');
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -136,7 +139,11 @@ export async function startAsync(
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
   }
-  mcpServer?.start();
+
+  if (mcpServer) {
+    addMcpCapabilities(mcpServer, devServerManager);
+    mcpServer.start();
+  }
 
   // Final note about closing the server.
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';

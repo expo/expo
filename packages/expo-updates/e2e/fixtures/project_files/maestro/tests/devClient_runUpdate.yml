@@ -19,7 +19,7 @@ onFlowStart:
           text: Enter URL manually
       - tapOn:
           label: Tap on "Updates URL" text field
-          text: '.*http:.*'
+          text: '.*exp:.*'
           below: Enter URL manually
 - runFlow:
     when:
@@ -30,7 +30,7 @@ onFlowStart:
           text: New development server
       - tapOn:
           label: Tap on "Updates URL" text field
-          text: '.*http:.*'
+          text: '.*exp:.*'
           below: New development server
 - inputText:
     label: Input local update server URL

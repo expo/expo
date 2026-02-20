@@ -1,9 +1,17 @@
 import { Link, usePathname, type Href } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
 
 const HomeIndex = () => {
   const pathname = usePathname();
+
+  useEffect(() => {
+    console.log(
+      'globalThis.expo.router',
+      globalThis.expo?.router?.currentPathname,
+      globalThis.expo?.router?.currentParams
+    );
+  }, []);
 
   return (
     <ScrollView
@@ -17,6 +25,8 @@ const HomeIndex = () => {
       <CaseLink href="/tabs" text="Native Tabs" />
       <CaseLink href="/toolbar" text="Toolbar" />
       <CaseLink href="/header-items" text="Header Items" />
+      <CaseLink href="/modals" text="Modals" />
+      <CaseLink href="/params" text="Params" />
     </ScrollView>
   );
 };

@@ -34,13 +34,13 @@ import { Host, Button } from '@expo/ui/swift-ui';
 export function SaveButton() {
   return (
     <Host style={{ flex: 1 }}>
-      <Button variant="default">Save changes</Button>
+      <Button label="Save changes" />
     </Host>
   );
 }
 ```
 
-For an in-depth explanation of how `Host` works, see the following resources:
+For more information, see the following resources:
 
 <BoxLink
   title="Expo UI guide for Swift UI"
@@ -50,6 +50,13 @@ For an in-depth explanation of how `Host` works, see the following resources:
     </>
   }
   href="/guides/expo-ui-swift-ui/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Extending with SwiftUI"
+  description="Create custom SwiftUI components and modifiers that integrate with Expo UI."
+  href="/guides/expo-ui-swift-ui/extending/"
   Icon={BookOpen02Icon}
 />
 

@@ -6,12 +6,61 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.8 — 2026-02-16
+
+### 🎉 New features
+
+- Full native interface for updates. ([#42981](https://github.com/expo/expo/pull/42981) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- [IOS] Fix optional value handling for asset hash in ExpoUpdatesUpdate. ([#43093](https://github.com/expo/expo/pull/43093) by [@billysutomo](https://github.com/billysutomo))
+
+## 55.0.7 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Prevent logging on download progress events to reduce log size. ([#42436](https://github.com/expo/expo/pull/42436) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add patch content negotiation headers. ([#40583](https://github.com/expo/expo/pull/40583) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [iOS] forward `PROJECT_ROOT` env var to create updates resources script ([#41418](https://github.com/expo/expo/pull/41418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix `downloadProgress` for update fetching on app startup. ([#41069](https://github.com/expo/expo/pull/41069) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

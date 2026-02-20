@@ -1,6 +1,6 @@
 package expo.modules.kotlin
 
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 
 class KPromiseWrapper(
   private val bridgePromise: com.facebook.react.bridge.Promise
@@ -8,7 +8,7 @@ class KPromiseWrapper(
 
   override fun resolve(value: Any?) {
     bridgePromise.resolve(
-      JSTypeConverter.convertToJSValue(value)
+      JSTypeConverterProvider.convertToJSValue(value)
     )
   }
 

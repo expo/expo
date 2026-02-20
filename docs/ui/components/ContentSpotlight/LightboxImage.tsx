@@ -1,8 +1,7 @@
 import { ImgHTMLAttributes, useState } from 'react';
 import { Lightbox } from 'yet-another-react-lightbox';
-import Zoom from 'yet-another-react-lightbox/plugins/zoom';
-
 import 'yet-another-react-lightbox/styles.css';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
 
 type Props = ImgHTMLAttributes<HTMLImageElement> & {
   src: string;

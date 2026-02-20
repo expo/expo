@@ -1,0 +1,229 @@
+---
+title: Server rendering
+description: Learn how to render Expo Router routes dynamically at request time using server-side rendering (SSR).
+isAlpha: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** Server rendering is in alpha and is available in SDK 55 and later. It requires a [deployed server](/router/web/api-routes/#deployment) for production use.
+
+Server-side rendering (SSR) generates HTML dynamically on each request, as opposed to [static rendering](/router/web/static-rendering), which pre-renders HTML at build time. This guide walks you through enabling server rendering for your Expo Router app.
+
+> **info** With server-side rendering, [data loaders](/router/web/data-loaders) are executed on the server for each request and the result is embedded in the HTML response.
+
+## Setup
+
+<Step label="1">
+
+Enable server rendering in your project's [app config](/versions/latest/config/app/):
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */
+    /* @end */
+    "web": {
+      "output": "server"
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          /* @info Enable server-side rendering */
+          "unstable_useServerRendering": true
+          /* @end */
+        }
+      ]
+    ]
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+Start the development server:
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Step>
+
+## Production
+
+To export your app for production, run the export command:
+
+<Terminal cmd={['$ npx expo export --platform web']} />
+
+This creates a **dist** directory with your server-rendered application. Unlike static rendering, no HTML files are pre-generated. Instead, the output includes a similar directory structure as shown below:
+
+<FileTree
+  files={[
+    'dist/client/_expo/static/js/web/entry-[hash].js',
+    'dist/client/_expo/static/css/[name]-[hash].css',
+    'dist/server/_expo/routes.json',
+    'dist/server/_expo/server/render.js',
+  ]}
+/>
+
+In output above includes the following directories inside **dist** directory:
+
+- **client** directory: Contains JavaScript and CSS bundles for client-side hydration
+- **server** directory: Contains the routes manifest and server rendering module
+
+You can test the production build locally by running the following command and opening the linked URL in your browser:
+
+<Terminal cmd={['$ npx expo serve']} />
+
+The above command starts a local server that renders pages on each request, simulating a production environment.
+
+## Dynamic routes
+
+With server rendering, dynamic routes are rendered on the fly, and the [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) export is not needed and should be removed. If your route file exports `generateStaticParams`, those routes will be handled dynamically instead. The route is rendered at request time with the actual parameters from the URL.
+
+```tsx app/blog/[id].tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function Page() {
+  const { id } = useLocalSearchParams();
+
+  /* @info The id parameter is available immediately from the URL */
+  return <Text>Post {id}</Text>;
+  /* @end */
+}
+```
+
+In the above example, when the app user visits `/blog/my-post`, the page is rendered on the server with `id` set to `"my-post"`.
+
+## Root HTML
+
+You can customize the root HTML document by creating an **app/+html.tsx** file. This component wraps all routes and runs only on the server.
+
+```tsx app/+html.tsx
+import { ScrollViewStyleReset } from 'expo-router/html';
+import { type PropsWithChildren } from 'react';
+
+// This file is web-only and used to configure the root HTML for every
+// web page during server rendering.
+// The contents of this function only run in Node.js environments and
+// do not have access to the DOM or browser APIs.
+export default function Root({ children }: PropsWithChildren) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        {/*
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native platforms.
+          However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
+        */}
+        <ScrollViewStyleReset />
+
+        {/* Add any additional <head> elements that you want globally available on web... */}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+The **+html.tsx** file is only used by the server renderer and never by client code. This means:
+
+- It will be run by `expo-server` during server rendering
+- It is not rehydrated on the client, and hence shouldn't use React hooks
+- You may not import global CSS in `+html.tsx` (use the [Root Layout](/router/basics/layout/#root-layout) for styles)
+- You may not call browser APIs like `window` or `document` in your `+html.tsx`
+
+All `+html.tsx` components are expected to render the `children` prop they receive in their JSX content.
+
+## Meta tags
+
+Add meta tags to your pages using the `<Head />` component from `expo-router`:
+
+```tsx app/about.tsx
+import Head from 'expo-router/head';
+import { Text } from 'react-native';
+
+export default function Page() {
+  return (
+    <>
+      <Head>
+        <title>About Us</title>
+        <meta name="description" content="Learn more about our company." />
+      </Head>
+      <Text>About page content</Text>
+    </>
+  );
+}
+```
+
+During server-side rendering, `<Head>` elements are extracted and included in the initial HTML response, modifying the `<head>` element sent to the client, and improving search engine optimization (SEO).
+
+## Deployment
+
+Server-side rendering requires a runtime server to render pages on each request. Server-side rendered Expo apps **cannot** be deployed to static hosting services like GitHub Pages.
+
+### Supported platforms
+
+| Platform                                  | Adapter                       |
+| ----------------------------------------- | ----------------------------- |
+| [EAS Hosting](/eas/hosting/introduction/) | Built-in                      |
+| Node.js/Express                           | `expo-server/adapter/express` |
+| Cloudflare Workers                        | `expo-server/adapter/workerd` |
+| Vercel Edge Functions                     | `expo-server/adapter/vercel`  |
+| Netlify Edge Functions                    | `expo-server/adapter/netlify` |
+| Bun                                       | `expo-server/adapter/bun`     |
+
+<Collapsible summary="Example: Deployment with EAS Hosting">
+
+EAS Hosting supports server rendering out of the box. Export your app and deploy with:
+
+<Terminal
+  cmd={['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist']}
+/>
+
+</Collapsible>
+
+## Comparison with static rendering
+
+| Feature            |     | Static Rendering                                                                      | Server Rendering              |
+| ------------------ | :-- | ------------------------------------------------------------------------------------- | ----------------------------- |
+| HTML generation    |     | Build time                                                                            | Request time                  |
+| Configuration      |     | `web.output: 'static'`                                                                | `web.output: 'server'`        |
+| Dynamic routes     |     | Requires [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) | Works automatically           |
+| Server required    |     | No                                                                                    | Yes                           |
+| Time to First Byte |     | Fastest (cached)                                                                      | Slower (rendered per request) |
+| Hosting            |     | Any static host                                                                       | Server runtime required       |
+
+## Common questions
+
+<Collapsible summary="Can I use data loaders with server rendering?">
+
+Yes. Server rendering works with [data loaders](/router/web/data-loaders) to fetch data on the server before rendering.
+
+</Collapsible>
+
+<Collapsible summary="Can I mix server and static rendering?">
+
+Currently, Expo Router does not support mixing server and static rendering in the same project. Choose a single output mode based on your requirements.
+
+</Collapsible>
+
+<Collapsible summary="How do I cache server-rendered responses?">
+
+Caching is handled at the server or CDN level. Configure your deployment platform to cache responses based on URL patterns or cache headers.
+
+</Collapsible>
+
+<Collapsible summary="Does server rendering work with API routes?">
+
+Yes. [API routes](/router/web/api-routes/) work independently of the rendering mode. They are always executed on the server.
+
+</Collapsible>

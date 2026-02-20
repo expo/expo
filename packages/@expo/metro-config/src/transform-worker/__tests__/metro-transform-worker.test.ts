@@ -768,3 +768,67 @@ it('allows the constantFoldingPlugin to not remove used helpers when `dev: false
   );
   expect(result.output[0].data.code).toMatchSnapshot();
 });
+
+describe('tree shaking AST cleaning', () => {
+  it('strips non-serializable values from AST when optimize is enabled', async () => {
+    // This test verifies that the transformer cleans the AST of non-serializable values
+    // (like Symbols that React Compiler may add) before returning it for tree shaking.
+    const contents = `
+      export function Component({ controller, onSubmit }) {
+        const usingProvider = !!controller;
+        const files = usingProvider ? controller.files : [];
+        const text = usingProvider ? controller.value : 'default';
+
+        const handleSubmit = (event) => {
+          event.preventDefault();
+          Promise.all(files.map(async (item) => {
+            if (item.url) {
+              return { id: item.id, url: item.url };
+            }
+            return item;
+          })).then((converted) => {
+            const result = onSubmit({ text, files: converted }, event);
+            if (result instanceof Promise) {
+              result.then(() => {
+                if (usingProvider) controller.clear();
+              });
+            }
+          });
+        };
+
+        return handleSubmit;
+      }
+    `;
+
+    const result = await Transformer.transform(
+      {
+        ...baseConfig,
+        unstable_disableModuleWrapping: true,
+      },
+      '/root',
+      'local/file.js',
+      Buffer.from(contents, 'utf8'),
+      {
+        ...baseTransformOptions,
+        dev: false,
+        experimentalImportSupport: true,
+        customTransformOptions: {
+          __proto__: null,
+          optimize: true,
+          reactCompiler: true,
+        },
+      }
+    );
+
+    // Verify the AST is present (tree shaking stores it)
+    const ast = result.output[0].data.ast;
+    expect(ast).toBeDefined();
+
+    // The key assertion: AST must be JSON-serializable (no Symbols, functions, etc.)
+    expect(() => JSON.stringify(ast)).not.toThrow();
+
+    // Verify the serialized AST can be parsed back
+    const serialized = JSON.stringify(ast);
+    expect(() => JSON.parse(serialized)).not.toThrow();
+  });
+});

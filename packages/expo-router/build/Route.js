@@ -27,8 +27,8 @@ function useContextKey() {
     return (0, matchers_1.getContextKey)(node.contextKey);
 }
 /** Provides the matching routes and filename to the children. */
-function Route({ children, node, route }) {
-    return (<exports.LocalRouteParamsContext.Provider value={route?.params}>
+function Route({ children, node, params }) {
+    return (<exports.LocalRouteParamsContext.Provider value={params}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
     </exports.LocalRouteParamsContext.Provider>);
 }

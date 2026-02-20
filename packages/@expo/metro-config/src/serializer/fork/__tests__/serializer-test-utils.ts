@@ -87,6 +87,7 @@ export async function serializeShakingAsync(
     splitChunks?: boolean;
     mockRuntime?: boolean;
     minify?: boolean;
+    reactCompiler?: boolean;
   } = {}
 ) {
   return serializeOptimizeAsync(fs, { treeshake: true, ...options });
@@ -102,6 +103,7 @@ export async function serializeOptimizeAsync(
     minify?: boolean;
     dev?: boolean;
     mockRuntime?: boolean;
+    reactCompiler?: boolean;
   } = {}
 ) {
   return await serializeToWithGraph(
@@ -116,6 +118,7 @@ export async function serializeOptimizeAsync(
         splitChunks: true,
         minify: false,
         inlineRequires: true,
+        reactCompiler: options.reactCompiler,
         ...options,
       },
       preModulesFs: options.mockRuntime

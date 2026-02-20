@@ -8,11 +8,11 @@ import * as Log from '../log';
 
 export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
   if (env.EXPO_NO_GIT_STATUS) {
-    Log.warn(
-      'Git status is dirty but the command will continue because EXPO_NO_GIT_STATUS is enabled...'
-    );
     return false;
   }
+  Log.warn(
+    'Git status is dirty are you sure you want to continue (Set EXPO_NO_GIT_STATUS=0 to disable)'
+  );
   const isGitStatusClean = await validateGitStatusAsync();
 
   // Give people a chance to bail out if git working tree is dirty

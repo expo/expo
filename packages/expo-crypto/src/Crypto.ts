@@ -6,6 +6,7 @@ import ExpoCrypto from './ExpoCrypto';
 declare const global: any;
 
 export * from './Crypto.types';
+export * from './aes';
 
 class CryptoError extends TypeError {
   code = 'ERR_CRYPTO';

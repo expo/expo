@@ -11,6 +11,7 @@ export type SerialAsset = {
         reactServerReferences?: string[];
         reactClientReferences?: string[];
         expoDomComponentReferences?: string[];
+        loaderReferences?: string[];
         requires?: string[];
     };
 };

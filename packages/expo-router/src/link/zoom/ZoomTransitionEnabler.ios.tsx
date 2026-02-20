@@ -1,6 +1,7 @@
 import { use } from 'react';
 
 import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import {
   getInternalExpoRouterParams,
@@ -44,13 +45,22 @@ export function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps) {
     const hasZoomTransition =
       !!zoomTransitionId && zoomTransitionScreenId === route.key && !isLinkPreviewNavigation;
     if (hasZoomTransition && typeof zoomTransitionId === 'string') {
+      // Read dismissalBoundsRect from context (set by usePreventZoomTransitionDismissal hook)
+      const targetContext = use(ZoomTransitionTargetContext);
+      const dismissalBoundsRect = targetContext.dismissalBoundsRect;
+
+      // Read gestureEnabled from the screen descriptor so that gestureEnabled: false
+      // automatically blocks the native zoom transition dismissal gesture,
+      // even when the user hasn't called usePreventZoomTransitionDismissal().
       const descriptorsMap = use(DescriptorsContext);
-      const currentDescriptor = descriptorsMap[route.key];
-      const preventInteractiveDismissal = currentDescriptor?.options?.gestureEnabled === false;
+      const gestureEnabled = descriptorsMap[route.key]?.options?.gestureEnabled;
+      const effectiveDismissalBoundsRect =
+        dismissalBoundsRect ?? (gestureEnabled === false ? { maxX: 0, maxY: 0 } : null);
+
       return (
         <LinkZoomTransitionEnabler
           zoomTransitionSourceIdentifier={zoomTransitionId}
-          preventInteractiveDismissal={preventInteractiveDismissal}
+          dismissalBoundsRect={effectiveDismissalBoundsRect}
         />
       );
     }

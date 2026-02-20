@@ -8,6 +8,7 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
   private var zxingBarcodeReaders: [AVMetadataObject.ObjectType: ZXReader]
   private var zxingEnabled = true
   private var zxingFPSProcessed = 6.0
+  private var lastFrameTimeStamp = 0.0
   private let responseHandler: BarcodeScanningResponseHandler
 
   init(
@@ -56,13 +57,9 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
 
     let kMinMargin = 1.0 / zxingFPSProcessed
     let presentTimeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+    let curFrameTimeStamp = Double(presentTimeStamp.value) / Double(presentTimeStamp.timescale)
 
-    var curFrameTimeStamp = 0.0
-    var lastFrameTimeStamp = 0.0
-
-    curFrameTimeStamp = Double(presentTimeStamp.value) / Double(presentTimeStamp.timescale)
-
-    if curFrameTimeStamp - lastFrameTimeStamp > Double(kMinMargin) {
+    if curFrameTimeStamp - lastFrameTimeStamp > kMinMargin {
       lastFrameTimeStamp = curFrameTimeStamp
 
       if let videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer),

@@ -10,7 +10,7 @@ import {
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { frame, padding, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { foregroundStyle, frame, padding, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import React, { useState } from 'react';
 import { Pressable, Text as RNText, View } from 'react-native';
 
@@ -39,7 +39,7 @@ export default function PopoverScreen() {
             <Popover.Content>
               <VStack modifiers={[padding({ all: 16 }), frame({ minWidth: 200 })]}>
                 <Text>Hello from Popover!</Text>
-                <Text color="#666666">This is the popover content.</Text>
+                <Text modifiers={[foregroundStyle('#666666')]}>This is the popover content.</Text>
               </VStack>
             </Popover.Content>
           </Popover>
@@ -72,7 +72,7 @@ export default function PopoverScreen() {
 
         <Section title="Configured Popover">
           <LabeledContent label="Settings">
-            <Text color="#888888">
+            <Text modifiers={[foregroundStyle('#888888')]}>
               anchor: {attachmentAnchor}, arrow: {arrowEdge}
             </Text>
           </LabeledContent>
@@ -87,8 +87,8 @@ export default function PopoverScreen() {
             <Popover.Content>
               <VStack modifiers={[padding({ all: 16 }), frame({ minWidth: 250 })]}>
                 <Text>Configured Popover</Text>
-                <Text color="#666666">Attachment: {attachmentAnchor}</Text>
-                <Text color="#666666">Arrow Edge: {arrowEdge}</Text>
+                <Text modifiers={[foregroundStyle('#666666')]}>Attachment: {attachmentAnchor}</Text>
+                <Text modifiers={[foregroundStyle('#666666')]}>Arrow Edge: {arrowEdge}</Text>
               </VStack>
             </Popover.Content>
           </Popover>

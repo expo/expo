@@ -63,10 +63,5 @@ function transformDocsUrl(url: string) {
     url = url.replace('https://docs.expo.dev/', 'http://localhost:3002/');
   }
 
-  // If viewing a docs preview hosted on S3, use the current origin instead of production
-  if (window?.location?.origin?.includes('s3-website-us-east-1.amazonaws.com')) {
-    url = url.replace('https://docs.expo.dev/', window.location.origin + '/');
-  }
-
   return url;
 }

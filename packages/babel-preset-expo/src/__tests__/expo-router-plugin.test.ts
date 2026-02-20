@@ -16,11 +16,6 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
-jest.mock('resolve-from', () => ({
-  __esModule: true,
-  default: jest.fn(() => '/foo/bar/node_modules/entry.js'),
-}));
-
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
@@ -37,7 +32,8 @@ const DEF_OPTIONS = {
   plugins: [expoRouterBabelPlugin],
   sourceMaps: true,
   configFile: false,
-  filename: '/unknown',
+  // Simulate a file inside node_modules/expo-router where _ctx.ios.js would be
+  filename: '/foo/bar/node_modules/expo-router/_ctx.ios.js',
   compact: false,
   comments: true,
   retainLines: true,
@@ -108,15 +104,9 @@ it(`skips async routes setting in native production`, () => {
 it(`inlines constants`, () => {
   process.env.NODE_ENV = 'development';
   const options = {
-    babelrc: false,
-    presets: [],
-    plugins: [expoRouterBabelPlugin],
-    sourceMaps: true,
-    filename: 'unknown',
-    configFile: false,
-    compact: false,
-    comments: true,
-    retainLines: true,
+    ...DEF_OPTIONS,
+    // Simulate a file inside node_modules/expo-router
+    filename: '/foo/bar/node_modules/expo-router/_ctx.ios.js',
     caller: getCaller({
       name: 'metro',
       engine: 'hermes',
@@ -134,13 +124,15 @@ process.env.EXPO_ROUTER_ABS_APP_ROOT;
 // EXPO_ROUTER_APP_ROOT
 process.env.EXPO_ROUTER_APP_ROOT;`;
 
+  // EXPO_ROUTER_APP_ROOT is computed relative to the file being transformed
+  // From /foo/bar/node_modules/expo-router/ to /foo/bar/app = ../../app
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
 // EXPO_PROJECT_ROOT
 "/foo/bar";
 // EXPO_ROUTER_ABS_APP_ROOT
 "/foo/bar/app";
 // EXPO_ROUTER_APP_ROOT
-"../app";`);
+"../../app";`);
 });
 
 it(`uses custom app entry`, () => {
@@ -166,13 +158,15 @@ process.env.EXPO_ROUTER_ABS_APP_ROOT;
 // EXPO_ROUTER_APP_ROOT
 process.env.EXPO_ROUTER_APP_ROOT;`;
 
+  // EXPO_ROUTER_APP_ROOT is computed relative to the file being transformed
+  // From /foo/bar/node_modules/expo-router/ to /random/value = ../../../../random/value
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
 // EXPO_PROJECT_ROOT
 "/foo/bar";
 // EXPO_ROUTER_ABS_APP_ROOT
 "/random/value";
 // EXPO_ROUTER_APP_ROOT
-"../../../random/value";`);
+"../../../../random/value";`);
 
   expect(getConfig).toHaveBeenCalledTimes(0);
 });
@@ -200,13 +194,41 @@ process.env.EXPO_ROUTER_ABS_APP_ROOT;
 // EXPO_ROUTER_APP_ROOT
 process.env.EXPO_ROUTER_APP_ROOT;`;
 
+  // EXPO_ROUTER_APP_ROOT is computed relative to the file being transformed
+  // From /foo/bar/node_modules/expo-router/ to /foo/bar/random/value = ../../random/value
   expect(babel.transform(sourceCode, options)!.code).toEqual(`
 // EXPO_PROJECT_ROOT
 "/foo/bar";
 // EXPO_ROUTER_ABS_APP_ROOT
 "/foo/bar/random/value";
 // EXPO_ROUTER_APP_ROOT
-"../random/value";`);
+"../../random/value";`);
 
   expect(getConfig).toHaveBeenCalledTimes(0);
+});
+
+it(`handles hoisted packages in monorepos (e.g., with Bun)`, () => {
+  process.env.NODE_ENV = 'development';
+
+  // Simulate a monorepo where expo-router is hoisted to the root node_modules
+  // but the app is in a nested workspace
+  const options = {
+    ...DEF_OPTIONS,
+    // expo-router is hoisted to monorepo root
+    filename: '/monorepo/node_modules/expo-router/_ctx.ios.js',
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      // App is in a nested workspace
+      projectRoot: '/monorepo/apps/my-app',
+      platform: 'ios',
+    }),
+  };
+
+  const sourceCode = `process.env.EXPO_ROUTER_APP_ROOT;`;
+
+  // The relative path should be computed from the actual file location (hoisted)
+  // to the app folder, not from where expo-router/entry might be expected to be
+  // From /monorepo/node_modules/expo-router/ to /monorepo/apps/my-app/app = ../../apps/my-app/app
+  expect(babel.transform(sourceCode, options)!.code).toEqual(`"../../apps/my-app/app";`);
 });

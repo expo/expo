@@ -85,7 +85,12 @@ module.exports = {
         unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
         unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
         unstable_useServerRendering: process.env.E2E_ROUTER_SERVER_RENDERING === 'true',
-        unstable_splitView: process.env.E2E_ROUTER_SPLIT_VIEW === 'true',
+      },
+    ],
+    [
+      'expo-asset',
+      {
+        assets: ['./assets/expo-logo.png', './assets/expo-transparent.png'],
       },
     ],
   ],

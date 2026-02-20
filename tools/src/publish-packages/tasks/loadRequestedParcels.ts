@@ -46,6 +46,11 @@ export const loadRequestedParcels = new Task<TaskArgs>(
       const isPrivate = pkg.packageJson.private;
       const isIncluded = packageNames.length === 0 || packageNames.includes(pkg.packageName);
       const isTemplate = pkg.isTemplate();
+
+      const isExpoModuleScripts = pkg.packageName === 'expo-module-scripts';
+      if (isExpoModuleScripts && !options.includeExpoModuleScripts) {
+        return false;
+      }
       if (options.templatesOnly) {
         // Only include templates when the flag is on
         return !isPrivate && isIncluded && isTemplate;

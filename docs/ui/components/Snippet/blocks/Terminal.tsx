@@ -2,11 +2,19 @@ import { mergeClasses } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
 import { Language, Prism } from 'prism-react-renderer';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { CODE } from '~/ui/components/Text';
 import { useIsMobileView } from '~/ui/components/utils/isMobileView';
 
+import {
+  PACKAGE_MANAGER_ORDER,
+  getPackageManagerServerSnapshot,
+  getPackageManagerSnapshot,
+  setPackageManagerPreference,
+  subscribePackageManagerStore,
+} from './packageManagerStore';
+import type { PackageManagerKey } from './packageManagerStore';
 import { Select } from '../../Select';
 import { Snippet } from '../Snippet';
 import { SnippetAction } from '../SnippetAction';
@@ -14,7 +22,6 @@ import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 import { CopyAction } from '../actions/CopyAction';
 
-type PackageManagerKey = 'npm' | 'yarn' | 'pnpm' | 'bun';
 type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 
 type TerminalProps = {
@@ -51,9 +58,6 @@ type PackageManagerState = {
   setActiveManager: (manager: PackageManagerKey) => void;
 };
 
-const STORAGE_KEY = 'expo-docs-terminal-package-manager';
-
-const PACKAGE_MANAGER_ORDER: PackageManagerKey[] = ['npm', 'yarn', 'pnpm', 'bun'];
 export const Terminal = ({
   cmd,
   cmdCopy,
@@ -85,7 +89,10 @@ export const Terminal = ({
   ) : null;
 
   return (
-    <Snippet className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
+    <Snippet
+      data-md="terminal"
+      data-md-commands={packageManagers ? JSON.stringify(packageManagers) : undefined}
+      className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
       <SnippetHeader
         alwaysDark
         title={title}
@@ -137,32 +144,18 @@ function usePackageManagerState(
     [packageManagers]
   );
 
-  const [activeManager, setActiveManager] = useState<PackageManagerKey | null>(() => {
-    if (typeof window === 'undefined') {
-      return availableManagers[0] ?? null;
-    }
-    const stored = window.localStorage.getItem(STORAGE_KEY) as PackageManagerKey | null;
-    if (stored && availableManagers.includes(stored)) {
-      return stored;
+  const preferredManager = useSyncExternalStore(
+    subscribePackageManagerStore,
+    getPackageManagerSnapshot,
+    getPackageManagerServerSnapshot
+  );
+
+  const activeManager = useMemo(() => {
+    if (preferredManager && availableManagers.includes(preferredManager)) {
+      return preferredManager;
     }
     return availableManagers[0] ?? null;
-  });
-
-  useEffect(() => {
-    const shouldReset = !activeManager || !availableManagers.includes(activeManager);
-    setActiveManager(
-      availableManagers.length > 0 ? (shouldReset ? availableManagers[0] : activeManager) : null
-    );
-  }, [activeManager, availableManagers]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    if (activeManager) {
-      window.localStorage.setItem(STORAGE_KEY, activeManager);
-    }
-  }, [activeManager]);
+  }, [availableManagers, preferredManager]);
 
   const shouldShowPackageTabs = availableManagers.length > 0;
   const activeCmd = useMemo(() => {
@@ -172,7 +165,20 @@ function usePackageManagerState(
     return fallbackCmd;
   }, [activeManager, fallbackCmd, packageManagers, shouldShowPackageTabs]);
 
-  return { availableManagers, activeManager, activeCmd, shouldShowPackageTabs, setActiveManager };
+  const setActiveManager = (manager: PackageManagerKey) => {
+    if (!availableManagers.includes(manager)) {
+      return;
+    }
+    setPackageManagerPreference(manager);
+  };
+
+  return {
+    availableManagers,
+    activeManager,
+    activeCmd,
+    shouldShowPackageTabs,
+    setActiveManager,
+  };
 }
 
 /**
@@ -254,13 +260,14 @@ function cmdMapper(line: string, index: number) {
   const key = `line-${index}`;
 
   if (line.trim() === '') {
-    return <br key={key} className="select-none" />;
+    return <br key={key} data-md="skip" className="select-none" />;
   }
 
   if (line.startsWith('#')) {
     return (
       <CODE
         key={key}
+        data-md="skip"
         className="select-none whitespace-pre !border-none !bg-transparent !text-palette-gray10">
         {line}
       </CODE>
@@ -270,7 +277,9 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key} className="w-fit">
-        <CODE className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
+        <CODE
+          data-md="skip"
+          className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
           -&nbsp;
         </CODE>
         <CODE

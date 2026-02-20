@@ -8,9 +8,12 @@ import {
   HStack,
   ColorPicker,
   Picker,
-  Switch,
+  Toggle,
   Rectangle,
   Slider,
+  Capsule,
+  Stepper,
+  Spacer,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -23,6 +26,7 @@ import {
   brightness,
   saturation,
   scaleEffect,
+  containerRelativeFrame,
   rotationEffect,
   offset,
   listRowSeparator,
@@ -58,9 +62,19 @@ import {
   pickerStyle,
   tag,
   font,
+  lineLimit,
+  contentShape,
+  shapes,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text as RNText,
+  View,
+  useWindowDimensions,
+  Alert,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
@@ -105,6 +119,9 @@ export default function ModifiersScreen() {
 
   const badgeType = ['standard', 'increased', 'decreased'] as const;
   const [badgeIndex, setBadgeIndex] = useState(0);
+
+  const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
+  const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
 
   return (
     <ScrollView>
@@ -169,10 +186,10 @@ export default function ModifiersScreen() {
                 : []),
             ]}>
             <VStack spacing={20}>
-              <Switch
+              <Toggle
                 label="Enable Insets"
-                value={enableRowInsets.enabled}
-                onValueChange={(v) => setEnableRowInsets((prev) => ({ ...prev, enabled: v }))}
+                isOn={enableRowInsets.enabled}
+                onIsOnChange={(v) => setEnableRowInsets((prev) => ({ ...prev, enabled: v }))}
               />
               <HStack spacing={20}>
                 {[
@@ -181,11 +198,11 @@ export default function ModifiersScreen() {
                 ].map((group, i) => (
                   <VStack key={i} spacing={20}>
                     {group.map((key) => (
-                      <Switch
+                      <Toggle
                         key={key}
                         label={insets.find((inset) => inset.key === key)!.label}
-                        value={enableRowInsets[key as keyof typeof enableRowInsets]}
-                        onValueChange={(v) => setEnableRowInsets((prev) => ({ ...prev, [key]: v }))}
+                        isOn={enableRowInsets[key as keyof typeof enableRowInsets]}
+                        onIsOnChange={(v) => setEnableRowInsets((prev) => ({ ...prev, [key]: v }))}
                         modifiers={[disabled(!enableRowInsets.enabled)]}
                       />
                     ))}
@@ -204,9 +221,9 @@ export default function ModifiersScreen() {
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
-              color={color ?? 'primary'}
-              lineLimit={1}
               modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                lineLimit(1),
                 font({ size: 16 }),
                 allowsTightening(allowTightening),
                 truncationMode(
@@ -227,10 +244,10 @@ export default function ModifiersScreen() {
                 </Text>
               ))}
             </Picker>
-            <Switch
+            <Toggle
               label="Allow Tightening"
-              value={allowTightening}
-              onValueChange={setAllowsTightening}
+              isOn={allowTightening}
+              onIsOnChange={setAllowsTightening}
             />
             <Text modifiers={[font({ size: 14 }), kerning(kerningValue)]}>Kerning Text</Text>
             <Slider min={0} max={10} onValueChange={setKerning} />
@@ -346,14 +363,17 @@ export default function ModifiersScreen() {
             </VStack>
 
             <VStack spacing={25}>
-              <Switch
+              <Toggle
                 label="Enable selection"
-                value={enabledSelection}
-                onValueChange={setEnabledSelection}
+                isOn={enabledSelection}
+                onIsOnChange={setEnabledSelection}
               />
               <Text
-                color={enabledSelection ? 'black' : 'gray'}
-                modifiers={[font({ size: 14 }), textSelection(enabledSelection)]}>
+                modifiers={[
+                  foregroundStyle({ type: 'color', color: enabledSelection ? 'black' : 'gray' }),
+                  font({ size: 14 }),
+                  textSelection(enabledSelection),
+                ]}>
                 This is selected text
               </Text>
             </VStack>
@@ -383,10 +403,10 @@ export default function ModifiersScreen() {
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
-            <Switch
-              value={hideScrollBackground}
+            <Toggle
+              isOn={hideScrollBackground}
               label="Hide form background"
-              onValueChange={setHideScrollBackground}
+              onIsOnChange={setHideScrollBackground}
             />
             <ColorPicker
               label="Select a row color"
@@ -423,7 +443,11 @@ export default function ModifiersScreen() {
                 endPoint: { x: 1, y: 1 },
               }),
             ]}>
-            <Text color={color ?? 'primary'} modifiers={[font({ size: 12 })]}>
+            <Text
+              modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                font({ size: 12 }),
+              ]}>
               Hello world, I don't react on foregroundStyle
             </Text>
             <ColorPicker
@@ -596,9 +620,9 @@ export default function ModifiersScreen() {
 
             {/* Disabled Modifier Demo */}
             <VStack spacing={8}>
-              <Switch
-                value={!isDisabled}
-                onValueChange={(value) => setIsDisabled(!value)}
+              <Toggle
+                isOn={!isDisabled}
+                onIsOnChange={(value) => setIsDisabled(!value)}
                 label="Enable Picker"
               />
               <Picker
@@ -623,7 +647,76 @@ export default function ModifiersScreen() {
             </VStack>
           </Section>
 
+          {/* Container Relative Frame Modifier */}
+          <Section title="Container Relative Frame Modifier">
+            <Capsule
+              modifiers={[
+                containerRelativeFrame({
+                  axes: 'horizontal',
+                  count: containerRelativeFrameCount,
+                  span: 1,
+                }),
+                foregroundStyle('#3498DB'),
+              ]}
+            />
+            <HStack>
+              {new Array(containerRelativeFrameCount).fill(null).map((_, i) => (
+                <Capsule
+                  key={i}
+                  modifiers={[
+                    containerRelativeFrame({
+                      axes: 'horizontal',
+                      count: containerRelativeFrameCount,
+                      span: 1,
+                    }),
+                    foregroundStyle('#3498DB'),
+                  ]}
+                />
+              ))}
+            </HStack>
+            <Stepper
+              onValueChanged={setContainerRelativeFrameCount}
+              defaultValue={containerRelativeFrameCount}
+              label={`Items count: ${containerRelativeFrameCount}`}
+            />
+          </Section>
+
           <AppearSection />
+
+          {/* Container Shape Modifier */}
+          <Section title="Content Shape Modifier">
+            <Text>Try tapping the empty space between texts:</Text>
+            <HStack
+              modifiers={[
+                cornerRadius(8),
+                onTapGesture(() => {
+                  Alert.alert('Without contentShape', 'Tapped! (Only works on text)');
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+
+            <Text>{'WITH contentShape\nNow tap the empty space:'}</Text>
+            <HStack
+              spacing={0}
+              modifiers={[
+                contentShape(shapes.rectangle()),
+                onTapGesture(() => {
+                  setcontentShapeButtonCounter((prev) => {
+                    const nextCount = prev + 1;
+                    Alert.alert('With contentShape', `Works everywhere! Count: ${nextCount}`);
+                    return nextCount;
+                  });
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+            <Text>Taps: {contentShapeButtonCounter}</Text>
+          </Section>
 
           <Section title="Misc">
             <VStack

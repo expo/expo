@@ -167,7 +167,7 @@ describe('useNavigation in preview', () => {
 
   it('navigation.navigate navigates in host view', async () => {
     const NavigationSetter = ({ children }: PropsWithChildren) => {
-      const navigation = useNavigation<NavigationProp<{ foo }>>();
+      const navigation = useNavigation<NavigationProp<{ foo: unknown }>>();
       useEffect(() => {
         navigation.navigate('foo');
       }, []);
@@ -190,7 +190,7 @@ describe('useNavigation in preview', () => {
 
   it('navigation.navigate does not navigate in preview', async () => {
     const NavigationSetter = ({ children }: PropsWithChildren) => {
-      const navigation = useNavigation<NavigationProp<{ foo }>>();
+      const navigation = useNavigation<NavigationProp<{ foo: unknown }>>();
       useEffect(() => {
         navigation.navigate('foo');
       }, []);

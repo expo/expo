@@ -19,26 +19,6 @@ class CellularModule : Module() {
   override fun definition() = ModuleDefinition {
     Name(moduleName)
 
-    Constant("allowsVoip") {
-      SipManager.isVoipSupported(context)
-    }
-
-    Constant("isoCountryCode") {
-      telephonyManager()?.simCountryIso
-    }
-
-    Constant("carrier") {
-      telephonyManager()?.simOperatorName
-    }
-
-    Constant("mobileCountryCode") {
-      telephonyManager()?.simOperator?.substring(0, 3)
-    }
-
-    Constant("mobileNetworkCode") {
-      telephonyManager()?.simOperator?.substring(3)
-    }
-
     AsyncFunction<Int>("getCellularGenerationAsync") {
       try {
         getCurrentGeneration()

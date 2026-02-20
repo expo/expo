@@ -25,4 +25,6 @@ public interface NotificationsChannelManager {
 
   @RequiresApi(api = Build.VERSION_CODES.O)
   NotificationChannel createNotificationChannel(@NonNull String channelId, CharSequence name, int importance, ReadableArguments channelOptions);
+
+  boolean customSoundExists(ReadableArguments channelOptions);
 }

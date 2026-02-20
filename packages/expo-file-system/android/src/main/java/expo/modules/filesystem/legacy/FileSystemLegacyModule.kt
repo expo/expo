@@ -210,7 +210,8 @@ open class FileSystemLegacyModule : Module() {
       val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       val encoding = options.encoding
-      getOutputStream(uri).use { out ->
+      val append = options.append
+      getOutputStream(uri, append).use { out ->
         if (encoding == EncodingType.BASE64) {
           val bytes = Base64.decode(contents, Base64.DEFAULT)
           out.write(bytes)
@@ -1068,9 +1069,9 @@ open class FileSystemLegacyModule : Module() {
   }
 
   @Throws(IOException::class)
-  private fun getOutputStream(uri: Uri) = when {
-    uri.scheme == "file" -> FileOutputStream(uri.toFile())
-    uri.isSAFUri -> context.contentResolver.openOutputStream(uri)!!
+  private fun getOutputStream(uri: Uri, append: Boolean = false) = when {
+    uri.scheme == "file" -> FileOutputStream(uri.toFile(), append)
+    uri.isSAFUri -> context.contentResolver.openOutputStream(uri, if (append) "wa" else "w")!!
     else -> throw IOException("Unsupported scheme for location '$uri'.")
   }
 

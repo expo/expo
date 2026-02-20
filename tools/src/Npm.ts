@@ -118,6 +118,8 @@ export async function packToTarballAsync(packageDir: string): Promise<PackResult
     ['pack', '--json', '--foreground-scripts=false'],
     {
       cwd: packageDir,
+      // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+      env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
     }
   );
   return result;
@@ -151,6 +153,8 @@ export async function publishPackageAsync(
   }
   await spawnAsync('npm', args, {
     cwd: packageDir,
+    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
     ...options.spawnOptions,
   });
 }

@@ -17,10 +17,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import expo.modules.core.MapHelper
 import expo.modules.core.arguments.MapArguments
 import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.interfaces.Arguments
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskConsumerInterface
@@ -43,7 +41,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   private var mLastReportedLocation: Location? = null
   private var mDeferredDistance = 0.0
   private val mDeferredLocations: MutableList<Location> = ArrayList()
-  private var mIsHostPaused = true
+
+  // Apps start in foreground state; lifecycle callbacks update this after initialization
+  private var mIsHostPaused = false
   private val mLocationClient: FusedLocationProviderClient by lazy {
     LocationServices.getFusedLocationProviderClient(context)
   }
@@ -82,21 +82,34 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     mTask ?: return
     val result = LocationResult.extractResult(intent)
     if (result != null) {
-      val locations = result.locations
-      deferLocations(locations)
-      maybeReportDeferredLocations()
+      handleLocationUpdate(result.locations)
     } else {
       try {
         mLocationClient.lastLocation.addOnCompleteListener { task ->
-          task.result?.let {
-            deferLocations(listOf(it))
-            maybeReportDeferredLocations()
-          }
+          task.result?.let { handleLocationUpdate(listOf(it)) }
         }
       } catch (e: SecurityException) {
         Log.e(TAG, "Cannot get last location: " + e.message)
       }
     }
+  }
+
+  /**
+   * Handles incoming location updates by either reporting immediately (foreground)
+   * or deferring for battery optimization (background).
+   */
+  private fun handleLocationUpdate(locations: List<Location>) {
+    if (locations.isEmpty()) return
+
+    // Foreground: report immediately for responsive UI (matches iOS behavior)
+    if (!mIsHostPaused) {
+      reportLocationsImmediately(locations)
+      return
+    }
+
+    // Background: use deferred buffer for battery optimization
+    deferLocations(locations)
+    maybeReportDeferredLocations()
   }
 
   override fun didExecuteJob(jobService: JobService, params: JobParameters): Boolean {
@@ -227,6 +240,32 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     mService?.stop()
   }
 
+  /**
+   * Reports locations immediately without deferred batching.
+   * Used in foreground mode to provide responsive location updates (matches iOS behavior).
+   */
+  private fun reportLocationsImmediately(locations: List<Location>) {
+    if (locations.isEmpty()) return
+    val context = context.applicationContext
+    val data: MutableList<PersistableBundle> = ArrayList()
+    var lastReported: Location? = null
+    for (location in locations) {
+      val timestamp = location.time
+      // Some devices may broadcast the same location multiple times (mostly twice)
+      // so we're filtering out these locations.
+      if (timestamp > sLastTimestamp) {
+        val bundle = LocationResponse(location).toBundle(PersistableBundle::class.java)
+        data.add(bundle)
+        sLastTimestamp = timestamp
+        lastReported = location
+      }
+    }
+    if (data.isNotEmpty()) {
+      mLastReportedLocation = lastReported
+      taskManagerUtils.scheduleJob(context, mTask, data)
+    }
+  }
+
   private fun deferLocations(locations: List<Location>) {
     val size = mDeferredLocations.size
     var lastLocation = if (size > 0) mDeferredLocations[size - 1] else mLastReportedLocation
@@ -256,7 +295,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
         sLastTimestamp = timestamp
       }
     }
-    if (data.size > 0) {
+    if (data.isNotEmpty()) {
       // Save last reported location, reset the distance and clear a list of locations.
       mLastReportedLocation = mDeferredLocations[mDeferredLocations.size - 1]
       mDeferredDistance = 0.0
@@ -269,7 +308,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
   private fun shouldReportDeferredLocations(): Boolean {
     val task = mTask ?: return false
-    if (mDeferredLocations.size == 0) {
+    if (mDeferredLocations.isEmpty()) {
       return false
     }
     if (!mIsHostPaused) {
@@ -278,9 +317,8 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     }
     val oldestLocation = mLastReportedLocation ?: mDeferredLocations[0]
     val newestLocation = mDeferredLocations[mDeferredLocations.size - 1]
-    val options: Arguments = MapHelper(task.options)
-    val distance = options.getDouble("deferredUpdatesDistance")
-    val interval = options.getLong("deferredUpdatesInterval")
+    val distance = (task.options["deferredUpdatesDistance"] as? Number)?.toDouble() ?: 0.0
+    val interval = (task.options["deferredUpdatesInterval"] as? Number)?.toLong() ?: 0L
     return newestLocation.time - oldestLocation.time >= interval && mDeferredDistance >= distance
   }
 
@@ -289,7 +327,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   }
 
   private fun executeTaskWithLocationBundles(locationBundles: ArrayList<Bundle>, callback: TaskExecutionCallback) {
-    if (locationBundles.size > 0 && mTask != null) {
+    if (locationBundles.isNotEmpty() && mTask != null) {
       val data = Bundle()
       data.putParcelableArrayList("locations", locationBundles)
       mTask?.execute(data, null, callback)

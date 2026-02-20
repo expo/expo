@@ -2,7 +2,10 @@ import type { BadgeProps, IconProps, LabelProps, VectorIconProps } from './types
 export declare function Badge(props: BadgeProps): null;
 export declare function Icon(props: IconProps): null;
 /**
- * Helper component which can be used to load vector icons.
+ * Helper component for loading vector icons.
+ *
+ * Prefer using the `md` and `sf` props on `Icon` rather than using this component directly.
+ * Only use this component when you need to load a specific icon from a vector icon family.
  *
  * @example
  * ```tsx
@@ -10,7 +13,6 @@ export declare function Icon(props: IconProps): null;
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * <Icon src={<VectorIcon family={MaterialCommunityIcons} name="home" />} />
- *
  * ```
  */
 export declare function VectorIcon<const NameT extends string>(props: VectorIconProps<NameT>): null;

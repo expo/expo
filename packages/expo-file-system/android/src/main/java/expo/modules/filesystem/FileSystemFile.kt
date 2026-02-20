@@ -3,12 +3,10 @@ package expo.modules.filesystem
 import android.net.Uri
 import android.util.Base64
 import expo.modules.interfaces.filesystem.Permission
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
-@OptIn(EitherType::class)
 class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   // Kept empty for now, but can be used to validate if the uri is a valid file uri. // TODO: Move to the constructor once also moved on iOS
   fun validatePath() {
@@ -50,48 +48,48 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
-  fun write(content: String) {
+  fun write(content: String, append: Boolean = false) {
     validateType()
     validatePermission(Permission.WRITE)
     if (!exists) {
       create()
     }
-    file.outputStream().use { outputStream ->
+    file.outputStream(append).use { outputStream ->
       outputStream.write(content.toByteArray())
     }
   }
 
-  fun write(content: TypedArray) {
+  fun write(content: TypedArray, append: Boolean = false) {
     validateType()
     validatePermission(Permission.WRITE)
     if (!exists) {
       create()
     }
     if (uri.isContentUri) {
-      file.outputStream().use { outputStream ->
+      file.outputStream(append).use { outputStream ->
         val array = ByteArray(content.length)
         content.toDirectBuffer().get(array)
         outputStream.write(array)
       }
     } else {
-      FileOutputStream(javaFile).use {
+      FileOutputStream(javaFile, append).use {
         it.channel.write(content.toDirectBuffer())
       }
     }
   }
 
-  fun write(content: ByteArray) {
+  fun write(content: ByteArray, append: Boolean = false) {
     validateType()
     validatePermission(Permission.WRITE)
     if (!exists) {
       create()
     }
     if (uri.isContentUri) {
-      file.outputStream().use { outputStream ->
+      file.outputStream(append).use { outputStream ->
         outputStream.write(content)
       }
     } else {
-      FileOutputStream(javaFile).use {
+      FileOutputStream(javaFile, append).use {
         it.write(content)
       }
     }

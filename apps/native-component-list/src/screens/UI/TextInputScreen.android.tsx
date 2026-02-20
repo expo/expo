@@ -12,12 +12,14 @@ export default function TextInputScreen() {
       <Section title="Current value">
         <Text>{JSON.stringify(value)}</Text>
       </Section>
-      <Button
-        onPress={async () => {
-          textRef.current?.setText('Hello there!');
-        }}>
-        Set text
-      </Button>
+      <Host matchContents>
+        <Button
+          onPress={async () => {
+            textRef.current?.setText('Hello there!');
+          }}>
+          Set text
+        </Button>
+      </Host>
       <Section title="Text Input">
         <Host matchContents>
           <TextInput

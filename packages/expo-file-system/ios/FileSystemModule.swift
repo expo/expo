@@ -203,18 +203,19 @@ public final class FileSystemModule: Module {
       }
 
       Function("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
+        let append = options?.append ?? false
         if let content: String = content.get() {
           if options?.encoding == WriteEncoding.base64 {
             guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
               throw UnableToWriteBase64DataException(file.url.absoluteString)
             }
-            try file.write(data)
+            try file.write(data, append: append)
           } else {
-            try file.write(content)
+            try file.write(content, append: append)
           }
         }
         if let content: TypedArray = content.get() {
-          try file.write(content)
+          try file.write(content, append: append)
         }
       }
 

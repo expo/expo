@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoSharing.js","sourceRoot":"","sources":["../src/ExpoSharing.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,aAAa,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoSharing');\n"]}

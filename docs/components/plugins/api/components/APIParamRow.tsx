@@ -30,7 +30,7 @@ export function APIParamRow({
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <DEMI>
+        <DEMI data-md="api-param-name">
           {flags?.isRest ? '...' : ''}
           {parseParamName(name)}
         </DEMI>

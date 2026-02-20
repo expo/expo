@@ -1,0 +1,151 @@
+name: E2E Test Suite for Expo Brownfield
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/test-suite-brownfield-isolated.yml
+      - apps/brownfield-tester/expo-app/**
+      - packages/expo-brownfield/**
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+  pull_request:
+    paths:
+      - .github/workflows/test-suite-brownfield-isolated.yml
+      - apps/brownfield-tester/expo-app/**
+      - packages/expo-brownfield/**
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-platform-for-e2e:
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run_ios: ${{ steps.changes.outputs.should_run_ios }}
+      should_run_android: ${{ steps.changes.outputs.should_run_android }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧐 Detect platform change
+        id: changes
+        uses: ./.github/actions/detect-platform-change
+        with:
+          android-paths: >-
+            "packages/expo-brownfield/android/**",
+            "packages/expo-brownfield/gradle-plugins/**"
+
+          ios-paths: >-
+            "packages/expo-brownfield/ios/**"
+
+          common-paths: >-
+            .github/workflows/test-suite-brownfield-isolated.yml,
+            "apps/brownfield-tester/expo-app/**",
+            "packages/expo-brownfield/cli/**",
+            "packages/expo-brownfield/plugin/**",
+            "packages/expo-brownfield/src/**",
+            "packages/expo-brownfield/e2e/maestro/**"
+
+  android-build:
+    runs-on: ubuntu-24.04
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
+    env:
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+      - name: 🔨 Use JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          gradle: 'true'
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+          react-native-gradle-downloads: 'true'
+      - name: 🧶 Install workspace node modules
+        run: yarn install --frozen-lockfile
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+      - name: 🤖 Build and publish Android artifacts (apps/brownfield-tester/expo-app)
+        run: |
+          npx expo prebuild --clean -p android
+          npx expo-brownfield build:android --repo MavenLocal --verbose
+        working-directory: apps/brownfield-tester/expo-app
+      - name: 🏗️ Build APK
+        run: |
+          ./gradlew clean
+          ./gradlew assembleRelease --refresh-dependencies
+        working-directory: apps/brownfield-tester/android-integrated
+      - name: 💾 Store APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: expo-brownfield-android-release
+          path: apps/brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
+
+  android-e2e:
+    runs-on: ubuntu-24.04
+    needs: android-build
+    strategy:
+      matrix:
+        api-level: [36]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+      - name: 🌠 Download builds
+        uses: actions/download-artifact@v4
+        with:
+          name: expo-brownfield-android-release
+          path: apps/brownfield-tester/android-integrated/apk
+      - name: 🍺 Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🧪 Run e2e tests (isolated brownfield)
+        uses: ./.github/actions/use-android-emulator
+        with:
+          avd-api: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
+          script: |
+            adb install -r apps/brownfield-tester/android-integrated/apk/*.apk
+            cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        with:
+          webhook: ${{ secrets.slack_webhook_android }}
+          channel: '#expo-android'
+          author_name: E2E Test Suite for Expo Brownfield
+
+  # TODO(pmleczek): Add iOS job
+  # ios-e2e:

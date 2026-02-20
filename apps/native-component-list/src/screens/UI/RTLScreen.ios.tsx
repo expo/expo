@@ -3,36 +3,36 @@ import {
   Host,
   HStack,
   Image,
-  Progress,
+  ProgressView,
   Picker,
   Slider,
-  Switch,
+  Toggle,
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { frame, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { frame, pickerStyle, progressViewStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 import { ScrollPage, Section } from '../../components/Page';
 
 export default function RTLTestScreen() {
   const [isRTL, setIsRTL] = React.useState(true);
-  const [switchValue, setSwitchValue] = React.useState(true);
+  const [toggleValue, setToggleValue] = React.useState(true);
   const [pickerSelection, setPickerSelection] = React.useState<string | number>(0);
   const [sliderValue, setSliderValue] = React.useState(0.5);
   const options = ['אפשרות 1', 'אפשרות 2', 'خيار ١', 'خيار ٢'];
 
   return (
     <ScrollPage>
-      <Section title="Switch">
+      <Section title="Toggle">
         <Host
           matchContents={{ vertical: true }}
           layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <VStack spacing={12} alignment="center">
-            <Switch value={isRTL} onValueChange={setIsRTL} label="Enable RTL" />
-            <Switch
-              value={switchValue}
-              onValueChange={setSwitchValue}
+            <Toggle isOn={isRTL} onIsOnChange={setIsRTL} label="Enable RTL" />
+            <Toggle
+              isOn={toggleValue}
+              onIsOnChange={setToggleValue}
               modifiers={[frame({ width: 64 })]}
             />
           </VStack>
@@ -110,7 +110,7 @@ export default function RTLTestScreen() {
         <Host matchContents layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <HStack spacing={8}>
             <Text>20%</Text>
-            <Progress progress={0.2} variant="linear" />
+            <ProgressView value={0.2} modifiers={[progressViewStyle('linear')]} />
           </HStack>
         </Host>
       </Section>

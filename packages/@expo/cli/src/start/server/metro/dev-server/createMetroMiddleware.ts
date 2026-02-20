@@ -1,12 +1,12 @@
 import type { MetroConfig } from '@expo/metro/metro';
 import connect from 'connect';
+import { Body } from 'fetch-nodeshim';
 
+import { compression } from './compression';
 import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
-
-const compression = require('compression');
 
 export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
   const messages = createMessagesSocket({ logger: Log });
@@ -14,13 +14,9 @@ export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoo
 
   const middleware = connect()
     .use(noCacheMiddleware)
-    .use(compression())
+    .use(compression)
     // Support opening stack frames from clients directly in the editor
-    .use('/open-stack-frame', rawBodyMiddleware)
     .use('/open-stack-frame', metroOpenStackFrameMiddleware)
-    // Support the symbolication endpoint of Metro
-    // See: https://github.com/facebook/metro/blob/a792d85ffde3c21c3fbf64ac9404ab0afe5ff957/packages/metro/src/Server.js#L1266
-    .use('/symbolicate', rawBodyMiddleware)
     // Support status check to detect if the packager needs to be started from the native side
     .use('/status', createMetroStatusMiddleware(metroConfig));
 
@@ -43,25 +39,18 @@ const noCacheMiddleware: connect.NextHandleFunction = (req, res, next) => {
   next();
 };
 
-const rawBodyMiddleware: connect.NextHandleFunction = (req, _res, next) => {
-  const reqWithBody = req as typeof req & { rawBody: string };
-  reqWithBody.setEncoding('utf8');
-  reqWithBody.rawBody = '';
-  reqWithBody.on('data', (chunk) => (reqWithBody.rawBody += chunk));
-  reqWithBody.on('end', next);
-};
-
-const metroOpenStackFrameMiddleware: connect.NextHandleFunction = (req, res, next) => {
-  // Only accept POST requests
-  if (req.method !== 'POST') return next();
-  // Only handle requests with a raw body
-  if (!('rawBody' in req) || !req.rawBody) {
-    res.statusCode = 406;
+const metroOpenStackFrameMiddleware: connect.NextHandleFunction = async (req, res, next) => {
+  if (req.method !== 'POST') {
+    return next();
+  }
+  try {
+    const frame = await new Body(req).json();
+    await openInEditorAsync(frame.file, frame.lineNumber);
+    return res.end('OK');
+  } catch {
+    res.statusCode = 400;
     return res.end('Open stack frame requires the JSON stack frame as request body');
   }
-
-  const frame = JSON.parse(req.rawBody as string);
-  openInEditorAsync(frame.file, frame.lineNumber).finally(() => res.end('OK'));
 };
 
 function createMetroStatusMiddleware(

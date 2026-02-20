@@ -1,4 +1,4 @@
-import { Button, Switch, ContextMenu, Submenu } from '@expo/ui/jetpack-compose';
+import { Button, Switch, ContextMenu, Submenu, Host } from '@expo/ui/jetpack-compose';
 // import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, /* StyleSheet, */ Text } from 'react-native';
@@ -28,91 +28,95 @@ export default function ContextMenuScreen() {
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Theme</Text>
-          <ContextMenu color={themeBackgroundColor}>
-            <ContextMenu.Trigger>
-              <Button
-                elementColors={{ containerColor: 'transparent', contentColor: 'blue' }}
-                trailingIcon="filled.ArrowDropDown">
-                {selectedTheme}
-              </Button>
-            </ContextMenu.Trigger>
-            <ContextMenu.Items>
-              <Button
-                elementColors={{
-                  containerColor: 'transparent',
-                  contentColor: themeForegroundColor,
-                }}
-                onPress={() => setSelectedTheme('Light')}
-                leadingIcon="filled.Star"
-                trailingIcon={selectedTheme === 'Light' ? 'filled.Check' : undefined}>
-                Light
-              </Button>
-              <Button
-                elementColors={{
-                  containerColor: 'transparent',
-                  contentColor: themeForegroundColor,
-                }}
-                onPress={() => setSelectedTheme('Dark')}
-                leadingIcon="filled.Face"
-                trailingIcon={selectedTheme === 'Dark' ? 'filled.Check' : undefined}>
-                Dark
-              </Button>
-              <Button
-                elementColors={{
-                  containerColor: 'transparent',
-                  contentColor: themeForegroundColor,
-                }}
-                onPress={() => setSelectedTheme('Auto')}
-                leadingIcon="filled.Settings"
-                trailingIcon={selectedTheme === 'Auto' ? 'filled.Check' : undefined}>
-                Auto
-              </Button>
-            </ContextMenu.Items>
-          </ContextMenu>
+          <Host matchContents>
+            <ContextMenu color={themeBackgroundColor}>
+              <ContextMenu.Trigger>
+                <Button
+                  elementColors={{ containerColor: 'transparent', contentColor: 'blue' }}
+                  trailingIcon="filled.ArrowDropDown">
+                  {selectedTheme}
+                </Button>
+              </ContextMenu.Trigger>
+              <ContextMenu.Items>
+                <Button
+                  elementColors={{
+                    containerColor: 'transparent',
+                    contentColor: themeForegroundColor,
+                  }}
+                  onPress={() => setSelectedTheme('Light')}
+                  leadingIcon="filled.Star"
+                  trailingIcon={selectedTheme === 'Light' ? 'filled.Check' : undefined}>
+                  Light
+                </Button>
+                <Button
+                  elementColors={{
+                    containerColor: 'transparent',
+                    contentColor: themeForegroundColor,
+                  }}
+                  onPress={() => setSelectedTheme('Dark')}
+                  leadingIcon="filled.Face"
+                  trailingIcon={selectedTheme === 'Dark' ? 'filled.Check' : undefined}>
+                  Dark
+                </Button>
+                <Button
+                  elementColors={{
+                    containerColor: 'transparent',
+                    contentColor: themeForegroundColor,
+                  }}
+                  onPress={() => setSelectedTheme('Auto')}
+                  leadingIcon="filled.Settings"
+                  trailingIcon={selectedTheme === 'Auto' ? 'filled.Check' : undefined}>
+                  Auto
+                </Button>
+              </ContextMenu.Items>
+            </ContextMenu>
+          </Host>
         </View>
       </Section>
       <Section title="Colorful Context Menu">
-        <ContextMenu color="#e3b7ff">
-          <ContextMenu.Trigger>
-            <Button variant="bordered">Show Colorful Menu</Button>
-          </ContextMenu.Trigger>
-          <ContextMenu.Items>
-            <Button variant="bordered" color="#ff0000" leadingIcon="filled.Favorite">
-              I'm red!
-            </Button>
-            <Button
-              variant="bordered"
-              elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
-              leadingIcon="filled.Star"
-              trailingIcon="filled.Check">
-              My text is green!
-            </Button>
-            <Switch
-              value={switchChecked}
-              label="I'm very colorful!"
-              variant="checkbox"
-              elementColors={{
-                checkedColor: '#ff0000',
-                disabledCheckedColor: '#00ff00',
-                uncheckedColor: '#0000ff',
-                checkmarkColor: '#ffff00',
-              }}
-              onValueChange={setSwitchChecked}
-            />
-            <Switch
-              value={switch2Checked}
-              variant="switch"
-              label="Switches can be colorul too!"
-              onValueChange={setSwitch2Checked}
-              elementColors={{
-                checkedThumbColor: '#ff0000',
-                checkedTrackColor: '#00ff00',
-                uncheckedThumbColor: '#0000ff',
-                uncheckedTrackColor: '#ffff00',
-              }}
-            />
-          </ContextMenu.Items>
-        </ContextMenu>
+        <Host matchContents>
+          <ContextMenu color="#e3b7ff">
+            <ContextMenu.Trigger>
+              <Button variant="bordered">Show Colorful Menu</Button>
+            </ContextMenu.Trigger>
+            <ContextMenu.Items>
+              <Button variant="bordered" color="#ff0000" leadingIcon="filled.Favorite">
+                I'm red!
+              </Button>
+              <Button
+                variant="bordered"
+                elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
+                leadingIcon="filled.Star"
+                trailingIcon="filled.Check">
+                My text is green!
+              </Button>
+              <Switch
+                value={switchChecked}
+                label="I'm very colorful!"
+                variant="checkbox"
+                elementColors={{
+                  checkedColor: '#ff0000',
+                  disabledCheckedColor: '#00ff00',
+                  uncheckedColor: '#0000ff',
+                  checkmarkColor: '#ffff00',
+                }}
+                onValueChange={setSwitchChecked}
+              />
+              <Switch
+                value={switch2Checked}
+                variant="switch"
+                label="Switches can be colorul too!"
+                onValueChange={setSwitch2Checked}
+                elementColors={{
+                  checkedThumbColor: '#ff0000',
+                  checkedTrackColor: '#00ff00',
+                  uncheckedThumbColor: '#0000ff',
+                  uncheckedTrackColor: '#ffff00',
+                }}
+              />
+            </ContextMenu.Items>
+          </ContextMenu>
+        </Host>
       </Section>
       <Section title="Context Menu with Submenu">
         <ContextMenu>

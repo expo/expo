@@ -58,6 +58,11 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
 
   private func showSplashScreen() {
     let splashScreenFilename = Bundle.main.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "SplashScreen"
+    // Prevents crashes in brownfield apps where the splash screen storyboard may not be present.
+    guard Bundle.main.path(forResource: splashScreenFilename, ofType: "storyboardc") != nil else {
+      return
+    }
+
     if let vc = UIStoryboard(name: splashScreenFilename, bundle: nil).instantiateInitialViewController() {
       loadingView = vc.view
       loadingView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]

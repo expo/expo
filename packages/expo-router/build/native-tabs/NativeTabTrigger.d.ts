@@ -8,8 +8,7 @@ import type { NativeTabOptions, NativeTabTriggerProps } from './types';
  * When used in the tab screen, the `name` prop takes no effect.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -23,8 +22,7 @@ import type { NativeTabOptions, NativeTabTriggerProps } from './types';
  * ```
  *
  * @example
- * ```tsx
- * // In a tab screen
+ * ```tsx app/home.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function HomeScreen() {
@@ -38,8 +36,6 @@ import type { NativeTabOptions, NativeTabTriggerProps } from './types';
  *   );
  * }
  * ```
- *
- * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 declare function NativeTabTriggerImpl(props: NativeTabTriggerProps): null;
 export declare const NativeTabTrigger: typeof NativeTabTriggerImpl & {
@@ -48,7 +44,7 @@ export declare const NativeTabTrigger: typeof NativeTabTriggerImpl & {
     Badge: import("react").FC<NativeTabsTriggerBadgeProps>;
     VectorIcon: typeof import("..").VectorIcon;
 };
-export declare function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, }: NativeTabTriggerProps, isDynamic?: boolean): NativeTabOptions;
+export declare function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, disableTransparentOnScrollEdge, }: NativeTabTriggerProps, isDynamic?: boolean): NativeTabOptions;
 export declare function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps): void;
 export declare function isNativeTabTrigger(child: ReactNode, contextKey?: string): child is ReactElement<NativeTabTriggerProps & {
     name: string;

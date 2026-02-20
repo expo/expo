@@ -20,8 +20,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby
@@ -37,7 +37,6 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🍏 Build iOS Project
         working-directory: ./apps/bare-expo

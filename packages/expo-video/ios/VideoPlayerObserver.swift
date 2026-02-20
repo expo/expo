@@ -588,18 +588,7 @@ private extension AVPlayerItemAccessLogEvent {
       return nil
     }
 
-    // We need to find a base uri to which the track id is added for streaming a specific source
-    var components = URLComponents(url: itemUrl, resolvingAgainstBaseURL: false)
-    components?.query = nil
-
-    guard let baseUriString = components?.url?.deletingLastPathComponent().absoluteString else {
-      return nil
-    }
-
-    // Removing the base uri from the log uri allows us to get the id, which can be matched to an existing VideoTrack
-    let id = logUri.replacingOccurrences(of: baseUriString, with: "")
-
-    return videoTracks.first { $0.id == id }
+    return videoTracks.first { $0.url?.absoluteString == logUri }
   }
 }
 

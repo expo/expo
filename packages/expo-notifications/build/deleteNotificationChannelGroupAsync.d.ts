@@ -5,5 +5,5 @@
  * @platform android
  * @header channels
  */
-export default function deleteNotificationChannelGroupAsync(groupId: string): Promise<void>;
+export declare function deleteNotificationChannelGroupAsync(groupId: string): Promise<void>;
 //# sourceMappingURL=deleteNotificationChannelGroupAsync.d.ts.map

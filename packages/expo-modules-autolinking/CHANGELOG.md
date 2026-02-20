@@ -6,6 +6,39 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Reduce memory retained after autolinking runs ([#42947](https://github.com/expo/expo/pull/42947) by [@kitten](https://github.com/kitten))
+- Add concurrency limits to IO-bound autolinking tasks ([#42968](https://github.com/expo/expo/pull/42968) by [@kitten](https://github.com/kitten))
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-16
+
+### 💡 Others
+
+- Replace `require-from-string` with `@expo/require-utils` ([#42884](https://github.com/expo/expo/pull/42884) by [@kitten](https://github.com/kitten))
+
+## 55.0.3 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Sync flavor dimensions and product flavors from app to expo module ([#40238](https://github.com/expo/expo/pull/40238) by [@kosmydel](https://github.com/kosmydel))
 - [Android] Added support for `services`. ([#41809](https://github.com/expo/expo/pull/41809) by [@lukmccall](https://github.com/lukmccall))
@@ -22,6 +55,7 @@
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
 - [Android] Align `expo-gradle-plugin`'s CLI command to align with iOS invocation of `expo-modules-autolinking` ([#41264](https://github.com/expo/expo/pull/41264) by [@kitten](https://github.com/kitten))
 - [Android] Removed `AppContext.camera`, `AppContext.font` and `AppContext.taskManager`. ([#41810](https://github.com/expo/expo/pull/41810) by [@lukmccall](https://github.com/lukmccall))
+- Make `ExpoModulesProvider` internal ([#42317](https://github.com/expo/expo/pull/42317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.0.23 - 2025-12-04
 

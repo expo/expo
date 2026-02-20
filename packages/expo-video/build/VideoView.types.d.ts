@@ -35,13 +35,6 @@ export interface VideoViewProps extends ViewProps {
      */
     contentFit?: VideoContentFit;
     /**
-     * Determines whether fullscreen mode is allowed or not.
-     *
-     * > Note: This option has been deprecated in favor of the `fullscreenOptions` prop and will be disabled in the future.
-     * @default true
-     */
-    allowsFullscreen?: boolean;
-    /**
      * Determines the fullscreen mode options.
      */
     fullscreenOptions?: FullscreenOptions;
@@ -58,6 +51,11 @@ export interface VideoViewProps extends ViewProps {
      * @platform ios
      */
     requiresLinearPlayback?: boolean;
+    /**
+     * Configuration for controlling the visibility of player control buttons.
+     * @platform android
+     */
+    buttonOptions?: ButtonOptions;
     /**
      * Determines the type of the surface used to render the video.
      * > This prop should not be changed at runtime.
@@ -167,6 +165,62 @@ export interface VideoViewProps extends ViewProps {
     useAudioNodePlayback?: boolean;
 }
 /**
+ * Configuration for controlling the visibility of player control buttons.
+ *
+ * > The fullscreen button should be controlled with [`fullscreenOptions.enable`](#fullscreenoptions).
+ *
+ * @platform android
+ */
+export type ButtonOptions = {
+    /**
+     * Whether to show the next button.
+     * @default false
+     */
+    showNext?: boolean;
+    /**
+     * Whether to show the previous button.
+     * @default false
+     */
+    showPrevious?: boolean;
+    /**
+     * Whether to show the seek forward button.
+     * @default true
+     */
+    showSeekForward?: boolean;
+    /**
+     * Whether to show the seek backward button.
+     * @default true
+     */
+    showSeekBackward?: boolean;
+    /**
+     * Whether to show the subtitles button.
+     * - `true`: Button is always visible
+     * - `false`: Button is never visible
+     * - `undefined`: Button is visible only when subtitles are available (default behavior)
+     * @default undefined
+     */
+    showSubtitles?: boolean | null;
+    /**
+     * Whether to show the settings button.
+     * @default true
+     */
+    showSettings?: boolean;
+    /**
+     * Whether to show the play/pause button.
+     * @default true
+     */
+    showPlayPause?: boolean;
+    /**
+     * Whether to show the bottom control bar (containing time, progress bar, and buttons).
+     * When set to `false`, the entire bottom bar including the progress bar will be hidden.
+     *
+     * > **Note**: The bottom bar is always visible in fullscreen mode to allow users to exit fullscreen.
+     *
+     * @default true
+     */
+    showBottomBar?: boolean;
+};
+/**
  * Describes the orientation of the video in fullscreen mode. Available values are:
  * - `default`: The video is displayed in any of the available device rotations.
  * - `portrait`: The video is displayed in one of two available portrait orientations and rotates between them.
@@ -183,7 +237,6 @@ export type FullscreenOrientation = 'default' | 'portrait' | 'portraitUp' | 'por
 export type FullscreenOptions = {
     /**
      * Specifies whether the fullscreen mode should be available to the user. When `false`, the fullscreen button will be hidden in the player.
-     * Equivalent to the `allowsFullscreen` prop.
      * @default true
      */
     enable: boolean;

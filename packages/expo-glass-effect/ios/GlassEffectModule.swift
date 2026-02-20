@@ -34,8 +34,14 @@ public final class GlassEffectModule: Module {
     }
 
     View(GlassView.self) {
-      Prop("glassEffectStyle", .regular) { (view, style: GlassStyle) in
-        view.setGlassStyle(style)
+      Prop("glassEffectStyle") { (view, config: Either<GlassStyle, GlassEffectStyleConfig>?) in
+        if let styleConfig: GlassEffectStyleConfig = config?.get() {
+          view.setGlassStyle(styleConfig)
+        } else if let style: GlassStyle = config?.get() {
+          view.setGlassStyle(style)
+        } else {
+          view.setGlassStyle(.regular)
+        }
       }
 
       Prop("tintColor") { (view, tintColor: UIColor?) in
@@ -44,6 +50,10 @@ public final class GlassEffectModule: Module {
 
       Prop("isInteractive") { (view, interactive: Bool) in
         view.setInteractive(interactive)
+      }
+
+      Prop("colorScheme", .auto) { (view, colorScheme: GlassColorScheme) in
+        view.setColorScheme(colorScheme)
       }
 
       Prop("borderRadius") { (view, border: CGFloat?) in

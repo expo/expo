@@ -1,77 +1,15 @@
-import { StackHeaderBackButton, type StackHeaderBackButtonProps } from './StackHeaderBackButton';
-import { StackHeaderButton, type StackHeaderButtonProps } from './StackHeaderButton';
-import { StackHeaderComponent, type StackHeaderProps } from './StackHeaderComponent';
-import {
-  StackHeaderLeft,
-  type StackHeaderLeftProps,
-  StackHeaderRight,
-  type StackHeaderRightProps,
-} from './StackHeaderLeftRight';
-import {
-  StackHeaderMenu,
-  StackHeaderMenuAction,
-  type StackHeaderMenuActionProps,
-  type StackHeaderMenuProps,
-} from './StackHeaderMenu';
-import { StackHeaderSearchBar, type StackHeaderSearchBarProps } from './StackHeaderSearchBar';
-import { StackHeaderSpacer, type StackHeaderSpacerProps } from './StackHeaderSpacer';
-import { StackHeaderTitle, type StackHeaderTitleProps } from './StackHeaderTitle';
-import { StackHeaderView, type StackHeaderViewProps } from './StackHeaderView';
-import {
-  StackHeaderBadge,
-  StackHeaderIcon,
-  StackHeaderLabel,
-  type StackHeaderBadgeProps,
-  type StackHeaderIconProps,
-  type StackHeaderLabelProps,
-} from './common-primitives';
-import type { StackHeaderItemSharedProps } from './shared';
+import { StackHeaderComponent } from './StackHeaderComponent';
+export const StackHeader = StackHeaderComponent;
 
-export const StackHeader = Object.assign(StackHeaderComponent, {
-  Left: StackHeaderLeft,
-  Right: StackHeaderRight,
-  BackButton: StackHeaderBackButton,
-  Title: StackHeaderTitle,
-  SearchBar: StackHeaderSearchBar,
-  Button: StackHeaderButton,
-  Badge: StackHeaderBadge,
-  Label: StackHeaderLabel,
-  Icon: StackHeaderIcon,
-  Menu: StackHeaderMenu,
-  MenuAction: StackHeaderMenuAction,
-  View: StackHeaderView,
-  Spacer: StackHeaderSpacer,
-});
+export type { StackHeaderProps } from './StackHeaderComponent';
+export { StackSearchBar, type StackSearchBarProps } from './StackSearchBar';
+
+export * from './toolbar';
+export * from './screen';
 
 export {
-  StackHeaderBackButton,
-  type StackHeaderBackButtonProps,
-  type StackHeaderProps,
-  StackHeaderLeft,
-  type StackHeaderLeftProps,
-  StackHeaderRight,
-  type StackHeaderRightProps,
-  StackHeaderSearchBar,
-  type StackHeaderSearchBarProps,
-  StackHeaderTitle,
-  type StackHeaderTitleProps,
-  StackHeaderButton,
-  type StackHeaderButtonProps,
-  StackHeaderBadge,
-  type StackHeaderBadgeProps,
-  StackHeaderLabel,
-  type StackHeaderLabelProps,
-  StackHeaderIcon,
-  type StackHeaderIconProps,
-  StackHeaderMenu,
-  type StackHeaderMenuProps,
-  StackHeaderMenuAction,
-  type StackHeaderMenuActionProps,
-  StackHeaderView,
-  type StackHeaderViewProps,
-  StackHeaderSpacer,
-  type StackHeaderSpacerProps,
-  type StackHeaderItemSharedProps,
-};
-
-export { StackScreen, appendScreenStackPropsToOptions, type StackScreenProps } from './StackScreen';
+  StackScreen,
+  appendScreenStackPropsToOptions,
+  validateStackPresentation,
+  type StackScreenProps,
+} from './StackScreen';

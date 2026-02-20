@@ -1,198 +1,137 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
+
 package expo.modules.ui
 
-import android.content.Context
-import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import expo.modules.kotlin.AppContext
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.with
+import expo.modules.kotlin.views.withIf
+import expo.modules.ui.convertibles.HorizontalAlignment
+import expo.modules.ui.convertibles.HorizontalArrangement
+import expo.modules.ui.convertibles.VerticalAlignment
+import expo.modules.ui.convertibles.ContentAlignment
+import expo.modules.ui.convertibles.VerticalArrangement
+import expo.modules.ui.convertibles.toComposeArrangement
 
-enum class HorizontalArrangement(val value: String) : Enumerable {
-  START("start"),
-  END("end"),
-  CENTER("center"),
-  SPACE_BETWEEN("spaceBetween"),
-  SPACE_AROUND("spaceAround"),
-  SPACE_EVENLY("spaceEvenly");
-
-  fun toComposeArrangement(): Arrangement.Horizontal {
-    return when (this) {
-      START -> Arrangement.Start
-      END -> Arrangement.End
-      CENTER -> Arrangement.Center
-      SPACE_BETWEEN -> Arrangement.SpaceBetween
-      SPACE_AROUND -> Arrangement.SpaceAround
-      SPACE_EVENLY -> Arrangement.SpaceEvenly
-    }
-  }
-}
-
-enum class VerticalArrangement(val value: String) : Enumerable {
+enum class FloatingToolbarExitAlwaysScrollBehavior(val value: String) : Enumerable {
   TOP("top"),
   BOTTOM("bottom"),
-  CENTER("center"),
-  SPACE_BETWEEN("spaceBetween"),
-  SPACE_AROUND("spaceAround"),
-  SPACE_EVENLY("spaceEvenly");
-
-  fun toComposeArrangement(): Arrangement.Vertical {
-    return when (this) {
-      TOP -> Arrangement.Top
-      BOTTOM -> Arrangement.Bottom
-      CENTER -> Arrangement.Center
-      SPACE_BETWEEN -> Arrangement.SpaceBetween
-      SPACE_AROUND -> Arrangement.SpaceAround
-      SPACE_EVENLY -> Arrangement.SpaceEvenly
-    }
-  }
-}
-
-enum class HorizontalAlignment(val value: String) : Enumerable {
   START("start"),
-  END("end"),
-  CENTER("center");
+  END("end");
 
-  fun toComposeAlignment(): Alignment.Horizontal {
+  fun toComposeExitDirection(): FloatingToolbarExitDirection {
     return when (this) {
-      START -> Alignment.Start
-      END -> Alignment.End
-      CENTER -> Alignment.CenterHorizontally
-    }
-  }
-}
-
-enum class VerticalAlignment(val value: String) : Enumerable {
-  TOP("top"),
-  BOTTOM("bottom"),
-  CENTER("center");
-
-  fun toComposeAlignment(): Alignment.Vertical {
-    return when (this) {
-      TOP -> Alignment.Top
-      BOTTOM -> Alignment.Bottom
-      CENTER -> Alignment.CenterVertically
+      TOP -> FloatingToolbarExitDirection.Top
+      BOTTOM -> FloatingToolbarExitDirection.Bottom
+      START -> FloatingToolbarExitDirection.Start
+      END -> FloatingToolbarExitDirection.End
     }
   }
 }
 
 data class LayoutProps(
-  val horizontalArrangement: MutableState<HorizontalArrangement> = mutableStateOf(HorizontalArrangement.START),
-  val verticalArrangement: MutableState<VerticalArrangement> = mutableStateOf(VerticalArrangement.TOP),
-  val horizontalAlignment: MutableState<HorizontalAlignment> = mutableStateOf(HorizontalAlignment.START),
-  val verticalAlignment: MutableState<VerticalAlignment> = mutableStateOf(VerticalAlignment.TOP),
-  val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(emptyList())
+  val horizontalArrangement: HorizontalArrangement? = null,
+  val verticalArrangement: VerticalArrangement? = null,
+  val horizontalAlignment: HorizontalAlignment? = null,
+  val verticalAlignment: VerticalAlignment? = null,
+  val contentAlignment: ContentAlignment? = null,
+  val floatingToolbarExitAlwaysScrollBehavior: FloatingToolbarExitAlwaysScrollBehavior? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
-class RowView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
-  override val props = LayoutProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Row(
-      horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
-      verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-    ) {
-      Children(this@Content.with(rowScope = this@Row))
+@Composable
+internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
+  val scrollBehavior = props.floatingToolbarExitAlwaysScrollBehavior
+    ?.toComposeExitDirection()
+    ?.let {
+      FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
+  Row(
+    horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
+    verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+  ) {
+    val scope = ComposableScope()
+      .with(rowScope = this@Row)
+      .withIf(scrollBehavior != null) {
+        with(nestedScrollConnection = scrollBehavior)
+      }
+    Children(scope)
   }
 }
 
-class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
-  override val props = LayoutProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Column(
-      verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
-      horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-    ) {
-      Children(this@Content.with(columnScope = this@Column))
-    }
+@Composable
+internal fun FunctionalComposableScope.FlowRowContent(props: LayoutProps) {
+  FlowRow(
+    horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
+    verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+  ) {
+    val scope = ComposableScope()
+      .with(rowScope = this@FlowRow)
+    Children(scope)
   }
 }
 
-class BoxView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
-  override val props = LayoutProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Box(
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-    ) {
-      Children(this@Content.with(boxScope = this@Box))
+@Composable
+internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
+  val scrollBehavior = props.floatingToolbarExitAlwaysScrollBehavior
+    ?.toComposeExitDirection()
+    ?.let {
+      FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
+  Column(
+    verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
+    horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+  ) {
+    val scope = ComposableScope()
+      .with(columnScope = this@Column)
+      .withIf(scrollBehavior != null) {
+        with(nestedScrollConnection = scrollBehavior)
+      }
+    Children(scope)
   }
 }
 
-enum class TextFontWeight(val value: String) : Enumerable {
-  NORMAL("normal"),
-  BOLD("bold"),
-  W100("100"),
-  W200("200"),
-  W300("300"),
-  W400("400"),
-  W500("500"),
-  W600("600"),
-  W700("700"),
-  W800("800"),
-  W900("900");
-
-  fun toComposeFontWeight(): FontWeight {
-    return when (this) {
-      NORMAL -> FontWeight.Normal
-      BOLD -> FontWeight.Bold
-      W100 -> FontWeight.W100
-      W200 -> FontWeight.W200
-      W300 -> FontWeight.W300
-      W400 -> FontWeight.W400
-      W500 -> FontWeight.W500
-      W600 -> FontWeight.W600
-      W700 -> FontWeight.W700
-      W800 -> FontWeight.W800
-      W900 -> FontWeight.W900
+@Composable
+fun FunctionalComposableScope.BoxContent(props: LayoutProps) {
+  val scrollBehavior = props.floatingToolbarExitAlwaysScrollBehavior
+    ?.toComposeExitDirection()
+    ?.let {
+      FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
-  }
-}
-
-data class TextProps(
-  val text: MutableState<String> = mutableStateOf(""),
-  val color: MutableState<AndroidColor?> = mutableStateOf(null),
-  val fontSize: MutableState<Float> = mutableFloatStateOf(16f),
-  val fontWeight: MutableState<TextFontWeight> = mutableStateOf(TextFontWeight.NORMAL),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
-) : ComposeProps
-
-class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextProps>(context, appContext) {
-  override val props = TextProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Text(
-      text = props.text.value,
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
-      color = colorToComposeColor(props.color.value),
-      style = TextStyle(
-        fontSize = props.fontSize.value.sp,
-        fontWeight = props.fontWeight.value.toComposeFontWeight()
-      )
-    )
+  Box(
+    contentAlignment = props.contentAlignment?.toComposeAlignment() ?: Alignment.TopStart,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+  ) {
+    val scope = ComposableScope()
+      .with(boxScope = this@Box)
+      .withIf(scrollBehavior != null) {
+        with(nestedScrollConnection = scrollBehavior)
+      }
+    Children(scope)
   }
 }

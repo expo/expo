@@ -196,7 +196,7 @@ export interface ExpoConfig {
          */
         useNativeDebug?: boolean;
         /**
-         * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to true. Set to false to force full asset downloads even when a server offers patch responses.
+         * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to false. Set to true to enable downloading asset patches instead of full assets when a server offers patch responses.
          */
         enableBsdiffPatchSupport?: boolean;
     };
@@ -792,11 +792,6 @@ export interface Android {
      * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
      */
     version?: string;
-    /**
-     * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to true.
-     * @deprecated Android 16+ (API level 36) requires edge-to-edge to be enabled. This feature can't be disabled anymore. [learn more](https://developer.android.com/about/versions/16/behavior-changes-16#edge-to-edge)
-     */
-    edgeToEdgeEnabled?: true;
     /**
      * Enable your app to use the [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) on Android 13 (API level 33) and later. Default to false.
      */

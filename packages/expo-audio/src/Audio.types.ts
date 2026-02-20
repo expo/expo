@@ -1,5 +1,20 @@
 import { AudioQuality, IOSOutputFormat } from './RecordingConstants';
 
+/**
+ * Represents audio source information returned from native.
+ * This is the object returned when reading sources from a queue.
+ */
+export type AudioSourceInfo = {
+  /**
+   * A string representing the resource identifier for the audio.
+   */
+  uri?: string;
+  /**
+   * An optional display name for the audio source.
+   */
+  name?: string;
+};
+
 // @docsMissing
 export type AudioSource =
   | string
@@ -21,6 +36,11 @@ export type AudioSource =
        * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
        */
       headers?: Record<string, string>;
+      /**
+       * An optional display name for the audio source.
+       * Useful for showing track names in a queue or playlist UI.
+       */
+      name?: string;
     };
 
 /**
@@ -104,6 +124,40 @@ export type AudioPlayerOptions = {
    * @default false
    */
   keepAudioSessionActive?: boolean;
+  /**
+   * The duration in seconds the player should buffer ahead of the current playback position.
+   * A higher value improves playback stability at the cost of more memory/network usage.
+   *
+   * - **iOS**: Maps to `AVPlayerItem.preferredForwardBufferDuration`. A value of `0` lets the system decide.
+   * - **Android**: Configures ExoPlayer's `DefaultLoadControl` max buffer duration.
+   * - **Web**: Not applicable (browser manages buffering).
+   *
+   * @default 0 (system default)
+   *
+   * @platform ios
+   * @platform android
+   */
+  preferredForwardBufferDuration?: number;
+};
+
+/**
+ * Options for configuring audio preloading behavior.
+ */
+export type PreloadOptions = {
+  /**
+   * The duration in seconds the player should buffer ahead of the current playback position.
+   * A higher value improves playback stability at the cost of more memory/network usage.
+   *
+   * - **iOS**: Maps to `AVPlayerItem.preferredForwardBufferDuration`. A value of `0` lets the system decide.
+   * - **Android**: Configures ExoPlayer's buffer duration.
+   * - **Web**: Not applicable (browser manages buffering).
+   *
+   * @default 10
+   *
+   * @platform ios
+   * @platform android
+   */
+  preferredForwardBufferDuration?: number;
 };
 
 /**
@@ -147,7 +201,7 @@ export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
  */
 export type AudioStatus = {
   /** Unique identifier for the player instance. */
-  id: number;
+  id: string;
   /** Current playback position in seconds. */
   currentTime: number;
   /** String representation of the player's internal playback state. */
@@ -177,6 +231,13 @@ export type AudioStatus = {
    * @default true
    */
   shouldCorrectPitch: boolean;
+  /**
+   * Whether the media services were reset by the system.
+   * When `true`, the player was interrupted because the system's media daemon crashed.
+   * The player will automatically attempt to recover by reloading the source and resuming playback.
+   * @platform ios
+   */
+  mediaServicesDidReset?: boolean;
 };
 
 /**
@@ -188,7 +249,7 @@ export type AudioStatus = {
  */
 export type RecordingStatus = {
   /** Unique identifier for the recording session. */
-  id: number;
+  id: string;
   /** Whether the recording has finished (stopped). */
   isFinished: boolean;
   /** Whether an error occurred during recording. */
@@ -197,6 +258,13 @@ export type RecordingStatus = {
   error: string | null;
   /** File URL of the completed recording, if available. */
   url: string | null;
+  /**
+   * Whether the media services were reset by the system.
+   * When `true`, the recording was interrupted because the system's media daemon crashed.
+   * The recorder is now invalid and must be re-prepared by calling `prepareToRecordAsync()`.
+   * @platform ios
+   */
+  mediaServicesDidReset?: boolean;
 };
 
 /**
@@ -462,6 +530,8 @@ export type AudioMode = {
    * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
    *   On Android, this means no audio focus is requested. Best suited for sound effects,
    *   UI feedback, or short audio clips.
+   *
+   * @default 'mixWithOthers'
    */
   interruptionMode: InterruptionMode;
   /**
@@ -480,12 +550,16 @@ export type AudioMode = {
   allowsRecording: boolean;
   /**
    * Whether the audio session stays active when the app moves to the background.
+   *
+   * > **Note**: On Android, you have to enable the lockscreen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Make sure to also appropriately [configure the config-plugin](#configuration-in-app-config).
    * @default false
    */
   shouldPlayInBackground: boolean;
   /**
    * Whether the audio should route through the earpiece.
-   * @platform android
+   * On iOS, this only has an effect when `allowsRecording` is `true` (i.e., the audio session
+   * category is `.playAndRecord`). When `false` (the default), audio is routed through the speaker.
+   * @default false
    */
   shouldRouteThroughEarpiece: boolean;
   /**
@@ -513,6 +587,7 @@ export type AudioMode = {
  *
  *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
  *
+ * @default 'mixWithOthers'
  */
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
 
@@ -553,4 +628,79 @@ export type AudioMetadata = {
   artist?: string;
   albumTitle?: string;
   artworkUrl?: string;
+};
+
+/**
+ * Loop mode for audio playlist playback.
+ *
+ * - `'none'`: No looping. Playback stops after the last track.
+ * - `'single'`: Loops the current track indefinitely.
+ * - `'all'`: Loops the entire playlist, returning to the first track after the last.
+ */
+export type AudioPlaylistLoopMode = 'none' | 'single' | 'all';
+
+/**
+ * Options for configuring an audio playlist.
+ */
+export type AudioPlaylistOptions = {
+  /**
+   * Initial sources to add to the playlist. Each source can be a local asset, remote URL, or null.
+   * @default []
+   */
+  sources?: AudioSource[];
+
+  /**
+   * How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+   * @default 500
+   */
+  updateInterval?: number;
+
+  /**
+   * Loop mode for the playlist.
+   * - `'none'`: No looping (default)
+   * - `'single'`: Loop the current track
+   * - `'all'`: Loop the entire playlist
+   * @default 'none'
+   */
+  loop?: AudioPlaylistLoopMode;
+
+  /**
+   * Sets the `crossOrigin` attribute on the `<audio>` elements used for playback.
+   * Required for CORS-enabled audio files when you need to access audio data.
+   * @platform web
+   * @default undefined
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
+};
+
+/**
+ * Status information for an audio playlist.
+ */
+export type AudioPlaylistStatus = {
+  /** Unique identifier for the playlist instance. */
+  id: string;
+  /** Index of the currently playing track in the playlist. */
+  currentIndex: number;
+  /** Total number of tracks in the playlist. */
+  trackCount: number;
+  /** Current playback position in seconds. */
+  currentTime: number;
+  /** Total duration of the current track in seconds. */
+  duration: number;
+  /** Whether the player is currently playing. */
+  playing: boolean;
+  /** Whether the player is buffering. */
+  isBuffering: boolean;
+  /** Whether the current track has finished loading. */
+  isLoaded: boolean;
+  /** Current playback rate (1.0 = normal speed). */
+  playbackRate: number;
+  /** Whether the player is muted. */
+  muted: boolean;
+  /** Current volume level (0.0 to 1.0). */
+  volume: number;
+  /** Current loop mode. */
+  loop: AudioPlaylistLoopMode;
+  /** Whether the current track just finished playing. */
+  didJustFinish: boolean;
 };

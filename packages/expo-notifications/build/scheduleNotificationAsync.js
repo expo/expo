@@ -62,7 +62,7 @@ import { hasValidTriggerObject } from './hasValidTriggerObject';
  * ```
  * @header schedule
  */
-export default async function scheduleNotificationAsync(request) {
+export async function scheduleNotificationAsync(request) {
     if (!NotificationScheduler.scheduleNotificationAsync) {
         throw new UnavailabilityError('Notifications', 'scheduleNotificationAsync');
     }

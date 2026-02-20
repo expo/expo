@@ -1,11 +1,11 @@
+import { randomBytes } from 'crypto';
 import fs from 'fs';
 // @ts-ignore
 import Jimp from 'jimp-compact';
+import os from 'os';
 import path from 'path';
 import stream from 'stream';
 import type { ReadableStream } from 'stream/web';
-import tempDir from 'temp-dir';
-import uniqueString from 'unique-string';
 import util from 'util';
 
 // cache downloaded images into memory
@@ -16,7 +16,7 @@ function stripQueryParams(url: string): string {
 }
 
 function temporaryDirectory() {
-  const directory = path.join(tempDir, uniqueString());
+  const directory = path.join(os.tmpdir(), randomBytes(16).toString('hex'));
   fs.mkdirSync(directory, { recursive: true });
   return directory;
 }

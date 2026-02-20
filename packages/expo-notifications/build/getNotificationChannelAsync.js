@@ -6,7 +6,7 @@
  * @platform android
  * @header channels
  */
-export default async function getNotificationChannelAsync(channelId) {
+export async function getNotificationChannelAsync(channelId) {
     console.debug('Notification channels feature is only supported on Android.');
     return null;
 }

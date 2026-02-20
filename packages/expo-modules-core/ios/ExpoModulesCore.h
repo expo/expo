@@ -8,7 +8,6 @@
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
 #import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXDefines.h>
-#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
@@ -37,10 +36,8 @@
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/EXSharedObjectUtils.h>
-#import <ExpoModulesCore/EXBridgeModule.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXSingletonModule.h>
-#import <ExpoModulesCore/EXUnimodulesCompat.h>
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>

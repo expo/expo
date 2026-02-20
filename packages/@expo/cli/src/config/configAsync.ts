@@ -4,7 +4,7 @@ import util from 'util';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
-import { setNodeEnv } from '../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 
 type Options = {
@@ -45,7 +45,7 @@ export async function configAsync(projectRoot: string, options: Options) {
     console.error = function () {};
   }
   setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   if (options.type) {
     assert.match(options.type, /^(public|prebuild|introspect)$/);

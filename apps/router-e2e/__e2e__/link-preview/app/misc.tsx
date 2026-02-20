@@ -208,6 +208,18 @@ const HomeIndex = () => {
         </Link.Trigger>
         <Link.Preview />
       </Link>
+      <Link href="/zoom-dest-list" asChild>
+        <Link.Trigger withAppleZoom>
+          <Pressable style={{ flex: 1, width: '33%', aspectRatio: width / height }}>
+            <Image
+              source={require('../../../assets/frog.jpg')}
+              resizeMode="cover"
+              style={{ width: '100%', height: '100%' }}
+            />
+          </Pressable>
+        </Link.Trigger>
+        <Link.Preview />
+      </Link>
     </ScrollView>
   );
 };

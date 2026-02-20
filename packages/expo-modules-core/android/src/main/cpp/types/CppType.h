@@ -7,7 +7,7 @@ namespace expo {
  * A cpp version of the `expo.modules.kotlin.jni.CppType` enum.
  * Used to determine which representation of the js value should be sent to the Kotlin.
  */
-enum CppType {
+enum class CppType {
   NONE = 0,
   DOUBLE = 1 << 0,
   INT = 1 << 1,
@@ -35,4 +35,5 @@ enum CppType {
   NATIVE_ARRAY_BUFFER = 1 << 23,
   SERIALIZABLE = 1 << 24,
 };
+
 } // namespace expo

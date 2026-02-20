@@ -111,6 +111,61 @@ export async function dispatchWorkflowEventAsync(
 }
 
 /**
+ * Fetches recent workflow runs across all workflows in the repo for a given branch.
+ * Supports an optional date range for filtering (uses GitHub's `created` parameter).
+ * When a date range is provided, paginates to fetch all matching runs.
+ */
+export async function getWorkflowRunsForRepoAsync(
+  branch: string,
+  options?: { startDate?: Date; endDate?: Date }
+) {
+  let created: string | undefined;
+  if (options?.startDate && options?.endDate) {
+    created = `${options.startDate.toISOString().split('T')[0]}..${options.endDate.toISOString().split('T')[0]}`;
+  } else if (options?.startDate) {
+    created = `>=${options.startDate.toISOString().split('T')[0]}`;
+  }
+
+  const hasDateFilter = !!options?.startDate;
+  const allRuns: any[] = [];
+  let page = 1;
+  const maxPages = hasDateFilter ? 50 : 1;
+
+  while (page <= maxPages) {
+    const { data } = await octokit.actions.listWorkflowRunsForRepo({
+      owner,
+      repo,
+      branch,
+      per_page: 100,
+      created,
+      page,
+    });
+    allRuns.push(...data.workflow_runs);
+    if (data.workflow_runs.length < 100) break;
+    page++;
+  }
+
+  return allRuns;
+}
+
+/**
+ * Downloads the log for a specific job in a workflow run.
+ * Returns the log as a string, or null if it fails.
+ */
+export async function downloadJobLogsAsync(job_id: number): Promise<string | null> {
+  try {
+    const { data } = await octokit.actions.downloadJobLogsForWorkflowRun({
+      owner,
+      repo,
+      job_id,
+    });
+    return data as unknown as string;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Returns an array of issue IDs that has been auto-closed by the pull request.
  */
 export async function getClosedIssuesAsync(pullRequestId: number): Promise<number[]> {

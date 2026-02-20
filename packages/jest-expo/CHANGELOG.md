@@ -8,6 +8,38 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo-file-system` mock to target `expo-file-system/legacy` instead of replacing the entire module, and preserve prototype chains for native module class mocks. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+## 55.0.6 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-01-27
+
+### 💡 Others
+
+- Bump `react-server-dom-webpack` ([#42570](https://github.com/expo/expo/pull/42570) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.4 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
 ### 💡 Others
 
 - Improve local mock lookup. ([#39743](https://github.com/expo/expo/pull/39743) by [@aleqsio](https://github.com/aleqsio))

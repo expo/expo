@@ -902,7 +902,9 @@ export function addListener(
   return MediaLibrary.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
 }
 
-// @docsMissing
+/**
+ * @deprecated use subscription.remove() instead.
+ */
 export function removeSubscription(subscription: EventSubscription): void {
   subscription.remove();
 }

@@ -1,5 +1,5 @@
 appId: com.expo.routere2e
-name: Toolbar button press
+name: Toolbar shares background
 ---
 - stopApp: com.expo.routere2e
 - openLink: router-e2e://toolbar?searchButton=true&micButton=true

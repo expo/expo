@@ -1,3 +1,4 @@
+import { useEvent } from 'expo';
 import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
@@ -5,6 +6,7 @@ import { View, StyleSheet, Text } from 'react-native';
 import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
 import { styles } from './videoStyles';
 import Button from '../../components/Button';
+import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import TitledSwitch from '../../components/TitledSwitch';
 
 const playerFactory = (player: VideoPlayer) => {
@@ -19,6 +21,8 @@ export default function VideoChangePlayerOutputScreen() {
   // in real usage by unaware users. We want to check if expo-video gracefully handles
   // this by displaying the video in the last `VideoView` to use it.
   const [useIncorrectReplace, setUseIncorrectReplace] = useState(false);
+  const [nativeControls, setNativeControls] = useState(true);
+  const [e2eSetupDone, setE2eSetupDone] = useState(false);
 
   const player = useVideoPlayer(bigBuckBunnySource, playerFactory);
   const player2 = useVideoPlayer(elephantsDreamSource, playerFactory);
@@ -26,6 +30,10 @@ export default function VideoChangePlayerOutputScreen() {
     { ref: player, viewIndex: 0 },
     { ref: player2, viewIndex: 1 },
   ]);
+  const { status: status1 } = useEvent(player, 'statusChange', { status: player.status });
+  const { status: status2 } = useEvent(player2, 'statusChange', { status: player2.status });
+  const bothReady = status1 === 'readyToPlay' && status2 === 'readyToPlay';
+
   const [viewPlayers, setViewPlayers] = useState([player, player2, null, null]);
 
   const advancePlayer = useCallback(
@@ -55,18 +63,24 @@ export default function VideoChangePlayerOutputScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      {Array(4)
-        .fill(0)
-        .map((_, i) => (
-          <VideoView
-            key={i}
-            style={screenStyles.smallVideo}
-            player={viewPlayers[i]}
-            nativeControls={false}
-          />
-        ))}
+      <E2EViewShotContainer
+        testID="view-player-output"
+        mode="keep-originals"
+        screenshotOutputPath="expo-video/screenshots">
+        {Array(4)
+          .fill(0)
+          .map((_, i) => (
+            <VideoView
+              key={i}
+              style={screenStyles.smallVideo}
+              player={viewPlayers[i]}
+              nativeControls={nativeControls}
+              allowsVideoFrameAnalysis={false}
+            />
+          ))}
+      </E2EViewShotContainer>
       <Button title="Move player 1 to the next video view" onPress={() => advancePlayer(0)} />
-      <Button title="Move player 2 from the next video view" onPress={() => advancePlayer(1)} />
+      <Button title="Move player 2 to the next video view" onPress={() => advancePlayer(1)} />
 
       <Text style={styles.centerText}>
         Use buttons below to check the following sequence: {'\n'} 1st button {'->'} 2nd button{' '}
@@ -75,12 +89,26 @@ export default function VideoChangePlayerOutputScreen() {
       <Button title="Move player 1 to first video view" onPress={() => movePlayerTo(0, 0)} />
       <Button title="Move player 2 to first video view" onPress={() => movePlayerTo(1, 0)} />
       <TitledSwitch
+        testID="switch-1"
         title="Move to new view without unmounting from the old one first"
         value={useIncorrectReplace}
         setValue={setUseIncorrectReplace}
         style={screenStyles.switch}
         titleStyle={styles.switchTitle}
       />
+      <Button
+        id="e2e-prepare"
+        title="Prepare for e2e"
+        onPress={() => {
+          setNativeControls(false);
+          player.pause();
+          player2.pause();
+          player.currentTime = 10;
+          player2.currentTime = 10;
+          setE2eSetupDone(true);
+        }}
+      />
+      {e2eSetupDone && bothReady && <Text>Players ready</Text>}
     </View>
   );
 }

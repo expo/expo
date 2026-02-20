@@ -7,7 +7,7 @@ let nativeTokenPromise = null;
  * that can be used with another push notification service.
  * @header fetch
  */
-export default async function getDevicePushTokenAsync() {
+export async function getDevicePushTokenAsync() {
     if (!PushTokenManager.getDevicePushTokenAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'getDevicePushTokenAsync');
     }

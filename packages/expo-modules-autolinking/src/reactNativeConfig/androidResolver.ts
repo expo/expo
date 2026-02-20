@@ -6,7 +6,8 @@ import type {
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import { scanFilesRecursively, fileExistsAsync } from '../utils';
+import { taskAll } from '../concurrency';
+import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,
@@ -61,7 +62,7 @@ export async function resolveDependencyConfigImplAndroidAsync(
     packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
   }
 
-  const packageJson = JSON.parse(await fs.readFile(path.join(packageRoot, 'package.json'), 'utf8'));
+  const packageJson = await loadPackageJson(fastJoin(packageRoot, 'package.json'));
   const buildTypes = reactNativeConfig?.buildTypes || [];
   const dependencyConfiguration = reactNativeConfig?.dependencyConfiguration;
   const libraryName =
@@ -243,7 +244,7 @@ export async function parseComponentDescriptorsAsync(
   const results = new Set<string>();
   for await (const entry of scanFilesRecursively(jsRoot)) {
     if (extRe.test(entry.name)) {
-      const contents = await fs.readFile(entry.path);
+      const contents = await fs.readFile(entry.path, 'utf8');
       const matched = matchComponentDescriptors(entry.path, contents);
       if (matched) {
         results.add(matched);
@@ -254,14 +255,12 @@ export async function parseComponentDescriptorsAsync(
 }
 
 let lazyCodegenComponentRegex: RegExp | null = null;
-function matchComponentDescriptors(_filePath: string, contents: Buffer): string | null {
-  const fileContents = contents.toString();
-
+function matchComponentDescriptors(_filePath: string, contents: string): string | null {
   if (!lazyCodegenComponentRegex) {
     lazyCodegenComponentRegex =
       /codegenNativeComponent(<.*>)?\s*\(\s*["'`](\w+)["'`](,?[\s\S]+interfaceOnly:\s*(\w+))?/m;
   }
-  const match = fileContents.match(lazyCodegenComponentRegex);
+  const match = contents.match(lazyCodegenComponentRegex);
   if (!(match?.[4] === 'true') && match?.[2]) {
     return `${match[2]}ComponentDescriptor`;
   }
@@ -298,8 +297,8 @@ const findAndroidManifestsAsync = async (targetPath: string) => {
 };
 
 const getFileCandidatesAsync = async (targetPath: string, fileNames: string[]) => {
-  const gradlePaths = await Promise.all(
-    fileNames.map((fileName) => fileExistsAsync(path.join(targetPath, fileName)))
+  const gradlePaths = await taskAll(fileNames, (fileName) =>
+    fileExistsAsync(path.join(targetPath, fileName))
   );
   return gradlePaths.filter((file) => file != null).sort((a, b) => a.localeCompare(b));
 };

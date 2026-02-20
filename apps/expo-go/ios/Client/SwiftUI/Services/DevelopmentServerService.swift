@@ -1,83 +1,98 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import Combine
 import UIKit
 
 @MainActor
 class DevelopmentServerService: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
 
-  private var discoveryCancellables = Set<AnyCancellable>()
-  private let discoveryInterval: TimeInterval = 2.0
+  private let discoveryInterval: TimeInterval = 3.0
   private let remoteRefreshInterval: TimeInterval = 10.0
+  private let remoteCacheKey = "expo-dev-sessions-cache"
+  private var remoteFailureCount = 0
+  private var nextRemoteFetchAllowedAt: Date = .distantPast
   private var localServers: [DevelopmentServer] = []
   private var remoteServers: [DevelopmentServer] = []
   private var sessionSecret: String?
+  private var discoveryTask: Task<Void, Never>?
+  private var remoteRefreshTask: Task<Void, Never>?
+  private var isDiscovering = false
+  private var isFetchingRemote = false
 
   func startDiscovery() {
     stopDiscovery()
-    discoverDevelopmentServers()
-    refreshRemoteSessions()
-
-    Timer.publish(every: discoveryInterval, on: .main, in: .common)
-      .autoconnect()
-      .receive(on: DispatchQueue.global(qos: .background))
-      .sink { [weak self] _ in
-        self?.discoverDevelopmentServers()
-      }
-      .store(in: &discoveryCancellables)
-
-    Timer.publish(every: remoteRefreshInterval, on: .main, in: .common)
-      .autoconnect()
-      .receive(on: DispatchQueue.global(qos: .background))
-      .sink { [weak self] _ in
-        self?.refreshRemoteSessions()
-      }
-      .store(in: &discoveryCancellables)
+    loadCachedRemoteSessions()
+    startDiscoveryLoop()
+    startRemoteRefreshLoop()
   }
 
   func stopDiscovery() {
-    discoveryCancellables.removeAll()
+    discoveryTask?.cancel()
+    remoteRefreshTask?.cancel()
+    discoveryTask = nil
+    remoteRefreshTask = nil
   }
 
   func setSessionSecret(_ sessionSecret: String?) {
+    guard self.sessionSecret != sessionSecret else { return }
     self.sessionSecret = sessionSecret
-    refreshRemoteSessions()
   }
 
-  func discoverDevelopmentServers() {
-    Task {
-      var discoveredServers: [DevelopmentServer] = []
-      // swiftlint:disable number_separator
-      let portsToCheck = [8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002]
-      // swiftlint:enable number_separator
-      let baseAddress = "http://localhost"
+  func refreshRemoteSessions() async {
+    await fetchRemoteSessions()
+  }
 
-      await withTaskGroup(of: DevelopmentServer?.self) { group in
-        for port in portsToCheck {
-          group.addTask {
-            await self.checkDevelopmentServer(url: "\(baseAddress):\(port)")
-          }
-        }
+  func discoverDevelopmentServers() async {
+    guard !isDiscovering else {
+      return
+    }
+    isDiscovering = true
+    defer { isDiscovering = false }
 
-        for await server in group {
-          if let server = server {
-            discoveredServers.append(server)
-          }
+    var discoveredServers: [DevelopmentServer] = []
+    // swiftlint:disable number_separator
+    let portsToCheck = [8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002]
+    // swiftlint:enable number_separator
+    let baseAddress = "http://localhost"
+
+    await withTaskGroup(of: DevelopmentServer?.self) { group in
+      for port in portsToCheck {
+        group.addTask {
+          await self.checkDevelopmentServer(url: "\(baseAddress):\(port)")
         }
       }
 
-      await MainActor.run {
-        self.localServers = discoveredServers
-        self.updateDevelopmentServers()
+      for await server in group {
+        if let server = server {
+          discoveredServers.append(server)
+        }
+      }
+    }
+
+    localServers = discoveredServers
+    updateDevelopmentServers()
+  }
+
+  private func startDiscoveryLoop() {
+    discoveryTask?.cancel()
+    discoveryTask = Task { [weak self] in
+      guard let self else { return }
+      while !Task.isCancelled {
+        await self.discoverDevelopmentServers()
+        try? await Task.sleep(nanoseconds: UInt64(self.discoveryInterval * 1_000_000_000))
       }
     }
   }
 
-  func refreshRemoteSessions() {
-    Task {
-      await fetchRemoteSessions()
+  private func startRemoteRefreshLoop() {
+    remoteRefreshTask?.cancel()
+    remoteRefreshTask = Task { [weak self] in
+      guard let self else { return }
+      while !Task.isCancelled {
+        await self.fetchRemoteSessions()
+        try? await Task.sleep(nanoseconds: UInt64(self.remoteRefreshInterval * 1_000_000_000))
+      }
     }
   }
 
@@ -110,36 +125,27 @@ class DevelopmentServerService: ObservableObject {
   }
 
   private func fetchLocalManifestInfo(url: String) async -> (name: String?, iconUrl: String?)? {
-    let manifestPaths = [
-      "\(url)/manifest",
-      "\(url)/manifest?platform=ios"
-    ]
+    guard let manifestURL = URL(string: "\(url)/manifest?platform=ios") else {
+      return nil
+    }
 
-    for manifestPath in manifestPaths {
-      guard let manifestURL = URL(string: manifestPath) else {
-        continue
+    var request = URLRequest(url: manifestURL)
+    request.setValue("application/expo+json,application/json", forHTTPHeaderField: "Accept")
+    request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
+    request.setValue("client", forHTTPHeaderField: "Expo-Client-Environment")
+    request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
+
+    do {
+      let (data, response) = try await URLSession.shared.data(for: request)
+      guard let httpResponse = response as? HTTPURLResponse,
+            (200..<300).contains(httpResponse.statusCode) else {
+        return nil
       }
 
-      var request = URLRequest(url: manifestURL)
-      request.setValue("application/expo+json,application/json", forHTTPHeaderField: "Accept")
-      request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
-      request.setValue("client", forHTTPHeaderField: "Expo-Client-Environment")
-      request.setValue(EXVersions.sharedInstance().sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
-
-      do {
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200..<300).contains(httpResponse.statusCode) else {
-          continue
-        }
-
-        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-          if let parsed = parseManifestInfo(json: json, baseUrl: url) {
-            return parsed
-          }
-        }
-      } catch {}
-    }
+      if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+        return parseManifestInfo(json: json, baseUrl: url)
+      }
+    } catch {}
 
     return nil
   }
@@ -182,11 +188,19 @@ class DevelopmentServerService: ObservableObject {
   }
 
   private func fetchRemoteSessions() async {
+    guard !isFetchingRemote else {
+      return
+    }
+    isFetchingRemote = true
+    defer { isFetchingRemote = false }
+
+    guard Date() >= nextRemoteFetchAllowedAt else {
+      return
+    }
+
     guard let sessionSecret, !sessionSecret.isEmpty else {
-      await MainActor.run {
-        self.remoteServers = []
-        self.updateDevelopmentServers()
-      }
+      self.remoteServers = []
+      self.updateDevelopmentServers()
       return
     }
 
@@ -198,12 +212,13 @@ class DevelopmentServerService: ObservableObject {
     request.httpMethod = "GET"
     request.setValue(sessionSecret, forHTTPHeaderField: "Expo-Session")
     request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
-    request.setValue(EXVersions.sharedInstance().sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
+    request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
 
     do {
       let (data, response) = try await URLSession.shared.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse,
             (200..<300).contains(httpResponse.statusCode) else {
+        applyRemoteFailureBackoff()
         return
       }
 
@@ -214,6 +229,7 @@ class DevelopmentServerService: ObservableObject {
       } else if let directSessions = try? decoder.decode([DevSession].self, from: data) {
         sessions = directSessions
       } else {
+        applyRemoteFailureBackoff()
         return
       }
 
@@ -227,10 +243,11 @@ class DevelopmentServerService: ObservableObject {
         )
       }
 
-      await MainActor.run {
-        self.remoteServers = mappedServers
-        self.updateDevelopmentServers()
-      }
+      self.remoteServers = mappedServers
+      self.updateDevelopmentServers()
+      cacheRemoteSessions(sessions)
+      remoteFailureCount = 0
+      nextRemoteFetchAllowedAt = .distantPast
     } catch {}
   }
 
@@ -244,16 +261,19 @@ class DevelopmentServerService: ObservableObject {
         merged[key] = server
       }
     }
-    developmentServers = merged.values.sorted { $0.url < $1.url }
+    let newServers = merged.values.sorted { $0.url < $1.url }
+    if newServers != developmentServers {
+      developmentServers = newServers
+    }
   }
 
   private func dedupeKey(for server: DevelopmentServer) -> String {
     if !server.description.isEmpty && server.description != server.url {
-      return server.description.lowercased()
+      return normalizeDescriptionKey(server.description).lowercased()
     }
     return normalizeUrl(server.url).lowercased()
   }
-  
+
   private func preferredServer(existing: DevelopmentServer, candidate: DevelopmentServer) -> DevelopmentServer {
     if isLocalhostURL(existing.url) && !isLocalhostURL(candidate.url) {
       return candidate
@@ -263,13 +283,65 @@ class DevelopmentServerService: ObservableObject {
     }
     return existing
   }
-  
+
+  private func normalizeDescriptionKey(_ description: String) -> String {
+    if let range = description.range(of: " on ", options: .backwards) {
+      let prefix = String(description[..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+      let suffix = String(description[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+      if !prefix.isEmpty && !suffix.isEmpty && !suffix.contains("/") {
+        return prefix
+      }
+    }
+    return description
+  }
+
   private func isLocalhostURL(_ url: String) -> Bool {
     guard let components = URLComponents(string: url),
           let host = components.host?.lowercased() else {
       return false
     }
     return host == "localhost" || host == "127.0.0.1"
+  }
+
+  private func cacheRemoteSessions(_ sessions: [DevSession]) {
+    let cache = DevSessionsCache(
+      timestamp: Date(),
+      sessions: sessions
+    )
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    if let data = try? encoder.encode(cache) {
+      UserDefaults.standard.set(data, forKey: remoteCacheKey)
+    }
+  }
+
+  private func loadCachedRemoteSessions() {
+    guard let data = UserDefaults.standard.data(forKey: remoteCacheKey) else {
+      return
+    }
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    guard let cache = try? decoder.decode(DevSessionsCache.self, from: data) else {
+      return
+    }
+    let mappedServers = cache.sessions.map { session in
+      DevelopmentServer(
+        url: session.url,
+        description: session.description,
+        source: session.source,
+        isRunning: true,
+        iconUrl: session.iconUrl
+      )
+    }
+    remoteServers = mappedServers
+    updateDevelopmentServers()
+  }
+
+  private func applyRemoteFailureBackoff() {
+    remoteFailureCount += 1
+    let cappedFailures = min(remoteFailureCount, 5)
+    let delay = min(pow(2.0, Double(cappedFailures)) * 2.0, 60.0)
+    nextRemoteFetchAllowedAt = Date().addingTimeInterval(delay)
   }
 
   private func absoluteIconUrl(_ iconUrl: String, baseUrl: String) -> String? {
@@ -284,13 +356,18 @@ class DevelopmentServerService: ObservableObject {
   }
 }
 
-private struct DevSessionsResponse: Decodable {
+private struct DevSessionsResponse: Codable {
   let data: [DevSession]
 }
 
-private struct DevSession: Decodable {
+private struct DevSession: Codable {
   let description: String
   let url: String
   let source: String
   let iconUrl: String?
+}
+
+private struct DevSessionsCache: Codable {
+  let timestamp: Date
+  let sessions: [DevSession]
 }

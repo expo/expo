@@ -11,7 +11,7 @@ class MediaController {
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
-  
+
   func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
     if let previous = activePlayer, previous.id != player?.id {
       previous.isActiveForLockScreen = false
@@ -200,7 +200,7 @@ class MediaController {
 
       return .success
     }
-    
+
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
@@ -216,13 +216,13 @@ class MediaController {
     remoteCommandCenter.changePlaybackPositionCommand.isEnabled = false
     remoteCommandCenter.skipForwardCommand.isEnabled = false
     remoteCommandCenter.skipBackwardCommand.isEnabled = false
-    
+
     // Remove event targets
-    remoteCommandCenter.playCommand.removeTarget(self);
-    remoteCommandCenter.pauseCommand.removeTarget(self);
-    remoteCommandCenter.togglePlayPauseCommand.removeTarget(self);
-    remoteCommandCenter.changePlaybackPositionCommand.removeTarget(self);
-    remoteCommandCenter.skipForwardCommand.removeTarget(self);
-    remoteCommandCenter.skipBackwardCommand.removeTarget(self);
+    remoteCommandCenter.playCommand.removeTarget(self)
+    remoteCommandCenter.pauseCommand.removeTarget(self)
+    remoteCommandCenter.togglePlayPauseCommand.removeTarget(self)
+    remoteCommandCenter.changePlaybackPositionCommand.removeTarget(self)
+    remoteCommandCenter.skipForwardCommand.removeTarget(self)
+    remoteCommandCenter.skipBackwardCommand.removeTarget(self)
   }
 }
