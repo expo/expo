@@ -13,28 +13,32 @@ import java.util.concurrent.ConcurrentHashMap
 object AudioPreloadManager {
   private val store = ConcurrentHashMap<String, ByteArray>()
 
-  suspend fun preload(uri: String, factory: DataSource.Factory) =
-    withContext(Dispatchers.IO) {
-      val dataSource = factory.createDataSource()
-      val dataSpec = DataSpec.Builder().setUri(uri.toUri()).build()
+  private inline fun <T : DataSource, R> T.use(block: (T) -> R): R {
+    try {
+      return block(this)
+    } finally {
+      close()
+    }
+  }
 
-      val outputStream = ByteArrayOutputStream()
-      try {
+  suspend fun preload(uri: String, factory: DataSource.Factory) = withContext(Dispatchers.IO) {
+    val dataSpec = DataSpec.Builder().setUri(uri.toUri()).build()
+
+    factory.createDataSource().use { dataSource ->
+      ByteArrayOutputStream().use { outputStream ->
         dataSource.open(dataSpec)
         val buffer = ByteArray(8 * 1024)
         generateSequence {
-          dataSource.read(buffer, 0, buffer.size).takeIf {
-            it != -1
-          }
+          dataSource
+            .read(buffer, 0, buffer.size)
+            .takeIf { it != -1 }
         }.forEach {
           outputStream.write(buffer, 0, it)
         }
-      } finally {
-        dataSource.close()
+        store[uri] = outputStream.toByteArray()
       }
-
-      store[uri] = outputStream.toByteArray()
     }
+  }
 
   fun get(uri: String): ByteArray? = store[uri]
 
