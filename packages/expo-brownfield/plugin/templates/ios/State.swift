@@ -18,6 +18,18 @@ public struct BrownfieldState {
     return BrownfieldStateInternal.subscribe(key, callback)
   }
 
+  @discardableResult
+  public static func subscribe<T>(
+    _ key: String, 
+    as type: T.Type,
+    _ callback: @escaping (T) -> Void
+  ) -> AnyCancellable {
+    return BrownfieldStateInternal.subscribe(key) { value in
+      guard let typed = value as? T else { return }
+      callback(typed)
+    }
+  }
+
   public static func delete(_ key: String) -> Any? {
     return BrownfieldStateInternal.delete(key)
   }

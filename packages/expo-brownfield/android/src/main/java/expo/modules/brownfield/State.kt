@@ -7,6 +7,7 @@ fun interface Removable {
 object BrownfieldState {
   private val registry = mutableMapOf<String, SharedState>()
   private val subscriptions = mutableMapOf<String, MutableList<(Any?) -> Unit>>()
+  private val notifyingKeys = mutableSetOf<String>()
 
   fun getOrCreate(key: String): SharedState {
     synchronized(this) {
@@ -50,10 +51,20 @@ object BrownfieldState {
   }
 
   fun notifySubscribers(key: String, value: Any?) {
-    var snapshot: List<(Any?) -> Unit>
     synchronized(this) {
-      snapshot = subscriptions[key]?.toList() ?: emptyList()
+      if (!notifyingKeys.add(key)) return
     }
-    snapshot.forEach { it(value) }
+
+    try {
+      val snapshot: List<(Any?) -> Unit>
+      synchronized(this) {
+        snapshot = subscriptions[key]?.toList() ?: emptyList()
+      }
+      snapshot.forEach { it(value) }
+    } finally {
+      synchronized(this) {
+        notifyingKeys.remove(key)
+      }
+    }
   }
 }

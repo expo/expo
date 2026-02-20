@@ -5,6 +5,7 @@ public final class BrownfieldStateInternal {
   private static let lock = NSLock()
   private static var registry: [String: SharedState] = [:]
   private static var subscriptions: [String: [(Any?) -> Void]] = [:]
+  private static var notifyingKeys = Set<String>()
 
   public static func getOrCreate(_ key: String) -> SharedState {
     lock.lock()
@@ -64,8 +65,11 @@ public final class BrownfieldStateInternal {
   }
 
   public static func notifySubscribers(_ key: String, _ value: Any?) {
+    guard !notifyingKeys.contains(key) else { return }
+    notifyingKeys.insert(key)
+    defer { notifyingKeys.remove(key) }
+
     var subscriberSnapshot: [(Any?) -> Void]
-    
     lock.lock()
     subscriberSnapshot = subscriptions[key] ?? []
     lock.unlock()
