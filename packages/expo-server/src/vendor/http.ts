@@ -88,16 +88,13 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
   // Abort action/loaders once we can no longer write a response or request aborts
   const controller = new AbortController();
-  res.on('close', () => controller.abort());
-  req.once('close', () => controller.abort());
-  req.once('error', (err) => controller.abort(err));
+  res.once('close', () => controller.abort());
+  res.once('error', (err) => controller.abort(err));
 
   const init: RequestInit = {
     method: req.method,
     headers: convertRawHeaders(req.rawHeaders),
-    // Cast until reason/throwIfAborted added
-    // https://github.com/mysticatea/abort-controller/issues/36
-    signal: controller.signal as RequestInit['signal'],
+    signal: controller.signal,
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
