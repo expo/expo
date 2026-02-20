@@ -19,10 +19,14 @@ Since the `Host` component is a React Native [`View`](https://reactnative.dev/do
 
 ## Usage
 
-```tsx Wrapping Button in Host
+### Match contents sizing
+
+Use `matchContents` to let the `Host` automatically size itself to fit its SwiftUI content, instead of requiring explicit dimensions.
+
+```tsx MatchContentsExample.tsx
 import { Button, Host } from '@expo/ui/swift-ui';
 
-function Example() {
+export default function MatchContentsExample() {
   return (
     <Host matchContents>
       <Button
@@ -36,10 +40,14 @@ function Example() {
 }
 ```
 
-```tsx Host with flexbox and VStack
+### Explicit sizing with style
+
+Use `style` to set explicit sizes on the `Host`, such as filling the available space with `flex: 1`.
+
+```tsx ExplicitSizingExample.tsx
 import { Button, Host, VStack, Text } from '@expo/ui/swift-ui';
 
-function Example() {
+export default function ExplicitSizingExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack spacing={8}>
@@ -51,6 +59,61 @@ function Example() {
           Click
         </Button>
       </VStack>
+    </Host>
+  );
+}
+```
+
+### Ignoring keyboard safe area
+
+Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard avoidance (for example, with [`react-native-keyboard-controller`](https://docs.expo.dev/versions/latest/sdk/keyboard-controller/)), to prevent the SwiftUI host from applying its own keyboard inset on top.
+
+```tsx IgnoreKeyboardExample.tsx
+import { View } from 'react-native';
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+
+export default function IgnoreKeyboardExample() {
+  return (
+    <KeyboardProvider>
+      <View style={{ flex: 1, backgroundColor: 'black' }}>
+        <KeyboardStickyView
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: 16,
+            backgroundColor: 'green',
+          }}>
+          <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
+            <TextField multiline />
+          </Host>
+        </KeyboardStickyView>
+      </View>
+    </KeyboardProvider>
+  );
+}
+```
+
+### Ignoring all safe areas
+
+Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar, home indicator, and keyboard — useful for full-screen overlays or backgrounds.
+
+```tsx IgnoreAllSafeAreasExample.tsx
+import { Host, Rectangle } from '@expo/ui/swift-ui';
+import { frame, background } from '@expo/ui/swift-ui/modifiers';
+
+export default function IgnoreAllSafeAreasExample() {
+  return (
+    <Host ignoreSafeArea="all" style={{ flex: 1 }}>
+      <Rectangle
+        modifiers={[
+          frame({ height: 100, width: 100 }),
+          frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'topLeading' }),
+          background('red'),
+        ]}
+      />
     </Host>
   );
 }
