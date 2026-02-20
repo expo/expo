@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [test] setup maestro e2e tests for expo-brownfield on ios ([#43028](https://github.com/expo/expo/pull/43028) by [@pmleczek](https://github.com/pmleczek))
+
 ## 55.0.8 — 2026-02-16
 
 ### 🛠 Breaking changes
