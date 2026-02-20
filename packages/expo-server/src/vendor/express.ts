@@ -1,8 +1,5 @@
 import type * as express from 'express';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
-import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 
 import {
   createRequestHandler as createExpoHandler,
@@ -73,8 +70,4 @@ export function createRequestHandler(
   };
 }
 
-export {
-  convertHeaders,
-  convertRequest,
-  respond,
-} from './http';
+export { convertRequest, respond } from './http';
