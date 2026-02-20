@@ -4,6 +4,12 @@ import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
 
+import { installEventLogger } from '../src/events';
+
+// Setup event logger output
+// NOTE: Done before any console output
+installEventLogger();
+
 // Check Node.js version and issue a loud warning if it's too outdated
 // This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
 const NODE_MIN = [20, 19, 4];

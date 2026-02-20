@@ -159,10 +159,13 @@ export declare const border: (params: {
 }) => ModifierConfig;
 /**
  * Applies scaling transformation.
- * @param scale - Scale factor (1.0 = normal size).
+ * @param scale - Uniform scale factor (1.0 = normal size), or an object with separate `x` and `y` scale factors.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
  */
-export declare const scaleEffect: (scale: number) => ModifierConfig;
+export declare const scaleEffect: (scale: number | {
+    x: number;
+    y: number;
+}) => ModifierConfig;
 /**
  * Applies rotation transformation.
  * @param angle - Rotation angle in degrees.

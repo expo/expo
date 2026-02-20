@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [Android][iOS] Add `url` field to HLS video tracks. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add `name`, `isDefault` and `autoSelect` fields to `AudioTrack` and `SubtitleTrack`. ([#43250](https://github.com/expo/expo/pull/43250) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
@@ -36,6 +37,7 @@
 
 - [iOS] Prevents blocking main thread when loading asset tracks for non-HSL tracks ([#42037](https://github.com/expo/expo/pull/42037) by [@santitopo](https://github.com/santitopo))
 - [Android] Fix crash due to `SimpleCache` directory lock conflicts. ([#42723](https://github.com/expo/expo/pull/42723) by [@santitopo](https://github.com/santitopo))
+- [Android] Avoid crash when FullscreenPlayerActivity init fails. ([#42943](https://github.com/expo/expo/pull/42943) by [@amyu](https://github.com/amyu))
 
 ## 55.0.4 — 2026-02-03
 

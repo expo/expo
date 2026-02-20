@@ -8,6 +8,7 @@
 
 /* Begin PBXCopyFilesBuildPhase section */
 		877C6FB32F3F6F2000C3B2B7 /* Embed Frameworks */ = {
+		87F31DDB2F47363100B37DF8 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -69,6 +70,7 @@
 				C0AD19EE2F180368005A1DBD /* Frameworks */,
 				C0AD19EF2F180368005A1DBD /* Resources */,
 				877C6FB32F3F6F2000C3B2B7 /* Embed Frameworks */,
+				87F31DDB2F47363100B37DF8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Strip loaders from server bundles ([#43212](https://github.com/expo/expo/pull/43212) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 55.0.5 — 2026-02-16

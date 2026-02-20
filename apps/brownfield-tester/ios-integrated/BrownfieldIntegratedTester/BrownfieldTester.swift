@@ -7,6 +7,7 @@ class BrownfieldTester: ObservableObject {
     @Published var showAlert: Bool = false
     
     // MARK: - Internal State
+    
     private var listenerId: String?
     private var messageTimer: Timer?
     private var messageCounter = 0
@@ -32,7 +33,6 @@ class BrownfieldTester: ObservableObject {
         listenerId = BrownfieldMessaging.addListener { [weak self] message in
             guard let self = self else { return }
             
-            // Safe casting
             let sender = message["sender"] as? String ?? "Unknown"
             let nested = message["source"] as? [String: Any?] ?? [:]
             let platform = nested["platform"] as? String ?? "Unknown"

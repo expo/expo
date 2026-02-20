@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@expo/styleguide';
+import { CookieConsentProvider } from '@expo/styleguide-cookie-consent';
 import { KapaProvider } from '@kapaai/react-sdk';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
@@ -9,7 +10,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
 import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
-import { AnalyticsProvider } from '~/providers/Analytics';
+import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
 import { markdownComponents } from '~/ui/components/Markdown';
@@ -60,6 +61,7 @@ export { reportWebVitals } from '~/providers/Analytics';
 
 export default function App({ Component, pageProps }: AppProps) {
   useNProgress();
+  useAnalyticsPageTracking();
   return (
     <>
       {/* eslint-disable-next-line react/no-unknown-property */}
@@ -81,8 +83,8 @@ export default function App({ Component, pageProps }: AppProps) {
         }
       `}</style>
       <MotionConfig reducedMotion="user">
-        <AnalyticsProvider>
-          <ThemeProvider>
+        <ThemeProvider>
+          <CookieConsentProvider ga4Id="G-YKNPYCMLWY">
             <TutorialChapterCompletionProvider>
               <CodeBlockSettingsProvider>
                 <MDXProvider components={rootMarkdownComponents}>
@@ -94,8 +96,8 @@ export default function App({ Component, pageProps }: AppProps) {
                 </MDXProvider>
               </CodeBlockSettingsProvider>
             </TutorialChapterCompletionProvider>
-          </ThemeProvider>
-        </AnalyticsProvider>
+          </CookieConsentProvider>
+        </ThemeProvider>
       </MotionConfig>
     </>
   );

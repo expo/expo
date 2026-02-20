@@ -1,6 +1,8 @@
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE } from './AudioEventKeys';
-import { getAudioContext, getSourceUri, getStatusFromMedia, nextId } from './AudioUtils.web';
+import { isAudioActive } from './AudioModule.web';
+import { getAudioContext, getSourceUri, getStatusFromMedia, nextId, preloadCache, safeDuration, } from './AudioUtils.web';
 import { mediaSessionController } from './MediaSessionController.web';
+export const activePlayers = new Set();
 export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     constructor(source, options = {}) {
         super();
@@ -9,6 +11,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.interval = Math.max(updateInterval, 1);
         this.crossOrigin = crossOrigin;
         this.media = this._createMediaElement();
+        activePlayers.add(this);
     }
     id = nextId();
     isAudioSamplingSupported = false;
@@ -41,7 +44,7 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.loop = value;
     }
     get duration() {
-        return this.media.duration;
+        return safeDuration(this.media.duration);
     }
     get currentTime() {
         return this.media.currentTime;
@@ -68,6 +71,9 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         return getStatusFromMedia(this.media, this.id);
     }
     play() {
+        if (!isAudioActive) {
+            return;
+        }
         this.media.play();
         this.isPlaying = true;
         this.startSampling();
@@ -186,9 +192,20 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         }
         this.samplingEnabled = false;
         this.media.pause();
+        // Clear event handlers to prevent memory leaks
+        this.media.ontimeupdate = null;
+        this.media.onplay = null;
+        this.media.onpause = null;
+        this.media.onseeked = null;
+        this.media.onended = null;
+        this.media.onloadeddata = null;
+        this.media.onerror = null;
         this.media.removeAttribute('src');
         this.media.load();
-        getStatusFromMedia(this.media, this.id);
+        activePlayers.delete(this);
+    }
+    release() {
+        this.remove();
     }
     setActiveForLockScreen(active, metadata, options) {
         if (active) {
@@ -214,7 +231,8 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     }
     _createMediaElement() {
         const newSource = getSourceUri(this.src);
-        const media = new Audio(newSource);
+        const cachedUri = newSource && preloadCache.has(newSource) ? preloadCache.get(newSource).blobUrl : newSource;
+        const media = new Audio(cachedUri);
         if (this.crossOrigin !== undefined) {
             media.crossOrigin = this.crossOrigin;
         }
@@ -270,6 +288,15 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
                 isLoaded: this.loaded,
             });
             mediaSessionController.updatePositionState(this);
+        };
+        media.onerror = () => {
+            this.loaded = false;
+            this.isPlaying = false;
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                isLoaded: false,
+                playing: false,
+            });
         };
         return media;
     }

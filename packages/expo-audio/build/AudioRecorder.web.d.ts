@@ -3,7 +3,7 @@ import { AudioRecorder, RecordingEvents } from './AudioModule.types';
 export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<RecordingEvents> implements AudioRecorder {
     constructor(options: Partial<RecordingOptions>);
     setup(): Promise<void>;
-    id: number;
+    id: string;
     currentTime: number;
     uri: string | null;
     private options;

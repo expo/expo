@@ -24,9 +24,27 @@ export function findMdxSource(htmlPath: string, outDir: string, pagesDir: string
 }
 
 /**
+ * Frontmatter fields that only affect the docs website UI (sidebar, TOC, search ranking)
+ * and carry no semantic value for LLM or MCP consumers. Stripped during markdown generation.
+ *
+ * Note: `packageName` is intentionally kept because the Expo docs MCP tool uses it
+ * to map pages to their npm packages.
+ */
+const UI_ONLY_FRONTMATTER_FIELDS = new Set([
+  'hideTOC',
+  'maxHeadingDepth',
+  'hideFromSearch',
+  'hideInSidebar',
+  'sidebar_title',
+  'searchRank',
+  'searchPosition',
+  'hasVideoLink',
+]);
+
+/**
  * Extract the raw YAML frontmatter block (including --- delimiters) from an MDX file.
  * Strips lines with empty values (e.g. `modificationDate:` injected by append-dates.js
- * with no value in shallow CI clones).
+ * with no value in shallow CI clones) and UI-only fields that are irrelevant to LLM consumers.
  * Returns the frontmatter string with trailing newline, or null if no frontmatter found.
  */
 export function extractFrontmatter(mdxPath: string): string | null {
@@ -38,6 +56,10 @@ export function extractFrontmatter(mdxPath: string): string | null {
   const filtered = match[1]
     .split('\n')
     .filter(line => !/^\w+:\s*$/.test(line))
+    .filter(line => {
+      const key = line.match(/^(\w+):/)?.[1];
+      return !key || !UI_ONLY_FRONTMATTER_FIELDS.has(key);
+    })
     .join('\n');
   if (!filtered.trim()) {
     return null;

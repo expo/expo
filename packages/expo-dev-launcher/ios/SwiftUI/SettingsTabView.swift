@@ -11,8 +11,6 @@ struct SettingsTabView: View {
   @State private var showCopiedMessage = false
   @State private var defaultPageSize: Int = 10
   @State private var showCacheClearedMessage = false
-  @State private var permissionCheckResult: String = "Not checked"
-  @State private var isCheckingPermission = false
 
   private func createBuildInfoJSON() -> String {
     let buildInfoDict: [String: Any] = [
@@ -41,6 +39,10 @@ struct SettingsTabView: View {
           .font(.system(size: 13))
           .foregroundStyle(.secondary)
 
+        #if !targetEnvironment(simulator)
+        localNetworkDebugSettings
+        #endif
+
         VStack(alignment: .leading, spacing: 8) {
           Text("system".uppercased())
             .font(.caption)
@@ -50,10 +52,6 @@ struct SettingsTabView: View {
           Divider()
           copyToClipboardButton
         }
-
-        #if DEBUG
-        localNetworkDebugSettings
-        #endif
 
         if isAdminUser {
           debugSettings
@@ -69,11 +67,12 @@ struct SettingsTabView: View {
     #if !os(macOS)
     .navigationBarHidden(true)
     #endif
-    #if DEBUG
-    .onChange(of: viewModel.permissionStatus) { _ in
-      if isCheckingPermission {
-        updatePermissionResultFromStatus()
-      }
+    #if os(iOS) && !targetEnvironment(simulator)
+    .task {
+      viewModel.refreshPermissionStatus()
+    }
+    .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+      viewModel.refreshPermissionStatus()
     }
     #endif
   }
@@ -238,113 +237,37 @@ struct SettingsTabView: View {
     """
   }
 
-  #if DEBUG
+  #if !targetEnvironment(simulator)
   private var localNetworkDebugSettings: some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text("Local Network Permission".uppercased())
-        .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
-
       VStack(spacing: 0) {
-        HStack {
-          Text("Permission Status")
-          Spacer()
-          Text(permissionCheckResult)
-            .foregroundColor(.secondary)
-        }
-        .padding()
+        Toggle("Local Network", isOn: .constant(viewModel.permissionStatus == .granted))
+          .disabled(true)
+          .padding()
 
-        Divider()
+        if viewModel.permissionStatus == .denied {
+          Divider()
 
-        HStack {
-          Text("First Launch Check")
-          Spacer()
-          Text(viewModel.hasGrantedNetworkPermission ? "Granted" : "Pending")
-            .foregroundColor(.secondary)
-        }
-        .padding()
-
-        Divider()
-
-        Button {
-          checkNetworkPermission()
-        } label: {
-          HStack {
-            if isCheckingPermission {
-              ProgressView()
-                .scaleEffect(0.8)
+          #if os(iOS)
+          Button {
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+              UIApplication.shared.open(url)
             }
-            Text(isCheckingPermission ? "Checking..." : "Check Permission Now")
-            Spacer()
-            Image(systemName: "wifi")
-              .foregroundColor(.blue)
+          } label: {
+            HStack {
+              Text("Open App Settings")
+              Spacer()
+              Image(systemName: "gear")
+                .foregroundColor(.blue)
+            }
           }
+          .padding()
+          #endif
         }
-        .disabled(isCheckingPermission)
-        .padding()
-
-        Divider()
-
-        Button {
-          resetPermissionFlow()
-        } label: {
-          HStack {
-            Text("Reset Permission Flow")
-            Spacer()
-            Image(systemName: "arrow.counterclockwise")
-              .foregroundColor(.orange)
-          }
-        }
-        .padding()
-
-        Divider()
-
-        #if os(iOS)
-        Button {
-          if let url = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(url)
-          }
-        } label: {
-          HStack {
-            Text("Open App Settings")
-            Spacer()
-            Image(systemName: "gear")
-              .foregroundColor(.blue)
-          }
-        }
-        .padding()
-        #endif
       }
       .background(Color.expoSecondarySystemBackground)
       .cornerRadius(12)
-
-      Text("Use these tools to debug local network permission flow. 'Reset Permission Flow' will show the pre-flight screen again on next launch.")
-        .font(.system(size: 13))
-        .foregroundStyle(.secondary)
     }
-  }
-
-  private func checkNetworkPermission() {
-    isCheckingPermission = true
-    permissionCheckResult = "Checking..."
-    viewModel.stopServerDiscovery()
-    viewModel.startServerDiscovery()
-  }
-
-  private func updatePermissionResultFromStatus() {
-    isCheckingPermission = false
-    if viewModel.hasGrantedNetworkPermission {
-      permissionCheckResult = "✅ Granted"
-    } else if viewModel.permissionStatus == .denied {
-      permissionCheckResult = "❌ Denied"
-    } else {
-      permissionCheckResult = "⚠️ Unknown"
-    }
-  }
-
-  private func resetPermissionFlow() {
-    viewModel.resetPermissionFlowState()
-    permissionCheckResult = "Not checked"
   }
   #endif
 }

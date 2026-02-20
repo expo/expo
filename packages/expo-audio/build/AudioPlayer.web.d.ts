@@ -1,9 +1,10 @@
 import { AudioMetadata, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectionQuality } from './Audio.types';
 import { AudioLockScreenOptions } from './AudioConstants';
 import { AudioPlayer, AudioEvents } from './AudioModule.types';
+export declare const activePlayers: Set<AudioPlayerWeb>;
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
     constructor(source: AudioSource, options?: AudioPlayerOptions);
-    id: number;
+    id: string;
     isAudioSamplingSupported: boolean;
     isBuffering: boolean;
     shouldCorrectPitch: boolean;
@@ -41,6 +42,7 @@ export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEv
     private stopSampling;
     setPlaybackRate(second: number, pitchCorrectionQuality?: PitchCorrectionQuality): void;
     remove(): void;
+    release(): void;
     setActiveForLockScreen(active: boolean, metadata?: AudioMetadata, options?: AudioLockScreenOptions): void;
     updateLockScreenMetadata(metadata: AudioMetadata): void;
     clearLockScreenControls(): void;

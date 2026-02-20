@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `Request`-like input handling, `method` normalization, and URL argument support to `fetch` ([#43194](https://github.com/expo/expo/pull/43194) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.0-preview.11 — 2026-02-16

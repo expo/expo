@@ -270,7 +270,7 @@ export const resolveTypeName = (
         return 'See description for available values.';
       }
       return renderUnion(types, { sdkVersion });
-    } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
+    } else if (elementType?.type === 'union' && elementType?.types?.length) {
       const unionTypes = elementType?.types ?? [];
       return (
         <>

@@ -7,7 +7,6 @@ hasVideoLink: true
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
-import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -61,15 +60,7 @@ Now that we've broken down the UI into smaller chunks, we're ready to start codi
 
 ## Display the image
 
-We'll use `expo-image` library to display the image in the app. It provides a cross-platform `<Image>` component to load and render an image.
-
-The `expo-image` library comes out of the box, but if you don't have it, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `expo-image` library:
-
-<Terminal cmd={['$ npx expo install expo-image']} />
-
-The [`npx expo install`](/more/expo-cli/#installation) command will install the library and add it to the project's dependencies in **package.json**.
-
-> **info** **Tip:** Any time we install a new library in our project, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal and then run the installation command. After the installation completes, we can start the development server again by running `npx expo start` from the same terminal window.
+We'll use `expo-image` library to display the image in the app. It provides a cross-platform `<Image>` component to load and render an image. It is already included in the default project template we're using.
 
 The Image component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
 

@@ -1,7 +1,7 @@
 import { Asset } from 'expo-asset';
 export const nextId = (() => {
     let id = 0;
-    return () => id++;
+    return () => String(id++);
 })();
 let audioContext = null;
 export function getAudioContext() {
@@ -36,6 +36,9 @@ export function getUserMedia(constraints) {
         getUserMedia.call(navigator, constraints, resolve, reject);
     });
 }
+export function safeDuration(duration) {
+    return isNaN(duration) || !isFinite(duration) ? 0 : duration;
+}
 export function getStatusFromMedia(media, id) {
     const isPlaying = !!(media.currentTime > 0 &&
         !media.paused &&
@@ -44,7 +47,7 @@ export function getStatusFromMedia(media, id) {
     const status = {
         id,
         isLoaded: true,
-        duration: media.duration,
+        duration: safeDuration(media.duration),
         currentTime: media.currentTime,
         playbackState: '',
         timeControlStatus: isPlaying ? 'playing' : 'paused',
@@ -59,6 +62,8 @@ export function getStatusFromMedia(media, id) {
     };
     return status;
 }
+// Preload cache: maps original source URIs to pre-fetched blob URLs
+export const preloadCache = new Map();
 export function getSourceUri(source) {
     if (typeof source === 'string') {
         return source;

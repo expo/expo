@@ -12,7 +12,10 @@ import java.util.Locale
 class SubtitleTrack(
   @Field val id: String,
   @Field val language: String?,
-  @Field val label: String?
+  @Field val label: String?,
+  @Field val name: String?,
+  @Field val isDefault: Boolean,
+  @Field val autoSelect: Boolean
 ) : Record, Serializable {
   companion object {
     fun fromFormat(format: Format?): SubtitleTrack? {
@@ -20,11 +23,17 @@ class SubtitleTrack(
       val id = format.id ?: return null
       val language = format.language ?: return null
       val label = Locale(language).displayLanguage
+      val name = format.label
+      val isDefault = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_DEFAULT) != 0
+      val autoSelect = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_AUTOSELECT) != 0
 
       return SubtitleTrack(
         id = id,
         language = language,
-        label = label
+        label = label,
+        name = name,
+        isDefault = isDefault,
+        autoSelect = autoSelect
       )
     }
   }
@@ -33,7 +42,10 @@ class SubtitleTrack(
 class AudioTrack(
   @Field val id: String,
   @Field val language: String?,
-  @Field val label: String?
+  @Field val label: String?,
+  @Field val name: String?,
+  @Field val isDefault: Boolean,
+  @Field val autoSelect: Boolean
 ) : Record, Serializable {
   companion object {
     fun fromFormat(format: Format?): AudioTrack? {
@@ -41,11 +53,17 @@ class AudioTrack(
       val id = format.id ?: return null
       val language = format.language
       val label = language?.let { Locale(it).displayLanguage } ?: "Unknown"
+      val name = format.label
+      val isDefault = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_DEFAULT) != 0
+      val autoSelect = (format.selectionFlags and androidx.media3.common.C.SELECTION_FLAG_AUTOSELECT) != 0
 
       return AudioTrack(
         id = id,
         language = language,
-        label = label
+        label = label,
+        name = name,
+        isDefault = isDefault,
+        autoSelect = autoSelect
       )
     }
   }

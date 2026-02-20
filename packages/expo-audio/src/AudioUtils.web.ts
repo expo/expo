@@ -4,7 +4,7 @@ import { AudioSource, AudioStatus } from './Audio.types';
 
 export const nextId = (() => {
   let id = 0;
-  return () => id++;
+  return () => String(id++);
 })();
 
 let audioContext: AudioContext | null = null;
@@ -46,7 +46,11 @@ export function getUserMedia(constraints: MediaStreamConstraints): Promise<Media
   });
 }
 
-export function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
+export function safeDuration(duration: number): number {
+  return isNaN(duration) || !isFinite(duration) ? 0 : duration;
+}
+
+export function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioStatus {
   const isPlaying = !!(
     media.currentTime > 0 &&
     !media.paused &&
@@ -57,7 +61,7 @@ export function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioSt
   const status: AudioStatus = {
     id,
     isLoaded: true,
-    duration: media.duration,
+    duration: safeDuration(media.duration),
     currentTime: media.currentTime,
     playbackState: '',
     timeControlStatus: isPlaying ? 'playing' : 'paused',
@@ -73,6 +77,9 @@ export function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioSt
 
   return status;
 }
+
+// Preload cache: maps original source URIs to pre-fetched blob URLs
+export const preloadCache = new Map<string, { blobUrl: string; audio: HTMLAudioElement }>();
 
 export function getSourceUri(source: AudioSource): string | undefined {
   if (typeof source === 'string') {

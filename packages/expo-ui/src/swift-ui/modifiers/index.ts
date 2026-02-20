@@ -225,10 +225,11 @@ export const border = (params: { color: Color; width?: number }) =>
 
 /**
  * Applies scaling transformation.
- * @param scale - Scale factor (1.0 = normal size).
+ * @param scale - Uniform scale factor (1.0 = normal size), or an object with separate `x` and `y` scale factors.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
  */
-export const scaleEffect = (scale: number) => createModifier('scaleEffect', { scale });
+export const scaleEffect = (scale: number | { x: number; y: number }) =>
+  createModifier('scaleEffect', typeof scale === 'number' ? { x: scale, y: scale } : scale);
 
 /**
  * Applies rotation transformation.
@@ -364,7 +365,14 @@ export const foregroundStyle = (
   if (typeof style === 'string') {
     return createModifier('foregroundStyle', { styleType: 'color', color: style });
   }
-  return createModifier('foregroundStyle', { styleType: style.type, ...style });
+  if (style.type === 'hierarchical') {
+    return createModifier('foregroundStyle', {
+      styleType: 'hierarchical',
+      hierarchicalStyle: style.style,
+    });
+  }
+  const { type, ...rest } = style;
+  return createModifier('foregroundStyle', { styleType: type, ...rest });
 };
 
 /**
