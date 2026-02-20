@@ -178,7 +178,7 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: 3.2.2
-      - name: Setup ccache
+      - name: 🔄 Setup ccache
         run: |
           brew install ccache
 
