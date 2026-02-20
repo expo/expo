@@ -37,6 +37,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
+    "test": "expo-module test",
+    "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
     "watch": "yarn run build --watch"
   },
   "devDependencies": {
