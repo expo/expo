@@ -16,8 +16,6 @@ import {
 
 `expo-navigation-bar` enables you to modify and observe the native navigation bar on Android devices. Due to some Android platform restrictions, parts of this API overlap with the `expo-status-bar` API.
 
-Properties are named after style properties; visibility, position, backgroundColor, borderColor, and so on.
-
 The APIs in this package have no impact when "Gesture Navigation" is enabled on the Android device. There is currently no native Android API to detect if "Gesture Navigation" is enabled or not.
 
 ## Installation
@@ -37,12 +35,8 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
       [
         "expo-navigation-bar",
         {
-          "backgroundColor": "#0f172a",
           "barStyle": "light",
-          "borderColor": "#1f2937",
-          "visibility": "visible",
-          "behavior": "inset-swipe",
-          "position": "relative"
+          "visibility": "visible"
         }
       ]
     ]
@@ -65,41 +59,6 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
       description:
         'Determines whether the navigation bar starts visible or hidden. Accepts `visible` to show the bar immediately and `hidden` to hide it until the user reveals it with a system gesture.',
       default: 'undefined',
-    },
-    {
-      name: 'backgroundColor',
-      description:
-        'Sets the navigation bar background color. Accepts color string supported by React Native. For example, `"#0f172a"`.',
-      default: 'undefined',
-      deprecated: true,
-    },
-    {
-      name: 'borderColor',
-      description:
-        'Sets the divider color above the navigation bar. Automatically converts the color string to a 32-bit integer.',
-      default: 'undefined',
-      deprecated: true,
-    },
-    {
-      name: 'behavior',
-      description:
-        'Controls how hidden system bars behave when revealed. Accepts `overlay-swipe`, `inset-swipe`, or `inset-touch` as values.',
-      default: 'undefined',
-      deprecated: true,
-    },
-    {
-      name: 'position',
-      description:
-        'Sets whether your layout is inset for the navigation bar. Accepts `relative` to keep the navigation bar outside the content and `absolute` to draw the content edge-to-edge under the bar.',
-      default: 'undefined',
-      deprecated: true,
-    },
-    {
-      name: 'legacyVisible',
-      description:
-        'Legacy equivalent of `androidNavigationBar.visible`. Accepts `leanback`, `immersive`, or `sticky-immersive` as values.',
-      default: 'undefined',
-      deprecated: true,
     },
   ]}
 />
