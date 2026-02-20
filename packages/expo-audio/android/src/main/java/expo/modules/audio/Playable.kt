@@ -24,30 +24,22 @@ interface Playable {
   val isPlaying: Boolean get() = player.isPlaying
   val volume: Float get() = player.volume
 
-  fun play() {
-    player.play()
-  }
+  fun play() = player.play()
 
-  fun pause() {
-    player.pause()
-  }
+  fun pause() = player.pause()
 
-  fun seekTo(seconds: Double) {
-    player.seekTo((seconds * 1000L).toLong())
-  }
+  fun seekTo(seconds: Double) = player.seekTo((seconds * 1000L).toLong())
 
-  fun setVolume(volume: Float?) {
-    appContext?.mainQueue?.launch {
-      val boundedVolume = volume?.coerceIn(0f, 1f) ?: 1f
-      if (isMuted) {
-        if (boundedVolume > 0f) {
-          previousVolume = boundedVolume
-        }
-        player.volume = 0f
-      } else {
+  fun setVolume(volume: Float?) = appContext?.mainQueue?.launch {
+    val boundedVolume = volume?.coerceIn(0f, 1f) ?: 1f
+    if (isMuted) {
+      if (boundedVolume > 0f) {
         previousVolume = boundedVolume
-        player.volume = boundedVolume
       }
+      player.volume = 0f
+    } else {
+      previousVolume = boundedVolume
+      player.volume = boundedVolume
     }
   }
 

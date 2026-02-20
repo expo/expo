@@ -38,13 +38,9 @@ object AudioPreloadManager {
 
   fun get(uri: String): ByteArray? = store[uri]
 
-  fun clearSource(uri: String) {
-    store.remove(uri)
-  }
+  fun clearSource(uri: String) = store.remove(uri)
 
-  fun clearAll() {
-    store.clear()
-  }
+  fun clearAll() = store.clear()
 
   fun getPreloadedSources(): List<String> = store.keys().toList()
 }
