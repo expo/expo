@@ -2,30 +2,30 @@ import { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, AndroidConfig } from 'expo/config-plugins';
 import { NavigationBarVisibility, NavigationBarBehavior, NavigationBarPosition, NavigationBarButtonStyle } from 'expo-navigation-bar';
 export type Props = {
-    /**
-     * @deprecated Due to Android edge-to-edge enforcement, this is deprecated and has no effect. This will be removed in a future release.
-     */
-    borderColor?: string;
-    /**
-     * @deprecated Due to Android edge-to-edge enforcement, this is deprecated and has no effect. This will be removed in a future release.
-     */
-    backgroundColor?: string | null;
     barStyle?: NavigationBarButtonStyle | null;
     visibility?: NavigationBarVisibility;
     /**
-     * @deprecated Due to Android edge-to-edge enforcement, this is deprecated and has no effect. This will be removed in a future release.
+     * @deprecated
+     */
+    backgroundColor?: string | null;
+    /**
+     * @deprecated
      */
     behavior?: NavigationBarBehavior;
     /**
-     * @deprecated Due to Android edge-to-edge enforcement, this is deprecated and has no effect. This will be removed in a future release.
+     * @deprecated
+     */
+    borderColor?: string;
+    /**
+     * @deprecated
      */
     position?: NavigationBarPosition;
     /**
-     * @deprecated Due to Android edge-to-edge enforcement, this is deprecated and has no effect. This will be removed in a future release.
+     * @deprecated
      */
     legacyVisible?: NonNullable<NonNullable<ExpoConfig['androidNavigationBar']>['visible']>;
 };
-export declare function resolveProps(config: Pick<ExpoConfig, 'androidNavigationBar'>, _props: Props | void): Props;
+export declare function resolveProps(config: Pick<ExpoConfig, 'androidNavigationBar'>, props: Props | void): Props;
 /**
  * Ensure the Expo Go manifest is updated when the project is using config plugin properties instead
  * of the static values that Expo Go reads from (`androidNavigationBar`).

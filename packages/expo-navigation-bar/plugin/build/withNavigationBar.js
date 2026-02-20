@@ -11,6 +11,7 @@ const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
 const debug = (0, debug_1.default)('expo:system-navigation-bar:plugin');
 const pkg = require('expo-navigation-bar/package.json');
+const EDGE_TO_EDGE_DEPRECATION_MESSAGE = 'property is deprecated due to Android 15 edge-to-edge enforcement and will be removed from Expo SDK';
 // strings.xml keys, this should not change.
 const VISIBILITY_KEY = 'expo_navigation_bar_visibility';
 const LEGACY_BAR_STYLE_MAP = {
@@ -18,17 +19,28 @@ const LEGACY_BAR_STYLE_MAP = {
     'dark-content': 'dark',
     'light-content': 'light',
 };
-function resolveProps(config, _props) {
-    let props;
-    if (!_props) {
-        props = {
+function resolveProps(config, props) {
+    if (!props) {
+        return {
             barStyle: config.androidNavigationBar?.barStyle
                 ? LEGACY_BAR_STYLE_MAP[config.androidNavigationBar?.barStyle]
                 : undefined,
         };
     }
-    else {
-        props = _props;
+    if (props.backgroundColor != null) {
+        config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.backgroundColor', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
+    }
+    if (props.behavior != null) {
+        config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.behavior', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
+    }
+    if (props.borderColor != null) {
+        config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.borderColor', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
+    }
+    if (props.position != null) {
+        config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.position', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
+    }
+    if (props.legacyVisible != null) {
+        config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.legacyVisible', 'property is deprecated in Android 11 (API 30) and will be removed from Expo SDK');
     }
     return props;
 }
