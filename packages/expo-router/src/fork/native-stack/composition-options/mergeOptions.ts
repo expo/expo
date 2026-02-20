@@ -23,8 +23,8 @@ export function mergeOptions(
     const descriptor = descriptors[key];
     const routeOptions = registry[key];
 
-    // No composition options or empty object → pass through
-    if (!routeOptions || Object.keys(routeOptions).length === 0) {
+    // No composition options or empty array → pass through
+    if (!routeOptions || routeOptions.length === 0) {
       result[key] = descriptor;
       continue;
     }
@@ -37,7 +37,7 @@ export function mergeOptions(
     }
 
     // Merge: descriptor options as base, composition options override
-    const mergedOptions = Object.assign({}, descriptor.options, ...Object.values(routeOptions));
+    const mergedOptions = Object.assign({}, descriptor.options, ...routeOptions);
 
     const merged = {
       ...descriptor,

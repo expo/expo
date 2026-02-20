@@ -3,151 +3,147 @@ import type { CompositionRegistry } from '../types';
 
 describe('registryReducer', () => {
   describe('set action', () => {
-    it('creates new entry with inner object for a new route key', () => {
+    it('creates new array entry for a new route key', () => {
       const state: CompositionRegistry = {};
+      const options = { title: 'Hello' };
 
       const result = registryReducer(state, {
         type: 'set',
         routeKey: 'route-1',
-        componentId: 'comp-1',
-        options: { title: 'Hello' },
+        options,
       });
 
       expect(result).not.toBe(state);
-      expect('route-1' in result).toBe(true);
-      expect(result['route-1']['comp-1']).toEqual({ title: 'Hello' });
+      expect(result['route-1']).toEqual([{ title: 'Hello' }]);
+      expect(result['route-1'][0]).toBe(options);
     });
 
-    it('adds component to existing route entry', () => {
+    it('appends options to existing route entry', () => {
+      const first = { title: 'First' };
       const state: CompositionRegistry = {
-        'route-1': { 'comp-1': { title: 'First' } },
+        'route-1': [first],
       };
+      const second = { headerShown: false as const };
 
       const result = registryReducer(state, {
         type: 'set',
         routeKey: 'route-1',
-        componentId: 'comp-2',
-        options: { headerShown: false },
+        options: second,
       });
 
       expect(result).not.toBe(state);
-      expect(Object.keys(result['route-1']).length).toBe(2);
-      expect(result['route-1']).not.toBe(state['route-1']); // New inner object
-      expect(result['route-1']['comp-1']).toEqual({ title: 'First' });
-      expect(result['route-1']['comp-2']).toEqual({ headerShown: false });
+      expect(result['route-1']).toHaveLength(2);
+      expect(result['route-1']).not.toBe(state['route-1']); // New array
+      expect(result['route-1'][0]).toBe(first);
+      expect(result['route-1'][1]).toBe(second);
     });
 
-    it('updates options when existing component registers different options', () => {
-      const state: CompositionRegistry = {
-        'route-1': { 'comp-1': { title: 'Old' } },
-      };
-
-      const result = registryReducer(state, {
-        type: 'set',
-        routeKey: 'route-1',
-        componentId: 'comp-1',
-        options: { title: 'New' },
-      });
-
-      expect(result).not.toBe(state);
-      expect(result['route-1']).not.toBe(state['route-1']); // New inner object
-      expect(result['route-1']['comp-1']).not.toBe(state['route-1']['comp-1']); // New options object
-      expect(result['route-1']['comp-1']).toEqual({ title: 'New' });
-    });
-
-    it('returns same state reference when options reference is identical', () => {
+    it('returns same state reference when options reference is already in array', () => {
       const options = { title: 'Unchanged' };
       const state: CompositionRegistry = {
-        'route-1': { 'comp-1': options },
+        'route-1': [options],
       };
 
       const result = registryReducer(state, {
         type: 'set',
         routeKey: 'route-1',
-        componentId: 'comp-1',
         options,
       });
 
       expect(result).toBe(state);
     });
 
-    it('creates both outer and inner entries for first registration', () => {
+    it('appends options with same shape but different reference', () => {
+      const state: CompositionRegistry = {
+        'route-1': [{ title: 'Hello' }],
+      };
+
+      const result = registryReducer(state, {
+        type: 'set',
+        routeKey: 'route-1',
+        options: { title: 'Hello' },
+      });
+
+      expect(result).not.toBe(state);
+      expect(result['route-1']).toHaveLength(2);
+    });
+
+    it('creates route entry for first registration', () => {
       const state: CompositionRegistry = {};
 
       const result = registryReducer(state, {
         type: 'set',
         routeKey: 'route-new',
-        componentId: 'comp-new',
         options: { title: 'Brand New' },
       });
 
-      expect(Object.keys(result).length).toBe(1);
-      expect(Object.keys(result['route-new']).length).toBe(1);
-      expect(result['route-new']['comp-new']).toEqual({ title: 'Brand New' });
+      expect(Object.keys(result)).toHaveLength(1);
+      expect(result['route-new']).toHaveLength(1);
+      expect(result['route-new'][0]).toEqual({ title: 'Brand New' });
     });
   });
 
-  describe('unregister action', () => {
-    it('removes component from route entry, keeps route', () => {
+  describe('unset action', () => {
+    it('removes options by reference, keeps route', () => {
+      const first = { title: 'First' };
+      const second = { headerShown: false as const };
       const state: CompositionRegistry = {
-        'route-1': {
-          'comp-1': { title: 'First' },
-          'comp-2': { headerShown: false },
-        },
+        'route-1': [first, second],
       };
 
       const result = registryReducer(state, {
-        type: 'unregister',
+        type: 'unset',
         routeKey: 'route-1',
-        componentId: 'comp-1',
+        options: first,
       });
 
       expect(result).not.toBe(state);
-      expect(Object.keys(result['route-1']).length).toBe(1);
-      expect(result['route-1']).not.toBe(state['route-1']); // New inner object
-      expect('comp-1' in result['route-1']).toBe(false);
-      expect('comp-2' in result['route-1']).toBe(true);
+      expect(result['route-1']).toHaveLength(1);
+      expect(result['route-1']).not.toBe(state['route-1']); // New array
+      expect(result['route-1'][0]).toBe(second);
     });
 
-    it('deletes entire route entry when last component is unregistered', () => {
+    it('deletes entire route entry when last options is removed', () => {
+      const options = { title: 'Only' };
       const state: CompositionRegistry = {
-        'route-1': { 'comp-1': { title: 'Only' } },
+        'route-1': [options],
       };
 
       const result = registryReducer(state, {
-        type: 'unregister',
+        type: 'unset',
         routeKey: 'route-1',
-        componentId: 'comp-1',
+        options,
       });
 
       expect(result).not.toBe(state);
       expect('route-1' in result).toBe(false);
-      expect(Object.keys(result).length).toBe(0);
+      expect(Object.keys(result)).toHaveLength(0);
     });
 
     it('returns same state reference for non-existent route key', () => {
+      const options = { title: 'Exists' };
       const state: CompositionRegistry = {
-        'route-1': { 'comp-1': { title: 'Exists' } },
+        'route-1': [options],
       };
 
       const result = registryReducer(state, {
-        type: 'unregister',
+        type: 'unset',
         routeKey: 'route-missing',
-        componentId: 'comp-1',
+        options,
       });
 
       expect(result).toBe(state);
     });
 
-    it('returns same state reference for non-existent component ID', () => {
+    it('returns same state reference for non-matching options reference', () => {
       const state: CompositionRegistry = {
-        'route-1': { 'comp-1': { title: 'Exists' } },
+        'route-1': [{ title: 'Exists' }],
       };
 
       const result = registryReducer(state, {
-        type: 'unregister',
+        type: 'unset',
         routeKey: 'route-1',
-        componentId: 'comp-missing',
+        options: { title: 'Exists' }, // Same shape, different reference
       });
 
       expect(result).toBe(state);
@@ -157,13 +153,13 @@ describe('registryReducer', () => {
   describe('unknown action', () => {
     it('returns same state reference for unknown action type', () => {
       const state: CompositionRegistry = {
-        'route-1': { 'comp-1': { title: 'Unchanged' } },
+        'route-1': [{ title: 'Unchanged' }],
       };
 
       const result = registryReducer(state, {
         type: 'unknown' as any,
         routeKey: 'route-1',
-        componentId: 'comp-1',
+        options: { title: 'Unchanged' },
       });
 
       expect(result).toBe(state);

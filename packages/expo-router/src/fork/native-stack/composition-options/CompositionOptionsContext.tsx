@@ -2,7 +2,7 @@
 
 import { useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { createContext, use, useCallback, useId, useMemo, useReducer } from 'react';
+import { createContext, use, useCallback, useMemo, useReducer } from 'react';
 
 import type { CompositionContextValue, CompositionRegistry } from './types';
 import { useSafeLayoutEffect } from '../../../views/useSafeLayoutEffect';
@@ -14,10 +14,9 @@ type RegistryAction =
   | {
       type: 'set';
       routeKey: string;
-      componentId: string;
       options: Partial<NativeStackNavigationOptions>;
     }
-  | { type: 'unregister'; routeKey: string; componentId: string };
+  | { type: 'unset'; routeKey: string; options: Partial<NativeStackNavigationOptions> };
 
 /** @internal */
 export function registryReducer(
@@ -25,28 +24,25 @@ export function registryReducer(
   action: RegistryAction
 ): CompositionRegistry {
   if (action.type === 'set') {
-    const { routeKey, componentId, options } = action;
-    if (state[routeKey]?.[componentId] === options) {
+    const { routeKey, options } = action;
+    if (state[routeKey]?.includes(options)) {
       return state;
     }
-    return { ...state, [routeKey]: { ...state[routeKey], [componentId]: options } };
+    return { ...state, [routeKey]: [...(state[routeKey] ?? []), options] };
   }
 
-  if (action.type === 'unregister') {
-    const { routeKey, componentId } = action;
-    const existingRoute = state[routeKey];
-    if (!existingRoute || !(componentId in existingRoute)) {
+  if (action.type === 'unset') {
+    const { routeKey, options } = action;
+    const existing = state[routeKey];
+    const filtered = existing?.filter((o) => o !== options);
+    if (!existing || filtered?.length === existing.length) {
       return state;
     }
-    // Remove the component entry
-    const { [componentId]: _, ...rest } = existingRoute;
-
-    // If no more components for the route, remove the route entry
-    if (Object.keys(rest).length === 0) {
-      const { [routeKey]: __, ...newState } = state;
+    if (filtered.length === 0) {
+      const { [routeKey]: _, ...newState } = state;
       return newState;
     }
-    return { ...state, [routeKey]: rest };
+    return { ...state, [routeKey]: filtered };
   }
   return state;
 }
@@ -55,26 +51,23 @@ export function registryReducer(
  * Provides the composition registry to descendant composition components.
  *
  * Uses useReducer with immutable object updates for React Compiler compatibility.
- * Each setOptionsFor/unregister call produces a new object reference, which
- * the compiler can track as a reactive dependency.
+ * Each set/unset call produces a new object reference, which the compiler can
+ * track as a reactive dependency.
  */
 export function useCompositionRegistry() {
   const [registry, dispatch] = useReducer(registryReducer, {} as CompositionRegistry);
 
-  const setOptionsFor = useCallback(
-    (routeKey: string, componentId: string, options: Partial<NativeStackNavigationOptions>) => {
-      dispatch({ type: 'set', routeKey, componentId, options });
-    },
-    []
-  );
+  const set = useCallback((routeKey: string, options: Partial<NativeStackNavigationOptions>) => {
+    dispatch({ type: 'set', routeKey, options });
+  }, []);
 
-  const unregister = useCallback((routeKey: string, componentId: string) => {
-    dispatch({ type: 'unregister', routeKey, componentId });
+  const unset = useCallback((routeKey: string, options: Partial<NativeStackNavigationOptions>) => {
+    dispatch({ type: 'unset', routeKey, options });
   }, []);
 
   const contextValue = useMemo(
-    () => ({ setOptionsFor, unregister }) satisfies CompositionContextValue,
-    [setOptionsFor, unregister]
+    () => ({ set, unset }) satisfies CompositionContextValue,
+    [set, unset]
   );
   return { registry, contextValue };
 }
@@ -93,18 +86,13 @@ export function useCompositionOption(options: Partial<NativeStackNavigationOptio
     );
   }
 
-  const componentId = useId();
-
   const route = useRoute();
-  const { setOptionsFor, unregister } = context;
+  const { set, unset } = context;
 
   useSafeLayoutEffect(() => {
+    set(route.key, options);
     return () => {
-      unregister(route.key, componentId);
+      unset(route.key, options);
     };
-  }, [route.key, componentId, unregister]);
-
-  useSafeLayoutEffect(() => {
-    setOptionsFor(route.key, componentId, options);
-  }, [route.key, componentId, setOptionsFor, options]);
+  }, [route.key, set, unset, options]);
 }

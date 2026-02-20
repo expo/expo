@@ -5,12 +5,11 @@ export declare const CompositionContext: import("react").Context<CompositionCont
 type RegistryAction = {
     type: 'set';
     routeKey: string;
-    componentId: string;
     options: Partial<NativeStackNavigationOptions>;
 } | {
-    type: 'unregister';
+    type: 'unset';
     routeKey: string;
-    componentId: string;
+    options: Partial<NativeStackNavigationOptions>;
 };
 /** @internal */
 export declare function registryReducer(state: CompositionRegistry, action: RegistryAction): CompositionRegistry;
@@ -18,14 +17,14 @@ export declare function registryReducer(state: CompositionRegistry, action: Regi
  * Provides the composition registry to descendant composition components.
  *
  * Uses useReducer with immutable object updates for React Compiler compatibility.
- * Each setOptionsFor/unregister call produces a new object reference, which
- * the compiler can track as a reactive dependency.
+ * Each set/unset call produces a new object reference, which the compiler can
+ * track as a reactive dependency.
  */
 export declare function useCompositionRegistry(): {
     registry: CompositionRegistry;
     contextValue: {
-        setOptionsFor: (routeKey: string, componentId: string, options: Partial<NativeStackNavigationOptions>) => void;
-        unregister: (routeKey: string, componentId: string) => void;
+        set: (routeKey: string, options: Partial<NativeStackNavigationOptions>) => void;
+        unset: (routeKey: string, options: Partial<NativeStackNavigationOptions>) => void;
     };
 };
 /**
