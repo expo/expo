@@ -2,11 +2,6 @@
  * Suppress the dev-mode hydration warning caused by next/link normalizing
  * trailing slashes differently during SSR vs client hydration.
  * See: next.config.ts `trailingSlash: true` + next/link internal resolveHref.
- *
- * Two interception points are needed because Next.js dev overlay receives errors
- * through two independent parts:
- *   1. console.error  -> nextJsHandleConsoleError -> handleError -> overlay
- *   2. reportError()  -> window "error" event     -> handleError -> overlay
  */
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -25,7 +20,7 @@ if (isDev && typeof window !== 'undefined') {
     return clientHrefs.every((c, i) => strip(c) === strip(serverHrefs[i]));
   };
 
-  // Part 1: Wrap console.error. By the time _app.tsx runs, Next.js has already
+  // By the time _app.tsx runs, Next.js has already
   // replaced console.error with nextJsHandleConsoleError (in register()).
   // Suppressing here prevents that handler from calling handleError -> overlay.
   // React 19 splits hydration warnings across multiple console.error args
@@ -39,18 +34,4 @@ if (isDev && typeof window !== 'undefined') {
     }
     wrappedConsoleError.apply(console, args);
   };
-
-  // Part 2: Intercept the window "error" event dispatched by reportError().
-  // The overlay listens in bubble phase; capture phase always runs first.
-  window.addEventListener(
-    'error',
-    (event: ErrorEvent) => {
-      const msg: string = event.error?.message ?? '';
-      if (msg.includes('hydrated but some attributes')) {
-        event.stopImmediatePropagation();
-        event.preventDefault();
-      }
-    },
-    true
-  );
 }
