@@ -1,6 +1,6 @@
 {
   "name": "@expo/local-build-cache-provider",
-  "version": "55.0.4",
+  "version": "55.0.5",
   "description": "Local build cache provider for Expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -40,7 +40,7 @@
     "build"
   ],
   "dependencies": {
-    "@expo/config": "~55.0.6",
+    "@expo/config": "~55.0.7",
     "chalk": "^4.1.2"
   },
   "devDependencies": {

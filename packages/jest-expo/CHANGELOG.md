@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- Fix `expo-file-system` mock to target `expo-file-system/legacy` instead of replacing the entire module, and preserve prototype chains for native module class mocks. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))
-
 ### 💡 Others
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Fix `expo-file-system` mock to target `expo-file-system/legacy` instead of replacing the entire module, and preserve prototype chains for native module class mocks. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))
 
 ## 55.0.6 — 2026-02-03
 

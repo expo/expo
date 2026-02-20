@@ -21,7 +21,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 The [Android media format support documentation](https://developer.android.com/media/media3/exoplayer/supported-formats) covers formats supported when using Expo Player on Android. The [iOS audio and video format documentation](https://developer.apple.com/documentation/coreaudiotypes/audio-format-identifiers) lists supported media formats for Apple devices.
 
-Note that audio automatically stops if headphones/bluetooth audio devices are disconnected.
+Note that audio automatically stops if headphones/Bluetooth audio devices are disconnected.
 
 ## Installation
 
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-### Playing audio in background
+### Playing audio in the background
 
 Background audio playback allows your app to continue playing audio when it moves to the background or when the device screen locks.
 
@@ -280,12 +280,12 @@ export default function AudioPlayerScreen() {
 
 <PlatformTags platforms={['android']} />
 
-- > **Note**: On Android, you have to enable the lockscreen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Make sure to also appropriately [configure the config-plugin](#configuration-in-app-config)
+> **Note**: On Android, you have to enable the lock screen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Ensure to appropriately [configure the config plugin](#configuration-in-app-config).
 
-* A media notification appears in the notification drawer with playback controls
-* Audio continues playing indefinitely in the background
-* Users can control playback from the lock screen and notification
-* The foreground service keeps the playback alive during playback
+- A media notification appears in the notification drawer with playback controls
+- Audio continues playing indefinitely in the background
+- Users can control playback from the lock screen and notification
+- The foreground service keeps the playback alive during playback
 
 <PlatformTags platforms={['ios']} />
 
@@ -325,7 +325,7 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 </ConfigReactNative>
 
-### Recording audio in background
+### Recording audio in the background
 
 > **warning** Background recording can significantly impact battery life. Only enable it when necessary for your app's functionality.
 
@@ -352,13 +352,13 @@ To enable background recording, use the config plugin in your [app config](/work
 The above configuration automatically configures the required native settings:
 
 - <PlatformTags platforms={['android']} /> Adds `FOREGROUND_SERVICE`,
-  `FOREGROUND_SERVICE_MICROPHONE` and `POST_NOTIFICATIONS` permissions. Also declares an audio
-  recording foreground service in app's `AndroidManifest.xml`.
+  `FOREGROUND_SERVICE_MICROPHONE`, and `POST_NOTIFICATIONS` permissions. Also declares an audio
+  recording foreground service in app's **AndroidManifest.xml**.
 - <PlatformTags platforms={['ios']} /> Adds the `audio` `UIBackgroundMode` capability
 
 <ConfigReactNative>
 
-If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure the following permissions in your native projects:
 
 - For Android, add to **android/app/src/main/AndroidManifest.xml**:
 
@@ -408,8 +408,8 @@ On iOS, background recording continues seamlessly when the app is in the backgro
 
 ### Using the AudioPlayer directly
 
-In most cases, the [`useAudioPlayer`](#useaudioplayersource-options) hook should be used to create a `AudioPlayer` instance. It manages the player's lifecycle and ensures that it is properly disposed of when the component is unmounted. However, in some advanced use cases, it might be necessary to create a `AudioPlayer` that does not get automatically destroyed when the component is unmounted.
-In those cases, the `AudioPlayer` can be created using the [`createAudioPlayer`](#audiocreateaudioplayersource-options) function. You need to be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](../sdk/expo/#release) method when the player is no longer needed. If not handled properly, this approach may lead to memory leaks.
+In most cases, use the [`useAudioPlayer`](#useaudioplayersource-options) hook to create an `AudioPlayer` instance. It manages the player's lifecycle and ensures proper disposal when the component unmounts. However, in some advanced use cases, you may need to create an `AudioPlayer` that persists beyond the component's lifecycle.
+In those cases, use the [`createAudioPlayer`](#audiocreateaudioplayersource-options) function. You need to be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](../sdk/expo/#release) method when the player is no longer needed. If not handled properly, this approach may lead to memory leaks.
 
 ```tsx
 import { createAudioPlayer } from 'expo-audio';
@@ -419,7 +419,7 @@ const player = createAudioPlayer(audioSource);
 ### Notes on web usage
 
 - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012).
-- MediaRecorder encoding options and other configurations are inconsistent across browsers, utilizing a Polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder) or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
+- MediaRecorder encoding options and other configurations are inconsistent across browsers. Using a polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder) or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
 - Web browsers require sites to be served securely for them to listen to a mic. See [MediaDevices `getUserMedia()` security](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#security) for more details.
 
 ## API

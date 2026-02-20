@@ -1,10 +1,7 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.ui.convertibles
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.unit.dp
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either

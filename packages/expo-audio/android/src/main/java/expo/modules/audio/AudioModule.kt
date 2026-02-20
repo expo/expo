@@ -224,21 +224,24 @@ class AudioModule : Module() {
 
     AsyncFunction("preload") Coroutine { source: AudioSource, _: Double ->
       val uri = source.uri ?: return@Coroutine
-      val upstreamFactory = httpDataSourceFactory(source.headers)
-      AudioPreloadCache.preload(context, uri, upstreamFactory)
+      val factory = when (uri.toUri().scheme) {
+        "http", "https" -> httpDataSourceFactory(source.headers)
+        else -> DefaultDataSource.Factory(context)
+      }
+      AudioPreloadManager.preload(uri, factory)
     }
 
     AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
       val uri = source.uri ?: return@Coroutine
-      AudioPreloadCache.clearSource(context, uri)
+      AudioPreloadManager.clearSource(uri)
     }
 
     AsyncFunction("clearAllPreloadedSources") Coroutine { ->
-      AudioPreloadCache.clearAll(context)
+      AudioPreloadManager.clearAll()
     }
 
     AsyncFunction("getPreloadedSources") {
-      AudioPreloadCache.getPreloadedSources()
+      AudioPreloadManager.getPreloadedSources()
     }
 
     OnActivityEntersBackground {
@@ -299,7 +302,7 @@ class AudioModule : Module() {
         recorders.values.forEach {
           it.stopRecording()
         }
-        AudioPreloadCache.release()
+        AudioPreloadManager.clearAll()
       }
     }
 
@@ -785,11 +788,14 @@ class AudioModule : Module() {
       else -> MediaItem.fromUri(uri)
     }
 
-    val factory = when (uri.scheme) {
-      "http", "https" -> {
-        AudioPreloadCache.createCacheDataSourceFactory(context, httpDataSourceFactory(source.headers))
+    val preloadedBytes = AudioPreloadManager.get(uriString)
+    val factory: DataSource.Factory = if (preloadedBytes != null) {
+      InMemoryDataSourceFactory(preloadedBytes)
+    } else {
+      when (uri.scheme) {
+        "http", "https" -> httpDataSourceFactory(source.headers)
+        else -> DefaultDataSource.Factory(context)
       }
-      else -> DefaultDataSource.Factory(context)
     }
     return buildMediaSourceFactory(factory, mediaItem)
   }

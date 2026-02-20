@@ -1,5 +1,3 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.ui
 
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
@@ -12,7 +10,6 @@ import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.core.view.size
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either

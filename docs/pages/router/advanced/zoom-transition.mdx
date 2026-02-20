@@ -335,6 +335,14 @@ Both `Link.AppleZoom` and `Link.AppleZoomTarget` only accept a single child comp
 
 </Collapsible>
 
+<Collapsible summary="Noticeable delay when opening or dismissing screens">
+
+You may experience a noticeable delay (approximately 1 second) when navigating to or dismissing screens that use zoom transitions, especially when performing rapid open/close/open gestures. This latency is higher than what you would see with native iOS apps using the same zoom transition API.
+
+This is an upstream issue in `react-native-screens` related to how it handles transitions on iOS. The Expo team is actively working with the `react-native-screens` team to improve this. See this [GitHub Issue](https://github.com/expo/expo/issues/42797) for updates and more details.
+
+</Collapsible>
+
 <Collapsible summary="Supported only within router's Stack navigator">
 
 The zoom transition feature is only supported when using the router's built-in Stack navigator.

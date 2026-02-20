@@ -1,10 +1,7 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.kotlin.jni.types
 
 import com.facebook.react.bridge.DynamicFromObject
 import com.google.common.truth.Truth
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.jni.SharedString
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
@@ -15,7 +12,6 @@ import expo.modules.kotlin.types.convert
 import org.junit.Test
 import java.net.URL
 
-@EitherType
 class EitherTypeConversionTest {
   @Test
   fun either_should_be_convertible() = conversionTest(

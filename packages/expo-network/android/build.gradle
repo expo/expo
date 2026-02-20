@@ -4,12 +4,12 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '55.0.6'
+version = '55.0.7'
 
 android {
   namespace "expo.modules.network"
   defaultConfig {
     versionCode 11
-    versionName '55.0.6'
+    versionName '55.0.7'
   }
 }

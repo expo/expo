@@ -39,8 +39,9 @@ const native_stack_1 = require("@react-navigation/native-stack");
 const expo_glass_effect_1 = require("expo-glass-effect");
 const React = __importStar(require("react"));
 const descriptors_context_1 = require("./descriptors-context");
-const LinkPreviewContext_1 = require("../../link/preview/LinkPreviewContext");
+const usePreviewTransition_1 = require("./usePreviewTransition");
 const navigationParams_1 = require("../../navigationParams");
+const GLASS = (0, expo_glass_effect_1.isLiquidGlassAvailable)();
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         id,
@@ -79,92 +80,38 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
         });
     }), [navigation, state.index, state.key]);
     // START FORK
-    const { openPreviewKey, setOpenPreviewKey } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
-    // This is used to track the preview screen that is currently transitioning on the native side
-    const [previewTransitioningScreenId, setPreviewTransitioningScreenId] = React.useState();
-    React.useEffect(() => {
-        if (previewTransitioningScreenId) {
-            // This means that the state was updated after the preview transition
-            if (state.routes.some((route) => route.key === previewTransitioningScreenId)) {
-                // We no longer need to track the preview transitioning screen
-                setPreviewTransitioningScreenId(undefined);
-            }
-        }
-    }, [state, previewTransitioningScreenId]);
-    const navigationWrapper = React.useMemo(() => {
-        if (openPreviewKey) {
-            const emit = (...args) => {
-                const { target, type, data } = args[0];
-                if (target === openPreviewKey && data && 'closing' in data && !data.closing) {
-                    // onWillAppear
-                    if (type === 'transitionStart') {
-                        // The screen from preview will appear, so we need to start tracking it
-                        setPreviewTransitioningScreenId(openPreviewKey);
-                    }
-                    // onAppear
-                    else if (type === 'transitionEnd') {
-                        // The screen from preview appeared.
-                        // We can now restore the stack animation
-                        setOpenPreviewKey(undefined);
-                    }
-                }
-                return navigation.emit(...args);
-            };
-            return {
-                ...navigation,
-                emit,
-            };
-        }
-        return navigation;
-    }, [navigation, openPreviewKey, setOpenPreviewKey]);
-    const { computedState, computedDescriptors } = React.useMemo(() => {
-        // The preview screen was pushed on the native side, but react-navigation state was not updated yet
-        if (previewTransitioningScreenId) {
-            const preloadedRoute = state.preloadedRoutes.find((route) => route.key === previewTransitioningScreenId);
-            if (preloadedRoute) {
-                const newState = {
-                    ...state,
-                    // On native side the screen is already pushed, so we need to update the state
-                    preloadedRoutes: state.preloadedRoutes.filter((route) => route.key !== previewTransitioningScreenId),
-                    routes: [...state.routes, preloadedRoute],
-                    index: state.index + 1,
-                };
-                const newDescriptors = previewTransitioningScreenId in descriptors
-                    ? descriptors
-                    : {
-                        ...descriptors,
-                        // We need to add the descriptor. For react-navigation this is still preloaded screen
-                        // Replicating the logic from https://github.com/react-navigation/react-navigation/blob/eaf1100ac7d99cb93ba11a999549dd0752809a78/packages/native-stack/src/views/NativeStackView.native.tsx#L489
-                        [previewTransitioningScreenId]: describe(preloadedRoute, true),
-                    };
-                return {
-                    computedState: newState,
-                    computedDescriptors: newDescriptors,
-                };
-            }
-        }
-        // Map internal gesture option to React Navigation's gestureEnabled option
-        // This allows Expo Router to override gesture behavior without affecting user settings
-        const GLASS = (0, expo_glass_effect_1.isLiquidGlassAvailable)();
-        Object.keys(descriptors).forEach((key) => {
-            const options = descriptors[key].options;
+    const { computedState, computedDescriptors, navigationWrapper } = (0, usePreviewTransition_1.usePreviewTransition)(state, navigation, descriptors, describe);
+    // Map internal gesture option to React Navigation's gestureEnabled option
+    // This allows Expo Router to override gesture behavior without affecting user settings
+    const finalDescriptors = React.useMemo(() => {
+        let needsNewMap = false;
+        const result = {};
+        for (const key of Object.keys(computedDescriptors)) {
+            const descriptor = computedDescriptors[key];
+            const options = descriptor.options;
             const internalGestureEnabled = options?.[navigationParams_1.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
-            if (internalGestureEnabled !== undefined) {
-                options.gestureEnabled = internalGestureEnabled;
+            const needsGestureFix = internalGestureEnabled !== undefined;
+            const needsGlassFix = GLASS && options?.presentation === 'formSheet';
+            if (needsGestureFix || needsGlassFix) {
+                needsNewMap = true;
+                const newOptions = { ...options };
+                if (needsGestureFix) {
+                    newOptions.gestureEnabled = internalGestureEnabled;
+                }
+                if (needsGlassFix) {
+                    newOptions.headerTransparent ??= true;
+                    newOptions.contentStyle ??= { backgroundColor: 'transparent' };
+                    newOptions.headerShadowVisible ??= false;
+                    newOptions.headerLargeTitleShadowVisible ??= false;
+                }
+                result[key] = { ...descriptor, options: newOptions };
             }
-            // Apply transparent defaults for formSheet presentation on iOS 26 with liquid glass
-            if (GLASS && options?.presentation === 'formSheet') {
-                options.headerTransparent ??= true;
-                options.contentStyle ??= { backgroundColor: 'transparent' };
-                options.headerShadowVisible ??= false;
-                options.headerLargeTitleShadowVisible ??= false;
+            else {
+                result[key] = descriptor;
             }
-        });
-        return {
-            computedState: state,
-            computedDescriptors: descriptors,
-        };
-    }, [state, previewTransitioningScreenId, describe, descriptors]);
+        }
+        return needsNewMap ? result : computedDescriptors;
+    }, [computedDescriptors]);
     // END FORK
     return (
     // START FORK
@@ -173,7 +120,7 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
       <NavigationContent>
         <native_stack_1.NativeStackView {...rest} 
     // START FORK
-    state={computedState} navigation={navigationWrapper} descriptors={computedDescriptors} 
+    state={computedState} navigation={navigationWrapper} descriptors={finalDescriptors} 
     // state={state}
     // navigation={navigation}
     // descriptors={descriptors}

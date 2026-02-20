@@ -8,7 +8,6 @@ import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -27,7 +26,6 @@ class FileSystemModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
   @RequiresApi(Build.VERSION_CODES.O)
-  @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
 

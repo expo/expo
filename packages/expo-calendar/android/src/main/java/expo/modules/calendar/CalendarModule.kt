@@ -35,7 +35,6 @@ import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -44,7 +43,6 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.types.Either
 import java.text.ParseException
 
-@OptIn(EitherType::class)
 class CalendarModule : Module() {
   private val reactContext
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()

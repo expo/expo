@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.7 — 2026-02-20
+
+### 🐛 Bug fixes
+
 - [Web] Fix potential `nan` duration. ([#43268](https://github.com/expo/expo/pull/43268) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- [android] Make in-memory preload cache. ([#43293](https://github.com/expo/expo/pull/43293) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.6 — 2026-02-16
 
