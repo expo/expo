@@ -154,7 +154,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build-type: [debug, release]
+        build-type: [release]
+        # TODO(pmleczek): Add dev menu tests for iOS and Android
+        # build-type: [debug, release]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
