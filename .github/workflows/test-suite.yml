@@ -70,7 +70,7 @@ jobs:
             "apps/test-suite/**",
             "packages/**",
             "!packages/@expo/cli/**",
-            "!packages/{create-expo,create-expo-nightly,create-expo-module}/**""
+            "!packages/{create-expo,create-expo-nightly,create-expo-module}/**",
             yarn.lock,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
