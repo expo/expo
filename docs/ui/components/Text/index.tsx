@@ -96,7 +96,6 @@ export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferre
 
   return (
     <LinkBase
-      skipNextLink={typeof props.href === 'string' && props.href.startsWith('/')}
       className={mergeClasses(
         'cursor-pointer decoration-0',
         'hocus:opacity-80',

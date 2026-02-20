@@ -7,7 +7,6 @@ export function HomeButton({ children, style, href, className, ...rest }: Button
     <Button
       {...rest}
       data-md="link"
-      skipNextLink={!isExternal}
       href={href}
       openInNewTab={isExternal}
       className={mergeClasses('absolute bottom-7 z-10 px-3.5', 'hocus:opacity-80', className)}>

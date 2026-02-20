@@ -54,7 +54,6 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
 
   return (
     <LinkBase
-      skipNextLink
       href={info.href}
       ref={ref}
       className={mergeClasses(

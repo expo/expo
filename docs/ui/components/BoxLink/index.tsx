@@ -18,7 +18,6 @@ export function BoxLink({ title, description, href, testID, Icon, imageUrl }: Bo
   const ArrowIcon = isExternal ? ArrowUpRightIcon : ArrowRightIcon;
   return (
     <LinkBase
-      skipNextLink={!isExternal}
       href={href}
       // Used by scripts/generate-markdown-pages-utils.js to extract card link title/description
       data-md="card-link"

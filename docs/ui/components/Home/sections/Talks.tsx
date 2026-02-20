@@ -20,7 +20,6 @@ export function Talks() {
         />
         <Button
           theme="secondary"
-          skipNextLink
           className="ml-auto"
           rightSlot={<ArrowRightIcon />}
           href="/additional-resources/#talks">

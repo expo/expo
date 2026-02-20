@@ -31,7 +31,6 @@ export const SidebarSingleEntry = ({
     <Tooltip.Root delayDuration={500} disableHoverableContent>
       <Tooltip.Trigger asChild>
         <LinkBase
-          skipNextLink
           href={href}
           className={mergeClasses(
             'flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm !leading-[100%] text-secondary',
