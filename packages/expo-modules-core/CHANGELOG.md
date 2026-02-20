@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Fixed view updates for Jetpack Compose integration. ([#42732](https://github.com/expo/expo/pull/42732) by [@kudo](https://github.com/kudo))
-- [Android] Promoted `Either` type stable.
+- [Android] Promoted `Either` type stable. ([#43267](https://github.com/expo/expo/pull/43267) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.9 — 2026-02-16
 
