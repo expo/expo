@@ -458,7 +458,8 @@ async function askForSubstitutionDataAsync(
   };
 
   // Get values from prompts
-  const promptedValues = filteredPrompts.length > 0 ? await prompts(filteredPrompts, { onCancel }) : {};
+  const promptedValues =
+    filteredPrompts.length > 0 ? await prompts(filteredPrompts, { onCancel }) : {};
 
   // Merge CLI-provided values with prompted values
   const name = options.name ?? promptedValues.name ?? slugToModuleName(slug);
@@ -479,11 +480,12 @@ async function askForSubstitutionDataAsync(
 
   const description = options.description ?? promptedValues.description ?? 'My new module';
   const authorName = options.authorName ?? promptedValues.authorName ?? (await findMyName()) ?? '';
-  const authorEmail = options.authorEmail ?? promptedValues.authorEmail ?? (await findGitHubEmail()) ?? '';
+  const authorEmail =
+    options.authorEmail ?? promptedValues.authorEmail ?? (await findGitHubEmail()) ?? '';
   const authorUrl =
     options.authorUrl ??
     promptedValues.authorUrl ??
-    (authorEmail ? (await findGitHubUserFromEmail(authorEmail)) ?? '' : '');
+    (authorEmail ? ((await findGitHubUserFromEmail(authorEmail)) ?? '') : '');
   const repo = options.repo ?? promptedValues.repo ?? (await guessRepoUrl(authorUrl, slug)) ?? '';
 
   return {
@@ -558,7 +560,7 @@ async function getSubstitutionDataFromOptions(
   const authorName = options.authorName ?? (await findMyName()) ?? '';
   const authorEmail = options.authorEmail ?? (await findGitHubEmail()) ?? '';
   const authorUrl =
-    options.authorUrl ?? (authorEmail ? (await findGitHubUserFromEmail(authorEmail)) ?? '' : '');
+    options.authorUrl ?? (authorEmail ? ((await findGitHubUserFromEmail(authorEmail)) ?? '') : '');
   const repo = options.repo ?? (await guessRepoUrl(authorUrl, slug)) ?? '';
 
   debug(
