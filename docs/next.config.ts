@@ -114,6 +114,7 @@ const nextConfig: NextConfig = {
 
     // Fix inline or browser MDX usage
     config.resolve.fallback = { fs: false, path: 'path-browserify' };
+
     config.output.environment = { ...config.output.environment, asyncFunction: true };
     config.experiments = { ...config.experiments, topLevelAwait: true };
 
