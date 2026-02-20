@@ -16,3 +16,8 @@ __rsc_tests__
 /android/src/androidTest/
 /android/src/test/
 /ios/Tests
+
+.eslintrc.js
+eslint.config.js
+plugin/jest.config.js
+plugin/tsconfig.tsbuildinfo
