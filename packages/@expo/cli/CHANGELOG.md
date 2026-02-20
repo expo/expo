@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Implement exponential retry for transient `devicectl` disconnects and fix null error logs. ([#43326](https://github.com/expo/expo/pull/43326) by [@balenamiaa](https://github.com/balenamiaa))
+
 ### 💡 Others
 
 ## 55.0.10 — 2026-02-20
