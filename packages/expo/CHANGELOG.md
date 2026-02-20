@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Remove legacy autolinking integration.
+
 ## 55.0.0-preview.11 — 2026-02-16
 
 _This version does not introduce any user-facing changes._
