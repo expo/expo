@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Refactor HTTP and Express adapters to adhere to stricter cancellation semantics ([#43305](https://github.com/expo/expo/pull/43305) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-16
