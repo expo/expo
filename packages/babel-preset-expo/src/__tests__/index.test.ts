@@ -140,7 +140,7 @@ it(`compiles sample file with Metro targeting Hermes`, () => {
     babelrc: false,
     presets: [preset],
     sourceMaps: true,
-    caller: getCaller({ name: 'metro', engine: 'hermes' }),
+    caller: getCaller({ name: 'metro', engine: 'hermes', isHermesV1: true }),
   };
   const fileName = path.resolve(__dirname, 'samples/App.js');
 
