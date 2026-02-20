@@ -248,6 +248,8 @@ export function setStyle(style: NavigationBarStyle) {
 /**
  * React hook that statefully updates with the visibility of the system navigation bar.
  *
+ * @returns Visibility of the navigation bar, `null` during async initialization.
+ *
  * @example
  * ```ts
  * function App() {
@@ -255,7 +257,6 @@ export function setStyle(style: NavigationBarStyle) {
  *   // React Component...
  * }
  * ```
- * @returns Visibility of the navigation bar, `null` during async initialization.
  */
 export function useVisibility(): NavigationBarVisibility | null {
   const [visibility, setVisible] = useState<NavigationBarVisibility | null>(null);
