@@ -40,14 +40,6 @@ export class DevServerManagerActions {
         const nativeRuntimeUrl = devServer.getNativeRuntimeUrl()!;
         const interstitialPageUrl = devServer.getRedirectUrl();
 
-        if (interstitialPageUrl) {
-          Log.log(
-            printItem(
-              chalk`Choose an app to open your project at {underline ${interstitialPageUrl}}`
-            )
-          );
-        }
-
         // Print the URL to stdout for tests
         if (env.__EXPO_E2E_TEST) {
           console.info(
