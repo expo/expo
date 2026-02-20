@@ -55,21 +55,9 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
 <ConfigPluginProperties
   properties={[
     {
-      name: 'backgroundColor',
-      description:
-        'Sets the navigation bar background color. Accepts color string supported by React Native. For example, `"#0f172a"`.',
-      default: 'undefined',
-    },
-    {
       name: 'barStyle',
       description:
         'Controls whether Android renders light or dark navigation bar buttons. Accepts `light` and `dark` as values.',
-      default: 'undefined',
-    },
-    {
-      name: 'borderColor',
-      description:
-        'Sets the divider color above the navigation bar. Automatically converts the color string to a 32-bit integer.',
       default: 'undefined',
     },
     {
@@ -79,22 +67,39 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
       default: 'undefined',
     },
     {
+      name: 'backgroundColor',
+      description:
+        'Sets the navigation bar background color. Accepts color string supported by React Native. For example, `"#0f172a"`.',
+      default: 'undefined',
+      deprecated: true,
+    },
+    {
+      name: 'borderColor',
+      description:
+        'Sets the divider color above the navigation bar. Automatically converts the color string to a 32-bit integer.',
+      default: 'undefined',
+      deprecated: true,
+    },
+    {
       name: 'behavior',
       description:
         'Controls how hidden system bars behave when revealed. Accepts `overlay-swipe`, `inset-swipe`, or `inset-touch` as values.',
       default: 'undefined',
+      deprecated: true,
     },
     {
       name: 'position',
       description:
         'Sets whether your layout is inset for the navigation bar. Accepts `relative` to keep the navigation bar outside the content and `absolute` to draw the content edge-to-edge under the bar.',
       default: 'undefined',
+      deprecated: true,
     },
     {
       name: 'legacyVisible',
       description:
         'Legacy equivalent of `androidNavigationBar.visible`. Accepts `leanback`, `immersive`, or `sticky-immersive` as values.',
       default: 'undefined',
+      deprecated: true,
     },
   ]}
 />
