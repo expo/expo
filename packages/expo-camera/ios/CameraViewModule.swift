@@ -31,10 +31,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
 
     Property("isModernBarcodeScannerAvailable") { () -> Bool in
-      if #available(iOS 16.0, *) {
-        return true
-      }
-      return false
+      return true
     }
 
     Property("toggleRecordingAsyncAvailable") { () -> Bool in
@@ -334,23 +331,19 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
 
     AsyncFunction("launchScanner") { (options: VisionScannerOptions?) in
-      if #available(iOS 16.0, *) {
-        try await MainActor.run {
-          guard DataScannerViewController.isSupported, DataScannerViewController.isAvailable else {
-            throw CameraScannerUnavailableException()
-          }
-          let delegate = VisionScannerDelegate(handler: self)
-          scannerContext = ScannerContext(delegate: delegate)
-          launchScanner(with: options)
+      try await MainActor.run {
+        guard DataScannerViewController.isSupported, DataScannerViewController.isAvailable else {
+          throw CameraScannerUnavailableException()
         }
+        let delegate = VisionScannerDelegate(handler: self)
+        scannerContext = ScannerContext(delegate: delegate)
+        launchScanner(with: options)
       }
     }
 
     AsyncFunction("dismissScanner") {
-      if #available(iOS 16.0, *) {
-        await MainActor.run {
-          dismissScanner()
-        }
+      await MainActor.run {
+        dismissScanner()
       }
     }
 
@@ -395,7 +388,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
   }
 
-  @available(iOS 16.0, *)
   @MainActor
   private func launchScanner(with options: VisionScannerOptions?) {
     let symbologies = options?.toSymbology() ?? []
@@ -416,7 +408,6 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
   }
 
-  @available(iOS 16.0, *)
   @MainActor
   private func dismissScanner() {
     guard let controller = scannerContext?.controller as? DataScannerViewController else {

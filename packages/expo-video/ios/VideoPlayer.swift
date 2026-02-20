@@ -31,9 +31,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         let payload = PlaybackRateChangedEventPayload(playbackRate: playbackRate, oldPlaybackRate: oldValue)
         safeEmit(event: "playbackRateChange", payload: payload)
       }
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        ref.defaultRate = playbackRate
-      }
+      ref.defaultRate = playbackRate
       ref.rate = playbackRate
     }
   }
@@ -315,15 +313,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      if player.defaultRate != playbackRate {
-        // User changed the playback speed in the native controls. Update the desiredRate variable
-        playbackRate = player.defaultRate
-      }
-    } else if newRate != 0 && newRate != playbackRate {
-      // On iOS < 16 play() method always returns the rate to 1.0, we have to keep resetting it back to desiredRate
-      // iOS < 16 uses an older player UI, so we don't have to worry about changes to the rate that come from the player UI
-      ref.rate = playbackRate
+    if player.defaultRate != playbackRate {
+      // User changed the playback speed in the native controls. Update the desiredRate variable
+      playbackRate = player.defaultRate
     }
   }
 

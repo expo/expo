@@ -58,9 +58,7 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
   // MARK: - Public methods
 
   func reload() {
-    if #available(iOS 16.4, *) {
-      webView.isInspectable = webviewDebuggingEnabled
-    }
+    webView.isInspectable = webviewDebuggingEnabled
 
     if needsResetupScripts {
       resetupScripts()

@@ -80,9 +80,7 @@ class SymbolView: ExpoView {
 
     switch symbolType {
     case .monochrome:
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        config = config.applying(UIImage.SymbolConfiguration.preferringMonochrome())
-      }
+      config = config.applying(UIImage.SymbolConfiguration.preferringMonochrome())
     case .hierarchical:
       config = config.applying(UIImage.SymbolConfiguration(hierarchicalColor: tint ?? .systemBlue))
     case .palette:

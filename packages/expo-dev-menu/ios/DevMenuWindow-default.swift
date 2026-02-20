@@ -67,23 +67,17 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
 
     #if os(tvOS)
     #else
-    if #available(iOS 15.0, *) {
-      if let sheet = devMenuViewController.sheetPresentationController {
-        if #available(iOS 16.0, *) {
-          sheet.detents = [
-            .custom(resolver: { context in
-              return context.maximumDetentValue * 0.6
-            }),
-            .large()
-          ]
-        } else {
-          sheet.detents = [.medium(), .large()]
-        }
+    if let sheet = devMenuViewController.sheetPresentationController {
+      sheet.detents = [
+        .custom(resolver: { context in
+          return context.maximumDetentValue * 0.6
+        }),
+        .large()
+      ]
 
-        sheet.largestUndimmedDetentIdentifier = .large
-        sheet.prefersEdgeAttachedInCompactHeight = true
-        sheet.delegate = self
-      }
+      sheet.largestUndimmedDetentIdentifier = .large
+      sheet.prefersEdgeAttachedInCompactHeight = true
+      sheet.delegate = self
     }
     #endif
 

@@ -43,11 +43,9 @@ public class CellularModule: Module {
     case CTRadioAccessTechnologyLTE:
       return .cellular4G
     default:
-      if #available(iOS 14.1, *) {
-        if radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
-            radioAccessTechnology == CTRadioAccessTechnologyNR {
-          return .cellular5G
-        }
+      if radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
+          radioAccessTechnology == CTRadioAccessTechnologyNR {
+        return .cellular5G
       }
       return .unknown
     }

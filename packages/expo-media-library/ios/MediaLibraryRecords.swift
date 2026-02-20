@@ -41,7 +41,7 @@ enum MediaSubtype: String, Enumerable {
   case videoCinematic
 
   static func stringify(_ mediaSubtypes: PHAssetMediaSubtype) -> [MediaSubtype.RawValue] {
-    var mapping: [(PHAssetMediaSubtype, MediaSubtype)] = [
+    let mapping: [(PHAssetMediaSubtype, MediaSubtype)] = [
       (.photoDepthEffect, .depthEffect),
       (.photoHDR, .hdr),
       (.videoHighFrameRate, .highFrameRate),
@@ -50,11 +50,9 @@ enum MediaSubtype: String, Enumerable {
       (.photoScreenshot, .screenshot),
       (.videoStreamed, .stream),
       (.videoTimelapse, .timelapse),
-      (.videoCinematic, .videoCinematic)
+      (.videoCinematic, .videoCinematic),
+      (.spatialMedia, .spatialMedia)
     ]
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      mapping.append((.spatialMedia, .spatialMedia))
-    }
 
     return mapping.compactMap { phSubtype, mediaSubtype in
       mediaSubtypes.contains(phSubtype) ? mediaSubtype.rawValue : nil
@@ -71,12 +69,7 @@ enum MediaSubtype: String, Enumerable {
     case .screenshot: .photoScreenshot
     case .stream: .videoStreamed
     case .timelapse: .videoTimelapse
-    case .spatialMedia:
-      if #available(iOS 16, tvOS 16, *) {
-        .spatialMedia
-      } else {
-        []
-      }
+    case .spatialMedia: .spatialMedia
     case .videoCinematic: .videoCinematic
     }
   }

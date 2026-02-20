@@ -131,15 +131,12 @@ public class LocalizationModule: Module {
   }
 
   static func getMeasurementSystemForLocale(_ locale: Locale) -> String {
-    if #available(iOS 16, tvOS 16, *) {
-      let measurementSystems = [
-        Locale.MeasurementSystem.us: "us",
-        Locale.MeasurementSystem.uk: "uk",
-        Locale.MeasurementSystem.metric: "metric"
-      ]
-      return measurementSystems[locale.measurementSystem] ?? "metric"
-    }
-    return locale.usesMetricSystem ? "metric" : "us"
+    let measurementSystems = [
+      Locale.MeasurementSystem.us: "us",
+      Locale.MeasurementSystem.uk: "uk",
+      Locale.MeasurementSystem.metric: "metric"
+    ]
+    return measurementSystems[locale.measurementSystem] ?? "metric"
   }
 
   static func getLocales() -> [[String: Any?]] {
@@ -149,31 +146,13 @@ public class LocalizationModule: Module {
       .map { languageTag -> [String: Any?] in
         let languageLocale = Locale.init(identifier: languageTag)
 
-        if #available(iOS 16, tvOS 16, *) {
-          return [
-            "languageTag": languageTag,
-            "languageCode": languageLocale.language.languageCode?.identifier,
-            "languageScriptCode": languageLocale.language.script?.identifier,
-            "languageRegionCode": languageLocale.region?.identifier,
-            "regionCode": userSettingsLocale.region?.identifier,
-            "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
-            "decimalSeparator": userSettingsLocale.decimalSeparator,
-            "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
-            "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-            "currencyCode": userSettingsLocale.currencyCode,
-            "currencySymbol": userSettingsLocale.currencySymbol,
-            "languageCurrencyCode": languageLocale.currencyCode,
-            "languageCurrencySymbol": languageLocale.currencySymbol,
-            "temperatureUnit": getTemperatureUnit()
-          ]
-        }
         return [
           "languageTag": languageTag,
-          "languageCode": languageLocale.languageCode,
-          "languageScriptCode": languageLocale.scriptCode,
-          "languageRegionCode": languageLocale.regionCode,
-          "regionCode": userSettingsLocale.regionCode,
-          "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
+          "languageCode": languageLocale.language.languageCode?.identifier,
+          "languageScriptCode": languageLocale.language.script?.identifier,
+          "languageRegionCode": languageLocale.region?.identifier,
+          "regionCode": userSettingsLocale.region?.identifier,
+          "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
           "decimalSeparator": userSettingsLocale.decimalSeparator,
           "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
           "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),

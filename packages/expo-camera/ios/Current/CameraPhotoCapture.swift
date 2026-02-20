@@ -82,9 +82,7 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
         photoSettings.flashMode = requestedFlashMode
       }
 
-      if #available(iOS 16.0, *) {
-        photoSettings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
-      }
+      photoSettings.maxPhotoDimensions = photoOutput.maxPhotoDimensions
 
       if !photoSettings.availablePreviewPhotoPixelFormatTypes.isEmpty,
       let previewFormat = photoSettings.__availablePreviewPhotoPixelFormatTypes.first {

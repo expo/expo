@@ -102,9 +102,6 @@ internal func copyPHAsset(fromUrl: URL, toUrl: URL, with resourceManager: PHAsse
 }
 
 internal func isPhotoLibraryStatusAuthorized() -> Bool {
-  if #available(iOS 14, tvOS 14, *) {
-    let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-    return status == .authorized || status == .limited
-  }
-  return PHPhotoLibrary.authorizationStatus() == .authorized
+  let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+  return status == .authorized || status == .limited
 }

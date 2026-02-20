@@ -5,7 +5,6 @@ protocol ScannerResultHandler {
   func onItemScanned(result: [String: Any])
 }
 
-@available(iOS 16.0, *)
 class VisionScannerDelegate: NSObject, DataScannerViewControllerDelegate {
   private let handler: ScannerResultHandler
 

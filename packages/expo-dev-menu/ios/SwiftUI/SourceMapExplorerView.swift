@@ -473,11 +473,7 @@ private struct ScrollContentBackgroundModifier: ViewModifier {
     #if os(tvOS)
     content
     #else
-    if #available(iOS 16.0, macOS 13.0, *) {
-      content.scrollContentBackground(.hidden)
-    } else {
-      content
-    }
+    content.scrollContentBackground(.hidden)
     #endif
   }
 }

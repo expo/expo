@@ -148,22 +148,9 @@ public class DocumentPickerModule: Module, PickingResultHandler {
   }
 
   private func getMimeType(from pathExtension: String) -> String? {
-    if #available(iOS 14, *) {
-      return UTType(filenameExtension: pathExtension)?.preferredMIMEType
-    } else {
-      if let uti = UTTypeCreatePreferredIdentifierForTag(
-        kUTTagClassFilenameExtension,
-        pathExtension as NSString, nil
-      )?.takeRetainedValue() {
-        if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
-          return mimetype as String
-        }
-      }
-      return nil
-    }
+    return UTType(filenameExtension: pathExtension)?.preferredMIMEType
   }
 
-  @available(iOS 14.0, *)
   private func toUTType(mimeType: String) -> UTType? {
     switch mimeType {
     case "*/*":
@@ -181,47 +168,11 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
   }
 
-  private func toUTI(mimeType: String) -> String {
-    var uti: CFString
-
-    switch mimeType {
-    case "*/*":
-      uti = kUTTypeItem
-    case "image/*":
-      uti = kUTTypeImage
-    case "video/*":
-      uti = kUTTypeVideo
-    case "audio/*":
-      uti = kUTTypeAudio
-    case "text/*":
-      uti = kUTTypeText
-    default:
-      if let ref = UTTypeCreatePreferredIdentifierForTag(
-        kUTTagClassMIMEType,
-        mimeType as CFString,
-        nil
-      )?.takeRetainedValue() {
-        uti = ref
-      } else {
-        uti = kUTTypeItem
-      }
-    }
-    return uti as String
-  }
-
   private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
-    if #available(iOS 14.0, *) {
-      let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
-      return UIDocumentPickerViewController(
-        forOpeningContentTypes: utTypes,
-        asCopy: true
-      )
-    } else {
-      let utiTypes = options.type.map { toUTI(mimeType: $0) }
-      return UIDocumentPickerViewController(
-        documentTypes: utiTypes,
-        in: .import
-      )
-    }
+    let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
+    return UIDocumentPickerViewController(
+      forOpeningContentTypes: utTypes,
+      asCopy: true
+    )
   }
 }

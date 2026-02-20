@@ -38,10 +38,8 @@ struct ConvertiblesTests {
       let urlString = "https://expo.dev/?\(query)"
       let url = try URL.convert(from: urlString, appContext: appContext)
 
-      if #available(iOS 16.0, *) {
-        #expect(url.query(percentEncoded: true) == "param=%F0%9F%A5%93")
-        #expect(url.query(percentEncoded: false) == query)
-      }
+      #expect(url.query(percentEncoded: true) == "param=%F0%9F%A5%93")
+      #expect(url.query(percentEncoded: false) == query)
       #expect(url.query == "param=%F0%9F%A5%93")
       #expect(url.absoluteString == "https://expo.dev/?param=%F0%9F%A5%93")
       #expect(url.absoluteString.removingPercentEncoding == urlString)
@@ -53,10 +51,8 @@ struct ConvertiblesTests {
       let urlString = "https://expo.dev/?\(query)"
       let url = try URL.convert(from: urlString, appContext: appContext)
 
-      if #available(iOS 16.0, *) {
-        #expect(url.query(percentEncoded: true) == query)
-        #expect(url.query(percentEncoded: false) == "param=🥓")
-      }
+      #expect(url.query(percentEncoded: true) == query)
+      #expect(url.query(percentEncoded: false) == "param=🥓")
       #expect(url.query == query)
       #expect(url.absoluteString == urlString)
       #expect(url.absoluteString.removingPercentEncoding == "https://expo.dev/?param=🥓")
@@ -82,11 +78,8 @@ struct ConvertiblesTests {
 
       #expect(url.absoluteString == urlString)
       #expect(url.path == path.removingPercentEncoding)
-
-      if #available(iOS 16.0, *) {
-        #expect(url.path(percentEncoded: true) == path)
-        #expect(url.path(percentEncoded: false) == path.removingPercentEncoding)
-      }
+      #expect(url.path(percentEncoded: true) == path)
+      #expect(url.path(percentEncoded: false) == path.removingPercentEncoding)
     }
 
     @Test

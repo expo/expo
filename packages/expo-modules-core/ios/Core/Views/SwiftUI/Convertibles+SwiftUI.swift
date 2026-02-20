@@ -47,30 +47,15 @@ extension Color: Convertible {
     case "clear":
       return .clear
     case "mint":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .mint
-      }
-      return nil
+      return .mint
     case "teal":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .teal
-      }
-      return nil
+      return .teal
     case "cyan":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .cyan
-      }
-      return nil
+      return .cyan
     case "indigo":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .indigo
-      }
-      return nil
+      return .indigo
     case "brown":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .brown
-      }
-      return nil
+      return .brown
     default:
       return nil
     }

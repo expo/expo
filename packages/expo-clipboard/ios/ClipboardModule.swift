@@ -83,10 +83,7 @@ public class ClipboardModule: Module {
     }
 
     Property("isPasteButtonAvailable") { () -> Bool in
-      if #available(iOS 16.0, *) {
-        return true
-      }
-      return false
+      return true
     }
 
     // MARK: - Events

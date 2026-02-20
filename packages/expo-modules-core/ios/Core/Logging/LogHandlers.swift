@@ -3,10 +3,7 @@
 import os.log
 
 public func createOSLogHandler(category: String) -> LogHandler {
-  if #available(iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
-    return OSLogHandler(category: category)
-  }
-  return PrintLogHandler()
+  return OSLogHandler(category: category)
 }
 
 public func createPersistentFileLogHandler(category: String) -> LogHandler {
@@ -23,7 +20,6 @@ public protocol LogHandler {
 /**
  The log handler that uses the new `os.Logger` API.
  */
-@available(iOS 14.0, watchOS 7.0, tvOS 14.0, *)
 internal class OSLogHandler: LogHandler {
   private let osLogger: os.Logger
 

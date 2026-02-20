@@ -65,35 +65,18 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
 }
 
 internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumentPickerViewController {
-  if #available(iOS 14.0, *) {
-    let utTypes: [UTType]
-    if let mimeType = mimeType {
-      if let utType = UTType(mimeType: mimeType) {
-        utTypes = [utType]
-      } else {
-        utTypes = [UTType.item]
-      }
+  let utTypes: [UTType]
+  if let mimeType = mimeType {
+    if let utType = UTType(mimeType: mimeType) {
+      utTypes = [utType]
     } else {
       utTypes = [UTType.item]
     }
-
-    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: true)
-
-    if let initialUri = initialUri {
-      picker.directoryURL = initialUri
-    }
-
-    return picker
-  }
-
-  let utiTypes: [String]
-  if let mimeType = mimeType {
-    utiTypes = [toUTI(mimeType: mimeType)]
   } else {
-    utiTypes = [kUTTypeItem as String]
+    utTypes = [UTType.item]
   }
 
-  let picker = UIDocumentPickerViewController(documentTypes: utiTypes, in: .import)
+  let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: true)
 
   if let initialUri = initialUri {
     picker.directoryURL = initialUri
@@ -103,23 +86,14 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumen
 }
 
 internal func createDirectoryPicker(initialUri: URL?) -> UIDocumentPickerViewController {
-  if #available(iOS 14.0, *) {
-    // Use UTType.folder for directory access as per Apple's documentation
-    let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.folder], asCopy: false)
-    if let initialUri = initialUri {
-      picker.directoryURL = initialUri
-    }
-    return picker
-  }
-  // For iOS 13 and earlier, use kUTTypeFolder
-  let picker = UIDocumentPickerViewController(documentTypes: [kUTTypeFolder as String], in: .open)
+  // Use UTType.folder for directory access as per Apple's documentation
+  let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.folder], asCopy: false)
   if let initialUri = initialUri {
     picker.directoryURL = initialUri
   }
   return picker
 }
 
-@available(iOS 14.0, *)
 private func toUTType(mimeType: String) -> UTType? {
   switch mimeType {
   case "*/*":
@@ -135,33 +109,5 @@ private func toUTType(mimeType: String) -> UTType? {
   default:
     return UTType(mimeType: mimeType)
   }
-}
-
-private func toUTI(mimeType: String) -> String {
-  var uti: CFString
-
-  switch mimeType {
-  case "*/*":
-    uti = kUTTypeItem
-  case "image/*":
-    uti = kUTTypeImage
-  case "video/*":
-    uti = kUTTypeVideo
-  case "audio/*":
-    uti = kUTTypeAudio
-  case "text/*":
-    uti = kUTTypeText
-  default:
-    if let ref = UTTypeCreatePreferredIdentifierForTag(
-      kUTTagClassMIMEType,
-      mimeType as CFString,
-      nil
-    )?.takeRetainedValue() {
-      uti = ref
-    } else {
-      uti = kUTTypeItem
-    }
-  }
-  return uti as String
 }
 #endif

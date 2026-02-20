@@ -27,26 +27,19 @@ extension ExpoSwiftUI {
     }
 
     public var body: some SwiftUI.View {
-      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-        if proxy !== ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY {
-          content.overlay {
-            content.fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
-              .hidden()
-              .onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }, action: { size in
-                var size = size
-                size.width = axis.contains(.horizontal) ? size.width : ShadowNodeProxy.UNDEFINED_SIZE
-                size.height = axis.contains(.vertical) ? size.height : ShadowNodeProxy.UNDEFINED_SIZE
-                proxy.setViewSize?(size)
-              })
-          }
-        } else {
-          content
+      if proxy !== ShadowNodeProxy.SHADOW_NODE_MOCK_PROXY {
+        content.overlay {
+          content.fixedSize(horizontal: axis.contains(.horizontal), vertical: axis.contains(.vertical))
+            .hidden()
+            .onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }, action: { size in
+              var size = size
+              size.width = axis.contains(.horizontal) ? size.width : ShadowNodeProxy.UNDEFINED_SIZE
+              size.height = axis.contains(.vertical) ? size.height : ShadowNodeProxy.UNDEFINED_SIZE
+              proxy.setViewSize?(size)
+            })
         }
       } else {
-        // TODO: throw a warning
-        content.onAppear(perform: {
-          log.warn("AutoSizingStack is not supported on iOS/tvOS < 16.0")
-        })
+        content
       }
     }
   }

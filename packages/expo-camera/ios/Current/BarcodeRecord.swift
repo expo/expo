@@ -27,11 +27,6 @@ enum BarcodeType: String, Enumerable {
   case upc_a
 
   func toMetadataObjectType() -> AVMetadataObject.ObjectType {
-    if #available(iOS 15.4, *) {
-      if self == .codabar {
-        return .codabar
-      }
-    }
     switch self {
     case .aztec:
       return .aztec
@@ -57,17 +52,12 @@ enum BarcodeType: String, Enumerable {
       return .dataMatrix
     case .code128:
       return .code128
-    default:
-      return .aztec
+    case .codabar:
+      return .codabar
     }
   }
 
   static func toBarcodeType(type: AVMetadataObject.ObjectType) -> BarcodeType {
-    if #available(iOS 15.4, *) {
-      if type == .codabar {
-        return .codabar
-      }
-    }
     switch type {
     case .aztec:
       return .aztec
@@ -91,6 +81,8 @@ enum BarcodeType: String, Enumerable {
       return .datamatrix
     case .code128:
       return .code128
+    case .codabar:
+      return .codabar
     default:
       return .aztec
     }
@@ -112,7 +104,6 @@ enum VNBarcodeType: String, Enumerable {
   case code128
   case upc_a
 
-  @available(iOS 16.0, *)
   func toSymbology() -> VNBarcodeSymbology {
     switch self {
     case .aztec:
@@ -151,7 +142,6 @@ struct VisionScannerOptions: Record {
   @Field var isGuidanceEnabled: Bool?
   @Field var isHighlightingEnabled: Bool?
 
-  @available(iOS 16.0, *)
   func toSymbology() -> [VNBarcodeSymbology] {
     barcodeTypes.map {
       $0.toSymbology()

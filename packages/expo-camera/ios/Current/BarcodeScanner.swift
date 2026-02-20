@@ -30,9 +30,7 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
     self.session = session
     self.sessionQueue = sessionQueue
 
-    if #available(iOS 15.4, *) {
-      zxingBarcodeReaders[AVMetadataObject.ObjectType.codabar] = ZXCodaBarReader()
-    }
+    zxingBarcodeReaders[AVMetadataObject.ObjectType.codabar] = ZXCodaBarReader()
   }
 
   func setSettings(_ newSettings: [String: [AVMetadataObject.ObjectType]]) {

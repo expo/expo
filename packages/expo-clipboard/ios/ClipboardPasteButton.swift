@@ -16,14 +16,9 @@ class ClipboardPasteButton: ExpoView {
 
   func update() {
     unmountChild()
-    if #available(iOS 16.0, *) {
-      mountView()
-    } else {
-      log.error("ClipboardPasteButton is only supported on iOS 16 and above")
-    }
+    mountView()
   }
 
-  @available(iOS 16.0, *)
   private func mountView() {
     let configuration = UIPasteControl.Configuration()
     configuration.baseBackgroundColor = baseBackgroundColor

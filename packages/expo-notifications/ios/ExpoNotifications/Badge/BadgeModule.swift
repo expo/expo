@@ -18,13 +18,7 @@ public class BadgeModule: Module {
       let settings = await center.notificationSettings()
 
       if settings.badgeSetting == .enabled {
-        if #available(iOS 16.0, *) {
-          try await center.setBadgeCount(badgeCount)
-        } else {
-          await MainActor.run {
-            RCTSharedApplication()?.applicationIconBadgeNumber = badgeCount
-          }
-        }
+        try await center.setBadgeCount(badgeCount)
         return true
       }
       return false

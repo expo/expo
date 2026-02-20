@@ -7,15 +7,13 @@ struct DevServerInfoModal: View {
 
   var body: some View {
     Group {
-      if #available(iOS 15.0, tvOS 16.0, *) {
-        if showingInfoDialog {
-          Color.black.opacity(0.4)
-            .ignoresSafeArea(.all)
-            .onTapGesture {
-              showingInfoDialog = false
-            }
-          content
-        }
+      if showingInfoDialog {
+        Color.black.opacity(0.4)
+          .ignoresSafeArea(.all)
+          .onTapGesture {
+            showingInfoDialog = false
+          }
+        content
       }
     }
     .animation(.easeInOut(duration: 0.3), value: showingInfoDialog)

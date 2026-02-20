@@ -111,10 +111,8 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
       menuAction.subtitle = subtitle
     }
 
-    if #available(iOS 16.0, *) {
-      if let preferredElementSize = preferredElementSize {
-        menuAction.preferredElementSize = preferredElementSize.toUIMenuElementSize()
-      }
+    if let preferredElementSize {
+      menuAction.preferredElementSize = preferredElementSize.toUIMenuElementSize()
     }
 
     parentMenuUpdatable?.updateMenu()
@@ -122,14 +120,17 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
   func updateUiAction() {
     var attributes: UIMenuElement.Attributes = []
-    if destructive == true { attributes.insert(.destructive) }
-    if disabled == true { attributes.insert(.disabled) }
+    if destructive == true {
+      attributes.insert(.destructive)
+    }
+    if disabled == true {
+      attributes.insert(.disabled)
+    }
     if routerHidden {
       attributes.insert(.hidden)
     }
-
-    if #available(iOS 16.0, *) {
-      if keepPresented == true { attributes.insert(.keepsMenuPresented) }
+    if keepPresented == true {
+      attributes.insert(.keepsMenuPresented)
     }
 
     baseUiAction.title = title
@@ -137,7 +138,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn == true ? .on : .off
 
-    if let subtitle = subtitle {
+    if let subtitle {
       baseUiAction.subtitle = subtitle
     }
     if let label = discoverabilityLabel {

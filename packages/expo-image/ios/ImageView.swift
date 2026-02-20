@@ -790,12 +790,11 @@ public final class ImageView: ExpoView {
 
   // MARK: - Live Text Interaction
 #if !os(tvOS)
-  @available(iOS 16.0, macCatalyst 17.0, *)
   static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
   var enableLiveTextInteraction: Bool = false {
     didSet {
-      guard #available(iOS 16.0, macCatalyst 17.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
+      guard oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
         return
       }
       if enableLiveTextInteraction {
@@ -808,7 +807,7 @@ public final class ImageView: ExpoView {
   }
 
   private func analyzeImage() {
-    guard #available(iOS 16.0, macCatalyst 17.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
+    guard ImageAnalyzer.isSupported, let image = sdImageView.image else {
       return
     }
 
@@ -832,7 +831,6 @@ public final class ImageView: ExpoView {
     }
   }
 
-  @available(iOS 16.0, macCatalyst 17.0, *)
   private func findImageAnalysisInteraction() -> ImageAnalysisInteraction? {
     let interaction = sdImageView.interactions.first {
       return $0 is ImageAnalysisInteraction

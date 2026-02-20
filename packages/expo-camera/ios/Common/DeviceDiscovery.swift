@@ -15,7 +15,7 @@ class DeviceDiscovery {
   private var backDevicesObservation: NSKeyValueObservation?
 
   private static var allDeviceTypes: [AVCaptureDevice.DeviceType] {
-    var types: [AVCaptureDevice.DeviceType] = [
+    return [
       // Primary camera - suitable for general-purpose use
       .builtInWideAngleCamera,
       // Longer focal length than wide angle camera
@@ -30,15 +30,10 @@ class DeviceDiscovery {
       // Dual camera (wide + telephoto)
       .builtInDualCamera,
       // Dual wide camera (ultrawide + wide)
-      .builtInDualWideCamera
-    ]
-
-    if #available(iOS 15.4, *) {
+      .builtInDualWideCamera,
       // LiDAR camera provides high-quality, high-accuracy depth information by measuring the round trip of an artificial light signal that a laser emits.
-      types.append(.builtInLiDARDepthCamera)
-    }
-
-    return types
+      .builtInLiDARDepthCamera
+    ]
   }
 
   init() {

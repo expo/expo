@@ -39,28 +39,20 @@ enum NotificationSoundEnum: String, Enumerable {
   case custom
 
   public init(from sound: UNNotificationSound?) {
-    if #available(iOS 15.2, *) {
-      #if targetEnvironment(macCatalyst)
-      self = switch sound {
-      case .defaultCritical: .defaultCritical
-      case .default: .default
-      default: .custom
-      }
-      #else
-      self = switch sound {
-      case .defaultCritical: .defaultCritical
-      case .defaultRingtone: .defaultRingtone
-      case .default: .default
-      default: .custom
-      }
-      #endif
-    } else {
-      self = switch sound {
-      case .defaultCritical: .defaultCritical
-      case .default: .default
-      default: .custom
-      }
+    #if targetEnvironment(macCatalyst)
+    self = switch sound {
+    case .defaultCritical: .defaultCritical
+    case .default: .default
+    default: .custom
     }
+    #else
+    self = switch sound {
+    case .defaultCritical: .defaultCritical
+    case .defaultRingtone: .defaultRingtone
+    case .default: .default
+    default: .custom
+    }
+    #endif
   }
 
   func toUNNotificationSound(customSoundName: String?) -> UNNotificationSound {
@@ -73,11 +65,7 @@ enum NotificationSoundEnum: String, Enumerable {
       #if targetEnvironment(macCatalyst)
       return .default
       #else
-      if #available(iOS 15.2, *) {
-        return .defaultRingtone
-      } else {
-        return .default
-      }
+      return .defaultRingtone
       #endif
     case .custom:
       guard let soundName = customSoundName else {

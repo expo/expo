@@ -205,12 +205,8 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
 
   #if !os(tvOS)
   private func forceRotationUpdate() {
-    if #available(iOS 16.0, *) {
-      let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-      windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: fullscreenOrientation))
-    } else {
-      UIViewController.attemptRotationToDeviceOrientation()
-    }
+    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+    windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: fullscreenOrientation))
   }
   #endif
 }
