@@ -1,7 +1,8 @@
+import { Contact, ContactAccessButton } from 'expo-contacts/next';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, Text } from 'react-native';
+
 import Button from '../../components/Button';
-import { Contact, ContactAccessButton } from 'expo-contacts/next';
 
 export default function ContactPickersScreen() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -34,7 +35,7 @@ export default function ContactPickersScreen() {
       return;
     }
     try {
-      await selectedContact.presentEditForm();
+      await selectedContact.editWithForm();
     } catch (error) {
       console.error(error);
     }
@@ -59,7 +60,7 @@ export default function ContactPickersScreen() {
         <Button title="Contact.presentCreateForm()" onPress={handlePresentCreateForm} />
         <Button title="Contact.presentPicker()" onPress={handlePresentPicker} />
         <Button
-          title="selectedContact.presentEditForm()"
+          title="selectedContact.editWithForm()"
           onPress={handlePresentEditForm}
           disabled={!selectedContact}
         />

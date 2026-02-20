@@ -1,7 +1,8 @@
+import { Contact } from 'expo-contacts/next';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
+
 import Button from '../../components/Button';
-import { Contact } from 'expo-contacts/next';
 
 export default function ContactApiScreen() {
   const [contact, setContact] = useState<Contact | null>(null);
@@ -69,7 +70,7 @@ export default function ContactApiScreen() {
             country: 'USA',
           },
         ],
-        dates: [{ label: 'birthday', date: { year: '2000', month: '01', day: '01' } }],
+        dates: [{ label: 'birthday', date: { year: 2000, month: 1, day: 1 } }],
         urlAddresses: [{ label: 'portfolio', url: 'https://hardcoded.io' }],
         relations: [{ label: 'manager', name: 'Big Boss' }],
         socialProfiles: [{ service: 'twitter', username: '@hardcoded_user' }],

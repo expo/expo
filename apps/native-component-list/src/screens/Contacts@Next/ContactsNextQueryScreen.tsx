@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TextInput } from 'react-native';
 import {
   Contact,
   ContactField,
   ContactsSortOrder,
   PartialContactDetails,
 } from 'expo-contacts/next';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TextInput } from 'react-native';
+
 import Button from '../../components/Button';
 
 export default function ContactsManager() {
@@ -28,9 +29,9 @@ export default function ContactsManager() {
     setLoading(true);
     try {
       const data = await Contact.getAllDetails([ContactField.FULL_NAME], {
-        name: name,
-        limit: parseInt(limit) || 20,
-        offset: parseInt(offset) || 0,
+        name,
+        limit: parseInt(limit, 10) || 20,
+        offset: parseInt(offset, 10) || 0,
         sortOrder: sort,
       });
       setContacts(data);
@@ -92,7 +93,7 @@ export default function ContactsManager() {
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 20 }}
         data={contacts}
-        keyExtractor={(item) => item.id || Math.random().toString()}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Text style={{ padding: 15, borderBottomWidth: 1, borderColor: '#eee' }}>
             {item.fullName}
