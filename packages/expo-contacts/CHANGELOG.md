@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `editWithForm` throws error
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-16

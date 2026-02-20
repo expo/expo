@@ -133,7 +133,7 @@ class Contact(
     return mapper.toRecord(existingContact)
   }
 
-  suspend fun presentEditForm() = withContext(Dispatchers.IO) {
+  suspend fun editWithForm() = withContext(Dispatchers.IO) {
     intentDelegate.launchEditContact(getLookupKeyUri())
   }
 

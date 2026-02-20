@@ -334,8 +334,8 @@ public class ContactsNextModule: Module {
         try this.thumbnail.get()
       }
 
-      AsyncFunction("presentEditForm") { (this: ContactNext, options: FormOptions?, promise: Promise) in
-        try formDelegate.presentEditForm(for: this, options: options, promise: promise)
+      AsyncFunction("editWithForm") { (this: ContactNext, options: FormOptions?, promise: Promise) in
+        try formDelegate.editWithForm(for: this, options: options, promise: promise)
       }.runOnQueue(.main)
 
       StaticAsyncFunction("getAll") { (queryOptions: ContactQueryOptions?) in
