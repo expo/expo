@@ -66,12 +66,12 @@ export default function ExplicitSizingExample() {
 
 ### Ignoring keyboard safe area
 
-Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard avoidance (for example, with [`react-native-keyboard-controller`](https://docs.expo.dev/versions/latest/sdk/keyboard-controller/)), to prevent the SwiftUI host from applying its own keyboard inset on top.
+Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard avoidance (for example, with `react-native-keyboard-controller`), to prevent the SwiftUI host from applying its own keyboard inset.
 
 ```tsx IgnoreKeyboardExample.tsx
-import { View } from 'react-native';
 import { Host, TextField } from '@expo/ui/swift-ui';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { View } from 'react-native';
 
 export default function IgnoreKeyboardExample() {
   return (
@@ -86,8 +86,8 @@ export default function IgnoreKeyboardExample() {
             padding: 16,
             backgroundColor: 'green',
           }}>
-          <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
-            <TextField multiline />
+          <Host matchContents ignoreSafeArea="all" style={{ backgroundColor: 'red' }}>
+            <TextField placeholder="Enter text" multiline />
           </Host>
         </KeyboardStickyView>
       </View>
@@ -98,22 +98,19 @@ export default function IgnoreKeyboardExample() {
 
 ### Ignoring all safe areas
 
-Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar, home indicator, and keyboard — useful for full-screen overlays or backgrounds.
+Use `ignoreSafeArea="all"` when you want SwiftUI content to extend behind the status bar, useful for full-screen overlays or backgrounds.
 
 ```tsx IgnoreAllSafeAreasExample.tsx
-import { Host, Rectangle } from '@expo/ui/swift-ui';
-import { frame, background } from '@expo/ui/swift-ui/modifiers';
+import { Host, Text, VStack } from '@expo/ui/swift-ui';
 
 export default function IgnoreAllSafeAreasExample() {
   return (
-    <Host ignoreSafeArea="all" style={{ flex: 1 }}>
-      <Rectangle
-        modifiers={[
-          frame({ height: 100, width: 100 }),
-          frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'topLeading' }),
-          background('red'),
-        ]}
-      />
+    <Host
+      ignoreSafeArea="all"
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <VStack>
+        <Text>This content extends behind the status bar and home indicator.</Text>
+      </VStack>
     </Host>
   );
 }
