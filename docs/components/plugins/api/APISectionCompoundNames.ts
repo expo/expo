@@ -34,7 +34,7 @@ export const getComponentPropertyChildren = (entry: GeneratedData): PropData[] =
 
   const seen = new Set<string>();
   return candidates.filter(child => {
-    if (!child || child.kind !== TypeDocKind.Property) {
+    if (child?.kind !== TypeDocKind.Property) {
       return false;
     }
     const id = `${child.name ?? ''}-${child.kind ?? ''}`;

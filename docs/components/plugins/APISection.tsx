@@ -130,8 +130,8 @@ const isComponent = (entry: GeneratedData) => {
   } else if (signatures?.length) {
     const mainSignature = signatures[0];
     if (
-      (mainSignature.parameters && mainSignature.parameters[0].name === 'props') ||
-      (mainSignature.parameters && mainSignature.parameters[0].name === '__namedParameters')
+      mainSignature.parameters?.[0].name === 'props' ||
+      mainSignature.parameters?.[0].name === '__namedParameters'
     ) {
       return true;
     }

@@ -19,6 +19,10 @@ export const isArchivePath = (path: string) => {
   return Utilities.pathStartsWith('archive', path);
 };
 
+export const isInternalPath = (path: string) => {
+  return Utilities.pathStartsWith('internal', path);
+};
+
 export const isVersionedPath = (path: string) => {
   return Utilities.pathStartsWith('versions', path);
 };

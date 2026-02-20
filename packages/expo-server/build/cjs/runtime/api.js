@@ -27,10 +27,11 @@ function assertSupport(name, v) {
 }
 var error_1 = require("./error");
 Object.defineProperty(exports, "StatusError", { enumerable: true, get: function () { return error_1.StatusError; } });
-/** Returns the current request's origin URL.
+/** Returns the current request's URL.
  *
- * This typically returns the request's `Origin` header, which contains the
- * request origin URL or defaults to `null`.
+ * This typically returns the request's URL, or on certain platform,
+ * the origin of the request. This does not use the `Origin` header
+ * in development as it may contain an untrusted value.
  * @returns A request origin
  */
 function origin() {

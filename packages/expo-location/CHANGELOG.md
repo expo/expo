@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- [iOS] Added `accuracy` field to `PermissionDetailsLocationIOS` exposing iOS 14+ precise/reduced location authorization. ([#42931](https://github.com/expo/expo/pull/42931) by [@sbs44](https://github.com/sbs44))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.7 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.6 — 2026-02-08
 

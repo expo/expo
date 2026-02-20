@@ -13,7 +13,6 @@ import expo.modules.calendar.exceptions.EventNotSavedException
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
 import expo.modules.calendar.domain.event.records.input.RemoveEventInput
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
@@ -27,7 +26,6 @@ class EventRepository(context: Context) {
   private val contentResolver
     get() = contextRef.get()?.contentResolver ?: throw Exceptions.ReactContextLost()
 
-  @OptIn(EitherType::class)
   suspend fun findEvents(startDate: DateTimeInput, endDate: DateTimeInput, calendars: List<String>): List<EventEntity> =
     withContext(Dispatchers.IO) {
       val eStartDate = requireNotNull(startDate.getTimeInMillis())

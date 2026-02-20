@@ -39,6 +39,23 @@ export default function TextScreen() {
             Hello <Text modifiers={[bold(), foregroundStyle('blue')]}>world</Text>!
           </Text>
         </Section>
+        <Section title="Hierarchical Foreground Style">
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'primary' })]}>
+            Primary{' '}
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              Secondary
+            </Text>
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+            Secondary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'tertiary' })]}>
+            Tertiary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'quaternary' })]}>
+            Quaternary
+          </Text>
+        </Section>
         <Section title="Custom Font Families">
           <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>Inter Bold Font</Text>
           <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>Inter Medium Font</Text>

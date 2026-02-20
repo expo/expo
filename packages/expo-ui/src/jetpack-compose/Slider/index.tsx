@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * Colors for slider's core elements.
@@ -64,12 +65,12 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'SliderView'
 );
 
-/**
- * @hidden
- */
-export function transformSliderProps(props: SliderProps): NativeSliderProps {
+function transformSliderProps(props: SliderProps): NativeSliderProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     min: props.min ?? 0,
     max: props.max ?? 1,
     steps: props.steps ?? 0,

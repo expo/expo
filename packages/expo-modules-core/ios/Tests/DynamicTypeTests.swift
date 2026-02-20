@@ -31,7 +31,7 @@ struct DynamicTypeTests {
     @Test
     func `is created`() {
       #expect(~Any.self is DynamicRawType<Any>)
-      #expect(~Bool.self is DynamicRawType<Bool>)
+      #expect(~Bool.self is DynamicBoolType)
       #expect(~DynamicRawTypeTests.self is DynamicRawType<DynamicRawTypeTests>)
     }
 

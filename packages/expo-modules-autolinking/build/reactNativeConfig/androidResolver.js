@@ -12,6 +12,7 @@ exports.parseComponentDescriptorsAsync = parseComponentDescriptorsAsync;
 exports.findGradleAndManifestAsync = findGradleAndManifestAsync;
 const promises_1 = __importDefault(require("fs/promises"));
 const path_1 = __importDefault(require("path"));
+const concurrency_1 = require("../concurrency");
 const utils_1 = require("../utils");
 async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeConfig, expoModuleConfig) {
     if (reactNativeConfig === null) {
@@ -53,7 +54,7 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
             reactNativeConfig?.packageImportPath || `import ${packageName}.${nativePackageClassName};`;
         packageInstance = reactNativeConfig?.packageInstance || `new ${nativePackageClassName}()`;
     }
-    const packageJson = JSON.parse(await promises_1.default.readFile(path_1.default.join(packageRoot, 'package.json'), 'utf8'));
+    const packageJson = await (0, utils_1.loadPackageJson)((0, utils_1.fastJoin)(packageRoot, 'package.json'));
     const buildTypes = reactNativeConfig?.buildTypes || [];
     const dependencyConfiguration = reactNativeConfig?.dependencyConfiguration;
     const libraryName = reactNativeConfig?.libraryName || (await parseLibraryNameAsync(androidDir, packageJson));
@@ -208,7 +209,7 @@ async function parseComponentDescriptorsAsync(packageRoot, packageJson) {
     const results = new Set();
     for await (const entry of (0, utils_1.scanFilesRecursively)(jsRoot)) {
         if (extRe.test(entry.name)) {
-            const contents = await promises_1.default.readFile(entry.path);
+            const contents = await promises_1.default.readFile(entry.path, 'utf8');
             const matched = matchComponentDescriptors(entry.path, contents);
             if (matched) {
                 results.add(matched);
@@ -219,12 +220,11 @@ async function parseComponentDescriptorsAsync(packageRoot, packageJson) {
 }
 let lazyCodegenComponentRegex = null;
 function matchComponentDescriptors(_filePath, contents) {
-    const fileContents = contents.toString();
     if (!lazyCodegenComponentRegex) {
         lazyCodegenComponentRegex =
             /codegenNativeComponent(<.*>)?\s*\(\s*["'`](\w+)["'`](,?[\s\S]+interfaceOnly:\s*(\w+))?/m;
     }
-    const match = fileContents.match(lazyCodegenComponentRegex);
+    const match = contents.match(lazyCodegenComponentRegex);
     if (!(match?.[4] === 'true') && match?.[2]) {
         return `${match[2]}ComponentDescriptor`;
     }
@@ -259,7 +259,7 @@ const findAndroidManifestsAsync = async (targetPath) => {
     return manifestPaths.sort((a, b) => a.localeCompare(b));
 };
 const getFileCandidatesAsync = async (targetPath, fileNames) => {
-    const gradlePaths = await Promise.all(fileNames.map((fileName) => (0, utils_1.fileExistsAsync)(path_1.default.join(targetPath, fileName))));
+    const gradlePaths = await (0, concurrency_1.taskAll)(fileNames, (fileName) => (0, utils_1.fileExistsAsync)(path_1.default.join(targetPath, fileName)));
     return gradlePaths.filter((file) => file != null).sort((a, b) => a.localeCompare(b));
 };
 async function findGradleAndManifestAsync({ androidDir, isLibrary, }) {

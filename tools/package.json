@@ -59,7 +59,7 @@
     "recursive-omit-by": "^2.0.0",
     "semver": "^7.6.3",
     "strip-ansi": "^6.0.0",
-    "tar": "^7.5.7",
+    "tar": "^7.5.8",
     "terminal-link": "^2.1.1",
     "typedoc": "^0.28.15",
     "uuid": "^9.0.0"

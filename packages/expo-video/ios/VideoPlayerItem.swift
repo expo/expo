@@ -20,7 +20,7 @@ class VideoPlayerItem: AVPlayerItem {
       return nil
     }
     self.videoSource = videoSource
-    self.isHls = videoSource.uri?.pathExtension == "m3u8" || videoSource.contentType == .hls
+    self.isHls = videoSource.uri?.isHLS == true || videoSource.contentType == .hls
 
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
@@ -33,7 +33,7 @@ class VideoPlayerItem: AVPlayerItem {
       return nil
     }
     self.videoSource = videoSource
-    self.isHls = videoSource.uri?.pathExtension == "m3u8" || videoSource.contentType == .hls
+    self.isHls = videoSource.uri?.isHLS == true || videoSource.contentType == .hls
 
     let asset = VideoAsset(url: url, videoSource: videoSource)
     self.urlAsset = asset
@@ -55,25 +55,54 @@ class VideoPlayerItem: AVPlayerItem {
 
   func createTracksLoadingTask() {
     tracksLoadingTask = Task { [weak self] in
-      var tracks: [VideoTrack] = []
-      guard let self else {
+      guard let self, let mainUrl = videoSource.uri else {
         return []
       }
 
-      if isHls {
-        do {
-          tracks = try await self.fetchHlsVideoTracks()
-        } catch {
-          tracks = []
-          log.warn("[expo-video] Failed to fetch HLS video tracks, this is not required for playback, but `expo-video` will have no knowledge of the available tracks: \(error.localizedDescription)")
-        }
-      } else {
-        let avAssetTracks = (try? await asset.loadTracks(withMediaType: .video)) ?? []
-        for avAssetTrack in avAssetTracks {
+      var tracks: [VideoTrack] = []
+      if let assetTracks = try? await urlAsset.loadTracks(withMediaType: .video) {
+        for avAssetTrack in assetTracks {
           tracks.append(await VideoTrack.from(assetTrack: avAssetTrack))
         }
       }
-      return tracks
+
+      guard isHls else {
+        return tracks
+      }
+
+      let hlsTracks = await loadHlsTracks(mainUrl: mainUrl)
+      return tracks + hlsTracks
+    }
+  }
+
+  // MARK: - HLS Helpers
+
+  private func loadHlsTracks(mainUrl: URL) async -> [VideoTrack] {
+    if #available(iOS 26.0, tvOS 26, *) {
+      return await loadModernHlsTracks(mainUrl: mainUrl)
+    }
+
+    return await loadLegacyHlsTracks()
+  }
+
+  @available(iOS 26.0, tvOS 26, *)
+  private func loadModernHlsTracks(mainUrl: URL) async -> [VideoTrack] {
+    guard let variants = try? await urlAsset.load(.variants) else {
+      return []
+    }
+    let isPlayable = (try? await urlAsset.load(.isPlayable)) ?? false
+
+    return variants.compactMap { variant in
+      VideoTrack.from(assetVariant: variant, isPlayable: isPlayable, mainUrl: mainUrl)
+    }
+  }
+
+  private func loadLegacyHlsTracks() async -> [VideoTrack] {
+    do {
+      return try await self.fetchHlsVideoTracks()
+    } catch {
+      log.warn("[expo-video] Failed to fetch HLS video tracks: \(error.localizedDescription)")
+      return []
     }
   }
 
@@ -93,13 +122,21 @@ class VideoPlayerItem: AVPlayerItem {
 
     let (data, _) = try await URLSession.shared.data(for: request)
     let content = String(data: data, encoding: .utf8) ?? ""
-    return parseM3U8(content)
+    return parseM3U8(content, mainUrl: uri)
   }
 
-  private func parseM3U8(_ content: String) -> [VideoTrack] {
+  private func parseM3U8(_ content: String, mainUrl: URL) -> [VideoTrack] {
     let lines = content.components(separatedBy: "\n")
     return zip(lines, lines.dropFirst()).compactMap { line, nextLine in
-      VideoTrack.from(hlsHeaderLine: line, idLine: nextLine)
+      VideoTrack.from(hlsHeaderLine: line, idLine: nextLine, mainUrl: mainUrl)
     }
+  }
+}
+
+private extension URL {
+  var isHLS: Bool {
+    // https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8
+    // Above is a valid link, even though the path extension is an empty string, we can use a more primitive suffix method as a fallback
+    return self.pathExtension.lowercased() == "m3u8" || self.absoluteString.lowercased().hasSuffix("m3u8")
   }
 }

@@ -13,7 +13,6 @@ import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.service.NotificationForwarderActivity
 import expo.modules.notifications.service.NotificationsService
-import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.runTaskManagerTasks
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import java.lang.ref.WeakReference
 import java.util.*
@@ -138,14 +137,22 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
-    if (!isAppInForeground()) {
-      // do not run in foreground for better alignment with iOS
-      // iOS doesn't run background tasks for notification responses at all
-      runTaskManagerTasks(context.applicationContext, NotificationSerializer.toBundle(notificationResponse))
-    }
     if (notificationResponse.action.opensAppToForeground()) {
       openAppToForeground(context, notificationResponse)
     }
+
+    // Run background tasks only for custom notification action buttons (not the default tap).
+    // When the default notification tap launches the app from killed state, calling
+    // runTaskManagerTasks starts a headless React instance that races with the foreground app.
+    // The foreground TaskManager gets misclassified as headless (via isStartedByHeadlessLoader),
+    // then wiped by invalidateAppRecord — breaking all subsequent background task execution.
+    if (!isAppInForeground() && notificationResponse.actionIdentifier != NotificationResponse.DEFAULT_ACTION_IDENTIFIER) {
+      FirebaseMessagingDelegate.runTaskManagerTasks(
+        context.applicationContext,
+        NotificationSerializer.toBundle(notificationResponse)
+      )
+    }
+
     // NOTE the listeners are not set up when the app is killed
     // and is launched in response to tapping a notification button
     // this code is a noop in that case

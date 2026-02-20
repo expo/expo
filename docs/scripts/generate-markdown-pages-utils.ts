@@ -24,9 +24,27 @@ export function findMdxSource(htmlPath: string, outDir: string, pagesDir: string
 }
 
 /**
+ * Frontmatter fields that only affect the docs website UI (sidebar, TOC, search ranking)
+ * and carry no semantic value for LLM or MCP consumers. Stripped during markdown generation.
+ *
+ * Note: `packageName` is intentionally kept because the Expo docs MCP tool uses it
+ * to map pages to their npm packages.
+ */
+const UI_ONLY_FRONTMATTER_FIELDS = new Set([
+  'hideTOC',
+  'maxHeadingDepth',
+  'hideFromSearch',
+  'hideInSidebar',
+  'sidebar_title',
+  'searchRank',
+  'searchPosition',
+  'hasVideoLink',
+]);
+
+/**
  * Extract the raw YAML frontmatter block (including --- delimiters) from an MDX file.
  * Strips lines with empty values (e.g. `modificationDate:` injected by append-dates.js
- * with no value in shallow CI clones).
+ * with no value in shallow CI clones) and UI-only fields that are irrelevant to LLM consumers.
  * Returns the frontmatter string with trailing newline, or null if no frontmatter found.
  */
 export function extractFrontmatter(mdxPath: string): string | null {
@@ -38,6 +56,10 @@ export function extractFrontmatter(mdxPath: string): string | null {
   const filtered = match[1]
     .split('\n')
     .filter(line => !/^\w+:\s*$/.test(line))
+    .filter(line => {
+      const key = line.match(/^(\w+):/)?.[1];
+      return !key || !UI_ONLY_FRONTMATTER_FIELDS.has(key);
+    })
     .join('\n');
   if (!filtered.trim()) {
     return null;
@@ -75,6 +97,8 @@ function createTurndownService(): TurndownService {
 }
 
 const turndown = createTurndownService();
+// Keep in sync with ui/components/Snippet/blocks/packageManagerStore.ts.
+const PACKAGE_MANAGER_MARKDOWN_ORDER = ['npm', 'yarn', 'pnpm', 'bun'] as const;
 
 /**
  * Recursively find all index.html files in a directory, skipping internal directories.
@@ -112,6 +136,166 @@ export function findMarkdownPages(dir: string): string[] {
     }
   }
   return results;
+}
+
+export interface ResolvedMdxImport {
+  content: string;
+  resolvedPath?: string;
+}
+
+type ResolveImportedMdx = (importPath: string, fromPath: string | null) => ResolvedMdxImport | null;
+
+function decodeJsStringLiteral(value: string): string {
+  return value
+    .replace(/\\n/g, '\n')
+    .replace(/\\r/g, '\r')
+    .replace(/\\t/g, '\t')
+    .replace(/\\\\/g, '\\')
+    .replace(/\\'/g, "'")
+    .replace(/\\"/g, '"');
+}
+
+function extractTerminalCommands(arrayLiteral: string): string[] {
+  const commands: string[] = [];
+  const strRegex = /'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)"/g;
+  let match: RegExpExecArray | null = null;
+
+  while ((match = strRegex.exec(arrayLiteral)) !== null) {
+    const raw = match[1] ?? match[2] ?? '';
+    const decoded = decodeJsStringLiteral(raw);
+    if (!decoded.trim()) {
+      continue;
+    }
+    commands.push(decoded);
+  }
+
+  return commands;
+}
+
+/**
+ * Convert raw MDX instruction content to markdown.
+ * Handles JSX patterns used by set-up-your-environment instruction scenes.
+ */
+export function convertMdxInstructionToMarkdown(
+  mdxContent: string,
+  resolveImportedMdx: ResolveImportedMdx,
+  options: { fromPath?: string | null; visitedPaths?: Set<string> } = {}
+): string {
+  let content = mdxContent;
+  const fromPath = options.fromPath ?? null;
+  const visitedPaths = options.visitedPaths ?? new Set<string>();
+
+  if (fromPath) {
+    visitedPaths.add(fromPath);
+  }
+
+  const importMap = new Map<string, string>();
+  const importRegex = /^import\s+(\w+)\s+from\s+["'](\.\.?\/[^"']+\.mdx)["']\s*;?\s*$/gm;
+  let importMatch: RegExpExecArray | null = null;
+
+  while ((importMatch = importRegex.exec(content)) !== null) {
+    const componentName = importMatch[1];
+    const importPath = importMatch[2];
+    const resolvedImport = resolveImportedMdx(importPath, fromPath);
+    if (!resolvedImport) {
+      continue;
+    }
+
+    if (resolvedImport.resolvedPath && visitedPaths.has(resolvedImport.resolvedPath)) {
+      continue;
+    }
+
+    const nestedVisited = new Set(visitedPaths);
+    if (resolvedImport.resolvedPath) {
+      nestedVisited.add(resolvedImport.resolvedPath);
+    }
+
+    const inlinedMarkdown = convertMdxInstructionToMarkdown(
+      resolvedImport.content,
+      resolveImportedMdx,
+      {
+        fromPath: resolvedImport.resolvedPath ?? null,
+        visitedPaths: nestedVisited,
+      }
+    );
+
+    importMap.set(componentName, inlinedMarkdown);
+  }
+
+  content = content.replace(/^import\s+.*$/gm, '');
+
+  for (const [name, resolved] of importMap) {
+    content = content.replace(new RegExp(`<${name}\\s*/>`, 'g'), `\n${resolved}\n`);
+    content = content.replace(
+      new RegExp(`<${name}[^>]*>[\\s\\S]*?</${name}>`, 'g'),
+      `\n${resolved}\n`
+    );
+  }
+
+  content = content.replace(/<BuildEnvironmentSwitch\s*\/>/g, '');
+  content = content.replace(/<BuildEnvironmentSwitch[^>]*>[\S\s]*?<\/BuildEnvironmentSwitch>/g, '');
+
+  content = content.replace(/<Terminal\b([\S\s]*?)\/>/g, (_match, attrs: string) => {
+    const cmdMatch = attrs.match(/cmd={([\S\s]*?)}\s*(?=\w+=|$)/);
+    if (!cmdMatch) {
+      return '';
+    }
+
+    const lines = extractTerminalCommands(cmdMatch[1])
+      .map(line => line.replace(/^\$\s*/, '').trimEnd())
+      .filter(line => line.length > 0 && !line.startsWith('#'));
+
+    if (lines.length === 0) {
+      return '';
+    }
+
+    return `\n\`\`\`sh\n${lines.join('\n')}\n\`\`\`\n`;
+  });
+
+  content = content.replace(/<Step\s+label=(?:"[^"]*"|'[^']*')\s*>/g, '');
+  content = content.replace(/<\/Step>/g, '');
+
+  content = content.replace(/<ContentSpotlight[\S\s]*?\/>/g, '');
+  content = content.replace(/<ContentSpotlight[\S\s]*?<\/ContentSpotlight>/g, '');
+
+  content = content.replace(/<\/?Tabs[^>]*>/g, '');
+  content = content.replace(
+    /<Tab\s+label=(?:"([^"]*)"|'([^']*)')\s*>/g,
+    (_match, doubleQuoted: string | undefined, singleQuoted: string | undefined) =>
+      `\n#### ${(doubleQuoted ?? singleQuoted ?? '').trim()}\n`
+  );
+  content = content.replace(/<\/Tab>/g, '');
+
+  content = content.replace(
+    /<Collapsible\s+summary=(?:"([^"]*)"|'([^']*)')\s*>/g,
+    (_match, doubleQuoted: string | undefined, singleQuoted: string | undefined) =>
+      `\n**${(doubleQuoted ?? singleQuoted ?? '').trim()}**\n`
+  );
+  content = content.replace(/<\/Collapsible>/g, '');
+
+  content = content.replace(
+    /<QRCodeReact[\S\s]*?value=(?:"([^"]*)"|'([^']*)')[\S\s]*?\/>/g,
+    (_match, doubleQuoted: string | undefined, singleQuoted: string | undefined) => {
+      const url = (doubleQuoted ?? singleQuoted ?? '').trim();
+      if (!url) {
+        return '';
+      }
+      return `Download link: [${url}](${url})`;
+    }
+  );
+
+  content = content.replace(/<div[^>]*>/g, '');
+  content = content.replace(/<\/div>/g, '');
+
+  content = content.replace(/<\/?[A-Z][^>]*>/g, '');
+  content = content.replace(/{\/\*[\S\s]*?\*\/}/g, '');
+
+  content = content.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+
+  content = content.replace(/\n{3,}/g, '\n\n');
+  content = cleanMarkdown(content);
+
+  return content.trim();
 }
 
 /**
@@ -295,6 +479,51 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Remove snippet headers (file labels, "Terminal" labels above code blocks).
   // data-md="snippet-header" is the stable marker (from SnippetHeader component).
   main.find('[data-md="snippet-header"]').remove();
+
+  // Convert tabbed Terminal blocks (package manager variants) into a single shell block.
+  // data-md="terminal" is the stable marker; data-md-commands contains all manager commands.
+  main.find('[data-md="terminal"][data-md-commands]').each((_, el) => {
+    const $el = $(el);
+    const commandsJson = $el.attr('data-md-commands');
+    if (!commandsJson) {
+      return;
+    }
+
+    const commands = JSON.parse(commandsJson) as Record<string, unknown>;
+    const lines: string[] = [];
+
+    for (const manager of PACKAGE_MANAGER_MARKDOWN_ORDER) {
+      const rawCommands = commands[manager];
+      if (!Array.isArray(rawCommands) || rawCommands.length === 0) {
+        continue;
+      }
+
+      const managerLines = rawCommands
+        .filter((line): line is string => typeof line === 'string')
+        .map(line => line.replace(/^\$\s*/, '').trim())
+        // Preserve existing terminal behavior: drop source comment lines.
+        .filter(line => line.length > 0 && !line.startsWith('#'));
+
+      // Skip heading-only sections (for example, comment-only manager arrays).
+      if (managerLines.length === 0) {
+        continue;
+      }
+
+      if (lines.length > 0) {
+        lines.push('');
+      }
+      lines.push(`# ${manager}`);
+      lines.push(...managerLines);
+    }
+
+    if (lines.length > 0) {
+      const $pre = $('<pre></pre>');
+      const $code = $('<code class="language-sh"></code>');
+      $code.text(lines.join('\n'));
+      $pre.append($code);
+      $el.replaceWith($pre);
+    }
+  });
 
   // Remove orphaned step numbers: replace step containers with just the content.
   // data-md="step" is the stable marker; the fallback matches div.flex.gap-4 with

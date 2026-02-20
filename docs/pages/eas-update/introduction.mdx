@@ -21,9 +21,14 @@ EAS Update makes fixing small bugs and pushing quick fixes a snap in between app
 
 ## Quick start
 
+> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+
 Install the `expo-updates` library and configure EAS Update:
 
-<Terminal cmd={['$ npx expo install expo-updates', '', '$ eas update:configure']} />
+<Terminal
+  cmd={['$ npx expo install expo-updates', '', '$ eas update:configure']}
+  cmdCopy="npx expo install expo-updates && eas update:configure"
+/>
 
 You need to create a new build for Android or iOS to include the `expo-updates` library in your build. After that, you can push an update to the production channel:
 

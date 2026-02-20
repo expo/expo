@@ -27,14 +27,14 @@ import expo.modules.video.managers.VideoManager
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class FullscreenPlayerActivity : Activity() {
   private lateinit var mContentView: View
-  private lateinit var videoViewId: String
+  private var videoViewId: String? = null
   private var videoPlayer: VideoPlayer? = null
   private lateinit var playerView: PlayerView
   private lateinit var videoView: VideoView
   private var didFinish = false
   private var wasAutoPaused = false
   private lateinit var options: FullscreenOptions
-  private lateinit var orientationHelper: FullscreenActivityOrientationHelper
+  private var orientationHelper: FullscreenActivityOrientationHelper? = null
   private var captioningChangeListener: CaptioningManager.CaptioningChangeListener? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,8 @@ class FullscreenPlayerActivity : Activity() {
           ?: throw FullScreenOptionsNotFoundException()
       }
 
-      videoView = VideoManager.getVideoView(videoViewId)
+      videoView = videoViewId?.let { VideoManager.getVideoView(it) }
+        ?: throw FullScreenVideoViewNotFoundException()
 
       orientationHelper = FullscreenActivityOrientationHelper(
         this,
@@ -65,7 +66,7 @@ class FullscreenPlayerActivity : Activity() {
           requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
       )
-      orientationHelper.startOrientationEventListener()
+      orientationHelper?.startOrientationEventListener()
     } catch (e: CodedException) {
       Log.e("ExpoVideo", "${e.message}", e)
       finish()
@@ -119,11 +120,13 @@ class FullscreenPlayerActivity : Activity() {
   override fun finish() {
     super.finish()
     didFinish = true
-    try {
-      VideoManager.getVideoView(videoViewId).attachPlayer()
-    } catch (e: VideoViewNotFoundException) {
-      // The video view might have been destroyed while the fullscreen player was open.
-      // We can safely ignore this exception.
+    videoViewId?.let {
+      try {
+        VideoManager.getVideoView(it).attachPlayer()
+      } catch (e: VideoViewNotFoundException) {
+        // The video view might have been destroyed while the fullscreen player was open.
+        // We can safely ignore this exception.
+      }
     }
 
     // Disable the exit transition
@@ -136,7 +139,7 @@ class FullscreenPlayerActivity : Activity() {
   }
 
   override fun onResume() {
-    orientationHelper.startOrientationEventListener()
+    orientationHelper?.startOrientationEventListener()
     playerView.useController = true
     // Reconfigure subtitles when resuming (handles returning from settings)
     SubtitleUtils.configureSubtitleView(playerView, this)
@@ -151,7 +154,7 @@ class FullscreenPlayerActivity : Activity() {
         videoPlayer?.player?.pause()
       }
     }
-    orientationHelper.stopOrientationEventListener()
+    orientationHelper?.stopOrientationEventListener()
     super.onPause()
   }
 
@@ -168,12 +171,8 @@ class FullscreenPlayerActivity : Activity() {
     if (::videoView.isInitialized) {
       videoView.exitFullscreen()
     }
-    if (::videoViewId.isInitialized) {
-      VideoManager.unregisterFullscreenPlayerActivity(videoViewId)
-    }
-    if (::orientationHelper.isInitialized) {
-      orientationHelper.stopOrientationEventListener()
-    }
+    VideoManager.unregisterFullscreenPlayerActivity(hashCode().toString())
+    orientationHelper?.stopOrientationEventListener()
   }
 
   private fun setupFullscreenButton() {
@@ -227,7 +226,7 @@ class FullscreenPlayerActivity : Activity() {
 
   override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
-    orientationHelper.onConfigurationChanged(newConfig)
+    orientationHelper?.onConfigurationChanged(newConfig)
   }
 
   companion object {

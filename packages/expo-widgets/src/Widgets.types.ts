@@ -35,7 +35,7 @@ export type WidgetBase<T extends object = object> = {
 
 export type ExpoTimelineEntry = {
   timestamp: number;
-  content: ReactNode;
+  props: Record<string, any>;
 };
 
 /**

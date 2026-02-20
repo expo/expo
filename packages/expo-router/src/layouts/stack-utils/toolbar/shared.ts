@@ -58,8 +58,33 @@ type RNSharedHeaderItem = Pick<
   | 'accessibilityHint'
 >;
 
-export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
+/** @internal */
+export function extractXcassetName(props: StackHeaderItemSharedProps): string | undefined {
+  const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
+  if (iconComponentProps && 'xcasset' in iconComponentProps) {
+    return iconComponentProps.xcasset;
+  }
+  return undefined;
+}
+
+/**
+ * Extracts the rendering mode from the Icon child component (for `src` and `xcasset` variants).
+ * Returns undefined if no explicit rendering mode is set on the Icon child.
+ * @internal
+ */
+export function extractIconRenderingMode(
   props: StackHeaderItemSharedProps
+): 'template' | 'original' | undefined {
+  const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
+  if (iconComponentProps && 'renderingMode' in iconComponentProps) {
+    return iconComponentProps.renderingMode;
+  }
+  return undefined;
+}
+
+export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
+  props: StackHeaderItemSharedProps,
+  isBottomPlacement: boolean = false
 ): RNSharedHeaderItem {
   const { children, style, separateBackground, icon, ...rest } = props;
   const stringChildren = Children.toArray(children)
@@ -78,8 +103,17 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
     if (!iconComponentProps) {
       return undefined;
     }
-    if ('src' in iconComponentProps) {
-      // Get explicit renderingMode from icon component props, or use iconRenderingMode from shared props
+    // Bottom placement xcasset uses native xcasset type
+    if ('xcasset' in iconComponentProps && isBottomPlacement) {
+      return {
+        type: 'xcasset',
+        name: iconComponentProps.xcasset,
+      } as unknown as NativeStackHeaderItemButton['icon'];
+    }
+    // Unified image path for src and xcasset (non-bottom)
+    if ('src' in iconComponentProps || 'xcasset' in iconComponentProps) {
+      const source =
+        'src' in iconComponentProps ? iconComponentProps.src : { uri: iconComponentProps.xcasset };
       const explicitRenderingMode =
         'renderingMode' in iconComponentProps ? iconComponentProps.renderingMode : undefined;
       const effectiveRenderingMode =
@@ -88,7 +122,7 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
         (props.tintColor ? 'template' : 'original');
       return {
         type: 'image',
-        source: iconComponentProps.src,
+        source,
         tinted: effectiveRenderingMode === 'template',
       };
     }

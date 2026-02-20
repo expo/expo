@@ -40,6 +40,15 @@ private func parsePresentationDetent(_ detent: Either<PresentationDetentPreset, 
 
 internal struct PresentationDetentsModifier: ViewModifier, Record {
   @Field var detents: [Either<PresentationDetentPreset, PresentationDetentItem>]?
+  @Field var selection: Either<PresentationDetentPreset, PresentationDetentItem>?
+  var eventDispatcher: EventDispatcher?
+
+  init() {}
+
+  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
+    try self = .init(from: params, appContext: appContext)
+    self.eventDispatcher = eventDispatcher
+  }
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func parseDetents() -> Set<PresentationDetent> {
@@ -58,10 +67,83 @@ internal struct PresentationDetentsModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
-      content.presentationDetents(parseDetents())
+      if selection != nil || eventDispatcher != nil {
+        PresentationDetentsSelectionView(
+          detents: parseDetents(),
+          rawDetents: detents ?? [],
+          initialSelection: selection.flatMap { parsePresentationDetent($0) },
+          eventDispatcher: eventDispatcher
+        ) {
+          content
+        }
+      } else {
+        content.presentationDetents(parseDetents())
+      }
     } else {
       content
     }
+  }
+}
+
+@available(iOS 16.0, tvOS 16.0, *)
+private func buildDetentSerializationMap(
+  from rawDetents: [Either<PresentationDetentPreset, PresentationDetentItem>]
+) -> [PresentationDetent: Any] {
+  var map: [PresentationDetent: Any] = [:]
+  for raw in rawDetents {
+    if let parsed = parsePresentationDetent(raw) {
+      if let preset: PresentationDetentPreset = raw.get() {
+        map[parsed] = preset.rawValue
+      } else if let item: PresentationDetentItem = raw.get() {
+        if let fraction = item.fraction {
+          map[parsed] = ["fraction": fraction]
+        } else if let height = item.height {
+          map[parsed] = ["height": height]
+        }
+      }
+    }
+  }
+  return map
+}
+
+@available(iOS 16.0, tvOS 16.0, *)
+private struct PresentationDetentsSelectionView<WrappedContent: View>: View {
+  let detents: Set<PresentationDetent>
+  let detentSerializationMap: [PresentationDetent: Any]
+  let initialSelection: PresentationDetent?
+  let eventDispatcher: EventDispatcher?
+  let wrappedContent: WrappedContent
+
+  @State private var selectedDetent: PresentationDetent
+
+  init(
+    detents: Set<PresentationDetent>,
+    rawDetents: [Either<PresentationDetentPreset, PresentationDetentItem>],
+    initialSelection: PresentationDetent?,
+    eventDispatcher: EventDispatcher?,
+    @ViewBuilder content: () -> WrappedContent
+  ) {
+    self.detents = detents
+    self.detentSerializationMap = buildDetentSerializationMap(from: rawDetents)
+    self.initialSelection = initialSelection
+    self.eventDispatcher = eventDispatcher
+    self.wrappedContent = content()
+    self._selectedDetent = State(initialValue: initialSelection ?? detents.first ?? .large)
+  }
+
+  var body: some View {
+    wrappedContent
+      .presentationDetents(detents, selection: $selectedDetent)
+      .onChange(of: selectedDetent) { newDetent in
+        if let serialized = detentSerializationMap[newDetent] {
+          eventDispatcher?(["presentationDetents": ["detent": serialized]])
+        }
+      }
+      .onChange(of: initialSelection) { newSelection in
+        if let newSelection {
+          selectedDetent = newSelection
+        }
+      }
   }
 }
 

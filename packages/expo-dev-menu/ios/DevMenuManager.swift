@@ -249,7 +249,7 @@ open class DevMenuManager: NSObject {
 
   override init() {
     super.init()
-    self.window = DevMenuWindow(manager: self)
+    self.window = Dispatch.mainSync { DevMenuWindow(manager: self) }
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
     DevMenuPreferences.setup()

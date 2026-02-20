@@ -17,7 +17,6 @@ import type { WebSocketServer } from 'ws';
 
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
-import { getRunningProcess } from '../../../utils/getRunningProcess';
 import type { ConnectAppType } from '../middleware/server.types';
 
 export const runServer = async (
@@ -79,12 +78,15 @@ export const runServer = async (
     if ('code' in error && error.code === 'EADDRINUSE') {
       // If `Error: listen EADDRINUSE: address already in use :::8081` then print additional info
       // about the process before throwing.
-      const info = getRunningProcess(config.server.port);
-      if (info) {
-        Log.error(
-          `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
-        );
-      }
+      const { getRunningProcess } =
+        require('../../../utils/getRunningProcess') as typeof import('../../../utils/getRunningProcess');
+      getRunningProcess(config.server.port).then((info) => {
+        if (info) {
+          Log.error(
+            `Port ${config.server.port} is busy running ${info.command} in: ${info.directory}`
+          );
+        }
+      });
     }
 
     if (onError) {

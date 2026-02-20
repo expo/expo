@@ -520,7 +520,10 @@ export type NotificationContentInput = {
      * The notification sound. Use `false` for a silent notification.
      * On Android version 8 and later, control the sounds via [notification channels](#setNotificationChannelAsync).
      * `defaultCritical` and `defaultRingtone` are applicable only on iOS, with `defaultCritical` requiring the critical alerts entitlement.
-     * */
+     *
+     * On iOS, you can also provide a custom sound filename including the extension. The file needs to be added
+     * to the `expo-notifications` config plugin `sounds` array in your app config.
+     */
     sound?: boolean | 'default' | 'defaultCritical' | 'defaultRingtone' | (string & {});
     /**
      * The name of the image or storyboard to use when your app launches because of the notification.

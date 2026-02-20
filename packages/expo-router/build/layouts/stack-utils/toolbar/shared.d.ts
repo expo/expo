@@ -36,6 +36,14 @@ export interface StackHeaderItemSharedProps {
     variant?: 'plain' | 'done' | 'prominent';
 }
 type RNSharedHeaderItem = Pick<NativeStackHeaderItemButton, 'label' | 'labelStyle' | 'icon' | 'variant' | 'tintColor' | 'disabled' | 'width' | 'hidesSharedBackground' | 'sharesBackground' | 'identifier' | 'badge' | 'accessibilityLabel' | 'accessibilityHint'>;
-export declare function convertStackHeaderSharedPropsToRNSharedHeaderItem(props: StackHeaderItemSharedProps): RNSharedHeaderItem;
+/** @internal */
+export declare function extractXcassetName(props: StackHeaderItemSharedProps): string | undefined;
+/**
+ * Extracts the rendering mode from the Icon child component (for `src` and `xcasset` variants).
+ * Returns undefined if no explicit rendering mode is set on the Icon child.
+ * @internal
+ */
+export declare function extractIconRenderingMode(props: StackHeaderItemSharedProps): 'template' | 'original' | undefined;
+export declare function convertStackHeaderSharedPropsToRNSharedHeaderItem(props: StackHeaderItemSharedProps, isBottomPlacement?: boolean): RNSharedHeaderItem;
 export {};
 //# sourceMappingURL=shared.d.ts.map

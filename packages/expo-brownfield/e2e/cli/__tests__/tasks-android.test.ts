@@ -1,6 +1,7 @@
-import { ERROR, TASKS_ANDROID } from '../../utils/output';
+import { BUILD, ERROR, TASKS_ANDROID } from '../../utils/output';
+import { CLI_PATH, executeCommandAsync } from '../../utils/process';
 import { createTempProject, cleanUpProject } from '../../utils/project';
-import { tasksAndroidTest } from '../../utils/test';
+import { buildTestCommon, expectPrebuild, tasksAndroidTest } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -26,7 +27,7 @@ describe('tasks:android command', () => {
      * Command: npx expo-brownfield tasks:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
-    it('should display help message for --help/-h option', async () => {
+    it('should display help message for --help/-h/help <command> option', async () => {
       // Help message display shouldn't require prebuild
       await tasksAndroidTest({
         directory: TEMP_DIR,
@@ -36,6 +37,12 @@ describe('tasks:android command', () => {
       await tasksAndroidTest({
         directory: TEMP_DIR,
         args: ['-h'],
+        useSnapshot: true,
+      });
+      await buildTestCommon({
+        directory: TEMP_DIR,
+        command: 'help',
+        args: ['tasks:android'],
         useSnapshot: true,
       });
     });
@@ -64,6 +71,61 @@ describe('tasks:android command', () => {
         successExit: false,
         stderr: [ERROR.ADDITIONAL_COMMAND('tasks:android')],
       });
+    });
+
+    /**
+     * Command: npx expo-brownfield tasks:android --library
+     * Expected behavior: The CLI should display the error message about missing argument
+     * (no need to test for all arguments as it's handled by commander)
+     */
+    it('should fail if argument value is not passed', async () => {
+      await tasksAndroidTest({
+        directory: TEMP_DIR,
+        args: ['--library'],
+        successExit: false,
+        stderr: [ERROR.MISSING_ARGUMENT('l', 'library', 'library')],
+      });
+    });
+
+    /**
+     * Command: npx expo-brownfield build:ios
+     * Expected behavior: The CLI should fail if prebuild is cancelled
+     */
+    it('should fail if prebuild is cancelled', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes no | node ${CLI_PATH} tasks:android`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
+    });
+
+    /**
+     * Command: npx expo-brownfield tasks:android
+     * Expected behavior: The CLI should validate and ask for prebuild
+     */
+    it('should validate and ask for prebuild', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes | node ${CLI_PATH} tasks:android`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('android'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(`Could not find brownfield library in the project`);
+
+      // The android directory should be created and not empty
+      await expectPrebuild(TEMP_DIR, 'android');
     });
   });
 

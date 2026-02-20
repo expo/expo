@@ -1,4 +1,4 @@
-import { HELP_MESSAGE } from '../../utils/output';
+import { HELP_MESSAGE, VERSION } from '../../utils/output';
 import { executeCLIASync } from '../../utils/process';
 import { createTempProject, cleanUpProject } from '../../utils/project';
 
@@ -38,6 +38,16 @@ describe('--help option', () => {
   });
 
   /**
+   * Command: npx expo-brownfield help
+   * Expected behavior: The CLI should support the `help` command
+   */
+  it('should support the `help` command', async () => {
+    const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['help']);
+    expect(exitCode).toBe(0);
+    expect(stdout).toMatchSnapshot();
+  });
+
+  /**
    * Command: npx expo-brownfield tasks:android --help
    * Expected behavior: The CLI should not print general help after a command is used
    */
@@ -50,12 +60,12 @@ describe('--help option', () => {
 
   /**
    * Command: npx expo-brownfield --version --help
-   * Expected behavior: The `--help` option should take precedence over `--version`
+   * Expected behavior: The `--help` option shouldn't take precedence over `--version`
    */
-  it('should take precedence over `--version`', async () => {
+  it("shouldn't take precedence over `--version`", async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
+    expect(stdout).toContain(VERSION);
   });
 
   /**
