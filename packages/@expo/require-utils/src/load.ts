@@ -46,6 +46,17 @@ const tsExtensionMapping: Record<string, string | undefined> = {
   '.mts': '.mjs',
 };
 
+function maybeReadFileSync(filename: string) {
+  try {
+    return fs.readFileSync(filename, 'utf8');
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+}
+
 function toFormat(filename: string) {
   if (filename.endsWith('.cjs')) {
     return 'commonjs';
@@ -61,17 +72,6 @@ function toFormat(filename: string) {
     return 'typescript';
   } else {
     return undefined;
-  }
-}
-
-function isTypescriptFilename(filename: string) {
-  switch (toFormat(filename)) {
-    case 'module-typescript':
-    case 'commonjs-typescript':
-    case 'typescript':
-      return true;
-    default:
-      return false;
   }
 }
 
@@ -194,13 +194,19 @@ async function loadModule(filename: string) {
  * NOTE: Requiring ESM has been added in all LTS versions (Node 20.19+, 22.12+, 24).
  * This already forms the minimum required Node version as of Expo SDK 54 */
 function loadModuleSync(filename: string) {
+  const format = toFormat(filename);
+  const isTypeScript =
+    format === 'module-typescript' || format === 'commonjs-typescript' || format === 'typescript';
   try {
-    if (!isTypescriptFilename(filename)) {
+    if (!isTypeScript) {
       return require(filename);
     }
   } catch (error: any) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw error;
+    } else if (format == null) {
+      const code = maybeReadFileSync(filename);
+      throw (code && annotateError(code, filename, error)) || error;
     }
     // We fallback to always evaluating the entrypoint module
     // This is out of safety, since we're not trusting the requiring ESM feature
