@@ -12,14 +12,14 @@ export default function AudioModeSelector() {
   }>({
     next: {
       interruptionMode: 'doNotMix',
-      playsInSilentMode: false,
+      playsInSilentMode: true,
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
     },
     current: {
       interruptionMode: 'doNotMix',
-      playsInSilentMode: false,
+      playsInSilentMode: true,
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
