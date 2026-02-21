@@ -106,7 +106,7 @@ class AudioModule : Module() {
           focusAcquired = true
 
           if (!shouldPlayInSilentMode()) {
-            return@OnAudioFocusChangeListener
+            return@launch
           }
 
           allPlayables.forEach { playable ->
@@ -467,7 +467,7 @@ class AudioModule : Module() {
               player.setMediaSource(it)
               if (wasPlaying) {
                 if (!shouldPlayInSilentMode()) {
-                  return@Function
+                  return@runOnMain
                 }
                 if (!focusAcquired) {
                   requestAudioFocus()
