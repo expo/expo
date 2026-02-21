@@ -333,6 +333,18 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   });
   main.find('svg').remove();
 
+  // Replace interactive diagrams (ReactFlow, etc.) with a text description.
+  // data-md="diagram" is the stable marker; data-md-alt contains the fallback text.
+  main.find('[data-md="diagram"]').each((_, el) => {
+    const $el = $(el);
+    const alt = $el.attr('data-md-alt')?.trim();
+    if (alt) {
+      $el.replaceWith(`<p>${alt}</p>`);
+    } else {
+      $el.remove();
+    }
+  });
+
   // Unwrap block elements inside headings — a <div> or nested <span> inside <h2> is invalid HTML
   // and breaks Turndown, splitting the heading into an empty "## " and a standalone paragraph.
   // Empty wrappers (leftover from icon removal) are removed; non-empty ones are unwrapped.

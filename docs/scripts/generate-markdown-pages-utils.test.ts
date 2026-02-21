@@ -277,6 +277,34 @@ describe('cleanHtml', () => {
   });
 });
 
+describe('diagram elements', () => {
+  it('replaces data-md="diagram" with its alt text', () => {
+    const html = `<main>
+      <p>The following diagram shows the hierarchy:</p>
+      <div data-md="diagram" data-md-alt="withMyPlugin [Config Plugin] → withAndroidPlugin [Plugin Function]">
+        <div class="react-flow">node labels and other interactive content</div>
+      </div>
+      <p>More content below.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('withMyPlugin [Config Plugin]');
+    expect(md).toContain('[Plugin Function]');
+    expect(md).not.toContain('react-flow');
+    expect(md).not.toContain('interactive content');
+  });
+
+  it('removes data-md="diagram" with no alt text', () => {
+    const html = `<main>
+      <h2>Overview</h2>
+      <div data-md="diagram"><div>canvas content</div></div>
+      <p>Text after.</p>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).not.toContain('canvas content');
+    expect(md).toContain('Text after.');
+  });
+});
+
 describe('cleanMarkdown', () => {
   it('removes empty headings', () => {
     expect(cleanMarkdown('## Content\n\n## \n\nMore text')).toBe('## Content\n\nMore text');
