@@ -15,6 +15,12 @@ enum InterruptionMode: String, Enumerable {
   case duckOthers
 }
 
+enum LoopMode: String, Enumerable {
+  case none
+  case single
+  case all
+}
+
 enum PitchCorrectionQuality: String, Enumerable {
   case low
   case medium

@@ -1,0 +1,79 @@
+---
+title: DevMenu
+description: A library that provides a developer menu for debug builds.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-dev-menu'
+packageName: 'expo-dev-menu'
+platforms: ['android', 'ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+
+The `expo-dev-menu` can be used as a **standalone library** in any Expo project. It is especially useful in [brownfield apps](/versions/unversioned/sdk/brownfield/) that don't need the full [`expo-dev-client`](/versions/unversioned/sdk/dev-client/) launcher interface.
+
+`expo-dev-menu` provides a developer menu UI for React Native apps that includes:
+
+- A powerful and extensible menu UI accessible via shake gesture or three-finger long press
+- Quick access to common development actions
+- Support for custom menu items to extend functionality
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+Once installed, the developer menu is available in your debug builds. You can open it by:
+
+- **Shake gesture**: Shake your device
+- **Three-finger long press**: Long press with three fingers on the screen
+- **Programmatically**: Call `DevMenu.openMenu()` from your code
+
+## Extending the dev menu
+
+The dev menu can be extended to include extra buttons by using the `registerDevMenuItems` API:
+
+```tsx
+import { registerDevMenuItems } from 'expo-dev-menu';
+
+const devMenuItems = [
+  {
+    name: 'My Custom Button',
+    callback: () => console.log('Hello world!'),
+  },
+];
+
+registerDevMenuItems(devMenuItems);
+```
+
+This will create a new section in the dev menu that includes the buttons you have registered:
+
+<ContentSpotlight
+  alt="An example of a custom menu button in expo-dev-menu"
+  src="/static/images/dev-client/custom-menu-button.png"
+  className="max-w-[400px]"
+/>
+
+> **Note:** Subsequent calls of `registerDevMenuItems` will override all previous entries.
+
+## Using with expo-dev-client
+
+If you are using [development builds](/develop/development-builds/introduction/), install `expo-dev-client` instead. It includes `expo-dev-menu` along with additional development tools:
+
+- A configurable launcher UI for switching between development servers
+- Improved debugging tools
+- Support for loading updates from [EAS Update](/eas-update/introduction/)
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+For more information, check the [`expo-dev-client` reference](/versions/latest/sdk/dev-client/).
+
+## API
+
+```js
+import * as DevMenu from 'expo-dev-menu';
+```
+
+<APISection packageName={['expo-dev-menu']} apiName="DevMenu" />

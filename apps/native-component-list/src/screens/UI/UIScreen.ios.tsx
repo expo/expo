@@ -195,6 +195,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ScrollView component',
+    route: 'ui/scrollview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewScreen'));
+    },
+  },
+  {
     name: 'Shapes',
     route: 'ui/shapes',
     options: {},

@@ -7,7 +7,9 @@ function setupRuntime() {
             enumerable: true,
             configurable: true,
             get() {
-                return scopeRef.current?.getStore()?.origin || 'null';
+                // NOTE(@kitten): By convention, this property must be a string, and runtimes typically
+                // choose to stringify "null" when the value is not available
+                return scopeRef.current?.getStore()?.origin ?? 'null';
             },
         });
     }

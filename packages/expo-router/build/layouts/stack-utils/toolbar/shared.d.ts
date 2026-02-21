@@ -44,6 +44,6 @@ export declare function extractXcassetName(props: StackHeaderItemSharedProps): s
  * @internal
  */
 export declare function extractIconRenderingMode(props: StackHeaderItemSharedProps): 'template' | 'original' | undefined;
-export declare function convertStackHeaderSharedPropsToRNSharedHeaderItem(props: StackHeaderItemSharedProps): RNSharedHeaderItem;
+export declare function convertStackHeaderSharedPropsToRNSharedHeaderItem(props: StackHeaderItemSharedProps, isBottomPlacement?: boolean): RNSharedHeaderItem;
 export {};
 //# sourceMappingURL=shared.d.ts.map

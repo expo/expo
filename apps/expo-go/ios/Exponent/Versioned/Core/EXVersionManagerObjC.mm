@@ -167,7 +167,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   }
 
   items[@"dev-remote-debug"] = @{
-    @"label": @"Open JS Debugger",
+    @"label": @"Open DevTools",
     @"isEnabled": @YES
   };
 

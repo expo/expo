@@ -1,5 +1,5 @@
 import SwiftUI
-import minimaltesterbrownfield
+import expoappbrownfield
 
 @main
 struct BrownfieldIntegratedTesterApp: App {

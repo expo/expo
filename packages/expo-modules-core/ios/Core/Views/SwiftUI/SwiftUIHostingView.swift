@@ -82,15 +82,11 @@ extension ExpoSwiftUI {
       super.init(appContext: appContext)
 
       shadowNodeProxy.setViewSize = { size in
-        #if RCT_NEW_ARCH_ENABLED
         self.setViewSize(size)
-        #endif
       }
 
       shadowNodeProxy.setStyleSize = { width, height in
-        #if RCT_NEW_ARCH_ENABLED
         self.setStyleSize(width, height: height)
-        #endif
       }
 
       shadowNodeProxy.objectWillChange.send()
@@ -161,7 +157,6 @@ extension ExpoSwiftUI {
       setupHostingViewConstraints()
     }
 
-#if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
      */
@@ -202,7 +197,6 @@ extension ExpoSwiftUI {
         props.objectWillChange.send()
       }
     }
-#endif // RCT_NEW_ARCH_ENABLED
 
     /**
      Setups layout constraints of the hosting controller view to match the layout set by React.

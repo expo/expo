@@ -7,7 +7,7 @@ final class ColorPickerProps: UIBaseViewProps {
   @Field var selection: Color = .clear
   @Field var label: String?
   @Field var supportsOpacity: Bool = true
-  var onValueChanged = EventDispatcher()
+  var onSelectionChange = EventDispatcher()
 }
 
 struct ColorPickerView: ExpoSwiftUI.View {
@@ -29,7 +29,7 @@ struct ColorPickerView: ExpoSwiftUI.View {
         if newHex != previousHex {
           previousHex = newHex
           let payload = ["value": newHex]
-          props.onValueChanged(payload)
+          props.onSelectionChange(payload)
         }
       }
 #else

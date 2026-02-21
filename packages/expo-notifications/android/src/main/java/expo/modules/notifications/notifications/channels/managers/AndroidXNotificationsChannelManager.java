@@ -138,6 +138,17 @@ public class AndroidXNotificationsChannelManager implements NotificationsChannel
     }
   }
 
+  public boolean customSoundExists(ReadableArguments args) {
+    if (!args.containsKey(SOUND_KEY)) {
+      return true;
+    }
+    String filename = args.getString(SOUND_KEY);
+    if (filename == null) {
+      return true;
+    }
+    return mSoundResolver.resourceExists(filename);
+  }
+
   @Nullable
   protected Uri createSoundUriFromArguments(ReadableArguments args) {
     // The default is... the default sound.

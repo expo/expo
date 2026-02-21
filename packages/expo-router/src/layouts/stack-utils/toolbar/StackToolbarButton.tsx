@@ -207,7 +207,7 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
     throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
   }
 
-  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props, true);
   // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
   const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
   const xcassetName = extractXcassetName(props);

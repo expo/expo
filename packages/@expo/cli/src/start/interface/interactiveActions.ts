@@ -48,19 +48,21 @@ export class DevServerManagerActions {
           rows--;
         }
 
-        const qr = printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
-        rows -= qr.lines;
-        qr.print();
+        if (!env.EXPO_NO_QR_CODE) {
+          const qr = printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
+          rows -= qr.lines;
+          qr.print();
 
-        let qrMessage = '';
-        if (!options.devClient) {
-          qrMessage = `Scan the QR code above to open in ${chalk`{bold Expo Go}`}.`;
-        } else {
-          qrMessage = chalk`Scan the QR code above to open in a {bold development build}.`;
-          qrMessage += ` (${learnMore('https://expo.fyi/start')})`;
+          let qrMessage = '';
+          if (!options.devClient) {
+            qrMessage = `Scan the QR code above to open in ${chalk`{bold Expo Go}`}.`;
+          } else {
+            qrMessage = chalk`Scan the QR code above to open in a {bold development build}.`;
+            qrMessage += ` (${learnMore('https://expo.fyi/start')})`;
+          }
+          rows--;
+          Log.log(printItem(qrMessage, { dim: true }));
         }
-        rows--;
-        Log.log(printItem(qrMessage, { dim: true }));
 
         if (interstitialPageUrl) {
           rows--;

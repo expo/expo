@@ -107,15 +107,30 @@ function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
     const ts = loadTypescript();
 
     if (ts) {
+      let module: ts.ModuleKind;
+      if (ext === '.cts') {
+        module = ts.ModuleKind.CommonJS;
+      } else if (ext === '.mts') {
+        module = ts.ModuleKind.ESNext;
+      } else {
+        // NOTE(@kitten): We can "preserve" the output, meaning, it can either be ESM or CJS
+        // and stop TypeScript from either transpiling it to CommonJS or adding an `export {}`
+        // if no exports are used. This allows the user to choose if this file is CJS or ESM
+        // (but not to mix both)
+        module = ts.ModuleKind.Preserve;
+      }
       const output = ts.transpileModule(code, {
         fileName: filename,
         reportDiagnostics: true,
         compilerOptions: {
-          module: ext === '.cts' ? ts.ModuleKind.CommonJS : ts.ModuleKind.ESNext,
+          module,
           moduleResolution: ts.ModuleResolutionKind.Bundler,
+          // `verbatimModuleSyntax` needs to be off, to erase as many imports as possible
+          verbatimModuleSyntax: false,
           target: ts.ScriptTarget.ESNext,
           newLine: ts.NewLineKind.LineFeed,
           inlineSourceMap: true,
+          esModuleInterop: true,
         },
       });
       inputCode = output?.outputText || inputCode;

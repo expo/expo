@@ -1,6 +1,27 @@
 import { type ColorValue } from 'react-native';
 import { ExpoModifier } from '../../types';
-type ShapeType = 'star' | 'pillStar' | 'pill' | 'circle' | 'rectangle' | 'polygon';
+type ShapeType = 'star' | 'pillStar' | 'pill' | 'circle' | 'rectangle' | 'polygon' | 'roundedCorner';
+/**
+ * Corner radii for RoundedCorner shape.
+ */
+export type CornerRadii = {
+    /**
+     * Top-start corner radius in dp.
+     */
+    topStart?: number;
+    /**
+     * Top-end corner radius in dp.
+     */
+    topEnd?: number;
+    /**
+     * Bottom-start corner radius in dp.
+     */
+    bottomStart?: number;
+    /**
+     * Bottom-end corner radius in dp.
+     */
+    bottomEnd?: number;
+};
 export type ShapeProps = {
     /**
      * Corner rounding percentage. Multiplied by the shorter dimension of the view to produce pixel values.
@@ -27,6 +48,10 @@ export type ShapeProps = {
      * @default 1.0
      */
     radius?: number;
+    /**
+     * Corner radii for RoundedCorner shape. Values are in dp.
+     */
+    cornerRadii?: CornerRadii;
     /** Color of the shape */
     color?: ColorValue;
     /**
@@ -38,7 +63,7 @@ type NativeShapeProps = Omit<ShapeProps, 'modifiers'> & {
     type: ShapeType;
     modifiers?: unknown;
 };
-export type ShapeRecordProps = Pick<NativeShapeProps, 'cornerRounding' | 'smoothing' | 'verticesCount' | 'innerRadius' | 'radius' | 'type'>;
+export type ShapeRecordProps = Pick<NativeShapeProps, 'cornerRounding' | 'smoothing' | 'verticesCount' | 'innerRadius' | 'radius' | 'cornerRadii' | 'type'>;
 export type ShapeJSXElement = React.ReactElement<NativeShapeProps> & {
     __expo_shape_jsx_element_marker: true;
 };
@@ -48,6 +73,7 @@ declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'color' | 'modifiers
 declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'color' | 'modifiers'>): ShapeJSXElement;
 declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'color' | 'modifiers'>): ShapeJSXElement;
 declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'color' | 'modifiers'>): ShapeJSXElement;
+declare function RoundedCorner(props: Pick<ShapeProps, 'cornerRadii' | 'color' | 'modifiers'>): ShapeJSXElement;
 export declare const Shape: {
     Star: typeof Star;
     PillStar: typeof PillStar;
@@ -55,6 +81,7 @@ export declare const Shape: {
     Circle: typeof Circle;
     Rectangle: typeof Rectangle;
     Polygon: typeof Polygon;
+    RoundedCorner: typeof RoundedCorner;
 };
 export declare function parseJSXShape(shape: ShapeJSXElement): ShapeRecordProps;
 export declare function parseJSXShape(shape?: ShapeJSXElement): ShapeRecordProps | undefined;

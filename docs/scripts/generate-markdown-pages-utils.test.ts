@@ -1352,7 +1352,6 @@ describe('extractFrontmatter', () => {
       path.join(tmpDir, 'full.mdx'),
       [
         '---',
-        'modificationDate: July 08, 2025',
         'title: Camera',
         'description: A camera component.',
         "platforms: ['android', 'ios']",
@@ -1379,19 +1378,47 @@ describe('extractFrontmatter', () => {
       path.join(tmpDir, 'no-frontmatter.mdx'),
       "import Foo from './Foo';\n\n# Hello\n"
     );
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'ui-fields.mdx'),
+      [
+        '---',
+        'title: Camera',
+        'description: A camera component.',
+        'hideTOC: true',
+        'maxHeadingDepth: 4',
+        'hideFromSearch: true',
+        'hideInSidebar: true',
+        'sidebar_title: Cam',
+        'searchRank: 10',
+        'searchPosition: 5',
+        'hasVideoLink: true',
+        'packageName: expo-camera',
+        'isDeprecated: true',
+        'isAlpha: true',
+        '---',
+        '',
+        '# Camera',
+        '',
+      ].join('\n')
+    );
+
+    fs.writeFileSync(
+      path.join(tmpDir, 'only-ui-fields.mdx'),
+      '---\nhideTOC: true\nmaxHeadingDepth: 4\n---\n\n# Page\n'
+    );
   });
 
   afterAll(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  it('extracts only modificationDate including delimiters', () => {
+  it('extracts full frontmatter including delimiters', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'full.mdx'));
     expect(result).not.toBeNull();
-    expect(result).toContain('modificationDate: July 08, 2025');
-    expect(result).not.toContain('title: Camera');
-    expect(result).not.toContain('description: A camera component.');
-    expect(result).not.toContain('platforms:');
+    expect(result).toContain('title: Camera');
+    expect(result).toContain('description: A camera component.');
+    expect(result).toContain('platforms:');
     // Should include --- delimiters
     expect(result).toMatch(/^---\n/);
     expect(result).toMatch(/\n---\n$/);
@@ -1399,14 +1426,19 @@ describe('extractFrontmatter', () => {
     expect(result).not.toContain('import');
   });
 
-  it('returns null when frontmatter has no modificationDate', () => {
+  it('extracts minimal frontmatter', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'minimal.mdx'));
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result).toContain('title: Minimal');
+    expect(result).not.toContain('# Minimal');
   });
 
-  it('returns null when modificationDate is empty', () => {
+  it('strips lines with empty values', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'empty-values.mdx'));
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result).toContain('title: Camera');
+    expect(result).toContain('description: A camera.');
+    expect(result).not.toContain('modificationDate');
   });
 
   it('returns null when all frontmatter fields are empty', () => {
@@ -1416,6 +1448,31 @@ describe('extractFrontmatter', () => {
 
   it('returns null when no frontmatter exists', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'no-frontmatter.mdx'));
+    expect(result).toBeNull();
+  });
+
+  it('strips UI-only fields and keeps semantic fields', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'ui-fields.mdx'));
+    expect(result).not.toBeNull();
+    // Semantic fields are preserved
+    expect(result).toContain('title: Camera');
+    expect(result).toContain('description: A camera component.');
+    expect(result).toContain('isDeprecated: true');
+    expect(result).toContain('isAlpha: true');
+    expect(result).toContain('packageName: expo-camera');
+    // UI-only fields are stripped
+    expect(result).not.toContain('hideTOC');
+    expect(result).not.toContain('maxHeadingDepth');
+    expect(result).not.toContain('hideFromSearch');
+    expect(result).not.toContain('hideInSidebar');
+    expect(result).not.toContain('sidebar_title');
+    expect(result).not.toContain('searchRank');
+    expect(result).not.toContain('searchPosition');
+    expect(result).not.toContain('hasVideoLink');
+  });
+
+  it('returns null when all fields are UI-only', () => {
+    const result = extractFrontmatter(path.join(tmpDir, 'only-ui-fields.mdx'));
     expect(result).toBeNull();
   });
 });

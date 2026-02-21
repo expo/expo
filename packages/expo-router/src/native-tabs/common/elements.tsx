@@ -99,10 +99,9 @@ export interface XcassetIcon {
    * Xcassets provide automatic multi-resolution (@1x/@2x/@3x), dark mode variants,
    * and device-specific images via `[UIImage imageNamed:]`.
    *
-   * > **Note:** The rendering mode (template vs original) is controlled by the
-   * > "Render As" setting on the image set in Xcode's asset catalog, not via props.
-   * > By default, tab bar icons are tinted. To preserve original colors, set
-   * > "Render As" to "Original Image" in the Attributes Inspector.
+   * The rendering mode (template vs original) can be controlled via the `renderingMode` prop
+   * on the `Icon` component. By default, icons are tinted when `iconColor` is set, and
+   * rendered as original otherwise.
    *
    * The value can be provided in two ways:
    * - As a string with the asset catalog image name

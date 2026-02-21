@@ -31,7 +31,7 @@ type RecorderProps = {
 
 export default function Recorder({ onDone, style }: RecorderProps) {
   const [state, setState] = React.useState<RecordingStatus>({
-    id: 0,
+    id: 'initial',
     hasError: false,
     error: null,
     isFinished: false,
@@ -233,7 +233,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
           {_formatTime(recorderState.durationMillis / 1000)}
         </Text>
       </View>
-      <AudioInputSelector recorder={audioRecorder} />
+      <AudioInputSelector recorder={audioRecorder} canRecord={recorderState.canRecord} />
       {maybeRenderErrorOverlay()}
     </View>
   );
