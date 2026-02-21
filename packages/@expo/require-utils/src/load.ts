@@ -4,7 +4,7 @@ import path from 'node:path';
 import url from 'node:url';
 import type * as ts from 'typescript';
 
-import { addAdvice, annotateError, formatDiagnostic } from './codeframe';
+import { annotateError, formatDiagnostic } from './codeframe';
 import { toCommonJS } from './transform';
 
 declare module 'node:module' {
@@ -182,8 +182,6 @@ function evalModule(
     if (diagnosticError) {
       throw diagnosticError;
     }
-
-    addAdvice(filename, error);
     throw annotateError(code, filename, error) ?? error;
   }
 }
@@ -225,7 +223,6 @@ function loadModuleSync(filename: string) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw error;
     } else if (format == null) {
-      addAdvice(filename, error);
       const code = maybeReadFileSync(filename);
       throw annotateError(code, filename, error) || error;
     }
