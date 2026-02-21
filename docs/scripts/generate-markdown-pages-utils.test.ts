@@ -287,8 +287,8 @@ describe('diagram elements', () => {
       <p>More content below.</p>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('withMyPlugin [Config Plugin]');
-    expect(md).toContain('[Plugin Function]');
+    expect(md).toContain('```\nwithMyPlugin [Config Plugin]');
+    expect(md).toContain('[Plugin Function]\n```');
     expect(md).not.toContain('react-flow');
     expect(md).not.toContain('interactive content');
   });
