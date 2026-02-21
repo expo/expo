@@ -320,8 +320,6 @@ export declare const italic: () => ModifierConfig;
  * Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.
  * When applied to `Text`, modifies the text view's font to use fixed-width digits, while leaving other characters proportionally spaced.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/monospaceddigit()).
- * @platform ios 15.0+
- * @platform tvos 15.0+
  */
 export declare const monospacedDigit: () => ModifierConfig;
 /**

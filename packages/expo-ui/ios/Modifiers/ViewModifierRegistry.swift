@@ -176,11 +176,7 @@ internal struct ItalicModifier: ViewModifier, Record {
 
 internal struct MonospacedDigitModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
-    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *) {
-      content.monospacedDigit()
-    } else {
-      content
-    }
+    content.monospacedDigit()
   }
 }
 
@@ -1335,10 +1331,7 @@ public class ViewModifierRegistry {
     case "italic":
       return text.italic()
     case "monospacedDigit":
-      if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *) {
-        return text.monospacedDigit()
-      }
-      return text
+      return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
       if let family = modifier.family {
