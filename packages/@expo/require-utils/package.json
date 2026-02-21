@@ -43,6 +43,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "expo-module-scripts": "^55.0.2",
+    "memfs": "^3.2.0",
     "typescript": "^5.9.2"
   },
   "publishConfig": {
