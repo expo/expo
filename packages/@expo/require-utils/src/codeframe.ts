@@ -42,10 +42,10 @@ export function addAdvice(filename: string, error: Error) {
   if (extname === '.js' || extname === '.ts') {
     if (/does not provide an export named/i.test(error.message)) {
       const targetExt = extname === '.ts' ? '.mts' : '.mjs';
-      error.message += `\nIf you're migrating from Expo 54, try changing ${basename}'s extension to .${targetExt}`;
+      error.message += `\nIf you're migrating from Expo 54, try changing ${basename}'s extension to ${targetExt}`;
     } else if (/require is not defined in ES module scope/i.test(error.message)) {
       const targetExt = extname === '.ts' ? '.cts' : '.cjs';
-      error.message += `\nIf you're migrating from Expo 54, try changing ${basename}'s extension to .${targetExt}`;
+      error.message += `\nIf you're migrating from Expo 54, try changing ${basename}'s extension to ${targetExt}`;
     }
   }
 }

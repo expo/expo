@@ -204,7 +204,7 @@ function loadModuleSync(filename: string) {
   const isTypeScript =
     format === 'module-typescript' || format === 'commonjs-typescript' || format === 'typescript';
   try {
-    if (!isTypeScript) {
+    if (format !== 'module' && !isTypeScript) {
       return require(filename);
     }
   } catch (error: any) {
