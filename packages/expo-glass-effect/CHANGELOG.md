@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix `isInteractive` not applying when `glassEffectStyle` has `animate: true`. ([#43330](https://github.com/expo/expo/pull/43330) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 55.0.6 — 2026-02-16
