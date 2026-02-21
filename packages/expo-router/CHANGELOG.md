@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix stack composition options in link preview ([#43334](https://github.com/expo/expo/pull/43334) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 55.0.0-preview.9 — 2026-02-20

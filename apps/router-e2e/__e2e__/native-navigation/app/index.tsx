@@ -37,9 +37,12 @@ const HomeIndex = () => {
 function CaseLink({ href, text }: { href: Href; text: string }) {
   return (
     <Link href={href} asChild>
-      <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
-        <Text style={{ color: '#fff' }}>{text}</Text>
-      </Pressable>
+      <Link.Trigger>
+        <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+          <Text style={{ color: '#fff' }}>{text}</Text>
+        </Pressable>
+      </Link.Trigger>
+      <Link.Preview />
     </Link>
   );
 }
