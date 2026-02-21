@@ -103,9 +103,7 @@ public final class GlassView: ExpoView {
         #if compiler(>=6.2) // Xcode 26
         let applyEffect = {
           if let uiStyle = newStyle.toUIGlassEffectStyle() {
-            let effect = UIGlassEffect(style: uiStyle)
-            self.glassEffectView.effect = effect
-            self.glassEffect = effect
+            self.glassEffect = UIGlassEffect(style: uiStyle)
             self.updateEffect()
           } else {
             // TODO: revisit this in newer versions of iOS
