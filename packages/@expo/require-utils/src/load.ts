@@ -66,7 +66,7 @@ function toFormat(filename: string, isLegacy: boolean) {
   } else if (filename.endsWith('.mjs')) {
     return 'module';
   } else if (filename.endsWith('.js')) {
-    return isLegacy ? 'commonjs' : undefined;
+    return isLegacy ? 'commonjs' : null;
   } else if (filename.endsWith('.mts')) {
     return 'module-typescript';
   } else if (filename.endsWith('.cts')) {
@@ -74,7 +74,7 @@ function toFormat(filename: string, isLegacy: boolean) {
   } else if (filename.endsWith('.ts')) {
     return isLegacy ? 'commonjs-typescript' : 'typescript';
   } else {
-    return undefined;
+    return null;
   }
 }
 
@@ -89,7 +89,7 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   const paths = [...prependPaths, ...nodeModulePaths];
   try {
     const mod = Object.assign(new nodeModule.Module(filename, parent), { filename, paths });
-    mod._compile(code, filename, format);
+    mod._compile(code, filename, format != null ? format : undefined);
     require.cache[filename] = mod;
     parent?.children?.splice(parent.children.indexOf(mod), 1);
     return mod;
