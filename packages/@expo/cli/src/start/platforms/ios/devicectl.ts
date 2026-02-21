@@ -233,7 +233,7 @@ async function installAppWithDeviceCtlAsync(
         throw error;
       }
       const backoffDelay = 500 + Math.pow(2, attempt - 1) * 500;
-      await new Promise(resolve => setTimeout(resolve, backoffDelay));
+      await new Promise((resolve) => setTimeout(resolve, backoffDelay));
     }
   }
 }
