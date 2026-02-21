@@ -339,7 +339,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $el = $(el);
     const alt = $el.attr('data-md-alt')?.trim();
     if (alt) {
-      $el.replaceWith(`<pre><code>${alt}</code></pre>`);
+      const $pre = $('<pre></pre>');
+      const $code = $('<code></code>');
+      $code.text(alt);
+      $pre.append($code);
+      $el.replaceWith($pre);
     } else {
       $el.remove();
     }

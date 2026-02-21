@@ -164,7 +164,8 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
   const diagramAlt = nodesData
     .map(n => {
       const names = [n.title, n.extraTitle].filter(Boolean).join(', ');
-      return `${names} [${n.badge}]`;
+      const sub = n.subtitle ? ` (${n.subtitle})` : '';
+      return `${names}${sub} [${n.badge}]`;
     })
     .join(' → ');
 

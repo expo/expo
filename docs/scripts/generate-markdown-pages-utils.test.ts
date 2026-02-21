@@ -293,6 +293,16 @@ describe('diagram elements', () => {
     expect(md).not.toContain('interactive content');
   });
 
+  it('escapes special HTML characters in diagram alt text', () => {
+    const html = `<main>
+      <div data-md="diagram" data-md-alt="A <B> & C"></div>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('A <B> & C');
+    expect(md).not.toContain('&lt;');
+    expect(md).not.toContain('&amp;');
+  });
+
   it('removes data-md="diagram" with no alt text', () => {
     const html = `<main>
       <h2>Overview</h2>
