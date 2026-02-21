@@ -58,9 +58,11 @@ function maybeReadFileSync(filename: string) {
   }
 }
 
-type Format = ReturnType<typeof toFormat>;
+type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript';
 
-function toFormat(filename: string, isLegacy: boolean) {
+function toFormat(filename: string, isLegacy: true): Format;
+function toFormat(filename: string, isLegacy: false): Format | null;
+function toFormat(filename: string, isLegacy: boolean): Format | null {
   if (filename.endsWith('.cjs')) {
     return 'commonjs';
   } else if (filename.endsWith('.mjs')) {
