@@ -36,6 +36,9 @@ inputs:
     description: 'NDK version used'
     default: '23.1.7779620'
     required: false
+  ccache:
+    description: 'Restore ccache'
+    required: false
   git-lfs:
     description: 'Restore Git LFS cache'
     required: false
@@ -190,6 +193,14 @@ runs:
       if: inputs.ndk == 'true' && steps.cache-android-ndk.outputs.cache-hit != 'true'
       shell: bash
       run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;${{ inputs.ndk-version }}"
+
+    - name: ♻️ Restore ccache
+      if: inputs.ccache == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}/.ccache
+        key: ${{ runner.os }}-ccache-${{ hashFiles('yarn.lock', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/*.mm', 'packages/**/*.m') }}
+        restore-keys: ${{ runner.os }}-ccache-
 
     - name: 🔍️ Get cache key of Git LFS files
       if: inputs.git-lfs == 'true'

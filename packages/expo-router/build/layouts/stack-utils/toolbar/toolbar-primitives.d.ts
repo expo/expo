@@ -41,9 +41,6 @@ export type StackToolbarIconProps = {
      * - With `tintColor`: defaults to `'template'`
      * - Without `tintColor`: defaults to `'original'`
      *
-     * > **Note**: For `left` and `right` header items, the rendering mode is controlled by the
-     * > asset catalog's "Render As" setting, not this prop.
-     *
      * @platform ios
      */
     renderingMode?: 'template' | 'original';

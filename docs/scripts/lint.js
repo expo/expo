@@ -21,7 +21,10 @@ const eslintArgs = [
 function runTsc() {
   return new Promise(resolve => {
     const chunks = [];
-    const proc = spawn('tsc', ['--noEmit', '--pretty'], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const proc = spawn('tsc', ['--noEmit', '--pretty'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: true,
+    });
     proc.stdout.on('data', d => chunks.push(d));
     proc.stderr.on('data', d => chunks.push(d));
     proc.on('close', status => {
@@ -34,6 +37,7 @@ function runTsc() {
 function runEslint() {
   const { status, stderr } = spawnSync('eslint', eslintArgs, {
     stdio: ['inherit', 'inherit', 'pipe'],
+    shell: true,
   });
 
   // If ESLint fails with a fatal error, the cache may be stale. Clear it and retry once.
@@ -44,6 +48,7 @@ function runEslint() {
     } catch {}
     const retry = spawnSync('eslint', eslintArgs, {
       stdio: ['inherit', 'inherit', 'pipe'],
+      shell: true,
     });
     return { status: retry.status, stderr: retry.stderr };
   }

@@ -21,7 +21,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
   const { types: t } = api;
 
   const routerAbsoluteRoot = api.caller(getExpoRouterAbsoluteAppRoot);
-  const isServer = api.caller(getIsServer);
   const isLoaderBundle = api.caller(getIsLoaderBundle);
 
   return {
@@ -44,12 +43,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
       },
 
       ExportNamedDeclaration(path, state) {
-        // NOTE(@hassankhan): Server bundles currently preserve loaders for SSG, a followup is
-        // required to remove them.
-        if (isServer && !isLoaderBundle) {
-          return;
-        }
-
         // Early exit if file is not within the `app/` directory
         if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
           debug('Skipping file outside app directory:', state.file.opts.filename);

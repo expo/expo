@@ -49,6 +49,7 @@ import {
   allowsTightening,
   truncationMode,
   kerning,
+  monospacedDigit,
   textCase,
   underline,
   strikethrough,
@@ -251,6 +252,19 @@ export default function ModifiersScreen() {
             />
             <Text modifiers={[font({ size: 14 }), kerning(kerningValue)]}>Kerning Text</Text>
             <Slider min={0} max={10} onValueChange={setKerning} />
+
+            <HStack alignment="center" spacing={40}>
+              <VStack spacing={4}>
+                <Text modifiers={[font({ size: 12 })]}>Default</Text>
+                <Text modifiers={[font({ size: 20 })]}>1111111111</Text>
+                <Text modifiers={[font({ size: 20 })]}>0000000000</Text>
+              </VStack>
+              <VStack spacing={4}>
+                <Text modifiers={[font({ size: 12 })]}>monospacedDigit</Text>
+                <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>1111111111</Text>
+                <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>0000000000</Text>
+              </VStack>
+            </HStack>
 
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>

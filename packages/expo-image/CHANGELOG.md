@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 55.0.4 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Android] Uses shared cookie jar for image requests. ([#43257](https://github.com/expo/expo/pull/43257) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 55.0.3 — 2026-01-27
 
 _This version does not introduce any user-facing changes._

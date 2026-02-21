@@ -8,8 +8,8 @@ exports._createSideEffectMatcher = _createSideEffectMatcher;
 exports.isVirtualModule = isVirtualModule;
 const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const fs_1 = __importDefault(require("fs"));
-const minimatch_1 = require("minimatch");
 const path_1 = __importDefault(require("path"));
+const picomatch_1 = __importDefault(require("picomatch"));
 const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
 const debug = require('debug')('expo:side-effects');
 function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value.path], checked = new Set()) {
@@ -61,27 +61,31 @@ const getPackageJsonMatcher = (options, dir) => {
     return isSideEffect;
 };
 function _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath = '') {
+    let sideEffectMatcher;
+    if (Array.isArray(packageJson.sideEffects)) {
+        const sideEffects = packageJson.sideEffects
+            .filter((sideEffect) => typeof sideEffect === 'string')
+            .map((sideEffect) => sideEffect.replace(/^\.\//, ''));
+        sideEffectMatcher = (0, picomatch_1.default)(sideEffects, { matchBase: true });
+    }
+    else if (typeof packageJson.sideEffects === 'boolean' || !packageJson.sideEffects) {
+        sideEffectMatcher = packageJson.sideEffects;
+    }
+    else {
+        debug('Invalid sideEffects field in package.json:', packageJsonPath, packageJson.sideEffects);
+    }
     return (fp) => {
         // Default is that everything is a side-effect unless explicitly marked as not.
-        if (packageJson.sideEffects == null) {
+        if (sideEffectMatcher == null) {
             return null;
         }
-        if (typeof packageJson.sideEffects === 'boolean') {
-            return packageJson.sideEffects;
+        else if (typeof sideEffectMatcher === 'boolean') {
+            return sideEffectMatcher;
         }
-        else if (Array.isArray(packageJson.sideEffects)) {
+        else {
             const relativeName = path_1.default.relative(dirRoot, fp);
-            return packageJson.sideEffects.some((sideEffect) => {
-                if (typeof sideEffect === 'string') {
-                    return (0, minimatch_1.minimatch)(relativeName, sideEffect.replace(/^\.\//, ''), {
-                        matchBase: true,
-                    });
-                }
-                return false;
-            });
+            return sideEffectMatcher(relativeName);
         }
-        debug('Invalid sideEffects field in package.json:', packageJsonPath, packageJson.sideEffects);
-        return null;
     };
 }
 function getShallowSideEffect(options, value) {

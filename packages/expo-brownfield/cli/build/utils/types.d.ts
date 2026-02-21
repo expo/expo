@@ -1,54 +1,4 @@
-import type { Spec } from 'arg';
-export interface HelpMessageCommand {
-    command: string;
-    description: string;
-    hasOptions?: boolean;
-}
-export interface HelpMessageOption {
-    description: string;
-    option: string;
-    short?: string;
-}
-export interface HelpMessageParams {
-    commands?: HelpMessageCommand[];
-    options?: HelpMessageOption[];
-    promptCommand?: string;
-    promptOptions?: string;
-}
-export interface HelpMessageSectionParams<T> {
-    items?: T[];
-    left: (item: T) => string;
-    right: (item: T) => string;
-    title: string;
-}
-export interface ParseArgsParams {
-    spec: Spec;
-    argv?: string[];
-    stopAtPositional?: boolean;
-}
-export type BuildTypeCommon = 'debug' | 'release';
-export type BuildTypeAndroid = BuildTypeCommon | 'all';
-export interface BuildConfigCommon {
-    dryRun: boolean;
-    help: boolean;
-    verbose: boolean;
-}
-export interface BuildConfigAndroid extends BuildConfigCommon {
-    buildType: BuildTypeAndroid;
-    libraryName: string;
-    repositories: string[];
-    tasks: string[];
-}
-export interface BuildConfigIos extends BuildConfigCommon {
-    artifacts: string;
-    buildType: BuildTypeCommon;
-    derivedDataPath: string;
-    device: string;
-    hermesFrameworkPath: string;
-    scheme: string;
-    simulator: string;
-    workspace: string;
-}
+export type Platform = 'android' | 'ios';
 export interface RunCommandOptions {
     cwd?: string;
     env?: Record<string, string>;
@@ -64,4 +14,28 @@ export interface WithSpinnerParams<T> {
     errorMessage?: string;
     onError?: 'error' | 'warn';
     verbose?: boolean;
+}
+export interface CommonConfig {
+    dryRun: boolean;
+    verbose: boolean;
+}
+export type BuildVariant = 'All' | 'Debug' | 'Release';
+export interface AndroidConfig extends CommonConfig {
+    library: string;
+    tasks: string[];
+    variant: BuildVariant;
+}
+export type BuildConfiguration = 'Debug' | 'Release';
+export interface IosConfig extends CommonConfig {
+    artifacts: string;
+    buildConfiguration: BuildConfiguration;
+    derivedDataPath: string;
+    device: string;
+    hermesFrameworkPath: string;
+    scheme: string;
+    simulator: string;
+    workspace: string;
+}
+export interface TasksConfigAndroid extends CommonConfig {
+    library: string;
 }

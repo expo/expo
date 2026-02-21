@@ -1,9 +1,9 @@
 import path from 'path';
 
 import { BUILD, BUILD_IOS, ERROR } from '../../utils/output';
-import { executeCommandAsync } from '../../utils/process';
+import { CLI_PATH, executeCommandAsync } from '../../utils/process';
 import { cleanUpProject, createTempProject } from '../../utils/project';
-import { buildIosTest, expectPrebuild } from '../../utils/test';
+import { buildIosTest, buildTestCommon, expectPrebuild } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -30,7 +30,7 @@ describe('build:ios command', () => {
      * Command: npx expo-brownfield build:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
-    it('should display help message for --help/-h option', async () => {
+    it('should display help message for --help/-h/help <command> option', async () => {
       // Help message display shouldn't require prebuild
       await buildIosTest({
         directory: TEMP_DIR,
@@ -40,6 +40,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR,
         args: ['-h'],
+        useSnapshot: true,
+      });
+      await buildTestCommon({
+        directory: TEMP_DIR,
+        command: 'help',
+        args: ['build:ios'],
         useSnapshot: true,
       });
     });
@@ -71,6 +77,39 @@ describe('build:ios command', () => {
     });
 
     /**
+     * Command: npx expo-brownfield build:ios --scheme
+     * Expected behavior: The CLI should display the error message about missing argument
+     * (no need to test for all arguments as it's handled by commander)
+     */
+    it('should fail if argument value is not passed', async () => {
+      await buildIosTest({
+        directory: TEMP_DIR,
+        args: ['--scheme'],
+        successExit: false,
+        stderr: [ERROR.MISSING_ARGUMENT('s', 'scheme', 'scheme')],
+      });
+    });
+
+    /**
+     * Command: npx expo-brownfield build:ios
+     * Expected behavior: The CLI should fail if prebuild is cancelled
+     */
+    it('should fail if prebuild is cancelled', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', `yes no | node ${CLI_PATH} build:ios`],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
+      expect(stderr).toContain(ERROR.MISSING_PREBUILD());
+    });
+
+    /**
      * Command: npx expo-brownfield build:ios
      * Expected behavior: The CLI should validate and ask for prebuild
      */
@@ -80,21 +119,17 @@ describe('build:ios command', () => {
       const { exitCode, stdout, stderr } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', 'yes | npx expo-brownfield build:ios'],
+        ['-c', `yes | node ${CLI_PATH} build:ios`],
         { ignoreErrors: true }
       );
       expect(exitCode).not.toBe(0);
       expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
       expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
-      // TODO(pmleczek): Refactor CLI error handling
-      expect(stderr).toContain(`Error: Value of iOS Scheme`);
-      expect(stderr).toContain(`could not be inferred from the project`);
+      expect(stderr).toContain(`Could not find brownfield iOS scheme`);
 
       // The android directory should be created and not empty
       await expectPrebuild(TEMP_DIR, 'ios');
     });
-
-    // TODO(pmleczek): Verify failure if prebuild is not done
   });
 
   /**
@@ -134,7 +169,7 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run'],
-        stdout: [BUILD_IOS.CONFIGURATION(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME)],
+        stdout: BUILD_IOS.CONFIGURATION(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME),
       });
     });
 
@@ -158,7 +193,7 @@ describe('build:ios command', () => {
       const expectedOutput = [
         ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Debug'),
         ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Debug'),
-        BUILD.BUILD_TYPE_DEBUG,
+        BUILD_IOS.BUILD_TYPE_DEBUG,
       ];
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
@@ -181,7 +216,7 @@ describe('build:ios command', () => {
       const expectedOutput = [
         ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
         ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
-        BUILD.BUILD_TYPE_RELEASE,
+        BUILD_IOS.BUILD_TYPE_RELEASE,
       ];
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
@@ -202,7 +237,7 @@ describe('build:ios command', () => {
     it('--release option should take precedence over --debug option', async () => {
       const expectedOutput = [
         ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
-        BUILD.BUILD_TYPE_RELEASE,
+        BUILD_IOS.BUILD_TYPE_RELEASE,
       ];
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
@@ -219,12 +254,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '-x', 'someworkspace.xcworkspace'],
-        stdout: [`- Xcode Workspace: someworkspace.xcworkspace`],
+        stdout: [`- Workspace: someworkspace.xcworkspace`],
       });
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '--xcworkspace', 'someworkspace.xcworkspace'],
-        stdout: [`- Xcode Workspace: someworkspace.xcworkspace`],
+        stdout: [`- Workspace: someworkspace.xcworkspace`],
       });
     });
 
@@ -236,12 +271,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '-s', 'somescheme'],
-        stdout: [`- Xcode Scheme: somescheme`],
+        stdout: [`- Scheme: somescheme`],
       });
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '--scheme', 'somescheme'],
-        stdout: [`- Xcode Scheme: somescheme`],
+        stdout: [`- Scheme: somescheme`],
       });
     });
 
@@ -254,12 +289,12 @@ describe('build:ios command', () => {
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '-a', '../artifacts'],
-        stdout: [`- Artifacts directory: ${expectedPath}`],
+        stdout: [`- Artifacts path: ${expectedPath}`],
       });
       await buildIosTest({
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '--artifacts', '../artifacts'],
-        stdout: [`- Artifacts directory: ${expectedPath}`],
+        stdout: [`- Artifacts path: ${expectedPath}`],
       });
     });
   });

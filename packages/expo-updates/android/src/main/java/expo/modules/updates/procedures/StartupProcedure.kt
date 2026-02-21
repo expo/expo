@@ -2,7 +2,6 @@ package expo.modules.updates.procedures
 
 import android.content.Context
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.rncompatibility.ReactNativeFeatureFlags
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.AssetEntity
@@ -66,7 +65,7 @@ class StartupProcedure(
 
   var emergencyLaunchException: Exception? = null
     private set
-  private val errorRecovery = ErrorRecovery(logger, ReactNativeFeatureFlags.enableBridgelessArchitecture)
+  private val errorRecovery = ErrorRecovery(logger)
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
   private val loaderTask = LoaderTask(

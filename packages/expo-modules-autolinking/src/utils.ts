@@ -1,23 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const MAX_SIZE = 5_000;
-
-export function memoize<const Fn extends (input: string, ...args: any[]) => Promise<any>>(fn: Fn) {
-  const cache = new Map<string, ReturnType<Fn>>();
-  return async (input: string, ...args: any[]) => {
-    if (!cache.has(input)) {
-      const result = await fn(input, ...args);
-      if (cache.size > MAX_SIZE) {
-        cache.clear();
-      }
-      cache.set(input, result);
-      return result;
-    } else {
-      return cache.get(input);
-    }
-  };
-}
+import { memoize } from './memoize';
 
 /** List filtered top-level files in `targetPath` (returns absolute paths) */
 export async function listFilesSorted(
@@ -96,3 +80,34 @@ export const fileExistsAsync = async (file: string): Promise<string | null> => {
   const stat = await fs.promises.stat(file).catch(() => null);
   return stat?.isFile() ? file : null;
 };
+
+export const fastJoin: (from: string, append: string) => string =
+  path.sep === '/'
+    ? (from, append) => `${from}${path.sep}${append}`
+    : (from, append) =>
+        `${from}${path.sep}${append[0] === '@' ? append.replace('/', path.sep) : append}`;
+
+export const maybeRealpath = async (target: string): Promise<string | null> => {
+  try {
+    return await fs.promises.realpath(target);
+  } catch {
+    return null;
+  }
+};
+
+export type PackageJson = Record<string, unknown> & { name?: string; version?: string };
+
+export const loadPackageJson = memoize(async function loadPackageJson(
+  jsonPath: string
+): Promise<PackageJson | null> {
+  try {
+    const packageJsonText = await fs.promises.readFile(jsonPath, 'utf8');
+    const json = JSON.parse(packageJsonText);
+    if (typeof json !== 'object' || json == null) {
+      return null;
+    }
+    return json;
+  } catch {
+    return null;
+  }
+});

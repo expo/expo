@@ -118,9 +118,11 @@ public class PersistentFileLog {
   private func appendTextToFile(text: String) throws {
     if let data = text.data(using: .utf8) {
       if let fileHandle = FileHandle(forWritingAtPath: filePath) {
-        fileHandle.seekToEndOfFile()
-        try fileHandle.write(data)
-        fileHandle.closeFile()
+        try EXUtilities.catchException {
+          fileHandle.seekToEndOfFile()
+          fileHandle.write(data)
+          fileHandle.closeFile()
+        }
       }
     }
   }

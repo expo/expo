@@ -6,26 +6,31 @@ import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/ma
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
     ...manifest,
-    htmlRoutes: manifest.htmlRoutes.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    apiRoutes: manifest.apiRoutes.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    notFoundRoutes: manifest.notFoundRoutes.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    redirects: manifest.redirects?.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    rewrites: manifest.rewrites?.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
+    htmlRoutes:
+      manifest.htmlRoutes?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    apiRoutes:
+      manifest.apiRoutes?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    notFoundRoutes:
+      manifest.notFoundRoutes?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    redirects:
+      manifest.redirects?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    rewrites:
+      manifest.rewrites?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
   };
 }
 
@@ -36,15 +41,24 @@ interface EnvironmentInput {
   isDevelopment: boolean;
 }
 
-export function createEnvironment(input: EnvironmentInput) {
+export interface CommonEnvironment {
+  getRoutesManifest(): Promise<Manifest | null>;
+  getHtml(request: Request, route: Route): Promise<string | Response | null>;
+  getApiRoute(route: Route): Promise<unknown>;
+  getMiddleware(middleware: MiddlewareInfo): Promise<any>;
+  getLoaderData(request: Request, route: Route): Promise<Response>;
+  preload(): Promise<void>;
+}
+
+export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
   // Cached manifest and SSR renderer, initialized on first request
-  let cachedManifest: Manifest | null = null;
+  let cachedManifest: Manifest | null | undefined;
   let ssrRenderer: SsrRenderFn | null = null;
 
-  async function getCachedRoutesManifest(): Promise<Manifest> {
-    if (!cachedManifest || input.isDevelopment) {
+  async function getRoutesManifest(): Promise<Manifest | null> {
+    if (cachedManifest === undefined || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
-      cachedManifest = initManifestRegExp(json as RawManifest);
+      cachedManifest = json ? initManifestRegExp(json as RawManifest) : null;
     }
     return cachedManifest;
   }
@@ -54,8 +68,8 @@ export function createEnvironment(input: EnvironmentInput) {
       return ssrRenderer;
     }
 
-    const manifest = await getCachedRoutesManifest();
-    if (manifest.rendering?.mode !== 'ssr') {
+    const manifest = await getRoutesManifest();
+    if (manifest?.rendering?.mode !== 'ssr') {
       return null;
     }
 
@@ -100,11 +114,9 @@ export function createEnvironment(input: EnvironmentInput) {
   }
 
   return {
-    async getRoutesManifest(): Promise<Manifest> {
-      return getCachedRoutesManifest();
-    },
+    getRoutesManifest,
 
-    async getHtml(request: Request, route: Route): Promise<string | Response | null> {
+    async getHtml(request, route) {
       // SSR path: Render at runtime if SSR module is available
       const renderer = await getServerRenderer();
       if (renderer) {
@@ -146,11 +158,11 @@ export function createEnvironment(input: EnvironmentInput) {
       return null;
     },
 
-    async getApiRoute(route: Route): Promise<unknown> {
+    async getApiRoute(route) {
       return input.loadModule(route.file);
     },
 
-    async getMiddleware(middleware: MiddlewareInfo): Promise<any> {
+    async getMiddleware(middleware) {
       const mod = (await input.loadModule(middleware.file)) as any;
       if (typeof mod?.default !== 'function') {
         return null;
@@ -158,7 +170,7 @@ export function createEnvironment(input: EnvironmentInput) {
       return mod;
     },
 
-    async getLoaderData(request: Request, route: Route): Promise<Response> {
+    async getLoaderData(request, route) {
       const params = parseParams(request, route);
       const result = await executeLoader(request, route, params);
 
@@ -167,6 +179,23 @@ export function createEnvironment(input: EnvironmentInput) {
       }
 
       return Response.json(result ?? null);
+    },
+
+    async preload() {
+      if (input.isDevelopment) {
+        return;
+      }
+      const manifest = await getRoutesManifest();
+      if (manifest) {
+        const requests: string[] = [];
+        if (manifest.middleware) requests.push(manifest.middleware.file);
+        if (manifest.rendering) requests.push(manifest.rendering.file);
+        for (const apiRoute of manifest.apiRoutes) requests.push(apiRoute.file);
+        for (const htmlRoute of manifest.htmlRoutes) {
+          if (htmlRoute.loader) requests.push(htmlRoute.loader);
+        }
+        await Promise.all(requests.map((request) => input.loadModule(request)));
+      }
     },
   };
 }

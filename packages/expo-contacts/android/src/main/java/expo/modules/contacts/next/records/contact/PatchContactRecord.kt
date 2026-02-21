@@ -7,13 +7,11 @@ import expo.modules.contacts.next.records.fields.PhoneRecord
 import expo.modules.contacts.next.records.fields.AddressRecord
 import expo.modules.contacts.next.records.fields.RelationRecord
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.ValueOrUndefined
 
-@OptIn(EitherType::class)
 data class PatchContactRecord(
   @Field val isFavourite: ValueOrUndefined<Boolean> = ValueOrUndefined.Undefined(),
   @Field val givenName: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),

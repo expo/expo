@@ -6,6 +6,25 @@
 
 ### 🎉 New features
 
+- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.9 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Android] improve security of env injection in publishing in [#43059](https://github.com/expo/expo/pull/43059) by [@pmleczek](https://github.com/pmleczek)
+- [ios] pass additional settings to generate CFBundleShortVersionString ([#43289](https://github.com/expo/expo/pull/43289) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.8 — 2026-02-16
+
+### 🛠 Breaking changes
+
+- [cli] update copied hermes framework name to hermesvm.xcframework ([#43138](https://github.com/expo/expo/pull/43138) by [@pmleczek](https://github.com/pmleczek))
+
 ### 🐛 Bug fixes
 
 - [iOS] fix framework search paths settings ([#43106](https://github.com/expo/expo/pull/43106) by [@pmleczek](https://github.com/pmleczek))
@@ -13,6 +32,7 @@
 ### 💡 Others
 
 - [test] add compilation verification and optimize brownfield workflow in [#42894](https://github.com/expo/expo/pull/42894) by [@pmleczek](https://github.com/pmleczek)
+- [cli] cli refactor ([#42921](https://github.com/expo/expo/pull/42921) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.7 — 2026-02-08
 

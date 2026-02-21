@@ -1,27 +1,46 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`--help option should return the correct help message 1`] = `
-"Usage: expo-brownfield <command> [<options>]
+"Usage: expo-brownfield [options] [command]
 
 Options:
-  --version, -v                 output the version number
-  --help, -h                    display help for command
+  -v, --version            output the version number
+  -h, --help               display help for command
 
 Commands:
-  build:android [<options>]     build and publish Android brownfield artifacts
-  build:ios [<options>]         build iOS brownfield artifacts
-  tasks:android [<options>]     list available publishing tasks and repositories for android"
+  build:android [options]  Build and publish Android brownfield artifacts
+  build:ios [options]      Build and publish iOS brownfield artifacts
+  tasks:android [options]  List available publishing tasks and repositories for
+                           Android
+  help [command]           display help for command"
 `;
 
 exports[`--help option should support the \`-h\` shorthand 1`] = `
-"Usage: expo-brownfield <command> [<options>]
+"Usage: expo-brownfield [options] [command]
 
 Options:
-  --version, -v                 output the version number
-  --help, -h                    display help for command
+  -v, --version            output the version number
+  -h, --help               display help for command
 
 Commands:
-  build:android [<options>]     build and publish Android brownfield artifacts
-  build:ios [<options>]         build iOS brownfield artifacts
-  tasks:android [<options>]     list available publishing tasks and repositories for android"
+  build:android [options]  Build and publish Android brownfield artifacts
+  build:ios [options]      Build and publish iOS brownfield artifacts
+  tasks:android [options]  List available publishing tasks and repositories for
+                           Android
+  help [command]           display help for command"
+`;
+
+exports[`--help option should support the \`help\` command 1`] = `
+"Usage: expo-brownfield [options] [command]
+
+Options:
+  -v, --version            output the version number
+  -h, --help               display help for command
+
+Commands:
+  build:android [options]  Build and publish Android brownfield artifacts
+  build:ios [options]      Build and publish iOS brownfield artifacts
+  tasks:android [options]  List available publishing tasks and repositories for
+                           Android
+  help [command]           display help for command"
 `;

@@ -1,4 +1,5 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { PrivacyChoicesButton } from '@expo/styleguide-cookie-consent';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
@@ -131,6 +132,7 @@ export const Footer = ({
         </div>
         <NewsletterSignUp />
       </div>
+      <PrivacyChoicesButton />
     </footer>
   );
 };

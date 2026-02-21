@@ -2,15 +2,23 @@ import { evalModule } from '@expo/require-utils';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { memoize, fileExistsAsync } from '../utils';
-import type { RNConfigReactNativeConfig } from './reactNativeConfig.types';
+import { memoize } from '../memoize';
+import { fileExistsAsync } from '../utils';
+import type {
+  RNConfigReactNativeConfig,
+  RNConfigReactNativeProjectConfig,
+} from './reactNativeConfig.types';
 
 const mockedNativeModules = path.join(__dirname, '..', '..', 'node_modules_mock');
+
+type LoadConfigAsync = <T extends RNConfigReactNativeConfig>(
+  packageRoot: string
+) => Promise<T | null>;
 
 /**
  * Load the `react-native.config.js` or `react-native.config.ts` from the package.
  */
-export const loadConfigAsync = memoize(async function loadConfigAsync<
+export const loadConfigAsync: LoadConfigAsync = memoize(async function loadConfigAsync<
   T extends RNConfigReactNativeConfig,
 >(packageRoot: string): Promise<T | null> {
   const configPath = (

@@ -159,5 +159,15 @@
   return [self isConfiguredForWhenInUseAuthorization] && [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
 }
 
+- (NSString *)accuracyAuthorizationString
+{
+  if (@available(iOS 14, *)) {
+    CLLocationManager *manager = self.locationManager ?: [[CLLocationManager alloc] init];
+    if (manager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy) {
+      return @"reduced";
+    }
+  }
+  return @"full";
+}
 
 @end

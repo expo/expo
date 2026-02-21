@@ -1,5 +1,3 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.maps
 
 import android.annotation.SuppressLint
@@ -32,7 +30,6 @@ import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.Polyline
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.kotlin.types.toKClass
 import expo.modules.kotlin.viewevent.EventDispatcher
