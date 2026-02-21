@@ -90,6 +90,7 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   try {
     const mod = Object.assign(new nodeModule.Module(filename, parent), { filename, paths });
     mod._compile(code, filename, format != null ? format : undefined);
+    mod.loaded = true;
     require.cache[filename] = mod;
     parent?.children?.splice(parent.children.indexOf(mod), 1);
     return mod;
@@ -229,6 +230,12 @@ function loadModuleSync(filename: string) {
     // We fallback to always evaluating the entrypoint module
     // This is out of safety, since we're not trusting the requiring ESM feature
     // and evaluating the module manually bypasses the error when it's flagged off
+  }
+
+  // Load from cache manually, if `loaded` is set and exports are defined, to avoid
+  // double transform or double evaluation
+  if (require.cache[filename]?.exports && require.cache[filename].loaded) {
+    return require.cache[filename].exports;
   }
 
   const code = fs.readFileSync(filename, 'utf8');
