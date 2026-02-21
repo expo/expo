@@ -4,7 +4,7 @@ import path from 'node:path';
 import url from 'node:url';
 import type * as ts from 'typescript';
 
-import { annotateError, formatDiagnostic } from './codeframe';
+import { addAdvice, annotateError, formatDiagnostic } from './codeframe';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];
@@ -164,7 +164,13 @@ function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
   } catch (error: any) {
     // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
     // since it's likely more useful than the eval error
-    throw formatDiagnostic(diagnostic) ?? annotateError(code, filename, error) ?? error;
+    const diagnosticError = formatDiagnostic(diagnostic);
+    if (diagnosticError) {
+      throw diagnosticError;
+    }
+
+    addAdvice(filename, error);
+    throw annotateError(code, filename, error) ?? error;
   }
 }
 
@@ -205,8 +211,9 @@ function loadModuleSync(filename: string) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw error;
     } else if (format == null) {
+      addAdvice(filename, error);
       const code = maybeReadFileSync(filename);
-      throw (code && annotateError(code, filename, error)) || error;
+      throw annotateError(code, filename, error) || error;
     }
     // We fallback to always evaluating the entrypoint module
     // This is out of safety, since we're not trusting the requiring ESM feature
