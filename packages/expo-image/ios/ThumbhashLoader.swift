@@ -1,7 +1,9 @@
-import SDWebImage
+@preconcurrency import SDWebImage
 import ExpoModulesCore
 
 class ThumbhashLoader: NSObject, SDImageLoader {
+  typealias ImageLoaderCompletedBlock = @Sendable (UIImage?, Data?, (any Error)?, Bool) -> Void
+
   // MARK: - SDImageLoader
 
   func canRequestImage(for url: URL?) -> Bool {
@@ -13,9 +15,9 @@ class ThumbhashLoader: NSObject, SDImageLoader {
     options: SDWebImageOptions = [],
     context: [SDWebImageContextOption: Any]?,
     progress progressBlock: SDImageLoaderProgressBlock?,
-    completed completedBlock: SDImageLoaderCompletedBlock? = nil
+    completed completedBlock: ImageLoaderCompletedBlock? = nil
   ) -> SDWebImageOperation? {
-    guard let url = url else {
+    guard let url else {
       let error = makeNSError(description: "URL provided to ThumbhashLoader is missing")
       completedBlock?(nil, nil, error, false)
       return nil
@@ -37,9 +39,10 @@ class ThumbhashLoader: NSObject, SDImageLoader {
       return nil
     }
 
-    DispatchQueue.global(qos: .userInitiated).async {
+    Task(priority: .high) {
       let image = image(fromThumbhash: thumbhashData)
-      DispatchQueue.main.async {
+
+      await MainActor.run {
         completedBlock?(image, nil, nil, true)
       }
     }

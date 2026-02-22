@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed compilation errors in Xcode 26.4 Beta 1
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-20

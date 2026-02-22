@@ -11,10 +11,10 @@ typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
 // swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
-  static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
-  static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
-  static let contentFitKey = SDWebImageContextOption(rawValue: "contentFit")
-  static let frameSizeKey = SDWebImageContextOption(rawValue: "frameSize")
+  nonisolated static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
+  nonisolated static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
+  nonisolated static let contentFitKey = SDWebImageContextOption(rawValue: "contentFit")
+  nonisolated static let frameSizeKey = SDWebImageContextOption(rawValue: "frameSize")
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 

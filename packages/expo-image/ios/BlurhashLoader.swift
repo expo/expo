@@ -1,7 +1,9 @@
-import SDWebImage
+@preconcurrency import SDWebImage
 import ExpoModulesCore
 
 class BlurhashLoader: NSObject, SDImageLoader {
+  typealias ImageLoaderCompletedBlock = @Sendable (UIImage?, Data?, (any Error)?, Bool) -> Void
+
   // MARK: - SDImageLoader
 
   func canRequestImage(for url: URL?) -> Bool {
@@ -13,9 +15,9 @@ class BlurhashLoader: NSObject, SDImageLoader {
     options: SDWebImageOptions = [],
     context: [SDWebImageContextOption: Any]?,
     progress progressBlock: SDImageLoaderProgressBlock?,
-    completed completedBlock: SDImageLoaderCompletedBlock? = nil
+    completed completedBlock: ImageLoaderCompletedBlock? = nil
   ) -> SDWebImageOperation? {
-    guard let url = url else {
+    guard let url else {
       let error = makeNSError(description: "URL provided to BlurhashLoader is missing")
       completedBlock?(nil, nil, error, false)
       return nil
@@ -31,14 +33,16 @@ class BlurhashLoader: NSObject, SDImageLoader {
     let blurhash = url.pathComponents[1]
     let size = CGSize(width: source.width, height: source.height)
 
-    DispatchQueue.global(qos: .userInitiated).async {
-      if let image = image(fromBlurhash: blurhash, size: size) {
-        DispatchQueue.main.async {
+    Task(priority: .high) {
+      let image = image(fromBlurhash: blurhash, size: size)
+
+      await MainActor.run {
+        if let image {
           completedBlock?(UIImage(cgImage: image), nil, nil, true)
+        } else {
+          let error = makeNSError(description: "Unable to generate an image from the given blurhash")
+          completedBlock?(nil, nil, error, false)
         }
-      } else {
-        let error = makeNSError(description: "Unable to generate an image from the given blurhash")
-        completedBlock?(nil, nil, error, false)
       }
     }
     return nil
