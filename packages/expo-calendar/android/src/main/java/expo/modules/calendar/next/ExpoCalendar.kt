@@ -204,7 +204,7 @@ class ExpoCalendar(
 
           val calendarsUri = uriBuilder.build()
           val calendarUri = contentResolver.insert(calendarsUri, values)
-          val calendarId = calendarUri?.lastPathSegment!!.toInt()
+          val calendarId = calendarUri?.lastPathSegment!!.toLong()
           calendarId
         } else {
           val uri = CalendarContract.Calendars.CONTENT_URI.buildUpon().appendPath(calendarRecord.id).build()
@@ -212,7 +212,7 @@ class ExpoCalendar(
           if (rowsUpdated == 0) {
             throw CalendarCouldNotBeUpdatedException("Failed to update calendar")
           }
-          calendarRecord.id!!.toInt()
+          calendarRecord.id!!.toLong()
         }
       }
     }
@@ -240,7 +240,7 @@ class ExpoCalendar(
 
     suspend fun findExpoCalendarById(context: AppContext, calendarID: String): ExpoCalendar? {
       return withContext(Dispatchers.IO) {
-        val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toInt().toLong())
+        val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
         val contentResolver = (
           context.reactContext
             ?: throw Exceptions.ReactContextLost()

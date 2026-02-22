@@ -111,12 +111,12 @@ class ExpoCalendarEvent(
         if (calendarId == null) {
           throw InvalidArgumentException("CalendarId is required.")
         }
-        eventBuilder.put(CalendarContract.Events.CALENDAR_ID, calendarId.toInt())
+        eventBuilder.put(CalendarContract.Events.CALENDAR_ID, calendarId.toLong())
         val eventsUri = CalendarContract.Events.CONTENT_URI
         val contentResolver = reactContext.contentResolver
         val eventUri = contentResolver.insert(eventsUri, eventBuilder.build())
           ?: throw EventsCouldNotBeCreatedException("Failed to insert event into the database")
-        val eventID = eventUri.lastPathSegment!!.toInt()
+        val eventID = eventUri.lastPathSegment!!.toLong()
         if (eventRecord.alarms != null) {
           createRemindersForEvent(eventID, eventRecord.alarms)
         }
@@ -137,7 +137,7 @@ class ExpoCalendarEvent(
 
   suspend fun deleteEvent() {
     withContext(Dispatchers.IO) {
-      val eventID = eventRecord?.id?.toInt()
+      val eventID = eventRecord?.id?.toLong()
         ?: throw EventCouldNotBeDeletedException("Event ID is required")
 
       val contentResolver = reactContext.contentResolver
@@ -145,7 +145,7 @@ class ExpoCalendarEvent(
       if (options?.futureEvents == null || options?.futureEvents == false) {
         val url = ContentUris.withAppendedId(
           CalendarContract.Events.CONTENT_URI,
-          eventID.toLong()
+          eventID
         )
         contentResolver
           .delete(url, null, null)
@@ -290,7 +290,7 @@ class ExpoCalendarEvent(
   companion object {
     suspend fun findEventById(eventID: String, appContext: AppContext): ExpoCalendarEvent? {
       return withContext(Dispatchers.IO) {
-        val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toInt().toLong())
+        val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
         val selection = "((${CalendarContract.Events.DELETED} != 1))"
         val projection = EventRepository.findEventByIdQueryParameters
         val contentResolver = appContext.reactContext?.contentResolver
