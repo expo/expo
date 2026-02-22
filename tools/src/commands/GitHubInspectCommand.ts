@@ -769,7 +769,7 @@ async function action(options: ActionOptions) {
   try {
     await getAuthenticatedUserAsync();
   } catch {
-    logger.error('GitHub authentication failed. Set the GITHUB_TOKEN environment variable.');
+    logger.error('GitHub authentication failed. Set the GITHUB_TOKEN environment variable. Create a token at: https://github.com/settings/tokens/new?description=expotools-github&scopes=public_repo');
     process.exit(1);
   }
 

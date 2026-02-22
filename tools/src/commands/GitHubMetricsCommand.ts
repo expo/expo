@@ -635,7 +635,10 @@ async function generateMetricsReport(options: MetricsOptions): Promise<string> {
 
 async function action(options: ActionOptions) {
   if (!process.env.GITHUB_TOKEN) {
-    throw new Error('Environment variable `GITHUB_TOKEN` is required for this command.');
+    throw new Error(
+      'Environment variable `GITHUB_TOKEN` is required for this command.\n' +
+        'Create a token at: https://github.com/settings/tokens/new?description=expotools-github&scopes=public_repo'
+    );
   }
 
   try {
