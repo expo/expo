@@ -57,7 +57,7 @@ class AudioControlsService : MediaSessionService() {
     set(value) {
       weakContext = value?.let { WeakReference(it) }
     }
-    
+
   var playsInSilentMode: Boolean = true
   var playbackListener: Player.Listener? = null
 

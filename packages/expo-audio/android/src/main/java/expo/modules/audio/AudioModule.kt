@@ -303,7 +303,6 @@ class AudioModule : Module() {
 
     OnActivityEntersForeground {
       if (!shouldPlayInBackground) {
-
         if (!shouldPlayInSilentMode()) {
           return@OnActivityEntersForeground
         }
