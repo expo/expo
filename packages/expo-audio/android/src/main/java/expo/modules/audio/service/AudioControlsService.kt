@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.content.pm.ServiceInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -37,6 +38,7 @@ import java.net.URL
 
 @OptIn(UnstableApi::class)
 class AudioControlsService : MediaSessionService() {
+  private lateinit var audioManager: AudioManager
   private val binder = AudioPlaybackServiceBinder(this)
   private var mediaSession: MediaSession? = null
   private var currentMetadata: Metadata? = null
@@ -55,7 +57,8 @@ class AudioControlsService : MediaSessionService() {
     set(value) {
       weakContext = value?.let { WeakReference(it) }
     }
-
+    
+  var playsInSilentMode: Boolean = true
   var playbackListener: Player.Listener? = null
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -64,12 +67,16 @@ class AudioControlsService : MediaSessionService() {
 
     context.mainQueue.launch {
       when (intent?.action) {
-        ACTION_PLAY -> currentPlayerRef.play()
+        ACTION_PLAY -> {
+          if (shouldPlayInSilentMode()) {
+            currentPlayerRef.play()
+          }
+        }
         ACTION_PAUSE -> currentPlayerRef.pause()
         ACTION_TOGGLE ->
           if (currentPlayerRef.isPlaying) {
             currentPlayerRef.pause()
-          } else {
+          } else if (shouldPlayInSilentMode()) {
             currentPlayerRef.play()
           }
 
@@ -84,7 +91,12 @@ class AudioControlsService : MediaSessionService() {
 
   override fun onCreate() {
     super.onCreate()
+    audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
     createNotificationChannelIfNeeded()
+  }
+
+  private fun shouldPlayInSilentMode(): Boolean {
+    return playsInSilentMode || audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL
   }
 
   private fun createNotificationChannelIfNeeded() {

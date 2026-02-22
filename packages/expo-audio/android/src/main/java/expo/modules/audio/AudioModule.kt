@@ -3,6 +3,7 @@ package expo.modules.audio
 import android.Manifest
 import android.content.ContentResolver
 import android.content.Context
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
@@ -65,6 +66,17 @@ class AudioModule : Module() {
   private val allPlayables: Sequence<Playable>
     get() = players.values.asSequence() + playlists.values.asSequence()
 
+  private val ringerModeReceiver = RingerModeReceiver {
+    if (playsInSilentMode) return@RingerModeReceiver
+    appContext.mainQueue.launch {
+      allPlayables.forEach { playable ->
+        if (playable.isPlaying) {
+          playable.pause()
+        }
+      }
+    }
+  }
+
   private var audioFocusRequest: AudioFocusRequest? = null
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
     appContext.mainQueue.launch {
@@ -126,7 +138,7 @@ class AudioModule : Module() {
   }
 
   private fun shouldPlayInSilentMode(): Boolean {
-    return playsInSilentMode || audioManager.getRingerMode() == AudioManager.RINGER_MODE_NORMAL
+    return playsInSilentMode || audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL
   }
 
   private fun requestAudioFocus() {
@@ -193,6 +205,7 @@ class AudioModule : Module() {
 
     OnCreate {
       audioManager = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      context.registerReceiver(ringerModeReceiver, IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION))
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
@@ -204,6 +217,10 @@ class AudioModule : Module() {
 
       recorders.values.forEach { recorder ->
         recorder.useForegroundService = allowsBackgroundRecording
+      }
+
+      players.values.forEach { player ->
+        player.serviceConnection.playbackServiceBinder?.service?.playsInSilentMode = playsInSilentMode
       }
     }
 
@@ -305,6 +322,7 @@ class AudioModule : Module() {
     }
 
     OnDestroy {
+      context.unregisterReceiver(ringerModeReceiver)
       GlobalScope.launch(Dispatchers.Main) {
         releaseAudioFocus()
         players.values.forEach {
@@ -732,6 +750,9 @@ class AudioModule : Module() {
       Function("play") { playlist: AudioPlaylist ->
         if (!audioEnabled) {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+          return@Function
+        }
+        if (!shouldPlayInSilentMode()) {
           return@Function
         }
         runOnMain {
