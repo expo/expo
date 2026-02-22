@@ -291,7 +291,11 @@ class PedometerModule : Module() {
         .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
         .build()
 
-      val response = Tasks.await(localRecordingClient.readData(readRequest))
+      val response = try {
+        Tasks.await(localRecordingClient.readData(readRequest))
+      } catch (e: SecurityException) {
+        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
+      }
 
       if (!response.status.isSuccess)
         throw CodedException(
