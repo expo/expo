@@ -222,6 +222,16 @@ class AudioModule : Module() {
       players.values.forEach { player ->
         player.serviceConnection.playbackServiceBinder?.service?.playsInSilentMode = playsInSilentMode
       }
+
+      if (!shouldPlayInSilentMode()) {
+        runOnMain {
+          allPlayables.forEach { playable ->
+            if (playable.isPlaying) {
+              playable.pause()
+            }
+          }
+        }
+      }
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
