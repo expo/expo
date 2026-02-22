@@ -64,15 +64,16 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 
 + (NSString *)serializedInterruptionLevel:(UNNotificationInterruptionLevel)interruptionLevel API_AVAILABLE(ios(15.0)) {
   static NSDictionary<NSNumber *, NSString *> *interruptionLevelMap;
-  if (!interruptionLevelMap) {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
     interruptionLevelMap = @{
       @(UNNotificationInterruptionLevelPassive): @"passive",
       @(UNNotificationInterruptionLevelActive): @"active",
       @(UNNotificationInterruptionLevelTimeSensitive): @"timeSensitive",
       @(UNNotificationInterruptionLevelCritical): @"critical"
     };
-  }
-  
+  });
+
   return [interruptionLevelMap objectForKey:@(interruptionLevel)];
 }
 
@@ -169,7 +170,8 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 + (NSDictionary *)calendarUnitsConversionMap
 {
   static NSDictionary *keysMap = nil;
-  if (!keysMap) {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
     keysMap = @{
       @(NSCalendarUnitEra): @"era",
       @(NSCalendarUnitYear): @"year",
@@ -188,7 +190,7 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
       // NSCalendarUnitCalendar and NSCalendarUnitTimeZone
       // should be handled separately
     };
-  }
+  });
   return keysMap;
 }
 
