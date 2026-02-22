@@ -11,7 +11,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`Pedometer` from `expo-sensors` uses the system step counter sensor for live updates, and the Recording API on Android / Core Motion on iOS for step history.
+`Pedometer` from `expo-sensors` uses the system step counter sensor for live updates, and the Recording API on Android/Core Motion on iOS for step history.
 
 > **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires Google Play Services Recording API support and an active `subscribeRecording()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecording` / `unsubscribeRecording`) are no-ops on iOS.
 
@@ -19,9 +19,9 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 You can listen for pedometer pause/resume events:
 
-> Event delivery is best-effort and generally only while the app is running. On Android, events are derived from walking/running activity transitions.
+> **Note:** Event delivery is best-effort and generally only while the app is running. On Android, events are derived from walking/running activity transitions.
 
-```ts
+```tsx
 import { Pedometer } from 'expo-sensors';
 
 const subscription = Pedometer.watchEventUpdates((event) => {
