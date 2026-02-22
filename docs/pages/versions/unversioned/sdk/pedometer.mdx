@@ -11,7 +11,7 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`Pedometer` from `expo-sensors` uses the system step counter sensor for live updates, and the Recording API on Android / Core Motion on iOS for step history.
+`Pedometer` from `expo-sensors` uses the system step counter sensor for live updates, and the Recording API on Android/Core Motion on iOS for step history.
 
 > **warning** Pedometer is not available in Expo Go for Android. Expo Go does not include the `ACTIVITY_RECOGNITION` permission that Pedometer needs. With this permission, Google Play could classify Expo Go as a health app. To use Pedometer on Android, create a [development build](/develop/development-builds/introduction/).
 
@@ -21,9 +21,9 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 You can listen for pedometer pause/resume events:
 
-> Event delivery is best-effort and generally only while the app is running. On Android, events are derived from walking/running activity transitions.
+> **Note:** Event delivery is best-effort and generally only while the app is running. On Android, events are derived from walking/running activity transitions.
 
-```ts
+```tsx
 import { Pedometer } from 'expo-sensors';
 
 const subscription = Pedometer.watchEventUpdates((event) => {
