@@ -7,6 +7,8 @@ jest.mock('../ExpoCrypto', () => ({
   digestString: jest.fn(async () => 0),
 }));
 
+jest.mock('../aes', () => ({}));
+
 it(`asserts invalid algorithm errors`, async () => {
   await expect(Crypto.digestStringAsync(null as any, '<DEBUG>')).rejects.toThrow(TypeError);
   await expect(Crypto.digestStringAsync('null' as any, '<DEBUG>')).rejects.toThrow(TypeError);

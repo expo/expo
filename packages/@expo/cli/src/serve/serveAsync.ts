@@ -9,7 +9,7 @@ import * as Log from '../log';
 import { directoryExistsAsync, fileExistsAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
-import { setNodeEnv } from '../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { resolvePortAsync } from '../utils/port';
 
 type Options = {
@@ -24,7 +24,7 @@ export async function serveAsync(inputDir: string, options: Options) {
   const projectRoot = findUpProjectRootOrAssert(inputDir);
 
   setNodeEnv('production');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   const port = await resolvePortAsync(projectRoot, {
     defaultPort: options.port,

@@ -1,7 +1,5 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#if RCT_NEW_ARCH_ENABLED
-
 @objc(ExpoFabricView)
 open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
@@ -20,6 +18,11 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    A dictionary of prop objects that contain prop setters.
    */
   lazy var viewManagerPropDict: [String: AnyViewProp]? = viewDefinition?.propsDict()
+
+  /**
+   A dictionary to store previous prop values for change detection.
+   */
+  private var previousProps: [String: Any] = [:]
 
   // MARK: - Initializers
 
@@ -79,14 +82,36 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     }
     for (key, prop) in propsDict {
       let newValue = props[key] as Any
+      let convertedNewValue = Conversions.fromNSObject(newValue)
+      let previousValue = previousProps[key]
 
-      // TODO: @tsapeta: Figure out better way to rethrow errors from here.
-      // Adding `throws` keyword to the function results in different
-      // method signature in Objective-C. Maybe just call `RCTLogError`?
-      try? prop.set(value: Conversions.fromNSObject(newValue), onView: self, appContext: context)
+      // only set the prop if the value has changed
+      if !areValuesEqual(previousValue, convertedNewValue) {
+        // TODO: @tsapeta: Figure out better way to rethrow errors from here.
+        // Adding `throws` keyword to the function results in different
+        // method signature in Objective-C. Maybe just call `RCTLogError`?
+        try? prop.set(value: convertedNewValue, onView: self, appContext: context)
+
+        previousProps[key] = convertedNewValue
+      }
     }
   }
 
+  /**
+   Helper function to compare two values for equality using string representation.
+   */
+  private func areValuesEqual(_ lhs: Any?, _ rhs: Any?) -> Bool {
+    switch (lhs, rhs) {
+    case (nil, nil):
+      return true
+    case let (lhsValue as AnyHashable, rhsValue as AnyHashable):
+      return lhsValue == rhsValue
+    case let (lhsValue as NSObjectProtocol, rhsValue as NSObjectProtocol):
+      return lhsValue.isEqual(rhsValue)
+    default:
+      return false
+    }
+  }
   /**
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */
@@ -202,5 +227,3 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
   // swiftlint:enable unavailable_function
 }
-
-#endif // RCT_NEW_ARCH_ENABLED

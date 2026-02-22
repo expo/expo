@@ -3,30 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fileExistsAsync = void 0;
-exports.memoize = memoize;
+exports.loadPackageJson = exports.maybeRealpath = exports.fastJoin = exports.fileExistsAsync = void 0;
 exports.listFilesSorted = listFilesSorted;
 exports.listFilesInDirectories = listFilesInDirectories;
 exports.scanFilesRecursively = scanFilesRecursively;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const MAX_SIZE = 5_000;
-function memoize(fn) {
-    const cache = new Map();
-    return async (input, ...args) => {
-        if (!cache.has(input)) {
-            const result = await fn(input, ...args);
-            if (cache.size > MAX_SIZE) {
-                cache.clear();
-            }
-            cache.set(input, result);
-            return result;
-        }
-        else {
-            return cache.get(input);
-        }
-    };
-}
+const memoize_1 = require("./memoize");
 /** List filtered top-level files in `targetPath` (returns absolute paths) */
 async function listFilesSorted(targetPath, filter) {
     try {
@@ -89,4 +72,29 @@ const fileExistsAsync = async (file) => {
     return stat?.isFile() ? file : null;
 };
 exports.fileExistsAsync = fileExistsAsync;
+exports.fastJoin = path_1.default.sep === '/'
+    ? (from, append) => `${from}${path_1.default.sep}${append}`
+    : (from, append) => `${from}${path_1.default.sep}${append[0] === '@' ? append.replace('/', path_1.default.sep) : append}`;
+const maybeRealpath = async (target) => {
+    try {
+        return await fs_1.default.promises.realpath(target);
+    }
+    catch {
+        return null;
+    }
+};
+exports.maybeRealpath = maybeRealpath;
+exports.loadPackageJson = (0, memoize_1.memoize)(async function loadPackageJson(jsonPath) {
+    try {
+        const packageJsonText = await fs_1.default.promises.readFile(jsonPath, 'utf8');
+        const json = JSON.parse(packageJsonText);
+        if (typeof json !== 'object' || json == null) {
+            return null;
+        }
+        return json;
+    }
+    catch {
+        return null;
+    }
+});
 //# sourceMappingURL=utils.js.map

@@ -1,11 +1,11 @@
 name: Docs Website PR Destroy Preview
 
+defaults:
+  run:
+    shell: bash
+
 on:
   pull_request:
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs-pr.yml'
-      - '.github/workflows/docs-pr-destroy.yml'
     types: [closed, unlabeled]
 
 concurrency:
@@ -18,9 +18,15 @@ jobs:
         (github.event.action == 'unlabeled' && github.event.label.name == 'preview')
     runs-on: ubuntu-24.04
     steps:
-      - name: 🪣 Delete docs preview bucket
+      - name: 👀 Checkout
+        uses: actions/checkout@v6
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: 🧹 Delete preview deployments
+        working-directory: docs
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-1'
-        run: aws s3 rb s3://docs.expo.dev-pr-${{ github.event.pull_request.number }} --force && exit 0
+          CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/prune-cloudflare-deployments.mjs --project=expo-docs --branch=pr-${{ github.event.pull_request.number }} --keep=0

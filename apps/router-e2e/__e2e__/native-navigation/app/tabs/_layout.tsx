@@ -1,5 +1,4 @@
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { enableZoomTransition } from 'expo-router/internal/utils';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Appearance, useColorScheme } from 'react-native';
@@ -10,14 +9,18 @@ if (process.env.EXPO_OS !== 'web') {
   Appearance.setColorScheme('unspecified');
 }
 
-enableZoomTransition();
-
 export default function Layout() {
   const [isPlaying, setIsPlaying] = useState(false);
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs
+        minimizeBehavior="onScrollDown"
+        screenListeners={({ route }) => ({
+          tabPress: () => {
+            console.log(`Tab Pressed: ${route.name}`);
+          },
+        })}>
         <NativeTabs.Trigger
           name="index"
           contentStyle={{
@@ -26,7 +29,13 @@ export default function Layout() {
           <NativeTabs.Trigger.Label>Index tab</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon sf="applewatch.side.right" md="watch" />
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="faces">
+        <NativeTabs.Trigger
+          name="faces"
+          listeners={{
+            focus: () => {
+              console.log('Faces tab focused');
+            },
+          }}>
           <NativeTabs.Trigger.Icon
             sf={{
               default: 'lock.applewatch',

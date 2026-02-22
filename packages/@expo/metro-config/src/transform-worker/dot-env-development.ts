@@ -5,28 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import * as dotenv from 'dotenv';
-import { expand as dotenvExpand } from 'dotenv-expand';
+import { parseEnv } from '@expo/env';
 
 export function parseEnvFile(src: string, isClient: boolean): Record<string, string> {
-  const expandedEnv: Record<string, string> = {};
-  const envFileParsed = dotenv.parse(src);
-
-  if (envFileParsed) {
-    const allExpandedEnv = dotenvExpand({
-      parsed: envFileParsed,
-      processEnv: {},
-    });
-
-    for (const key of Object.keys(envFileParsed)) {
-      if (allExpandedEnv.parsed?.[key]) {
-        if (isClient && !key.startsWith('EXPO_PUBLIC_')) {
-          // Don't include non-public variables in the client bundle.
-          continue;
-        }
-        expandedEnv[key] = allExpandedEnv.parsed[key];
+  const output: Record<string, string> = {};
+  const env = parseEnv(src);
+  for (const key of Object.keys(env)) {
+    if (env[key] != null) {
+      if (isClient && !key.startsWith('EXPO_PUBLIC_')) {
+        // Don't include non-public variables in the client bundle.
+        continue;
       }
+      output[key] = env[key];
     }
   }
-  return expandedEnv;
+  return output;
 }

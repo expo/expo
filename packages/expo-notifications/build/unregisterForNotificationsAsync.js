@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import PushTokenManager from './PushTokenManager';
 // @docsMissing
-export default async function unregisterForNotificationsAsync() {
+export async function unregisterForNotificationsAsync() {
     if (!PushTokenManager.unregisterForNotificationsAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'unregisterForNotificationsAsync');
     }

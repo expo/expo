@@ -4,6 +4,7 @@ import { LayoutAlt01Icon } from '@expo/styleguide-icons/outline/LayoutAlt01Icon'
 import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 import {
   cleanCopyValue,
@@ -105,6 +106,7 @@ export function Code({ className, children, title }: CodeProps) {
       <SnippetContent className="p-0">
         <pre
           ref={contentRef}
+          data-md-lang={language}
           style={{
             maxHeight: collapseBound,
           }}
@@ -123,6 +125,7 @@ export function Code({ className, children, title }: CodeProps) {
   ) : (
     <pre
       ref={contentRef}
+      data-md-lang={language}
       style={{
         maxHeight: collapseBound,
       }}

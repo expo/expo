@@ -1,17 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
-import type { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import type { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
-type ClipboardEvent = {
-    /**
-     * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
-     */
-    content: string;
-    /**
-     * An array of content types that are available on the clipboard.
-     */
-    contentTypes: ContentType[];
-};
-export { EventSubscription as Subscription, ClipboardEvent };
+export { EventSubscription as Subscription };
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -143,16 +133,7 @@ export declare function hasImageAsync(): Promise<boolean>;
 export declare function addClipboardListener(listener: (event: ClipboardEvent) => void): EventSubscription;
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
- *
- * @param subscription The subscription to remove (created by addClipboardListener).
- *
- * @example
- * ```typescript
- * const subscription = addClipboardListener(() => {
- *   alert('Copy pasta!');
- * });
- * removeClipboardListener(subscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export declare function removeClipboardListener(subscription: EventSubscription): void;
 /**

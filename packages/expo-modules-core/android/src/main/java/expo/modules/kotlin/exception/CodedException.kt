@@ -205,15 +205,30 @@ internal class IncorrectRefTypeException(
   message = "Cannot convert received '$receivedClass' to the '$desiredType', because of the inner ref type mismatch"
 )
 
-internal class FieldCastException(
-  fieldName: String,
-  fieldType: KType,
-  providedType: ReadableType,
+internal class FieldCastException private constructor(
+  message: String,
   cause: CodedException
-) : DecoratedException(
-  message = "Cannot cast '${providedType.name}' for field '$fieldName' ('$fieldType').",
-  cause
-)
+) : DecoratedException(message, cause) {
+  constructor(
+    fieldName: String,
+    fieldType: KType,
+    providedType: ReadableType,
+    cause: CodedException
+  ) : this(
+    message = "Cannot cast '${providedType.name}' for field '$fieldName' ('$fieldType').",
+    cause = cause
+  )
+
+  constructor(
+    fieldName: String,
+    fieldType: KType,
+    recordType: KType,
+    cause: CodedException
+  ) : this(
+    message = "Cannot cast value for field '$fieldName' ('$fieldType') in record '$recordType'.",
+    cause = cause
+  )
+}
 
 internal class RecordCastException(
   recordType: KType,

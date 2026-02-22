@@ -33,12 +33,8 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoLink = ExpoLink;
-const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importStar(require("react"));
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const LinkWithPreview_1 = require("./LinkWithPreview");
@@ -55,10 +51,7 @@ function ExpoLink(props) {
 function ExpoLinkImpl(props) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
     const href = (0, useZoomHref_1.useZoomHref)(props);
-    const shouldUseLinkWithPreview = process.env.EXPO_OS === 'ios' &&
-        isLinkWithPreview(props) &&
-        !isPreview &&
-        expo_constants_1.default?.expoConfig?.newArchEnabled !== false;
+    const shouldUseLinkWithPreview = process.env.EXPO_OS === 'ios' && isLinkWithPreview(props) && !isPreview;
     if (shouldUseLinkWithPreview) {
         return <LinkWithPreview_1.LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href}/>;
     }

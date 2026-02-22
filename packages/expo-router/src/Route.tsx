@@ -1,10 +1,10 @@
 'use client';
 
+import type { LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { LoaderFunction } from './types';
 import { type ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
@@ -40,7 +40,7 @@ export type RouteNode = {
   children: RouteNode[];
   /** Is the route a dynamic path */
   dynamic: null | DynamicConvention[];
-  /** `index`, `error-boundary`, etc. */
+  /** `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx` */
   route: string;
   /** Context Module ID, used for matching children. */
   contextKey: string;
@@ -63,9 +63,7 @@ export type RouteNode = {
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
-export const LocalRouteParamsContext = createContext<
-  Record<string, string | undefined> | undefined
->({});
+export const LocalRouteParamsContext = createContext<object | undefined>({});
 
 if (process.env.NODE_ENV !== 'production') {
   CurrentRouteContext.displayName = 'RouteNode';
@@ -86,13 +84,13 @@ export function useContextKey(): string {
 
 export type RouteProps = PropsWithChildren<{
   node: RouteNode;
-  route?: { params: Record<string, string | undefined> };
+  params: object | undefined;
 }>;
 
 /** Provides the matching routes and filename to the children. */
-export function Route({ children, node, route }: RouteProps) {
+export function Route({ children, node, params }: RouteProps) {
   return (
-    <LocalRouteParamsContext.Provider value={route?.params}>
+    <LocalRouteParamsContext.Provider value={params}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
     </LocalRouteParamsContext.Provider>
   );

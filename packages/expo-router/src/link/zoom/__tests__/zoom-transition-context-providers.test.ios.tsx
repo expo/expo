@@ -56,6 +56,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
     expect(capturedValue).toBeDefined();
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     expect(capturedValue.identifier).toBeTruthy();
     expect(typeof capturedValue.identifier).toBe('string');
     expect(capturedValue.hasZoomSource).toBe(false);
@@ -71,6 +73,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     expect(capturedValue.addSource).toBeDefined();
     expect(typeof capturedValue.addSource).toBe('function');
     expect(capturedValue.removeSource).toBeDefined();
@@ -87,6 +91,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     expect(capturedValue.hasZoomSource).toBe(false);
 
     act(() => {
@@ -96,6 +102,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
     expect(onContextValueChange).toHaveBeenCalledTimes(2);
 
     const updatedValue = onContextValueChange.mock.calls[1][0];
+    // Narrows type for TypeScript
+    if (!updatedValue) throw new Error('Expected updatedValue to be defined');
     expect(updatedValue.hasZoomSource).toBe(true);
   });
 
@@ -109,24 +117,30 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     act(() => {
       capturedValue.addSource();
     });
 
     expect(onContextValueChange).toHaveBeenCalledTimes(2);
     const afterAddValue = onContextValueChange.mock.calls[1][0];
+    // Narrows type for TypeScript
+    if (!afterAddValue) throw new Error('Expected afterAddValue to be defined');
     expect(afterAddValue.hasZoomSource).toBe(true);
 
     act(() => {
       afterAddValue.removeSource();
     });
     const afterRemoveValue = onContextValueChange.mock.calls[2][0];
+    // Narrows type for TypeScript
+    if (!afterRemoveValue) throw new Error('Expected afterRemoveValue to be defined');
     expect(afterRemoveValue.hasZoomSource).toBe(false);
   });
 
   test('retains identifier between rerenders', () => {
     const onContextValueChange = jest.fn<void, [ZoomTransitionSourceContextValueType]>();
-    const { rerender } = render(
+    render(
       <ZoomTransitionSourceContextProvider linkProps={{ href: '/test', asChild: true }}>
         <TestComponent onContextValueChange={onContextValueChange} />
       </ZoomTransitionSourceContextProvider>
@@ -134,6 +148,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const initialValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!initialValue) throw new Error('Expected initialValue to be defined');
     const initialId = initialValue.identifier;
     const addSource = initialValue.addSource;
     expect(initialId).toBeDefined();
@@ -144,6 +160,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(2);
     const updatedValue = onContextValueChange.mock.calls[1][0];
+    // Narrows type for TypeScript
+    if (!updatedValue) throw new Error('Expected updatedValue to be defined');
     expect(updatedValue.identifier).toBe(initialId);
   });
 
@@ -157,6 +175,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
 
     expect(() => {
       act(() => {
@@ -178,6 +198,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     expect(() => {
       act(() => {
         capturedValue.addSource();
@@ -197,6 +219,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     expect(() => {
       act(() => {
         capturedValue.addSource();
@@ -215,6 +239,8 @@ describe(ZoomTransitionSourceContextProvider, () => {
 
     expect(onContextValueChange).toHaveBeenCalledTimes(1);
     const capturedValue = onContextValueChange.mock.calls[0][0];
+    // Narrows type for TypeScript
+    if (!capturedValue) throw new Error('Expected capturedValue to be defined');
     expect(() => {
       act(() => {
         capturedValue.addSource();

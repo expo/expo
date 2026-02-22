@@ -9,7 +9,7 @@ import { schema } from './schema';
 import { takeScreenshot } from './takeScreenshot';
 import { cropViewByTestID } from './viewCropper';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7123;
 const e2eDir = path.resolve(path.join(__dirname, '..', '..'));
 
 Bun.serve({

@@ -40,6 +40,7 @@ const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
+const NativeMenuContext_1 = require("./NativeMenuContext");
 const elements_1 = require("./elements");
 const href_1 = require("./href");
 const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
@@ -89,6 +90,7 @@ function LinkWithPreview({ children, ...rest }) {
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
     const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
+    const blockPressRef = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
         path: tabPath,
     }), [tabPath]);
@@ -98,6 +100,7 @@ function LinkWithPreview({ children, ...rest }) {
     }
     return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
             if (hasPreview) {
+                blockPressRef.current = true;
                 isPreviewTapped.current = false;
                 prefetch(rest.hrefForPreviewNavigation);
                 setIsCurrenPreviewOpen(true);
@@ -112,6 +115,7 @@ function LinkWithPreview({ children, ...rest }) {
                 }
             }
         }} onPreviewDidClose={() => {
+            blockPressRef.current = false;
             if (hasPreview && isPreviewTapped.current && isPad) {
                 router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
             }
@@ -121,11 +125,17 @@ function LinkWithPreview({ children, ...rest }) {
                 router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
             }
         }} style={{ display: 'contents' }} disableForceFlatten>
-      <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
-        <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
-        {preview}
-        {menuElement}
-      </InternalLinkPreviewContext_1.InternalLinkPreviewContext>
+      <NativeMenuContext_1.NativeMenuContext value>
+        <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{
+            isVisible: isCurrentPreviewOpen,
+            href: rest.hrefForPreviewNavigation,
+            blockPressRef,
+        }}>
+          <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
+          {preview}
+          {menuElement}
+        </InternalLinkPreviewContext_1.InternalLinkPreviewContext>
+      </NativeMenuContext_1.NativeMenuContext>
     </native_1.NativeLinkPreview>);
 }
 //# sourceMappingURL=LinkWithPreview.js.map

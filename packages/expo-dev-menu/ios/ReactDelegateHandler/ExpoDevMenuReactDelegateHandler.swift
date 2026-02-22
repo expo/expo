@@ -5,12 +5,7 @@ import ExpoModulesCore
 
 @objc
 public class ExpoDevMenuReactDelegateHandler: ExpoReactDelegateHandler {
-  public override func createReactRootView(
-    reactDelegate: ExpoReactDelegate,
-    moduleName: String,
-    initialProperties: [AnyHashable: Any]?,
-    launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-  ) -> UIView? {
+  public override func createRootViewController() -> UIViewController? {
     if EXAppDefines.APP_DEBUG {
       DevMenuManager.shared.updateCurrentBridge(RCTBridge.current())
     }

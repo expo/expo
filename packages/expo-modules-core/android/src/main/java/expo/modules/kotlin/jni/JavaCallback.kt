@@ -7,14 +7,14 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.toJSValueExperimental
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
   operator fun invoke(value: Any?) = checkIfValid {
-    val result = JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
+    val result = JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
     if (result == null) {
       invokeNative()
       return
@@ -115,10 +115,10 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
 
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
+    mHybridData.resetNative()
   }
 
-  override fun deallocate() {
-    mHybridData.resetNative()
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 }

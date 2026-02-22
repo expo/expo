@@ -95,7 +95,10 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
 }
 
 private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject {
-  return try nativeType is AnySharedRef.Type ? appContext.runtime.getSharedRefClass() : appContext.runtime.getSharedObjectClass()
+  let isSharedRef = nativeType is AnySharedRef.Type
+  return try JavaScriptActor.assumeIsolated {
+    return try isSharedRef ? appContext.runtime.getSharedRefClass() : appContext.runtime.getSharedObjectClass()
+  }
 }
 
 private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {

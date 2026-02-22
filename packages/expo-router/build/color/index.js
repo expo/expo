@@ -24,22 +24,34 @@ __exportStar(require("./android.material.types"), exports);
 __exportStar(require("./ios.types"), exports);
 const iosColor = new Proxy({}, {
     get(_, prop) {
-        return (0, react_native_1.PlatformColor)(prop);
+        if (process.env.EXPO_OS === 'ios') {
+            return (0, react_native_1.PlatformColor)(prop);
+        }
+        return null;
     },
 });
 const androidAttrColor = new Proxy({}, {
     get(_, prop) {
-        return (0, react_native_1.PlatformColor)('?attr/' + prop);
+        if (process.env.EXPO_OS === 'android') {
+            return (0, react_native_1.PlatformColor)('?attr/' + prop);
+        }
+        return null;
     },
 });
 const androidMaterialColor = new Proxy({}, {
     get(_, prop) {
-        return (0, materialColor_1.Material3Color)(prop);
+        if (process.env.EXPO_OS === 'android') {
+            return (0, materialColor_1.Material3Color)(prop);
+        }
+        return null;
     },
 });
 const androidDynamicColor = new Proxy({}, {
     get(_, prop) {
-        return (0, materialColor_1.Material3DynamicColor)(prop);
+        if (process.env.EXPO_OS === 'android') {
+            return (0, materialColor_1.Material3DynamicColor)(prop);
+        }
+        return null;
     },
 });
 const androidColor = new Proxy({
@@ -57,7 +69,10 @@ const androidColor = new Proxy({
         if (prop in target) {
             return target[prop];
         }
-        return (0, react_native_1.PlatformColor)('@android:color/' + prop);
+        if (process.env.EXPO_OS === 'android') {
+            return (0, react_native_1.PlatformColor)('@android:color/' + prop);
+        }
+        return null;
     },
 });
 /**
@@ -71,7 +86,7 @@ const androidColor = new Proxy({
  *
  * On **iOS**, it is a type-safe wrapper over `PlatformColor`, providing access to system colors. For example, `Color.ios.label`.
  *
- * > **Note**: To ensure the colors align with the system theme on Android, make sure they are used within a component that responds to theme changes, such as by using the `useColorScheme` hook from React Native.
+ * > **Note**: To ensure the colors align with the system theme on Android, make sure they are used within a component that responds to theme changes, such as by using the `useColorScheme` hook from React Native. This is especially important when using React Compiler, which can memoize components.
  *
  * @example
  * ```tsx

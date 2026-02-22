@@ -4,7 +4,7 @@ import { LinkAppleZoom } from './zoom/link-apple-zoom';
 import { LinkAppleZoomTarget } from './zoom/link-apple-zoom-target';
 export declare const Link: ((props: LinkProps) => import("react").JSX.Element) & {
     resolveHref: (href: import("..").Href) => string;
-    Menu: import("react").FC<import("./elements").LinkMenuProps>;
+    Menu: (props: import("./elements").LinkMenuProps) => import("react").JSX.Element | null;
     Trigger: typeof LinkTrigger;
     Preview: typeof LinkPreview;
     MenuAction: typeof LinkMenuAction;

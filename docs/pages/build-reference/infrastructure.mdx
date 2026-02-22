@@ -20,11 +20,12 @@ Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in o
 
 Images for each platform have one specific version of Node.js, Yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
 
-When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-54`.
+When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-55`.
 
 - The use of a specific name guarantees a consistent environment with only minor updates.
 - When using the `auto` alias, the build image will be selected based on the project configuration, Expo SDK version, and React Native version. You can check what image is used for a build in the **Spin up build environment** build logs section.
 - The `latest` alias will be assigned to the image with the most up-to-date versions of the software.
+- The `sdk-55` alias will be assigned to the image best suited for SDK 55 builds.
 - The `sdk-54` alias will be assigned to the image best suited for SDK 54 builds.
 - The `sdk-53` alias will be assigned to the image best suited for SDK 53 builds.
 - The `sdk-52` alias will be assigned to the image best suited for SDK 52 builds.
@@ -69,7 +70,24 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ### Android server images
 
-#### <CopyTextButton>`ubuntu-24.04-jdk-17-ndk-r27b` (`latest`, `sdk-54`)</CopyTextButton>
+#### <CopyTextButton>`ubuntu-24.04-jdk-17-ndk-r27b-sdk-55` (`latest`, `sdk-55`)</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- GCE image: `ubuntu-2404-noble-amd64-v20260128`
+- NDK 27.1.12297006
+- Node.js 20.19.4
+- Bun 1.3.8
+- Yarn 1.22.22
+- pnpm 10.28.2
+- npm 10.9.3
+- Java 17
+- node-gyp 12.2.0
+- Maestro 2.1.0
+
+</Collapsible>
+
+#### <CopyTextButton>`ubuntu-24.04-jdk-17-ndk-r27b` (`sdk-54`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -306,7 +324,45 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
-#### <CopyTextButton>`macos-sequoia-15.6-xcode-26.0` (`latest`, `sdk-54`, `macos-sequoia-15.5-xcode-26.0`)</CopyTextButton>
+#### <CopyTextButton>`macos-sequoia-15.6-xcode-26.2` (`latest`, `sdk-55`)</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- macOS Sequoia 15.6.1
+- Xcode 26.2 (17C52)
+- Node.js 20.19.4
+- Bun 1.3.8
+- Yarn 1.22.22
+- pnpm 10.28.2
+- npm 10.9.3
+- fastlane 2.231.1
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 12.2.0
+- Maestro 2.1.0
+
+</Collapsible>
+
+#### <CopyTextButton>`macos-sequoia-15.6-xcode-26.1`</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- macOS Sequoia 15.6.1
+- Xcode 26.1 (17B55)
+- Node.js 20.19.4
+- Bun 1.3.1
+- Yarn 1.22.22
+- pnpm 10.20.0
+- npm 10.9.3
+- fastlane 2.228.0
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 11.5.0
+- Maestro 2.0.9
+
+</Collapsible>
+
+#### <CopyTextButton>`macos-sequoia-15.6-xcode-26.0` (`sdk-54`, `macos-sequoia-15.5-xcode-26.0`)</CopyTextButton>
 
 <Collapsible summary="Details">
 

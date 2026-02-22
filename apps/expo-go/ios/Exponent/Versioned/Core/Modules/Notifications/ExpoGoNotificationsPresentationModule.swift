@@ -1,9 +1,9 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import EXNotifications
+import ExpoNotifications
 
-public final class ExpoGoNotificationsPresentationModule: PresentationModule {
+final class ExpoGoNotificationsPresentationModule: PresentationModule {
   private let scopeKey: String
   // swiftlint:disable:next unavailable_function
   required init(appContext: AppContext) {

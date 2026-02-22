@@ -16,6 +16,8 @@ config.watchFolders = [
   path.join(monorepoRoot, 'node_modules'), // Allow Metro to resolve "shared" `node_modules` of the monorepo
   path.join(monorepoRoot, 'apps/common'), // Allow Metro to resolve common ThemeProvider
   path.join(monorepoRoot, 'apps/bare-expo/modules/benchmarking'), // Allow Metro to resolve benchmarking folder
+  path.join(monorepoRoot, 'apps/bare-expo/modules/worklets-tester'), // Allow Metro to resolve worklets-tester folder
+  path.join(monorepoRoot, 'apps/bare-expo/modules/test-expo-ui'), // Allow Metro to resolve test-expo-ui folder
   path.join(monorepoRoot, 'apps/test-suite'), // Allow Metro to resolve test-suite app
 ];
 

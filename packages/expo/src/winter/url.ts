@@ -8,8 +8,7 @@
 
 // This file should not import `react-native` in order to remain self-contained.
 
-/// <reference path="../ts-declarations/whatwg-url-without-unicode.d.ts" />
-import { URL, URLSearchParams } from 'whatwg-url-without-unicode';
+import { URL, URLSearchParams } from 'whatwg-url-minimum';
 
 declare namespace globalThis {
   const RN$Bridgeless: undefined | boolean;
@@ -56,14 +55,13 @@ function getBlobUrlPrefix() {
   return BLOB_URL_PREFIX;
 }
 
-declare module 'whatwg-url-without-unicode' {
+declare module 'whatwg-url-minimum' {
   // TODO(@kitten): Clarify where this came from
   type BlobLike = Blob & { data?: { blobId: string; offset: number } };
 
   interface URLConstructor {
     createObjectURL(blob: BlobLike): string;
     revokeObjectURL(url: URL): void;
-    canParse(url: string, base?: string): boolean;
   }
 }
 
@@ -91,7 +89,9 @@ declare module 'whatwg-url-without-unicode' {
  * </resources>
  * ```
  */
-URL.createObjectURL = function createObjectURL(blob) {
+URL.createObjectURL = function createObjectURL(
+  blob: Blob & { data?: { blobId: string; offset: number } }
+) {
   if (getBlobUrlPrefix() == null) {
     throw new Error('Cannot create URL for blob');
   }
@@ -102,16 +102,6 @@ URL.createObjectURL = function createObjectURL(blob) {
 
 URL.revokeObjectURL = function revokeObjectURL(_url) {
   // Do nothing.
-};
-
-URL.canParse = function canParse(url: string, base?: string): boolean {
-  try {
-    // eslint-disable-next-line no-new
-    new URL(url, base);
-    return true;
-  } catch {
-    return false;
-  }
 };
 
 export { URL, URLSearchParams };

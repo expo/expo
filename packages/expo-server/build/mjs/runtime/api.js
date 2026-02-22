@@ -1,3 +1,4 @@
+import { ImmutableHeaders } from '../ImmutableRequest';
 import { scopeRef } from './scope';
 function enforcedRequestScope() {
     const scope = scopeRef.current?.getStore();
@@ -16,14 +17,20 @@ function assertSupport(name, v) {
     return v;
 }
 export { StatusError } from './error';
-/** Returns the current request's origin URL.
+/** Returns the current request's URL.
  *
- * This typically returns the request's `Origin` header, which contains the
- * request origin URL or defaults to `null`.
+ * This typically returns the request's URL, or on certain platform,
+ * the origin of the request. This does not use the `Origin` header
+ * in development as it may contain an untrusted value.
  * @returns A request origin
  */
 export function origin() {
     return assertSupport('origin()', enforcedRequestScope().origin);
+}
+/** Returns an immutable copy of the current request's headers. */
+export function requestHeaders() {
+    const headers = assertSupport('requestHeaders', enforcedRequestScope().requestHeaders);
+    return new ImmutableHeaders(headers);
 }
 /** Returns the request's environment, if the server runtime supports this.
  *

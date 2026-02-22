@@ -68,13 +68,17 @@ public final class AppContext: NSObject, @unchecked Sendable {
   public var _runtime: ExpoRuntime? {
     didSet {
       if _runtime == nil {
-        // When the runtime is unpinned from the context (e.g. deallocated),
-        // we should make sure to release all JS objects from the memory.
-        // Otherwise the JSCRuntime asserts may fail on deallocation.
-        releaseRuntimeObjects()
+        JavaScriptActor.assumeIsolated {
+          // When the runtime is unpinned from the context (e.g. deallocated),
+          // we should make sure to release all JS objects from the memory.
+          // Otherwise the JSCRuntime asserts may fail on deallocation.
+          releaseRuntimeObjects()
+        }
       } else if _runtime != oldValue {
-        // Try to install the core object automatically when the runtime changes.
-        try? prepareRuntime()
+        JavaScriptActor.assumeIsolated {
+          // Try to install the core object automatically when the runtime changes.
+          try? prepareRuntime()
+        }
       }
     }
   }
@@ -91,6 +95,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  @objc
+  public var _uiRuntime: WorkletRuntime? {
+    didSet {
+      if _uiRuntime != oldValue {
+        MainActor.assumeIsolated {
+          try? prepareUIRuntime()
+        }
+      }
+    }
+  }
+
+  public var uiRuntime: WorkletRuntime {
+    get throws {
+      if let uiRuntime = _uiRuntime {
+        return uiRuntime
+      }
+      throw Exceptions.UIRuntimeLost()
+    }
+  }
+
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
    It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
@@ -98,14 +122,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   @objc
   public var appIdentifier: String? {
-    #if RCT_NEW_ARCH_ENABLED
     guard let moduleRegistry = reactBridge?.moduleRegistry else {
       return nil
     }
     return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
-    #else
-    return nil
-    #endif
   }
 
   /**
@@ -162,7 +182,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
     return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
@@ -173,7 +193,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    - Warning: This is deprecated, use `appContext.runtime.schedule` instead.
    */
   @available(*, deprecated, renamed: "runtime.schedule")
-  public func executeOnJavaScriptThread(_ closure: @escaping () -> Void) {
+  public func executeOnJavaScriptThread(_ closure: @JavaScriptActor @escaping () -> Void) {
     _runtime?.schedule(closure)
   }
 
@@ -197,9 +217,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       throw JavaScriptClassNotFoundException()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
-    let object = try runtime.createObject(withPrototype: prototype)
-
-    return object
+    return try runtime.createObject(withPrototype: prototype)
   }
 
   // MARK: - Legacy modules
@@ -208,7 +226,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns a legacy module implementing given protocol/interface.
    */
   public func legacyModule<ModuleProtocol>(implementing moduleProtocol: Protocol) -> ModuleProtocol? {
-    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol
+    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol ?? moduleRegistry.getModule(implementing: ModuleProtocol.self)
   }
 
   /**
@@ -232,12 +250,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Provides access to the image loader from legacy module registry.
    */
   public var imageLoader: EXImageLoaderInterface? {
-    guard let bridge = reactBridge else {
-      // TODO: Find a way to do this without a bridge
-      log.warn("Unable to get the image loader because the bridge is not available.")
+    guard let loader = hostWrapper?.findModule(withName: "RCTImageLoader", lazilyLoadIfNecessary: true) as? RCTImageLoader else {
+      log.warn("Unable to get the RCTImageLoader module.")
       return nil
     }
-    return ImageLoader(bridge: bridge)
+    return ImageLoader(rctImageLoader: loader)
   }
 
   /**
@@ -247,8 +264,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Provides an event emitter that is compatible with the legacy interface.
+   - Deprecated as of Expo SDK 55. May be removed in the future releases.
    */
-  public var eventEmitter: EXEventEmitterService? {
+  @available(*, deprecated, message: "Use `sendEvent` directly on the module instance instead")
+  public var eventEmitter: LegacyEventEmitterCompat? {
     return LegacyEventEmitterCompat(appContext: self)
   }
 
@@ -335,30 +354,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns a JavaScript object that represents a module with given name.
    When remote debugging is enabled, this will always return `nil`.
    */
+  @JavaScriptActor
   @objc
   public func getNativeModuleObject(_ moduleName: String) -> JavaScriptObject? {
     return moduleRegistry.get(moduleHolderForName: moduleName)?.javaScriptObject
-  }
-
-  /**
-   Returns an array of event names supported by all Swift modules.
-   */
-  @objc
-  public func getSupportedEvents() -> [String] {
-    return moduleRegistry.reduce(into: [String]()) { events, holder in
-      events.append(contentsOf: holder.definition.eventNames)
-    }
-  }
-
-  /**
-   Modifies listeners count for module with given name. Depending on the listeners count,
-   `onStartObserving` and `onStopObserving` are called.
-   */
-  @objc
-  public func modifyEventListenersCount(_ moduleName: String, count: Int) {
-    moduleRegistry
-      .get(moduleHolderForName: moduleName)?
-      .modifyListenersCount(count)
   }
 
   /**
@@ -455,23 +454,22 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Registers native views defined by registered native modules.
-   - Note: It should stay private as `registerNativeModules` should be the only call site. Works only with the New Architecture.
+   - Note: It should stay private as `registerNativeModules` should be the only call site.
    - Todo: `RCTComponentViewFactory` is thread-safe, so this function should be as well.
    */
   @MainActor
   private func registerNativeViews() {
-#if RCT_NEW_ARCH_ENABLED
     for holder in moduleRegistry {
       for (key, viewDefinition) in holder.definition.views {
         let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
         ExpoFabricView.registerComponent(viewModule, appContext: self)
       }
     }
-#endif
   }
 
   // MARK: - Runtime
 
+  @JavaScriptActor
   internal func prepareRuntime() throws {
     let runtime = try runtime
     let coreObject = runtime.createObject()
@@ -490,7 +488,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
-    
+
     // Install `global.expo.SharedRef`.
     EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
@@ -501,9 +499,25 @@ public final class AppContext: NSObject, @unchecked Sendable {
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
   }
 
+  @MainActor
+  internal func prepareUIRuntime() throws {
+    let uiRuntime = try uiRuntime
+    let coreObject = uiRuntime.createObject()
+
+    // Initialize `global.expo`.
+    uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
+  }
+
   /**
    Unsets runtime objects that we hold for each module.
    */
+  @JavaScriptActor
   private func releaseRuntimeObjects() {
     sharedObjectRegistry.clear()
     classRegistry.clear()
@@ -528,7 +542,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       moduleRegistry.post(event: .appContextDestroys)
     }
   }
-  
+
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
@@ -554,8 +568,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
       return providerClass.init()
     }
 
-    // [2] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    for bundle in Bundle.allFrameworks {
+      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
+      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
+        return providerClass.init()
+      }
+    }
+
+    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
+  }
+
+  public func reloadAppAsync(_ reason: String = "Reload from appContext") {
+    if moduleRegistry.has(moduleWithName: "ExpoGo") {
+      NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
+    } else {
+      DispatchQueue.main.async {
+        RCTTriggerReloadCommandListeners(reason)
+      }
+    }
   }
 }
 

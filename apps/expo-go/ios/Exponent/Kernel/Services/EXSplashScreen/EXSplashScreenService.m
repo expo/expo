@@ -43,7 +43,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
                            options:options
           splashScreenViewProvider:splashScreenViewProvider
                    successCallback:^{}
-                   failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                   failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
 }
 
 - (void)showSplashScreenFor:(UIViewController *)viewController

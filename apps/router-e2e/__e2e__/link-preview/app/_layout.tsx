@@ -1,8 +1,6 @@
 import { Stack } from 'expo-router';
-import { enableZoomTransition } from 'expo-router/internal/utils';
 
 const isAllowed = false;
-enableZoomTransition();
 
 export default function Layout() {
   return (

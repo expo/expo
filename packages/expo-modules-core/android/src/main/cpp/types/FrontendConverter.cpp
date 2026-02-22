@@ -13,7 +13,7 @@
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
-#include "../worklets/Worklet.h"
+#include "../worklets/Serializable.h"
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
@@ -743,24 +743,24 @@ jobject ValueOrUndefinedFrontendConverter::convert(
 
 #if WORKLETS_ENABLED
 
-jobject WorkletFrontendConverter::convert(
+jobject SynchronizableFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
   const jsi::Value &value
 ) const {
   JSIContext *jsiContext = getJSIContext(rt);
 
-  auto worklet = worklets::extractSerializableOrThrow<worklets::SerializableWorklet>(rt, value);
-  return Worklet::newInstance(
+  auto worklet = worklets::extractSerializableOrThrow(rt, value);
+  return Serializable::newInstance(
     jsiContext,
     worklet
   ).release();
 }
 
-bool WorkletFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+bool SynchronizableFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
   try {
     // TODO(@lukmccall): find a better way to check this without throwing exception
-    worklets::extractSerializableOrThrow<worklets::SerializableWorklet>(rt, value);
+    worklets::extractSerializableOrThrow(rt, value);
     return true;
   } catch (...) {
     return false;

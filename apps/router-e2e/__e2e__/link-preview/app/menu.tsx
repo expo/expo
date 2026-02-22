@@ -187,6 +187,29 @@ const Menus = () => {
               unstable_keepPresented
             />
           </Link.Menu>
+          {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
+          <Link.Menu title="Element Size Medium" inline elementSize="medium">
+            <Link.MenuAction
+              title="Refresh"
+              icon="arrow.clockwise"
+              onPress={() => console.log('Refresh')}
+            />
+            <Link.MenuAction
+              title="Resume"
+              icon="arrow.2.circlepath"
+              onPress={() => console.log('Resume')}
+            />
+            <Link.MenuAction title="Pin" icon="pin" onPress={() => console.log('Pin')} />
+          </Link.Menu>
+          {/* elementSize="large" displays actions with larger icons and titles */}
+          <Link.Menu title="Element Size Large" inline elementSize="large">
+            <Link.MenuAction
+              title="Share"
+              icon="square.and.arrow.up"
+              onPress={() => console.log('Share')}
+            />
+            <Link.MenuAction title="Copy" icon="doc.on.doc" onPress={() => console.log('Copy')} />
+          </Link.Menu>
           <Link.Menu title="More" icon="ellipsis">
             <Link.MenuAction
               title="Submenu Item 1"

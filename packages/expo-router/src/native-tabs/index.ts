@@ -1,4 +1,15 @@
-export * from './common/elements';
+export type {
+  NativeTabsTriggerLabelProps,
+  SrcIcon,
+  SFSymbolIcon,
+  XcassetIcon,
+  DrawableIcon,
+  MaterialIcon,
+  BaseNativeTabsTriggerIconProps,
+  NativeTabsTriggerIconProps,
+  NativeTabsTriggerBadgeProps,
+  NativeTabsBottomAccessoryProps,
+} from './common/elements';
 export type {
   NativeTabsProps,
   NativeTabTriggerProps,

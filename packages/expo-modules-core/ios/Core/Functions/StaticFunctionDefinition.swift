@@ -37,9 +37,8 @@ public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>
     by owner: AnyObject?,
     withArguments args: [Any],
     appContext: AppContext,
-    callback: @Sendable @escaping (FunctionCallResult) -> ()
+    callback: @Sendable @escaping (FunctionCallResult) -> Void
   ) {
-
     return super.call(by: nil, withArguments: args, appContext: appContext, callback: callback)
   }
 }

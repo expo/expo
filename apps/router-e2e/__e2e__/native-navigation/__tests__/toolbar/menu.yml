@@ -23,7 +23,44 @@ name: Toolbar menu
 - assertVisible:
     id: "tag"
 - assertVisible: "Preferences"
-- assertVisible: "Quick Actions"
+- assertVisible: "Palette Actions"
+- assertVisible: "Star-palette"
+- assertVisible:
+    id: "star"
+- assertVisible: "Flag-palette"
+- assertVisible:
+    id: "flag"
+- assertVisible: "Pin-palette"
+- assertVisible:
+    id: "pin"
+- assertVisible: "Small Actions"
+- assertVisible: "Star"
+- assertVisible:
+    id: "star.fill"
+- assertVisible: "Flag"
+- assertVisible:
+    id: "flag.fill"
+- assertVisible: "Pin"
+- assertVisible:
+    id: "pin.fill"
+- swipe:
+    start: 5%, 90%
+    end: 5%, 50%
+    duration: 100
+- assertVisible: "Medium Size"
+- assertVisible: "Refresh"
+- assertVisible:
+    id: "arrow.clockwise"
+- assertVisible: "Resume"
+- assertVisible:
+    id: "arrow.2.circlepath"
+- assertVisible: "Large Size"
+- assertVisible: "Share"
+- assertVisible:
+    id: "square.and.arrow.up"
+- assertVisible: "Copy"
+- assertVisible:
+    id: "doc.on.doc"
 - assertVisible: "Locked action"
 - assertVisible:
     id: "lock"
@@ -32,27 +69,19 @@ name: Toolbar menu
 - assertVisible: "Disable notifications"
 - assertVisible: "Red"
 - assertVisible: "Blue"
-- assertVisible: 
+- assertVisible:
     id: "checkmark"
     index: 1
-- assertNotVisible: 
+- assertNotVisible:
     id: "checkmark"
     index: 2
 - assertVisible: "Green"
 - assertVisible: "Favorite Color"
 - tapOn: "Preferences"
-- assertVisible: "Send email"
-- assertVisible: "Move to folder"
-- tapOn: "Quick Actions"
-- assertVisible:
-    id: "star"
-- assertVisible:
-    id: "flag"
-- assertVisible:
-    id: "pin"
-- tapOn: "Quick Actions"
-- tapOn: "Move to folder"
-- assertVisible: "Moving to folder..."
+- assertVisible: "Large Size"
+- assertVisible: "Share"
+- tapOn: "Share"
+- assertVisible: "Sharing"
 - tapOn: "OK"
 - tapOn: "Actions"
 - tapOn: "Preferences"

@@ -2,7 +2,7 @@ import {
   Button,
   Host,
   Picker,
-  Switch,
+  Toggle,
   ContextMenu,
   Text,
   Section as SwiftUISection,
@@ -12,12 +12,7 @@ import {
   Divider,
   RNHostView,
 } from '@expo/ui/swift-ui';
-import {
-  buttonStyle,
-  menuActionDismissBehavior,
-  pickerStyle,
-  tag,
-} from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, foregroundStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
@@ -27,8 +22,8 @@ const videoLink =
 
 export default function ContextMenuScreen() {
   const [selectedIndex, setSelectedIndex] = React.useState<number | undefined>(1);
-  const [switchChecked, setSwitchChecked] = React.useState<boolean>(true);
-  const [switch2Checked, setSwitch2Checked] = React.useState<boolean>(true);
+  const [toggleChecked, setToggleChecked] = React.useState<boolean>(true);
+  const [toggle2Checked, setToggle2Checked] = React.useState<boolean>(true);
 
   const player = useVideoPlayer(videoLink, (player) => {
     player.loop = true;
@@ -39,8 +34,8 @@ export default function ContextMenuScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <List>
-        <Section title="Context Menu with glass effect button">
-          <ContextMenu modifiers={[buttonStyle('glass')]}>
+        <Section title="Basic Context Menu">
+          <ContextMenu>
             <ContextMenu.Items>
               <Button
                 label="Hello"
@@ -55,11 +50,11 @@ export default function ContextMenuScreen() {
               />
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Text color="accentColor">Show menu</Text>
+              <Text modifiers={[foregroundStyle('accentColor')]}>Show menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
-        <Section title="Single-Press Context Menu">
+        <Section title="Context Menu with Picker">
           <ContextMenu modifiers={[buttonStyle('bordered')]}>
             <ContextMenu.Items>
               <Button
@@ -86,25 +81,23 @@ export default function ContextMenuScreen() {
               </Picker>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Text color="accentColor">Show Menu</Text>
+              <Text modifiers={[foregroundStyle('accentColor')]}>Show Menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
-        <Section title="Long-Press Context Menu">
-          <ContextMenu activationMethod="longPress">
+        <Section title="Context Menu with Preview">
+          <ContextMenu>
             <ContextMenu.Items>
-              <Switch
-                value={switchChecked}
+              <Toggle
+                isOn={toggleChecked}
                 label="Do u love doggos?"
-                variant="checkbox"
-                onValueChange={setSwitchChecked}
+                onIsOnChange={setToggleChecked}
               />
-              <Switch
-                value={switch2Checked}
-                variant="switch"
+              <Toggle
+                isOn={toggle2Checked}
                 label="Will u marry doggos?"
                 systemImage="heart.slash"
-                onValueChange={setSwitch2Checked}
+                onIsOnChange={setToggle2Checked}
               />
               <Button
                 role="destructive"
@@ -144,26 +137,6 @@ export default function ContextMenuScreen() {
             </ContextMenu.Preview>
           </ContextMenu>
         </Section>
-        <Section title="Context Menu Dismissal Behavior">
-          <ContextMenu modifiers={[menuActionDismissBehavior('disabled')]}>
-            <ContextMenu.Items>
-              <Button onPress={() => console.log('Pressed3')} label="Do not dismiss" />
-              <Button
-                label="Automatically dismiss"
-                onPress={() => console.log('Pressed1')}
-                modifiers={[menuActionDismissBehavior('automatic')]}
-              />
-              <Button
-                label="Always dismiss"
-                onPress={() => console.log('Pressed2')}
-                modifiers={[menuActionDismissBehavior('enabled')]}
-              />
-            </ContextMenu.Items>
-            <ContextMenu.Trigger>
-              <Text color="accentColor">Show menu</Text>
-            </ContextMenu.Trigger>
-          </ContextMenu>
-        </Section>
         <Section title="SwiftUI Section and Divider Components">
           <ContextMenu modifiers={[buttonStyle('glass')]}>
             <ContextMenu.Items>
@@ -176,7 +149,7 @@ export default function ContextMenuScreen() {
               </SwiftUISection>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Text color="accentColor">Show menu</Text>
+              <Text modifiers={[foregroundStyle('accentColor')]}>Show menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>

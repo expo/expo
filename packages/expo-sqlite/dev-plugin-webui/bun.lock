@@ -21,7 +21,7 @@
         "react": "19.1.0",
         "react-dom": "19.1.0",
         "react-native": "0.81.5",
-        "react-native-safe-area-context": "~5.6.0",
+        "react-native-safe-area-context": "~5.6.2",
         "react-native-screens": "~4.16.0",
         "react-native-web": "~0.21.0",
         "sonner": "^2.0.7",
@@ -32,7 +32,7 @@
       },
       "devDependencies": {
         "@jest/globals": "~29.7.0",
-        "@testing-library/react-native": "^13.2.0",
+        "@testing-library/react-native": "^13.3.0",
         "@types/bun": "^1.3.1",
         "@types/jest": "29.5.14",
         "@types/react": "~19.1.0",

@@ -35,6 +35,7 @@ export default function DocumentationPage({
   title,
   description,
   packageName,
+  cliVersion,
   sourceCodeUrl,
   iconUrl,
   children,
@@ -313,7 +314,9 @@ export default function DocumentationPage({
           title={title}
           description={description}
           canonicalUrl={
-            version !== 'unversioned' ? RoutesUtils.getCanonicalUrl(pathname) : undefined
+            version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
+              ? RoutesUtils.getCanonicalUrl(pathname)
+              : undefined
           }>
           {hideFromSearch !== true && (
             <meta
@@ -323,7 +326,8 @@ export default function DocumentationPage({
           )}
           {(version === 'unversioned' ||
             RoutesUtils.isPreviewPath(pathname) ||
-            RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+            RoutesUtils.isArchivePath(pathname) ||
+            RoutesUtils.isInternalPath(pathname)) && <meta name="robots" content="noindex" />}
           {searchRank && <meta name="searchRank" content={String(searchRank)} />}
           {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
         </DocumentationHead>
@@ -349,6 +353,7 @@ export default function DocumentationPage({
             <PageHeader
               title={title}
               description={description}
+              cliVersion={cliVersion}
               sourceCodeUrl={sourceCodeUrl}
               packageName={packageName}
               iconUrl={iconUrl}

@@ -6,6 +6,67 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.7 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Web] Fix potential `nan` duration. ([#43268](https://github.com/expo/expo/pull/43268) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [android] Make in-memory preload cache. ([#43293](https://github.com/expo/expo/pull/43293) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.6 — 2026-02-16
+
+### 🎉 New features
+
+- [iOS] Add support for `shouldRouteThroughEarpiece`. ([#43089](https://github.com/expo/expo/pull/43089) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Make it possible to add/remove the foreground service and foreground service permissions with a config plugin. ([#43014](https://github.com/expo/expo/pull/43014) by [@behenate](https://github.com/behenate))
+- [Web] Add support for audio sampling. ([#43149](https://github.com/expo/expo/pull/43149) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for media controls. ([#43150](https://github.com/expo/expo/pull/43150) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for selecting recording inputs. ([#43151](https://github.com/expo/expo/pull/43151) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for recording metering. ([#43152](https://github.com/expo/expo/pull/43152) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Enable `setIsAudioActiveAsync`. ([#43142](https://github.com/expo/expo/pull/43142) by [@alanjhughes](https://github.com/alanjhughes))
+- Add support for preloading audio sources. ([#43063](https://github.com/expo/expo/pull/43063) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [Android] Fix memory leaks when refreshing the app. ([#42785](https://github.com/expo/expo/pull/42785) by [@behenate](https://github.com/behenate))
+- [iOS] Fixes `mediaServicesDidReset` not being correctly implemented. ([#42898](https://github.com/expo/expo/pull/42898) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Improve event handling. ([#43121](https://github.com/expo/expo/pull/43121) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Rework native audio service handling. ([#43015](https://github.com/expo/expo/pull/43015) by [@behenate](https://github.com/behenate))
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
 - [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Support `mixWithOthers` interruption mode. ([#41670](https://github.com/expo/expo/pull/41670) by [@alanjhughes](https://github.com/alanjhughes))
@@ -17,6 +78,7 @@
 - [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
+- [Android] Handle `stop` errors on the `recorder` and return correct timestamp for `currentTime`. ([#41933](https://github.com/expo/expo/pull/41933) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -59,6 +121,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Removed requiring shouldPlayInBackground to be true for background recording. ([#42134](https://github.com/expo/expo/pull/42134) by [@chrfalch](https://github.com/chrfalch))
 
 ## 1.0.11 — 2025-09-11
 

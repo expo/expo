@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 
 ## 10.0.0 — 2025-08-13

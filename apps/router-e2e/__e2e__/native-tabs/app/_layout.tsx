@@ -1,7 +1,4 @@
-import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { VectorIcon } from 'expo-router';
-import { enableZoomTransition } from 'expo-router/internal/utils';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Appearance, Platform, useColorScheme } from 'react-native';
@@ -11,8 +8,6 @@ import { MiniPlayer } from '../components/mini-player';
 if (process.env.EXPO_OS !== 'web') {
   Appearance.setColorScheme('unspecified');
 }
-
-enableZoomTransition();
 
 export default function Layout() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -39,6 +34,13 @@ export default function Layout() {
           <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
           <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
           <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="icon-test">
+          <NativeTabs.Trigger.Icon
+            src={require('../../../assets/explore_orange.png')}
+            renderingMode="original"
+          />
+          <NativeTabs.Trigger.Label>Original Icon</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
         <NativeTabs.BottomAccessory>
           <MiniPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />

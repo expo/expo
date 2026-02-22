@@ -9,6 +9,8 @@
 
 #ifdef __cplusplus
 
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+
 namespace facebook::react {
 class RuntimeScheduler;
 }
@@ -38,6 +40,7 @@ typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime,
                                           NSArray<EXJavaScriptValue *> *_Nonnull arguments);
 #endif // __cplusplus
 
+NS_SWIFT_SENDABLE
 NS_SWIFT_NAME(JavaScriptRuntime)
 @interface EXJavaScriptRuntime : NSObject
 
@@ -49,6 +52,8 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 #ifdef __cplusplus
 
 - (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime;
+
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 
 /**
  Returns the underlying runtime object.

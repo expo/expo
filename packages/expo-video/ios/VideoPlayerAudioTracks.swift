@@ -64,7 +64,7 @@ class VideoPlayerAudioTracks {
 
       if let group = try await asset.loadMediaSelectionGroup(for: characteristic) {
         for option in group.options {
-          guard let audioTrack = AudioTrack.from(mediaSelectionOption: option) else {
+          guard let audioTrack = AudioTrack.from(mediaSelectionOption: option, in: group) else {
             continue
           }
 
@@ -84,6 +84,6 @@ class VideoPlayerAudioTracks {
       return nil
     }
 
-    return AudioTrack.from(mediaSelectionOption: selectedMediaOption)
+    return AudioTrack.from(mediaSelectionOption: selectedMediaOption, in: mediaSelectionGroup)
   }
 }

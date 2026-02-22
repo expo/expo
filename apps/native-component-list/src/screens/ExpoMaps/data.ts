@@ -1,3 +1,23 @@
+// Transatlantic flight paths for geodesic polyline testing.
+// Long east-west routes at high latitudes show dramatic geodesic curvature
+// (the great circle arc bows north over the Atlantic/Arctic).
+export const flightPaths = [
+  {
+    name: 'Prague → NYC',
+    coordinates: [
+      { latitude: 50.1008, longitude: 14.26 }, // PRG
+      { latitude: 40.6413, longitude: -73.7781 }, // JFK
+    ],
+  },
+  {
+    name: 'London → Miami',
+    coordinates: [
+      { latitude: 51.47, longitude: -0.4543 }, // LHR
+      { latitude: 25.7959, longitude: -80.287 }, // MIA
+    ],
+  },
+];
+
 export const polylineCoordinates = [
   {
     latitude: 46.334295,

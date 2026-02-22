@@ -11,11 +11,37 @@ import expo.modules.calendar.next.exceptions.EventDateTimeInvalidException
 import java.text.SimpleDateFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
   timeZone = TimeZone.getTimeZone("GMT")
 }
-val rrFormat = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
+
+/**
+ * [SimpleDateFormat] used in native recurrence rule string.
+ * The format corresponds to the 'date-time' type defined by RFC-5455 section 3.3.5.
+ */
+val rrFormat = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'").apply {
+  timeZone = TimeZone.getTimeZone("GMT")
+}
+
+/**
+ * [SimpleDateFormat] used in native recurrence rule string for all-day events.
+ * The format corresponds to the 'date' type defined by RFC-5455 section 3.3.4.
+ */
+val allDayRrFormat = SimpleDateFormat("yyyyMMdd").apply {
+  timeZone = TimeZone.getTimeZone("GMT")
+}
+
+/**
+ * @param dateString RFC-5455 date or date-time string (RFC sections 3.3.4 and 3.3.5).
+ */
+fun parseRrDate(dateString: String): Date? =
+  runCatching {
+    rrFormat.parse(dateString)
+  }.recover {
+    allDayRrFormat.parse(dateString)
+  }.getOrNull()
 
 suspend fun findEvents(contentResolver: ContentResolver, startDate: Any, endDate: Any, calendars: List<String>): Cursor {
   return withContext(Dispatchers.IO) {

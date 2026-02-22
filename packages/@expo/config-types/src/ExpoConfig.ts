@@ -71,31 +71,6 @@ export interface ExpoConfig {
    */
   icon?: string;
   /**
-   * @deprecated in favor of expo-notifications config plugin. Configuration for remote (push) notifications.
-   */
-  notification?: {
-    /**
-     * (Android only) Local path or remote URL to an image to use as the icon for push notifications. 96x96 png grayscale with transparency. We recommend following [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles). If not provided, defaults to your app icon.
-     */
-    icon?: string;
-    /**
-     * (Android only) Tint color for the push notification image when it appears in the notification tray. Defaults to `#ffffff`
-     */
-    color?: string;
-    /**
-     * Whether or not to display notifications when the app is in the foreground on iOS. `_displayInForeground` option in the individual push notification message overrides this option. [Learn more.](https://docs.expo.dev/push-notifications/receiving-notifications/#foreground-notification-behavior) Defaults to `false`.
-     */
-    iosDisplayInForeground?: boolean;
-    /**
-     * Show each push notification individually (`default`) or collapse into one (`collapse`).
-     */
-    androidMode?: 'default' | 'collapse';
-    /**
-     * If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. For example, `'#{unread_notifications} new interactions'`.
-     */
-    androidCollapsedTitle?: string;
-  };
-  /**
    * Configuration for the status bar on Android. For more details please navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
    */
   androidStatusBar?: {
@@ -223,7 +198,7 @@ export interface ExpoConfig {
      */
     useNativeDebug?: boolean;
     /**
-     * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to true. Set to false to force full asset downloads even when a server offers patch responses.
+     * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to false. Set to true to enable downloading asset patches instead of full assets when a server offers patch responses.
      */
     enableBsdiffPatchSupport?: boolean;
   };
@@ -825,11 +800,6 @@ export interface Android {
    * Your android app version. Takes precedence over the root `version` field. In addition to this field, you'll also use `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). This corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
   version?: string;
-  /**
-   * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to true.
-   * @deprecated Android 16+ (API level 36) requires edge-to-edge to be enabled. This feature can't be disabled anymore. [learn more](https://developer.android.com/about/versions/16/behavior-changes-16#edge-to-edge)
-   */
-  edgeToEdgeEnabled?: true;
   /**
    * Enable your app to use the [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) on Android 13 (API level 33) and later. Default to false.
    */

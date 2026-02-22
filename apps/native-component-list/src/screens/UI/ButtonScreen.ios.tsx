@@ -1,6 +1,6 @@
 import {
   Button,
-  Progress,
+  ProgressView,
   Host,
   Image,
   Label,
@@ -121,7 +121,7 @@ export default function ButtonScreen() {
             </VStack>
           </Button>
           <Button>
-            <Progress color="blue" variant="circular" />
+            <ProgressView modifiers={[tint('blue')]} />
           </Button>
         </Section>
       </List>

@@ -401,14 +401,13 @@ export function likelyContainsCodeFrame(message: string | undefined): boolean {
  * Walks thru the error cause chain and attaches the import stack to the root error message.
  * Removes the error stack for import and syntax errors.
  */
-export const attachImportStackToRootMessage = (err: unknown) => {
-  if (!(err instanceof Error)) return;
-
+export const attachImportStackToRootMessage = (
+  err: unknown,
+  importStack = nearestImportStack(err)
+) => {
   // Space out build failures.
-  const nearestImportStackValue = nearestImportStack(err);
-  if (nearestImportStackValue) {
-    err.message += '\n\n' + nearestImportStackValue;
-
+  if (err instanceof Error && importStack) {
+    err.message += '\n\n' + importStack;
     if (!isDebug) {
       // When not debugging remove the stack to avoid cluttering the output and confusing users,
       // the import stack is the guide to fixing the error.

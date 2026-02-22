@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { memoize } from './memoize';
 import {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
@@ -9,7 +10,6 @@ import {
   RawModuleConfigApple,
   SupportedPlatform,
 } from './types';
-import { memoize } from './utils';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {
@@ -30,6 +30,7 @@ export class ExpoAndroidProjectConfig {
     public name: string,
     public path: string,
     public modules?: ExpoAndroidModuleConfig[],
+    public services?: string[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
     public shouldUsePublicationScriptPath?: string,
@@ -138,6 +139,7 @@ export class ExpoModuleConfig {
             ? new ExpoAndroidModuleConfig(module, null)
             : new ExpoAndroidModuleConfig(module.class, module.name)
         ),
+        this.rawConfig.android?.services,
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
         this.rawConfig.android?.shouldUsePublicationScriptPath,
@@ -155,6 +157,7 @@ export class ExpoModuleConfig {
               ? new ExpoAndroidModuleConfig(module, null)
               : new ExpoAndroidModuleConfig(module.class, module.name)
           ),
+          project.services,
           project.publication,
           project.gradleAarProjects,
           project.shouldUsePublicationScriptPath

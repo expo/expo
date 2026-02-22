@@ -118,6 +118,8 @@ export async function packToTarballAsync(packageDir: string): Promise<PackResult
     ['pack', '--json', '--foreground-scripts=false'],
     {
       cwd: packageDir,
+      // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+      env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
     }
   );
   return result;
@@ -151,8 +153,19 @@ export async function publishPackageAsync(
   }
   await spawnAsync('npm', args, {
     cwd: packageDir,
+    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
     ...options.spawnOptions,
   });
+}
+
+function maybeNpmOtpFlag() {
+  const { NPM_OTP } = process.env;
+  if (NPM_OTP) {
+    return ['--otp', NPM_OTP];
+  } else {
+    return [];
+  }
 }
 
 /**
@@ -164,7 +177,11 @@ export async function addTagAsync(
   tagName: string,
   spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'add', `${packageName}@${version}`, tagName], spawnOptions);
+  await spawnAsync(
+    'npm',
+    ['dist-tag', 'add', `${packageName}@${version}`, tagName, ...maybeNpmOtpFlag()],
+    spawnOptions
+  );
 }
 
 /**
@@ -175,7 +192,11 @@ export async function removeTagAsync(
   tagName: string,
   spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName], spawnOptions);
+  await spawnAsync(
+    'npm',
+    ['dist-tag', 'rm', packageName, tagName, ...maybeNpmOtpFlag()],
+    spawnOptions
+  );
 }
 
 /**

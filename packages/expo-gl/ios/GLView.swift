@@ -4,10 +4,10 @@ import ExpoModulesCore
 
 internal final class GLView: ExpoView, EXGLContextDelegate {
   lazy var glContext: EXGLContext = {
-    guard let legacyModuleRegistry = appContext?.legacyModuleRegistry else {
-      fatalError("Legacy module registry is not available")
+    guard let runtime = try? appContext?.runtime, let fileSystem = appContext?.fileSystem else {
+      fatalError("[expo-gl] Unable to get the app context, JS runtime or file system manager")
     }
-    return EXGLContext(delegate: self, andModuleRegistry: legacyModuleRegistry)
+    return EXGLContext(delegate: self, runtime: runtime, fileSystem: fileSystem)
   }()
 
   lazy var eaglContext: EAGLContext = glContext.createSharedEAGLContext()

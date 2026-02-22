@@ -50,7 +50,7 @@ class AssetModule : Module() {
       localUrl.mkdirs()
     }
 
-    if (appContext.filePermission?.getPathPermissions(appContext.reactContext, localUrl.parent)?.contains(Permission.WRITE) != true) {
+    if (!appContext.filePermission.getPathPermissions(context, requireNotNull(localUrl.parent)).contains(Permission.WRITE)) {
       throw UnableToDownloadAssetException(uri.toString())
     }
 

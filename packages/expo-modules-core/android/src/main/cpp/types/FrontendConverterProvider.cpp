@@ -31,7 +31,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::ANY, AnyFrontendConvert);
 
 #if WORKLETS_ENABLED
-  RegisterConverter(CppType::WORKLET, WorkletFrontendConverter);
+  RegisterConverter(CppType::SERIALIZABLE, SynchronizableFrontendConverter);
 #endif
 
 #undef RegisterConverter

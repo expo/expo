@@ -1,0 +1,103 @@
+---
+title: ScrollView
+description: A SwiftUI ScrollView component for scrollable content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI ScrollView matches the official SwiftUI [ScrollView API](https://developer.apple.com/documentation/swiftui/scrollview) and provides a scrollable container for its children.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic vertical scroll view
+
+A simple vertically scrollable list of text items.
+
+```tsx ScrollViewVerticalExample.tsx
+import { Host, ScrollView, VStack, Text } from '@expo/ui/swift-ui';
+import { padding } from '@expo/ui/swift-ui/modifiers';
+
+export default function ScrollViewVerticalExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <ScrollView>
+        <VStack spacing={8}>
+          {Array.from({ length: 30 }, (_, i) => (
+            <Text key={i} modifiers={[padding({ horizontal: 16 })]}>
+              {`Item ${i + 1}`}
+            </Text>
+          ))}
+        </VStack>
+      </ScrollView>
+    </Host>
+  );
+}
+```
+
+### Horizontal scroll view
+
+Use the `axes` prop to scroll horizontally.
+
+```tsx ScrollViewHorizontalExample.tsx
+import { Host, ScrollView, HStack, RoundedRectangle } from '@expo/ui/swift-ui';
+import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function ScrollViewHorizontalExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <ScrollView axes="horizontal">
+        <HStack spacing={8}>
+          {Array.from({ length: 20 }, (_, i) => (
+            <RoundedRectangle
+              key={i}
+              cornerRadius={12}
+              modifiers={[
+                frame({ width: 100, height: 100 }),
+                foregroundStyle(`hsl(${i * 18}, 70%, 50%)`),
+              ]}
+            />
+          ))}
+        </HStack>
+      </ScrollView>
+    </Host>
+  );
+}
+```
+
+### Hidden scroll indicators
+
+Set `showsIndicators` to `false` to hide the scroll bars.
+
+```tsx ScrollViewHiddenIndicatorsExample.tsx
+import { Host, ScrollView, VStack, Text } from '@expo/ui/swift-ui';
+
+export default function ScrollViewHiddenIndicatorsExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <ScrollView showsIndicators={false}>
+        <VStack spacing={8}>
+          {Array.from({ length: 30 }, (_, i) => (
+            <Text key={i}>{`Item ${i + 1}`}</Text>
+          ))}
+        </VStack>
+      </ScrollView>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { ScrollView } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/scrollview" apiName="ScrollView" />

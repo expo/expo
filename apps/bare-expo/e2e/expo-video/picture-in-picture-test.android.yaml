@@ -1,0 +1,28 @@
+# Tests whether the fullscreen opens, and if appropriate events were sent
+appId: dev.expo.Payments
+jsEngine: graaljs
+---
+- openLink: bareexpo://components/video/pip
+
+- tapOn:
+    text: 'e2e pause'
+- tapOn:
+    text: 'Enter Picture In Picture'
+# We cannot do a view-shot check while in pip, because the VideoView with testID is removed when entering.
+# We can be pretty sure we've successfully entered PiP when it's gone though
+- assertNotVisible:
+    id: 'pip-view'
+
+# Important! If you are running this locally and the test fails, it may mean that at some point you have manually shifted the pip window position or size.
+# The PiP window position/size is remembered across app and device restarts. So you may have to clean the emulator data to restore the original pip window position.
+- tapOn:
+    point: 68%,68%
+    repeat: 2
+    delay: 700
+# Make sure the view hierarchy was restored
+- runFlow:
+    file: ../_nested-flows/viewshot-comparison.yaml
+    env:
+      screenshotOutputPath: 'expo-video/screenshots/pip-1'
+      testID: 'pip-view'
+      mode: 'keep-originals'

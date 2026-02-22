@@ -3,6 +3,7 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.helpers.preferences
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
@@ -88,7 +89,6 @@ class DevMenuDefaultPreferences(
   override var isOnboardingFinished: Boolean
     by preferences(sharedPreferences, false)
 
-  // TODO: @behenate, on VR this value should be true by default
   override var showFab: Boolean
-    by preferences(sharedPreferences, false)
+    by preferences(sharedPreferences, VRUtilities.isQuest())
 }

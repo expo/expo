@@ -1,19 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enableZoomTransition = enableZoomTransition;
+exports.disableZoomTransition = disableZoomTransition;
 exports.isZoomTransitionEnabled = isZoomTransitionEnabled;
 exports.ZoomTransitionEnabler = ZoomTransitionEnabler;
 const react_1 = require("react");
+const zoom_transition_context_1 = require("./zoom-transition-context");
 const descriptors_context_1 = require("../../fork/native-stack/descriptors-context");
 const navigationParams_1 = require("../../navigationParams");
 const PreviewRouteContext_1 = require("../preview/PreviewRouteContext");
 const native_1 = require("../preview/native");
-let _isZoomTransitionEnabled = false;
-function enableZoomTransition() {
-    if (process.env.EXPO_OS === 'ios') {
-        console.warn('[expo-router] Zoom transition is an experimental feature. Use at your own risk.');
-        _isZoomTransitionEnabled = true;
-    }
+let _isZoomTransitionEnabled = process.env.EXPO_OS === 'ios';
+function disableZoomTransition() {
+    _isZoomTransitionEnabled = false;
 }
 function isZoomTransitionEnabled() {
     return _isZoomTransitionEnabled;
@@ -35,10 +33,16 @@ function ZoomTransitionEnabler({ route }) {
         const isLinkPreviewNavigation = !!internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
         const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key && !isLinkPreviewNavigation;
         if (hasZoomTransition && typeof zoomTransitionId === 'string') {
+            // Read dismissalBoundsRect from context (set by usePreventZoomTransitionDismissal hook)
+            const targetContext = (0, react_1.use)(zoom_transition_context_1.ZoomTransitionTargetContext);
+            const dismissalBoundsRect = targetContext.dismissalBoundsRect;
+            // Read gestureEnabled from the screen descriptor so that gestureEnabled: false
+            // automatically blocks the native zoom transition dismissal gesture,
+            // even when the user hasn't called usePreventZoomTransitionDismissal().
             const descriptorsMap = (0, react_1.use)(descriptors_context_1.DescriptorsContext);
-            const currentDescriptor = descriptorsMap[route.key];
-            const preventInteractiveDismissal = currentDescriptor?.options?.gestureEnabled === false;
-            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} preventInteractiveDismissal={preventInteractiveDismissal}/>);
+            const gestureEnabled = descriptorsMap[route.key]?.options?.gestureEnabled;
+            const effectiveDismissalBoundsRect = dismissalBoundsRect ?? (gestureEnabled === false ? { maxX: 0, maxY: 0 } : null);
+            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} dismissalBoundsRect={effectiveDismissalBoundsRect}/>);
         }
     }
     return null;

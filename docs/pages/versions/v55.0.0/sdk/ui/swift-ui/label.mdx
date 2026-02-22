@@ -1,0 +1,73 @@
+---
+title: Label
+description: A SwiftUI Label component for displaying text with an icon.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Label matches the official SwiftUI [Label API](https://developer.apple.com/documentation/swiftui/label) and displays a title alongside an icon.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic label with SF Symbol
+
+```tsx BasicLabelExample.tsx
+import { Host, Label } from '@expo/ui/swift-ui';
+
+export default function BasicLabelExample() {
+  return (
+    <Host matchContents>
+      <Label title="Favorites" systemImage="star.fill" />
+    </Host>
+  );
+}
+```
+
+### With custom icon
+
+Use the `icon` prop to provide a custom React node as the icon instead of an SF Symbol.
+
+```tsx LabelCustomIconExample.tsx
+import { Host, Label, Image } from '@expo/ui/swift-ui';
+
+export default function LabelCustomIconExample() {
+  return (
+    <Host matchContents>
+      <Label title="Custom Icon" icon={<Image systemName="sparkles" size={20} color="purple" />} />
+    </Host>
+  );
+}
+```
+
+### Icon only
+
+Use the [`labelStyle`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#labelstyle) modifier with `iconOnly` to display only the icon. Always provide a `title` for accessibility even though it won't be visible.
+
+```tsx LabelIconOnlyExample.tsx
+import { Host, Label } from '@expo/ui/swift-ui';
+import { labelStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function LabelIconOnlyExample() {
+  return (
+    <Host matchContents>
+      <Label title="Settings" systemImage="gear" modifiers={[labelStyle('iconOnly')]} />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Label } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/label" apiName="Label" />

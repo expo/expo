@@ -2,6 +2,7 @@
 
 #import <ExpoLocation/EXBaseLocationRequester.h>
 #import <ExpoModulesCore/EXUtilities.h>
+#import <React/RCTLog.h>
 
 #import <objc/message.h>
 
@@ -36,7 +37,7 @@
 
   CLAuthorizationStatus systemStatus;
   if (![EXBaseLocationRequester isConfiguredForAlwaysAuthorization] && ![EXBaseLocationRequester isConfiguredForWhenInUseAuthorization]) {
-    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/3iLqy6S (https://docs.expo.dev/distribution/app-stores/#system-permissions-dialogs-on-ios) for more information."));
+    RCTFatal(RCTErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/3iLqy6S (https://docs.expo.dev/distribution/app-stores/#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
@@ -158,5 +159,15 @@
   return [self isConfiguredForWhenInUseAuthorization] && [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
 }
 
+- (NSString *)accuracyAuthorizationString
+{
+  if (@available(iOS 14, *)) {
+    CLLocationManager *manager = self.locationManager ?: [[CLLocationManager alloc] init];
+    if (manager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy) {
+      return @"reduced";
+    }
+  }
+  return @"full";
+}
 
 @end

@@ -21,7 +21,7 @@ internal func loadImage(atUrl url: URL, appContext: AppContext) async throws -> 
   guard let imageLoader = appContext.imageLoader else {
     throw ImageLoaderNotFoundException()
   }
-  guard FileSystemUtilities.permissions(appContext, for: url).contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
+  guard FileSystemUtilities.isReadableFile(appContext, url) else {
     throw FileSystemReadPermissionException(url.absoluteString)
   }
 

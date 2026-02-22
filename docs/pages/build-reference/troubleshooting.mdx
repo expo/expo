@@ -4,6 +4,7 @@ description: A reference for troubleshooting build errors and crashes when using
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { A } from '~/ui/components/Text';
 
@@ -103,6 +104,39 @@ If your project imports a file listed in **.gitignore**, the build will fail wit
 - Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/build-reference/variables/#using-secrets-in-environment-variables) for more information.
 
 </Collapsible>
+
+## Compare build logs
+
+When an EAS Build that previously succeeded starts failing, identifying what changed between the two builds can help pinpoint the root cause. The **Compare** button on the EAS Build details page helps you compare two builds side-by-side, showing differences in their build logs and configuration.
+
+To compare two builds:
+
+- Open your build details page on the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) of your failed build
+- Click the **Compare** button to open the compare modal
+- Enter the build ID or the complete build URL of the build you want to compare against. This will be the build that previously succeeded.
+- Click **Compare**.
+
+<ContentSpotlight
+  alt="Compare builds modal."
+  src="/static/images/eas-build/troubleshooting/compare-builds-modal.png"
+  className="max-w-[600px]"
+/>
+
+The above screenshot shows the comparison view that displays both builds with their metadata at the top. This includes, status, environment, Expo SDK version, and more. Below the metadata, a side-by-side log comparison shows output organized by each build phase.
+
+Within each build phase, an indicator is used to show what changed between the two builds:
+
+- **Changed (X lines)**: The phase ran in both builds but produced different output.
+- **+ Added**: The phase exists only in the comparison build (the original build failed before reaching it).
+- **- Removed**: The phase exists only in the original build.
+
+<ContentSpotlight
+  alt="Compare builds view."
+  src="/static/images/eas-build/troubleshooting/compare-builds-view.png"
+  className="max-w-[600px]"
+/>
+
+In the above example, comparing a failed build on the right side against a successful build on the left reveals differences in installed packages and highlighted lock files mismatch.
 
 ## Verify that your JavaScript bundles locally
 

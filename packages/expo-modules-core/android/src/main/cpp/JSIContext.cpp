@@ -13,12 +13,12 @@
 #include <fbjni/fbjni.h>
 
 #include <memory>
+#include <shared_mutex>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
-
 
 void JSIContext::registerNatives() {
   registerHybrid({
@@ -263,14 +263,26 @@ bool JSIContext::wasDeallocated() const noexcept {
   return wasDeallocated_;
 }
 
-std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
+static std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
+static std::shared_mutex jsiContextsMutex;
 
 void bindJSIContext(const jsi::Runtime &runtime, JSIContext *jsiContext) {
+  std::unique_lock lock(jsiContextsMutex);
   jsiContexts[reinterpret_cast<uintptr_t>(&runtime)] = jsiContext;
 }
 
 void unbindJSIContext(const jsi::Runtime &runtime) {
+  std::unique_lock lock(jsiContextsMutex);
   jsiContexts.erase(reinterpret_cast<uintptr_t>(&runtime));
+}
+
+JSIContext *getJSIContext(const jsi::Runtime &runtime) {
+  std::shared_lock lock(jsiContextsMutex);
+  const auto iterator = jsiContexts.find(reinterpret_cast<uintptr_t>(&runtime));
+  if (iterator == jsiContexts.end()) {
+    throw std::invalid_argument("JSIContext for the given runtime doesn't exist");
+  }
+  return iterator->second;
 }
 
 } // namespace expo

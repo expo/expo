@@ -4,7 +4,7 @@ sidebar_title: SafeAreaContext
 description: A library with a flexible API for accessing the device's safe area inset information.
 sourceCodeUrl: 'https://github.com/AppAndFlow/react-native-safe-area-context'
 packageName: 'react-native-safe-area-context'
-platforms: ['android', 'ios', 'web', 'tvos']
+platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 ---
 
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
@@ -12,7 +12,7 @@ import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRi
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { APIBoxSectionHeader } from '~/components/plugins/api/components/APIBoxSectionHeader';
-import { CALLOUT } from '~/ui/components/Text';
+import { CALLOUT, A } from '~/ui/components/Text';
 
 > **info** This library is listed in the Expo SDK reference because it is included in [Expo Go](https://expo.dev/go). You may use any library of your choice with [development builds](/develop/development-builds/introduction/).
 
@@ -60,7 +60,14 @@ function SomeComponent() {
 <PaddedAPIBox header="edges" headerNestingLevel={4}>
 
 {/* prettier-ignore */}
-<CALLOUT theme="tertiary" className="text-2xs">Optional&ensp;•&ensp;Type: [`Edge[]`](#edge)&ensp;•&ensp;Default: `["top", "right", "bottom", "left"]`</CALLOUT>
+<CALLOUT theme="tertiary" className="text-2xs">
+  {'Optional\u2002•\u2002Type: '}
+  <A href="#edge">
+    <code>Edge[]</code>
+  </A>
+  {'\u2002•\u2002Default: '}
+  <code>["top", "right", "bottom", "left"]</code>
+</CALLOUT>
 <br />
 
 Sets the edges to apply the safe area insets to.
@@ -70,7 +77,10 @@ Sets the edges to apply the safe area insets to.
 <PaddedAPIBox header="emulateUnlessSupported" headerNestingLevel={4}>
 
 <CALLOUT theme="tertiary" className="text-2xs">
-  Optional&ensp;•&ensp;Type: `boolean`&ensp;•&ensp;Default: `true`
+  {'Optional\u2002•\u2002Type: '}
+  <code>boolean</code>
+  {'\u2002•\u2002Default: '}
+  <code>true</code>
 </CALLOUT>
 <br />
 

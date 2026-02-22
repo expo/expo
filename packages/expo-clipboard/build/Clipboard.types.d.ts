@@ -80,4 +80,10 @@ export type TextPasteEvent = {
 export type ImagePasteEvent = {
     type: 'image';
 } & ClipboardImage;
+export type ClipboardEvent = {
+    /**
+     * An array of content types that are available on the clipboard.
+     */
+    contentTypes: ContentType[];
+};
 //# sourceMappingURL=Clipboard.types.d.ts.map

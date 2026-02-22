@@ -99,11 +99,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Progress component',
-    route: 'ui/progress',
+    name: 'ProgressView component',
+    route: 'ui/progress-view',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./ProgressScreen'));
+      return optionalRequire(() => require('./ProgressViewScreen'));
     },
   },
   {
@@ -112,6 +112,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'Section component',
+    route: 'ui/section',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SectionScreen'));
     },
   },
   {
@@ -163,6 +171,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Content Transition',
+    route: 'ui/content-transition',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContentTransitionScreen'));
+    },
+  },
+  {
     name: 'Glass Effect',
     route: 'ui/glass-effect',
     options: {},
@@ -176,6 +192,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
+  {
+    name: 'ScrollView component',
+    route: 'ui/scrollview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewScreen'));
     },
   },
   {
@@ -232,6 +256,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
+    },
+  },
+  {
+    name: 'Extending Expo UI',
+    route: 'ui/extending',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
 ];

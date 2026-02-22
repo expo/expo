@@ -57,6 +57,26 @@ class SharingModule : Module() {
       }
     }
 
+    Function("getSharedPayloads") {
+      val intent = SharingSingleton.intent
+      if (intent == null) {
+        return@Function emptyList<SharePayload>()
+      }
+      return@Function SimpleShareIntentDataParser.parse(context, intent)
+    }
+
+    AsyncFunction("getResolvedSharedPayloadsAsync") {
+      val intent = SharingSingleton.intent
+      if (intent == null) {
+        return@AsyncFunction emptyList<ResolvedSharePayload>()
+      }
+      return@AsyncFunction ResolvingShareIntentDataParser.parse(context, intent)
+    }
+
+    Function("clearSharedPayloads") {
+      SharingSingleton.intent = null
+    }
+
     OnActivityResult { _, (requestCode) ->
       if (requestCode == REQUEST_CODE && pendingPromise != null) {
         pendingPromise?.resolve(null)
@@ -84,8 +104,13 @@ class SharingModule : Module() {
 
   private fun isAllowedToRead(url: String?): Boolean {
     val permissions = appContext.filePermission
-    return permissions?.getPathPermissions(context, url)?.contains(Permission.READ)
-      ?: false
+    if (url == null) {
+      return false
+    }
+
+    return permissions
+      .getPathPermissions(context, url)
+      .contains(Permission.READ)
   }
 
   private fun createSharingIntent(uri: Uri, mimeType: String?) =
