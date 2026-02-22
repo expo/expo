@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix zoom dismiss gesture not animating in dev builds and Expo Go ([#43338](https://github.com/expo/expo/pull/43338) by [@just1and0](https://github.com/just1and0))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-20
