@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix `Color.android.dynamic.background` always returning null by adding missing `background` mapping to `attrMap`. ([#43336](https://github.com/expo/expo/pull/43336) by [@just1and0](https://github.com/just1and0))
+
 ### 💡 Others
 
 ## 55.0.0-preview.9 — 2026-02-20
