@@ -2,12 +2,16 @@ import { uuid, type EventSubscription } from 'expo-modules-core';
 
 import ExpoFileSystem from './ExpoFileSystem';
 import {
-  FileMode,
   type DownloadOptions,
   type PathInfo,
   type PickFileOptions,
   type PickMultipleFilesResult,
   type PickSingleFileResult,
+  FileMode,
+  UploadOptions,
+  UploadResult,
+  DownloadTaskOptions,
+  DownloadPauseState,
 } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -324,4 +328,211 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
 Directory.pickDirectoryAsync = async function (initialUri?: string) {
   const directory = (await ExpoFileSystem.pickDirectoryAsync(initialUri)).uri;
   return new Directory(directory);
+};
+
+/**
+ * Represents an upload task with progress tracking and cancellation support.
+ */
+export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
+  private _file: File;
+  private _url: string;
+  private _options?: UploadOptions;
+  private _subscription?: EventSubscription;
+  private _abortHandler?: () => void;
+
+  constructor(file: File, url: string, options?: UploadOptions) {
+    super();
+    this._file = file;
+    this._url = url;
+    this._options = options;
+  }
+
+  async uploadAsync(): Promise<UploadResult> {
+    try {
+      if (this._options?.signal?.aborted) {
+        throw createAbortError();
+      }
+
+      // Set up progress listener if provided
+      if (this._options?.onProgress) {
+        this._subscription = this.addListener('progress', this._options.onProgress);
+      }
+
+      // Set up abort signal handler if provided
+      if (this._options?.signal) {
+        this._abortHandler = () => this.cancel();
+        this._options.signal.addEventListener('abort', this._abortHandler, { once: true });
+      }
+
+      // Prepare native options (strip onProgress and signal, keep the rest)
+      const nativeOpts = {
+        httpMethod: this._options?.httpMethod || 'POST',
+        uploadType: this._options?.uploadType ?? 0,
+        headers: this._options?.headers,
+        fieldName: this._options?.fieldName,
+        mimeType: this._options?.mimeType,
+        parameters: this._options?.parameters,
+      };
+
+      // Call native method
+      const result = await super.start(this._url, this._file.uri, nativeOpts);
+      return result;
+    } catch (error) {
+      // If the signal was aborted, throw an AbortError
+      if (this._options?.signal?.aborted) {
+        throw createAbortError();
+      }
+      throw error;
+    } finally {
+      this._cleanup();
+    }
+  }
+
+  cancel(): void {
+    super.cancel();
+    this._cleanup();
+  }
+
+  private _cleanup() {
+    if (this._subscription) {
+      this._subscription.remove();
+      this._subscription = undefined;
+    }
+    if (this._abortHandler && this._options?.signal) {
+      this._options.signal.removeEventListener('abort', this._abortHandler);
+      this._abortHandler = undefined;
+    }
+  }
+}
+
+/**
+ * Represents a download task with pause/resume support and progress tracking.
+ */
+export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
+  private _url: string;
+  private _destination: File | Directory;
+  private _options?: DownloadTaskOptions;
+  private _resumeData?: string;
+  private _subscription?: EventSubscription;
+  private _abortHandler?: () => void;
+
+  constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions) {
+    super();
+    this._url = url;
+    this._destination = destination;
+    this._options = options;
+  }
+
+  async downloadAsync(): Promise<File | null> {
+    try {
+      this._setupListeners();
+
+      const nativeOpts = {
+        headers: this._options?.headers,
+      };
+
+      const result = await super.start(this._url, this._destination, nativeOpts);
+      return result ? new File(result) : null; // null = paused
+    } catch (error) {
+      if (this._options?.signal?.aborted) {
+        throw createAbortError();
+      }
+      throw error;
+    } finally {
+      this._cleanupListeners();
+    }
+  }
+
+  async pauseAsync(): Promise<DownloadPauseState> {
+    const result = await super.pause();
+    this._resumeData = result.resumeData || undefined;
+    return this.savable();
+  }
+
+  async resumeAsync(): Promise<File | null> {
+    if (!this._resumeData) {
+      throw new Error('No resume data available. Call downloadAsync() or pauseAsync() first.');
+    }
+
+    try {
+      this._setupListeners();
+
+      const nativeOpts = {
+        headers: this._options?.headers,
+      };
+
+      const result = await super.resume(this._url, this._destination, this._resumeData, nativeOpts);
+
+      // If successful, clear resume data
+      if (result) {
+        this._resumeData = undefined;
+      }
+
+      return result ? new File(result) : null; // null = paused again
+    } catch (error) {
+      if (this._options?.signal?.aborted) {
+        throw createAbortError();
+      }
+      throw error;
+    } finally {
+      this._cleanupListeners();
+    }
+  }
+
+  cancel(): void {
+    super.cancel();
+    this._cleanupListeners();
+  }
+
+  savable(): DownloadPauseState {
+    return {
+      url: this._url,
+      fileUri: this._destination.uri,
+      options: this._options,
+      resumeData: this._resumeData,
+    };
+  }
+
+  static fromSavable(state: DownloadPauseState): DownloadTask {
+    const dest = state.fileUri.endsWith('/')
+      ? new Directory(state.fileUri)
+      : new File(state.fileUri);
+    const task = new DownloadTask(state.url, dest, state.options);
+    task._resumeData = state.resumeData;
+    return task;
+  }
+
+  private _setupListeners() {
+    if (this._options?.onProgress) {
+      this._subscription = this.addListener('progress', this._options.onProgress);
+    }
+    if (this._options?.signal) {
+      this._abortHandler = () => this.cancel();
+      this._options.signal.addEventListener('abort', this._abortHandler, { once: true });
+    }
+  }
+
+  private _cleanupListeners() {
+    if (this._subscription) {
+      this._subscription.remove();
+      this._subscription = undefined;
+    }
+    if (this._abortHandler && this._options?.signal) {
+      this._options.signal.removeEventListener('abort', this._abortHandler);
+      this._abortHandler = undefined;
+    }
+  }
+}
+
+// Add factory methods to File
+File.prototype.createUploadTask = function (url: string, options?: UploadOptions): UploadTask {
+  return new UploadTask(this, url, options);
+};
+
+File.createDownloadTask = function (
+  url: string,
+  destination: File | Directory,
+  options?: DownloadTaskOptions
+): DownloadTask {
+  return new DownloadTask(url, destination, options);
 };

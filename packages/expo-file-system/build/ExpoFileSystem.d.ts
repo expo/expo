@@ -1,14 +1,34 @@
-import { NativeModule } from 'expo-modules-core';
-import type { Directory, File, DownloadOptions, DownloadProgress, PickSingleFileOptions, PickMultipleFilesOptions, PathInfo } from './ExpoFileSystem.types';
+import { NativeModule, SharedObject } from 'expo-modules-core';
+import type { Directory, File, DownloadOptions, DownloadProgress, PathInfo, PickSingleFileOptions, PickMultipleFilesOptions, UploadProgress, UploadResult } from './ExpoFileSystem.types';
 type FileSystemEvents = {
     downloadProgress: (data: {
         uuid: string;
         data: DownloadProgress;
     }) => void;
 };
+type UploadTaskEvents = {
+    progress: (data: UploadProgress) => void;
+};
+type DownloadTaskEvents = {
+    progress: (data: DownloadProgress) => void;
+};
+declare class FileSystemUploadTask extends SharedObject<UploadTaskEvents> {
+    start(url: string, fileUri: string, options: Record<string, any>): Promise<UploadResult>;
+    cancel(): void;
+}
+declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEvents> {
+    start(url: string, to: File | Directory, options?: Record<string, any>): Promise<string | null>;
+    pause(): Promise<{
+        resumeData: string;
+    }>;
+    resume(url: string, to: File | Directory, resumeData: string, options?: Record<string, any>): Promise<string | null>;
+    cancel(): void;
+}
 declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
     FileSystemDirectory: typeof Directory;
     FileSystemFile: typeof File;
+    FileSystemUploadTask: typeof FileSystemUploadTask;
+    FileSystemDownloadTask: typeof FileSystemDownloadTask;
     downloadFileAsync(url: string, destination: File | Directory, options?: DownloadOptions, uuid?: string): Promise<string>;
     cancelDownloadAsync(uuid: string): void;
     pickDirectoryAsync(initialUri?: string): Promise<Directory>;

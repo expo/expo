@@ -66,3 +66,22 @@ internal class UnableToMoveException(reason: String) :
   CodedException(
     "Unable to move file or directory: $reason"
   )
+
+internal class UnableToUploadException(reason: String) :
+  CodedException(
+    "Unable to upload a file: $reason"
+  )
+
+internal class UploadCancelledException :
+  CodedException( "Upload was cancelled")
+
+internal class InvalidResumeDataException :
+  CodedException(
+    "Invalid resume data provided"
+  )
+
+internal class DownloadCancelledException :
+  CodedException(
+    "Download was cancelled"
+  )
+

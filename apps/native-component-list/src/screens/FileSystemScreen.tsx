@@ -1,7 +1,7 @@
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
-import { File, Directory, Paths, FileMode } from 'expo-file-system';
-import type { DownloadProgress, FileHandle } from 'expo-file-system';
+import { File, Directory, Paths, FileMode, UploadType } from 'expo-file-system';
+import type { FileHandle, UploadProgress, DownloadProgress } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
 import React, { useEffect, useRef, useState } from 'react';
@@ -81,6 +81,8 @@ export default function FileSystemScreen() {
         <FileLifecycleSection setCurrentFile={setCurrentFile} withCurrentFile={withCurrentFile} />
         <FilePickerSection setCurrentFile={setCurrentFile} />
         <DownloadSection />
+        <UploadSection currentFile={currentFile} />
+        <DownloadTaskSection />
       </View>
     </ScrollView>
   );
@@ -691,7 +693,6 @@ function FileLifecycleSection({
   );
 }
 
-// ===== Section: File Lifecycle =====
 function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => void }) {
   const { width } = useWindowDimensions();
   const [multiple, setMultiple] = useState(false);
@@ -830,7 +831,6 @@ function DownloadSection() {
     }
 
     try {
-      // ~100 MB test file
       const file = await File.downloadFileAsync('https://proof.ovh.net/files/100Mb.dat', dest, {
         idempotent: true,
         signal: controller.signal,
@@ -920,6 +920,170 @@ function DownloadSection() {
           <ListButton title="Clean up & reset" onPress={cleanup} />
         </>
       )}
+    </>
+  );
+}
+
+function UploadSection({ currentFile }: { currentFile: File | null }) {
+  const [progress, setProgress] = useState<string>('');
+  const [result, setResult] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+  const taskRef = useRef<ReturnType<File['createUploadTask']> | null>(null);
+
+  const handleUpload = async (uploadType: UploadType) => {
+    if (!currentFile) {
+      Alert.alert('Error', 'No file selected');
+      return;
+    }
+    setUploading(true);
+    setProgress('Starting...');
+    setResult('');
+    try {
+      const task = currentFile.createUploadTask('https://httpbin.org/post', {
+        uploadType,
+        fieldName: 'file',
+        mimeType: currentFile.type || 'application/octet-stream',
+        parameters: { description: 'test upload' },
+        onProgress: ({ bytesSent, totalBytes }: UploadProgress) => {
+          setProgress(`${bytesSent} / ${totalBytes} bytes`);
+        },
+      });
+      taskRef.current = task;
+      const uploadResult = await task.uploadAsync();
+      setResult(
+        JSON.stringify(
+          { status: uploadResult.status, body: truncate(uploadResult.body, 300) },
+          null,
+          2
+        )
+      );
+    } catch (e: any) {
+      console.log(e);
+      setResult(`Error: ${e.message}`);
+      setProgress('Errored');
+    } finally {
+      setUploading(false);
+      taskRef.current = null;
+    }
+  };
+
+  return (
+    <>
+      <HeadingText>Upload Task</HeadingText>
+      <ListButton
+        title="Upload binary"
+        disabled={!currentFile || uploading}
+        onPress={() => handleUpload(UploadType.BINARY_CONTENT)}
+      />
+      <ListButton
+        title="Upload multipart"
+        disabled={!currentFile || uploading}
+        onPress={() => handleUpload(UploadType.MULTIPART)}
+      />
+      <ListButton
+        title="Cancel upload"
+        disabled={!uploading}
+        onPress={() => taskRef.current?.cancel()}
+      />
+      {progress ? <MonoText>Progress: {progress}</MonoText> : null}
+      {result ? <MonoText>{result}</MonoText> : null}
+    </>
+  );
+}
+
+function DownloadTaskSection() {
+  const [progress, setProgress] = useState<string>('');
+  const [status, setStatus] = useState<'idle' | 'downloading' | 'paused' | 'completed'>('idle');
+  const [resultInfo, setResultInfo] = useState<string>('');
+  const taskRef = useRef<ReturnType<typeof File.createDownloadTask> | null>(null);
+  const DOWNLOAD_URL = 'https://httpbin.org/drip?numbytes=5000&duration=2&delay=0&code=200';
+
+  const handleStart = async () => {
+    setStatus('downloading');
+    setProgress('Starting...');
+    setResultInfo('');
+    const dest = new File(Paths.cache, 'test_sandbox', 'download_task_test.bin');
+    const task = File.createDownloadTask(DOWNLOAD_URL, dest, {
+      onProgress: ({ bytesWritten, totalBytes }: DownloadProgress) => {
+        const pct = totalBytes > 0 ? Math.round((bytesWritten / totalBytes) * 100) : '?';
+        setProgress(`${bytesWritten} / ${totalBytes} bytes (${pct}%)`);
+      },
+    });
+    taskRef.current = task;
+    try {
+      const file = await task.downloadAsync();
+      if (file) {
+        setStatus('completed');
+        setResultInfo(`Done: ${file.uri}\nSize: ${file.size} bytes`);
+      } else {
+        setStatus('paused');
+        setResultInfo('Download paused');
+      }
+    } catch (e: any) {
+      console.log(e);
+      setStatus('idle');
+      setProgress('Errored');
+      setResultInfo(`Error: ${e.message}`);
+    }
+  };
+
+  const handlePause = async () => {
+    try {
+      const state = await taskRef.current?.pauseAsync();
+      setStatus('paused');
+      setResultInfo(`Paused. Resume data: ${state?.resumeData ? 'available' : 'none'}`);
+    } catch (e: any) {
+      console.log(e);
+      setResultInfo(`Pause error: ${e.message}`);
+    }
+  };
+
+  const handleResume = async () => {
+    setStatus('downloading');
+    try {
+      const file = await taskRef.current?.resumeAsync();
+      if (file) {
+        setStatus('completed');
+        setResultInfo(`Done: ${file.uri}\nSize: ${file.size} bytes`);
+      } else {
+        setStatus('paused');
+        setResultInfo('Paused again');
+      }
+    } catch (e: any) {
+      console.log(e);
+      setStatus('idle');
+      setResultInfo(`Resume error: ${e.message}`);
+    }
+  };
+
+  const handleCancel = () => {
+    taskRef.current?.cancel();
+    taskRef.current = null;
+    setStatus('idle');
+    setProgress('');
+    setResultInfo('Cancelled');
+  };
+
+  return (
+    <>
+      <HeadingText>Download Task</HeadingText>
+      <ListButton
+        title="Start download"
+        disabled={status === 'downloading'}
+        onPress={handleStart}
+      />
+      <ListButton title="Pause" disabled={status !== 'downloading'} onPress={handlePause} />
+      <ListButton title="Resume" disabled={status !== 'paused'} onPress={handleResume} />
+      <ListButton
+        title="Cancel"
+        disabled={status === 'idle' || status === 'completed'}
+        onPress={handleCancel}
+      />
+      {progress ? <MonoText>Progress: {progress}</MonoText> : null}
+      {resultInfo ? <MonoText>{resultInfo}</MonoText> : null}
+    </>
+  );
+}
     </>
   );
 }

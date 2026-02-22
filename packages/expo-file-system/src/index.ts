@@ -11,6 +11,8 @@ export {
   type DownloadOptions,
   type DownloadProgress,
   FileMode,
+  EncodingType,
+  UploadType,
   type PickFileOptions,
   type PickSingleFileOptions,
   type PickMultipleFilesOptions,
@@ -20,6 +22,11 @@ export {
   type PickMultipleFilesResult,
   type PickMultipleFilesSuccessResult,
   type PickFileCanceledResult,
+  type UploadOptions,
+  type UploadProgress,
+  type UploadResult,
+  type DownloadTaskOptions,
+  type DownloadPauseState,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';

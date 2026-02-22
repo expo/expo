@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { type DownloadOptions, type PathInfo } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo, UploadOptions, UploadResult, DownloadTaskOptions, DownloadPauseState } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -105,5 +105,39 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     get name(): string;
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
+}
+/**
+ * Represents an upload task with progress tracking and cancellation support.
+ */
+export declare class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
+    private _file;
+    private _url;
+    private _options?;
+    private _subscription?;
+    private _abortHandler?;
+    constructor(file: File, url: string, options?: UploadOptions);
+    uploadAsync(): Promise<UploadResult>;
+    cancel(): void;
+    private _cleanup;
+}
+/**
+ * Represents a download task with pause/resume support and progress tracking.
+ */
+export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
+    private _url;
+    private _destination;
+    private _options?;
+    private _resumeData?;
+    private _subscription?;
+    private _abortHandler?;
+    constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
+    downloadAsync(): Promise<File | null>;
+    pauseAsync(): Promise<DownloadPauseState>;
+    resumeAsync(): Promise<File | null>;
+    cancel(): void;
+    savable(): DownloadPauseState;
+    static fromSavable(state: DownloadPauseState): DownloadTask;
+    private _setupListeners;
+    private _cleanupListeners;
 }
 //# sourceMappingURL=FileSystem.d.ts.map

@@ -382,6 +382,48 @@ export declare class File {
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
     /**
+     * Creates a download task for downloading a file with pause/resume support.
+     *
+     * @param url - The URL of the file to download.
+     * @param destination - The destination directory or file.
+     * @param options - Download options including headers, progress callback, and abort signal.
+     * @returns A `DownloadTask` instance that can be used to control the download.
+     *
+     * @example
+     * ```ts
+     * const dest = new File(Paths.document, 'video.mp4');
+     * const downloadTask = File.createDownloadTask(url, dest, {
+     *   onProgress: ({ bytesWritten, totalBytes }) => {
+     *     console.log(`Downloaded ${bytesWritten} of ${totalBytes} bytes`);
+     *   }
+     * });
+     * const file = await downloadTask.downloadAsync();
+     * ```
+     */
+    static createDownloadTask(url: string, destination: Directory | File, options?: DownloadTaskOptions): DownloadTask;
+    /**
+     * Creates an upload task for uploading this file with progress tracking.
+     *
+     * @param url - The URL to upload the file to.
+     * @param options - Upload options including upload type, headers, progress callback, and abort signal.
+     * @returns An `UploadTask` instance that can be used to control the upload.
+     *
+     * @example
+     * ```ts
+     * const file = new File(Paths.document, 'photo.jpg');
+     * const uploadTask = file.createUploadTask(url, {
+     *   uploadType: UploadType.MULTIPART,
+     *   headers: { Authorization: 'Bearer token' },
+     *   onProgress: ({ bytesSent, totalBytes }) => {
+     *     console.log(`Uploaded ${bytesSent} of ${totalBytes} bytes`);
+     *   }
+     * });
+     * const result = await uploadTask.uploadAsync();
+     * console.log('Upload status:', result.status);
+     * ```
+     */
+    createUploadTask(url: string, options?: UploadOptions): UploadTask;
+    /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */
     size: number;
@@ -554,4 +596,200 @@ export type PickFileCanceledResult = {
     result: null;
     canceled: true;
 };
+/**
+ * Represents the type of upload operation.
+ */
+export declare enum UploadType {
+    /**
+     * Binary content upload - the file is uploaded as-is in the request body.
+     */
+    BINARY_CONTENT = 0,
+    /**
+     * Multipart form upload - the file is uploaded as part of a multipart/form-data request.
+     */
+    MULTIPART = 1
+}
+/**
+ * Represents upload progress data.
+ */
+export type UploadProgress = {
+    /**
+     * The number of bytes sent so far.
+     */
+    bytesSent: number;
+    /**
+     * The total number of bytes to send.
+     */
+    totalBytes: number;
+};
+/**
+ * Represents the result of an upload operation.
+ */
+export type UploadResult = {
+    /**
+     * The response body as a string.
+     */
+    body: string;
+    /**
+     * The HTTP status code.
+     */
+    status: number;
+    /**
+     * The response headers.
+     */
+    headers: Record<string, string>;
+};
+/**
+ * Options for upload operations.
+ */
+export type UploadOptions = {
+    /**
+     * The HTTP method to use.
+     * @default 'POST'
+     */
+    httpMethod?: 'POST' | 'PUT' | 'PATCH';
+    /**
+     * The type of upload operation.
+     * @default UploadType.BINARY_CONTENT
+     */
+    uploadType?: UploadType;
+    /**
+     * Custom headers to include in the request.
+     */
+    headers?: Record<string, string>;
+    /**
+     * The field name for the file in multipart uploads.
+     * @default 'file'
+     */
+    fieldName?: string;
+    /**
+     * The MIME type of the file.
+     */
+    mimeType?: string;
+    /**
+     * Additional form parameters to include in multipart uploads.
+     */
+    parameters?: Record<string, string>;
+    /**
+     * Callback for upload progress updates.
+     */
+    onProgress?: (data: UploadProgress) => void;
+    /**
+     * AbortSignal to cancel the upload.
+     */
+    signal?: AbortSignal;
+};
+/**
+ * Options for download task operations.
+ */
+export type DownloadTaskOptions = {
+    /**
+     * Custom headers to include in the request.
+     */
+    headers?: Record<string, string>;
+    /**
+     * Callback for download progress updates.
+     */
+    onProgress?: (data: DownloadProgress) => void;
+    /**
+     * AbortSignal to cancel the download.
+     */
+    signal?: AbortSignal;
+};
+/**
+ * Represents the state of a paused download that can be persisted and resumed later.
+ */
+export type DownloadPauseState = {
+    /**
+     * The URL of the download.
+     */
+    url: string;
+    /**
+     * The destination file URI.
+     */
+    fileUri: string;
+    /**
+     * The download options.
+     */
+    options?: DownloadTaskOptions;
+    /**
+     * Platform-specific resume data.
+     */
+    resumeData?: string;
+};
+/**
+ * Represents an upload task with progress tracking and cancellation support.
+ */
+export declare class UploadTask {
+    /**
+     * Creates a new upload task.
+     * @param file The file to upload.
+     * @param url The destination URL.
+     * @param options Upload options including headers, progress callback, and abort signal.
+     */
+    constructor(file: File, url: string, options?: UploadOptions);
+    /**
+     * Starts the upload operation.
+     * @returns A promise that resolves with the upload result.
+     */
+    uploadAsync(): Promise<UploadResult>;
+    /**
+     * Cancels the upload operation.
+     */
+    cancel(): void;
+    /**
+     * Adds a listener for upload progress events.
+     */
+    addListener(eventName: 'progress', listener: (data: UploadProgress) => void): {
+        remove: () => void;
+    };
+}
+/**
+ * Represents a download task with pause/resume support and progress tracking.
+ */
+export declare class DownloadTask {
+    /**
+     * Creates a new download task.
+     * @param url The source URL.
+     * @param destination The destination file or directory.
+     * @param options Download options including headers, progress callback, and abort signal.
+     */
+    constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
+    /**
+     * Starts the download operation.
+     * @returns A promise that resolves with the downloaded file, or null if paused.
+     */
+    downloadAsync(): Promise<File | null>;
+    /**
+     * Pauses the download operation.
+     * @returns A promise that resolves with the pause state that can be persisted.
+     */
+    pauseAsync(): Promise<DownloadPauseState>;
+    /**
+     * Resumes a paused download operation.
+     * @returns A promise that resolves with the downloaded file, or null if paused again.
+     */
+    resumeAsync(): Promise<File | null>;
+    /**
+     * Cancels the download operation.
+     */
+    cancel(): void;
+    /**
+     * Returns the current state that can be persisted and restored later.
+     * @returns The pause state.
+     */
+    savable(): DownloadPauseState;
+    /**
+     * Creates a download task from a saved state.
+     * @param state The saved pause state.
+     * @returns A new download task.
+     */
+    static fromSavable(state: DownloadPauseState): DownloadTask;
+    /**
+     * Adds a listener for download progress events.
+     */
+    addListener(eventName: 'progress', listener: (data: DownloadProgress) => void): {
+        remove: () => void;
+    };
+}
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map
