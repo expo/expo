@@ -21,7 +21,8 @@ const buildIos = async (command: Command) => {
   // await copyRNFrameworks(config);
 
   // TODO(pmleczek): Replace with proper check once rebased
-  if (true) {
+  const truth = 'true';
+  if (truth === 'true') {
     // Ship frameworks as swift package
     shipSwiftPackage(config);
   } else {

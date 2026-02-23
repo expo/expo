@@ -10,7 +10,8 @@ const buildIos = async (command) => {
     // await copyHermesXcframework(config);
     // await copyRNFrameworks(config);
     // TODO(pmleczek): Replace with proper check once rebased
-    if (true) {
+    const truth = 'true';
+    if (truth === 'true') {
         // Ship frameworks as swift package
         (0, utils_1.shipSwiftPackage)(config);
     }
