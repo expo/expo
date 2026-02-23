@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `androidNavigationBar.enforceContrast` and `androidNavigationBar.visible` properties handling (moved to the `expo-navigation-bar` plugin config). ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Deprecated and turned into no-op the `androidNavigationBar.backgroundColor` app config property. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.6 — 2026-02-20
 

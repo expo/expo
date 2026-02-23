@@ -4,14 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `legacyVisible` plugin option. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
+
+- Add the `enforceContrast` plugin option. Falls back to `androidNavigationBar.enforceContrast` if set. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- Deprecated and turned into no-ops the following functions, which no longer have any effect due to edge-to-edge enforcement: `setBackgroundColorAsync`, `getBackgroundColorAsync`, `setBorderColorAsync`, `getBorderColorAsync`, `setBehaviorAsync`, `getBehaviorAsync`, `setPositionAsync`, `unstable_getPositionAsync`, and `getButtonStyleAsync`.([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
-- Deprecated and turned into no-ops the following `withNavigationBar` plugin options, which no longer have any effect due to edge-to-edge enforcement: `borderColor`, `backgroundColor`, `behavior`, `position`, and `legacyVisible`. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+- Deprecated and turned into no-ops the `setBackgroundColorAsync`, `getBackgroundColorAsync`, `setBorderColorAsync`, `getBorderColorAsync`, `setBehaviorAsync`, `getBehaviorAsync`, `setPositionAsync`, `unstable_getPositionAsync`, and `getButtonStyleAsync` functions, as well as the `borderColor`, `backgroundColor`, `behavior`, and `position` plugin options. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.7 — 2026-02-20
 
