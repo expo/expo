@@ -10,7 +10,7 @@ export const withNavigationBar: ConfigPlugin = (config) => {
   if ('androidNavigationBar' in config) {
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar',
-      'Property is deprecated. Use the `expo-navigation-bar` plugin configuration instead.'
+      'property is deprecated. Use the `expo-navigation-bar` plugin configuration instead.'
     );
   }
 
