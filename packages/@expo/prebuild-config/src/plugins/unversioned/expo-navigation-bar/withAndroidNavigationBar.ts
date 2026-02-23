@@ -2,16 +2,14 @@ import {
   AndroidConfig,
   ConfigPlugin,
   WarningAggregator,
-  withAndroidColors,
   withAndroidStyles,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-const NAVIGATION_BAR_COLOR = 'navigationBarColor';
-
 export const withNavigationBar: ConfigPlugin = (config) => {
-  const immersiveMode = getNavigationBarImmersiveMode(config);
-  if (immersiveMode) {
+  const { androidNavigationBar = {} } = config;
+
+  if ('visible' in androidNavigationBar) {
     // Immersive mode needs to be set programmatically
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar.visible',
@@ -20,16 +18,8 @@ export const withNavigationBar: ConfigPlugin = (config) => {
     );
   }
 
-  config = withNavigationBarColors(config);
   config = withNavigationBarStyles(config);
   return config;
-};
-
-const withNavigationBarColors: ConfigPlugin = (config) => {
-  return withAndroidColors(config, (config) => {
-    config.modResults = setNavigationBarColors(config, config.modResults);
-    return config;
-  });
 };
 
 const withNavigationBarStyles: ConfigPlugin = (config) => {
@@ -38,23 +28,6 @@ const withNavigationBarStyles: ConfigPlugin = (config) => {
     return config;
   });
 };
-
-export function setNavigationBarColors(
-  config: Pick<ExpoConfig, 'androidNavigationBar'>,
-  colors: AndroidConfig.Resources.ResourceXML
-): AndroidConfig.Resources.ResourceXML {
-  const hexString = getNavigationBarColor(config);
-  if (hexString) {
-    colors = AndroidConfig.Colors.setColorItem(
-      AndroidConfig.Resources.buildResourceItem({
-        name: NAVIGATION_BAR_COLOR,
-        value: hexString,
-      }),
-      colors
-    );
-  }
-  return colors;
-}
 
 export function setNavigationBarStyles(
   config: Pick<ExpoConfig, 'androidNavigationBar'>,
@@ -67,21 +40,13 @@ export function setNavigationBarStyles(
     value: 'true',
   });
   styles = AndroidConfig.Styles.assignStylesValue(styles, {
-    add: !!getNavigationBarColor(config),
+    add: true,
     parent: AndroidConfig.Styles.getAppThemeGroup(),
-    name: `android:${NAVIGATION_BAR_COLOR}`,
-    value: `@color/${NAVIGATION_BAR_COLOR}`,
+    name: 'android:navigationBarColor',
+    value: '@android:color/transparent',
   });
 
   return styles;
-}
-
-export function getNavigationBarImmersiveMode(config: Pick<ExpoConfig, 'androidNavigationBar'>) {
-  return config.androidNavigationBar?.visible || null;
-}
-
-export function getNavigationBarColor(config: Pick<ExpoConfig, 'androidNavigationBar'>) {
-  return config.androidNavigationBar?.backgroundColor || null;
 }
 
 export function getNavigationBarStyle(config: Pick<ExpoConfig, 'androidNavigationBar'>) {

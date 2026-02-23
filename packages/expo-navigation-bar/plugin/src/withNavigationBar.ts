@@ -193,6 +193,12 @@ export function setNavigationBarStyles(
     name: 'android:windowLightNavigationBar',
     value: 'true',
   });
+  styles = AndroidConfig.Styles.assignStylesValue(styles, {
+    add: true,
+    parent: AndroidConfig.Styles.getAppThemeGroup(),
+    name: 'android:navigationBarColor',
+    value: '@android:color/transparent',
+  });
 
   return styles;
 }

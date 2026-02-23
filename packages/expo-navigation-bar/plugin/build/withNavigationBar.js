@@ -108,6 +108,12 @@ function setNavigationBarStyles({ barStyle }, styles) {
         name: 'android:windowLightNavigationBar',
         value: 'true',
     });
+    styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
+        add: true,
+        parent: config_plugins_1.AndroidConfig.Styles.getAppThemeGroup(),
+        name: 'android:navigationBarColor',
+        value: '@android:color/transparent',
+    });
     return styles;
 }
 function applyEnforceNavigationBarContrast(config, enforceNavigationBarContrast) {

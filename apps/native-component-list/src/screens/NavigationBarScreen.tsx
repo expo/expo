@@ -41,7 +41,7 @@ function VisibilityExample() {
 }
 
 function ButtonStyleExample() {
-  const [style, setStyle] = React.useState<NavigationBar.NavigationBarButtonStyle>('light');
+  const [style, setStyle] = React.useState<NavigationBar.NavigationBarStyle>('light');
   const nextStyle = style === 'light' ? 'dark' : 'light';
   return (
     <Button
