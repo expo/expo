@@ -322,8 +322,9 @@ export declare class File {
    * @param mimeType A mime type that is used to filter out files that can be picked out.
    * @returns A `File` instance or an array of `File` instances.
    */
-  static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
+  static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
 
+  static pickFilesAsync(): Promise<File[]>;
   /**
    * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
    */

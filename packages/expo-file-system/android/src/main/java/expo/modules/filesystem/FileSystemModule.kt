@@ -98,20 +98,30 @@ class FileSystemModule : Module() {
 
     AsyncFunction("pickDirectoryAsync") Coroutine { initialUri: Uri? ->
       val result = filePickerLauncher.launch(
-        FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY)
+        FilePickerContractOptions(initialUri, null, false, PickerType.DIRECTORY)
       )
       when (result) {
-        is FilePickerContractResult.Success -> result.path as FileSystemDirectory
+        is FilePickerContractResult.Success -> result.paths.first() as FileSystemDirectory
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
       }
     }
 
     AsyncFunction("pickFileAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
       val result = filePickerLauncher.launch(
-        FilePickerContractOptions(initialUri, mimeType, PickerType.FILE)
+        FilePickerContractOptions(initialUri, mimeType, false, PickerType.FILE)
       )
       when (result) {
-        is FilePickerContractResult.Success -> result.path as FileSystemFile
+        is FilePickerContractResult.Success -> result.paths.first() as FileSystemFile
+        is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
+      }
+    }
+
+    AsyncFunction("pickFilesAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
+      val result = filePickerLauncher.launch(
+        FilePickerContractOptions(initialUri, mimeType, true, PickerType.FILE)
+      )
+      when (result) {
+        is FilePickerContractResult.Success -> result.paths.map{ file -> file as FileSystemFile}
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
       }
     }

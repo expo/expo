@@ -134,6 +134,13 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
   }
+
+  static async pickFilesAsync(initialUri?: string, mimeType?: string): Promise<File[]> {
+    const files = (await ExpoFileSystem.pickFilesAsync(initialUri, mimeType)).map(
+      (file) => new File(file.uri)
+    );
+    return files;
+  }
 }
 
 // Cannot use `static` keyword in class declaration because of a runtime error.
