@@ -134,13 +134,6 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
   }
-
-  static async pickFilesAsync(initialUri?: string, mimeType?: string): Promise<File[]> {
-    const files = (await ExpoFileSystem.pickFilesAsync(initialUri, mimeType)).map(
-      (file) => new File(file.uri)
-    );
-    return files;
-  }
 }
 
 // Cannot use `static` keyword in class declaration because of a runtime error.
@@ -153,8 +146,23 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
-File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
-  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
+type PickFileOptions = { initialUri?: string; mimeType?: string; multipleFiles?: boolean };
+
+File.pickFileAsync = async function (
+  initialUriOrOptions?: string | PickFileOptions,
+  mimeType?: string
+) {
+  let options: { initialUri?: string; mimeType?: string; multipleFiles?: boolean } = {
+    mimeType,
+    initialUri: undefined,
+    multipleFiles: undefined,
+  };
+  if (typeof initialUriOrOptions === 'object') {
+    options = initialUriOrOptions as PickFileOptions;
+  } else {
+    options.initialUri = initialUriOrOptions as string;
+  }
+  const file = (await ExpoFileSystem.pickFileAsync(options)).uri;
   return new File(file);
 };
 
