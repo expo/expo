@@ -6,6 +6,7 @@ import ActivityKit
 struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var name: String
+    var props: String
   }
 }
 
@@ -17,14 +18,14 @@ public struct WidgetLiveActivity: Widget {
 
   public var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
-      let nodes = getLiveActivityNodes(forName: context.state.name)
+      let nodes = getLiveActivityNodes(forName: context.state.name, props: context.state.props)
       if #available(iOS 18.0, *) {
         LiveActivityBanner(context: context, nodes: nodes)
       } else {
         liveActivitySection("banner", source: context.activityID, nodes: nodes)
       }
     } dynamicIsland: { context in
-      let nodes = getLiveActivityNodes(forName: context.state.name)
+      let nodes = getLiveActivityNodes(forName: context.state.name, props: context.state.props)
       return DynamicIsland {
         expandedContent(source: context.activityID, nodes: nodes)
       } compactLeading: {

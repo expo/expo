@@ -97,7 +97,7 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
     val timeString =
         java.time.LocalDateTime.now()
             .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
-    BrownfieldState.set("time", timeString)
+    BrownfieldState.set("time", mapOf("time" to timeString))
   }
 
   override fun invokeDefaultOnBackPressed() {

@@ -5,9 +5,39 @@ onFlowStart:
 ---
 # Check that state is correct on a dev client build with updates enabled
 - launchApp
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          label: Tap on "Enter URL manually"
+          text: Enter URL manually
+      - tapOn:
+          label: Tap on "Updates URL" text field
+          text: '.*exp:.*'
+          below: Enter URL manually
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - tapOn:
+          label: Tap on "New development server"
+          text: New development server
+      - tapOn:
+          label: Tap on "Updates URL" text field
+          text: '.*exp:.*'
+          below: New development server
+- inputText:
+    label: Input local update server URL
+    text: "http://localhost:8081\n"
 - tapOn:
-    label: Tap on local URL
-    below: Development servers
+    label: Tap on "Connect" button
+    text: Connect
+    optional: true
+- tapOn:
+    label: Tap on "Connect" button
+    text: Connect
+    optional: true
 - tapOn:
     label: Tap on "Continue" to clear onboarding menu
     text: Continue
@@ -15,6 +45,7 @@ onFlowStart:
 - tapOn:
     label: Tap on reload
     text: Reload
+    optional: true
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

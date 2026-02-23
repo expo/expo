@@ -4,36 +4,29 @@ import path from 'node:path';
  * Help messages
  */
 export const HELP_MESSAGE = {
-  GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`,
+  GENERAL_HEADER: `Usage: expo-brownfield [options] [command]`,
 };
 
 /**
  * Common build outputs
  */
 export const BUILD = {
-  BUILD_TYPE_ALL: `- Build type: All`,
-  BUILD_TYPE_DEBUG: `- Build type: Debug`,
-  BUILD_TYPE_RELEASE: `- Build type: Release`,
   PREBUILD_PROMPT: `Do you want to run the prebuild now?`,
   PREBUILD_WARNING: (platform: 'android' | 'ios') =>
     `Prebuild for platform: ${platform} is missing`,
-  VERBOSE: `- Verbose: true`,
+  VERBOSE: ` - Verbose: true`,
 };
 
 /**
  * Android build outputs
  */
 export const BUILD_ANDROID = {
-  CONFIGURATION: `Build configuration:
-- Verbose: false
-- Build type: All
-- Brownfield library: brownfield
-- Repositories: []
-- Tasks: someGradleTask`,
-  LIBRARY: `- Brownfield library: brownfieldlib`,
-  REPOSTORIES: `- Repositories: MavenLocal, CustomLocal`,
-  TASK: `- Tasks: task1`,
-  TASKS: `- Tasks: task1, task2, task3`,
+  BUILD_VARIANT_ALL: `- Build variant: All`,
+  BUILD_VARIANT_DEBUG: `- Build variant: Debug`,
+  BUILD_VARIANT_RELEASE: `- Build variant: Release`,
+  LIBRARY: `- Library: brownfieldlib`,
+  TASK: [`- Tasks:`, `- task1`],
+  TASKS: [`- Tasks:`, `- task1`, `- task2`, `- task3`],
 };
 
 /**
@@ -50,12 +43,17 @@ export const BUILD_IOS = {
     `-destination generic/platform=iphonesimulator`,
     `-configuration ${configuration}`,
   ],
-  CONFIGURATION: (projectRoot: string, workspace: string) => `Build configuration:
-- Verbose: false
-- Artifacts directory: ${projectRoot}/artifacts
-- Build type: Release
-- Xcode Scheme: testapp${workspace}brownfield
-- Xcode Workspace: ${projectRoot}/ios/testapp${workspace}.xcworkspace`,
+  BUILD_TYPE_DEBUG: `- Build configuration: Debug`,
+  BUILD_TYPE_RELEASE: `- Build configuration: Release`,
+  CONFIGURATION: (projectRoot: string, workspace: string) => [
+    `Resolved build configuration`,
+    `- Build configuration: Release`,
+    `- Scheme: testapp${workspace}brownfield`,
+    `- Workspace: ${projectRoot}/ios/testapp${workspace}.xcworkspace`,
+    `- Dry run: true`,
+    `- Verbose: false`,
+    `- Artifacts path: ${projectRoot}/artifacts`,
+  ],
   HERMES_COPYING: `Copying hermes XCFramework from Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework to`,
   PACKAGE_COMMAND: (projectRoot: string, workspace: string, configuration: 'Debug' | 'Release') => [
     `xcodebuild`,
@@ -71,11 +69,11 @@ export const BUILD_IOS = {
  */
 export const TASKS_ANDROID = {
   RESULT: [
-    `Publish tasks:`,
+    `Publishing tasks`,
     '- publishBrownfieldAllPublicationToMavenLocal',
     '- publishBrownfieldDebugPublicationToMavenLocal',
     '- publishBrownfieldReleasePublicationToMavenLocal',
-    'Repositories:',
+    'Repositories',
     '- MavenLocal',
   ],
   VERBOSE: [`> Configure project`, `Publishing tasks\n----------------`, `BUILD SUCCESSFUL in`],
@@ -85,15 +83,14 @@ export const TASKS_ANDROID = {
  * Error outputs
  */
 export const ERROR = {
-  ADDITIONAL_COMMAND: (
-    command: string
-  ) => `Error: Command ${command} doesn't support additional commands
-For all available options please use the help command:
-npx expo-brownfield ${command} --help`,
+  ADDITIONAL_COMMAND: (command: string) =>
+    `error: too many arguments for '${command}'. Expected 0 arguments but got 1.`,
+  MISSING_ARGUMENT: (short: string, full: string, argumentName: string) =>
+    `error: option '-${short}, --${full} <${argumentName}>' argument missing`,
+  MISSING_PREBUILD: () => `Brownfield cannot be built without prebuilding the native project`,
   MISSING_TASKS_OR_REPOSITORIES: () => `Error: At least one task or repository must be specified`,
-  UNKNOWN_COMMAND: () => `Error: unknown command
-Supported commands: build:android, build:ios, tasks:android`,
-  UNKNOWN_OPTION: (option: string) => `Error: unknown or unexpected option: ${option}`,
+  UNKNOWN_COMMAND: (command: string) => `error: unknown command '${command}'`,
+  UNKNOWN_OPTION: (option: string) => `error: unknown option '${option}'`,
 };
 
 /**

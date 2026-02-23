@@ -123,6 +123,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ZStackView.self)
     ExpoUIView(GlassEffectContainerView.self)
     ExpoUIView(LabeledContentView.self)
+    ExpoUIView(ScrollViewComponent.self)
     ExpoUIView(RectangleView.self)
     ExpoUIView(RoundedRectangleView.self)
     ExpoUIView(EllipseView.self)

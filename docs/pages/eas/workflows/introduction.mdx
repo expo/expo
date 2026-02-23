@@ -28,9 +28,11 @@ EAS Workflows run in managed cloud environments with pre-packaged job types desi
 
 ## Quick start
 
+> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+
 Workflows are defined as YAML files in the **.eas/workflows/** directory at the root of your project. Each file specifies a `name`, optional triggers (`on`), and one or more `jobs` that run in the cloud. You can run a workflow with EAS CLI with the following command:
 
-<Terminal cmd={['$ npx eas-cli@latest workflow:run .eas/workflows/your-workflow.yml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/your-workflow.yml']} />
 
 ## Key features
 

@@ -39,7 +39,7 @@ const State = () => {
       {/* Native to JS synchronization */}
       <Text style={styles.subTitle}>Native to JS synchronization</Text>
       <View style={styles.timeDemoContainer}>
-        <Text style={styles.timeText}>Time: {time ?? 'N / A'}</Text>
+        <Text style={styles.timeText}>Time: {time?.time ?? 'N / A'}</Text>
         <TimeInputDemo />
       </View>
     </SafeAreaView>
@@ -58,7 +58,7 @@ const BlockDemo = () => {
 
 const TimeInputDemo = () => {
   const [time] = ExpoBrownfield.useSharedState('time');
-  return <TextInput style={styles.timeInput} value={time ?? 'N / A'} editable={false} />;
+  return <TextInput style={styles.timeInput} value={time?.time ?? 'N / A'} editable={false} />;
 };
 
 export default State;

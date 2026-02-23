@@ -336,6 +336,7 @@ let UpdatesDatabaseV10Schema = """
 """
 
 @Suite("UpdatesDatabaseInitialization", .serialized)
+@MainActor
 struct DatabaseInitializationTests {
   var testDatabaseDir: URL
 
@@ -353,6 +354,7 @@ struct DatabaseInitializationTests {
   // MARK: - Database persistence
 
   @Suite("database persistence", .serialized)
+  @MainActor
   struct DatabasePersistenceTests {
     var testDatabaseDir: URL
 
@@ -399,6 +401,7 @@ struct DatabaseInitializationTests {
   // MARK: - Migrations
 
   @Suite("migrations", .serialized)
+  @MainActor
   struct MigrationsTests {
     var testDatabaseDir: URL
 

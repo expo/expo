@@ -25,6 +25,9 @@ const HomeIndex = () => {
       <CaseLink href="/tabs" text="Native Tabs" />
       <CaseLink href="/toolbar" text="Toolbar" />
       <CaseLink href="/header-items" text="Header Items" />
+      <CaseLink href="/composition-lifecycle" text="Composition Lifecycle" />
+      <CaseLink href="/composition-conflicts" text="Composition Conflicts" />
+      <CaseLink href="/composition-rerenders" text="Composition Rerenders" />
       <CaseLink href="/modals" text="Modals" />
       <CaseLink href="/params" text="Params" />
     </ScrollView>
@@ -34,9 +37,12 @@ const HomeIndex = () => {
 function CaseLink({ href, text }: { href: Href; text: string }) {
   return (
     <Link href={href} asChild>
-      <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
-        <Text style={{ color: '#fff' }}>{text}</Text>
-      </Pressable>
+      <Link.Trigger>
+        <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+          <Text style={{ color: '#fff' }}>{text}</Text>
+        </Pressable>
+      </Link.Trigger>
+      <Link.Preview />
     </Link>
   );
 }

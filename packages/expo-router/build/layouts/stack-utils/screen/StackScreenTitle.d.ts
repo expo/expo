@@ -96,7 +96,10 @@ export type StackScreenTitleProps = {
  *   );
  * }
  * ```
+ *
+ * > **Note:** If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
  */
-export declare function StackScreenTitle(props: StackScreenTitleProps): React.JSX.Element;
+export declare function StackScreenTitle({ children, asChild, style, largeStyle, large, }: StackScreenTitleProps): null;
 export declare function appendStackScreenTitlePropsToOptions(options: NativeStackNavigationOptions, props: StackScreenTitleProps): NativeStackNavigationOptions;
 //# sourceMappingURL=StackScreenTitle.d.ts.map

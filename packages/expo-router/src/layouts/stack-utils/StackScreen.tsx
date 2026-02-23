@@ -2,7 +2,7 @@
 import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { Children, isValidElement, useMemo, type PropsWithChildren, type ReactNode } from 'react';
+import { Children, isValidElement, useMemo, type PropsWithChildren } from 'react';
 
 import { StackHeaderComponent, appendStackHeaderPropsToOptions } from './StackHeaderComponent';
 import {
@@ -11,9 +11,9 @@ import {
   StackScreenBackButton,
   appendStackScreenBackButtonPropsToOptions,
 } from './screen';
-import { StackToolbar, appendStackToolbarPropsToOptions, type StackToolbarProps } from './toolbar';
+import { StackToolbar, appendStackToolbarPropsToOptions } from './toolbar';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
-import { getAllChildrenOfType, isChildOfType } from '../../utils/children';
+import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
 
 type StackBaseScreenProps = BaseScreenProps<
@@ -73,14 +73,6 @@ export interface StackScreenProps extends PropsWithChildren {
   dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
 }
 
-function extractBottomToolbars(children: ReactNode): React.ReactElement<StackToolbarProps>[] {
-  return (
-    getAllChildrenOfType(children, StackToolbar).filter(
-      (child) => child.props.placement === 'bottom' || child.props.placement === undefined
-    ) ?? []
-  );
-}
-
 /**
  * Component used to define a screen in a native stack navigator.
  *
@@ -130,21 +122,15 @@ export const StackScreen = Object.assign(
       );
     }
 
-    const updatedOptions = useMemo(
-      () =>
-        appendScreenStackPropsToOptions(typeof options === 'function' ? {} : (options ?? {}), {
-          children,
-        }),
-      [options, children]
+    const ownOptions = useMemo(
+      () => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})),
+      [options]
     );
-
-    const bottomToolbars = useMemo(() => extractBottomToolbars(children), [children]);
 
     return (
       <>
-        <Screen {...rest} options={updatedOptions} />
-        {/* Bottom toolbar is a native component rendered separately */}
-        {bottomToolbars}
+        <Screen {...rest} options={ownOptions} />
+        {children}
       </>
     );
   },

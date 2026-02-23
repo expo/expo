@@ -7,7 +7,7 @@ import {
   getAndroidPaths,
   getPublishingLines,
 } from '../../utils/android';
-import { createTempProject, cleanUpProject, createEnvFile } from '../../utils/project';
+import { createTempProject, cleanUpProject } from '../../utils/project';
 import { expectFile, expectFiles } from '../../utils/test';
 import { PluginProps } from '../../utils/types';
 
@@ -104,7 +104,7 @@ describe('plugin for android', () => {
       content: ['group = "com.example.test.app"', 'version = "1.0.0"'],
     });
 
-    const publishingLines = ['localDefault {', 'type = "localMaven"'];
+    const publishingLines = ['localDefault {', 'type.set("localMaven")'];
     validateBuildGradle(TEMP_DIR, publishingLines);
   });
 
@@ -315,12 +315,11 @@ describe('plugin for android', () => {
         },
       },
     ] as PluginProps['android']['publishing'];
-    await createEnvFile(TEMP_DIR, ENV);
     await setupPlugin(TEMP_DIR, {
       publishing: PUBLISHING,
     });
 
-    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING, ENV));
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING));
   });
 
   /**

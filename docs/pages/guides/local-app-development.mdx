@@ -33,16 +33,29 @@ To build your project locally you can use compile commands from Expo CLI which g
   ]}
 />
 
-The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app.
+The above commands compile your project, using your locally installed Android SDK or Xcode, into a debug build of your app. Each command performs two steps: it compiles and installs the native binary on your device or emulator, then starts the Metro bundler to serve your JavaScript or TypeScript code.
 
 - These compilation commands initially run `npx expo prebuild` to generate native directories (**android** and **ios**) before building, if they do not exist yet. If they already exist, this will be skipped.
 - You can also add the `--device` flag to select a device to run the app on — you can select a physically connected device or emulator/simulator.
-- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production build of your app](/deploy/build-project/#production-builds-locally). Note that these builds are not signed and you cannot submit them to app stores. To sign your production build, see [Local app production](/guides/local-app-production/).
+- You can pass in `--variant release` (Android) or `--configuration Release` (iOS) to build a [production build of your app](/deploy/build-project/#release-builds-locally). Note that these builds are not signed and you cannot submit them to app stores. To sign your production build, see [Local app production](/guides/local-app-production/).
 - **Android only**: Starting in SDK 54, you can pass the `--variant debugOptimized` variant for faster development iteration. See [Compiling Android in Expo CLI reference](/more/expo-cli/#compiling-android) for more information.
 
-To modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on top of existing files. It may also produce different results after the build.
+### After the first build: use `npx expo start`
 
-To avoid this, the native directories are automatically added to the project's **.gitignore** when you create a new project, and you can use `npx expo prebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/prebuild/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
+Once the app is compiled and installed on your device or emulator, you don't need to rebuild every time you make a change. If you're only modifying JavaScript or TypeScript code, you can start the Metro bundler on its own:
+
+<Terminal cmd={['$ npx expo start']} />
+
+Then press <kbd>a</kbd> for Android or <kbd>i</kbd> for iOS in the terminal to launch the already-installed app. Metro serves your updated JavaScript bundle without recompiling native code, so the app loads in seconds instead of minutes.
+
+| Command                                     | What it does                                          | When to use it                                                                  |
+| ------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `npx expo run:android` / `npx expo run:ios` | Compiles native code, installs the app, starts Metro. | First build, after adding a native library, or after modifying a config plugin. |
+| `npx expo start`                            | Starts only the Metro bundler.                        | Daily development when only changing JavaScript or TypeScript code.             |
+
+To modify your project's configuration or native code after the first build, you will have to rebuild your project using `npx expo run:android|ios` again. Running `npx expo prebuild` again layers the changes on top of existing files. It may also produce different results after the build.
+
+To avoid this, the native directories are automatically added to the project's **.gitignore** when you create a new project, and you can use `npx expo prebuild --clean` command. This ensures that the project is always managed, and the [`--clean` flag](/workflow/continuous-native-generation/#clean) will delete existing directories before regenerating them. You can use [app config](/workflow/configuration/) or create a [config plugin](/config-plugins/introduction/) to modify your project's configuration or code inside the native directories.
 
 To learn more about how compilation and prebuild works, see the following guides:
 
@@ -61,13 +74,13 @@ To learn more about how compilation and prebuild works, see the following guides
 <BoxLink
   title="Prebuild"
   description="Learn how Expo CLI generates native code of your project before compiling it."
-  href="/workflow/prebuild"
+  href="/workflow/continuous-native-generation"
   Icon={BookOpen02Icon}
 />
 
 ## Local builds with `expo-dev-client`
 
-If you install [`expo-dev-client`](/develop/development-builds/introduction/#what-is-expo-dev-client) to your project, then a debug build of your project will include the `expo-dev-client` UI and tooling, and we call these development builds.
+If you install [`expo-dev-client`](/develop/development-builds/introduction/) to your project, then a debug build of your project will include the `expo-dev-client` UI and tooling, and we call these development builds.
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 

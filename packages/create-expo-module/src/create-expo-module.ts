@@ -3,8 +3,10 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import ejs from 'ejs';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import prompts from 'prompts';
+import validateNpmPackage from 'validate-npm-package-name';
 
 import { createExampleApp } from './createExampleApp';
 import {
@@ -22,8 +24,10 @@ import {
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import type { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
 import { env } from './utils/env';
+import { findGitHubEmail, findMyName } from './utils/git';
+import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 import { newStep } from './utils/ora';
-import { downloadAndExtractTarball } from './utils/tar';
+import { extractLocalTarball } from './utils/tar';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -46,6 +50,44 @@ const IGNORES_PATHS = [
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
+
+/**
+ * Determines if we're in an interactive environment.
+ * Non-interactive when: CI=1/true or non-TTY stdin.
+ */
+function isInteractive(): boolean {
+  // Check for CI environment
+  const ci = process.env.CI;
+  if (ci === '1' || ci === 'true' || ci?.toLowerCase() === 'true') {
+    return false;
+  }
+  // Check for TTY
+  if (!process.stdin.isTTY) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Converts a slug to a native module name (PascalCase).
+ */
+function slugToModuleName(slug: string): string {
+  return slug
+    .replace(/^@/, '')
+    .replace(/^./, (match) => match.toUpperCase())
+    .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
+}
+
+/**
+ * Converts a slug to an Android package name.
+ */
+function slugToAndroidPackage(slug: string): string {
+  const namespace = slug
+    .replace(/\W/g, '')
+    .replace(/^(expo|reactnative)/, '')
+    .toLowerCase();
+  return `expo.modules.${namespace}`;
+}
 
 async function getCorrectLocalDirectory(targetOrSlug: string) {
   let packageJsonPath: string | null = null;
@@ -79,6 +121,11 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
  * @param options An options object for `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
+  const interactive = isInteractive();
+  if (!interactive) {
+    debug('Running in non-interactive mode');
+  }
+
   if (options.local) {
     console.log();
     console.log(
@@ -90,7 +137,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     );
     console.log();
   }
-  const slug = await askForPackageSlugAsync(target, options.local);
+  const slug = await askForPackageSlugAsync(target, options.local, options);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
     : path.join(CWD, target || slug);
@@ -99,11 +146,11 @@ async function main(target: string | undefined, options: CommandOptions) {
     return;
   }
   await fs.promises.mkdir(targetDir, { recursive: true });
-  await confirmTargetDirAsync(targetDir);
+  await confirmTargetDirAsync(targetDir, options);
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(slug, options.local);
+  const data = await askForSubstitutionDataAsync(slug, options.local, options);
 
   // Make one line break between prompts and progress logs
   console.log();
@@ -204,12 +251,41 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
 }
 
 /**
- * Asks NPM registry for the url to the tarball.
+ * Downloads a package tarball using `npm pack` and returns the filename.
  */
-async function getNpmTarballUrl(packageName: string, version: string = 'latest'): Promise<string> {
-  debug(`Using module template ${chalk.bold(packageName)}@${chalk.bold(version)}`);
-  const { stdout } = await spawnAsync('npm', ['view', `${packageName}@${version}`, 'dist.tarball']);
-  return stdout.trim();
+async function npmPackAsync(packageName: string, cwd: string): Promise<string> {
+  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  const cmd = ['pack', packageName, '--json'];
+  const cmdString = `${npm} ${cmd.join(' ')}`;
+  debug('Run:', cmdString, `(cwd: ${cwd})`);
+
+  let results: string;
+  try {
+    results = (await spawnAsync(npm, cmd, { cwd })).stdout?.trim();
+  } catch (error: any) {
+    if (error?.stderr?.match(/npm ERR! code E404/)) {
+      const pkg =
+        error.stderr.match(/npm ERR! 404\s+'(.*)' is not in this registry\./)?.[1] ?? error.stderr;
+      throw new Error(`NPM package not found: ` + pkg);
+    }
+    throw error;
+  }
+
+  if (!results) {
+    throw new Error(`No output from "${cmdString}"`);
+  }
+
+  try {
+    const json = JSON.parse(results);
+    if (!Array.isArray(json) || !json[0]?.filename) {
+      throw new Error(`Invalid response from npm: ${results}`);
+    }
+    return json[0].filename;
+  } catch (error: any) {
+    throw new Error(
+      `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
+    );
+  }
 }
 
 /**
@@ -255,12 +331,13 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
   return await newStep('Downloading module template from npm', async (step) => {
     const templateVersion = await getTemplateVersion(isLocal);
     const packageName = isLocal ? 'expo-module-template-local' : 'expo-module-template';
+    const tmpDir = path.join(os.tmpdir(), '.create-expo-module');
 
+    await fs.promises.mkdir(tmpDir, { recursive: true });
+
+    let filename: string;
     try {
-      await downloadAndExtractTarball({
-        url: await getNpmTarballUrl(packageName, templateVersion),
-        dir: targetDir,
-      });
+      filename = await npmPackAsync(`${packageName}@${templateVersion}`, tmpDir);
     } catch {
       console.log();
       console.warn(
@@ -268,11 +345,15 @@ async function downloadPackageAsync(targetDir: string, isLocal = false): Promise
           "Couldn't download the versioned template from npm, falling back to the latest version."
         )
       );
-      await downloadAndExtractTarball({
-        url: await getNpmTarballUrl(packageName, 'latest'),
-        dir: targetDir,
-      });
+      filename = await npmPackAsync(`${packageName}@latest`, tmpDir);
     }
+
+    await extractLocalTarball({
+      filePath: path.join(tmpDir, filename),
+      dir: targetDir,
+    });
+
+    await fs.promises.rm(tmpDir, { recursive: true, force: true });
 
     step.succeed('Downloaded module template from npm registry.');
 
@@ -348,8 +429,26 @@ async function createGitRepositoryAsync(targetDir: string) {
 
 /**
  * Asks the user for the package slug (npm package name).
+ * In non-interactive mode, uses the target path or 'my-module' as default.
  */
-async function askForPackageSlugAsync(customTargetPath?: string, isLocal = false): Promise<string> {
+async function askForPackageSlugAsync(
+  customTargetPath: string | undefined,
+  isLocal: boolean,
+  options: CommandOptions
+): Promise<string> {
+  const interactive = isInteractive();
+
+  // In non-interactive mode, derive slug from target path or use default
+  if (!interactive) {
+    const targetBasename = customTargetPath && path.basename(customTargetPath);
+    const slug =
+      targetBasename && validateNpmPackage(targetBasename).validForNewPackages
+        ? targetBasename
+        : 'my-module';
+    debug(`Non-interactive mode: using slug "${slug}"`);
+    return slug;
+  }
+
   const { slug } = await prompts(
     (isLocal ? getLocalFolderNamePrompt : getSlugPrompt)(customTargetPath),
     {
@@ -362,29 +461,44 @@ async function askForPackageSlugAsync(customTargetPath?: string, isLocal = false
 /**
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
+ * In non-interactive mode, uses defaults or CLI-provided values.
  */
 async function askForSubstitutionDataAsync(
   slug: string,
-  isLocal = false
+  isLocal: boolean,
+  options: CommandOptions
 ): Promise<SubstitutionData | LocalSubstitutionData> {
+  const interactive = isInteractive();
+
+  // Non-interactive mode: use CLI options and defaults
+  if (!interactive) {
+    return getSubstitutionDataFromOptions(slug, isLocal, options);
+  }
+
+  // Interactive mode: prompt for values, but skip prompts for CLI-provided values
   const promptQueries = await (
     isLocal ? getLocalSubstitutionDataPrompts : getSubstitutionDataPrompts
   )(slug);
+
+  // Filter out prompts for values already provided via CLI
+  const filteredPrompts = promptQueries.filter((prompt) => {
+    const name = prompt.name as string;
+    const cliValue = getCliValueForPrompt(name, options);
+    return cliValue === undefined;
+  });
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
     process.exit(0);
   };
 
-  const {
-    name,
-    description,
-    package: projectPackage,
-    authorName,
-    authorEmail,
-    authorUrl,
-    repo,
-  } = await prompts(promptQueries, { onCancel });
+  // Get values from prompts
+  const promptedValues =
+    filteredPrompts.length > 0 ? await prompts(filteredPrompts, { onCancel }) : {};
+
+  // Merge CLI-provided values with prompted values
+  const name = options.name ?? promptedValues.name ?? slugToModuleName(slug);
+  const projectPackage = options.package ?? promptedValues.package ?? slugToAndroidPackage(slug);
 
   if (isLocal) {
     return {
@@ -398,6 +512,95 @@ async function askForSubstitutionDataAsync(
       type: 'local',
     };
   }
+
+  const description = options.description ?? promptedValues.description ?? 'My new module';
+  const authorName = options.authorName ?? promptedValues.authorName ?? (await findMyName()) ?? '';
+  const authorEmail =
+    options.authorEmail ?? promptedValues.authorEmail ?? (await findGitHubEmail()) ?? '';
+  const authorUrl =
+    options.authorUrl ??
+    promptedValues.authorUrl ??
+    (authorEmail ? ((await findGitHubUserFromEmail(authorEmail)) ?? '') : '');
+  const repo = options.repo ?? promptedValues.repo ?? (await guessRepoUrl(authorUrl, slug)) ?? '';
+
+  return {
+    project: {
+      slug,
+      name,
+      version: '0.1.0',
+      description,
+      package: projectPackage,
+      moduleName: handleSuffix(name, 'Module'),
+      viewName: handleSuffix(name, 'View'),
+    },
+    author: `${authorName} <${authorEmail}> (${authorUrl})`,
+    license: 'MIT',
+    repo,
+    type: 'remote',
+  };
+}
+
+/**
+ * Gets the CLI value for a given prompt name.
+ */
+function getCliValueForPrompt(promptName: string, options: CommandOptions): string | undefined {
+  switch (promptName) {
+    case 'name':
+      return options.name;
+    case 'description':
+      return options.description;
+    case 'package':
+      return options.package;
+    case 'authorName':
+      return options.authorName;
+    case 'authorEmail':
+      return options.authorEmail;
+    case 'authorUrl':
+      return options.authorUrl;
+    case 'repo':
+      return options.repo;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Gets substitution data from CLI options and defaults (for non-interactive mode).
+ */
+async function getSubstitutionDataFromOptions(
+  slug: string,
+  isLocal: boolean,
+  options: CommandOptions
+): Promise<SubstitutionData | LocalSubstitutionData> {
+  const name = options.name ?? slugToModuleName(slug);
+  const projectPackage = options.package ?? slugToAndroidPackage(slug);
+
+  debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
+
+  if (isLocal) {
+    return {
+      project: {
+        slug,
+        name,
+        package: projectPackage,
+        moduleName: handleSuffix(name, 'Module'),
+        viewName: handleSuffix(name, 'View'),
+      },
+      type: 'local',
+    };
+  }
+
+  // For remote modules, resolve author info
+  const description = options.description ?? 'My new module';
+  const authorName = options.authorName ?? (await findMyName()) ?? '';
+  const authorEmail = options.authorEmail ?? (await findGitHubEmail()) ?? '';
+  const authorUrl =
+    options.authorUrl ?? (authorEmail ? ((await findGitHubUserFromEmail(authorEmail)) ?? '') : '');
+  const repo = options.repo ?? (await guessRepoUrl(authorUrl, slug)) ?? '';
+
+  debug(
+    `Non-interactive mode: description="${description}", authorName="${authorName}", authorEmail="${authorEmail}", authorUrl="${authorUrl}", repo="${repo}"`
+  );
 
   return {
     project: {
@@ -418,12 +621,25 @@ async function askForSubstitutionDataAsync(
 
 /**
  * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
+ * In non-interactive mode, automatically continues (assumes intent to overwrite).
  */
-async function confirmTargetDirAsync(targetDir: string): Promise<void> {
+async function confirmTargetDirAsync(targetDir: string, options: CommandOptions): Promise<void> {
   const files = await fs.promises.readdir(targetDir);
   if (files.length === 0) {
     return;
   }
+
+  // In non-interactive mode, proceed automatically
+  if (!isInteractive()) {
+    debug(`Non-interactive mode: target directory "${targetDir}" is not empty, continuing anyway`);
+    console.log(
+      chalk.yellow(
+        `Warning: Target directory ${chalk.magenta(targetDir)} is not empty, continuing anyway.`
+      )
+    );
+    return;
+  }
+
   const { shouldContinue } = await prompts(
     {
       type: 'confirm',
@@ -500,6 +716,14 @@ program
     'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.',
     false
   )
+  // Module configuration options (skip prompts when provided)
+  .option('--name <name>', 'Native module name (e.g., MyModule).')
+  .option('--description <description>', 'Module description.')
+  .option('--package <package>', 'Android package name (e.g., expo.modules.mymodule).')
+  .option('--author-name <name>', 'Author name for package.json.')
+  .option('--author-email <email>', 'Author email for package.json.')
+  .option('--author-url <url>', "URL to the author's profile (e.g., GitHub profile).")
+  .option('--repo <url>', 'URL of the repository.')
   .action(main);
 
 program

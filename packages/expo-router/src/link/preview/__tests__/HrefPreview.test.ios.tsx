@@ -2,7 +2,9 @@ import type { NavigationProp } from '@react-navigation/native';
 import { screen } from '@testing-library/react-native';
 import React, { useEffect, type PropsWithChildren } from 'react';
 import { View, Text } from 'react-native';
+import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
+import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import {
   useGlobalSearchParams,
   useLocalSearchParams,
@@ -15,6 +17,22 @@ import { renderRouter } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { Redirect } from '../../Redirect';
 import { HrefPreview } from '../HrefPreview';
+
+jest.mock('react-native-screens', () => {
+  const actualScreens = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
+  return {
+    ...actualScreens,
+    ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
+  };
+});
+
+const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
+
+afterEach(() => {
+  ScreenStackItem.mockClear();
+});
 
 it.each([
   { visible: 'foo', hidden: 'bar' },
@@ -334,4 +352,129 @@ describe('Setting Stack.Screen options in preview', () => {
     ]);
     expect(consoleWarnSpy).toHaveBeenCalled();
   });
+});
+
+describe('Stack Composition API', () => {
+  it('does not throw when useCompositionOption is directly called inside HrefPreview', () => {
+    function PreviewScreen() {
+      useCompositionOption({ title: 'Direct Hook Title' });
+      return <View testID="preview" />;
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => (
+        <View testID="index">
+          <HrefPreview href="/preview" />
+        </View>
+      ),
+      preview: PreviewScreen,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId('preview')).toBeVisible();
+  });
+
+  it('does not set options when useCompositionOption is directly called inside HrefPreview', () => {
+    function PreviewScreen() {
+      useCompositionOption({ title: 'Direct Hook Title' });
+      return <View testID="preview" />;
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => (
+        <View testID="index">
+          <HrefPreview href="/preview" />
+        </View>
+      ),
+      preview: PreviewScreen,
+    });
+
+    // Only one ScreenStackItem call (initial render for the index screen)
+    expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+    // Index screen title is unchanged — preview composition options did not leak
+    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('index');
+  });
+
+  const cases = [
+    {
+      name: 'Stack.Screen.Title',
+      component: () => <Stack.Screen.Title>Preview Title</Stack.Screen.Title>,
+    },
+    {
+      name: 'Stack.Screen.BackButton',
+      component: () => <Stack.Screen.BackButton hidden />,
+    },
+    {
+      name: 'Stack.Header',
+      component: () => <Stack.Header hidden />,
+    },
+    {
+      name: 'Stack.SearchBar',
+      component: () => <Stack.SearchBar placeholder="Search" />,
+    },
+    {
+      name: 'Stack.Toolbar (right)',
+      component: () => (
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Button onPress={() => {}} />
+        </Stack.Toolbar>
+      ),
+    },
+    {
+      name: 'Stack.Toolbar (bottom)',
+      component: () => (
+        <Stack.Toolbar>
+          <Stack.Toolbar.Button onPress={() => {}} />
+        </Stack.Toolbar>
+      ),
+    },
+  ];
+
+  it.each(cases)(
+    'does not throw when $name is used inside HrefPreview',
+    ({ component: CompositionComponent }) => {
+      renderRouter({
+        _layout: () => <Stack />,
+        index: () => (
+          <View testID="index">
+            <HrefPreview href="/preview" />
+          </View>
+        ),
+        preview: () => (
+          <View testID="preview">
+            <CompositionComponent />
+          </View>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen.getByTestId('preview')).toBeVisible();
+    }
+  );
+
+  it.each(cases)(
+    'does not set options when $name is used inside HrefPreview',
+    ({ component: CompositionComponent }) => {
+      renderRouter({
+        _layout: () => <Stack />,
+        index: () => (
+          <View testID="index">
+            <HrefPreview href="/preview" />
+          </View>
+        ),
+        preview: () => (
+          <View testID="preview">
+            <CompositionComponent />
+          </View>
+        ),
+      });
+
+      // Only one ScreenStackItem call (initial render for the index screen)
+      expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+      // Index screen title is unchanged — preview composition options did not leak
+      expect(ScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('index');
+    }
+  );
 });

@@ -82,7 +82,10 @@ internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) 
 
     publishingExtension()
       .publications
-      .createReleasePublication(publicationInfo)
+      .createReleasePublication(
+        publicationInfo,
+        expoModulesExtension.pomConfigurator
+      )
 
     createExpoPublishToMavenLocalTask(publicationInfo, expoModulesExtension)
 

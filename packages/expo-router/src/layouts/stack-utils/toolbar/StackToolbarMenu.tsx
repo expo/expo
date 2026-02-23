@@ -220,7 +220,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     [props.children]
   );
 
-  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
 
   const computedLabel = sharedProps?.label;
   const computedMenuTitle = sharedProps?.menu?.title;
@@ -262,7 +262,8 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
 };
 
 export function convertStackToolbarMenuPropsToRNHeaderItem(
-  props: StackToolbarMenuProps
+  props: StackToolbarMenuProps,
+  isBottomPlacement: boolean = false
 ): NativeStackHeaderItemMenu | undefined {
   if (props.hidden) {
     return undefined;
@@ -278,7 +279,7 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
     title
   );
 
-  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(rest);
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(rest, isBottomPlacement);
 
   const item: NativeStackHeaderItemMenu = {
     ...sharedProps,

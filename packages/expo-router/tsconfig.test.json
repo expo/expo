@@ -8,6 +8,7 @@
     "**/__rsc_tests__/",
     "./types/expect.d.ts",
     "./src/ts-declarations",
+    "./src/types",
     "../@expo/cli/ts-declarations",
     "../expo/src/ts-declarations"
   ],

@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "55.0.7",
+  "version": "55.0.9",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -49,11 +49,12 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "arg": "^5.0.2",
+    "@expo/env": "~2.1.0",
     "chalk": "^4.1.2",
+    "commander": "^14.0.3",
     "diff": "^5.2.0",
-    "expo-build-properties": "~55.0.6",
-    "expo-manifests": "~55.0.5",
+    "expo-build-properties": "~55.0.8",
+    "expo-manifests": "~55.0.8",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@expo/require-utils",
-  "version": "55.0.0",
+  "version": "55.0.1",
   "description": "Reusable require and Node resolution utilities library for Expo",
   "license": "MIT",
   "main": "./build/index.js",

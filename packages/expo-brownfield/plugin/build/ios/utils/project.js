@@ -29,8 +29,8 @@ const configureBuildPhases = (project, target, targetName, projectName, files = 
     project.addBuildPhase(files, constants_1.Constants.BuildPhase.Sources, target.pbxNativeTarget.name, target.uuid, constants_1.Constants.Target.Framework, constants_1.Constants.Utils.XCEmptyString);
 };
 exports.configureBuildPhases = configureBuildPhases;
-const configureBuildSettings = (project, targetName, currentProjectVersion, bundleIdentifier) => {
-    const commonBuildSettings = getCommonBuildSettings(targetName, currentProjectVersion, bundleIdentifier);
+const configureBuildSettings = (project, targetName, currentProjectVersion, bundleIdentifier, version = '1.0') => {
+    const commonBuildSettings = getCommonBuildSettings(targetName, currentProjectVersion, bundleIdentifier, version);
     const buildConfigurationList = [
         {
             name: 'Debug',
@@ -55,7 +55,7 @@ const configureBuildSettings = (project, targetName, currentProjectVersion, bund
     destTarget.buildConfigurationList = configurationList.uuid;
 };
 exports.configureBuildSettings = configureBuildSettings;
-const getCommonBuildSettings = (targetName, currentProjectVersion, bundleIdentifier) => {
+const getCommonBuildSettings = (targetName, currentProjectVersion, bundleIdentifier, version) => {
     return {
         /* ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
         ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
@@ -70,11 +70,8 @@ const getCommonBuildSettings = (targetName, currentProjectVersion, bundleIdentif
         DEBUG_INFORMATION_FORMAT = dwarf;
         DEVELOPMENT_TEAM = ;
         GCC_C_LANGUAGE_STANDARD = gnu11;
-        LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-        MARKETING_VERSION = 1.0;
         MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
         MTL_FAST_MATH = YES;
-        SKIP_INSTALL = YES;
         SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
         SWIFT_EMIT_LOC_STRINGS = YES;
         SWIFT_OPTIMIZATION_LEVEL = "-Onone"; */
@@ -83,12 +80,15 @@ const getCommonBuildSettings = (targetName, currentProjectVersion, bundleIdentif
         TARGETED_DEVICE_FAMILY: `"1,2"`,
         INFOPLIST_FILE: `${targetName}/Info.plist`,
         CURRENT_PROJECT_VERSION: `"${currentProjectVersion}"`,
+        LD_RUNPATH_SEARCH_PATHS: '"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"',
+        DYLIB_INSTALL_NAME_BASE: '"@rpath"',
         // IPHONEOS_DEPLOYMENT_TARGET: `"${deploymentTarget}"`,
         PRODUCT_BUNDLE_IDENTIFIER: `"${bundleIdentifier}"`,
         GENERATE_INFOPLIST_FILE: `"YES"`,
         INFOPLIST_KEY_CFBundleDisplayName: targetName,
         INFOPLIST_KEY_NSHumanReadableCopyright: `""`,
-        // MARKETING_VERSION: `"${marketingVersion}"`,
+        INFOPLIST_KEY_CFBundleShortVersionString: `"${version}"`,
+        MARKETING_VERSION: `"${version}"`,
         SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
         CODE_SIGN_ENTITLEMENTS: `"${targetName}/${targetName}.entitlements"`,
         // DEVELOPMENT_TEAM: `""`,

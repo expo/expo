@@ -6,6 +6,32 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- fix stack composition options in link preview ([#43334](https://github.com/expo/expo/pull/43334) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+## 55.0.0-preview.9 — 2026-02-20
+
+### 🎉 New features
+
+- [ios] add support for renderingMode of xcassets in header items and bottom tabs ([#43185](https://github.com/expo/expo/pull/43185) by [@Ubax](https://github.com/Ubax))
+- use scoped dynamic options in stack ([#43184](https://github.com/expo/expo/pull/43184) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [ios] fix gestureEnabled: false when using zoom transition ([#43202](https://github.com/expo/expo/pull/43202) by [@Ubax](https://github.com/Ubax))
+- [web] fix Stack.Screen in expo modal ([#43188](https://github.com/expo/expo/pull/43188) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- extract usePreviewTransition from NativeStackNavigator ([#43182](https://github.com/expo/expo/pull/43182) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.0-preview.8 — 2026-02-16
+
+### 🎉 New features
+
 - [ios] Add xcasset icon support to native tabs ([#42867](https://github.com/expo/expo/pull/42867) by [@Ubax](https://github.com/Ubax))
 - [ios] activate `iosPreventReattachmentOfDismissedScreens` by default ([#43001](https://github.com/expo/expo/pull/43001) by [@Ubax](https://github.com/Ubax))
 - [ios] support xcasset in header items ([#43046](https://github.com/expo/expo/pull/43046) by [@Ubax](https://github.com/Ubax))
@@ -15,8 +41,12 @@
 
 - [web] Fix route URL detection in `useLoaderData` ([#42912](https://github.com/expo/expo/pull/42912) by [@hassankhan](https://github.com/hassankhan))
 - [web] Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
+- [ios] fix immediate navigation when opening Link.Preview ([#43071](https://github.com/expo/expo/pull/43071) by [@Ubax](https://github.com/Ubax))
+- [ios] fix link preview background color ([#43120](https://github.com/expo/expo/pull/43120) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
+
+- Bump peer dependency to `@testing-library/react-native@^13.2.0` ([#43084](https://github.com/expo/expo/pull/43084) by [@hassankhan](https://github.com/hassankhan))
 
 ## 55.0.0-preview.7 — 2026-02-08
 
@@ -43,7 +73,7 @@
 
 ### 💡 Others
 
-- Consolidate native toolbar components into StackToolbar* files ([#42712](https://github.com/expo/expo/pull/42712) by [@Ubax](https://github.com/Ubax))
+- Consolidate native toolbar components into StackToolbar\* files ([#42712](https://github.com/expo/expo/pull/42712) by [@Ubax](https://github.com/Ubax))
 - remove warnings from Color API ([#42790](https://github.com/expo/expo/pull/42790) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.0-preview.5 — 2026-02-03

@@ -67,7 +67,7 @@ const StackToolbarMenu = (props) => {
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
     const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
-    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
     const computedLabel = sharedProps?.label;
     const computedMenuTitle = sharedProps?.menu?.title;
     const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
@@ -89,14 +89,14 @@ const StackToolbarMenu = (props) => {
     return (<NativeToolbarMenu {...props} icon={icon} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
-function convertStackToolbarMenuPropsToRNHeaderItem(props) {
+function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
     if (props.hidden) {
         return undefined;
     }
     const { title, ...rest } = props;
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
     const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(props.children, title);
-    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest);
+    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest, isBottomPlacement);
     const item = {
         ...sharedProps,
         label: computedLabel,

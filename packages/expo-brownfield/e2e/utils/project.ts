@@ -203,19 +203,3 @@ export const createTemplateOverrides = async (projectRoot: string, entries: Temp
     await fs.promises.writeFile(templatePath, entry.content);
   }
 };
-
-/**
- * Create an .env file with specified values
- */
-export const createEnvFile = async (projectRoot: string, variables: Record<string, string>) => {
-  const envFilePath = path.join(projectRoot, '.env');
-  if (fs.existsSync(envFilePath)) {
-    await fs.promises.rm(envFilePath, { force: true });
-  }
-  await fs.promises.writeFile(
-    envFilePath,
-    Object.entries(variables)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('\n')
-  );
-};

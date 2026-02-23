@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.OperationCanceledException
 import androidx.core.content.ContextCompat
-import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.CameraContractOptions
 import expo.modules.imagepicker.contracts.CropImageContract
@@ -269,7 +268,10 @@ class ImagePickerModule : Module() {
   }
 
   private suspend fun ensureCameraPermissionsAreGranted(): Unit = suspendCancellableCoroutine { continuation ->
-    val permissions = appContext.permissions ?: throw ModuleNotFoundException("Permissions")
+    val permissions = appContext.permissions ?: run {
+      continuation.resumeWithException(Exceptions.ModuleNotFound(Permissions::class))
+      return@suspendCancellableCoroutine
+    }
 
     permissions.askForPermissions(
       { permissionsResponse ->
