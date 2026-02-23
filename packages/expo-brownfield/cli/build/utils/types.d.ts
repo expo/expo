@@ -32,6 +32,7 @@ export interface IosConfig extends CommonConfig {
     derivedDataPath: string;
     device: string;
     hermesFrameworkPath: string;
+    prebuiltFrameworksPath: string[];
     scheme: string;
     simulator: string;
     workspace: string;

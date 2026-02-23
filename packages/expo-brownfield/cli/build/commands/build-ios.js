@@ -10,5 +10,6 @@ const buildIos = async (command) => {
     await (0, utils_1.buildFramework)(config);
     await (0, utils_1.createXcframework)(config);
     await (0, utils_1.copyHermesXcframework)(config);
+    await (0, utils_1.copyRNFrameworks)(config);
 };
 exports.default = buildIos;

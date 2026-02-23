@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.printIosConfig = exports.makeArtifactsDirectory = exports.findWorkspace = exports.findScheme = exports.createXcframework = exports.copyHermesXcframework = exports.buildFramework = exports.cleanUpArtifacts = void 0;
+exports.printIosConfig = exports.makeArtifactsDirectory = exports.findWorkspace = exports.findScheme = exports.createXcframework = exports.copyRNFrameworks = exports.copyHermesXcframework = exports.buildFramework = exports.cleanUpArtifacts = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -83,6 +83,29 @@ const copyHermesXcframework = async (config) => {
     });
 };
 exports.copyHermesXcframework = copyHermesXcframework;
+// TODO(pmleczek): Better integrate with CLI
+const copyRNFrameworks = async (config) => {
+    for (const framework of config.prebuiltFrameworksPath) {
+        const frameworkPath = `./ios/${framework}`;
+        if (!node_fs_1.default.existsSync(frameworkPath)) {
+            return;
+        }
+    }
+    for (const framework of config.prebuiltFrameworksPath) {
+        const basename = node_path_1.default.basename(framework);
+        return (0, spinner_1.withSpinner)({
+            operation: async () => node_fs_1.default.cpSync(`./ios/${framework}`, `${config.artifacts}/${basename}`, {
+                force: true,
+                recursive: true,
+            }),
+            loaderMessage: `Copying ${basename} to the artifacts directory...`,
+            successMessage: `Copying ${basename} to the artifacts directory succeeded`,
+            errorMessage: `Copying ${basename} to the artifacts directory failed`,
+            verbose: config.verbose,
+        });
+    }
+};
+exports.copyRNFrameworks = copyRNFrameworks;
 const createXcframework = async (config) => {
     const args = [
         '-create-xcframework',

@@ -9,6 +9,7 @@ import {
   printIosConfig,
   resolveBuildConfigIos,
   validatePrebuild,
+  copyRNFrameworks,
 } from '../utils';
 
 const buildIos = async (command: Command) => {
@@ -22,6 +23,7 @@ const buildIos = async (command: Command) => {
   await buildFramework(config);
   await createXcframework(config);
   await copyHermesXcframework(config);
+  await copyRNFrameworks(config);
 };
 
 export default buildIos;

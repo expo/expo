@@ -2,6 +2,7 @@ import { IosConfig } from './types';
 export declare const cleanUpArtifacts: (config: IosConfig) => Promise<void>;
 export declare const buildFramework: (config: IosConfig) => Promise<import("./types").RunCommandResult | undefined>;
 export declare const copyHermesXcframework: (config: IosConfig) => Promise<void>;
+export declare const copyRNFrameworks: (config: IosConfig) => Promise<void>;
 export declare const createXcframework: (config: IosConfig) => Promise<import("./types").RunCommandResult | undefined>;
 export declare const findScheme: () => string | undefined;
 export declare const findWorkspace: () => string | undefined;

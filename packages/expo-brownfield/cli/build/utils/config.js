@@ -28,6 +28,10 @@ const resolveBuildConfigIos = (options) => {
     const device = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
     const simulator = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphonesimulator`);
     const hermesFrameworkPath = 'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
+    const prebuiltFrameworksPath = [
+        'Pods/React-Core-prebuilt/React.xcframework',
+        'Pods/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework',
+    ];
     return {
         ...resolveCommonConfig(options),
         artifacts,
@@ -36,6 +40,7 @@ const resolveBuildConfigIos = (options) => {
         device,
         simulator,
         hermesFrameworkPath,
+        prebuiltFrameworksPath,
         scheme: resolveScheme(options),
         workspace: resolveWorkspace(options),
     };

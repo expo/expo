@@ -89,6 +89,32 @@ export const copyHermesXcframework = async (config: IosConfig) => {
   });
 };
 
+// TODO(pmleczek): Better integrate with CLI
+export const copyRNFrameworks = async (config: IosConfig) => {
+  for (const framework of config.prebuiltFrameworksPath) {
+    const frameworkPath = `./ios/${framework}`;
+    if (!fs.existsSync(frameworkPath)) {
+      return;
+    }
+  }
+
+  for (const framework of config.prebuiltFrameworksPath) {
+    const basename = path.basename(framework);
+
+    return withSpinner({
+      operation: async () =>
+        fs.cpSync(`./ios/${framework}`, `${config.artifacts}/${basename}`, {
+          force: true,
+          recursive: true,
+        }),
+      loaderMessage: `Copying ${basename} to the artifacts directory...`,
+      successMessage: `Copying ${basename} to the artifacts directory succeeded`,
+      errorMessage: `Copying ${basename} to the artifacts directory failed`,
+      verbose: config.verbose,
+    });
+  }
+};
+
 export const createXcframework = async (config: IosConfig) => {
   const args = [
     '-create-xcframework',
