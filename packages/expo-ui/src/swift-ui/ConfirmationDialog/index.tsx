@@ -39,20 +39,14 @@ type NativeConfirmationDialogProps = Omit<ConfirmationDialogProps, 'onIsPresente
 const ConfirmationDialogNativeView: React.ComponentType<NativeConfirmationDialogProps> =
   requireNativeView('ExpoUI', 'ConfirmationDialogView');
 
-const ConfirmationDialogNativeTrigger: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'ConfirmationDialogTrigger'
-);
+const ConfirmationDialogNativeTrigger: React.ComponentType<{ children: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'ConfirmationDialogTrigger');
 
-const ConfirmationDialogNativeActions: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'ConfirmationDialogActions'
-);
+const ConfirmationDialogNativeActions: React.ComponentType<{ children: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'ConfirmationDialogActions');
 
-const ConfirmationDialogNativeMessage: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'ConfirmationDialogMessage'
-);
+const ConfirmationDialogNativeMessage: React.ComponentType<{ children: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'ConfirmationDialogMessage');
 
 /**
  * The component visible all the time that triggers the confirmation dialog presentation.

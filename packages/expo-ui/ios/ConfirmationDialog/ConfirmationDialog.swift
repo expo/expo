@@ -15,7 +15,7 @@ internal struct ConfirmationDialogView: ExpoSwiftUI.View {
       .confirmationDialog(
         props.title,
         isPresented: $isPresented,
-        titleVisibility: props.titleVisibility.visibility
+        titleVisibility: props.titleVisibility.toVisibility()
       ) {
         actionsContent
       } message: {
@@ -37,6 +37,11 @@ internal struct ConfirmationDialogView: ExpoSwiftUI.View {
       .compactMap({ $0.childView as? ConfirmationDialogTrigger })
       .first {
       trigger
+    } else {
+      EmptyView()
+        .onAppear {
+          log.warn("ConfirmationDialog requires a ConfirmationDialog.Trigger child to be visible")
+        }
     }
   }
 
