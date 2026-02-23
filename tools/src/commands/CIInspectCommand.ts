@@ -87,7 +87,6 @@ function getScrollWindow(total: number, selectedIndex: number): { start: number;
 type ActionOptions = {
   branch: string;
   week?: string;
-  inspect?: string;
 };
 
 type AuthStatus = {
@@ -222,8 +221,8 @@ function countRunStats(
     else other++;
   }
   const total = runs.length;
-  const effective = success + cancelled;
-  const successRate = total > 0 ? (effective / total) * 100 : 0;
+  const concluded = success + failed + cancelled;
+  const successRate = concluded > 0 ? ((success + cancelled) / concluded) * 100 : 0;
   return { total, success, failed, cancelled, other, successRate };
 }
 
@@ -595,11 +594,7 @@ async function fetchEASWorkflowItems(startDate: Date, endDate: Date): Promise<Wo
 function buildCategories(items: WorkflowItem[]): CategoryInfo[] {
   const broken = items.filter((w) => w.successRate === 0 && w.total >= 2 && w.failed >= 2);
   const needsAttention = items.filter(
-    (w) =>
-      w.successRate > 0 &&
-      w.successRate < 75 &&
-      w.total >= 2 &&
-      w.success + w.failed + w.cancelled > 0
+    (w) => w.successRate > 0 && w.successRate < 75 && w.total >= 2 && w.failed > 0
   );
   const highVolume = items.filter((w) => w.total >= 10 && w.successRate < 90 && w.failed > 0);
   const allSorted = [...items].sort((a, b) => b.total - a.total);
@@ -890,11 +885,81 @@ async function inspectLatestFailureLogs(wf: WorkflowItem): Promise<void> {
       }
     }
   } else {
-    logger.log(
-      chalk.gray(
-        '  EAS log download requires eas CLI \u2014 use et ci-status --inspect for detailed EAS logs.'
-      )
+    // EAS workflow logs
+    if (!wf.project) {
+      logger.log(chalk.gray('  No project info available for this EAS workflow.'));
+      return;
+    }
+
+    const projectDirs = await findEASProjectDirs();
+    const projectDir = projectDirs.find((d) => path.basename(d) === wf.project);
+    if (!projectDir) {
+      logger.log(chalk.gray(`  Could not find project directory for ${wf.project}.`));
+      return;
+    }
+
+    const easEnv = {
+      ...process.env,
+      EXPO_NO_DOCTOR: 'true',
+      EAS_BUILD_PROFILE: process.env.EAS_BUILD_PROFILE ?? 'release-client',
+    };
+
+    logger.log(chalk.gray(`  Fetching run details for ${latestFailed.id}...`));
+
+    const runDetails = await runEASCommand(
+      ['workflow:view', String(latestFailed.id), '--json', '--non-interactive'],
+      projectDir,
+      easEnv
     );
+
+    if (!runDetails?.jobs) {
+      logger.warn(`  Could not fetch run details.`);
+      return;
+    }
+
+    const failedJobs = runDetails.jobs.filter(
+      (j: any) => (j.status ?? '').toUpperCase() === 'FAILURE'
+    );
+
+    if (!failedJobs.length) {
+      logger.log(chalk.gray('  No failed jobs found.'));
+      return;
+    }
+
+    if (runDetails.logURL) {
+      logger.log(`  ${chalk.gray(runDetails.logURL)}`);
+    }
+
+    for (const job of failedJobs) {
+      const jobName = job.name ?? job.key ?? 'unknown';
+      logger.log(`\n  ${chalk.red('\u2717')} ${chalk.bold(jobName)}`);
+
+      logger.log(chalk.gray(`    Downloading log for "${jobName}"...`));
+
+      let rawLog: string | null = null;
+      try {
+        const result = await spawnAsync(
+          'eas',
+          ['workflow:logs', job.id, '--all-steps', '--non-interactive'],
+          { cwd: projectDir, env: easEnv }
+        );
+        rawLog = result.stdout;
+      } catch {
+        logger.warn(`    Could not download log for this job.`);
+        continue;
+      }
+
+      if (!rawLog?.trim()) {
+        logger.warn(`    Log is empty.`);
+        continue;
+      }
+
+      const log = stripLogTimestamps(rawLog);
+      const snippets = extractErrorSnippets(log);
+      if (snippets.length) {
+        printLogSnippets(snippets);
+      }
+    }
   }
 }
 
@@ -1074,158 +1139,6 @@ async function interactiveDashboard(options: ActionOptions, auth: AuthStatus): P
   }
 }
 
-// --- Inspect mode (preserved for non-interactive deep-dives) ---
-
-function printFailurePatternSummary(
-  failedRuns: { timestamp: Date }[],
-  startDate: Date,
-  endDate: Date
-): void {
-  if (failedRuns.length <= 1) return;
-
-  logger.log('\u2500'.repeat(40));
-  logger.info(`\n${chalk.bold('Failure Pattern Summary')}\n`);
-  logger.log(`  ${failedRuns.length} failures in the date range.`);
-
-  const midpoint = new Date((startDate.getTime() + endDate.getTime()) / 2);
-  const recentCount = failedRuns.filter((r) => r.timestamp > midpoint).length;
-  const earlyCount = failedRuns.length - recentCount;
-
-  if (recentCount > earlyCount * 2) {
-    logger.log(
-      `  ${chalk.red('\u2192')} Failures are ${chalk.red('increasing')} \u2014 most failures occurred in the second half of the period.`
-    );
-  } else if (earlyCount > recentCount * 2) {
-    logger.log(
-      `  ${chalk.green('\u2192')} Failures are ${chalk.green('decreasing')} \u2014 most failures occurred in the first half of the period.`
-    );
-  } else {
-    logger.log(
-      `  ${chalk.yellow('\u2192')} Failures are ${chalk.yellow('spread evenly')} across the period.`
-    );
-  }
-  logger.log('');
-}
-
-async function inspectGitHubWorkflow(
-  workflowName: string,
-  branch: string,
-  startDate: Date,
-  endDate: Date
-): Promise<boolean> {
-  logger.info(chalk.gray('Fetching GitHub Actions workflow runs...'));
-
-  let runs;
-  try {
-    runs = await getWorkflowRunsForRepoAsync(branch, { startDate, endDate });
-  } catch (error: any) {
-    logger.error(`Failed to fetch GitHub Actions runs: ${error.message}`);
-    return false;
-  }
-
-  const needle = workflowName.toLowerCase();
-  const matchingRuns = runs.filter((r: any) => (r.name ?? '').toLowerCase().includes(needle));
-
-  if (!matchingRuns.length) {
-    return false;
-  }
-
-  const actualName = matchingRuns[0].name;
-  const workflowRuns = matchingRuns.filter((r: any) => r.name === actualName);
-
-  logger.info(`${chalk.gray('Source:')} GitHub Actions\n`);
-
-  const failed = workflowRuns.filter((r: any) => r.conclusion === 'failure');
-  const succeeded = workflowRuns.filter((r: any) => r.conclusion === 'success');
-  const cancelled = workflowRuns.filter((r: any) => r.conclusion === 'cancelled');
-
-  logger.log(`  Workflow: ${chalk.bold(actualName)}`);
-  logger.log(`  Total runs: ${workflowRuns.length}`);
-  logger.log(
-    `  ${chalk.green(`${succeeded.length} passed`)}, ${chalk.red(`${failed.length} failed`)}, ${chalk.gray(`${cancelled.length} cancelled`)}\n`
-  );
-
-  if (!failed.length) {
-    logger.info(chalk.green('No failures found for this workflow.'));
-    return true;
-  }
-
-  const recentFailures = failed.slice(0, 3);
-  logger.info(chalk.gray(`Inspecting ${recentFailures.length} most recent failure(s)...\n`));
-
-  for (const run of recentFailures) {
-    const runDate = new Date(run.created_at).toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    logger.log('\u2500'.repeat(40));
-    logger.log(`\n  ${chalk.bold(`Run #${run.run_number}`)} \u2014 ${runDate}`);
-    logger.log(`  ${chalk.gray(run.html_url)}`);
-
-    if (run.head_commit?.message) {
-      const commitMsg = run.head_commit.message.split('\n')[0];
-      logger.log(`  Commit: ${chalk.gray(commitMsg)}`);
-    }
-
-    logger.info(chalk.gray(`  Fetching jobs for run #${run.run_number}...`));
-
-    let jobs;
-    try {
-      jobs = await getJobsForWorkflowRunAsync(run.id);
-    } catch (error: any) {
-      logger.warn(`  Failed to fetch jobs: ${error.message}`);
-      continue;
-    }
-
-    const failedJobs = jobs.filter((j) => j.conclusion === 'failure');
-    if (!failedJobs.length) {
-      logger.log(`  ${chalk.gray('No failed jobs found (run may have been cancelled).')}`);
-      continue;
-    }
-
-    logger.log(`  ${chalk.red(`${failedJobs.length} failed job(s)`)}:\n`);
-
-    for (const job of failedJobs) {
-      logger.log(`  ${chalk.red('\u2717')} ${chalk.bold(job.name)}`);
-
-      const failedSteps = (job.steps ?? []).filter((s) => s.conclusion === 'failure');
-      if (failedSteps.length) {
-        for (const step of failedSteps) {
-          logger.log(`    Step: ${chalk.red(step.name)}`);
-        }
-      }
-
-      logger.info(chalk.gray(`    Downloading log for "${job.name}"...`));
-
-      const rawLog = await downloadJobLogsAsync(job.id);
-      if (!rawLog) {
-        logger.warn(`    Could not download log for this job.`);
-        continue;
-      }
-
-      const log = stripLogTimestamps(rawLog);
-      const snippets = extractErrorSnippets(log);
-      if (snippets.length) {
-        printLogSnippets(snippets);
-      }
-
-      logger.log('');
-    }
-  }
-
-  printFailurePatternSummary(
-    failed.map((r: any) => ({ timestamp: new Date(r.created_at) })),
-    startDate,
-    endDate
-  );
-
-  return true;
-}
-
 async function runEASCommand(
   args: string[],
   projectDir: string,
@@ -1236,240 +1149,6 @@ async function runEASCommand(
     return JSON.parse(result.stdout);
   } catch {
     return null;
-  }
-}
-
-async function inspectEASWorkflow(
-  workflowName: string,
-  startDate: Date,
-  endDate: Date
-): Promise<boolean> {
-  logger.info(chalk.gray('Searching Expo Workflows...'));
-
-  let projectDirs: string[];
-  try {
-    projectDirs = await findEASProjectDirs();
-  } catch {
-    return false;
-  }
-
-  if (!projectDirs.length) return false;
-
-  const easEnv = {
-    ...process.env,
-    EXPO_NO_DOCTOR: 'true',
-    EAS_BUILD_PROFILE: process.env.EAS_BUILD_PROFILE ?? 'release-client',
-  };
-
-  const needle = workflowName.toLowerCase();
-
-  for (const projectDir of projectDirs) {
-    const projectName = path.basename(projectDir);
-
-    logger.info(chalk.gray(`Fetching runs for ${projectName}...`));
-    const allRuns = await fetchEASRuns(projectDir, projectName, easEnv);
-
-    const runsInRange = allRuns.filter((r) => {
-      const ts = r.startedAt ?? r.createdAt ?? r.created_at;
-      if (!ts) return false;
-      const d = new Date(ts);
-      return d >= startDate && d <= endDate;
-    });
-
-    const matchingRuns = runsInRange.filter((r) =>
-      (r.workflowName ?? r.workflow_name ?? '').toLowerCase().includes(needle)
-    );
-
-    if (!matchingRuns.length) continue;
-
-    const actualName = matchingRuns[0].workflowName ?? matchingRuns[0].workflow_name;
-    const workflowRuns = matchingRuns.filter(
-      (r) => (r.workflowName ?? r.workflow_name) === actualName
-    );
-
-    logger.info(`${chalk.gray('Source:')} Expo Workflows (${projectName})\n`);
-
-    const failed = workflowRuns.filter((r) => (r.status ?? '').toUpperCase() === 'FAILURE');
-    const succeeded = workflowRuns.filter((r) => {
-      const s = (r.status ?? '').toUpperCase();
-      return s === 'SUCCESS' || s === 'FINISHED';
-    });
-    const cancelled = workflowRuns.filter((r) => (r.status ?? '').toUpperCase() === 'CANCELED');
-
-    logger.log(`  Workflow: ${chalk.bold(actualName)}`);
-    logger.log(`  Project: ${projectName}`);
-    logger.log(`  Total runs: ${workflowRuns.length}`);
-    logger.log(
-      `  ${chalk.green(`${succeeded.length} passed`)}, ${chalk.red(`${failed.length} failed`)}, ${chalk.gray(`${cancelled.length} cancelled`)}\n`
-    );
-
-    if (!failed.length) {
-      logger.info(chalk.green('No failures found for this workflow.'));
-      return true;
-    }
-
-    const recentFailures = failed.slice(0, 3);
-    logger.info(chalk.gray(`Inspecting ${recentFailures.length} most recent failure(s)...\n`));
-
-    for (const run of recentFailures) {
-      const ts = run.startedAt ?? run.createdAt;
-      const runDate = ts
-        ? new Date(ts).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          })
-        : 'unknown date';
-
-      logger.log('\u2500'.repeat(40));
-      logger.log(`\n  ${chalk.bold(`Run ${run.id}`)} \u2014 ${runDate}`);
-
-      if (run.gitCommitMessage) {
-        const commitMsg = run.gitCommitMessage.split('\n')[0];
-        logger.log(`  Commit: ${chalk.gray(commitMsg)}`);
-      }
-
-      logger.info(chalk.gray(`  Fetching run details...`));
-      const runDetails = await runEASCommand(
-        ['workflow:view', run.id, '--json', '--non-interactive'],
-        projectDir,
-        easEnv
-      );
-
-      if (!runDetails?.jobs) {
-        logger.warn(`  Could not fetch run details.`);
-        continue;
-      }
-
-      const failedJobs = runDetails.jobs.filter(
-        (j: any) => (j.status ?? '').toUpperCase() === 'FAILURE'
-      );
-
-      if (!failedJobs.length) {
-        logger.log(`  ${chalk.gray('No failed jobs found.')}`);
-        continue;
-      }
-
-      if (runDetails.logURL) {
-        logger.log(`  ${chalk.gray(runDetails.logURL)}`);
-      }
-
-      logger.log(`  ${chalk.red(`${failedJobs.length} failed job(s)`)}:\n`);
-
-      for (const job of failedJobs) {
-        const jobName = job.name ?? job.key ?? 'unknown';
-        logger.log(`  ${chalk.red('\u2717')} ${chalk.bold(jobName)}`);
-
-        logger.info(chalk.gray(`    Downloading log for "${jobName}"...`));
-
-        let rawLog: string | null = null;
-        try {
-          const result = await spawnAsync(
-            'eas',
-            ['workflow:logs', job.id, '--all-steps', '--non-interactive'],
-            { cwd: projectDir, env: easEnv }
-          );
-          rawLog = result.stdout;
-        } catch {
-          logger.warn(`    Could not download log for this job.`);
-          continue;
-        }
-
-        if (!rawLog?.trim()) {
-          logger.warn(`    Log is empty.`);
-          continue;
-        }
-
-        const log = stripLogTimestamps(rawLog);
-        const snippets = extractErrorSnippets(log);
-        if (snippets.length) {
-          printLogSnippets(snippets);
-        }
-
-        logger.log('');
-      }
-    }
-
-    printFailurePatternSummary(
-      failed.map((r: any) => ({
-        timestamp: new Date(r.startedAt ?? r.createdAt),
-      })),
-      startDate,
-      endDate
-    );
-
-    return true;
-  }
-
-  return false;
-}
-
-async function inspectWorkflow(
-  workflowName: string,
-  branch: string,
-  startDate: Date,
-  endDate: Date,
-  auth: AuthStatus
-): Promise<void> {
-  logger.log(
-    chalk.bold(`\nInspecting workflow: ${chalk.cyan(workflowName)}\n`) + '\u2500'.repeat(40)
-  );
-
-  if (auth.github) {
-    const found = await inspectGitHubWorkflow(workflowName, branch, startDate, endDate);
-    if (found) return;
-  }
-
-  if (auth.eas) {
-    const found = await inspectEASWorkflow(workflowName, startDate, endDate);
-    if (found) return;
-  }
-
-  logger.warn(`No workflows found matching "${workflowName}".`);
-
-  if (auth.github) {
-    logger.log('\nAvailable GitHub Actions workflows:');
-    try {
-      const runs = await getWorkflowRunsForRepoAsync(branch, {
-        startDate,
-        endDate,
-      });
-      const names = [...new Set(runs.map((r: any) => r.name).filter(Boolean))].sort();
-      for (const name of names) {
-        logger.log(`  - ${name}`);
-      }
-    } catch {
-      // Skip
-    }
-  }
-
-  if (auth.eas) {
-    logger.log('\nAvailable Expo Workflows:');
-    try {
-      const projectDirs = await findEASProjectDirs();
-      const easEnv = {
-        ...process.env,
-        EXPO_NO_DOCTOR: 'true',
-        EAS_BUILD_PROFILE: process.env.EAS_BUILD_PROFILE ?? 'release-client',
-      };
-      for (const projectDir of projectDirs) {
-        const projectName = path.basename(projectDir);
-        const allRuns = await fetchEASRuns(projectDir, projectName, easEnv);
-        const names = [
-          ...new Set(allRuns.map((r: any) => r.workflowName ?? r.workflow_name).filter(Boolean)),
-        ].sort();
-        if (names.length) {
-          logger.log(`  ${chalk.gray(`[${projectName}]`)}`);
-          for (const name of names) {
-            logger.log(`  - ${name}`);
-          }
-        }
-      }
-    } catch {
-      // Skip
-    }
   }
 }
 
@@ -1486,16 +1165,6 @@ async function action(options: ActionOptions) {
 
   printAuthStatus(auth);
 
-  // --inspect mode: non-interactive deep-dive into a specific workflow
-  if (options.inspect) {
-    const branch = options.branch;
-    const [startDate, endDate] = parseDateRange(options.week);
-    await inspectWorkflow(options.inspect, branch, startDate, endDate, auth);
-    logger.info(chalk.green('Done\n'));
-    return;
-  }
-
-  // Default: interactive TUI
   await interactiveDashboard(options, auth);
   logger.log('');
 }
@@ -1507,20 +1176,12 @@ export default (program: Command) => {
     .description(
       'Interactive CI/CD dashboard for GitHub Actions and Expo Workflows. ' +
         'Shows workflow health categories, success rates, daily trends, and failure inspection. ' +
-        'Navigate with arrow keys, Enter to drill down, Esc to go back. ' +
-        'Use --inspect for non-interactive deep-dive into a specific workflow.'
+        'Navigate with arrow keys, Enter to drill down, Esc to go back.'
     )
     .option('-b, --branch <branch>', 'Branch to check', 'main')
     .option(
       '-w, --week <week>',
       'ISO week number (1-53), or "last"/"prev" for previous week. Defaults to current week.'
-    )
-    .option(
-      '-i, --inspect <workflow>',
-      'Deep-inspect a workflow by name (partial match). ' +
-        'Searches GitHub Actions first, then Expo Workflows. ' +
-        'Fetches the 3 most recent failed runs, downloads job logs, and extracts error snippets. ' +
-        'Example: --inspect "iOS Unit Tests"'
     )
     .asyncAction(action);
 };
