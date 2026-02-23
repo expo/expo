@@ -2,14 +2,11 @@ import type { Command } from 'commander';
 
 import {
   buildFramework,
-  cleanUpArtifacts,
-  createXcframework,
-  copyHermesXcframework,
-  makeArtifactsDirectory,
   printIosConfig,
   resolveBuildConfigIos,
   validatePrebuild,
-  copyRNFrameworks,
+  shipSwiftPackage,
+  shipFrameworks,
 } from '../utils';
 
 const buildIos = async (command: Command) => {
@@ -18,12 +15,19 @@ const buildIos = async (command: Command) => {
   const config = resolveBuildConfigIos(command.opts());
   printIosConfig(config);
 
-  await cleanUpArtifacts(config);
-  makeArtifactsDirectory(config);
   await buildFramework(config);
-  await createXcframework(config);
-  await copyHermesXcframework(config);
-  await copyRNFrameworks(config);
+  // await createXcframework(config);
+  // await copyHermesXcframework(config);
+  // await copyRNFrameworks(config);
+
+  // TODO(pmleczek): Replace with proper check once rebased
+  if (true) {
+    // Ship frameworks as swift package
+    shipSwiftPackage(config);
+  } else {
+    // Ship frameworks as standalone XCFrameworks
+    shipFrameworks(config);
+  }
 };
 
 export default buildIos;

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { runCommand } from './commands';
+import { XCFramework } from './constants';
 import CLIError from './error';
 import { withSpinner } from './spinner';
 import { IosConfig } from './types';
@@ -63,59 +64,38 @@ export const buildFramework = async (config: IosConfig) => {
   });
 };
 
-export const copyHermesXcframework = async (config: IosConfig) => {
-  if (config.dryRun) {
-    console.log(
-      `Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${config.artifacts}/hermes.xcframework`
-    );
-    return;
-  }
+export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
+  const xcframeworks = (Object.keys(XCFramework) as (keyof typeof XCFramework)[]).map(
+    (framework) => ({
+      name: path.basename(XCFramework[framework]),
+      path: XCFramework[framework],
+    })
+  );
 
-  const sourcePath = `./ios/${config.hermesFrameworkPath}`;
-  if (!fs.existsSync(sourcePath)) {
-    CLIError.handle('ios-hermes-framework-not-found', sourcePath);
-  }
-
-  return withSpinner({
-    operation: async () =>
-      fs.cpSync(sourcePath, `${config.artifacts}/hermesvm.xcframework`, {
-        force: true,
-        recursive: true,
-      }),
-    loaderMessage: 'Copying hermesvm.xcframework to the artifacts directory...',
-    successMessage: 'Copying hermesvm.xcframework to the artifacts directory succeeded',
-    errorMessage: 'Copying hermesvm.xcframework to the artifacts directory failed',
-    verbose: config.verbose,
-  });
-};
-
-// TODO(pmleczek): Better integrate with CLI
-export const copyRNFrameworks = async (config: IosConfig) => {
-  for (const framework of config.prebuiltFrameworksPath) {
-    const frameworkPath = `./ios/${framework}`;
-    if (!fs.existsSync(frameworkPath)) {
-      return;
+  for (const xcframework of xcframeworks) {
+    const sourcePath = path.join('ios', xcframework.path);
+    if (fs.existsSync(sourcePath)) {
+      return withSpinner({
+        operation: async () =>
+          fs.promises.cp(sourcePath, path.join(dest, xcframework.name), {
+            force: true,
+            recursive: true,
+          }),
+        loaderMessage: `Copying ${xcframework.name} to the artifacts directory...`,
+        successMessage: `Copying ${xcframework.name} to the artifacts directory succeeded`,
+        errorMessage: `Copying ${xcframework.name} to the artifacts directory failed`,
+        verbose: config.verbose,
+      });
+    } else if (xcframework.name === 'hermesvm.xcframework') {
+      CLIError.handle('ios-hermes-framework-not-found', sourcePath);
     }
   }
-
-  for (const framework of config.prebuiltFrameworksPath) {
-    const basename = path.basename(framework);
-
-    return withSpinner({
-      operation: async () =>
-        fs.cpSync(`./ios/${framework}`, `${config.artifacts}/${basename}`, {
-          force: true,
-          recursive: true,
-        }),
-      loaderMessage: `Copying ${basename} to the artifacts directory...`,
-      successMessage: `Copying ${basename} to the artifacts directory succeeded`,
-      errorMessage: `Copying ${basename} to the artifacts directory failed`,
-      verbose: config.verbose,
-    });
-  }
 };
 
-export const createXcframework = async (config: IosConfig) => {
+export const createXCframework = async (config: IosConfig, at: string) => {
+  const frameworkName = `${config.scheme}.xcframework`;
+  const outputPath = path.join(at, frameworkName);
+
   const args = [
     '-create-xcframework',
     '-framework',
@@ -123,7 +103,7 @@ export const createXcframework = async (config: IosConfig) => {
     '-framework',
     `${config.simulator}/${config.scheme}.framework`,
     '-output',
-    `${config.artifacts}/${config.scheme}.xcframework`,
+    outputPath,
   ];
 
   if (config.dryRun) {
@@ -209,4 +189,27 @@ export const printIosConfig = (config: IosConfig) => {
   console.log(` - Verbose: ${chalk.blue(config.verbose)}`);
   console.log(` - Artifacts path: ${chalk.blue(config.artifacts)}`);
   console.log();
+};
+
+export const shipFrameworks = async (config: IosConfig) => {
+  // Create artifacts directory
+  await cleanUpArtifacts(config);
+  makeArtifactsDirectory(config);
+
+  // Copy/create XCFrameworks into the package
+  await createXCframework(config, config.artifacts);
+  await copyXCFrameworks(config, config.artifacts);
+};
+
+// TODO(pmleczek): Uncomment once rebased
+export const shipSwiftPackage = async (config: IosConfig) => {
+  // Create artifacts directory and swift package
+  await cleanUpArtifacts(config);
+  makeArtifactsDirectory(config);
+  // const packagePath = await createSwiftPackage(config);
+  // const xcframeworksPath = path.join(packagePath, 'xcframeworks');
+
+  // Copy/create XCFrameworks into the package
+  // await createXCframework(config, xcframeworksPath);
+  // await copyXCFrameworks(config, xcframeworksPath);
 };
