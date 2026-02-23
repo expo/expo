@@ -68,6 +68,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     arrayBuffer(): Promise<ArrayBuffer>;
     stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
+    static pickFilesAsync(initialUri?: string, mimeType?: string): Promise<File[]>;
 }
 /**
  * Represents a directory on the filesystem.

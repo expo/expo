@@ -18,6 +18,7 @@ internal class FilePickingHandler: FilePickingResultHandler {
     isDirectory: Bool,
     initialUri: URL?,
     mimeType: String?,
+    multipleDocuments: Bool,
     promise: Promise
   ) {
     guard let module = module else {
@@ -41,12 +42,13 @@ internal class FilePickingHandler: FilePickingResultHandler {
       initialUri: initialUri,
       mimeType: mimeType,
       isDirectory: isDirectory,
+      multipleDocuments: multipleDocuments,
       delegate: pickerDelegate
     )
 
     picker.delegate = pickerDelegate
     picker.presentationController?.delegate = pickerDelegate
-    picker.allowsMultipleSelection = false
+    picker.allowsMultipleSelection = multipleDocuments
 
     if UIDevice.current.userInterfaceIdiom == .pad {
       let viewFrame = currentVc.view.frame
@@ -63,10 +65,19 @@ internal class FilePickingHandler: FilePickingResultHandler {
     currentVc.present(picker, animated: true)
   }
 
+  func didPickFilesAt(urls: [URL]) {
+    handlePickingResult { context in
+        let files = urls.map { url in
+            FileSystemFile(url: url)
+        }
+      context.promise.resolve(files)
+    }
+  }
+    
   func didPickFileAt(url: URL) {
     handlePickingResult { context in
-      let file = FileSystemFile(url: url)
-      context.promise.resolve(file)
+        let file = FileSystemFile(url: url)
+        context.promise.resolve(file)
     }
   }
 
