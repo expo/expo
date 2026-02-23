@@ -33,12 +33,10 @@ Pod::Spec.new do |s|
     s.source_files = "**/*.{h,m,swift}"
   end
 
+  project_root_env_var = ENV['PROJECT_ROOT'] ? "export PROJECT_ROOT=#{ENV['PROJECT_ROOT']}\n" : ""
   build_bundle_script = {
     :name => 'Build ExpoWidgets Bundle',
-    :script => %Q{
-      echo "Building ExpoWidgets.bundle..."
-      #{__dir__}/../scripts/with-node.sh #{__dir__}/../scripts/build-bundle.mjs
-    },
+    :script => project_root_env_var + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/xcode-build-bundle.sh"',
     :execution_position => :before_compile,
     # NOTE(@krystofwoldrich): Ideally we would specify `__dir__/**/*`, but Xcode doesn't support patterns
     :input_files  => ["#{__dir__}/../package.json"],
