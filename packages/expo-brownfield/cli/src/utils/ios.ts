@@ -263,5 +263,10 @@ export const printIosConfig = (config: IosConfig) => {
   console.log(` - Dry run: ${chalk.blue(config.dryRun)}`);
   console.log(` - Verbose: ${chalk.blue(config.verbose)}`);
   console.log(` - Artifacts path: ${chalk.blue(config.artifacts)}`);
+
+  if (config.output !== 'frameworks') {
+    console.log(` - Package name: ${chalk.blue(config.output.packageName)}`);
+  }
+
   console.log();
 };

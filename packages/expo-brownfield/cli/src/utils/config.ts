@@ -23,7 +23,6 @@ export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig 
 };
 
 export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
-  console.log(options);
   let artifacts = options.artifacts || './artifacts';
   if (!path.isAbsolute(artifacts)) {
     artifacts = path.join(process.cwd(), artifacts);

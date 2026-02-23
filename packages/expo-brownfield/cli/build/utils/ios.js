@@ -234,6 +234,9 @@ const printIosConfig = (config) => {
     console.log(` - Dry run: ${chalk_1.default.blue(config.dryRun)}`);
     console.log(` - Verbose: ${chalk_1.default.blue(config.verbose)}`);
     console.log(` - Artifacts path: ${chalk_1.default.blue(config.artifacts)}`);
+    if (config.output !== 'frameworks') {
+        console.log(` - Package name: ${chalk_1.default.blue(config.output.packageName)}`);
+    }
     console.log();
 };
 exports.printIosConfig = printIosConfig;

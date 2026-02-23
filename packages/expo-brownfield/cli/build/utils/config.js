@@ -18,7 +18,6 @@ const resolveBuildConfigAndroid = (options) => {
 };
 exports.resolveBuildConfigAndroid = resolveBuildConfigAndroid;
 const resolveBuildConfigIos = (options) => {
-    console.log(options);
     let artifacts = options.artifacts || './artifacts';
     if (!node_path_1.default.isAbsolute(artifacts)) {
         artifacts = node_path_1.default.join(process.cwd(), artifacts);
