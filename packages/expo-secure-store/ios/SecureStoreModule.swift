@@ -66,17 +66,13 @@ public final class SecureStoreModule: Module {
     }
 
     Function("canUseDeviceCredentialsAuthentication") { () -> Bool in
-      return areDeviceCredentialsEnabled()
+      #if os(tvOS)
+      return false
+      #else
+      var error: NSError?
+      return LAContext().canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: &error)
+      #endif
     }
-  }
-
-  private func areDeviceCredentialsEnabled() -> Bool {
-    #if os(tvOS)
-    return false
-    #else
-    var error: NSError?
-    return LAContext().canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: &error)
-    #endif
   }
 
   private func get(with key: String, options: SecureStoreOptions) throws -> String? {
@@ -117,7 +113,6 @@ public final class SecureStoreModule: Module {
       }
 
       var error: Unmanaged<CFError>? = nil
-
       let accessControlFlag: SecAccessControlCreateFlags = options.enableDeviceFallback ? .userPresence : .biometryCurrentSet
 
       guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, accessControlFlag, &error) else {
