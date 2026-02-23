@@ -1,10 +1,23 @@
 import { fetch } from 'expo/fetch';
+import { File } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
 export const name = 'Fetch';
 
 export function test({ describe, expect, it, ...t }) {
+  const testDirectory = FS.documentDirectory + 'tests/';
+  t.beforeEach(async () => {
+    try {
+      await FS.makeDirectoryAsync(testDirectory);
+    } catch {}
+  });
+  t.afterEach(async () => {
+    try {
+      await FS.deleteAsync(testDirectory);
+    } catch {}
+  });
+
   describe('Response types', () => {
     setupTestTimeout(t);
 
@@ -196,6 +209,49 @@ export function test({ describe, expect, it, ...t }) {
       expect(json.headers['Content-Type'][0].startsWith('multipart/form-data; boundary=')).toBe(
         true
       );
+    });
+
+    it('should set the correct Content-Type header for file uploads', async () => {
+      const src = new File(testDirectory, 'upload-type-test.txt');
+      src.write('hello world');
+
+      const response = await fetch('https://httpbingo.org/anything', {
+        method: 'POST',
+        body: src,
+      });
+      const body = await response.json();
+      expect(body.headers['Content-Type'][0]).toContain('text/plain');
+    });
+
+    it('should set the correct Content-Length header for file uploads', async () => {
+      const content = 'abc'.repeat(100);
+      const src = new File(testDirectory, 'upload-length-test.txt');
+      src.write(content);
+
+      const response = await fetch('https://httpbingo.org/anything', {
+        method: 'POST',
+        body: src,
+      });
+      const body = await response.json();
+      expect(body.headers['Content-Length'][0]).toBe(String(content.length));
+    });
+
+    it('should post large File as body', async () => {
+      // Skip if the upload test server isn't running
+      try {
+        await fetch('http://localhost:3000', { method: 'HEAD' });
+      } catch {
+        console.warn('Skipping: upload server not running on localhost:3000');
+        return;
+      }
+
+      const file = createLargeFile(500 * 1024 * 1024, testDirectory); // 500 MB
+
+      const response = await fetch('http://localhost:3000', {
+        method: 'POST',
+        body: file,
+      });
+      expect(response.ok).toBe(true);
     });
   });
 
@@ -509,4 +565,26 @@ function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
 
 function delayAsync(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function createLargeFile(sizeBytes, directory) {
+  const file = new File(directory, 'upload-large-test.bin');
+
+  file.create({ overwrite: true });
+
+  const chunkSize = 1024 * 1024; // 1MB
+  const chunk = new Uint8Array(chunkSize);
+  chunk.fill(120); // arbitrary binary data
+
+  let written = 0;
+
+  while (written < sizeBytes) {
+    const remaining = sizeBytes - written;
+    const toWrite = remaining < chunkSize ? chunk.subarray(0, remaining) : chunk;
+
+    file.write(toWrite, { append: true });
+    written += toWrite.length;
+  }
+
+  return file;
 }

@@ -18,6 +18,9 @@ import {
   TEST_DURATION_LABEL,
   startGroup,
   endGroup,
+  createUploadServer,
+  UPLOAD_SERVER_PORT,
+  setupAdbReverse,
 } from './lib/e2e-common';
 
 const APP_ID = 'dev.expo.payments';
@@ -51,27 +54,39 @@ const __dirname = dirname(__filename);
           `No connected Android device found. In CI, it should be started via the 'Use Android Emulator' action.`
         );
       }
-      const e2eDir = path.join(projectRoot, 'e2e');
-      await runCustomMaestroFlowsAsync(e2eDir, 'android', (maestroFlowFilePath) =>
-        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
-      );
 
-      const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
-        appId: APP_ID,
-        e2eDir,
-        confirmFirstRunPromptIOS: false,
+      const uploadServer = createUploadServer();
+      await new Promise<void>((resolve, reject) => {
+        uploadServer.listen(UPLOAD_SERVER_PORT, resolve).on('error', reject);
       });
+      console.log(`Upload server listening on http://localhost:${UPLOAD_SERVER_PORT}`);
+      await setupAdbReverse(adbPath, deviceId);
 
-      await retryAsync((retryNumber) => {
-        console.log(`Native modules test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(
-          maestroNativeModulesFlowFilePath,
-          deviceId,
-          appBinaryPath,
-          adbPath,
-          e2eDir
+      try {
+        const e2eDir = path.join(projectRoot, 'e2e');
+        await runCustomMaestroFlowsAsync(e2eDir, 'android', (maestroFlowFilePath) =>
+          testAsync(maestroFlowFilePath, deviceId, appBinaryPath, adbPath, e2eDir)
         );
-      }, NUM_OF_RETRIES);
+
+        const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
+          appId: APP_ID,
+          e2eDir,
+          confirmFirstRunPromptIOS: false,
+        });
+
+        await retryAsync((retryNumber) => {
+          console.log(`Native modules test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
+          return testAsync(
+            maestroNativeModulesFlowFilePath,
+            deviceId,
+            appBinaryPath,
+            adbPath,
+            e2eDir
+          );
+        }, NUM_OF_RETRIES);
+      } finally {
+        await new Promise((resolve) => uploadServer.close(resolve));
+      }
     }
   } catch (e) {
     console.error('Uncaught Error', e);

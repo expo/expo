@@ -1,5 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import * as fs from 'fs/promises';
+import * as http from 'http';
 import * as path from 'path';
 const MAESTRO_DRIVER_STARTUP_TIMEOUT = String(180_000);
 const MAESTRO_CLI_NO_ANALYTICS = '1';
@@ -221,4 +222,44 @@ export function endGroup() {
   if (process.env.CI) {
     console.log('::endgroup::');
   }
+}
+
+export const UPLOAD_SERVER_PORT = 3000;
+
+export function createUploadServer(): http.Server {
+  return http.createServer((req, res) => {
+    if (req.method !== 'PUT' && req.method !== 'POST') {
+      res.statusCode = 405;
+      return res.end('Only PUT and POST supported\n');
+    }
+
+    let totalBytes = 0;
+
+    req.on('data', (chunk: Buffer) => {
+      totalBytes += chunk.length;
+    });
+
+    req.on('end', () => {
+      console.log(`Upload complete. Received ${totalBytes} bytes`);
+      res.statusCode = 200;
+      res.end(`Received ${totalBytes} bytes\n`);
+    });
+
+    req.on('error', (err) => {
+      console.error('Request error:', err);
+      res.statusCode = 500;
+      res.end('Request error\n');
+    });
+  });
+}
+
+export async function setupAdbReverse(adbPath: string, deviceId: string): Promise<void> {
+  console.log(`Setting up adb reverse for port ${UPLOAD_SERVER_PORT}`);
+  await spawnAsync(adbPath, [
+    '-s',
+    deviceId,
+    'reverse',
+    `tcp:${UPLOAD_SERVER_PORT}`,
+    `tcp:${UPLOAD_SERVER_PORT}`,
+  ]);
 }
