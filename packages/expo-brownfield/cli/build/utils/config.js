@@ -18,6 +18,7 @@ const resolveBuildConfigAndroid = (options) => {
 };
 exports.resolveBuildConfigAndroid = resolveBuildConfigAndroid;
 const resolveBuildConfigIos = (options) => {
+    console.log(options);
     let artifacts = options.artifacts || './artifacts';
     if (!node_path_1.default.isAbsolute(artifacts)) {
         artifacts = node_path_1.default.join(process.cwd(), artifacts);
@@ -26,17 +27,25 @@ const resolveBuildConfigIos = (options) => {
     const buildProductsPath = node_path_1.default.join(derivedDataPath, 'Build/Products');
     const buildConfiguration = resolveBuildConfiguration(options);
     const device = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
+    const scheme = resolveScheme(options);
     const simulator = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphonesimulator`);
     const hermesFrameworkPath = 'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
+    const packageName = options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
+    const output = options.package
+        ? {
+            packageName,
+        }
+        : 'frameworks';
     return {
         ...resolveCommonConfig(options),
         artifacts,
+        output,
         buildConfiguration,
         derivedDataPath,
         device,
         simulator,
         hermesFrameworkPath,
-        scheme: resolveScheme(options),
+        scheme,
         workspace: resolveWorkspace(options),
     };
 };

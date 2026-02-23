@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.printIosConfig = exports.makeArtifactsDirectory = exports.findWorkspace = exports.findScheme = exports.createXcframework = exports.copyHermesXcframework = exports.buildFramework = exports.cleanUpArtifacts = void 0;
+exports.printIosConfig = exports.makeArtifactsDirectory = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXcframework = exports.createSwiftPackage = exports.copyHermesXcframework = exports.buildFramework = exports.cleanUpArtifacts = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -20,10 +20,8 @@ const cleanUpArtifacts = async (config) => {
             if (!node_fs_1.default.existsSync(config.artifacts)) {
                 return;
             }
-            const xcframeworks = node_fs_1.default
-                .readdirSync(config.artifacts)
-                .filter((item) => item.endsWith('.xcframework'));
-            xcframeworks.forEach((item) => {
+            // TODO(pmleczek): Maybe remove whole directory
+            node_fs_1.default.readdirSync(config.artifacts).forEach((item) => {
                 const itemPath = `${config.artifacts}/${item}`;
                 node_fs_1.default.rmSync(itemPath, { recursive: true, force: true });
             });
@@ -63,8 +61,11 @@ const buildFramework = async (config) => {
 };
 exports.buildFramework = buildFramework;
 const copyHermesXcframework = async (config) => {
+    const destinationPath = config.output === 'frameworks'
+        ? `${config.artifacts}/hermesvm.xcframework`
+        : `${config.artifacts}/${config.output.packageName}/xcframeworks/hermesvm.xcframework`;
     if (config.dryRun) {
-        console.log(`Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${config.artifacts}/hermes.xcframework`);
+        console.log(`Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${destinationPath}`);
         return;
     }
     const sourcePath = `./ios/${config.hermesFrameworkPath}`;
@@ -72,7 +73,7 @@ const copyHermesXcframework = async (config) => {
         error_1.default.handle('ios-hermes-framework-not-found', sourcePath);
     }
     return (0, spinner_1.withSpinner)({
-        operation: async () => node_fs_1.default.cpSync(sourcePath, `${config.artifacts}/hermesvm.xcframework`, {
+        operation: async () => node_fs_1.default.promises.cp(sourcePath, destinationPath, {
             force: true,
             recursive: true,
         }),
@@ -83,7 +84,34 @@ const copyHermesXcframework = async (config) => {
     });
 };
 exports.copyHermesXcframework = copyHermesXcframework;
+const createSwiftPackage = async (config) => {
+    if (config.dryRun && config.output !== 'frameworks') {
+        console.log(`Creating Swift package with name: ${config.output.packageName} at path: ${config.artifacts}`);
+        return;
+    }
+    return (0, spinner_1.withSpinner)({
+        operation: async () => {
+            if (config.output === 'frameworks') {
+                return;
+            }
+            const packagePath = node_path_1.default.join(config.artifacts, config.output.packageName);
+            await node_fs_1.default.promises.mkdir(packagePath, { recursive: true });
+            // <package-name>/xcframeworks
+            const xcframeworksDir = node_path_1.default.join(packagePath, 'xcframeworks');
+            await node_fs_1.default.promises.mkdir(xcframeworksDir, { recursive: true });
+            await (0, exports.generatePackageMetadataFile)(config, packagePath);
+        },
+        loaderMessage: 'Creating Swift package...',
+        successMessage: 'Creating Swift package succeeded',
+        errorMessage: 'Creating Swift package failed',
+        verbose: config.verbose,
+    });
+};
+exports.createSwiftPackage = createSwiftPackage;
 const createXcframework = async (config) => {
+    const output = config.output === 'frameworks'
+        ? `${config.artifacts}/${config.scheme}.xcframework`
+        : `${config.artifacts}/${config.output.packageName}/xcframeworks/${config.scheme}.xcframework`;
     const args = [
         '-create-xcframework',
         '-framework',
@@ -91,7 +119,7 @@ const createXcframework = async (config) => {
         '-framework',
         `${config.simulator}/${config.scheme}.framework`,
         '-output',
-        `${config.artifacts}/${config.scheme}.xcframework`,
+        output,
     ];
     if (config.dryRun) {
         console.log(`xcodebuild ${args.join(' ')}`);
@@ -150,6 +178,42 @@ const findWorkspace = () => {
     }
 };
 exports.findWorkspace = findWorkspace;
+// TODO(pmleczek): Add support for prebuilt RN frameworks in future PR
+const generatePackageMetadataFile = async (config, packagePath) => {
+    if (config.output === 'frameworks') {
+        return;
+    }
+    const xcframeworks = [
+        { name: config.scheme, targets: [config.scheme] },
+        { name: 'hermesvm', targets: ['hermesvm'] },
+    ];
+    const contents = `// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "${config.output.packageName}",
+    platforms: [.iOS(.v15)],
+    products: [${xcframeworks
+        .map((xcf) => `
+        .library(
+          name: "${xcf.name}",
+          targets: ["${xcf.targets.join('", "')}"],
+        ),
+      `)
+        .join('\n')}],
+    targets: [${xcframeworks
+        .map((xcf) => `
+        .binaryTarget(
+          name: "${xcf.name}",
+          path: "xcframeworks/${xcf.name}.xcframework",
+        ),
+      `)
+        .join('\n')}]
+);
+`;
+    await node_fs_1.default.promises.writeFile(node_path_1.default.join(packagePath, 'Package.swift'), contents);
+};
+exports.generatePackageMetadataFile = generatePackageMetadataFile;
 const makeArtifactsDirectory = (config) => {
     try {
         if (!node_fs_1.default.existsSync(config.artifacts)) {

@@ -3,6 +3,7 @@ import type { Command } from 'commander';
 import {
   buildFramework,
   cleanUpArtifacts,
+  createSwiftPackage,
   createXcframework,
   copyHermesXcframework,
   makeArtifactsDirectory,
@@ -20,6 +21,7 @@ const buildIos = async (command: Command) => {
   await cleanUpArtifacts(config);
   makeArtifactsDirectory(config);
   await buildFramework(config);
+  await createSwiftPackage(config);
   await createXcframework(config);
   await copyHermesXcframework(config);
 };

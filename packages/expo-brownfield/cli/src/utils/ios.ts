@@ -19,10 +19,8 @@ export const cleanUpArtifacts = async (config: IosConfig) => {
         return;
       }
 
-      const xcframeworks = fs
-        .readdirSync(config.artifacts)
-        .filter((item) => item.endsWith('.xcframework'));
-      xcframeworks.forEach((item) => {
+      // TODO(pmleczek): Maybe remove whole directory
+      fs.readdirSync(config.artifacts).forEach((item) => {
         const itemPath = `${config.artifacts}/${item}`;
         fs.rmSync(itemPath, { recursive: true, force: true });
       });
@@ -64,9 +62,14 @@ export const buildFramework = async (config: IosConfig) => {
 };
 
 export const copyHermesXcframework = async (config: IosConfig) => {
+  const destinationPath =
+    config.output === 'frameworks'
+      ? `${config.artifacts}/hermesvm.xcframework`
+      : `${config.artifacts}/${config.output.packageName}/xcframeworks/hermesvm.xcframework`;
+
   if (config.dryRun) {
     console.log(
-      `Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${config.artifacts}/hermes.xcframework`
+      `Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${destinationPath}`
     );
     return;
   }
@@ -78,7 +81,7 @@ export const copyHermesXcframework = async (config: IosConfig) => {
 
   return withSpinner({
     operation: async () =>
-      fs.cpSync(sourcePath, `${config.artifacts}/hermesvm.xcframework`, {
+      fs.promises.cp(sourcePath, destinationPath, {
         force: true,
         recursive: true,
       }),
@@ -89,7 +92,42 @@ export const copyHermesXcframework = async (config: IosConfig) => {
   });
 };
 
+export const createSwiftPackage = async (config: IosConfig) => {
+  if (config.dryRun && config.output !== 'frameworks') {
+    console.log(
+      `Creating Swift package with name: ${config.output.packageName} at path: ${config.artifacts}`
+    );
+    return;
+  }
+
+  return withSpinner({
+    operation: async () => {
+      if (config.output === 'frameworks') {
+        return;
+      }
+
+      const packagePath = path.join(config.artifacts, config.output.packageName);
+      await fs.promises.mkdir(packagePath, { recursive: true });
+
+      // <package-name>/xcframeworks
+      const xcframeworksDir = path.join(packagePath, 'xcframeworks');
+      await fs.promises.mkdir(xcframeworksDir, { recursive: true });
+
+      await generatePackageMetadataFile(config, packagePath);
+    },
+    loaderMessage: 'Creating Swift package...',
+    successMessage: 'Creating Swift package succeeded',
+    errorMessage: 'Creating Swift package failed',
+    verbose: config.verbose,
+  });
+};
+
 export const createXcframework = async (config: IosConfig) => {
+  const output =
+    config.output === 'frameworks'
+      ? `${config.artifacts}/${config.scheme}.xcframework`
+      : `${config.artifacts}/${config.output.packageName}/xcframeworks/${config.scheme}.xcframework`;
+
   const args = [
     '-create-xcframework',
     '-framework',
@@ -97,7 +135,7 @@ export const createXcframework = async (config: IosConfig) => {
     '-framework',
     `${config.simulator}/${config.scheme}.framework`,
     '-output',
-    `${config.artifacts}/${config.scheme}.xcframework`,
+    output,
   ];
 
   if (config.dryRun) {
@@ -161,6 +199,49 @@ export const findWorkspace = (): string | undefined => {
     const errorMessage = error instanceof Error ? error.message : '';
     CLIError.handle('ios-workspace-unknown-error', errorMessage);
   }
+};
+
+// TODO(pmleczek): Add support for prebuilt RN frameworks in future PR
+export const generatePackageMetadataFile = async (config: IosConfig, packagePath: string) => {
+  if (config.output === 'frameworks') {
+    return;
+  }
+
+  const xcframeworks = [
+    { name: config.scheme, targets: [config.scheme] },
+    { name: 'hermesvm', targets: ['hermesvm'] },
+  ];
+
+  const contents = `// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "${config.output.packageName}",
+    platforms: [.iOS(.v15)],
+    products: [${xcframeworks
+      .map(
+        (xcf) => `
+        .library(
+          name: "${xcf.name}",
+          targets: ["${xcf.targets.join('", "')}"],
+        ),
+      `
+      )
+      .join('\n')}],
+    targets: [${xcframeworks
+      .map(
+        (xcf) => `
+        .binaryTarget(
+          name: "${xcf.name}",
+          path: "xcframeworks/${xcf.name}.xcframework",
+        ),
+      `
+      )
+      .join('\n')}]
+);
+`;
+
+  await fs.promises.writeFile(path.join(packagePath, 'Package.swift'), contents);
 };
 
 export const makeArtifactsDirectory = (config: IosConfig) => {
