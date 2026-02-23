@@ -1,6 +1,5 @@
-import { ExportedConfigWithProps } from '@expo/config-plugins';
 import { ExpoConfig } from 'expo/config';
-import { AndroidConfig, ConfigPlugin } from 'expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, ExportedConfigWithProps } from 'expo/config-plugins';
 import { NavigationBarBehavior, NavigationBarButtonStyle, NavigationBarPosition, NavigationBarVisibility } from 'expo-navigation-bar';
 export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
 export type Props = {

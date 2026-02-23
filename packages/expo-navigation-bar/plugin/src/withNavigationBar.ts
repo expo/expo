@@ -1,9 +1,9 @@
-import { ExportedConfigWithProps } from '@expo/config-plugins';
 import Debug from 'debug';
 import { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
   ConfigPlugin,
+  ExportedConfigWithProps,
   createRunOncePlugin,
   WarningAggregator,
   withAndroidStyles,
