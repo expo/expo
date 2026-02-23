@@ -1,13 +1,19 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-const config = getDefaultConfig(__dirname);
+const config = getDefaultConfig(process.cwd());
+
 const expoStubPath = path.resolve(__dirname, './bundle/expo-module-stub.ts');
 const reactStubPath = path.resolve(__dirname, './bundle/react-stub.ts');
 const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts');
 
 const buildConfig = {
   ...config,
+  projectRoot: __dirname,
+  watchFolders: [
+    ...config.watchFolders,
+    __dirname,
+  ],
   resolver: {
     ...config.resolver,
     resolveRequest(context, moduleName, platform) {
@@ -27,10 +33,7 @@ const buildConfig = {
   transformer: {
     ...config.transformer,
     getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: true,
-        inlineRequires: false,
-      },
+      transform: { experimentalImportSupport: true, inlineRequires: false },
     }),
   },
   serializer: {

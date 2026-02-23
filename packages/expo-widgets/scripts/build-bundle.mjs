@@ -55,6 +55,10 @@ const result = await spawn(
   {
     stdio: 'inherit',
     cwd: projectRoot,
+    env: {
+      ...process.env,
+      EXPO_OVERRIDE_METRO_CONFIG: path.join(__dirname, '../metro.config.js'),
+    },
   }
 );
 
