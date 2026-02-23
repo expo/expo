@@ -42,9 +42,6 @@ function resolveProps(config, props) {
     if ('position' in props) {
         config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.position', EDGE_TO_EDGE_DEPRECATION_MESSAGE);
     }
-    if ('legacyVisible' in props) {
-        config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.legacyVisible', 'property is deprecated in Android 11 (API 30) and will be removed from Expo SDK');
-    }
     return props;
 }
 /**

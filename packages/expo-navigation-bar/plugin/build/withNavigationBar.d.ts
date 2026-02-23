@@ -23,10 +23,6 @@ export type Props = {
      * @deprecated
      */
     position?: NavigationBarPosition;
-    /**
-     * @deprecated
-     */
-    legacyVisible?: NonNullable<NonNullable<ExpoConfig['androidNavigationBar']>['visible']>;
 };
 export declare function resolveProps(config: Pick<ExpoConfig, 'androidNavigationBar'>, props: Props | void): Props;
 /**

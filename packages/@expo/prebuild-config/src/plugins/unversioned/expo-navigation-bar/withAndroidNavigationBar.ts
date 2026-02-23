@@ -7,14 +7,10 @@ import {
 import { ExpoConfig } from '@expo/config-types';
 
 export const withNavigationBar: ConfigPlugin = (config) => {
-  const { androidNavigationBar = {} } = config;
-
-  if ('visible' in androidNavigationBar) {
-    // Immersive mode needs to be set programmatically
+  if ('androidNavigationBar' in config) {
     WarningAggregator.addWarningAndroid(
-      'androidNavigationBar.visible',
-      'Property is deprecated in Android 11 (API 30) and will be removed from Expo SDK.',
-      'https://expo.fyi/android-navigation-bar-visible-deprecated'
+      'androidNavigationBar',
+      'Property is deprecated. Use the `expo-navigation-bar` plugin configuration instead.'
     );
   }
 

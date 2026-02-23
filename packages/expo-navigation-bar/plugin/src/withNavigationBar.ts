@@ -43,10 +43,6 @@ export type Props = {
    * @deprecated
    */
   position?: NavigationBarPosition;
-  /**
-   * @deprecated
-   */
-  legacyVisible?: NonNullable<NonNullable<ExpoConfig['androidNavigationBar']>['visible']>;
 };
 
 const EDGE_TO_EDGE_DEPRECATION_MESSAGE =
@@ -101,12 +97,6 @@ export function resolveProps(
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar.position',
       EDGE_TO_EDGE_DEPRECATION_MESSAGE
-    );
-  }
-  if ('legacyVisible' in props) {
-    WarningAggregator.addWarningAndroid(
-      'androidNavigationBar.legacyVisible',
-      'property is deprecated in Android 11 (API 30) and will be removed from Expo SDK'
     );
   }
 
