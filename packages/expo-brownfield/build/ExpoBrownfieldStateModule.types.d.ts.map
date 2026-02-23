@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoBrownfieldStateModule.types.d.ts","sourceRoot":"","sources":["../src/ExpoBrownfieldStateModule.types.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,MAAM,CAAC;AAEzC,MAAM,CAAC,OAAO,OAAO,6BAA8B,SAAQ,YAAY;IACrE,cAAc,CAAC,GAAG,EAAE,MAAM,GAAG,GAAG;IAChC,iBAAiB,CAAC,GAAG,EAAE,MAAM,GAAG,IAAI;CACrC"}

@@ -12,7 +12,7 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
-version = '55.0.6'
+version = '55.0.7'
 
 def hasDevLauncher = findProject(":expo-dev-launcher") != null
 def configureInRelease = findProperty("expo.devmenu.configureInRelease") == "true"
@@ -29,7 +29,7 @@ android {
 
   defaultConfig {
     versionCode 10
-    versionName '55.0.6'
+    versionName '55.0.7'
   }
 
   buildTypes {

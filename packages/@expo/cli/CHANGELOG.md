@@ -8,9 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- Implement exponential retry for transient `devicectl` disconnects and fix null error logs. ([#43326](https://github.com/expo/expo/pull/43326) by [@balenamiaa](https://github.com/balenamiaa))
+
+### 💡 Others
+
+- Replace `minimatch` with `picomatch` and update ([#43323](https://github.com/expo/expo/pull/43323) by [@kitten](https://github.com/kitten))
+
+## 55.0.10 — 2026-02-20
+
 ### 💡 Others
 
 - Force `forceNodeFilesystemAPI` when watchman is enabled (the default) but not present ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+- Add `EXPO_NO_QR_CODE` env variable to disable QR code generation ([#43187](https://github.com/expo/expo/pull/43187) by [@cortinico](https://github.com/cortinico))
 
 ## 55.0.9 — 2026-02-16
 

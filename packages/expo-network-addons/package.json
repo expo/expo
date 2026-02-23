@@ -1,7 +1,7 @@
 {
   "name": "expo-network-addons",
   "title": "Expo Networking Addons",
-  "version": "55.0.6",
+  "version": "55.0.7",
   "description": "Expo module that provides extra functionalities for networking",
   "main": "build/index.js",
   "types": "build/index.d.ts",

@@ -10,9 +10,6 @@ const screen_1 = require("./screen");
 const toolbar_1 = require("./toolbar");
 const children_1 = require("../../utils/children");
 const Screen_1 = require("../../views/Screen");
-function extractBottomToolbars(children) {
-    return ((0, children_1.getAllChildrenOfType)(children, toolbar_1.StackToolbar).filter((child) => child.props.placement === 'bottom' || child.props.placement === undefined) ?? []);
-}
 /**
  * Component used to define a screen in a native stack navigator.
  *
@@ -58,14 +55,10 @@ exports.StackScreen = Object.assign(function StackScreen({ children, options, ..
     if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
         console.warn('Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.');
     }
-    const updatedOptions = (0, react_1.useMemo)(() => appendScreenStackPropsToOptions(typeof options === 'function' ? {} : (options ?? {}), {
-        children,
-    }), [options, children]);
-    const bottomToolbars = (0, react_1.useMemo)(() => extractBottomToolbars(children), [children]);
+    const ownOptions = (0, react_1.useMemo)(() => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})), [options]);
     return (<>
-        <Screen_1.Screen {...rest} options={updatedOptions}/>
-        {/* Bottom toolbar is a native component rendered separately */}
-        {bottomToolbars}
+        <Screen_1.Screen {...rest} options={ownOptions}/>
+        {children}
       </>);
 }, {
     Title: screen_1.StackScreenTitle,

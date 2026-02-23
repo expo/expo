@@ -2,8 +2,8 @@ import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React, { useMemo } from 'react';
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
+import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import { convertFontWeightToStringFontWeight } from '../../../utils/style';
-import { Screen } from '../../../views/Screen';
 
 export type StackScreenTitleProps = {
   /**
@@ -105,10 +105,31 @@ export type StackScreenTitleProps = {
  *   );
  * }
  * ```
+ *
+ * > **Note:** If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
  */
-export function StackScreenTitle(props: StackScreenTitleProps) {
-  const updatedOptions = useMemo(() => appendStackScreenTitlePropsToOptions({}, props), [props]);
-  return <Screen options={updatedOptions} />;
+export function StackScreenTitle({
+  children,
+  asChild,
+  style,
+  largeStyle,
+  large,
+}: StackScreenTitleProps) {
+  const options = useMemo(
+    () =>
+      appendStackScreenTitlePropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        { children, asChild, style, largeStyle, large } satisfies Record<
+          keyof StackScreenTitleProps,
+          unknown
+        >
+      ),
+    [children, asChild, style, largeStyle, large]
+  );
+  useCompositionOption(options);
+  return null;
 }
 
 export function appendStackScreenTitlePropsToOptions(

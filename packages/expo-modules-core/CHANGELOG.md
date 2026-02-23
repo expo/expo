@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `field.options.insert()` silently failing in `fieldsOf()` due to mutation on protocol existential. ([#43341](https://github.com/expo/expo/pull/43341) by [@just1and0](https://github.com/just1and0))
+
+### 💡 Others
+
+## 55.0.10 — 2026-02-20
+
+### 🐛 Bug fixes
+
 - [iOS] Fix crash from `PersistentFileLog`. ([#43283](https://github.com/expo/expo/pull/43283) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
@@ -53,7 +61,6 @@
 
 - [iOS] Fixed a crash in Fabric when unmounting a view while a geometry change event is being dispatched. ([#42628](https://github.com/expo/expo/issues/42628) by [@danishshaik](https://github.com/danishshaik)) ([#42634](https://github.com/expo/expo/pull/42634) by [@danishshaik](https://github.com/danishshaik))
 - [iOS] Fix crashes when converting a single JSValue into an Array. ([#42694](https://github.com/expo/expo/pull/42694) by [@behenate](https://github.com/behenate))
-
 - Added more Jetpack Compose support. ([#42734](https://github.com/expo/expo/pull/42734) by [@kudo](https://github.com/kudo))
 
 ## 55.0.5 — 2026-01-27

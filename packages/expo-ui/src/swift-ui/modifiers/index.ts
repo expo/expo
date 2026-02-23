@@ -390,6 +390,13 @@ export const bold = () => createModifier('bold', {});
 export const italic = () => createModifier('italic', {});
 
 /**
+ * Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.
+ * When applied to `Text`, modifies the text view's font to use fixed-width digits, while leaving other characters proportionally spaced.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/monospaceddigit()).
+ */
+export const monospacedDigit = () => createModifier('monospacedDigit', {});
+
+/**
  * Sets the tint color of a view.
  * @param color - The tint color (hex string). For example, `#FF0000`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/tint(_:)).
@@ -1003,6 +1010,7 @@ export type BuiltInModifier =
   | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof bold>
   | ReturnType<typeof italic>
+  | ReturnType<typeof monospacedDigit>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>

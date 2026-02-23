@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
-- [iOS] Added per-axis `scaleEffect` support (`{ x, y }`) to view modifiers. ([#43228](https://github.com/expo/expo/pull/43228) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `monospacedDigit` modifier. ([#43328](https://github.com/expo/expo/pull/43328) by [@axeelz](https://github.com/axeelz))
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0-preview.7 — 2026-02-20
+
+### 🎉 New features
+
+- [iOS] Added per-axis `scaleEffect` support (`{ x, y }`) to view modifiers. ([#43228](https://github.com/expo/expo/pull/43228) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 

@@ -13,6 +13,9 @@ on:
       - packages/**
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!packages/create-expo/**'
+      - '!packages/create-expo-nightly/**'
+      - '!packages/create-expo-module/**'
       - '!**.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
@@ -26,6 +29,9 @@ on:
       - packages/**
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!packages/create-expo/**'
+      - '!packages/create-expo-nightly/**'
+      - '!packages/create-expo-module/**'
       - '!**.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
@@ -63,6 +69,8 @@ jobs:
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/**",
+            "!packages/@expo/cli/**",
+            "!packages/{create-expo,create-expo-nightly,create-expo-module}/**",
             yarn.lock,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
@@ -152,13 +160,50 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+      - name: Setup ccache
+        run: |
+          brew install ccache
+
+          # In order to use ccache with Xcode, unlike on Android, we can't just change env variables - we need to change PATH.
+          MKDIR_PATH=$HOME/.ccache_bin
+          mkdir -p $MKDIR_PATH
+          ln -sf $(which ccache) $MKDIR_PATH/clang
+          ln -sf $(which ccache) $MKDIR_PATH/clang++
+          ln -sf $(which ccache) $MKDIR_PATH/cc
+          ln -sf $(which ccache) $MKDIR_PATH/c++
+          echo "$MKDIR_PATH" >> $GITHUB_PATH
+          echo "CC=$MKDIR_PATH/clang" >> $GITHUB_ENV
+          echo "CXX=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+          echo "LD=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+          echo "LDPLUSPLUS=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+
+          # By default ccache includes mtime of a compiler in hashes, for each CI run mtime varies.
+          echo "CCACHE_COMPILERCHECK=content" >> $GITHUB_ENV
+
+          # It must be the same as in .github/actions/expo-caches/action.yml
+          echo "CCACHE_DIR=${{ runner.temp }}/.ccache" >> $GITHUB_ENV
+
+          # Sloppiness options disable some of the ccache checks to increase hit rate.
+          # We exclude ctime and mtime so the cache is hit based on file content.
+          # time_macros might help if in included modules there are macros like __TIME__ which would trigger a cache miss.
+          # modules, clang_index_store, system_headers, and ivfsoverlay are Xcode-specific options.
+          echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,modules,clang_index_store,system_headers,ivfsoverlay" >> $GITHUB_ENV
+
+          # Speeds up the process on cache misses by skipping the preprocessing step.
+          echo "CCACHE_DEPEND=true" >> $GITHUB_ENV
+
+          # Speeds up copying files on cache hits; natively supported by macOS APFS.
+          echo "CCACHE_FILECLONE=true" >> $GITHUB_ENV
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          ccache: 'true'
           yarn-workspace: 'true'
           yarn-tools: 'true'
           bare-expo-pods: 'true'
+      - name: Reset ccache stats
+        run: ccache -z
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
       - name: 🕵️ Debug CocoaPods lockfiles
@@ -205,6 +250,8 @@ jobs:
             ./scripts/start-ios-e2e-test.ts --build
           build-output: apps/bare-expo/ios/build/BareExpo.app
           artifact-name: bare-expo-ios-builds
+      - name: Show ccache stats
+        run: ccache -s -v
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -340,16 +387,45 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: Install ccache
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ccache
+      - name: Configure ccache
+        run: |
+          # It must be the same as in .github/actions/expo-caches/action.yml 
+          echo "CCACHE_DIR=${{ runner.temp }}/.ccache" >> $GITHUB_ENV
+
+          # By default ccache includes mtime of a compiler in hashes, for each CI run mtime varies.
+          echo "CCACHE_COMPILERCHECK=content" >> $GITHUB_ENV
+
+          # Calculate hash based on a relative path - this prevents cache misses when an absolute path changes.
+          echo "CCACHE_BASEDIR=${{ github.workspace }}" >> $GITHUB_ENV
+
+          # Default is 5GB, this cache takes only ~300MB.
+          echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+
+          # Sloppiness options disable some of the ccache checks to increase hit rate. 
+          # In our case we exclude ctime and mtime so cache is hit based on file content. 
+          # time_macros might help if in included modules there are macros like __TIME__ which would trigger a cache miss.
+          echo "CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime,time_macros" >> $GITHUB_ENV
+
+          # Replaces compiler with ccache 
+          echo "CMAKE_C_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
+          echo "CMAKE_CXX_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          ccache: 'true'
           gradle: 'true'
           yarn-workspace: 'true'
           yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
+      - name: Reset ccache stats
+        run: ccache -z
       - name: 🧶 Install workspace node modules
         run: yarn install --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
@@ -392,6 +468,8 @@ jobs:
             ./scripts/start-android-e2e-test.ts --build
           build-output: apps/bare-expo/android/app/build/outputs/apk/release
           artifact-name: bare-expo-android-builds
+      - name: Show ccache stats
+        run: ccache -s -v
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))

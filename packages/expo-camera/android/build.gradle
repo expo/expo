@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '55.0.6'
+version = '55.0.7'
 
 def barcodeScannerEnabled = findProperty('expo.camera.barcode-scanner-enabled')
 def isBarcodeScannerEnabled = (barcodeScannerEnabled ?: "true").toString() != "false"
@@ -13,7 +13,7 @@ android {
   namespace "expo.modules.camera"
   defaultConfig {
     versionCode 32
-    versionName "55.0.6"
+    versionName "55.0.7"
   }
 }
 

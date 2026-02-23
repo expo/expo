@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "55.0.0-alpha.7",
+  "version": "55.0.0-alpha.8",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -35,7 +35,7 @@
     "@expo/config-plugins": "~55.0.5",
     "@expo/config-types": "^55.0.4",
     "@expo/plist": "^0.5.2",
-    "@expo/ui": "55.0.0-preview.6"
+    "@expo/ui": "55.0.0-preview.7"
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2"

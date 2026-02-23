@@ -51,7 +51,7 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
+          yarn-workspace: "true"
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
       - name: Get the base commit
@@ -66,6 +66,7 @@ jobs:
           working-directory: apps/bare-expo
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
           fingerprint-db-cache-path: .fingerprint.db
+          fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
 
       - name: 👀 Debug fingerprint
         run: |
@@ -125,7 +126,7 @@ jobs:
         id: old_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'expo-bot'
+          comment-author: "expo-bot"
           body-includes: <!-- pr-labeler comment -->
       - name: 💬 Add comment with fingerprint
         if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id == '' }}
@@ -133,9 +134,11 @@ jobs:
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
-            const diff = JSON.stringify(${{ steps.fingerprint.outputs.fingerprint-diff}}, null, 2);
+            const fs = require('fs');
+            const state = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/fingerprint-state.json', 'utf8'));
+            const diff = JSON.stringify(state.diff, null, 2);
             const body = `<!-- pr-labeler comment -->
-            The Pull Request introduced fingerprint changes against the base commit: ${{ steps.fingerprint.outputs.previous-git-commit }}
+            The Pull Request introduced fingerprint changes against the base commit: ${state.previousGitCommitHash}
             <details><summary>Fingerprint diff</summary>
 
             \`\`\`json
@@ -160,9 +163,11 @@ jobs:
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
-            const diff = JSON.stringify(${{ steps.fingerprint.outputs.fingerprint-diff}}, null, 2);
+            const fs = require('fs');
+            const state = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + '/fingerprint-state.json', 'utf8'));
+            const diff = JSON.stringify(state.diff, null, 2);
             const body = `<!-- pr-labeler comment -->
-            The Pull Request introduced fingerprint changes against the base commit: ${{ steps.fingerprint.outputs.previous-git-commit }}
+            The Pull Request introduced fingerprint changes against the base commit: ${state.previousGitCommitHash}
             <details><summary>Fingerprint diff</summary>
 
             \`\`\`json

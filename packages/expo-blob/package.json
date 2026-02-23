@@ -1,6 +1,6 @@
 {
   "name": "expo-blob",
-  "version": "55.0.6",
+  "version": "55.0.7",
   "description": "Provides a Blob implementation for handling binary data across platforms, with web API compatibility for creating, reading, and manipulating binary objects.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

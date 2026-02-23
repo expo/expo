@@ -6,13 +6,27 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- fix stack composition options in link preview ([#43334](https://github.com/expo/expo/pull/43334) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+## 55.0.0-preview.9 — 2026-02-20
+
+### 🎉 New features
+
 - [ios] add support for renderingMode of xcassets in header items and bottom tabs ([#43185](https://github.com/expo/expo/pull/43185) by [@Ubax](https://github.com/Ubax))
+- use scoped dynamic options in stack ([#43184](https://github.com/expo/expo/pull/43184) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 - [ios] fix gestureEnabled: false when using zoom transition ([#43202](https://github.com/expo/expo/pull/43202) by [@Ubax](https://github.com/Ubax))
+- [web] fix Stack.Screen in expo modal ([#43188](https://github.com/expo/expo/pull/43188) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
+
+- extract usePreviewTransition from NativeStackNavigator ([#43182](https://github.com/expo/expo/pull/43182) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.0-preview.8 — 2026-02-16
 

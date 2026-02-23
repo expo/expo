@@ -216,6 +216,34 @@ async function installAppWithDeviceCtlAsync(
   bundleIdOrAppPath: string,
   onProgress: (event: { status: string; isComplete: boolean; progress: number }) => void
 ): Promise<void> {
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await installAppWithDeviceCtlInternalAsync(uuid, bundleIdOrAppPath, onProgress, attempt);
+      return;
+    } catch (error: any) {
+      if (error.code === 'detached') {
+        throw error;
+      }
+      const isTransientDisconnect =
+        error.message &&
+        (error.message.includes('CoreDeviceError') || error.message.includes('0xFA0'));
+
+      if (!isTransientDisconnect || attempt === maxAttempts) {
+        throw error;
+      }
+      const backoffDelay = 500 + Math.pow(2, attempt - 1) * 500;
+      await new Promise((resolve) => setTimeout(resolve, backoffDelay));
+    }
+  }
+}
+
+async function installAppWithDeviceCtlInternalAsync(
+  uuid: string,
+  bundleIdOrAppPath: string,
+  onProgress: (event: { status: string; isComplete: boolean; progress: number }) => void,
+  attempt: number
+): Promise<void> {
   // 𝝠 xcrun devicectl device install app --device 00001110-001111110110101A /Users/evanbacon/Library/Developer/Xcode/DerivedData/Router-hgbqaxzhrhkiftfweydvhgttadvn/Build/Products/Debug-iphoneos/Router.app --verbose
   return new Promise((resolve, reject) => {
     const args: string[] = [
@@ -239,10 +267,11 @@ async function installAppWithDeviceCtlAsync(
         return;
       }
       currentProgress = progress;
+      const statusPrefix = attempt > 1 ? `Installing (attempt ${attempt})` : 'Installing';
       onProgress({
         progress,
         isComplete: progress === 100,
-        status: 'Installing',
+        status: statusPrefix,
       });
     }
 
@@ -271,13 +300,17 @@ async function installAppWithDeviceCtlAsync(
       debug('[stdout]:', strings);
     });
 
+    let stderrBuffer = '';
+    childProcess.stderr.on('data', (data: Buffer) => {
+      stderrBuffer += data.toString();
+    });
+
     childProcess.on('close', (code) => {
       debug('[close]: ' + code);
       if (code === 0) {
         resolve();
       } else {
-        const stderr = childProcess.stderr.read();
-        const err = new Error(stderr);
+        const err = new Error(stderrBuffer || `Command failed with exit code ${code}`);
         (err as any).code = code;
         detach(err);
       }
@@ -287,9 +320,8 @@ async function installAppWithDeviceCtlAsync(
       off?.();
       if (childProcess) {
         return new Promise<void>((resolve) => {
-          childProcess?.on('close', resolve);
+          childProcess?.on('close', () => resolve());
           childProcess?.kill();
-          // childProcess = null;
           reject(err ?? new CommandError('detached'));
         });
       }
