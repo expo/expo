@@ -12,13 +12,6 @@ function _configPlugins() {
   };
   return data;
 }
-function _withEnforceNavigationBarContrast() {
-  const data = require("./withEnforceNavigationBarContrast");
-  _withEnforceNavigationBarContrast = function () {
-    return data;
-  };
-  return data;
-}
 function _withRestoreDefaultTheme() {
   const data = require("./withRestoreDefaultTheme");
   _withRestoreDefaultTheme = function () {
@@ -35,7 +28,6 @@ function applyEdgeToEdge(config) {
   if ('edgeToEdgeEnabled' in (config.android ?? {})) {
     _configPlugins().WarningAggregator.addWarningAndroid(TAG, '`edgeToEdgeEnabled` customization is no longer available - Android 16 makes edge-to-edge mandatory. Remove the `edgeToEdgeEnabled` entry from your app.json/app.config.js.');
   }
-  config = (0, _withEnforceNavigationBarContrast().withEnforceNavigationBarContrast)(config, config.androidNavigationBar?.enforceContrast !== false);
 
   // We always restore the default theme in case the project has a leftover react-native-edge-to-edge theme from SDK 53.
   // If they are using react-native-edge-to-edge config plugin it'll be reapplied later.

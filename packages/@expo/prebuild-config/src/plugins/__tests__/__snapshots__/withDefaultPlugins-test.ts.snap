@@ -488,12 +488,6 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
-                  "name": "colorPrimaryDark",
-                },
-                "_": "#000FFF",
-              },
-              {
-                "$": {
                   "name": "navigationBarColor",
                 },
                 "_": "#ff0000",
@@ -1065,13 +1059,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "parent": "Theme.AppCompat.DayNight.NoActionBar",
                 },
                 "item": [
-                  {
-                    "$": {
-                      "name": "android:enforceNavigationBarContrast",
-                      "tools:targetApi": "29",
-                    },
-                    "_": "true",
-                  },
                   {
                     "$": {
                       "name": "android:editTextBackground",
@@ -1675,12 +1662,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   "name": "colorPrimary",
                 },
                 "_": "#fff000",
-              },
-              {
-                "$": {
-                  "name": "colorPrimaryDark",
-                },
-                "_": "#000FFF",
               },
               {
                 "$": {

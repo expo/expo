@@ -93,7 +93,7 @@ export interface ExpoConfig {
     };
     /**
      * Configuration for the bottom navigation bar on Android. Can be used to configure the `expo-navigation-bar` module in EAS Build.
-     * @deprecated Use the `expo-navigation-bar` module configuration instead
+     * @deprecated Use the `expo-navigation-bar` plugin configuration instead
      */
     androidNavigationBar?: {
         /**

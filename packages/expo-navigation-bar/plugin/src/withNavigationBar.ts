@@ -1,27 +1,32 @@
+import { ExportedConfigWithProps } from '@expo/config-plugins';
 import Debug from 'debug';
 import { ExpoConfig } from 'expo/config';
 import {
+  AndroidConfig,
   ConfigPlugin,
   createRunOncePlugin,
-  AndroidConfig,
-  withStringsXml,
-  withAndroidStyles,
   WarningAggregator,
+  withAndroidStyles,
+  withStringsXml,
 } from 'expo/config-plugins';
 import {
-  NavigationBarVisibility,
   NavigationBarBehavior,
-  NavigationBarPosition,
   NavigationBarButtonStyle,
+  NavigationBarPosition,
+  NavigationBarVisibility,
 } from 'expo-navigation-bar';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
 const pkg = require('expo-navigation-bar/package.json');
 
+export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
+
 export type Props = {
+  enforceContrast?: boolean;
   barStyle?: NavigationBarButtonStyle | null;
   visibility?: NavigationBarVisibility;
+
   /**
    * @deprecated
    */
@@ -64,38 +69,41 @@ export function resolveProps(
   props: Props | void
 ): Props {
   if (!props) {
+    const { androidNavigationBar } = config;
+
     return {
-      barStyle: config.androidNavigationBar?.barStyle
-        ? LEGACY_BAR_STYLE_MAP[config.androidNavigationBar?.barStyle]
+      enforceContrast: androidNavigationBar?.enforceContrast,
+      barStyle: androidNavigationBar?.barStyle
+        ? LEGACY_BAR_STYLE_MAP[androidNavigationBar?.barStyle]
         : undefined,
     };
   }
 
-  if (props.backgroundColor != null) {
+  if ('backgroundColor' in props) {
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar.backgroundColor',
       EDGE_TO_EDGE_DEPRECATION_MESSAGE
     );
   }
-  if (props.behavior != null) {
+  if ('behavior' in props) {
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar.behavior',
       EDGE_TO_EDGE_DEPRECATION_MESSAGE
     );
   }
-  if (props.borderColor != null) {
+  if ('borderColor' in props) {
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar.borderColor',
       EDGE_TO_EDGE_DEPRECATION_MESSAGE
     );
   }
-  if (props.position != null) {
+  if ('position' in props) {
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar.position',
       EDGE_TO_EDGE_DEPRECATION_MESSAGE
     );
   }
-  if (props.legacyVisible != null) {
+  if ('legacyVisible' in props) {
     WarningAggregator.addWarningAndroid(
       'androidNavigationBar.legacyVisible',
       'property is deprecated in Android 11 (API 30) and will be removed from Expo SDK'
@@ -169,7 +177,7 @@ export function setStrings(
 const withNavigationBarStyles: ConfigPlugin<Props> = (config, props) => {
   return withAndroidStyles(config, (config) => {
     config.modResults = setNavigationBarStyles(props, config.modResults);
-    return config;
+    return applyEnforceNavigationBarContrast(config, props.enforceContrast !== false);
   });
 };
 
@@ -187,6 +195,42 @@ export function setNavigationBarStyles(
   });
 
   return styles;
+}
+
+export function applyEnforceNavigationBarContrast(
+  config: ResourceXMLConfig,
+  enforceNavigationBarContrast: boolean
+): ResourceXMLConfig {
+  const enforceNavigationBarContrastItem = {
+    _: enforceNavigationBarContrast ? 'true' : 'false',
+    $: {
+      name: 'android:enforceNavigationBarContrast',
+      'tools:targetApi': '29',
+    },
+  };
+  const { style = [] } = config.modResults.resources;
+  const mainThemeIndex = style.findIndex(({ $ }) => $.name === 'AppTheme');
+  if (mainThemeIndex === -1) {
+    return config;
+  }
+  const mainTheme = style[mainThemeIndex];
+  const enforceIndex = mainTheme.item.findIndex(
+    ({ $ }) => $.name === 'android:enforceNavigationBarContrast'
+  );
+  if (enforceIndex !== -1) {
+    style[mainThemeIndex].item[enforceIndex] = enforceNavigationBarContrastItem;
+    return config;
+  }
+
+  config.modResults.resources.style = [
+    {
+      $: style[mainThemeIndex].$,
+      item: [enforceNavigationBarContrastItem, ...mainTheme.item],
+    },
+    ...style.filter(({ $ }) => $.name !== 'AppTheme'),
+  ];
+
+  return config;
 }
 
 export default createRunOncePlugin(withNavigationBar, pkg.name, pkg.version);

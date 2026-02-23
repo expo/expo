@@ -1,7 +1,10 @@
+import { ExportedConfigWithProps } from '@expo/config-plugins';
 import { ExpoConfig } from 'expo/config';
-import { ConfigPlugin, AndroidConfig } from 'expo/config-plugins';
-import { NavigationBarVisibility, NavigationBarBehavior, NavigationBarPosition, NavigationBarButtonStyle } from 'expo-navigation-bar';
+import { AndroidConfig, ConfigPlugin } from 'expo/config-plugins';
+import { NavigationBarBehavior, NavigationBarButtonStyle, NavigationBarPosition, NavigationBarVisibility } from 'expo-navigation-bar';
+export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
 export type Props = {
+    enforceContrast?: boolean;
     barStyle?: NavigationBarButtonStyle | null;
     visibility?: NavigationBarVisibility;
     /**
@@ -33,5 +36,6 @@ export declare function resolveProps(config: Pick<ExpoConfig, 'androidNavigation
 export declare const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<Props>;
 export declare function setStrings(strings: AndroidConfig.Resources.ResourceXML, { visibility }: Props): AndroidConfig.Resources.ResourceXML;
 export declare function setNavigationBarStyles({ barStyle }: Props, styles: AndroidConfig.Resources.ResourceXML): AndroidConfig.Resources.ResourceXML;
+export declare function applyEnforceNavigationBarContrast(config: ResourceXMLConfig, enforceNavigationBarContrast: boolean): ResourceXMLConfig;
 declare const _default: ConfigPlugin<void | Props>;
 export default _default;
