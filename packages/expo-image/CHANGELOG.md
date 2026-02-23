@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed compilation errors in Xcode 26.4 Beta 1
+- [iOS] Fixed compilation errors in Xcode 26.4 Beta 1 ([#43346](https://github.com/expo/expo/pull/43346) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
