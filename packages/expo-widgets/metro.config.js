@@ -39,7 +39,7 @@ const buildConfig = {
   transformer: {
     ...config.transformer,
     getTransformOptions: async () => ({
-      transform: { experimentalImportSupport: true, inlineRequires: false },
+      transform: { experimentalImportSupport: false, inlineRequires: false },
     }),
   },
   serializer: {
