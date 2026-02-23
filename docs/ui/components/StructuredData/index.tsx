@@ -1,11 +1,11 @@
 import Head from 'next/head';
 
-type StructuredDataProps = {
+export type StructuredDataProps = {
   data: Record<string, any>;
-  id?: string;
+  id: string;
 };
 
-export function StructuredData({ data, id = 'data-structured' }: StructuredDataProps) {
+export function StructuredData({ data, id }: StructuredDataProps) {
   return (
     <Head>
       <script
