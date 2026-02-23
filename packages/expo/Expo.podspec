@@ -49,6 +49,9 @@ Pod::Spec.new do |s|
   # Otherwise, `pod install` would fail because it's not linkable by the community CLI.
   if defined?(use_expo_modules!)
     s.dependency 'ExpoModulesCore'
+    # expo-file-system is always present at runtime (it's a direct dependency of the expo package).
+    # This gives us type-safe access to FileSystemFile without adding a new runtime dependency.
+    s.dependency 'ExpoFileSystem'
   elsif !$expo_warned_about_missing_autolinking
     puts <<~EOS
 

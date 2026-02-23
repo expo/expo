@@ -3,7 +3,7 @@ import ExpoModulesCore
 import CryptoKit
 import UniformTypeIdentifiers
 
-internal final class FileSystemFile: FileSystemPath {
+public final class FileSystemFile: FileSystemPath {
   init(url: URL) {
     super.init(url: url, isDirectory: false)
   }

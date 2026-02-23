@@ -1,3 +1,5 @@
+import { File } from 'expo-file-system';
+
 import { ExpoFetchModule } from './ExpoFetchModule';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
@@ -13,6 +15,13 @@ import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
 /** Returns if `input` is a Request object */
 const isRequest = (input: any): input is FetchRequestLike =>
   input != null && typeof input === 'object' && 'body' in input;
+
+/** Returns if `body` is a expo-file-system File */
+const isFileSharedObject = (body: any): body is File =>
+  body instanceof File &&
+  typeof body.uri === 'string' &&
+  (body.uri.startsWith('file://') || body.uri.startsWith('content://')) &&
+  typeof body.type === 'string';
 
 // TODO(@kitten): Do we really want to use our own types for web standards?
 export async function fetch(
@@ -39,9 +48,18 @@ export async function fetch(
 
   const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
-  const { body: requestBody, overriddenHeaders } = await normalizeBodyInitAsync(body);
-  if (overriddenHeaders) {
-    headers = overrideHeaders(headers, overriddenHeaders);
+  let requestBody: Uint8Array | null = null;
+  let fileObject: File | null = null;
+
+  if (isFileSharedObject(body)) {
+    fileObject = body;
+    headers = overrideHeaders(headers, [['Content-Type', body.type]]);
+  } else {
+    const { body: normalizedBody, overriddenHeaders } = await normalizeBodyInitAsync(body);
+    requestBody = normalizedBody;
+    if (overriddenHeaders) {
+      headers = overrideHeaders(headers, overriddenHeaders);
+    }
   }
 
   const nativeRequestInit: NativeRequestInit = {
@@ -58,7 +76,11 @@ export async function fetch(
     request.cancel();
   });
   try {
-    await request.start(`${url}`, nativeRequestInit, requestBody);
+    if (fileObject != null) {
+      await request.startWithFile(`${url}`, nativeRequestInit, fileObject);
+    } else {
+      await request.start(`${url}`, nativeRequestInit, requestBody);
+    }
   } catch (e: unknown) {
     if (e instanceof Error) {
       throw FetchError.createFromError(e);

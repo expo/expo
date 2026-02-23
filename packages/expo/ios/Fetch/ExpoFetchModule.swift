@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 @preconcurrency import ExpoModulesCore
+import ExpoFileSystem
 
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
 nonisolated(unsafe) internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
@@ -83,6 +84,23 @@ public final class ExpoFetchModule: Module {
           url: url,
           requestInit: requestInit,
           requestBody: requestBody
+        )
+        request.response.waitFor(states: [.responseReceived, .errorReceived]) { state in
+          if state == .responseReceived {
+            promise.resolve()
+          } else if state == .errorReceived {
+            promise.reject(request.response.error ?? FetchUnknownException())
+          }
+        }
+      }.runOnQueue(fetchRequestQueue)
+
+      AsyncFunction("startWithFile") { (request: NativeRequest, url: URL, requestInit: NativeRequestInit, file: FileSystemFile, promise: Promise) in
+        request.startWithFile(
+          urlSession: urlSession,
+          urlSessionDelegate: urlSessionDelegate,
+          url: url,
+          requestInit: requestInit,
+          file: file
         )
         request.response.waitFor(states: [.responseReceived, .errorReceived]) { state in
           if state == .responseReceived {

@@ -8,6 +8,7 @@ import com.facebook.react.modules.network.CookieJarContainer
 import com.facebook.react.modules.network.ForwardingCookieHandler
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.core.errors.ModuleDestroyedException
+import expo.modules.filesystem.FileSystemFile
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
@@ -124,6 +125,27 @@ class ExpoFetchModule : Module() {
           requestBody: ByteArray?,
           promise: Promise ->
         request.start(client, url, requestInit, requestBody)
+        request.response.waitForStates(
+          listOf(
+            ResponseState.RESPONSE_RECEIVED,
+            ResponseState.ERROR_RECEIVED
+          )
+        ) { state ->
+          if (state == ResponseState.RESPONSE_RECEIVED) {
+            promise.resolve()
+          } else if (state == ResponseState.ERROR_RECEIVED) {
+            promise.reject(request.response.error?.toCodedException() ?: FetchUnknownException())
+          }
+        }
+      }
+
+      AsyncFunction("startWithFile") {
+          request: NativeRequest,
+          url: URL,
+          requestInit: NativeRequestInit,
+          file: FileSystemFile,
+          promise: Promise ->
+        request.startWithFile(client, url, requestInit, file)
         request.response.waitForStates(
           listOf(
             ResponseState.RESPONSE_RECEIVED,

@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoFileSystem
 
 /**
  A SharedObject for request.
@@ -28,6 +29,23 @@ internal final class NativeRequest: SharedObject, @unchecked Sendable {
       url: url,
       requestInit: requestInit,
       requestBody: requestBody
+    )
+  }
+
+  func startWithFile(
+    urlSession: URLSession,
+    urlSessionDelegate: URLSessionSessionDelegateProxy,
+    url: URL,
+    requestInit: NativeRequestInit,
+    file: FileSystemFile
+  ) {
+    self.response.redirectMode = requestInit.redirect
+    self.task.startWithFile(
+      urlSession: urlSession,
+      urlSessionDelegate: urlSessionDelegate,
+      url: url,
+      requestInit: requestInit,
+      fileURL: file.url
     )
   }
 

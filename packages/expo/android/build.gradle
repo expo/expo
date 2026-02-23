@@ -76,6 +76,9 @@ android {
 
 dependencies { dependencyHandler ->
   implementation 'com.facebook.react:react-android'
+  // expo-file-system is always present at runtime (it's a direct dependency of the expo package).
+  // compileOnly gives us type-safe access to FileSystemPath without adding a runtime dependency.
+  compileOnly project(':expo-file-system')
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.13.5'

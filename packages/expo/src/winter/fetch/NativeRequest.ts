@@ -1,3 +1,4 @@
+import type { File } from 'expo-file-system';
 import type { SharedObject } from 'expo-modules-core';
 
 export type NativeHeadersType = [string, string][];
@@ -7,6 +8,11 @@ export declare class NativeRequest extends SharedObject {
     url: string,
     requestInit: NativeRequestInit,
     requestBody: Uint8Array | null
+  ): Promise<NativeResponse>;
+  public startWithFile(
+    url: string,
+    requestInit: NativeRequestInit,
+    file: File
   ): Promise<NativeResponse>;
   public cancel(): void;
 }

@@ -1,8 +1,8 @@
 import Foundation
 import ExpoModulesCore
 
-internal class FileSystemPath: SharedObject {
-  var url: URL
+public class FileSystemPath: SharedObject {
+  public internal(set) var url: URL
 
   func validateType() throws {
     throw NotImplementedException()

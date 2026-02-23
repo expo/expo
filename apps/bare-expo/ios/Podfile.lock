@@ -39,6 +39,7 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
   - Expo (55.0.0-preview.11):
+    - ExpoFileSystem
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -298,6 +299,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - Expo/Tests (55.0.0-preview.11):
+    - ExpoFileSystem
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -3809,7 +3811,7 @@ SPEC CHECKSUMS:
   EXConstants: 40afe5fffcac91a0fe4b82477cde7d39a0830ca0
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 92680b709d89368c8ef752d893d15168c800a0c3
-  Expo: 5177a9fb7725c6da7b91bf3c75e9993293d707eb
+  Expo: 5a15e40074a785c1f09e7173245e193fd931f36a
   expo-dev-client: 9c1da5d562fe12443ca87b597e08be24a480c510
   expo-dev-launcher: 0de12037ac0a789b5f8f52a915b758cbe0826737
   expo-dev-menu: 11c09553c731519aa53443a173f151e867c7229c
