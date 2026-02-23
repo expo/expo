@@ -35,6 +35,7 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
       [
         "expo-navigation-bar",
         {
+          "enforceContrast": true,
           "barStyle": "light",
           "visibility": "visible"
         }
@@ -49,16 +50,16 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
 <ConfigPluginProperties
   properties={[
     {
-      name: 'barStyle',
-      description:
-        'Controls whether Android renders light or dark navigation bar buttons. Accepts `light` and `dark` as values.',
-      default: 'undefined',
-    },
-    {
       name: 'enforceContrast',
       description:
         'Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content.',
       default: 'true',
+    },
+    {
+      name: 'barStyle',
+      description:
+        'Controls whether Android renders light or dark navigation bar buttons. Accepts `light` and `dark` as values.',
+      default: 'undefined',
     },
     {
       name: 'visibility',
@@ -66,7 +67,8 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
         'Determines whether the navigation bar starts visible or hidden. Accepts `visible` to show the bar immediately and `hidden` to hide it until the user reveals it with a system gesture.',
       default: 'undefined',
     },
-  ]}
+
+]}
 />
 
 <ConfigReactNative>
