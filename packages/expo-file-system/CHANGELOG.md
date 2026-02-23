@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- expo/fetch: streaming upload of FileSystem file instances ([#43361](https://github.com/expo/expo/pull/43361) by [@gmaclennan](https://github.com/gmaclennan))
+
 ### 🐛 Bug fixes
 
 - Fix Jest mock to support new `File`/`Directory`/`Paths` API. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))
