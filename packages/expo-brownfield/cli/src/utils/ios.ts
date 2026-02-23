@@ -19,7 +19,6 @@ export const cleanUpArtifacts = async (config: IosConfig) => {
         return;
       }
 
-      // TODO(pmleczek): Maybe remove whole directory
       fs.readdirSync(config.artifacts).forEach((item) => {
         const itemPath = `${config.artifacts}/${item}`;
         fs.rmSync(itemPath, { recursive: true, force: true });

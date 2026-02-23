@@ -20,7 +20,6 @@ const cleanUpArtifacts = async (config) => {
             if (!node_fs_1.default.existsSync(config.artifacts)) {
                 return;
             }
-            // TODO(pmleczek): Maybe remove whole directory
             node_fs_1.default.readdirSync(config.artifacts).forEach((item) => {
                 const itemPath = `${config.artifacts}/${item}`;
                 node_fs_1.default.rmSync(itemPath, { recursive: true, force: true });
