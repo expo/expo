@@ -4,13 +4,30 @@ import { ResourceXML } from './Resources';
 import { assignStylesValue, getAppThemeGroup } from './Styles';
 import { ConfigPlugin } from '../Plugin.types';
 import { withAndroidStyles } from '../plugins/android-plugins';
+import { addWarningAndroid } from '../utils/warnings';
 
+const TAG = 'STATUS_BAR_PLUGIN';
 // https://developer.android.com/reference/android/R.attr#windowLightStatusBar
 const WINDOW_LIGHT_STATUS_BAR = 'android:windowLightStatusBar';
 // https://developer.android.com/reference/android/R.attr#statusBarColor
 const STATUS_BAR_COLOR = 'android:statusBarColor';
 
 export const withStatusBar: ConfigPlugin = (config) => {
+  const { androidStatusBar = {} } = config;
+
+  if ('backgroundColor' in androidStatusBar) {
+    addWarningAndroid(
+      TAG,
+      'Due to Android edge-to-edge enforcement, `androidStatusBar.backgroundColor` is deprecated and has no effect. This will be removed in a future release.'
+    );
+  }
+  if ('translucent' in androidStatusBar) {
+    addWarningAndroid(
+      TAG,
+      'Due to Android edge-to-edge enforcement, `androidStatusBar.translucent` is deprecated and has no effect. This will be removed in a future release.'
+    );
+  }
+
   config = withStatusBarStyles(config);
   return config;
 };
