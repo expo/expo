@@ -15,7 +15,6 @@ public class ExpoBrownfieldStateModule: Module {
         return state.get()
       }
       
-      // Overload for dictionary/object
       Function("set") { (state: SharedState, value: JavaScriptValue?) in
         state.set(value?.getRaw())
       }
