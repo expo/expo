@@ -28,27 +28,8 @@ export type ConfirmationDialogProps = {
 } & CommonViewModifierProps;
 /**
  * `ConfirmationDialog` presents a confirmation dialog with a title, optional message, and action buttons.
- * It is the SwiftUI equivalent of an action sheet / alert confirmation.
  *
- * @example
- * ```tsx
- * <ConfirmationDialog
- *   title="Delete Item?"
- *   isPresented={isPresented}
- *   onIsPresentedChange={setIsPresented}
- *   titleVisibility="visible">
- *   <ConfirmationDialog.Trigger>
- *     <Button title="Delete" onPress={() => setIsPresented(true)} />
- *   </ConfirmationDialog.Trigger>
- *   <ConfirmationDialog.Actions>
- *     <Button title="Confirm Delete" role="destructive" onPress={() => handleDelete()} />
- *     <Button title="Cancel" role="cancel" />
- *   </ConfirmationDialog.Actions>
- *   <ConfirmationDialog.Message>
- *     <Text>Are you sure you want to delete this item? This action cannot be undone.</Text>
- *   </ConfirmationDialog.Message>
- * </ConfirmationDialog>
- * ```
+ * @see https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:message:)
  */
 declare function ConfirmationDialog(props: ConfirmationDialogProps): import("react").JSX.Element;
 declare namespace ConfirmationDialog {
