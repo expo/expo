@@ -34,7 +34,8 @@ struct LocalNetworkPermissionView: View {
           .font(.body)
           .foregroundColor(.secondary)
           .multilineTextAlignment(.center)
-        
+          .fixedSize(horizontal: false, vertical: true)
+
         VStack(spacing: 12) {
           if !hasRequestedPermission {
             continueButton
@@ -98,6 +99,7 @@ struct LocalNetworkPermissionView: View {
         .font(.footnote)
         .foregroundColor(.secondary)
         .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
     }
   }
 
@@ -132,6 +134,7 @@ struct LocalNetworkPermissionView: View {
         .font(.footnote)
         .foregroundColor(.secondary)
         .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
 
       Button {
         #if os(iOS)

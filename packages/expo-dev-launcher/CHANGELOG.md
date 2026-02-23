@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix truncated text labels in `LocalNetworkPermissionView`
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-20
