@@ -17,16 +17,22 @@ const buildConfig = {
   resolver: {
     ...config.resolver,
     resolveRequest(context, moduleName, platform) {
-      if (moduleName === 'expo') {
-        return { type: 'sourceFile', filePath: expoStubPath };
-      } else if (moduleName === 'react') {
-        return { type: 'sourceFile', filePath: reactStubPath };
-      } else if (moduleName === 'react/jsx-runtime') {
-        return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
-      } else if (moduleName === 'react/jsx-dev-runtime') {
-        return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
-      } else {
+      const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
+      if (fileSpecifierRe.test(moduleName)) {
         return context.resolveRequest(context, moduleName, platform);
+      }
+      switch (moduleName) {
+        case 'expo':
+          return { type: 'sourceFile', filePath: expoStubPath };
+        case 'react':
+          return { type: 'sourceFile', filePath: reactStubPath };
+        case 'react/jsx-runtime':
+        case 'react/jsx-dev-runtime':
+          return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
+        case 'react-native':
+          return { type: 'empty' };
+        default:
+          return context.resolveRequest(context, moduleName, platform);
       }
     },
   },
