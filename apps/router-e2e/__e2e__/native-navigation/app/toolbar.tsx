@@ -25,6 +25,8 @@ export default function ToolbarScreen() {
   const [showMicButton, setShowMicButton] = useState(!!params.micButton);
   const [showCustomView, setShowCustomView] = useState(false);
   const [showMenu, setShowMenu] = useState(!!params.menu);
+  const [showXcassetButton, setShowXcassetButton] = useState(false);
+  const [showXcassetMenu, setShowXcassetMenu] = useState(false);
   const [showFixedSpacer, setShowFixedSpacer] = useState(false);
   const [fixedSpacerShareBackground, setFixedSpacerShareBackground] = useState(false);
   const [fixedSpacerWidth, setFixedSpacerWidth] = useState(20);
@@ -94,18 +96,19 @@ export default function ToolbarScreen() {
 
   return (
     <>
+      <Stack.Screen
+        options={{
+          headerLargeTitle: false,
+        }}
+      />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         contentInsetAdjustmentBehavior="automatic">
         <Text style={styles.title}>Toolbar E2E Test Screen</Text>
-        <Stack.SearchBar
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setIsSearchFocused(false)}
-          onChangeText={(e) => setSearchText(e.nativeEvent.text)}
-          placement="integratedButton"
-          placeholder="This is toolbar searchbar"
-        />
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Button icon="safari" />
+        </Stack.Toolbar>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>
@@ -193,6 +196,24 @@ export default function ToolbarScreen() {
           <View style={styles.switchRow}>
             <Text style={styles.label}>Show Menu</Text>
             <Switch testID="toggle-menu" value={showMenu} onValueChange={setShowMenu} />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Button</Text>
+            <Switch
+              testID="toggle-xcasset-button"
+              value={showXcassetButton}
+              onValueChange={setShowXcassetButton}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Menu</Text>
+            <Switch
+              testID="toggle-xcasset-menu"
+              value={showXcassetMenu}
+              onValueChange={setShowXcassetMenu}
+            />
           </View>
 
           <View style={styles.switchRow}>
@@ -342,6 +363,27 @@ export default function ToolbarScreen() {
             />
           </Pressable>
         </Stack.Toolbar.View>
+
+        {/* Xcasset button */}
+        <Stack.Toolbar.Button
+          hidden={!showXcassetButton}
+          tintColor={Color.ios.systemTeal}
+          iconRenderingMode="original"
+          onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
+          <Stack.Toolbar.Icon xcasset="expo-logo" />
+        </Stack.Toolbar.Button>
+
+        {/* Xcasset menu */}
+        {showXcassetMenu && (
+          <Stack.Toolbar.Menu title="Xcasset Menu" tintColor={Color.ios.systemTeal}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+            <Stack.Toolbar.Label>Expo</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from xcasset menu')}>
+              Xcasset Action
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        )}
 
         {/* Nested menu with dynamic content */}
         {showMenu && (

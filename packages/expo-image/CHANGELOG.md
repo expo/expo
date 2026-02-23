@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed compilation errors in Xcode 26.4 Beta 1 ([#43346](https://github.com/expo/expo/pull/43346) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+## 55.0.4 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Android] Uses shared cookie jar for image requests. ([#43257](https://github.com/expo/expo/pull/43257) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.3 — 2026-01-27
 

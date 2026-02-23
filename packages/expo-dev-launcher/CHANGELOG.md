@@ -8,7 +8,25 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix truncated text labels in `LocalNetworkPermissionView` ([#43353](https://github.com/expo/expo/pull/43353) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 55.0.8 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [android] fixed crash when returning from notification settings after disabling notification permissions ([#43217](https://github.com/expo/expo/pull/43217) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.7 — 2026-02-16
+
+### 🎉 New features
+
+- Full native interface for updates. ([#42981](https://github.com/expo/expo/pull/42981) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- fixes to error handling ([#42873](https://github.com/expo/expo/pull/42873) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.6 — 2026-02-08
 

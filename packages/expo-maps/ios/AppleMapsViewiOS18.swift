@@ -22,7 +22,6 @@ extension MKMapPoint {
       x: a.x + clamped * dx,
       y: a.y + clamped * dy
     )
-
     return distance(to: proj)
   }
 }
@@ -85,7 +84,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
 
         ForEach(props.polylines) { polyline in
-          MapPolyline(coordinates: polyline.clLocationCoordinates2D)
+          MapPolyline(
+            coordinates: polyline.clLocationCoordinates2D,
+            contourStyle: polyline.contourStyle.toContourStyle()
+          )
             .stroke(polyline.color, lineWidth: polyline.width)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
@@ -176,7 +178,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                   "id": hit.id,
                   "color": hit.color,
                   "width": hit.width,
-                  "contourStyle": hit.contourStyle,
+                  "contourStyle": hit.contourStyle.rawValue,
                   "coordinates": coords
                 ])
               }
@@ -278,14 +280,15 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     let threshold = props.properties.polylineTapThreshold
 
     return props.polylines.first { line in
-      let pts = line.clLocationCoordinates2D.map(MKMapPoint.init)
+      let coords = line.hitTestCoordinates
+      guard var prev = coords.first.map(MKMapPoint.init) else { return false }
 
-      var minDist = CLLocationDistance.greatestFiniteMagnitude
-      for (a, b) in zip(pts, pts.dropFirst()) {
-        minDist = min(minDist, tapPoint.distance(toSegmentFrom: a, to: b))
-        if minDist < threshold {
+      for coord in coords.dropFirst() {
+        let curr = MKMapPoint(coord)
+        if tapPoint.distance(toSegmentFrom: prev, to: curr) < threshold {
           return true
         }
+        prev = curr
       }
       return false
     }
@@ -317,16 +320,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   func isTapInsideCircle(
     tapCoordinate: CLLocationCoordinate2D, circleCenter: CLLocationCoordinate2D, radius: Double
   ) -> Bool {
-    // Convert coordinates to CLLocation for distance calculation
-    let tapLocation = CLLocation(
-      latitude: tapCoordinate.latitude, longitude: tapCoordinate.longitude)
-    let circleCenterLocation = CLLocation(
-      latitude: circleCenter.latitude, longitude: circleCenter.longitude)
-
-    // Calculate distance between tap and circle center (in meters)
-    let distance = tapLocation.distance(from: circleCenterLocation)
-
-    // Return true if distance is less than or equal to the radius
-    return distance <= radius
+    let tapPoint = MKMapPoint(tapCoordinate)
+    let centerPoint = MKMapPoint(circleCenter)
+    return tapPoint.distance(to: centerPoint) <= radius
   }
 }

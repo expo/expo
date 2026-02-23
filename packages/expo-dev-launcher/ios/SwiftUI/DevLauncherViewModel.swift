@@ -10,7 +10,14 @@ private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 private let BONJOUR_TYPE = "_expo._tcp"
-private let networkPermissionFlowKey = "expo.devlauncher.hasCompletedNetworkPermissionFlow"
+private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPermission"
+
+enum LocalNetworkPermissionStatus: Equatable, Sendable {
+  case unknown
+  case checking
+  case granted
+  case denied
+}
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
@@ -205,41 +212,74 @@ class DevLauncherViewModel: ObservableObject {
       return
     }
 
-    let hasCompletedPermissionFlow = UserDefaults.standard.bool(
-      forKey: networkPermissionFlowKey
-    )
-
-    #if targetEnvironment(simulator)
-    // Simulators don't need permission, continue
-    #else
-    if !hasCompletedPermissionFlow {
-      return
-    }
-    #endif
-
-    stopServerDiscovery()
-    startDevServerBrowser()
-    startLocalDevServerScanner()
-  }
-
-  func startDiscoveryForPermissionCheck() {
-    permissionStatus = .checking
     stopServerDiscovery()
     startDevServerBrowser()
     startLocalDevServerScanner()
   }
   
-  func markPermissionFlowCompleted() {
-    UserDefaults.standard.set(true, forKey: networkPermissionFlowKey)
+  func markNetworkPermissionGranted() {
+    UserDefaults.standard.set(true, forKey: networkPermissionGrantedKey)
+    permissionStatus = .granted
   }
 
-  func resetPermissionFlowState() {
-    UserDefaults.standard.removeObject(forKey: networkPermissionFlowKey)
-    permissionStatus = .unknown
+  var hasGrantedNetworkPermission: Bool {
+    UserDefaults.standard.bool(forKey: networkPermissionGrantedKey)
   }
 
-  var isFirstPermissionCheck: Bool {
-    !UserDefaults.standard.bool(forKey: networkPermissionFlowKey)
+  func refreshPermissionStatus() {
+    permissionStatus = .checking
+    Task {
+      let hasAccess = await checkLocalNetworkAccess()
+      permissionStatus = hasAccess ? .granted : .denied
+    }
+  }
+
+  func checkLocalNetworkAccess() async -> Bool {
+    let serviceType = BONJOUR_TYPE
+    let queue = DispatchQueue(label: "expo.devlauncher.permissioncheck")
+
+    return await withCheckedContinuation { continuation in
+      var done = false
+
+      let listener = try? NWListener(using: .tcp, on: .any)
+      listener?.service = NWListener.Service(type: serviceType)
+      listener?.stateUpdateHandler = { _ in }
+      listener?.newConnectionHandler = { $0.cancel() }
+      listener?.start(queue: queue)
+
+      let browser = NWBrowser(for: .bonjour(type: serviceType, domain: nil), using: .tcp)
+      browser.browseResultsChangedHandler = { results, _ in
+        guard !done else { return }
+        if !results.isEmpty {
+          done = true
+          continuation.resume(returning: true)
+          browser.cancel()
+          listener?.cancel()
+        }
+      }
+
+      browser.stateUpdateHandler = { state in
+        guard !done else { return }
+        if case .waiting(let error) = state,
+           case .dns(let dnsError) = error,
+           dnsError == kDNSServiceErr_PolicyDenied {
+          done = true
+          continuation.resume(returning: false)
+          browser.cancel()
+          listener?.cancel()
+        }
+      }
+
+      browser.start(queue: queue)
+
+      queue.asyncAfter(deadline: .now() + 2) {
+        guard !done else { return }
+        done = true
+        continuation.resume(returning: false)
+        browser.cancel()
+        listener?.cancel()
+      }
+    }
   }
 
   func stopServerDiscovery() {
@@ -282,8 +322,6 @@ class DevLauncherViewModel: ObservableObject {
       Task { @MainActor [weak self] in
         guard let self else { return }
         switch state {
-        case .ready:
-          self.permissionStatus = .granted
         case .waiting(let error):
           if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
             self.permissionStatus = .denied
@@ -302,6 +340,7 @@ class DevLauncherViewModel: ObservableObject {
       guard let self = self else { return }
       Task { @MainActor [weak self, results] in
         guard let self else { return }
+        self.markNetworkPermissionGranted()
         self.pingTask?.cancel()
         self.pingTask = Task {
           defer { self.pingTask = nil }

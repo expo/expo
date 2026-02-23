@@ -10,6 +10,31 @@
 
 ### 💡 Others
 
+## 55.0.9 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+### 🎉 New features
+
+- improve custom sound validation ([#43189](https://github.com/expo/expo/pull/43189) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- [Android] fix background task not consistently executing ([#43245](https://github.com/expo/expo/pull/43245) by [@vonovak](https://github.com/vonovak))
+- [Android] fix `deleteNotificationChannelGroupAsync` export ([#43244](https://github.com/expo/expo/pull/43244) by [@vonovak](https://github.com/vonovak))
+- add FCM intent origin validation ([#43206](https://github.com/expo/expo/pull/43206) by [@vonovak](https://github.com/vonovak))
+- Fixed crash in `NotificationForwarderActivity` on Android 11/12 when Parcelable extras fail to deserialize by using byte array serialization as fallback. ([#43203](https://github.com/expo/expo/pull/43203) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [Android] migrate several Java files to Kotlin ([#43249](https://github.com/expo/expo/pull/43249) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.7 — 2026-02-16
+
+### 💡 Others
+
 - Remove unused `assert` dependency ([#42970](https://github.com/expo/expo/pull/42970) by [@kitten](https://github.com/kitten))
 
 ## 55.0.6 — 2026-02-08

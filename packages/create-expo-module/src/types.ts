@@ -10,6 +10,14 @@ export type CommandOptions = {
   withChangelog: boolean;
   example: boolean;
   local: boolean;
+  // Module configuration options (skip prompts when provided)
+  name?: string;
+  description?: string;
+  package?: string;
+  authorName?: string;
+  authorEmail?: string;
+  authorUrl?: string;
+  repo?: string;
 };
 
 /**

@@ -7,7 +7,11 @@ import {
   convertStackToolbarMenuActionPropsToRNHeaderItem,
 } from '../toolbar/StackToolbarMenu';
 import { ToolbarPlacementContext, type ToolbarPlacement } from '../toolbar/context';
-import { StackToolbarLabel, StackToolbarBadge } from '../toolbar/toolbar-primitives';
+import {
+  StackToolbarIcon,
+  StackToolbarLabel,
+  StackToolbarBadge,
+} from '../toolbar/toolbar-primitives';
 
 jest.mock('../../../link/preview/native', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -425,6 +429,21 @@ describe('submenu conversion', () => {
       );
     });
 
+    it('warns for xcasset icons in submenu', () => {
+      convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu">
+            <StackToolbarIcon xcasset="custom-icon" />
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
+      );
+    });
+
     it('accepts SF Symbol icons in submenu', () => {
       const result = convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
@@ -486,6 +505,82 @@ describe('StackToolbarMenu component', () => {
     expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
       expect.objectContaining({
         icon: 'ellipsis.circle',
+      }),
+      undefined
+    );
+  });
+
+  it('passes xcassetName from StackToolbarIcon xcasset child', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu>
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        icon: undefined,
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as template for xcasset menu when tintColor is set', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'template',
+      }),
+      undefined
+    );
+  });
+
+  it('passes imageRenderingMode as original for xcasset menu without tintColor', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu>
+          <StackToolbarIcon xcasset="custom-icon" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
+      }),
+      undefined
+    );
+  });
+
+  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu iconRenderingMode="template" tintColor="blue">
+          <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xcassetName: 'custom-icon',
+        imageRenderingMode: 'original',
       }),
       undefined
     );

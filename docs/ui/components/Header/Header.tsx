@@ -74,6 +74,7 @@ export const Header = ({
           <div className={mergeClasses('hidden', 'max-lg-gutters:flex')}>
             <Button
               theme="quaternary"
+              aria-label="Toggle navigation menu"
               className={mergeClasses(
                 'px-3',
                 'hocus:bg-element hocus:shadow-[none]',

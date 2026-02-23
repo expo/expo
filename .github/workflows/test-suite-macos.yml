@@ -40,6 +40,8 @@ on:
       - '!**/.gitattributes'
       - '!**/.watchmanconfig'
       - '!**/.fingerprintignore'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

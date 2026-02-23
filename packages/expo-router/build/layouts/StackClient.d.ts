@@ -2,7 +2,7 @@ import { ParamListBase, StackRouter as RNStackRouter, StackNavigationState, type
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React, { ComponentProps } from 'react';
 import { type StackScreenProps, StackSearchBar } from './stack-utils';
-import { Protected, type ProtectedProps } from '../views/Protected';
+import { Protected } from '../views/Protected';
 /**
  * We extend NativeStackNavigationOptions with our custom props
  * to allow for several extra props to be used on web, like modalWidth
@@ -160,7 +160,7 @@ declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Eleme
         Title: typeof import("./stack-utils").StackScreenTitle;
         BackButton: typeof import("./stack-utils").StackScreenBackButton;
     };
-    Protected: React.FunctionComponent<ProtectedProps>;
+    Protected: React.FunctionComponent<import("../views/Protected").ProtectedProps>;
     Header: typeof import("./stack-utils/StackHeaderComponent").StackHeaderComponent;
     SearchBar: typeof StackSearchBar;
     Toolbar: {

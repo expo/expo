@@ -89,7 +89,10 @@ export const Terminal = ({
   ) : null;
 
   return (
-    <Snippet data-md="terminal" className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
+    <Snippet
+      data-md="terminal"
+      data-md-commands={packageManagers ? JSON.stringify(packageManagers) : undefined}
+      className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
       <SnippetHeader
         alwaysDark
         title={title}

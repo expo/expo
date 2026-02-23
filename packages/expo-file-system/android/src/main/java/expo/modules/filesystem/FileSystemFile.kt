@@ -3,12 +3,10 @@ package expo.modules.filesystem
 import android.net.Uri
 import android.util.Base64
 import expo.modules.interfaces.filesystem.Permission
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
-@OptIn(EitherType::class)
 class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   // Kept empty for now, but can be used to validate if the uri is a valid file uri. // TODO: Move to the constructor once also moved on iOS
   fun validatePath() {

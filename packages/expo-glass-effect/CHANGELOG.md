@@ -8,7 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- Fix `isInteractive` not applying when `glassEffectStyle` has `animate: true`. ([#43330](https://github.com/expo/expo/pull/43330) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix glass effect not rendering on first visit to a non-initial tab in tab navigator. ([#43330](https://github.com/expo/expo/pull/43330) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.5 — 2026-02-08
 

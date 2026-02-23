@@ -1,4 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
+import { isMarketingConsented } from '@expo/styleguide-cookie-consent';
 import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
 import { useState } from 'react';
 
@@ -9,6 +10,9 @@ const PORTAL_ID = '22007177';
 const FORM_GUID = '6a213eb9-5e86-4a8e-8607-33f9ac1e07d6';
 
 function getHutk() {
+  if (!isMarketingConsented()) {
+    return '';
+  }
   return (
     document.cookie
       .split('; ')

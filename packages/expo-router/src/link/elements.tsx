@@ -129,11 +129,17 @@ export function LinkMenuAction(props: LinkMenuActionProps) {
     props.icon ??
     (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
   const sf = typeof icon === 'string' ? icon : undefined;
+  const rawXcasset =
+    iconComponent?.props && 'xcasset' in iconComponent.props
+      ? iconComponent.props.xcasset
+      : undefined;
+  const xcassetName = typeof rawXcasset === 'string' ? rawXcasset : undefined;
   return (
     <NativeLinkPreviewAction
       {...rest}
       identifier={identifier}
       icon={sf}
+      xcassetName={xcassetName}
       title={label ?? title ?? ''}
       keepPresented={unstable_keepPresented}
       onSelected={() => onPress?.()}

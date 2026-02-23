@@ -13,3 +13,5 @@ export {
   validateStackPresentation,
   type StackScreenProps,
 } from './StackScreen';
+
+export { mapProtectedScreen } from './mapProtectedScreen';

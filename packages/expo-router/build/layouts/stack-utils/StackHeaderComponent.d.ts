@@ -99,7 +99,10 @@ export interface StackHeaderProps {
  *   );
  * }
  * ```
+ *
+ * > **Note:** If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
  */
-export declare function StackHeaderComponent(props: StackHeaderProps): import("react").JSX.Element;
+export declare function StackHeaderComponent({ children, hidden, asChild, transparent, blurEffect, style, largeStyle, }: StackHeaderProps): null;
 export declare function appendStackHeaderPropsToOptions(options: NativeStackNavigationOptions, props: StackHeaderProps): NativeStackNavigationOptions;
 //# sourceMappingURL=StackHeaderComponent.d.ts.map
