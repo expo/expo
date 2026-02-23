@@ -294,7 +294,7 @@ exceptions:
   - 'Method 2: Use'
   - 'Image manipulation without disk I/O'
   - Live Activities
-  - Starting a Live Activity
-  - Updating a Live Activity
+  - 'Prerequisite: Creating widget'
+  - 'Prerequisite: Creating Live Activity'
   - Hiding the Tab bar
   - Integrated vs Isolated
