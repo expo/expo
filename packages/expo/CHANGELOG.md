@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support streaming POST and PUT request bodies in `expo/fetch`
+- Support streaming POST and PUT request bodies in `expo/fetch` ([#43361](https://github.com/expo/expo/pull/43361) by [@gmaclennan](https://github.com/gmaclennan))
 
 ### 🐛 Bug fixes
 
