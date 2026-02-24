@@ -10,6 +10,9 @@ export {
   type DirectoryInfo,
   type DownloadOptions,
   FileMode,
+  type PickFileOptions,
+  type PickSingleFileOptions,
+  type PickMultipleFilesOptions,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';
