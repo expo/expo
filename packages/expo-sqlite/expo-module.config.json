@@ -1,13 +1,50 @@
 {
-  "platforms": ["apple", "android", "devtools"],
+  "platforms": [ "apple", "android", "devtools" ],
   "apple": {
-    "modules": ["SQLiteModule"]
+    "modules": [ "SQLiteModule" ]
   },
   "android": {
-    "modules": ["expo.modules.sqlite.SQLiteModule"],
+    "modules": [ "expo.modules.sqlite.SQLiteModule" ],
     "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy"
   },
   "devtools": {
-    "webpageRoot": "dev-plugin-dist"
+    "webpageRoot": "dev-plugin-dist",
+    "cliExtensions": {
+      "description": "Expo: manage SQLite databases",
+      "commands": [
+        {
+          "name": "list_databases",
+          "title": "List registered SQLite databases",
+          "environments": [ "cli", "mcp" ]
+        },
+        {
+          "name": "execute_query",
+          "title": "Execute a SQL query on a SQLite database",
+          "environments": [ "cli", "mcp" ],
+          "parameters": [
+            { "name": "name", "type": "text", "description": "The name of the database to get details for" },
+            { "name": "query", "type": "text", "description": "The SQL query to execute" }
+          ]
+        },
+        {
+          "name": "list_tables",
+          "title": "List tables in a SQLite database",
+          "environments": [ "cli", "mcp" ],
+          "parameters": [
+            { "name": "name", "type": "text", "description": "The name of the database to list tables for" }
+          ]
+        },
+        {
+          "name": "get_table_schema",
+          "title": "Get the schema of a table in a SQLite database",
+          "environments": [ "cli", "mcp" ],
+          "parameters": [
+            { "name": "name", "type": "text", "description": "The name of the database to get the table schema for" },
+            { "name": "table", "type": "text", "description": "The name of the table to get the schema for" }
+          ]
+        }
+      ],
+      "entryPoint": "cli/build/index.js"
+    }
   }
 }

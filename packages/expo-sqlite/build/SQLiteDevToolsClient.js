@@ -1,4 +1,5 @@
 import AwaitLock from 'await-lock';
+import { startCliListenerAsync } from 'expo/devtools';
 import { basename } from './pathUtils';
 const DEVTOOLS_PLUGIN_NAME = 'expo-sqlite';
 const LIST_TABLES_QUERY = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name";
@@ -104,23 +105,7 @@ function setupDevToolsListeners() {
                 });
                 return;
             }
-            const trimmedQuery = params.query.trim().toUpperCase();
-            const isReadQuery = trimmedQuery.startsWith('SELECT') || trimmedQuery.startsWith('PRAGMA');
-            let result;
-            if (isReadQuery) {
-                const rows = await database.getAllAsync(params.query, params.params || []);
-                const columns = rows.length > 0 && rows[0] && typeof rows[0] === 'object' ? Object.keys(rows[0]) : [];
-                result = { rows, columns };
-            }
-            else {
-                const runResult = await database.runAsync(params.query, params.params || []);
-                result = {
-                    rows: [],
-                    columns: [],
-                    changes: runResult.changes,
-                    lastInsertRowId: runResult.lastInsertRowId,
-                };
-            }
+            const result = await executeQueryAsync(params.query, database);
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'executeQuery',
@@ -150,7 +135,7 @@ function setupDevToolsListeners() {
                 });
                 return;
             }
-            const tables = (await database.getAllAsync(LIST_TABLES_QUERY));
+            const tables = await getTablesAsync(database);
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'listTables',
@@ -180,11 +165,7 @@ function setupDevToolsListeners() {
                 });
                 return;
             }
-            const tables = (await database.getAllAsync("SELECT name FROM sqlite_master WHERE type='table' AND name = ?", [params.tableName]));
-            if (tables.length === 0) {
-                throw new Error(`Table '${params.tableName}' not found`);
-            }
-            const schema = (await database.getAllAsync(`PRAGMA table_info(${params.tableName})`));
+            const schema = await fetchTableSchemaAsync(params.tableName, database);
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'getTableSchema',
@@ -202,5 +183,155 @@ function setupDevToolsListeners() {
             });
         }
     });
+}
+/* Setup listeners for the cli extensions client. */
+const EXTENSION_NAME = 'expo-sqlite-cli-extension';
+startCliListenerAsync(EXTENSION_NAME).then(({ addMessageListener }) => {
+    addMessageListener('listDatabases', async ({ sendResponseAsync }) => {
+        try {
+            if (registeredDatabases.size === 0) {
+                return sendResponseAsync('No databases registered.');
+            }
+            await sendResponseAsync('Databases: ' +
+                Array.from(registeredDatabases.keys())
+                    .map((databasePath) => basename(databasePath))
+                    .join(', '));
+        }
+        catch (error) {
+            await sendResponseAsync('An error occurred while listing databases: ' +
+                (typeof error === 'object' && error !== null && 'message' in error
+                    ? (String(error.message) ?? 'Unknown error')
+                    : String(error)));
+        }
+    });
+    addMessageListener('executeQuery', async ({ sendResponseAsync, params }) => {
+        try {
+            const database = findDatabase(params.name);
+            if (!database) {
+                return sendResponseAsync(`Database ${params.name} not found`);
+            }
+            const result = await executeQueryAsync(params.query, database);
+            await sendResponseAsync(`\n\n${tableFormatHelper(result)}`);
+        }
+        catch (error) {
+            await sendResponseAsync('An error occurred while executing the query: ' +
+                (typeof error === 'object' && error !== null && 'message' in error
+                    ? error.message
+                    : String(error)));
+        }
+    });
+    addMessageListener('listTables', async ({ sendResponseAsync, params }) => {
+        try {
+            const database = findDatabase(params.name);
+            if (!database) {
+                return sendResponseAsync(`Database ${params.name} not found`);
+            }
+            const tables = await getTablesAsync(database);
+            await sendResponseAsync(`Tables in ${basename(database.databasePath)}: ` + tables.map((t) => t.name).join(', '));
+        }
+        catch (error) {
+            await sendResponseAsync('An error occurred while listing tables: ' +
+                (typeof error === 'object' && error !== null && 'message' in error
+                    ? error.message
+                    : String(error)));
+        }
+    });
+    addMessageListener('getTableSchema', async ({ sendResponseAsync, params }) => {
+        try {
+            const database = findDatabase(params.name);
+            if (!database) {
+                return sendResponseAsync(`Database ${params.name} not found`);
+            }
+            const schema = await fetchTableSchemaAsync(params.table, database);
+            await sendResponseAsync(`\n\n${schemaFormatHelper(schema)}`);
+        }
+        catch (error) {
+            await sendResponseAsync('An error occurred while retrieving the table schema: ' +
+                (typeof error === 'object' && error !== null && 'message' in error
+                    ? error.message
+                    : String(error)));
+        }
+    });
+});
+async function getTablesAsync(database) {
+    return (await database.getAllAsync(LIST_TABLES_QUERY));
+}
+async function fetchTableSchemaAsync(table, database) {
+    const tables = (await database.getAllAsync("SELECT name FROM sqlite_master WHERE type='table' AND name = ?", [table]));
+    if (tables.length === 0) {
+        throw new Error(`Table '${table}' not found`);
+    }
+    const schema = (await database.getAllAsync(`PRAGMA table_info(${table})`));
+    return schema;
+}
+async function executeQueryAsync(query, database) {
+    const trimmedQuery = query.trim().toUpperCase();
+    const isReadQuery = trimmedQuery.startsWith('SELECT') || trimmedQuery.startsWith('PRAGMA');
+    let result;
+    if (isReadQuery) {
+        const rows = await database.getAllAsync(query, []);
+        const columns = rows.length > 0 && rows[0] && typeof rows[0] === 'object' ? Object.keys(rows[0]) : [];
+        result = { rows, columns };
+    }
+    else {
+        const runResult = await database.runAsync(query, []);
+        result = {
+            rows: [],
+            columns: [],
+            changes: runResult.changes,
+            lastInsertRowId: runResult.lastInsertRowId,
+        };
+    }
+    return result;
+}
+function findDatabase(name) {
+    return Array.from(registeredDatabases.values())
+        .find((ref) => {
+        const db = ref.deref();
+        return db?.databasePath.endsWith(name) || db?.databasePath.endsWith(name + '.db');
+    })
+        ?.deref();
+}
+/**
+ * Formats the query result into a table-like string for better readability in the CLI.
+ * Example output:
+ * id | title | done
+ * ---|-------|-----
+ * 4  | Milk  | 0
+ * 5  | Cake  | 0
+ *
+ * For a query like: SELECT id, title, done FROM todos;
+ * Output: { "rows": [ { "id": 4, "title": "Milk", "done": 0},{"id": 5,"title": "Cake", "done": 0}],"columns": ["id","title","done"}
+ */
+function tableFormatHelper(results) {
+    const columnWidths = results.columns.map((col) => col.length);
+    results.rows.forEach((row) => {
+        results.columns.forEach((col, index) => {
+            const cellLength = String(row[col]).length;
+            if (cellLength > columnWidths[index]) {
+                columnWidths[index] = cellLength;
+            }
+        });
+    });
+    const header = results.columns.map((col, index) => col.padEnd(columnWidths[index])).join(' | ');
+    const separator = columnWidths.map((width) => '-'.repeat(width)).join('-|-');
+    const rows = results.rows.map((row) => results.columns.map((col, index) => String(row[col]).padEnd(columnWidths[index])).join(' | '));
+    return [header, separator, ...rows].join('\n');
+}
+/**
+ * [ {"cid": 0, "name": "id","type": "INTEGER","notnull": 0,"dflt_value": null, "pk": 1},{"cid": 1,name": "title",type": "TEXT",null": 1,alue": null, "pk": 0}]
+ * @param schema
+ * @returns
+ */
+function schemaFormatHelper(schema) {
+    const columnWidths = ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'].map((col) => Math.max(col.length, ...schema.map((row) => String(row[col]).length)));
+    const header = ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk']
+        .map((col, index) => col.padEnd(columnWidths[index]))
+        .join(' | ');
+    const separator = columnWidths.map((width) => '-'.repeat(width)).join('-|-');
+    const rows = schema.map((row) => ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk']
+        .map((col, index) => String(row[col]).padEnd(columnWidths[index]))
+        .join(' | '));
+    return [header, separator, ...rows].join('\n');
 }
 //# sourceMappingURL=SQLiteDevToolsClient.js.map
