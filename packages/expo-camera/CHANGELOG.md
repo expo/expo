@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Web] Expands support for barcode types that can be scanned.
+- [Web] Expands support for barcode types that can be scanned. ([#43403](https://github.com/expo/expo/pull/43403) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
