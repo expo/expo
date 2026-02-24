@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -9,4 +10,22 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const args = getArgs({ maybeAddWatchFlag: true });
 
-await commandRunner(path.join(dirname, 'expo-module-tsc'), ['--noEmit', ...args]);
+// Packages with tsc project references (e.g. @expo/devtools) use a solution-style
+// tsconfig.json with "files": []. Plain `tsc --noEmit` would check nothing, so we
+// use `tsc --build . --noEmit` to type-check all referenced projects.
+const tsconfigPath = path.join(process.cwd(), 'tsconfig.json');
+let usesBuildMode = false;
+if (fs.existsSync(tsconfigPath)) {
+  try {
+    const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'));
+    if (Array.isArray(tsconfig.references) && tsconfig.references.length > 0) {
+      usesBuildMode = true;
+    }
+  } catch {}
+}
+
+if (usesBuildMode) {
+  await commandRunner(path.join(dirname, 'expo-module-tsc'), ['--build', '.', '--noEmit', ...args]);
+} else {
+  await commandRunner(path.join(dirname, 'expo-module-tsc'), ['--noEmit', ...args]);
+}

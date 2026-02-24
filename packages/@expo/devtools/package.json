@@ -7,13 +7,13 @@
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
-      "node": "./build/index.node.js",
+      "node": "./build/node/index.node.js",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build && ncc build src/index.node.ts -o build/ncc-node && mv build/ncc-node/index.js build/index.node.js && rm -rf build/ncc-node",
+    "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -47,19 +47,23 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.3",
     "expo-module-scripts": "^55.0.2",
     "ws": "^8.18.0"
   },
   "peerDependencies": {
+    "expo-constants": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "ws": "*"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "react-native": {
+      "optional": true
+    },
+    "ws": {
       "optional": true
     }
   }

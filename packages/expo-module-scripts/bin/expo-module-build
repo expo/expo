@@ -26,5 +26,21 @@ if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
   }
 }
 
+// Packages that need multiple output formats (e.g. @expo/devtools emits both ESM and CJS)
+// use tsc project references with a solution-style tsconfig.json. When references are
+// present, switch to `tsc --build .` so all referenced projects compile in a single pass
+// (including --watch mode).
+if (!args.includes('--build')) {
+  const tsconfigPath = path.join(process.cwd(), 'tsconfig.json');
+  if (fs.existsSync(tsconfigPath)) {
+    try {
+      const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'));
+      if (Array.isArray(tsconfig.references) && tsconfig.references.length > 0) {
+        args.unshift('--build', '.');
+      }
+    } catch {}
+  }
+}
+
 args = addWatchFlagIfNeeded(args);
 await commandRunner(path.join(dirname, 'expo-module-tsc'), args);

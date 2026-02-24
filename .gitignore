@@ -131,7 +131,7 @@ docs/pages/versions/*/react-native/*.diff
 **/ios/.xcode.env.local
 
 # TypeScript state
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 
 # Secrets - contains real secrets fetched from GCP
 /secrets/keys.json

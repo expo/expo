@@ -1,0 +1,17 @@
+{
+  "extends": "expo-module-scripts/tsconfig.node",
+  "compilerOptions": {
+    "outDir": "../build/node",
+    "rootDir": "../src",
+    "composite": true,
+    "tsBuildInfoFile": "../build/node/.tsbuildinfo"
+  },
+  "include": ["../src"],
+  "exclude": [
+    "../src/__mocks__/*",
+    "../src/__tests__/*",
+    "../src/**/*.native.ts",
+    "../src/hooks.tsx",
+    "../src/index.ts"
+  ]
+}
