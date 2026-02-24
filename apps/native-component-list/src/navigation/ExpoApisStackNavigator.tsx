@@ -415,6 +415,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/SQLiteScreen'));
+    },
+    name: 'SQLite',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/NavigationBarScreen'));
     },
     name: 'NavigationBar',
