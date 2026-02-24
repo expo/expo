@@ -525,7 +525,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 
   // After changing brownfield docs
-  '/brownfield/installing-expo-modules/': '/brownfield/get-started/',
+  '/brownfield/installing-expo-modules/': '/brownfield/overview/',
+  '/brownfield/get-started/': '/brownfield/isolated-approach/',
 
   // After removing Navigation section from Home and adding a Navigation page
   '/develop/file-based-routing/': '/develop/app-navigation/',

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [ios] avoid higher quality-of-service thread waiting on lower quality-of-service thread when requesting permissions ([#43377](https://github.com/expo/expo/pull/43377) by [@vonovak](https://github.com/vonovak))
+
 ## 55.0.9 — 2026-02-20
 
 _This version does not introduce any user-facing changes._

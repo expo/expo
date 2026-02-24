@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Deprecated and turned into no-ops the `backgroundColor`, `networkActivityIndicatorVisible` and `translucent` `StatusBar` props, as well as the `setStatusBarBackgroundColor`, `setStatusBarNetworkActivityIndicatorVisible` and `setStatusBarTranslucent` functions. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
 ## 55.0.3 — 2026-02-16
 
 _This version does not introduce any user-facing changes._

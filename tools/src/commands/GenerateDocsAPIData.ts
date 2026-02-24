@@ -39,6 +39,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/gauge': ['swift-ui/Gauge/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/confirmationdialog': ['swift-ui/ConfirmationDialog/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],

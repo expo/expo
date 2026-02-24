@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix truncated text labels in `LocalNetworkPermissionView` ([#43353](https://github.com/expo/expo/pull/43353) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-20

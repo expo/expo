@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Remove legacy autolinking integration. ([#43303](https://github.com/expo/expo/pull/43303) by [@lukmccall](https://github.com/lukmccall))
+
 ## 55.0.0-preview.12 — 2026-02-20
 
 ### 🐛 Bug fixes

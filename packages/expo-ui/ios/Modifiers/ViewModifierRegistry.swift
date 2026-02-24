@@ -774,22 +774,6 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
-internal enum ListRowSeparatorVisibility: String, Enumerable {
-  case automatic
-  case visible
-  case hidden
-
-  func toVisibility() -> Visibility {
-    switch self {
-    case .visible:
-      return .visible
-    case .hidden:
-      return .hidden
-    default:
-      return .automatic
-    }
-  }
-}
 
 internal enum VerticalEdgeOptions: String, Enumerable {
   case all
@@ -809,7 +793,7 @@ internal enum VerticalEdgeOptions: String, Enumerable {
 }
 
 internal struct ListRowSeparator: ViewModifier, Record {
-  @Field var visibility: ListRowSeparatorVisibility = .automatic
+  @Field var visibility: VisibilityOptions = .automatic
   @Field var edges: VerticalEdgeOptions?
 
   func body(content: Content) -> some View {

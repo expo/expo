@@ -34,9 +34,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/navigation-bar",
   "dependencies": {
-    "@react-native/normalize-colors": "0.83.2",
-    "debug": "^4.3.2",
-    "react-native-is-edge-to-edge": "^1.2.1"
+    "react-native-is-edge-to-edge": "^1.2.1",
+    "debug": "^4.3.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

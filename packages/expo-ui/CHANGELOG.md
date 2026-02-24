@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added `ConfirmationDialog` component. ([#43366](https://github.com/expo/expo/pull/43366) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `monospacedDigit` modifier. ([#43328](https://github.com/expo/expo/pull/43328) by [@axeelz](https://github.com/axeelz))
 
 ### 🐛 Bug fixes

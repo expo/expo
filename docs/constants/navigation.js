@@ -223,7 +223,8 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
-      makePage('brownfield/get-started.mdx'),
+      makePage('brownfield/isolated-approach.mdx'),
+      makePage('brownfield/integrated-approach.mdx'),
       makePage('brownfield/lifecycle-listeners.mdx'),
     ]),
     makeGroup(

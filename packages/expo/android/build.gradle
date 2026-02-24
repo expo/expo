@@ -1,26 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'expo-module-gradle-plugin'
-
-import expo.modules.plugin.gradle.ExpoModuleExtension
-import expo.modules.plugin.Version
-
-// TODO(@lukmccall): Remove when we drop support for SDK 52
-def useLegacyAutolinking = false
-try {
-  apply plugin: "expo-autolinking"
-} catch (e) {
-  useLegacyAutolinking = true
-}
-
-if (useLegacyAutolinking) {
-  // Import autolinking script
-  apply from: "../scripts/autolinking.gradle"
-}
-
-if (useLegacyAutolinking) {
-  ensureDependeciesWereEvaluated(project)
-}
-
+apply plugin: "expo-autolinking"
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -28,8 +8,6 @@ buildscript {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
   }
 }
-
-def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
 
 group = 'host.exp.exponent'
 version = '55.0.0-preview.12'
@@ -48,16 +26,6 @@ android {
   }
   testOptions {
     unitTests.includeAndroidResources = true
-  }
-
-  if (useLegacyAutolinking) {
-    sourceSets {
-      main {
-        java {
-          srcDirs += new File(project.buildDir, generatedFilesSrcDir)
-        }
-      }
-    }
   }
 
   buildTypes {
@@ -83,30 +51,4 @@ dependencies { dependencyHandler ->
   testImplementation "com.google.truth:truth:1.4.5"
   testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
   testImplementation 'org.robolectric:robolectric:4.16'
-
-  if (useLegacyAutolinking) {
-    // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
-    // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
-    addExpoModulesDependencies(dependencyHandler, project)
-  }
-}
-
-if (useLegacyAutolinking) {
-  // A task generating a package list of expo modules.
-  task generateExpoModulesPackageListTask {
-    def modulesConfig = getModulesConfig()
-    def outputPath = getGenerateExpoModulesPackagesListPath()
-    if (modulesConfig) {
-      outputs.file(file(outputPath))
-      inputs.property("modulesConfig", modulesConfig)
-    }
-
-    // TOOD(@lukmccall): fix not working with configuration cache enabled
-    doLast {
-      generateExpoModulesPackageList()
-    }
-  }
-
-// Run that task during prebuilding phase.
-  preBuild.dependsOn "generateExpoModulesPackageListTask"
 }

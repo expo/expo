@@ -66,7 +66,7 @@ Use `eas env:create` to add variables and `eas env:list` to verify what is set.
 
 ### Client-side values
 
-The environment variables with the [`EXPO_PUBLIC_`](/guides/environment-variables) prefix are available as `process.env` variables in your app's code. You can use them dynamically to configure your app behavior based in their values:
+The environment variables with the [`EXPO_PUBLIC_`](/guides/environment-variables) prefix are available as `process.env` variables in your app's code. You can use them dynamically to configure your app behavior based on their values:
 
 ```tsx
 import { Button } from 'react-native';
@@ -85,13 +85,13 @@ function Post() {
 }
 ```
 
-In above example, `EXPO_PUBLIC_API_URL` is used to dynamically set the API URL for the fetch request.
+In the above example, `EXPO_PUBLIC_API_URL` is used to dynamically set the API URL for the fetch request.
 
 > **warning** Do not put secrets in `EXPO_PUBLIC_` variables. Everything in client bundles is readable by end users.
 
 ### Build-time and app config
 
-Other variables that are without `EXPO_PUBLIC_` prefix, can be used during [app config](/workflow/configuration) resolution to configure your app's behavior. For example, the `APP_VARIANT` variable is used to determine the app name, package name, and bundle identifier for the selected [app variant](/build-reference/variants/):
+Other variables that are without the `EXPO_PUBLIC_` prefix can be used during [app config](/workflow/configuration) resolution to configure your app's behavior. For example, the `APP_VARIANT` variable is used to determine the app name, package name, and bundle identifier for the selected [app variant](/build-reference/variants/):
 
 Use non-prefixed variables in dynamic app config. Keep visibility at least **sensitive** if you need to resolve config locally (plain text and sensitive are readable in EAS CLI; secrets stay on the server).
 
@@ -145,7 +145,7 @@ export default {
 
 ### Secrets and file variables
 
-Environment variables such as `GOOGLE_SERVICES_JSON` is a secret file variable that is not readable outside of EAS servers and is used to provide the git ignored **google-services.json** file to an EAS Build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository):
+An environment variable such as `GOOGLE_SERVICES_JSON` is a secret file variable that is not readable outside of EAS servers and is used to provide the git ignored **google-services.json** file to an EAS Build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository):
 
 ```js app.config.js
 export default {
@@ -159,7 +159,7 @@ export default {
 
 You can use [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project or account to create, update, and delete environment variables.
 
-You can also use EAS CLI to manage them. The following commands are provided as examples for `production` environment. When using these commands, replace `production` with the environment you want to manage.
+You can also use EAS CLI to manage them. The following commands are provided as examples for the `production` environment. When using these commands, replace `production` with the environment you want to manage.
 
 <Terminal
   cmd={[
@@ -215,7 +215,7 @@ You can also use the **Export** option in the EAS dashboard to download the file
 
 > **important** Creating custom environments is available for [Enterprise and production](/billing/plans/#plans) plans.
 
-The three default environments are sufficient for most use-cases, but if you project relies on complex workflows and requires the flexibility to create more environments, using custom environments may come in handy.
+The three default environments are sufficient for most use-cases, but if your project relies on complex workflows and requires the flexibility to create more environments, using custom environments may come in handy.
 
 ### Create a custom environment in EAS dashboard
 
@@ -235,7 +235,7 @@ To create a custom environment in EAS dashboard:
 
 ### Create a custom environment with EAS CLI
 
-To assign an environment variable to a custom environments, use your custom environment name in place of the environment. For example, the command below creates a new variable `EXPO_PUBLIC_API_URL` and assigns it to the custom `staging` environment:
+To assign an environment variable to custom environments, use your custom environment name in place of the environment. For example, the command below creates a new variable `EXPO_PUBLIC_API_URL` and assigns it to the custom `staging` environment:
 
 <Terminal
   cmd={[

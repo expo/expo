@@ -1,41 +1,92 @@
 import { type EventSubscription } from 'expo-modules-core';
-import React from 'react';
-import { ExpoLiveActivityEntry, ExpoWidgetsEvents, LiveActivityDismissalPolicy, LiveActivityInfo, WidgetBase } from './Widgets.types';
+import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, PushTokenEvent, WidgetBase, WidgetTimelineEntry } from './Widgets.types';
 /**
- * Starts a new Live Activity on iOS.
- * Live Activities display real-time information on the Lock Screen and in the Dynamic Island.
- * @param name The name/identifier of the Live Activity to start.
- * @param props Optional props to pass to the Live Activity layout.
- * @param url An optional deep link URL to open when the user taps the Live Activity.
- * @return The unique identifier of the started Live Activity.
+ * Represents a widget instance. Provides methods to manage the widget's timeline.
  */
-export declare const startLiveActivity: (name: string, props?: object, url?: string) => string;
+export declare class Widget<T extends object = object> {
+    /** @hidden */
+    private nativeWidgetObject;
+    constructor(name: string, layout: (p: WidgetBase<T>) => React.JSX.Element);
+    /**
+     * Force reloads the widget, causing it to refresh its content and timeline.
+     */
+    reload(): void;
+    /**
+     * Schedules a series of updates for the widget's content and reloads the widget.
+     * @param entries Timeline entries, each specifying a date and the props to display at that time.
+     */
+    updateTimeline(entries: WidgetTimelineEntry<T>[]): void;
+    /**
+     * Sets the widget's content to the given props immediately, without scheduling a timeline.
+     * @param props The properties to display in the widget.
+     */
+    updateSnapshot(props: T): void;
+    /**
+     * Returns the current timeline entries for the widget, including past and future entries.
+     */
+    getTimeline(): Promise<WidgetTimelineEntry<T>[]>;
+}
 /**
- * Updates an existing Live Activity with new content.
- * @param id The unique identifier of the Live Activity to update (returned from `startLiveActivity`).
- * @param name The name/identifier of the Live Activity.
- * @param props Optional props to pass to the Live Activity layout.
+ * Represents a Live Activity instance. Provides methods to update its content and end it.
  */
-export declare const updateLiveActivity: (id: string, name: string, props?: object) => void;
+export declare class LiveActivity<T extends object = object> {
+    /** @hidden */
+    private nativeLiveActivity;
+    constructor(nativeLiveActivity: NativeLiveActivity);
+    /**
+     * Updates the Live Activity's content. The UI reflects the new properties immediately.
+     * @param props The updated content properties.
+     */
+    update(props: T): Promise<void>;
+    /**
+     * Ends the Live Activity.
+     * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
+     */
+    end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void>;
+    /**
+     * Returns the push token for this Live Activity, used to send push notification updates via APNs.
+     * Returns `null` if push notifications are not enabled or the token is not yet available.
+     */
+    getPushToken(): Promise<string | null>;
+    /**
+     * Adds a listener for push token update events on this Live Activity instance.
+     * The token can be used to send content updates to this specific activity via APNs.
+     * @param listener Callback invoked when a new push token is available.
+     * @returns An event subscription that can be used to remove the listener.
+     */
+    addPushTokenListener(listener: (event: PushTokenEvent) => void): EventSubscription;
+}
 /**
- * Updates a widget's timeline with multiple entries that will be displayed at scheduled times.
- * The widget system will automatically switch between entries based on their timestamps.
- * @param name The name/identifier of the widget to update.
- * @param timeline Timeline entries with the dates and optional props for each entry.
- * @template T The type of custom props passed to the widget.
+ * Manages Live Activity instances of a specific type. Use it to start new activities and retrieve currently active ones.
  */
-export declare const updateWidgetTimeline: <T extends object>(name: string, timeline: {
-    date: Date;
-    props?: T;
-}[]) => void;
+export declare class LiveActivityFactory<T extends object = object> {
+    /** @hidden */
+    private nativeLiveActivityFactory;
+    constructor(name: string, layout: LiveActivityComponent<T>);
+    /**
+     * Starts a new Live Activity with the given properties.
+     * @param props The initial content properties for the Live Activity.
+     * @param url An optional URL to associate with the Live Activity, used for deep linking.
+     * @returns The new Live Activity instance.
+     */
+    start(props: T, url?: string): LiveActivity<T>;
+    /**
+     * Returns all currently active instances of this Live Activity type.
+     */
+    getInstances(): LiveActivity<T>[];
+}
 /**
- * Updates a widget with a single snapshot entry for the current time.
- * This is a convenience wrapper around `updateWidgetTimeline` for widgets that don't need multiple timeline entries.
- * @param name The name/identifier of the widget to update.
- * @param props Optional custom props to pass to the widget component.
- * @template T The type of custom props passed to the widget.
+ * Creates a Widget instance.
+ * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
+ * @param widget The widget component, marked with the `'widget'` directive.
  */
-export declare const updateWidgetSnapshot: <T extends object>(name: string, props?: T) => void;
+export declare function createWidget<T extends object = object>(name: string, widget: (props: WidgetBase<T>) => React.JSX.Element): Widget<T>;
+/**
+ * Creates a Live Activity Factory for managing Live Activities of a specific type.
+ * @param name The Live Activity name. Must match the `'name'` field in your widget configuration in the app config.
+ * @param liveActivity The Live Activity component, marked with the `'widget'` directive.
+ */
+export declare function createLiveActivity<T extends object = object>(name: string, liveActivity: LiveActivityComponent<T>): LiveActivityFactory<T>;
 /**
  * Adds a listener for widget interaction events (for example, button taps).
  * @param listener Callback function to handle user interaction events.
@@ -49,39 +100,4 @@ export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['
  * @return An event subscription that can be used to remove the listener.
  */
 export declare function addPushToStartTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']): EventSubscription;
-/**
- * Ends a live activity.
- * @param activityId The ID of the live activity to end.
- * @param dismissalPolicy How the live activity should be dismissed from the screen.
- */
-export declare function endLiveActivity(activityId: string, dismissalPolicy?: LiveActivityDismissalPolicy): void;
-/**
- * Adds a listener for push token updates.
- * @param listener Callback function to handle push token updates.
- * @return An event subscription that can be used to remove the listener.
- */
-export declare function addPushTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsTokenReceived']): EventSubscription;
-/**
- * Gets the push token for a specific live activity.
- * @param activityId The ID of the live activity.
- * @return A promise that resolves to the push token, or null if not available.
- */
-export declare function getLiveActivityPushToken(activityId: string): Promise<string | null>;
-/**
- * Gets all currently running live activities.
- * @return An array of live activity information objects.
- */
-export declare function getLiveActivities(): LiveActivityInfo[];
-/**
- * Registers a widget layout for a given widget name.
- * @param name The name/identifier of the widget.
- * @param widget A React component that renders the widget layout marked with `'widget'` directive.
- */
-export declare function registerWidgetLayout<T extends object>(name: string, widget: (props: WidgetBase<T>) => React.JSX.Element): void;
-/**
- * Registers a Live Activity layout for a given activity name.
- * @param name The name/identifier of the Live Activity.
- * @param widget A function that returns the Live Activity layout marked with `'widget'` directive.
- */
-export declare function registerLiveActivityLayout<T extends object>(name: string, widget: (props: T) => ExpoLiveActivityEntry): void;
 //# sourceMappingURL=Widgets.d.ts.map

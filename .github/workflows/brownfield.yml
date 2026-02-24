@@ -291,6 +291,51 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+      - name: 🔄 Setup ccache
+        run: |
+          brew install ccache
+
+          # In order to use ccache with Xcode, unlike on Android, we can't just change env variables - we need to change PATH.
+          MKDIR_PATH=$HOME/.ccache_bin
+          mkdir -p $MKDIR_PATH
+          ln -sf $(which ccache) $MKDIR_PATH/clang
+          ln -sf $(which ccache) $MKDIR_PATH/clang++
+          ln -sf $(which ccache) $MKDIR_PATH/cc
+          ln -sf $(which ccache) $MKDIR_PATH/c++
+          echo "$MKDIR_PATH" >> $GITHUB_PATH
+          echo "CC=$MKDIR_PATH/clang" >> $GITHUB_ENV
+          echo "CXX=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+          echo "LD=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+          echo "LDPLUSPLUS=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+
+          # By default ccache includes mtime of a compiler in hashes, for each CI run mtime varies.
+          echo "CCACHE_COMPILERCHECK=content" >> $GITHUB_ENV
+
+          # It must be the same as in .github/actions/expo-caches/action.yml
+          echo "CCACHE_DIR=${{ runner.temp }}/.ccache" >> $GITHUB_ENV
+
+          # Sloppiness options disable some of the ccache checks to increase hit rate.
+          # We exclude ctime and mtime so the cache is hit based on file content.
+          # time_macros might help if in included modules there are macros like __TIME__ which would trigger a cache miss.
+          # modules, clang_index_store, system_headers, and ivfsoverlay are Xcode-specific options.
+          echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,modules,clang_index_store,system_headers,ivfsoverlay" >> $GITHUB_ENV
+
+          # Speeds up the process on cache misses by skipping the preprocessing step.
+          echo "CCACHE_DEPEND=true" >> $GITHUB_ENV
+
+          # Speeds up copying files on cache hits; natively supported by macOS APFS.
+          echo "CCACHE_FILECLONE=true" >> $GITHUB_ENV
+      - name: ♻️ Restore ccache
+        id: ccache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/.ccache
+          key: ccache-ios-brownfield-${{ hashFiles('yarn.lock', '**/Podfile.lock') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-ios-brownfield-${{ hashFiles('yarn.lock', '**/Podfile.lock') }}-
+            ccache-ios-brownfield-
+      - name: 🔄 Reset ccache statistics
+        run: ccache -z
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -310,6 +355,14 @@ jobs:
       - name: 🍏 Build iOS artifacts (Debug)
         run: npx expo-brownfield build:ios --debug --verbose
         working-directory: apps/brownfield-tester/expo-app
+      - name: 💾 Save ccache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/.ccache
+          key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
+      - name: Show ccache stats
+        run: ccache -s -v
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))

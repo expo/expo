@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `editWithForm` throws error ([#43315](https://github.com/expo/expo/pull/43315) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-20

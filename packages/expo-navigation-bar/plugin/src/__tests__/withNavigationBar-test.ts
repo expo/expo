@@ -1,54 +1,53 @@
-import { AndroidConfig, WarningAggregator } from 'expo/config-plugins';
+import { ModConfig } from '@expo/config-plugins';
 
 import {
+  applyEnforceNavigationBarContrast,
   resolveProps,
-  setNavigationBarColors,
-  setNavigationBarStyles,
+  ResourceXMLConfig,
   setStrings,
   withAndroidNavigationBarExpoGoManifest,
 } from '../withNavigationBar';
 
-jest.mock('expo/config-plugins', () => {
-  const plugins = jest.requireActual('expo/config-plugins');
-  return {
-    ...plugins,
-    WarningAggregator: { addWarningAndroid: jest.fn() },
-  };
+const exportedConfigWithPopsCommon = (modName: string = 'styles') => ({
+  name: 'test',
+  slug: 'test',
+  modRequest: {
+    platform: 'android' as keyof ModConfig,
+    modName,
+    projectRoot: '/app',
+    platformProjectRoot: '/app/android',
+    introspect: false,
+  },
+  modRawConfig: {
+    name: 'test',
+    slug: 'test',
+  },
 });
 
 describe(resolveProps, () => {
   it(`resolves no props`, () => {
     expect(resolveProps({})).toStrictEqual({
       barStyle: undefined,
-      backgroundColor: undefined,
-      legacyVisible: undefined,
+      enforceContrast: undefined,
     });
   });
-  it(`resolves legacy props`, () => {
-    jest.mocked(WarningAggregator.addWarningAndroid).mockClear();
+  it(`resolves props`, () => {
     expect(
       resolveProps({
         androidNavigationBar: {
-          visible: 'leanback',
-          backgroundColor: '#fff000',
           barStyle: 'light-content',
         },
       })
     ).toStrictEqual({
       barStyle: 'light',
-      backgroundColor: '#fff000',
-      legacyVisible: 'leanback',
+      enforceContrast: undefined,
     });
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(1);
   });
-  it(`skips legacy props if any config plugin props are provided`, () => {
-    jest.mocked(WarningAggregator.addWarningAndroid).mockClear();
+  it(`skips props if any config plugin props are provided`, () => {
     expect(
       resolveProps(
         {
           androidNavigationBar: {
-            visible: 'leanback',
-            backgroundColor: '#fff000',
             barStyle: 'light-content',
           },
         },
@@ -56,7 +55,6 @@ describe(resolveProps, () => {
         {}
       )
     ).toStrictEqual({});
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(0);
   });
   it(`resolves config plugin props`, () => {
     expect(
@@ -65,21 +63,11 @@ describe(resolveProps, () => {
         // config plugin props
         {
           barStyle: 'dark',
-          backgroundColor: 'blue',
-          behavior: 'inset-swipe',
-          borderColor: 'green',
-          position: 'absolute',
           visibility: 'hidden',
-          legacyVisible: 'immersive',
         }
       )
     ).toStrictEqual({
       barStyle: 'dark',
-      backgroundColor: 'blue',
-      behavior: 'inset-swipe',
-      borderColor: 'green',
-      legacyVisible: 'immersive',
-      position: 'absolute',
       visibility: 'hidden',
     });
   });
@@ -92,21 +80,10 @@ describe(setStrings, () => {
       // config plugin props
       {
         barStyle: 'dark',
-        backgroundColor: 'blue',
-        behavior: 'inset-swipe',
-        borderColor: 'green',
-        position: 'absolute',
         visibility: 'hidden',
-        legacyVisible: 'immersive',
       }
     );
   }
-  // TODO: Should we do validation on backgroundColor just for convenience?
-  it(`asserts an invalid color`, () => {
-    expect(() =>
-      setStrings({ resources: {} }, resolveProps({}, { borderColor: '-bacon-' }))
-    ).toThrow(/Invalid color value: -bacon-/);
-  });
 
   it(`sets all strings`, () => {
     expect(setStrings({ resources: {} }, getAllProps())).toStrictEqual({
@@ -114,38 +91,10 @@ describe(setStrings, () => {
         string: [
           {
             $: {
-              name: 'expo_navigation_bar_border_color',
-              translatable: 'false',
-            },
-            _: '-16744448',
-          },
-          {
-            $: {
               name: 'expo_navigation_bar_visibility',
               translatable: 'false',
             },
             _: 'hidden',
-          },
-          {
-            $: {
-              name: 'expo_navigation_bar_position',
-              translatable: 'false',
-            },
-            _: 'absolute',
-          },
-          {
-            $: {
-              name: 'expo_navigation_bar_behavior',
-              translatable: 'false',
-            },
-            _: 'inset-swipe',
-          },
-          {
-            $: {
-              name: 'expo_navigation_bar_legacy_visible',
-              translatable: 'false',
-            },
-            _: 'immersive',
           },
         ],
       },
@@ -180,22 +129,22 @@ describe(setStrings, () => {
   });
   it(`redefines duplicates`, () => {
     // Set all strings
-    const strings = setStrings({ resources: {} }, { borderColor: '#4630EB' });
+    const strings = setStrings({ resources: {} }, { visibility: 'hidden' });
 
     expect(strings.resources.string).toStrictEqual([
       {
-        $: { name: 'expo_navigation_bar_border_color', translatable: 'false' },
+        $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
         // Test an initial value
-        _: '-12177173',
+        _: 'hidden',
       },
     ]);
     expect(
-      setStrings(strings, resolveProps({}, { borderColor: 'dodgerblue' })).resources.string
+      setStrings(strings, resolveProps({}, { visibility: 'visible' })).resources.string
     ).toStrictEqual([
       {
-        $: { name: 'expo_navigation_bar_border_color', translatable: 'false' },
+        $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
         // Test a redefined value
-        _: '-14774017',
+        _: 'visible',
       },
     ]);
   });
@@ -207,10 +156,7 @@ describe(withAndroidNavigationBarExpoGoManifest, () => {
       withAndroidNavigationBarExpoGoManifest(
         { name: '', slug: '' },
         {
-          backgroundColor: '#ff00ff',
           barStyle: 'dark',
-          legacyVisible: 'immersive',
-          borderColor: 'orange',
           visibility: 'hidden',
         }
       )
@@ -218,39 +164,215 @@ describe(withAndroidNavigationBarExpoGoManifest, () => {
       name: expect.any(String),
       slug: expect.any(String),
       androidNavigationBar: {
-        backgroundColor: '#ff00ff',
         // Ensure `content` is added
         barStyle: 'dark-content',
-        // Ensure legacy value is able to be set
-        visible: 'immersive',
       },
     });
   });
 });
 
-describe('e2e: write navigation color and style to files correctly', () => {
-  it(`sets the navigationBarColor item in styles.xml. sets windowLightNavigation bar true`, async () => {
-    const stylesJSON = await setNavigationBarStyles(
-      { backgroundColor: '#111111', barStyle: 'dark' },
-      { resources: {} }
-    );
+describe('applyEnforceNavigationBarContrast', () => {
+  const attributeName = 'android:enforceNavigationBarContrast';
 
-    const group = AndroidConfig.Styles.getStylesGroupAsObject(
-      stylesJSON,
-      AndroidConfig.Styles.getAppThemeGroup()
-    );
-    expect(group?.['android:navigationBarColor']).toBe('@color/navigationBarColor');
-    expect(group?.['android:windowLightNavigationBar']).toBe('true');
+  it('adds attribute when enforceNavigationBarContrast is true and it does not exist', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'AppTheme', parent: 'Theme.Whatever' },
+              item: [{ $: { name: 'android:otherSetting' }, _: 'true' }],
+            },
+          ],
+        },
+      },
+    };
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
+
+    const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
+    expect(appTheme?.item).toContainEqual({
+      _: 'true',
+      $: {
+        name: attributeName,
+        'tools:targetApi': '29',
+      },
+    });
+    expect(appTheme?.item).toContainEqual({ $: { name: 'android:otherSetting' }, _: 'true' });
+    expect(resultConfig.modResults).toMatchInlineSnapshot(`
+      {
+        "resources": {
+          "style": [
+            {
+              "$": {
+                "name": "AppTheme",
+                "parent": "Theme.Whatever",
+              },
+              "item": [
+                {
+                  "$": {
+                    "name": "android:enforceNavigationBarContrast",
+                    "tools:targetApi": "29",
+                  },
+                  "_": "true",
+                },
+                {
+                  "$": {
+                    "name": "android:otherSetting",
+                  },
+                  "_": "true",
+                },
+              ],
+            },
+          ],
+        },
+      }
+    `);
   });
 
-  it(`sets the navigationBarColor item in styles.xml and adds color to colors.xml if 'androidNavigationBar.backgroundColor' is given. sets windowLightNavigation bar true`, async () => {
-    const colorsJSON = await setNavigationBarColors(
-      { backgroundColor: '#111111' },
-      { resources: {} }
-    );
+  it('updates attribute to true when it already exists as false', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'AppTheme', parent: 'Theme.Whatever' },
+              item: [
+                { $: { name: 'android:otherSetting' }, _: 'true' },
+                { _: 'false', $: { name: attributeName, 'tools:targetApi': '29' } }, // Attribute exists as false
+              ],
+            },
+          ],
+        },
+      },
+    };
 
-    expect(AndroidConfig.Colors.getColorsAsObject(colorsJSON)?.navigationBarColor).toBe('#111111');
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true); // enforce = true
+
+    const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
+    const targetItem = appTheme?.item?.find((i) => i.$.name === attributeName);
+    expect(targetItem?._).toBe('true');
+    expect(resultConfig.modResults).toMatchInlineSnapshot(`
+      {
+        "resources": {
+          "style": [
+            {
+              "$": {
+                "name": "AppTheme",
+                "parent": "Theme.Whatever",
+              },
+              "item": [
+                {
+                  "$": {
+                    "name": "android:otherSetting",
+                  },
+                  "_": "true",
+                },
+                {
+                  "$": {
+                    "name": "android:enforceNavigationBarContrast",
+                    "tools:targetApi": "29",
+                  },
+                  "_": "true",
+                },
+              ],
+            },
+          ],
+        },
+      }
+    `);
   });
 
-  // TODO: Test redefined and unset
+  it('updates attribute to false when enforceNavigationBarContrast is false', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'AppTheme', parent: 'Theme.Whatever' },
+              item: [
+                { $: { name: 'android:otherSetting' }, _: 'true' },
+                { _: 'true', $: { name: attributeName, 'tools:targetApi': '29' } }, // Attribute exists as true
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, false); // enforce = false
+
+    const appTheme = resultConfig.modResults.resources.style?.find((s) => s.$.name === 'AppTheme');
+    const targetItem = appTheme?.item?.find((i) => i.$.name === attributeName);
+    expect(targetItem?._).toBe('false');
+    expect(resultConfig.modResults).toMatchInlineSnapshot(`
+      {
+        "resources": {
+          "style": [
+            {
+              "$": {
+                "name": "AppTheme",
+                "parent": "Theme.Whatever",
+              },
+              "item": [
+                {
+                  "$": {
+                    "name": "android:otherSetting",
+                  },
+                  "_": "true",
+                },
+                {
+                  "$": {
+                    "name": "android:enforceNavigationBarContrast",
+                    "tools:targetApi": "29",
+                  },
+                  "_": "false",
+                },
+              ],
+            },
+          ],
+        },
+      }
+    `);
+  });
+
+  it('does nothing if AppTheme is not found', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          style: [
+            {
+              $: { name: 'SomeOtherTheme', parent: 'Theme.Whatever' },
+              item: [],
+            },
+          ],
+        },
+      },
+    };
+    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
+
+    expect(resultConfig.modResults).toEqual(originalModResults);
+  });
+
+  it('does nothing if styles resource is missing', () => {
+    const inputConfig: ResourceXMLConfig = {
+      ...exportedConfigWithPopsCommon(),
+      modResults: {
+        resources: {
+          // style: [] // Missing style array
+        },
+      },
+    };
+    const originalModResults = JSON.parse(JSON.stringify(inputConfig.modResults));
+
+    const resultConfig = applyEnforceNavigationBarContrast(inputConfig, true);
+
+    expect(resultConfig.modResults).toEqual(originalModResults);
+  });
 });

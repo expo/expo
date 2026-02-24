@@ -36,12 +36,14 @@ export type StatusBarProps = {
   /**
    * If the network activity indicator should be visible.
    * @platform ios
+   * @deprecated The status bar network activity indicator is not supported in iOS 13 and later. This will be removed in a future release.
    */
   networkActivityIndicatorVisible?: boolean;
 
   /**
    * The background color of the status bar.
    * @platform android
+   * @deprecated Due to Android edge-to-edge enforcement, setting the status bar background color is deprecated and has no effect. This will be removed in a future release.
    */
   backgroundColor?: string;
 
@@ -50,6 +52,7 @@ export type StatusBarProps = {
    * the app will draw under the status bar. This is the default behaviour in
    * projects created with Expo tools because it is consistent with iOS.
    * @platform android
+   * @deprecated Due to Android edge-to-edge enforcement, setting the status bar as translucent is deprecated and has no effect. This will be removed in a future release.
    */
   translucent?: boolean;
 };
