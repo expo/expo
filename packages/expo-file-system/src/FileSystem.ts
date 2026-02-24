@@ -148,23 +148,23 @@ File.downloadFileAsync = async function downloadFileAsync(
 
 function parsePickFileOptions(
   initialUriOrOptions?: string | PickFileOptions,
-  mimeType?: string
+  mimeTypes?: string[]
 ): PickFileOptions {
   if (typeof initialUriOrOptions === 'object') {
     return initialUriOrOptions;
   }
   return {
     initialUri: initialUriOrOptions,
-    mimeType,
+    mimeTypes,
     multipleFiles: false,
   };
 }
 
 File.pickFileAsync = async function (
   initialUriOrOptions?: string | PickFileOptions,
-  mimeType?: string
+  mimeTypes?: string[]
 ): Promise<File | File[]> {
-  const options: PickFileOptions = parsePickFileOptions(initialUriOrOptions, mimeType);
+  const options: PickFileOptions = parsePickFileOptions(initialUriOrOptions, mimeTypes);
   if (options.multipleFiles) {
     const files = await ExpoFileSystem.pickFileAsync(options);
     return (files as File[]).map((file) => new File(file));
