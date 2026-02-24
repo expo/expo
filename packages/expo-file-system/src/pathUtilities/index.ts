@@ -1,8 +1,8 @@
-import type { Directory, ExpoFile } from '../FileSystem';
+import type { Directory, File } from '../FileSystem';
 import * as nodePath from './path';
 import { asUrl, isUrl, encodeURLChars } from './url';
 
-function uriObjectToString(path: string | ExpoFile | Directory): string {
+function uriObjectToString(path: string | File | Directory): string {
   return typeof path === 'string' ? path : path.uri;
 }
 
@@ -12,7 +12,7 @@ export class PathUtilities {
    * @param paths - An array of path segments.
    * @returns A string representing the joined path.
    */
-  static join(...paths: (string | ExpoFile | Directory)[]): string {
+  static join(...paths: (string | File | Directory)[]): string {
     const [firstSegment, ...rest] = paths.map(uriObjectToString);
     const pathAsUrl = asUrl(firstSegment);
     if (pathAsUrl) {
@@ -28,7 +28,7 @@ export class PathUtilities {
    * @param to - The relative path.
    * @returns A string representing the resolved path.
    */
-  static relative(from: string | ExpoFile | Directory, to: string | ExpoFile | Directory): string {
+  static relative(from: string | File | Directory, to: string | File | Directory): string {
     const fromString = uriObjectToString(from);
     const toString = uriObjectToString(to);
 
@@ -48,7 +48,7 @@ export class PathUtilities {
    * @param path - The path to check.
    * @returns `true` if the path is absolute, `false` otherwise.
    */
-  static isAbsolute(path: string | ExpoFile | Directory): boolean {
+  static isAbsolute(path: string | File | Directory): boolean {
     const pathString = uriObjectToString(path);
     if (isUrl(pathString)) {
       return true;
@@ -61,7 +61,7 @@ export class PathUtilities {
    * @param path - The path to normalize.
    * @returns A string representing the normalized path.
    */
-  static normalize(path: string | ExpoFile | Directory): string {
+  static normalize(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
     const pathURL = asUrl(encodeURLChars(pathString));
     if (pathURL) {
@@ -76,7 +76,7 @@ export class PathUtilities {
    * @param path - The path to get the directory name from.
    * @returns A string representing the directory name.
    */
-  static dirname(path: string | ExpoFile | Directory): string {
+  static dirname(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
     const pathURL = asUrl(pathString);
     if (pathURL) {
@@ -92,7 +92,7 @@ export class PathUtilities {
    * @param ext - An optional file extension.
    * @returns A string representing the base name.
    */
-  static basename(path: string | ExpoFile | Directory, ext?: string): string {
+  static basename(path: string | File | Directory, ext?: string): string {
     const pathString = uriObjectToString(path);
     const pathURL = asUrl(pathString);
     if (pathURL) {
@@ -106,7 +106,7 @@ export class PathUtilities {
    * @param path - The path to get the extension from.
    * @returns A string representing the extension.
    */
-  static extname(path: string | ExpoFile | Directory): string {
+  static extname(path: string | File | Directory): string {
     const pathString = uriObjectToString(path);
     const pathURL = asUrl(pathString);
     if (pathURL) {
@@ -120,7 +120,7 @@ export class PathUtilities {
    * @param path - The path to parse.
    * @returns An object containing the parsed path components.
    */
-  static parse(path: string | ExpoFile | Directory): {
+  static parse(path: string | File | Directory): {
     root: string;
     dir: string;
     base: string;
