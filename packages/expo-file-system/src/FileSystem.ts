@@ -1,5 +1,10 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { FileMode, type DownloadOptions, type PathInfo } from './ExpoFileSystem.types';
+import {
+  FileMode,
+  PickFileOptions,
+  type DownloadOptions,
+  type PathInfo,
+} from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -75,8 +80,6 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     options?: DownloadOptions
   ) => Promise<File>;
 
-  static pickFileAsync: (initialUri?: string, mimeType?: string) => Promise<File | File[]>;
-
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
@@ -148,25 +151,32 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
-type PickFileOptions = { initialUri?: string; mimeType?: string; multipleFiles?: boolean };
+function parsePickFileOptions(
+  initialUriOrOptions?: string | PickFileOptions,
+  mimeType?: string
+): PickFileOptions {
+  if (typeof initialUriOrOptions === 'object') {
+    return initialUriOrOptions;
+  }
+  return {
+    initialUri: initialUriOrOptions,
+    mimeType,
+    multipleFiles: false,
+  };
+}
 
 File.pickFileAsync = async function (
   initialUriOrOptions?: string | PickFileOptions,
   mimeType?: string
-) {
-  let options: { initialUri?: string; mimeType?: string; multipleFiles?: boolean } = {
-    mimeType,
-    initialUri: undefined,
-    multipleFiles: undefined,
-  };
-  if (typeof initialUriOrOptions === 'object') {
-    options = initialUriOrOptions as PickFileOptions;
-  } else {
-    options.initialUri = initialUriOrOptions as string;
+): Promise<File | File[]> {
+  const options: PickFileOptions = parsePickFileOptions(initialUriOrOptions, mimeType);
+  if (options.multipleFiles) {
+    const files = await ExpoFileSystem.pickFileAsync(options);
+    return (files as File[]).map((file) => new File(file));
   }
-  const file = (await ExpoFileSystem.pickFileAsync(options)).uri;
-  return new File(file);
-};
+  const file = await ExpoFileSystem.pickFileAsync(options);
+  return new File(file as File);
+} as typeof ExpoFileSystem.FileSystemFile.pickFileAsync;
 
 /**
  * Represents a directory on the filesystem.
