@@ -8,9 +8,9 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [ios] Fixed `requestPermissionsAsync` not forwarding new options to the OS when notifications were already granted ([#43378](https://github.com/expo/expo/pull/43378) by [@vonovak](https://github.com/vonovak))
 
-- [ios] avoid higher quality-of-service thread waiting on lower quality-of-service thread when requesting permissions ([#43377](https://github.com/expo/expo/pull/43377) by [@vonovak](https://github.com/vonovak))
+### 💡 Others
 
 ## 55.0.9 — 2026-02-20
 

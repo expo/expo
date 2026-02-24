@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix ESM/CJS compatibility errors being swallowed ([#43329](https://github.com/expo/expo/pull/43329) by [@kitten](https://github.com/kitten))
+- Restore old ESM-to-CJS transform behaviour for `.js` and `.ts` loading for now ([#43329](https://github.com/expo/expo/pull/43329) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.1 — 2026-02-20
