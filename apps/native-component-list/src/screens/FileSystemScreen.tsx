@@ -1,66 +1,13 @@
-import { Paths, File, Directory } from 'expo-file-system';
+import { Paths, File } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Button, ScrollView, StyleSheet, View, Text } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
-import { useEffect, useState } from 'react';
-
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',
 };
 
 export default function FileSystemScreen() {
-  const [pickedFile, setPickedFile] = useState<File | null>(null);
-  const [pickedDir, setPickedDir] = useState<Directory | null>(null);
-  const [pickedDirs, setPickedDirs] = useState<Directory[] | null>(null);
-  const [soemText, setSomeText] = useState<string>('Text: ');
-  const [pickedFiles, setPickedFiles] = useState<File[] | null>(null);
-
-  useEffect(() => {
-    try {
-      const pd = Directory.pickDirectoryAsync() as Promise<Directory>;
-      pd?.then((dir) => {
-        console.log(`name: ${dir.name}`);
-        console.log(`uri: ${dir.uri}`);
-        setSomeText('Text: ' + dir.name);
-        setPickedDir(dir);
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    // (anyFile as File).;
-    try {
-      const pd = Directory.pickDirectoryAsync();
-      pd.then((dir) => {
-        setPickedDir(dir as Directory);
-        console.log(`dir name: ${(dir as Directory).name}`);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    try {
-      const pf = File.pickFileAsync();
-      pf.then((file) => {
-        setPickedFile(file as File);
-        console.log(`file name: ${(file as File).name}`);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    try {
-      const pfs = File.pickFileAsync({ multipleFiles: true });
-      pfs.then((files: File[]) => {
-        setPickedFiles(files);
-        console.log(`files count: ${files}
-    files0 name: ${files[0]?.name}
-    files1 name: ${files[1]?.name}
-    `);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -101,14 +48,6 @@ export default function FileSystemScreen() {
             });
           }}
         />
-      </View>
-      <View>
-        <Text>{'name ' + soemText}</Text>
-        <Text>{'pd name ' + pickedDir?.name}</Text>
-        <Text>{'pd uri ' + pickedDir?.uri}</Text>
-        <Text>{'pfs len ' + pickedFiles?.length}</Text>
-        <Text>{'pfs 0 ' + pickedFiles?.[0]?.name}</Text>
-        <Text>{'pfs 1 ' + pickedFiles?.[1]?.name}</Text>
       </View>
     </ScrollView>
   );
