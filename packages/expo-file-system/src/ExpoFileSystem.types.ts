@@ -74,13 +74,13 @@ export type DirectoryCreateOptions = {
 export declare class Directory {
   /**
    * Creates an instance of a directory.
-   * @param uris An array of: `file:///` string URIs, `ExpoFile` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+   * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
    * @example
    * ```ts
    * const directory = new Directory("file:///path/to/directory");
    * ```
    */
-  constructor(...uris: (string | ExpoFile | Directory)[]);
+  constructor(...uris: (string | File | Directory)[]);
 
   /**
    * Represents the directory URI. The field is read-only, but it may change as a result of calling some methods such as `move`.
@@ -112,19 +112,19 @@ export declare class Directory {
    */
   create(options?: DirectoryCreateOptions): void;
 
-  createFile(name: string, mimeType: string | null): ExpoFile;
+  createFile(name: string, mimeType: string | null): File;
 
   createDirectory(name: string): Directory;
 
   /**
    * Copies a directory.
    */
-  copy(destination: Directory | ExpoFile): void;
+  copy(destination: Directory | File): void;
 
   /**
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
-  move(destination: Directory | ExpoFile): void;
+  move(destination: Directory | File): void;
 
   /**
    * Renames a directory.
@@ -141,7 +141,7 @@ export declare class Directory {
   /**
    * Lists the contents of a directory.
    */
-  list(): (Directory | ExpoFile)[];
+  list(): (Directory | File)[];
 
   get parentDirectory(): Directory;
   get name(): string;
@@ -193,13 +193,13 @@ export type DownloadOptions = {
 /**
  * Represents a file on the file system.
  */
-export declare class ExpoFile extends Blob {
+export declare class File extends Blob {
   /**
-   * Creates an instance of ExpoFile.
+   * Creates an instance of File.
    *
    * @param uris A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
    */
-  constructor(...uris: (string | ExpoFile | Directory)[]);
+  constructor(...uris: (string | File | Directory)[]);
 
   /**
    * Represents the file URI. The field is read-only, but it may change as a result of calling some methods such as `move`.
@@ -290,12 +290,12 @@ export declare class ExpoFile extends Blob {
   /**
    * Copies a file.
    */
-  copy(destination: Directory | ExpoFile): void;
+  copy(destination: Directory | File): void;
 
   /**
    * Moves a directory. Updates the `uri` property that now points to the new location.
    */
-  move(destination: Directory | ExpoFile): void;
+  move(destination: Directory | File): void;
 
   /**
    * Renames a file.
@@ -326,14 +326,14 @@ export declare class ExpoFile extends Blob {
    *
    * @example
    * ```ts
-   * const file = await ExpoFile.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
+   * const file = await File.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
    * ```
    */
   static downloadFileAsync(
     url: string,
-    destination: Directory | ExpoFile,
+    destination: Directory | File,
     options?: DownloadOptions
-  ): Promise<ExpoFile>;
+  ): Promise<File>;
 
   /**
    * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
@@ -342,11 +342,11 @@ export declare class ExpoFile extends Blob {
    *
    * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
    * @param mimeType A mime type that is used to filter out files that can be picked out.
-   * @returns A `ExpoFile` instance or an array of `ExpoFile` instances.
+   * @returns A `File` instance or an array of `File` instances.
    */
-  static pickFileAsync(initialUri?: string, mimeType?: string): Promise<ExpoFile | ExpoFile[]>;
-  static pickFileAsync(options?: PickSingleFileOptions): Promise<ExpoFile>;
-  static pickFileAsync(options?: PickMultipleFilesOptions): Promise<ExpoFile[]>;
+  static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
+  static pickFileAsync(options?: PickSingleFileOptions): Promise<File>;
+  static pickFileAsync(options?: PickMultipleFilesOptions): Promise<File[]>;
 
   /**
    * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
@@ -360,7 +360,7 @@ export declare class ExpoFile extends Blob {
 
   /**
    * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
-   * Depracted in favor of `lastModified` to be more in line with web [ExpoFile](https://developer.mozilla.org/en-US/docs/Web/API/ExpoFile)
+   * Depracted in favor of `lastModified` to be more in line with web [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
    * @deprecated
    */
   modificationTime: number | null;

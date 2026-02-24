@@ -60,34 +60,34 @@ export class Paths extends PathUtilities {
 /**
  * Represents a file on the filesystem.
  *
- * A `ExpoFile` instance can be created for any path, and does not need to exist on the filesystem during creation.
+ * A `File` instance can be created for any path, and does not need to exist on the filesystem during creation.
  *
- * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `ExpoFile` instance (which creates a new reference to the same file).
+ * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
  * @example
  * ```ts
- * const file = new ExpoFile(Paths.cache, "subdirName", "file.txt");
+ * const file = new File(Paths.cache, "subdirName", "file.txt");
  * ```
  */
-export class ExpoFile extends ExpoFileSystem.FileSystemFile implements Blob {
+export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   static downloadFileAsync: (
     url: string,
-    destination: Directory | ExpoFile,
+    destination: Directory | File,
     options?: DownloadOptions
-  ) => Promise<ExpoFile>;
+  ) => Promise<File>;
 
   // static pickFileAsync: typeof ExpoFileSystem.FileSystemFile.pickFileAsync;
 
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
-   * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `ExpoFile` instance (which creates a new reference to the same file).
-   * @param uris An array of: `file:///` string URIs, `ExpoFile` instances, and `Directory` instances representing an arbitrary location on the file system.
+   * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
+   * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
    * @example
    * ```ts
-   * const file = new ExpoFile(Paths.cache, "subdirName", "file.txt");
+   * const file = new File(Paths.cache, "subdirName", "file.txt");
    * ```
    */
-  constructor(...uris: (string | ExpoFile | Directory)[]) {
+  constructor(...uris: (string | File | Directory)[]) {
     super(Paths.join(...uris));
     this.validatePath();
   }
@@ -100,7 +100,7 @@ export class ExpoFile extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   /**
-   * ExpoFile extension.
+   * File extension.
    * @example '.png'
    */
   get extension() {
@@ -108,7 +108,7 @@ export class ExpoFile extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   /**
-   * ExpoFile name. Includes the extension.
+   * File name. Includes the extension.
    */
   get name() {
     return Paths.basename(this.uri);
@@ -137,13 +137,13 @@ export class ExpoFile extends ExpoFileSystem.FileSystemFile implements Blob {
 }
 
 // Cannot use `static` keyword in class declaration because of a runtime error.
-ExpoFile.downloadFileAsync = async function downloadFileAsync(
+File.downloadFileAsync = async function downloadFileAsync(
   url: string,
-  to: ExpoFile | Directory,
+  to: File | Directory,
   options?: DownloadOptions
 ) {
   const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options);
-  return new ExpoFile(outputURI);
+  return new File(outputURI);
 };
 
 function parsePickFileOptions(
@@ -160,17 +160,17 @@ function parsePickFileOptions(
   };
 }
 
-ExpoFile.pickFileAsync = async function (
+File.pickFileAsync = async function (
   initialUriOrOptions?: string | PickFileOptions,
   mimeType?: string
-): Promise<ExpoFile | ExpoFile[]> {
+): Promise<File | File[]> {
   const options: PickFileOptions = parsePickFileOptions(initialUriOrOptions, mimeType);
   if (options.multipleFiles) {
     const files = await ExpoFileSystem.pickFileAsync(options);
-    return (files as ExpoFile[]).map((file) => new ExpoFile(file));
+    return (files as File[]).map((file) => new File(file));
   }
   const file = await ExpoFileSystem.pickFileAsync(options);
-  return new ExpoFile(file as ExpoFile);
+  return new File(file as File);
 } as typeof ExpoFileSystem.FileSystemFile.pickFileAsync;
 
 /**
@@ -191,13 +191,13 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
    * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
    * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a `Directory` instance (like `Paths.cache`).
-   * @param uris An array of: `file:///` string URIs, `ExpoFile` instances, and `Directory` instances representing an arbitrary location on the file system.
+   * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
    * @example
    * ```ts
    * const directory = new Directory(Paths.cache, "subdirName");
    * ```
    */
-  constructor(...uris: (string | ExpoFile | Directory)[]) {
+  constructor(...uris: (string | File | Directory)[]) {
     super(Paths.join(...uris));
     this.validatePath();
   }
@@ -212,13 +212,13 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
   /**
    * Lists the contents of a directory.
    * Calling this method if the parent directory does not exist will throw an error.
-   * @returns An array of `Directory` and `ExpoFile` instances.
+   * @returns An array of `Directory` and `File` instances.
    */
-  override list(): (Directory | ExpoFile)[] {
-    // We need to wrap it in the JS ExpoFile/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
+  override list(): (Directory | File)[] {
+    // We need to wrap it in the JS File/Directory classes, and returning SharedObjects in lists is not supported yet on Android.
     return super
       .listAsRecords()
-      .map(({ isDirectory, uri }) => (isDirectory ? new Directory(uri) : new ExpoFile(uri)));
+      .map(({ isDirectory, uri }) => (isDirectory ? new Directory(uri) : new File(uri)));
   }
 
   /**
@@ -228,9 +228,9 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
     return Paths.basename(this.uri);
   }
 
-  createFile(name: string, mimeType: string | null): ExpoFile {
+  createFile(name: string, mimeType: string | null): File {
     // Wrapping with the JS child class for additional, JS-only methods.
-    return new ExpoFile(super.createFile(name, mimeType).uri);
+    return new File(super.createFile(name, mimeType).uri);
   }
 
   createDirectory(name: string): Directory {

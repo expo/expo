@@ -1,4 +1,4 @@
-import { Paths, ExpoFile, Directory } from 'expo-file-system';
+import { Paths, File, Directory } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Button, ScrollView, StyleSheet, View, Text } from 'react-native';
 
@@ -10,11 +10,11 @@ FileSystemScreen.navigationOptions = {
 };
 
 export default function FileSystemScreen() {
-  const [pickedFile, setPickedFile] = useState<ExpoFile | null>(null);
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [pickedDir, setPickedDir] = useState<Directory | null>(null);
   const [pickedDirs, setPickedDirs] = useState<Directory[] | null>(null);
   const [soemText, setSomeText] = useState<string>('Text: ');
-  const [pickedFiles, setPickedFiles] = useState<ExpoFile[] | null>(null);
+  const [pickedFiles, setPickedFiles] = useState<File[] | null>(null);
 
   useEffect(() => {
     try {
@@ -28,7 +28,7 @@ export default function FileSystemScreen() {
     } catch (error) {
       console.error(error);
     }
-    // (anyFile as ExpoFile).;
+    // (anyFile as File).;
     try {
       const pd = Directory.pickDirectoryAsync();
       pd.then((dir) => {
@@ -39,17 +39,17 @@ export default function FileSystemScreen() {
       console.log(error);
     }
     try {
-      const pf = ExpoFile.pickFileAsync();
+      const pf = File.pickFileAsync();
       pf.then((file) => {
-        setPickedFile(file as ExpoFile);
-        console.log(`file name: ${(file as ExpoFile).name}`);
+        setPickedFile(file as File);
+        console.log(`file name: ${(file as File).name}`);
       });
     } catch (error) {
       console.log(error);
     }
     try {
-      const pfs = ExpoFile.pickFileAsync({ multipleFiles: true });
-      pfs.then((files: ExpoFile[]) => {
+      const pfs = File.pickFileAsync({ multipleFiles: true });
+      pfs.then((files: File[]) => {
         setPickedFiles(files);
         console.log(`files count: ${files}
     files0 name: ${files[0]?.name}
@@ -68,7 +68,7 @@ export default function FileSystemScreen() {
         <Button
           title="From file"
           onPress={async () => {
-            const file = new ExpoFile(Paths.cache, 'file.txt');
+            const file = new File(Paths.cache, 'file.txt');
             file.write('123');
             await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
               data: file.contentUri,
@@ -81,7 +81,7 @@ export default function FileSystemScreen() {
         <Button
           title="From asset"
           onPress={async () => {
-            const file = new ExpoFile(Paths.bundle, 'expo-root.pem');
+            const file = new File(Paths.bundle, 'expo-root.pem');
             await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
               data: file.contentUri,
               flags: 1,
@@ -92,7 +92,7 @@ export default function FileSystemScreen() {
         <Button
           title="From SAF"
           onPress={async () => {
-            const res = await ExpoFile.pickFileAsync();
+            const res = await File.pickFileAsync();
             const file = Array.isArray(res) ? res[0] : res;
             await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
               data: file.contentUri,

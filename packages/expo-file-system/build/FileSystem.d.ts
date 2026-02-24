@@ -31,35 +31,35 @@ export declare class Paths extends PathUtilities {
 /**
  * Represents a file on the filesystem.
  *
- * A `ExpoFile` instance can be created for any path, and does not need to exist on the filesystem during creation.
+ * A `File` instance can be created for any path, and does not need to exist on the filesystem during creation.
  *
- * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `ExpoFile` instance (which creates a new reference to the same file).
+ * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
  * @example
  * ```ts
- * const file = new ExpoFile(Paths.cache, "subdirName", "file.txt");
+ * const file = new File(Paths.cache, "subdirName", "file.txt");
  * ```
  */
-export declare class ExpoFile extends ExpoFileSystem.FileSystemFile implements Blob {
-    static downloadFileAsync: (url: string, destination: Directory | ExpoFile, options?: DownloadOptions) => Promise<ExpoFile>;
+export declare class File extends ExpoFileSystem.FileSystemFile implements Blob {
+    static downloadFileAsync: (url: string, destination: Directory | File, options?: DownloadOptions) => Promise<File>;
     /**
      * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
      *
-     * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `ExpoFile` instance (which creates a new reference to the same file).
-     * @param uris An array of: `file:///` string URIs, `ExpoFile` instances, and `Directory` instances representing an arbitrary location on the file system.
+     * The constructor accepts an array of strings that are joined to create the file URI. The first argument can also be a `Directory` instance (like `Paths.cache`) or a `File` instance (which creates a new reference to the same file).
+     * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
      * @example
      * ```ts
-     * const file = new ExpoFile(Paths.cache, "subdirName", "file.txt");
+     * const file = new File(Paths.cache, "subdirName", "file.txt");
      * ```
      */
-    constructor(...uris: (string | ExpoFile | Directory)[]);
+    constructor(...uris: (string | File | Directory)[]);
     get parentDirectory(): Directory;
     /**
-     * ExpoFile extension.
+     * File extension.
      * @example '.png'
      */
     get extension(): string;
     /**
-     * ExpoFile name. Includes the extension.
+     * File name. Includes the extension.
      */
     get name(): string;
     readableStream(): ReadableStream<Uint8Array<ArrayBuffer>>;
@@ -85,25 +85,25 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
      * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
      *
      * The constructor accepts an array of strings that are joined to create the directory URI. The first argument can also be a `Directory` instance (like `Paths.cache`).
-     * @param uris An array of: `file:///` string URIs, `ExpoFile` instances, and `Directory` instances representing an arbitrary location on the file system.
+     * @param uris An array of: `file:///` string URIs, `File` instances, and `Directory` instances representing an arbitrary location on the file system.
      * @example
      * ```ts
      * const directory = new Directory(Paths.cache, "subdirName");
      * ```
      */
-    constructor(...uris: (string | ExpoFile | Directory)[]);
+    constructor(...uris: (string | File | Directory)[]);
     get parentDirectory(): Directory;
     /**
      * Lists the contents of a directory.
      * Calling this method if the parent directory does not exist will throw an error.
-     * @returns An array of `Directory` and `ExpoFile` instances.
+     * @returns An array of `Directory` and `File` instances.
      */
-    list(): (Directory | ExpoFile)[];
+    list(): (Directory | File)[];
     /**
      * Directory name.
      */
     get name(): string;
-    createFile(name: string, mimeType: string | null): ExpoFile;
+    createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
 }
 //# sourceMappingURL=FileSystem.d.ts.map
