@@ -8,7 +8,7 @@ data class PickFileOptions(
   @Field
   val initialUri: Uri?,
   @Field
-  val mimeType: String?,
+  val mimeTypes: List<String>?,
   @Field
   val multipleFiles: Boolean?
 ) : Record

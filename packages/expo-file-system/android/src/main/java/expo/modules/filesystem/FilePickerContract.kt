@@ -22,8 +22,14 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
   override fun createIntent(context: Context, input: FilePickerContractOptions): Intent =
     if (input.pickerType == PickerType.FILE) {
       Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-        // if no type is set no intent handler is found – just android things
-        type = input.mimeType ?: "*/*"
+        type = if (input.mimeTypes.size >= 1) {
+          input.mimeTypes.first()
+        } else {
+          "*/*"
+        }
+        if (input.mimeTypes.size > 1) {
+          putExtra(Intent.EXTRA_MIME_TYPES, input.mimeTypes.toTypedArray())
+        }
         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, input.multipleFiles)
       }
     } else {
@@ -76,7 +82,7 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
     }
 }
 
-internal data class FilePickerContractOptions(val initialUri: Uri?, val mimeType: String? = null, val multipleFiles: Boolean, val pickerType: PickerType = PickerType.FILE) : Serializable
+internal data class FilePickerContractOptions(val initialUri: Uri?, val mimeTypes: List<String>, val multipleFiles: Boolean, val pickerType: PickerType = PickerType.FILE) : Serializable
 
 internal enum class PickerType {
   FILE,
