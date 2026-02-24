@@ -32,6 +32,17 @@ export type FileWriteOptions = {
      */
     append?: boolean;
 };
+export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
+export type PickSingleFileOptions = {
+    initialUri?: string;
+    mimeType?: string;
+    multipleFiles?: false;
+};
+export type PickMultipleFilesOptions = {
+    initialUri?: string;
+    mimeType?: string;
+    multipleFiles: true;
+};
 export type DirectoryCreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
@@ -282,7 +293,8 @@ export declare class File {
      * @returns A `File` instance or an array of `File` instances.
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
-    static pickFilesAsync(): Promise<File[]>;
+    static pickFileAsync(options?: PickSingleFileOptions): Promise<File>;
+    static pickFileAsync(options?: PickMultipleFilesOptions): Promise<File[]>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */
@@ -293,8 +305,14 @@ export declare class File {
     md5: string | null;
     /**
      * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+     * Depracted in favor of `lastModified` to be more in line with web [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
+     * @deprecated
      */
     modificationTime: number | null;
+    /**
+     * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+     */
+    lastModified: number | null;
     /**
      * A creation time of the file expressed in milliseconds since epoch. Returns null if the file does not exist, cannot be read or the Android version is earlier than API 26.
      */
