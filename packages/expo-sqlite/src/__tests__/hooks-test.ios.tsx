@@ -14,7 +14,7 @@ jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 describe(useSQLiteContext, () => {
   afterEach(async () => {
-    await fs.unlink('test.db').catch(() => {});
+    await fs.unlink('hooks-test.db').catch(() => {});
   });
 
   it('should return a SQLite database instance', async () => {
@@ -57,7 +57,7 @@ describe(useSQLiteContext, () => {
     expect(openDatabaseSpy).toHaveBeenCalledTimes(2);
 
     // Passing different databaseName should re-open the database
-    rerender(<SQLiteProviderWithView databaseName="test.db" />);
+    rerender(<SQLiteProviderWithView databaseName="hooks-test.db" />);
     expect(openDatabaseSpy).toHaveBeenCalledTimes(3);
 
     openDatabaseSpy.mockRestore();
