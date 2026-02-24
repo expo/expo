@@ -16,6 +16,7 @@ import path from 'path';
 import picomatch from 'picomatch';
 
 import { findUpPackageJsonPath } from './findUpPackageJsonPath';
+import { toPosixPath } from '../utils/filePath';
 
 const debug = require('debug')('expo:side-effects') as typeof console.log;
 
@@ -124,8 +125,8 @@ export function _createSideEffectMatcher(
     } else if (typeof sideEffectMatcher === 'boolean') {
       return sideEffectMatcher;
     } else {
-      const relativeName = path.isAbsolute(fp) ? path.relative(dirRoot, fp) : fp;
-      return sideEffectMatcher(relativeName);
+      const relativeName = path.isAbsolute(fp) ? path.relative(dirRoot, fp) : path.normalize(fp);
+      return sideEffectMatcher(toPosixPath(relativeName));
     }
   };
 }
