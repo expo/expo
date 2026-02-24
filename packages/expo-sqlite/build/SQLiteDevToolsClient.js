@@ -201,7 +201,8 @@ const EXTENSION_NAME = 'expo-sqlite-cli-extension';
 if (__DEV__) {
     const { startCliListenerAsync } = require('@expo/devtools');
     if (typeof startCliListenerAsync === 'function') {
-        startCliListenerAsync(EXTENSION_NAME).then(({ addMessageListener }) => {
+        startCliListenerAsync(EXTENSION_NAME)
+            .then(({ addMessageListener }) => {
             addMessageListener('listDatabases', async ({ sendResponseAsync }) => {
                 try {
                     if (registeredDatabases.size === 0) {
@@ -236,7 +237,8 @@ if (__DEV__) {
                         return sendResponseAsync(`Database ${params.name} not found`);
                     }
                     const tables = await getTablesAsync(database);
-                    await sendResponseAsync(`Tables in ${basename(database.databasePath)}: ` + tables.map((t) => t.name).join(', '));
+                    await sendResponseAsync(`Tables in ${basename(database.databasePath)}: ` +
+                        tables.map((t) => t.name).join(', '));
                 }
                 catch (error) {
                     await sendResponseAsync('An error occurred while listing tables: ' + errorMessage(error));
@@ -255,6 +257,9 @@ if (__DEV__) {
                     await sendResponseAsync('An error occurred while retrieving the table schema: ' + errorMessage(error));
                 }
             });
+        })
+            .catch(() => {
+            // Silently ignore connection failures (e.g. no dev server in test environments)
         });
     }
 }
