@@ -272,79 +272,92 @@ const EXTENSION_NAME = 'expo-sqlite-cli-extension';
 if (__DEV__) {
   const { startCliListenerAsync } = require('@expo/devtools') as typeof import('@expo/devtools');
   if (typeof startCliListenerAsync === 'function') {
-    startCliListenerAsync(EXTENSION_NAME).then(({ addMessageListener }) => {
-      addMessageListener<Record<string, never>>('listDatabases', async ({ sendResponseAsync }) => {
-        try {
-          if (registeredDatabases.size === 0) {
-            return sendResponseAsync('No databases registered.');
-          }
-          await sendResponseAsync(
-            'Databases: ' +
-              Array.from(registeredDatabases.keys())
-                .map((databasePath) => basename(databasePath))
-                .join(', ')
-          );
-        } catch (error: unknown) {
-          await sendResponseAsync(
-            'An error occurred while listing databases: ' + errorMessage(error)
-          );
-        }
-      });
-
-      addMessageListener<{ name: string; query: string }>(
-        'executeQuery',
-        async ({ sendResponseAsync, params }) => {
-          try {
-            const database = findDatabase(params.name);
-            if (!database) {
-              return sendResponseAsync(`Database ${params.name} not found`);
+    startCliListenerAsync(EXTENSION_NAME)
+      .then(({ addMessageListener }) => {
+        addMessageListener<Record<string, never>>(
+          'listDatabases',
+          async ({ sendResponseAsync }) => {
+            try {
+              if (registeredDatabases.size === 0) {
+                return sendResponseAsync('No databases registered.');
+              }
+              await sendResponseAsync(
+                'Databases: ' +
+                  Array.from(registeredDatabases.keys())
+                    .map((databasePath) => basename(databasePath))
+                    .join(', ')
+              );
+            } catch (error: unknown) {
+              await sendResponseAsync(
+                'An error occurred while listing databases: ' + errorMessage(error)
+              );
             }
-            const result = await executeQueryAsync(params.query, database);
-            await sendResponseAsync(`\n\n${formatTable(result.columns, result.rows)}`);
-          } catch (error: unknown) {
-            await sendResponseAsync(
-              'An error occurred while executing the query: ' + errorMessage(error)
-            );
           }
-        }
-      );
+        );
 
-      addMessageListener<{ name: string }>('listTables', async ({ sendResponseAsync, params }) => {
-        try {
-          const database = findDatabase(params.name);
-          if (!database) {
-            return sendResponseAsync(`Database ${params.name} not found`);
-          }
-
-          const tables = await getTablesAsync(database);
-          await sendResponseAsync(
-            `Tables in ${basename(database.databasePath)}: ` + tables.map((t) => t.name).join(', ')
-          );
-        } catch (error: unknown) {
-          await sendResponseAsync('An error occurred while listing tables: ' + errorMessage(error));
-        }
-      });
-
-      addMessageListener<{ name: string; table: string }>(
-        'getTableSchema',
-        async ({ sendResponseAsync, params }) => {
-          try {
-            const database = findDatabase(params.name);
-            if (!database) {
-              return sendResponseAsync(`Database ${params.name} not found`);
+        addMessageListener<{ name: string; query: string }>(
+          'executeQuery',
+          async ({ sendResponseAsync, params }) => {
+            try {
+              const database = findDatabase(params.name);
+              if (!database) {
+                return sendResponseAsync(`Database ${params.name} not found`);
+              }
+              const result = await executeQueryAsync(params.query, database);
+              await sendResponseAsync(`\n\n${formatTable(result.columns, result.rows)}`);
+            } catch (error: unknown) {
+              await sendResponseAsync(
+                'An error occurred while executing the query: ' + errorMessage(error)
+              );
             }
-            const schema = await fetchTableSchemaAsync(params.table, database);
-            await sendResponseAsync(
-              `\n\n${formatTable(['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], schema)}`
-            );
-          } catch (error: unknown) {
-            await sendResponseAsync(
-              'An error occurred while retrieving the table schema: ' + errorMessage(error)
-            );
           }
-        }
-      );
-    });
+        );
+
+        addMessageListener<{ name: string }>(
+          'listTables',
+          async ({ sendResponseAsync, params }) => {
+            try {
+              const database = findDatabase(params.name);
+              if (!database) {
+                return sendResponseAsync(`Database ${params.name} not found`);
+              }
+
+              const tables = await getTablesAsync(database);
+              await sendResponseAsync(
+                `Tables in ${basename(database.databasePath)}: ` +
+                  tables.map((t) => t.name).join(', ')
+              );
+            } catch (error: unknown) {
+              await sendResponseAsync(
+                'An error occurred while listing tables: ' + errorMessage(error)
+              );
+            }
+          }
+        );
+
+        addMessageListener<{ name: string; table: string }>(
+          'getTableSchema',
+          async ({ sendResponseAsync, params }) => {
+            try {
+              const database = findDatabase(params.name);
+              if (!database) {
+                return sendResponseAsync(`Database ${params.name} not found`);
+              }
+              const schema = await fetchTableSchemaAsync(params.table, database);
+              await sendResponseAsync(
+                `\n\n${formatTable(['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], schema)}`
+              );
+            } catch (error: unknown) {
+              await sendResponseAsync(
+                'An error occurred while retrieving the table schema: ' + errorMessage(error)
+              );
+            }
+          }
+        );
+      })
+      .catch(() => {
+        // Silently ignore connection failures (e.g. no dev server in test environments)
+      });
   }
 }
 
