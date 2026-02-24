@@ -125,29 +125,14 @@ public final class FileSystemModule: Module {
       #endif
     }.runOnQueue(.main)
 
-      AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+      AsyncFunction("pickFileAsync") { (options: FilePickingOptions?, promise: Promise) in
       #if os(iOS)
       filePickingHandler.presentDocumentPicker(
-        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
+        picker: createFilePicker(initialUri: options?.initialUri, mimeType: options?.mimeType),
         isDirectory: false,
-        initialUri: initialUri,
-        mimeType: mimeType,
-        multipleDocuments: false,
-        promise: promise
-      )
-      #else
-      promise.reject(FeatureNotAvailableOnPlatformException())
-      #endif
-    }.runOnQueue(.main)
-      
-      AsyncFunction("pickFilesAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
-      #if os(iOS)
-      filePickingHandler.presentDocumentPicker(
-        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
-        isDirectory: false,
-        initialUri: initialUri,
-        mimeType: mimeType,
-        multipleDocuments: true,
+        initialUri: options?.initialUri,
+        mimeType: options?.mimeType,
+        multipleDocuments: options?.multipleFiles ?? false,
         promise: promise
       )
       #else

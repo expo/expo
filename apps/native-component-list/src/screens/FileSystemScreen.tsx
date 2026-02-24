@@ -1,10 +1,10 @@
-import { Paths, File as ExpoFile, Directory } from 'expo-file-system';
+import { Paths, ExpoFile, Directory } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Button, ScrollView, StyleSheet, View, Text } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import { useEffect, useState } from 'react';
-import { P } from '@expo/html-elements';
+
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',
 };
@@ -17,42 +17,36 @@ export default function FileSystemScreen() {
   const [pickedFiles, setPickedFiles] = useState<ExpoFile[] | null>(null);
 
   useEffect(() => {
-    // try {
-    //   // const file = ExpoFile.pickFileAsync() as ExpoFile;
-    //   // console.log(file.textSync());
-    //   // setPickedFile(ExpoFile.pickFileAsync() as Promise<ExpoFile>);
-    //   // pickedFile?.then((file) => {
-    //   //   console.log(file.textSync());
-    //   // });
-    //   const pd = Directory.pickDirectoryAsync() as Promise<Directory>;
-    //   pd?.then((dir) => {
-    //     console.log(`name: ${dir.name}`);
-    //     console.log(`uri: ${dir.uri}`);
-    //     setSomeText('Text: ' + dir.name);
-    //     setPickedDir(dir);
-    //   });
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      const pd = Directory.pickDirectoryAsync() as Promise<Directory>;
+      pd?.then((dir) => {
+        console.log(`name: ${dir.name}`);
+        console.log(`uri: ${dir.uri}`);
+        setSomeText('Text: ' + dir.name);
+        setPickedDir(dir);
+      });
+    } catch (error) {
+      console.error(error);
+    }
     // (anyFile as ExpoFile).;
-    // try {
-    //   const pd = Directory.pickDirectoryAsync();
-    //   pd.then((dir) => {
-    //     setPickedDir(dir as Directory);
-    //     console.log(`dir name: ${(dir as Directory).name}`);
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    //   try {
-    //     const pf = ExpoFile.pickFileAsync();
-    //     pf.then((file) => {
-    //       setPickedFile(file as ExpoFile);
-    //       console.log(`file name: ${(file as ExpoFile).name}`);
-    //     });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
+    try {
+      const pd = Directory.pickDirectoryAsync();
+      pd.then((dir) => {
+        setPickedDir(dir as Directory);
+        console.log(`dir name: ${(dir as Directory).name}`);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      const pf = ExpoFile.pickFileAsync();
+      pf.then((file) => {
+        setPickedFile(file as ExpoFile);
+        console.log(`file name: ${(file as ExpoFile).name}`);
+      });
+    } catch (error) {
+      console.log(error);
+    }
     try {
       const pfs = ExpoFile.pickFileAsync({ multipleFiles: true });
       pfs.then((files: ExpoFile[]) => {

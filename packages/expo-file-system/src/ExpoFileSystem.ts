@@ -2,7 +2,7 @@ import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
 import type {
   Directory,
-  File,
+  ExpoFile,
   DownloadOptions,
   PathInfo,
   PickSingleFileOptions,
@@ -11,15 +11,15 @@ import type {
 
 declare class ExpoFileSystemModule extends NativeModule {
   FileSystemDirectory: typeof Directory;
-  FileSystemFile: typeof File;
+  FileSystemFile: typeof ExpoFile;
   downloadFileAsync(
     url: string,
-    destination: File | Directory,
+    destination: ExpoFile | Directory,
     options?: DownloadOptions
   ): Promise<string>;
   pickDirectoryAsync(initialUri?: string): Promise<Directory>;
-  pickFileAsync(options: PickSingleFileOptions): Promise<File>;
-  pickFileAsync(options: PickMultipleFilesOptions): Promise<File[]>;
+  pickFileAsync(options: PickSingleFileOptions): Promise<ExpoFile>;
+  pickFileAsync(options: PickMultipleFilesOptions): Promise<ExpoFile[]>;
   info(uri: string): PathInfo;
   totalDiskSpace: number;
   availableDiskSpace: number;

@@ -68,13 +68,13 @@ export type DirectoryCreateOptions = {
 export declare class Directory {
     /**
      * Creates an instance of a directory.
-     * @param uris An array of: `file:///` string URIs, `File` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
+     * @param uris An array of: `file:///` string URIs, `ExpoFile` instances, `Directory` instances representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a file.
      * @example
      * ```ts
      * const directory = new Directory("file:///path/to/directory");
      * ```
      */
-    constructor(...uris: (string | File | Directory)[]);
+    constructor(...uris: (string | ExpoFile | Directory)[]);
     /**
      * Represents the directory URI. The field is read-only, but it may change as a result of calling some methods such as `move`.
      */
@@ -100,16 +100,16 @@ export declare class Directory {
      * @throws Error if the containing folder doesn't exist, the application has no read access to it or the directory (or a file with the same path) already exists (unless `idempotent` is `true`).
      */
     create(options?: DirectoryCreateOptions): void;
-    createFile(name: string, mimeType: string | null): File;
+    createFile(name: string, mimeType: string | null): ExpoFile;
     createDirectory(name: string): Directory;
     /**
      * Copies a directory.
      */
-    copy(destination: Directory | File): void;
+    copy(destination: Directory | ExpoFile): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): void;
+    move(destination: Directory | ExpoFile): void;
     /**
      * Renames a directory.
      */
@@ -126,7 +126,9 @@ export declare class Directory {
     /**
      * Lists the contents of a directory.
      */
-    list(): (Directory | File)[];
+    list(): (Directory | ExpoFile)[];
+    get parentDirectory(): Directory;
+    get name(): string;
     /**
      * Retrieves an object containing properties of a directory.
      *
@@ -170,17 +172,22 @@ export type DownloadOptions = {
 /**
  * Represents a file on the file system.
  */
-export declare class File {
+export declare class ExpoFile extends Blob {
     /**
-     * Creates an instance of File.
+     * Creates an instance of ExpoFile.
      *
      * @param uris A `file:///` URI representing an arbitrary location on the file system. The location does not need to exist, or it may already contain a directory.
      */
-    constructor(...uris: (string | File | Directory)[]);
+    constructor(...uris: (string | ExpoFile | Directory)[]);
     /**
      * Represents the file URI. The field is read-only, but it may change as a result of calling some methods such as `move`.
      */
-    readonly uri: string;
+    get uri(): string;
+    get parentDirectory(): Directory;
+    get extension(): string;
+    get name(): string;
+    readableStream(): ReadableStream;
+    writableStream(): WritableStream<Uint8Array>;
     /**
      * @hidden This method is not meant to be used directly. It is called by the JS constructor.
      * Validates a directory path.
@@ -247,11 +254,11 @@ export declare class File {
     /**
      * Copies a file.
      */
-    copy(destination: Directory | File): void;
+    copy(destination: Directory | ExpoFile): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): void;
+    move(destination: Directory | ExpoFile): void;
     /**
      * Renames a file.
      */
@@ -279,10 +286,10 @@ export declare class File {
      *
      * @example
      * ```ts
-     * const file = await File.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
+     * const file = await ExpoFile.downloadFileAsync("https://example.com/image.png", new Directory(Paths.document));
      * ```
      */
-    static downloadFileAsync(url: string, destination: Directory | File, options?: DownloadOptions): Promise<File>;
+    static downloadFileAsync(url: string, destination: Directory | ExpoFile, options?: DownloadOptions): Promise<ExpoFile>;
     /**
      * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
      *
@@ -290,11 +297,11 @@ export declare class File {
      *
      * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
-     * @returns A `File` instance or an array of `File` instances.
+     * @returns A `ExpoFile` instance or an array of `ExpoFile` instances.
      */
-    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File>;
-    static pickFileAsync(options?: PickSingleFileOptions): Promise<File>;
-    static pickFileAsync(options?: PickMultipleFilesOptions): Promise<File[]>;
+    static pickFileAsync(initialUri?: string, mimeType?: string): Promise<ExpoFile | ExpoFile[]>;
+    static pickFileAsync(options?: PickSingleFileOptions): Promise<ExpoFile>;
+    static pickFileAsync(options?: PickMultipleFilesOptions): Promise<ExpoFile[]>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */
@@ -305,7 +312,7 @@ export declare class File {
     md5: string | null;
     /**
      * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
-     * Depracted in favor of `lastModified` to be more in line with web [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
+     * Depracted in favor of `lastModified` to be more in line with web [ExpoFile](https://developer.mozilla.org/en-US/docs/Web/API/ExpoFile)
      * @deprecated
      */
     modificationTime: number | null;

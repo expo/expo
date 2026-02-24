@@ -24,7 +24,7 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
       Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
         // if no type is set no intent handler is found – just android things
         type = input.mimeType ?: "*/*"
-        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, input.multipleFiles)
       }
     } else {
       Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
