@@ -4,6 +4,7 @@ object BrownfieldState {
   private var expoModule: ExpoBrownfieldStateModule? = null
 
   private val registry = mutableMapOf<String, SharedState>()
+  private val subscriptions = mutableMapOf<String, MutableList<(Any?) -> Unit>>()
   private val deletedKeys = mutableSetOf<String>()
 
   fun getOrCreate(key: String): SharedState {
@@ -27,11 +28,14 @@ object BrownfieldState {
   }
 
   fun subscribe(key: String, callback: (Any?) -> Unit): Removable {
-    val state: SharedState
     synchronized(this) {
-      state = registry.getOrPut(key) { SharedState(key) }
+      subscriptions.getOrPut(key) { mutableListOf() }.add(callback)
     }
-    return state.addListener(callback)
+    return Removable {
+      synchronized(this@BrownfieldState) {
+        subscriptions[key]?.remove(callback)
+      }
+    }
   }
 
   fun delete(key: String): Any? {
@@ -54,5 +58,13 @@ object BrownfieldState {
 
   internal fun setExpoModule(expoModule: ExpoBrownfieldStateModule?) {
     this.expoModule = expoModule
+  }
+
+  fun notifySubscribers(key: String, value: Any?) {
+    val snapshot: List<(Any?) -> Unit>
+    synchronized(this) {
+      snapshot = subscriptions[key]?.toList() ?: emptyList()
+    }
+    snapshot.forEach { it(value) }
   }
 }

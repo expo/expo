@@ -1,6 +1,13 @@
 import Combine
 import Foundation
 
+public class ListenerRef {
+  let callback: (Any?) -> Void
+  init(_ callback: @escaping (Any?) -> Void) { 
+    self.callback = callback 
+  }
+}
+
 public final class BrownfieldStateInternal {
   public static let shared = BrownfieldStateInternal()
 
@@ -8,6 +15,7 @@ public final class BrownfieldStateInternal {
   private var expoModule: ExpoBrownfieldStateModule?
 
   private var registry: [String: SharedState] = [:]
+  private var subscriptions: [String: [ListenerRef]] = [:]
   private var deletedKeys: Set<String> = []
 
   public func getOrCreate(_ key: String) -> SharedState {
@@ -49,18 +57,17 @@ public final class BrownfieldStateInternal {
     _ key: String,
     _ callback: @escaping (Any?) -> Void
   ) -> AnyCancellable {
-    let state: SharedState
-    lock.lock()
+    let listenerRef = ListenerRef(callback)
 
-    if let existing = registry[key] {
-      state = existing
-    } else {
-      state = SharedState(key)
-      registry[key] = state
-    }
+    lock.lock()
+    subscriptions[key, default: []].append(listenerRef)
     lock.unlock()
 
-    return state.addListener(callback)
+    return AnyCancellable { [weak self] in
+      self?.lock.lock()
+      self?.subscriptions[key]?.removeAll { $0 === listenerRef }
+      self?.lock.unlock()
+    }
   }
 
   public func delete(_ key: String) -> Any? {
@@ -84,5 +91,14 @@ public final class BrownfieldStateInternal {
 
   public func setExpoModule(_ expoModule: ExpoBrownfieldStateModule?) {
     self.expoModule = expoModule
+  }
+
+  public func notifySubscribers(_ key: String, _ value: Any?) {
+    var snapshot: [ListenerRef]
+    lock.lock()
+    snapshot = Array(subscriptions[key, default: []])
+    lock.unlock()
+
+    snapshot.forEach { $0.callback(value) }
   }
 }
