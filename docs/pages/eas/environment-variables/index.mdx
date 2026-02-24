@@ -48,7 +48,7 @@ Verify if the environment variable is created successfully by confirming it appe
 
 <Step label="3">
 
-To use the environment variable in EAS Build, add `environment` field to the `production` build profile:
+To use the environment variable in EAS Build, add the `environment` field to the `production` build profile:
 
 ```json eas.json
 {
@@ -76,7 +76,7 @@ The `--environment` flag is used to specify the environment to use for the updat
 
 <Step label="5">
 
-To use the environment variable with EAS Hosting, run the `eas deploy` command with the `--environment` flag specified. If you need both client and server side environment variables, run the commands below in the order they are listed (client-side variables must be plain text or sensitive, not secret) and see [client-side environment variables](/eas/environment-variables/usage/#client-side-environment-variables) for details information.
+To use the environment variable with EAS Hosting, run the `eas deploy` command with the `--environment` flag specified. If you need both client and server side environment variables, run the commands below in the order they are listed (client-side variables must be plain text or sensitive, not secret) and see [client-side environment variables](/eas/environment-variables/usage/#client-side-environment-variables) for more information.
 
 <Terminal
   cmd={[
@@ -122,7 +122,7 @@ There are three different visibility settings available for each environment var
 | Sensitive       | Obfuscated in EAS Build and Workflows job logs. You can use a toggle to make them visible on the website. They are also readable in EAS CLI. |
 | Secret          | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in EAS Build and Workflows job logs.   |
 
-> **warning** Note that **anything that is included in your client side code should be considered public and readable to any individual that can run your app**.
+> **warning** Note that **anything that is included in your client-side code should be considered public and readable to any individual that can run your app**.
 
 > **warning** **Secret type environment variables** are intended to provide values to an EAS Build or Workflows job so that they may be used to alter how a job runs. For example, setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
 

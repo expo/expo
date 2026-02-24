@@ -85,13 +85,13 @@ function Post() {
 }
 ```
 
-In above example, `EXPO_PUBLIC_API_URL` is used to dynamically set the API URL for the fetch request.
+In the above example, `EXPO_PUBLIC_API_URL` is used to dynamically set the API URL for the fetch request.
 
 > **warning** Do not put secrets in `EXPO_PUBLIC_` variables. Everything in client bundles is readable by end users.
 
 ### Build-time and app config
 
-Other variables that are without `EXPO_PUBLIC_` prefix, can be used during [app config](/workflow/configuration) resolution to configure your app's behavior. For example, the `APP_VARIANT` variable is used to determine the app name, package name, and bundle identifier for the selected [app variant](/build-reference/variants/):
+Other variables that are without the `EXPO_PUBLIC_` prefix can be used during [app config](/workflow/configuration) resolution to configure your app's behavior. For example, the `APP_VARIANT` variable is used to determine the app name, package name, and bundle identifier for the selected [app variant](/build-reference/variants/):
 
 Use non-prefixed variables in dynamic app config. Keep visibility at least **sensitive** if you need to resolve config locally (plain text and sensitive are readable in EAS CLI; secrets stay on the server).
 
@@ -159,7 +159,7 @@ export default {
 
 You can use [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project or account to create, update, and delete environment variables.
 
-You can also use EAS CLI to manage them. The following commands are provided as examples for `production` environment. When using these commands, replace `production` with the environment you want to manage.
+You can also use EAS CLI to manage them. The following commands are provided as examples for the `production` environment. When using these commands, replace `production` with the environment you want to manage.
 
 <Terminal
   cmd={[
