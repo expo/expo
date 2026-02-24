@@ -4,7 +4,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import tempDir from 'temp-dir';
 
-import { executeCommandAsync, executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
+import {
+  executeCommandAsync,
+  executeCreateExpoCLIAsync,
+  executeExpoCLIAsync,
+  sleep,
+} from './process';
 import type { PluginProps, TemplateEntry } from './types';
 
 const PROJECT_NAME = 'testapp';
