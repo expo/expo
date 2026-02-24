@@ -1,5 +1,4 @@
 import spawnAsync from '@expo/spawn-async';
-import fs from 'node:fs';
 
 export const CLI_PATH = require.resolve('../../bin/cli.js');
 export const CREATE_EXPO_BIN = require.resolve('../../../create-expo/build/index.js');
@@ -18,7 +17,6 @@ export const executeCLIASync = async (
   options: ExecuteCLIOptions = { ignoreErrors: false }
 ) => {
   try {
-    await ensureBinaryExists(CLI_PATH, 'yarn workspace expo-brownfield prepare');
     const { stdout, stderr, status } = await spawnAsync(CLI_PATH, args, {
       cwd,
       stdio: 'pipe',
@@ -45,7 +43,6 @@ export const executeExpoCLIAsync = async (
   options: ExecuteCLIOptions = { ignoreErrors: false }
 ) => {
   try {
-    await ensureBinaryExists(EXPO_CLI_BIN, 'yarn workspace @expo/cli prepare');
     const { stdout, stderr, status } = await spawnAsync(EXPO_CLI_BIN, args, {
       cwd,
       stdio: 'pipe',
@@ -72,7 +69,6 @@ export const executeCreateExpoCLIAsync = async (
   options: ExecuteCLIOptions = { ignoreErrors: false }
 ) => {
   try {
-    await ensureBinaryExists(CREATE_EXPO_BIN, 'yarn workspace create-expo build:prod');
     const { stdout, stderr, status } = await spawnAsync(CREATE_EXPO_BIN, args, {
       cwd,
       stdio: 'pipe',
@@ -151,16 +147,4 @@ const processOutput = ({
  */
 export const sleep = (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-/**
- * Ensures that binary exists
- */
-export const ensureBinaryExists = async (bin: string, command: string) => {
-  if (fs.existsSync(bin)) {
-    return;
-  }
-
-  const split = command.split(' ');
-  await executeCommandAsync(process.cwd(), split[0], split.slice(1));
 };
