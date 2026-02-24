@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 17.0, macOS to 14.0. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - [iOS] Added `ConfirmationDialog` component. ([#43366](https://github.com/expo/expo/pull/43366) by [@nishan](https://github.com/intergalacticspacehighway))

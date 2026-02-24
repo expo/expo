@@ -40,7 +40,7 @@ describe(validateConfig, () => {
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.deploymentTarget\` needs to be at least version 15.1."`
+      `"\`ios.deploymentTarget\` needs to be at least version 17.0."`
     );
   });
 
@@ -270,7 +270,7 @@ describe('shared config resolution', () => {
           minSdkVersion: 24,
         },
         ios: {
-          deploymentTarget: '15.1',
+          deploymentTarget: '17.0',
           useHermesV1: false,
         },
       })

@@ -22,7 +22,7 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
   const androidEnabled = props?.android?.enabled ?? false;
 
   if (iosEnabled) {
-    const deploymentTarget = '15.1';
+    const deploymentTarget = '17.0';
     const bundleIdentifier = config.ios?.bundleIdentifier;
     if (!bundleIdentifier) {
       throw new Error(

@@ -526,7 +526,7 @@ function transformAppJsonForE2E(
       '@react-native-tvos/config-tv',
       {
         isTV: true,
-        tvosDeploymentTarget: '15.1',
+        tvosDeploymentTarget: '17.0',
         showVerboseWarnings: true,
       },
     ]);

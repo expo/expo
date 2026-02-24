@@ -9,7 +9,7 @@ ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNati
 
 prepare_react_native_project!
 
-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '17.0'
 
 target 'NativeTests' do
   pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface/ios'

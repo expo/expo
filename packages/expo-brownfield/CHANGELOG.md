@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 17.0, macOS to 14.0. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))

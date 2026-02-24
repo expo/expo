@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped minimum iOS/tvOS version to 17.0, macOS to 14.0. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - New API based on shared objects. ([#43243](https://github.com/expo/expo/pull/43243) by [@jakex7](https://github.com/jakex7))

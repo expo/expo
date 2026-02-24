@@ -36,9 +36,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '15.1',
-    :osx => '11.0',
-    :tvos => '15.1'
+    :ios => '17.0',
+    :osx => '14.0',
+    :tvos => '17.0'
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }

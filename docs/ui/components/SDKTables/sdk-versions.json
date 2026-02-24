@@ -5,7 +5,7 @@
       "android": "7+",
       "compileSdkVersion": "36",
       "targetSdkVersion": "36",
-      "ios": "15.1+",
+      "ios": "17.0+",
       "xcode": "16.1+",
       "react-native": "0.83",
       "react-native-web": "0.21.0",

@@ -480,7 +480,7 @@ require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 # @end #
 
-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '17.0'
 
 target 'yolo27' do
   use_expo_modules!

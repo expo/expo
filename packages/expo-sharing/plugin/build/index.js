@@ -19,7 +19,7 @@ const withShareExtension = (config, props) => {
     const iosEnabled = props?.ios?.enabled ?? false;
     const androidEnabled = props?.android?.enabled ?? false;
     if (iosEnabled) {
-        const deploymentTarget = '15.1';
+        const deploymentTarget = '17.0';
         const bundleIdentifier = config.ios?.bundleIdentifier;
         if (!bundleIdentifier) {
             throw new Error("The application config doesn't define a bundle identifier. Make sure that `ios.bundleIdentifier` field has a value.");
