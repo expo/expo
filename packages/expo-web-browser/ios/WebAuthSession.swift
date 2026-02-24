@@ -34,16 +34,15 @@ final internal class WebAuthSession {
 
     // iOS 17.4+/macOS 14.4+ supports HTTPS callbacks with host/path matching
     if #available(iOS 17.4, macOS 14.4, *),
-       let redirectUrl = redirectUrl,
+       let redirectUrl,
        redirectUrl.scheme == "https",
        let host = redirectUrl.host(percentEncoded: false),
        !host.isEmpty {
       // Use the new callback API for HTTPS universal links
-      // Pass empty string for path to match any path under the host if no specific path is provided
-      let path = redirectUrl.path.isEmpty ? "" : redirectUrl.path
+      // Pass an empty string for the path to match any path under the host if no specific path is provided
       self.authSession = ASWebAuthenticationSession(
         url: authUrl,
-        callback: .https(host: host, path: path),
+        callback: .https(host: host, path: redirectUrl.path),
         completionHandler: completionHandler
       )
     } else {
