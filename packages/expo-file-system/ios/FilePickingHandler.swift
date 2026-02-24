@@ -17,7 +17,7 @@ internal class FilePickingHandler: FilePickingResultHandler {
     picker: UIDocumentPickerViewController,
     isDirectory: Bool,
     initialUri: URL?,
-    mimeType: String?,
+    mimeTypes: [String],
     multipleDocuments: Bool,
     promise: Promise
   ) {
@@ -40,7 +40,7 @@ internal class FilePickingHandler: FilePickingResultHandler {
     filePickingContext = FilePickingContext(
       promise: promise,
       initialUri: initialUri,
-      mimeType: mimeType,
+      mimeTypes: mimeTypes,
       isDirectory: isDirectory,
       multipleDocuments: multipleDocuments,
       delegate: pickerDelegate
