@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [ios] avoid higher quality-of-service thread waiting on lower quality-of-service thread when requesting permissions
+
 ## 55.0.9 — 2026-02-20
 
 _This version does not introduce any user-facing changes._
