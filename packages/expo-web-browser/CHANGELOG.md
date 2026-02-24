@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for auth universal links callback ([#42695](https://github.com/expo/expo/pull/42695) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
