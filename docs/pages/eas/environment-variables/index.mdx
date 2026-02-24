@@ -13,18 +13,18 @@ import { Step } from '~/ui/components/Step';
 
 This guide explains how to use Environment Variables in Expo Application Services (EAS): Build, Updates, Workflows, and Hosting. For general information on how environment variables work with the Expo framework, refer to [Environment variables in Expo](/guides/environment-variables).
 
-During a local development, environment variables are loaded from your local **.env** or **.env.local** files. These files are generally excluded from the project's version control (that is, if they are listed in the **.gitignore** file or not committed) so they are not available for jobs that run on a remote server, for example, EAS Build and EAS Workflows. Additionally, most projects have multiple app variants and require multiple sets of environment variables (for instance Development and Production).
+During local development, environment variables are loaded from your local **.env** or **.env.local** files. These files are generally excluded from the project's version control (that is, if they are listed in the **.gitignore** file or not committed) so they are not available for jobs that run on a remote server, for example, EAS Build and EAS Workflows. Additionally, most projects have multiple app variants and require multiple sets of environment variables (for instance Development and Production).
 
 ## Why use EAS environment variables
 
-You might want to use EAS Environment Variable if you need to:
+You might want to use EAS Environment variables if you need to:
 
 - Keep configuration in one place for cloud builds, updates, and workflows without committing **.env** files.
 - Separate values by environment (`development`, `preview`, `production`) while reusing names.
 - Control visibility (plain text, sensitive, secret) so only the right surfaces can read each value.
 - Apply the same set locally with [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) or inside CI/CD.
 
-These are the problems that EAS Environment variables is built to solve. With EAS Environment variables, the variables are configured in EAS via the EAS CLI or directly on the [expo.dev](https://expo.dev) dashboard, and can be accessed by EAS Build and EAS Workflows as well as your local machine via the EAS CLI.
+These are the problems that EAS Environment variables are built to solve. With EAS Environment variables, the variables are configured in EAS via the EAS CLI or directly on the [expo.dev](https://expo.dev) dashboard, and can be accessed by EAS Build and EAS Workflows as well as your local machine via the EAS CLI.
 
 ## Quick start
 
