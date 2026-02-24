@@ -32,17 +32,6 @@ export type FileWriteOptions = {
      */
     append?: boolean;
 };
-export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
-export type PickSingleFileOptions = {
-    initialUri?: string;
-    mimeTypes?: string[];
-    multipleFiles?: false;
-};
-export type PickMultipleFilesOptions = {
-    initialUri?: string;
-    mimeTypes?: string[];
-    multipleFiles: true;
-};
 export type DirectoryCreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
@@ -185,8 +174,17 @@ export declare class File extends Blob {
     get uri(): string;
     get parentDirectory(): Directory;
     get extension(): string;
+    /**
+     * Basename of the file.
+     */
     get name(): string;
+    /**
+     * Creates a readable stream from the file.
+     */
     readableStream(): ReadableStream;
+    /**
+     * Creates a writeable stream to the file.
+     */
     writableStream(): WritableStream<Uint8Array>;
     /**
      * @hidden This method is not meant to be used directly. It is called by the JS constructor.
@@ -300,7 +298,17 @@ export declare class File extends Blob {
      * @returns A `File` instance or an array of `File` instances.
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
+    /**
+     * An overload of pickFileAsync method which picks and returns a single `File`.
+     * This overload requires options to have `multipleFiles` flag be `undefined` or `false`.
+     * @param options options
+     */
     static pickFileAsync(options?: PickSingleFileOptions): Promise<File>;
+    /**
+     * An overload of pickFileAsync method which picks and returns a list of `File`'s.
+     * This overload requires options to have `multipleFiles` flag be `true`.
+     * @param options options
+     */
     static pickFileAsync(options?: PickMultipleFilesOptions): Promise<File[]>;
     /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
@@ -312,8 +320,7 @@ export declare class File extends Blob {
     md5: string | null;
     /**
      * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
-     * Depracted in favor of `lastModified` to be more in line with web [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
-     * @deprecated
+     * @deprecated in favor of `lastModified` to be more in line with web [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
      */
     modificationTime: number | null;
     /**
@@ -411,5 +418,48 @@ export type DirectoryInfo = {
      * A list of file names contained within a directory.
      */
     files?: string[];
+};
+/**
+ * Options type for file picking
+ */
+export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
+/**
+ * Options for picking a single file
+ */
+export type PickSingleFileOptions = {
+    /**
+     * A uri pointing to an initial folder in which the file picker is opened.
+     */
+    initialUri?: string;
+    /**
+     * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
+     * to be picked. It also supports wildcards like `'image/*'` to choose any image. To allow any type
+     * of document you can use `'&ast;/*'`.
+     * @default '&ast;/*'
+     */
+    mimeTypes?: string | string[];
+    /**
+     * Allows multiple files to be selected from the system UI.
+     * @default false
+     */
+    multipleFiles?: false;
+};
+export type PickMultipleFilesOptions = {
+    /**
+     * A uri pointing to an initial folder in which the file picker is opened.
+     */
+    initialUri?: string;
+    /**
+     * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
+     * to be picked. It also supports wildcards like `'image/*'` to choose any image. To allow any type
+     * of document you can use `'&ast;/*'`.
+     * @default '&ast;/*'
+     */
+    mimeTypes?: string | string[];
+    /**
+     * Allows multiple files to be selected from the system UI.
+     * @default false
+     */
+    multipleFiles: true;
 };
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map

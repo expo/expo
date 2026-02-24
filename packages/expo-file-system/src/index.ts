@@ -9,6 +9,9 @@ export {
   type PathInfo,
   type DirectoryInfo,
   type DownloadOptions,
+  type PickFileOptions,
+  type PickSingleFileOptions,
+  type PickMultipleFilesOptions,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';
