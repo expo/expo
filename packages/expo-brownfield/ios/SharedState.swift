@@ -3,8 +3,14 @@ import ExpoModulesCore
 
 public final class SharedState: SharedObject {
   private let lock = NSLock()
+  private let key: String
   private var value: Any?
   private var listeners: [(Any?) -> Void] = []
+
+  public init(_ key: String) {
+    self.key = key
+    super.init()
+  }
 
   public func get() -> Any? {
     lock.lock()
@@ -20,8 +26,8 @@ public final class SharedState: SharedObject {
     lock.unlock()
 
     emit(event: "change", arguments: ["value": newValue])
-
     listenersSnapshot.forEach { $0(newValue) }
+    BrownfieldStateInternal.shared.maybeNotifyKeyRecreated(self.key)
   }
 
   public func addListener(_ listener: @escaping (Any?) -> Void) -> AnyCancellable {

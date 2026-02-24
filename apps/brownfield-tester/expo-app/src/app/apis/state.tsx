@@ -53,15 +53,13 @@ const DataTypesDemo = () => {
           stateKey="array"
           label="Array"
           text={JSON.stringify(array)}
-          onPress={() =>
-            setArray((p) => [...(p ?? []), 'ex', 1, 2.34, false, null, undefined, { a: 'b' }])
-          }
+          onPress={() => setArray((p) => [...(p ?? []), 'ex', 1, 2.34, false, { a: 'b' }])}
         />
         <DataTypesDemoItem
           stateKey="object"
           label="Object"
           text={JSON.stringify(object)}
-          onPress={() => setObject((p) => ({ ...p, a: 'b', c: { d: 'e', f: ['g', { h: 'i' }] } }))}
+          onPress={() => setObject({ a: 'b', c: { d: 'e', f: ['g', { h: 'i' }] } })}
         />
       </View>
     </View>

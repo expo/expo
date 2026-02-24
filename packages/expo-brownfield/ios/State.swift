@@ -2,10 +2,15 @@ import Combine
 import Foundation
 
 public final class BrownfieldStateInternal {
-  private static let lock = NSLock()
-  private static var registry: [String: SharedState] = [:]
+  public static let shared = BrownfieldStateInternal()
 
-  public static func getOrCreate(_ key: String) -> SharedState {
+  private let lock = NSLock()
+  private var expoModule: ExpoBrownfieldStateModule?
+
+  private var registry: [String: SharedState] = [:]
+  private var deletedKeys: Set<String> = []
+
+  public func getOrCreate(_ key: String) -> SharedState {
     lock.lock()
     defer { lock.unlock() }
 
@@ -13,26 +18,26 @@ public final class BrownfieldStateInternal {
       return existing
     }
 
-    let state = SharedState()
+    let state = SharedState(key)
     registry[key] = state
 
     return state
   }
 
-  public static func get(_ key: String) -> Any? {
+  public func get(_ key: String) -> Any? {
     lock.lock()
     defer { lock.unlock() }
     return registry[key]?.get()
   }
 
-  public static func set(_ key: String, _ value: Any?) {
+  public func set(_ key: String, _ value: Any?) {
     let state: SharedState
     lock.lock()
 
     if let existing = registry[key] {
       state = existing
     } else {
-      state = SharedState()
+      state = SharedState(key)
       registry[key] = state
     }
     lock.unlock()
@@ -40,7 +45,7 @@ public final class BrownfieldStateInternal {
     state.set(value)
   }
 
-  public static func subscribe(
+  public func subscribe(
     _ key: String,
     _ callback: @escaping (Any?) -> Void
   ) -> AnyCancellable {
@@ -50,7 +55,7 @@ public final class BrownfieldStateInternal {
     if let existing = registry[key] {
       state = existing
     } else {
-      state = SharedState()
+      state = SharedState(key)
       registry[key] = state
     }
     lock.unlock()
@@ -58,9 +63,26 @@ public final class BrownfieldStateInternal {
     return state.addListener(callback)
   }
 
-  public static func delete(_ key: String) -> Any? {
+  public func delete(_ key: String) -> Any? {
     lock.lock()
     defer { lock.unlock() }
+    deletedKeys.insert(key)
     return registry.removeValue(forKey: key)?.get()
+  }
+
+  public func maybeNotifyKeyRecreated(_ key: String) {
+    lock.lock()
+    if !deletedKeys.contains(key) {
+      lock.unlock()
+      return
+    }
+    deletedKeys.remove(key)
+    lock.unlock()
+
+    expoModule?.notifyKeyRecreated(key)
+  }
+
+  public func setExpoModule(_ expoModule: ExpoBrownfieldStateModule?) {
+    self.expoModule = expoModule
   }
 }

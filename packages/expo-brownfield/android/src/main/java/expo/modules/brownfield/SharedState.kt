@@ -6,7 +6,7 @@ fun interface Removable {
   fun remove()
 }
 
-class SharedState : SharedObject() {
+class SharedState(val key: String) : SharedObject() {
   private var value: Any? = null
   private val listeners = mutableListOf<(Any?) -> Unit>()
 
@@ -24,6 +24,7 @@ class SharedState : SharedObject() {
     }
     emit("change", mapOf("value" to newValue))
     listenersSnapshot.forEach { it(newValue) }
+    BrownfieldState.maybeNotifyKeyRecreated(key)
   }
 
   fun addListener(listener: ((Any?) -> Unit)): Removable {
