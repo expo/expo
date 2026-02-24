@@ -1,0 +1,67 @@
+---
+title: Divider
+description: A Jetpack Compose Divider component for creating visual separators.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Divider matches the official Jetpack Compose [HorizontalDivider API](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#HorizontalDivider) and creates a thin horizontal line to visually separate content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic divider
+
+```tsx BasicDividerExample.tsx
+import { Host, Divider, Column, Text } from '@expo/ui/jetpack-compose';
+
+export default function BasicDividerExample() {
+  return (
+    <Host matchContents>
+      <Column>
+        <Text>First section</Text>
+        <Divider />
+        <Text>Second section</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Divider with padding modifier
+
+Use the `modifiers` prop to add padding around the divider.
+
+```tsx DividerWithPaddingExample.tsx
+import { Host, Divider, Column, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function DividerWithPaddingExample() {
+  return (
+    <Host matchContents>
+      <Column>
+        <Text>Section A</Text>
+        <Divider modifiers={[paddingAll(16)]} />
+        <Text>Section B</Text>
+        <Divider modifiers={[paddingAll(16)]} />
+        <Text>Section C</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Divider } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/divider" apiName="Divider" />
