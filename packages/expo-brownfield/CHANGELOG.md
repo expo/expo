@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [state] add ios implementation & improvements ([#43236](https://github.com/expo/expo/pull/43236) by [@pmleczek](https://github.com/pmleczek))
+
 ## 55.0.9 — 2026-02-20
 
 ### 🐛 Bug fixes
