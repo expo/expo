@@ -1,0 +1,83 @@
+---
+title: ListItem
+description: A Jetpack Compose ListItem component for displaying structured list entries.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A list item component that follows Material Design 3 guidelines for structured list entries with headline, supporting text, and leading/trailing slots. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/lists) for more information.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic list item
+
+```tsx BasicListItem.tsx
+import { Host, ListItem } from '@expo/ui/jetpack-compose';
+
+export default function BasicListItem() {
+  return (
+    <Host matchContents>
+      <ListItem headline="Settings" />
+    </Host>
+  );
+}
+```
+
+### With supporting text and overline
+
+Use the `supportingText` prop to add a secondary line and `overlineText` for a category label above the headline.
+
+```tsx ListItemWithText.tsx
+import { Host, ListItem } from '@expo/ui/jetpack-compose';
+
+export default function ListItemWithText() {
+  return (
+    <Host matchContents>
+      <ListItem
+        overlineText="ACCOUNT"
+        headline="Profile"
+        supportingText="Manage your account settings and preferences"
+      />
+    </Host>
+  );
+}
+```
+
+### With leading and trailing slots
+
+Use `ListItem.Leading` and `ListItem.Trailing` sub-components to add content to the start and end of the list item.
+
+```tsx ListItemWithSlots.tsx
+import { Host, ListItem, Icon } from '@expo/ui/jetpack-compose';
+
+export default function ListItemWithSlots() {
+  return (
+    <Host matchContents>
+      <ListItem headline="Notifications" supportingText="Manage notification preferences">
+        <ListItem.Leading>
+          <Icon source={require('./assets/notifications.xml')} contentDescription="Notifications" />
+        </ListItem.Leading>
+        <ListItem.Trailing>
+          <Icon source={require('./assets/chevron_forward.xml')} contentDescription="Navigate" />
+        </ListItem.Trailing>
+      </ListItem>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { ListItem } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/listitem" apiName="ListItem" />
