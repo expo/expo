@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added CLI extension for accessing running and open SQLite instances from the CLI and the MCP server.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
