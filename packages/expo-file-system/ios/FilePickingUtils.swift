@@ -22,6 +22,15 @@ internal struct FilePickingContext {
   var pickedUrl: URL?
 }
 
+struct FilePickingOptions: Record {
+  @Field
+  var initialUri: URL?
+  @Field
+  var mimeType: String?
+  @Field
+  var multipleFiles: Bool?
+}
+
 internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate {
   private let resultHandler: FilePickingResultHandler
   private let isDirectory: Bool
