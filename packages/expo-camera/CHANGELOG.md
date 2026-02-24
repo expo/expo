@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Web] Expands support for barcode types that can be scanned.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

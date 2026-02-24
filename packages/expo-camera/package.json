@@ -34,7 +34,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "invariant": "^2.2.4"
+    "barcode-detector": "^3.0.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2"
