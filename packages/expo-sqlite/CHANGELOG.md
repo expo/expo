@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added CLI extension for accessing running and open SQLite instances from the CLI and the MCP server.
+- Added CLI extension for accessing running and open SQLite instances from the CLI and the MCP server. ([#43385](https://github.com/expo/expo/pull/43385) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
