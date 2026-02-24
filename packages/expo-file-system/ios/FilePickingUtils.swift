@@ -15,7 +15,7 @@ internal protocol FilePickingResultHandler {
 internal struct FilePickingContext {
   let promise: Promise
   let initialUri: URL?
-  let mimeType: String?
+  let mimeTypes: [String]
   let isDirectory: Bool
   let multipleDocuments: Bool
   let delegate: FilePickingDelegate
@@ -26,7 +26,7 @@ struct FilePickingOptions: Record {
   @Field
   var initialUri: URL?
   @Field
-  var mimeType: String?
+  var mimeTypes: [String]?
   @Field
   var multipleFiles: Bool?
 }
@@ -77,16 +77,12 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
   }
 }
 
-internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumentPickerViewController {
+internal func createFilePicker(initialUri: URL?, mimeTypes: [String]) -> UIDocumentPickerViewController {
   if #available(iOS 14.0, *) {
-    let utTypes: [UTType]
-    if let mimeType = mimeType {
-      if let utType = UTType(mimeType: mimeType) {
-        utTypes = [utType]
-      } else {
-        utTypes = [UTType.item]
-      }
-    } else {
+    var utTypes: [UTType] = mimeTypes.map { mimeType in
+      UTType(mimeType: mimeType) ?? UTType.item
+    }
+    if utTypes.isEmpty {
       utTypes = [UTType.item]
     }
 
@@ -100,8 +96,8 @@ internal func createFilePicker(initialUri: URL?, mimeType: String?) -> UIDocumen
   }
 
   let utiTypes: [String]
-  if let mimeType = mimeType {
-    utiTypes = [toUTI(mimeType: mimeType)]
+  if !mimeTypes.isEmpty {
+    utiTypes = mimeTypes
   } else {
     utiTypes = [kUTTypeItem as String]
   }
