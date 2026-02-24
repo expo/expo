@@ -13,17 +13,17 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String, enableDeviceFallback: Boolean) {
-  private var authType: Int = if (enableDeviceFallback) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
+class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String, isUserPresenceRequired: Boolean) {
+  private var authType: Int = if (isUserPresenceRequired) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
   private var executor: Executor = ContextCompat.getMainExecutor(context)
-  private var promptInfo = buildPromptInfo(context, title, enableDeviceFallback)
+  private var promptInfo = buildPromptInfo(context, title, isUserPresenceRequired)
 
-  private fun buildPromptInfo(context: Context, title: String, enableDeviceFallback: Boolean): PromptInfo {
+  private fun buildPromptInfo(context: Context, title: String, isUserPresenceRequired: Boolean): PromptInfo {
     var prompt = PromptInfo.Builder()
       .setTitle(title)
       .setAllowedAuthenticators(authType)
 
-    if (!enableDeviceFallback) {
+    if (!isUserPresenceRequired) {
       prompt = prompt.
         setNegativeButtonText(context.getString(android.R.string.cancel))
     }

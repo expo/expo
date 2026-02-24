@@ -1,5 +1,6 @@
 'use strict';
 
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 export const name = 'SecureStore';
@@ -87,7 +88,7 @@ export function test(t) {
             try {
               await SecureStore.setItemAsync(key, value, {
                 keychainService: 'service',
-                requireAuthentication: true,
+                requireAuthentication: 'biometry',
               });
               if (!canSave) {
                 t.fail('Expected SecureStore.setItemAsync to throw an error');
@@ -118,8 +119,7 @@ export function test(t) {
             try {
               await SecureStore.setItemAsync(key, value, {
                 keychainService: 'fallback_service',
-                enableDeviceFallback: true,
-                requireAuthentication: true,
+                requireAuthentication: 'userPresence',
               });
               if (!canSave) {
                 t.fail('Expected SecureStore.setItemAsync to throw an error');
@@ -175,7 +175,12 @@ export function test(t) {
         t.expect(result).toBe(longValue);
       });
     });
+    // accessGroup is iOS-only (keychain access groups); Android does not support it
     t.describe('Stores with access group', () => {
+      if (Platform.OS !== 'ios') {
+        t.it('access group tests are iOS-only', () => {});
+        return;
+      }
       t.it('Set long value', async () => {
         const result = await SecureStore.setItemAsync(key, longValue, {
           accessGroup: 'group.dev.expo.Payments',

@@ -20,9 +20,10 @@ class AuthenticationHelper(
 ) {
   private var isAuthenticating = false
 
-  suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: Boolean, title: String, enableDeviceFallback: Boolean): Cipher {
-    if (requiresAuthentication) {
-      return openAuthenticationPrompt(cipher, title, enableDeviceFallback).cryptoObject?.cipher
+  suspend fun authenticateCipher(cipher: Cipher, requiresAuthentication: String?, title: String): Cipher {
+    if (requiresAuthentication != null) {
+      val isUserPresenceRequired = requiresAuthentication == "userPresence"
+      return openAuthenticationPrompt(cipher, title, isUserPresenceRequired).cryptoObject?.cipher
         ?: throw AuthenticationException("Couldn't get cipher from authentication result")
     }
     return cipher
@@ -31,7 +32,7 @@ class AuthenticationHelper(
   private suspend fun openAuthenticationPrompt(
     cipher: Cipher,
     title: String,
-    enableDeviceFallback: Boolean
+    isUserPresenceRequired: Boolean
   ): BiometricPrompt.AuthenticationResult {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       throw AuthenticationException("Biometric authentication requires Android API 23")
@@ -43,7 +44,7 @@ class AuthenticationHelper(
     isAuthenticating = true
 
     try {
-      if (enableDeviceFallback) {
+      if (isUserPresenceRequired) {
         assertDeviceSecurity()
       } else {
         assertBiometricsSupport()
@@ -52,7 +53,7 @@ class AuthenticationHelper(
       val fragmentActivity = getCurrentActivity() as? FragmentActivity
         ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
 
-      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title, enableDeviceFallback)
+      val authenticationPrompt = AuthenticationPrompt(fragmentActivity, context, title, isUserPresenceRequired)
 
       return withContext(Dispatchers.Main.immediate) {
         return@withContext authenticationPrompt.authenticate(cipher)
