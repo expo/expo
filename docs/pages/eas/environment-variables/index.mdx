@@ -34,7 +34,7 @@ To create a new environment variable, use the EAS CLI and run the following comm
 
 <Terminal
   cmd={[
-    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://api.example.com --environment production --visibility plainText',
+    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://api.example.com --environment production --visibility plaintext',
   ]}
 />
 
@@ -48,7 +48,7 @@ Verify if the environment variable is created successfully by confirming it appe
 
 <Step label="3">
 
-To use the environment variable in EAS Build, add `environment` field to the `prodcuction` build profile:
+To use the environment variable in EAS Build, add `environment` field to the `production` build profile:
 
 ```json eas.json
 {
