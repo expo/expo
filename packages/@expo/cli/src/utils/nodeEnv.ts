@@ -19,7 +19,7 @@ export const event = events('env', (t) => [
     mode: 'development' | 'production';
   }>(),
   t.event<'load', {
-    mode: string;
+    mode: string | undefined;
     files: string[];
     env: Record<string, string | undefined>;
   }>(),
@@ -39,12 +39,6 @@ export function setNodeEnv(mode: 'development' | 'production') {
     babelEnv: process.env.BABEL_ENV,
     mode,
   });
-}
-
-interface LoadEnvFilesOptions {
-  force?: boolean;
-  silent?: boolean;
-  mode?: string;
 }
 
 interface LoadEnvFilesOptions {
