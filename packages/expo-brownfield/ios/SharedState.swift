@@ -1,4 +1,3 @@
-import Combine
 import ExpoModulesCore
 
 public final class SharedState: SharedObject {
