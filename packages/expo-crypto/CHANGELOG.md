@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed support in API routes. ([#43405](https://github.com/expo/expo/pull/43405) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-20
