@@ -47,12 +47,12 @@ export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
 
 export type PickSingleFileOptions = {
   initialUri?: string;
-  mimeType?: string;
+  mimeTypes?: string[];
   multipleFiles?: false;
 };
 export type PickMultipleFilesOptions = {
   initialUri?: string;
-  mimeType?: string;
+  mimeTypes?: string[];
   multipleFiles: true;
 };
 
