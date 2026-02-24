@@ -1,5 +1,4 @@
 import AwaitLock from 'await-lock';
-import { startCliListenerAsync } from 'expo/devtools';
 import { basename } from './pathUtils';
 const DEVTOOLS_PLUGIN_NAME = 'expo-sqlite';
 const LIST_TABLES_QUERY = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name";
@@ -101,7 +100,23 @@ function setupDevToolsListeners() {
                 });
                 return;
             }
-            const result = await executeQueryAsync(params.query, database);
+            const trimmedQuery = params.query.trim().toUpperCase();
+            const isReadQuery = trimmedQuery.startsWith('SELECT') || trimmedQuery.startsWith('PRAGMA');
+            let result;
+            if (isReadQuery) {
+                const rows = await database.getAllAsync(params.query, params.params || []);
+                const columns = rows.length > 0 && rows[0] && typeof rows[0] === 'object' ? Object.keys(rows[0]) : [];
+                result = { rows, columns };
+            }
+            else {
+                const runResult = await database.runAsync(params.query, params.params || []);
+                result = {
+                    rows: [],
+                    columns: [],
+                    changes: runResult.changes,
+                    lastInsertRowId: runResult.lastInsertRowId,
+                };
+            }
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'executeQuery',
@@ -129,7 +144,7 @@ function setupDevToolsListeners() {
                 });
                 return;
             }
-            const tables = await getTablesAsync(database);
+            const tables = (await database.getAllAsync(LIST_TABLES_QUERY));
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'listTables',
@@ -157,7 +172,11 @@ function setupDevToolsListeners() {
                 });
                 return;
             }
-            const schema = await fetchTableSchemaAsync(params.tableName, database);
+            const tables = (await database.getAllAsync("SELECT name FROM sqlite_master WHERE type='table' AND name = ?", [params.tableName]));
+            if (tables.length === 0) {
+                throw new Error(`Table '${params.tableName}' not found`);
+            }
+            const schema = (await database.getAllAsync(`PRAGMA table_info(${params.tableName})`));
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'getTableSchema',
@@ -176,61 +195,69 @@ function setupDevToolsListeners() {
 }
 /* Setup listeners for the cli extensions client. */
 const EXTENSION_NAME = 'expo-sqlite-cli-extension';
-startCliListenerAsync(EXTENSION_NAME).then(({ addMessageListener }) => {
-    addMessageListener('listDatabases', async ({ sendResponseAsync }) => {
-        try {
-            if (registeredDatabases.size === 0) {
-                return sendResponseAsync('No databases registered.');
-            }
-            await sendResponseAsync('Databases: ' +
-                Array.from(registeredDatabases.keys())
-                    .map((databasePath) => basename(databasePath))
-                    .join(', '));
-        }
-        catch (error) {
-            await sendResponseAsync('An error occurred while listing databases: ' + errorMessage(error));
-        }
-    });
-    addMessageListener('executeQuery', async ({ sendResponseAsync, params }) => {
-        try {
-            const database = findDatabase(params.name);
-            if (!database) {
-                return sendResponseAsync(`Database ${params.name} not found`);
-            }
-            const result = await executeQueryAsync(params.query, database);
-            await sendResponseAsync(`\n\n${formatTable(result.columns, result.rows)}`);
-        }
-        catch (error) {
-            await sendResponseAsync('An error occurred while executing the query: ' + errorMessage(error));
-        }
-    });
-    addMessageListener('listTables', async ({ sendResponseAsync, params }) => {
-        try {
-            const database = findDatabase(params.name);
-            if (!database) {
-                return sendResponseAsync(`Database ${params.name} not found`);
-            }
-            const tables = await getTablesAsync(database);
-            await sendResponseAsync(`Tables in ${basename(database.databasePath)}: ` + tables.map((t) => t.name).join(', '));
-        }
-        catch (error) {
-            await sendResponseAsync('An error occurred while listing tables: ' + errorMessage(error));
-        }
-    });
-    addMessageListener('getTableSchema', async ({ sendResponseAsync, params }) => {
-        try {
-            const database = findDatabase(params.name);
-            if (!database) {
-                return sendResponseAsync(`Database ${params.name} not found`);
-            }
-            const schema = await fetchTableSchemaAsync(params.table, database);
-            await sendResponseAsync(`\n\n${formatTable(['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], schema)}`);
-        }
-        catch (error) {
-            await sendResponseAsync('An error occurred while retrieving the table schema: ' + errorMessage(error));
-        }
-    });
-});
+// Lazy-require @expo/devtools to avoid forcing full module initialization in environments
+// where native modules aren't available (e.g. Jest). startCliListenerAsync is only exported
+// from the Node.js (CJS) entry point of @expo/devtools.
+if (__DEV__) {
+    const { startCliListenerAsync } = require('@expo/devtools');
+    if (typeof startCliListenerAsync === 'function') {
+        startCliListenerAsync(EXTENSION_NAME).then(({ addMessageListener }) => {
+            addMessageListener('listDatabases', async ({ sendResponseAsync }) => {
+                try {
+                    if (registeredDatabases.size === 0) {
+                        return sendResponseAsync('No databases registered.');
+                    }
+                    await sendResponseAsync('Databases: ' +
+                        Array.from(registeredDatabases.keys())
+                            .map((databasePath) => basename(databasePath))
+                            .join(', '));
+                }
+                catch (error) {
+                    await sendResponseAsync('An error occurred while listing databases: ' + errorMessage(error));
+                }
+            });
+            addMessageListener('executeQuery', async ({ sendResponseAsync, params }) => {
+                try {
+                    const database = findDatabase(params.name);
+                    if (!database) {
+                        return sendResponseAsync(`Database ${params.name} not found`);
+                    }
+                    const result = await executeQueryAsync(params.query, database);
+                    await sendResponseAsync(`\n\n${formatTable(result.columns, result.rows)}`);
+                }
+                catch (error) {
+                    await sendResponseAsync('An error occurred while executing the query: ' + errorMessage(error));
+                }
+            });
+            addMessageListener('listTables', async ({ sendResponseAsync, params }) => {
+                try {
+                    const database = findDatabase(params.name);
+                    if (!database) {
+                        return sendResponseAsync(`Database ${params.name} not found`);
+                    }
+                    const tables = await getTablesAsync(database);
+                    await sendResponseAsync(`Tables in ${basename(database.databasePath)}: ` + tables.map((t) => t.name).join(', '));
+                }
+                catch (error) {
+                    await sendResponseAsync('An error occurred while listing tables: ' + errorMessage(error));
+                }
+            });
+            addMessageListener('getTableSchema', async ({ sendResponseAsync, params }) => {
+                try {
+                    const database = findDatabase(params.name);
+                    if (!database) {
+                        return sendResponseAsync(`Database ${params.name} not found`);
+                    }
+                    const schema = await fetchTableSchemaAsync(params.table, database);
+                    await sendResponseAsync(`\n\n${formatTable(['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk'], schema)}`);
+                }
+                catch (error) {
+                    await sendResponseAsync('An error occurred while retrieving the table schema: ' + errorMessage(error));
+                }
+            });
+        });
+    }
+}
 function errorMessage(error) {
     return typeof error === 'object' && error !== null && 'message' in error
         ? String(error.message)
