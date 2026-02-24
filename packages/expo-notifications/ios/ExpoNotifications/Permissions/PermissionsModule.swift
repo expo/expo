@@ -33,10 +33,10 @@ public class PermissionsModule: Module {
         : defaultAuthorizationOptions
       requester.setAuthorizationOptions(options)
 
-      // Call requestAuthorization directly to ensure new options are always
+      // Call `requestAuthorization` directly to ensure new options are always
       // forwarded to the OS, even if notifications were previously granted.
-      // iOS safely handles repeated calls to requestAuthorization(options:).
-      // expo go notifications permissions are not scoped
+      // iOS safely handles repeated calls to `requestAuthorization(options:)`.
+      // Expo Go notifications permissions are not scoped
       requester.requestAuthorizationOptions(options, resolver: promise.resolver, rejecter: promise.legacyRejecter)
     }
   }
