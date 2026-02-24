@@ -167,7 +167,7 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
       const sub = n.subtitle ? ` (${n.subtitle})` : '';
       return `${names}${sub} [${n.badge}]`;
     })
-    .join(' → ');
+    .join('\n→ ');
 
   return (
     <div
