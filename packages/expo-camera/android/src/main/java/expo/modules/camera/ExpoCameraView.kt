@@ -542,7 +542,7 @@ class ExpoCameraView(
           try {
             analyzer.setAnalyzer(
               ContextCompat.getMainExecutor(context),
-              BarcodeAnalyzer(lensFacing, barcodeFormats) {
+              BarcodeAnalyzer(barcodeFormats) {
                 onBarcodeScanned(it)
               }
             )
