@@ -12,6 +12,7 @@ import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
+import type { AddressInfo } from 'net';
 import { parse } from 'url';
 import type { WebSocketServer } from 'ws';
 
@@ -20,7 +21,7 @@ import { Log } from '../../../log';
 import type { ConnectAppType } from '../middleware/server.types';
 
 export const runServer = async (
-  metroBundler: MetroBundlerDevServer,
+  _metroBundler: MetroBundlerDevServer,
   config: ConfigT,
   {
     hasReducedPerformance = false,
@@ -39,6 +40,7 @@ export const runServer = async (
     mockServer: boolean;
   }
 ): Promise<{
+  address: AddressInfo | null;
   server: http.Server | https.Server;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
   metro: Server;
@@ -124,14 +126,10 @@ export const runServer = async (
   };
 
   if (mockServer) {
-    return { server: httpServer, hmrServer: null, metro: metroServer };
+    return { address: null, server: httpServer, hmrServer: null, metro: metroServer };
   }
 
-  return new Promise<{
-    server: http.Server | https.Server;
-    hmrServer: MetroHmrServer<MetroHmrClient>;
-    metro: Server;
-  }>((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     httpServer.on('error', (error) => {
       reject(error);
     });
@@ -164,7 +162,14 @@ export const runServer = async (
         }
       });
 
-      resolve({ server: httpServer, hmrServer, metro: metroServer });
+      const address = httpServer.address();
+
+      resolve({
+        address: address && typeof address === 'object' ? address : null,
+        server: httpServer,
+        hmrServer,
+        metro: metroServer,
+      });
     });
   });
 };
