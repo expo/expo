@@ -107,8 +107,11 @@ export function _createSideEffectMatcher(
   if (Array.isArray(packageJson.sideEffects)) {
     const sideEffects = packageJson.sideEffects
       .filter((sideEffect) => typeof sideEffect === 'string')
-      .map((sideEffect: any) => sideEffect.replace(/^\.\//, ''));
-    sideEffectMatcher = picomatch(sideEffects, { matchBase: true });
+      .map((sideEffect: any) => {
+        const pattern = sideEffect.replace(/^\.\//, '');
+        return pattern.includes('/') ? pattern : `**/${pattern}`;
+      });
+    sideEffectMatcher = picomatch(sideEffects);
   } else if (typeof packageJson.sideEffects === 'boolean' || !packageJson.sideEffects) {
     sideEffectMatcher = packageJson.sideEffects;
   } else {
@@ -121,7 +124,7 @@ export function _createSideEffectMatcher(
     } else if (typeof sideEffectMatcher === 'boolean') {
       return sideEffectMatcher;
     } else {
-      const relativeName = path.relative(dirRoot, fp);
+      const relativeName = path.isAbsolute(fp) ? path.relative(dirRoot, fp) : fp;
       return sideEffectMatcher(relativeName);
     }
   };
