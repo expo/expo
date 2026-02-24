@@ -7,7 +7,7 @@ import { buildIosTest, buildTestCommon, expectPrebuild } from '../../utils/test'
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
-const PREBUILD_WORKSPACE_NAME = 'buildiospb';
+const PREBUILD_WORKSPACE_NAME = 'brownfield';
 
 /**
  * Tests the `build:ios` command
