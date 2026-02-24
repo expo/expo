@@ -35,13 +35,14 @@ public class ExpoNotificationsPermissionsRequester: NSObject, EXPermissionsReque
   }
 
   private func makePermissionsResult(from settings: UNNotificationSettings) -> [AnyHashable: Any] {
-    let generalStatus: EXPermissionStatus = {
-      return switch settings.authorizationStatus {
-      case .authorized: EXPermissionStatusGranted
-      case .denied: EXPermissionStatusDenied
-      default: EXPermissionStatusUndetermined
-      }
-    }()
+    let generalStatus: EXPermissionStatus = switch settings.authorizationStatus {
+    case .authorized:
+      EXPermissionStatusGranted
+    case .denied:
+      EXPermissionStatusDenied
+    default:
+      EXPermissionStatusUndetermined
+    }
 
     let status: [String: Any?] = [
       "status": settings.authorizationStatus.rawValue,
