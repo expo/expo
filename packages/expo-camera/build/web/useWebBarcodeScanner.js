@@ -1,14 +1,10 @@
 import * as React from 'react';
 import * as WebBarcodeScanner from './WebBarcodeScanner';
-/**
- * Map barcode coordinates from the video's intrinsic resolution to the
- * view's layout dimensions, matching native behavior (simple proportional mapping).
- */
-function mapToViewCoordinates(result, videoWidth, videoHeight, viewWidth, viewHeight, isMirrored) {
-    const scaleX = viewWidth / videoWidth;
-    const scaleY = viewHeight / videoHeight;
+function mapToViewCoordinates(result, videoWidth, viewHeight, height, width, isMirrored) {
+    const scaleX = width / videoWidth;
+    const scaleY = viewHeight / height;
     const mapPoint = (p) => {
-        const x = isMirrored ? viewWidth - p.x * scaleX : p.x * scaleX;
+        const x = isMirrored ? width - p.x * scaleX : p.x * scaleX;
         const y = p.y * scaleY;
         return { x, y };
     };
@@ -46,7 +42,6 @@ export function useWebBarcodeScanner(video, { isEnabled, barcodeTypes, interval,
             const bitmap = await createImageBitmap(videoEl);
             const results = await WebBarcodeScanner.detect(bitmap, barcodeTypes);
             bitmap.close();
-            // Use the video element's rendered size as the view dimensions
             const viewWidth = videoEl.clientWidth || videoWidth;
             const viewHeight = videoEl.clientHeight || videoHeight;
             for (const raw of results) {
@@ -55,9 +50,6 @@ export function useWebBarcodeScanner(video, { isEnabled, barcodeTypes, interval,
             }
         }
         catch (error) {
-            if (__DEV__) {
-                console.warn('expo-camera: barcode scanning error', error);
-            }
             if (onError) {
                 onError({ nativeEvent: error });
             }
