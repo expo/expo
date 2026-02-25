@@ -26,7 +26,14 @@ Expo Router brings the best file-system routing concepts from the web to a unive
 
 We recommend creating a new Expo app using `create-expo-app` to create a project with Expo Router library already installed and configured:
 
-<Terminal cmd={['$ npx create-expo-app@latest']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
+  }}
+/>
 
 </Step>
 
@@ -41,7 +48,7 @@ Now, you can start your project by running:
 
 </Step>
 
-### Resources
+## Resources
 
 <BoxLink
   title="Expo Tutorial"
@@ -65,14 +72,14 @@ Now, you can start your project by running:
 ## Key features
 
 - **Native**: Built on top of our powerful [React Navigation suite](https://reactnavigation.org/), Expo Router navigation is truly native and platform-optimized by default.
-- **Shareable**: Every screen in your app is automatically [deep linkable](/linking/overview/). Making any route in your app shareable with links.
+- **Shareable**: Every screen in your app is automatically [deep linkable](/linking/overview/), making any route in your app shareable with links.
 - **Offline-first**: Apps are cached and run offline-first, with automatic updates when you publish a new version. Handles all incoming native URLs without a network connection or server.
 - **Optimized**: Routes are automatically optimized with [lazy-evaluation in production](/router/web/async-routes/), and deferred bundling in development.
 - **Iteration**: Universal Fast Refresh across Android, iOS, and web, along with artifact memoization in the bundler to keep you moving fast at scale.
 - **Universal**: Android, iOS, and web share a unified navigation structure, with the ability to drop-down to platform-specific APIs at the route level.
 - **Discoverable**: Expo Router enables build-time [static rendering](/router/web/static-rendering/) on web, and [universal linking](/linking/overview/) to native. Meaning your app content can be indexed by search engines.
 
-### Using a different navigation library
+## Using a different navigation library
 
 You can use any other navigation library, like [React Navigation](https://reactnavigation.org/docs/getting-started#installation), in your Expo project. However, if you are building a new app, **we recommend using Expo Router for all the features described above**. With other navigation libraries, you might have to implement your own strategies for some of these features, such as shareable links or handling web and native navigation in the same project.
 
