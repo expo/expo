@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [ios] support custom images in submenus ([#43414](https://github.com/expo/expo/pull/43414) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
