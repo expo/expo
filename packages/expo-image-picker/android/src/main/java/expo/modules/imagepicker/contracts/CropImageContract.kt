@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
-import androidx.core.net.toFile
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImage
@@ -21,16 +21,21 @@ import expo.modules.imagepicker.toImageFileExtension
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.runBlocking
+import java.io.File
 import java.io.Serializable
 
 internal class CropImageContract(
   private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
+  private var outputFile: File? = null
+
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, expo.modules.imagepicker.ExpoCropImageActivity::class.java).apply {
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri.toUri())
     val compressFormat = mediaType?.toBitmapCompressFormat() ?: Bitmap.CompressFormat.JPEG
     val cacheDirectory = appContextProvider.appContext.cacheDirectory
-    val outputUri = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension()).toUri()
+    val file = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension())
+    outputFile = file
+    val outputUri = FileProvider.getUriForFile(context, context.packageName + ".ImagePickerFileProvider", file)
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
@@ -68,9 +73,10 @@ internal class CropImageContract(
     if (resultCode == Activity.RESULT_CANCELED || result == null) {
       return ImagePickerContractResult.Cancelled
     }
+    val targetFile = requireNotNull(outputFile)
     val targetUri = requireNotNull(result.uriContent)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
-    runBlocking { copyExifData(input.sourceUri.toUri(), targetUri.toFile(), contentResolver) }
+    runBlocking { copyExifData(input.sourceUri.toUri(), targetFile, contentResolver) }
     return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
   }
 }
