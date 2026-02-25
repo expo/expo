@@ -100,7 +100,7 @@ Add the following configuration to your **metro.config.js**. If you don't have t
 
 If you deploy your app to web hosting services, you will also need to add the `Cross-Origin-Embedder-Policy` and `Cross-Origin-Opener-Policy` headers to your web server. [Learn more about the `COEP`, `COOP` headers, and `SharedArrayBuffer`](https://developer.chrome.com/blog/enabling-shared-array-buffer/).
 
-If you deploy your app on [EAS Hosting](/eas/hosting/introduction/), you can configure the headers in your **app.json**:
+If you deploy your app on [EAS Hosting](/eas/hosting/introduction/), you can configure the headers in your app config:
 
 ```json app.json
 {
@@ -521,7 +521,7 @@ expect(row.data).toEqual(blob);
 
 ### Browse an on-device database
 
-The `expo-sqlite` library includes a built-in DevTools inspector plugin that is automatically enabled in development — no extra setup needed. It lets you browse tables, view and edit rows, run SQL queries, and export databases directly from your browser. To open it, press <kbd>shift+m</kbd> in the Expo CLI terminal to open the dev tools menu, and then select **Open expo-sqlite** to launch the inspector.
+The `expo-sqlite` library includes a built-in DevTools inspector plugin that is automatically enabled in development and requires no extra setup. It lets you browse tables, view and edit rows, run SQL queries, and export databases directly from your browser. To open it, press <kbd>shift+m</kbd> in the Expo CLI terminal to open the dev tools menu, and then select **Open expo-sqlite** to launch the inspector.
 
 <ContentSpotlight
   alt="SQLite inspector showing a data browser with table rows, edit/delete actions, and a sidebar listing tables"
