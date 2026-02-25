@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `launchCameraAsync()` hanging indefinitely on Android 16 devices with the 2025-09-05 security patch when camera permission is already granted. ([#39480](https://github.com/expo/expo/issues/39480) by [@Mako-L](https://github.com/Mako-L))
+- [Android] Fixed `launchCameraAsync()` hanging indefinitely on Android 16 devices with the 2025-09-05 security patch when camera permission is already granted. ([#39480](https://github.com/expo/expo/issues/39480) by [@Mako-L](https://github.com/Mako-L)) ([#43438](https://github.com/expo/expo/pull/43438) by [@Mako-L](https://github.com/Mako-L))
 
 ### 💡 Others
 
