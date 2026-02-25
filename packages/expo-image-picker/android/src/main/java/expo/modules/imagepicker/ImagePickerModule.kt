@@ -273,6 +273,17 @@ class ImagePickerModule : Module() {
       return@suspendCancellableCoroutine
     }
 
+    // Workaround for Android 16 (2025-09-05 security patch) where askForPermissions()
+    // hangs forever when permissions are already granted. Check first with ContextCompat.
+    val cameraGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+    val storageGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ||
+      ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+
+    if (cameraGranted && storageGranted) {
+      continuation.resume(Unit)
+      return@suspendCancellableCoroutine
+    }
+
     permissions.askForPermissions(
       { permissionsResponse ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
