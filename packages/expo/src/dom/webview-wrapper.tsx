@@ -138,13 +138,15 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
     ...domProps,
     containerStyle: [containerStyle, debugZeroHeightStyle, dom?.containerStyle],
     onLayout: (__DEV__ ? debugOnLayout : dom?.onLayout) as RawWebViewProps['onLayout'],
-    injectedJavaScriptBeforeContentLoaded: [
+    injectedJavaScriptObject: {
       // Inject the top-most OS for the DOM component to read.
-      `window.$$EXPO_DOM_HOST_OS = ${JSON.stringify(process.env.EXPO_OS)};true;`,
-      // On first mount, inject `$$EXPO_INITIAL_PROPS` with the initial props.
-      `window.$$EXPO_INITIAL_PROPS = ${JSON.stringify(smartActions)};true;`,
+      EXPO_DOM_HOST_OS: process.env.EXPO_OS,
+      // Inject the initial props
+      initialProps: smartActions,
+    },
+    injectedJavaScript: [
       dom?.matchContents ? getInjectBodySizeObserverScript() : null,
-      dom?.injectedJavaScriptBeforeContentLoaded,
+      dom?.injectedJavaScript,
       'true;',
     ]
       .filter(Boolean)

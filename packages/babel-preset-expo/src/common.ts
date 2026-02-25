@@ -105,6 +105,11 @@ export function getIsServer(caller?: any) {
   return caller?.isServer ?? false;
 }
 
+export function getIsDomComponent(caller?: any): boolean {
+  assertExpoBabelCaller(caller);
+  return caller?.isDomComponent ?? false;
+}
+
 export function getIsLoaderBundle(caller?: any) {
   assertExpoBabelCaller(caller);
   return caller?.isLoaderBundle ?? false;

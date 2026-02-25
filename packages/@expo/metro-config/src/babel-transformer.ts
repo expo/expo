@@ -33,6 +33,8 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   projectRoot: string;
   /** When true, indicates this bundle should contain only the loader export */
   isLoaderBundle?: boolean;
+  /** When true, indicates this file is part of a DOM component bundle */
+  isDomComponent?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -142,6 +144,8 @@ function getBabelCaller({
     isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
       ? true
       : undefined,
+
+    isDomComponent: options.customTransformOptions?.dom != null ? true : undefined,
 
     // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
     // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed

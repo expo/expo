@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed DOM Components rendering issues on Android 9 devices. ([#43156](https://github.com/expo/expo/pull/43156) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-25

@@ -8,6 +8,7 @@ import {
   getBundler,
   getInlineEnvVarsEnabled,
   getIsDev,
+  getIsDomComponent,
   getIsFastRefreshEnabled,
   getIsNodeModule,
   getIsProd,
@@ -107,6 +108,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
+  const isDomComponent = api.caller(getIsDomComponent);
   const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
@@ -125,10 +127,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platform = 'web';
   }
 
-  // Use the simpler babel preset for web and server environments (both web and native SSR).
-  const isModernEngine = platform === 'web' || isServerEnv;
-
   const platformOptions = getOptions(options, platform);
+
+  // Use the simpler babel preset for web and server environments (both web and native SSR).
+  // For DOM components, the webview may be an Android factory WebView that doesn't support many modern JavaScript features,
+  // so we need to use the more compatible preset for web regardless.
+  const isModernEngine = (platform === 'web' || isServerEnv) && !isDomComponent;
 
   // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
   // adds extra dependencies (requires/imports) we need to disable it
@@ -152,7 +156,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     }
   }
 
-  if (platformOptions.unstable_transformProfile == null) {
+  if (platformOptions.unstable_transformProfile == null && !isDomComponent) {
     platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
   }
 

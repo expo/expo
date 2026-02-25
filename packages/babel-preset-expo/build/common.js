@@ -15,6 +15,7 @@ exports.getIsNodeModule = getIsNodeModule;
 exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
 exports.getIsServer = getIsServer;
+exports.getIsDomComponent = getIsDomComponent;
 exports.getIsLoaderBundle = getIsLoaderBundle;
 exports.getMetroSourceType = getMetroSourceType;
 exports.getBabelRuntimeVersion = getBabelRuntimeVersion;
@@ -118,6 +119,10 @@ function getReactCompiler(caller) {
 function getIsServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isServer ?? false;
+}
+function getIsDomComponent(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.isDomComponent ?? false;
 }
 function getIsLoaderBundle(caller) {
     assertExpoBabelCaller(caller);

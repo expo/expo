@@ -41,6 +41,7 @@ _This version does not introduce any user-facing changes._
 - Fix port prompt causing process hangs on some systems when checking the conflicting process's info ([#43054](https://github.com/expo/expo/pull/43054) by [@kitten](https://github.com/kitten))
 - Fix editor opening to not spawn terminal editors and have more fallbacks ([#43073](https://github.com/expo/expo/pull/43073) by [@kitten](https://github.com/kitten))
 - Fix `setResponseHeaders()` failing on responses with immutable headers ([#43111](https://github.com/expo/expo/pull/43111) by [@hassankhan](https://github.com/hassankhan))
+- Fixed DOM Components rendering issues on Android 9 devices. ([#43156](https://github.com/expo/expo/pull/43156) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
