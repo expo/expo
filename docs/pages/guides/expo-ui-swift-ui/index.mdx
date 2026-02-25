@@ -263,13 +263,13 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
 
 ### Secondary text styling
 
-There are several approaches for styling secondary or muted text. You can use `opacity` for a simple muted effect, or `foregroundStyle` for more control over the color. At this point, the [hierarchical styles](/versions/v55.0.0/sdk/ui/swift-ui/modifiers/#foregroundstylestyle) do not work for `Text`.
+Use `foregroundStyle` to apply a [hierarchical style](/versions/v55.0.0/sdk/ui/swift-ui/modifiers/#foregroundstylestyle), which will make text appear lighter and more subtle.
 
 <Tabs>
   <Tab label="Code">
     ```tsx Secondary text styling
     import { Button, Form, Host, HStack, Image, List, Section, Spacer, Text } from '@expo/ui/swift-ui';
-    import { buttonStyle, font, foregroundStyle, opacity, padding } from '@expo/ui/swift-ui/modifiers';
+    import { buttonStyle, font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
 
     export default function SecondaryTextExample() {
       return (
@@ -281,10 +281,9 @@ There are several approaches for styling secondary or muted text. You can use `o
                   <HStack>
                     <Text>Night Shift</Text>
                     <Spacer />
-                    {/* Using foregroundStyle for colored secondary text */}
                     <Text
                       modifiers={[
-                        foregroundStyle({ type: 'color', color: '#8E8E93' }),
+                        foregroundStyle({type: 'hierarchical', style: 'secondary'}),
                         padding({ trailing: 8 }),
                       ]}>
                       22:00 to 07:00
@@ -294,8 +293,7 @@ There are several approaches for styling secondary or muted text. You can use `o
                 </Button>
               </List>
               <List>
-                {/* Using opacity for muted secondary text */}
-                <Text modifiers={[opacity(0.6), font({ size: 14 })]}>
+                <Text modifiers={[foregroundStyle({type: 'hierarchical', style: 'secondary'}), font({ size: 14 })]}>
                   Save up to 280.7 MB. This will permanently delete all photos and videos kept in the
                   "Recently Deleted" album.
                 </Text>
@@ -406,7 +404,7 @@ Use `VStack` with `alignment="leading"` for list items with title and subtitle.
       Text,
       VStack,
     } from '@expo/ui/swift-ui';
-    import { buttonStyle, font, foregroundStyle, opacity, padding } from '@expo/ui/swift-ui/modifiers';
+    import { buttonStyle, font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
 
     export default function MultiLineListItemExample() {
       return (
@@ -427,14 +425,14 @@ Use `VStack` with `alignment="leading"` for list items with title and subtitle.
                   >
                     <VStack spacing={4} alignment="leading">
                       <Text>Chrome</Text>
-                      <Text modifiers={[opacity(0.6), font({ size: 14 })]}>
+                      <Text modifiers={[foregroundStyle({type: 'hierarchical', style: 'secondary'}), font({ size: 14 })]}>
                         Last used: Today
                       </Text>
                     </VStack>
                     <Spacer />
                     <Text
                       modifiers={[
-                        foregroundStyle({ type: 'color', color: '#8E8E93' }),
+                        foregroundStyle({type: 'hierarchical', style: 'secondary'}),
                         font({ size: 16 }),
                       ]}
                     >
