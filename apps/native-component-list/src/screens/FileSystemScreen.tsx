@@ -22,9 +22,7 @@ FileSystemScreen.navigationOptions = {
 
 export default function FileSystemScreen() {
   const { width } = useWindowDimensions();
-  const [copyToCache, setCopyToCache] = useState(false);
   const [multiple, setMultiple] = useState(false);
-  const [initialUri, setInitialUri] = useState(null);
   const [pickerResult, setPickerResult] = useState<File | File[] | null>(null);
 
   const openPicker = async () => {
@@ -113,12 +111,6 @@ export default function FileSystemScreen() {
             onPress={openPicker}
             title="Open document picker"
             buttonStyle={{ width: '100%' }}
-          />
-          <TitleSwitch
-            style={{ marginVertical: 10 }}
-            value={copyToCache}
-            setValue={setCopyToCache}
-            title="Copy to cache"
           />
           <TitleSwitch
             style={{ marginVertical: 10 }}
