@@ -10,7 +10,7 @@ import { Step } from '~/ui/components/Step';
 
 > **important** Data loaders are in alpha and are available in SDK 55 and later. They require either [static rendering](/router/web/static-rendering) or [server rendering](/router/web/server-rendering).
 
-Data loaders enable server-side data fetching for your routes. By exporting a `loader` function from a route file, you can fetch data on the server and access it in your component using the [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) hook. This lets you keep sensitive data and API keys on the server while providing your components with the data they need.
+Data loaders enable server-side data fetching for your routes. By exporting a `loader` function from a route file, you can fetch data on the server and access it in your component using the [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) hook. This lets you keep sensitive data and API keys on the server while providing your components with the data they need.
 
 ## Setup
 
@@ -72,7 +72,7 @@ Start the development server:
 
 ## Basic example
 
-Export a `loader` function from your route file and use the [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) hook to access the data in your component:
+Export a `loader` function from your route file and use the [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) hook to access the data in your component:
 
 ```tsx app/index.tsx
 import { Text, View } from 'react-native';
@@ -95,13 +95,13 @@ export default function Home() {
 }
 ```
 
-The `loader` function executes on the server, and its return value is serialized and passed to your component. This means you can safely use server-side secrets, database connections, and other resources that should not be exposed to the client. When using TypeScript, passing `typeof loader` as the generic parameter to [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) allows the hook to infer the return type from your loader function.
+The `loader` function executes on the server, and its return value is serialized and passed to your component. This means you can safely use server-side secrets, database connections, and other resources that should not be exposed to the client. When using TypeScript, passing `typeof loader` as the generic parameter to [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) allows the hook to infer the return type from your loader function.
 
-> **info** The [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) hook does not need to be called in the route component itself. It can be called in any child component within the route's component tree.
+> **info** The [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) hook does not need to be called in the route component itself. It can be called in any child component within the route's component tree.
 
 ### Using Suspense
 
-When a component calls the [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) hook while data is still loading, React suspends that component. The loading state cascades up the component tree until it reaches the nearest [`<Suspense>`](https://react.dev/reference/react/Suspense) boundary, which then renders its fallback.
+When a component calls the [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) hook while data is still loading, React suspends that component. The loading state cascades up the component tree until it reaches the nearest [`<Suspense>`](https://react.dev/reference/react/Suspense) boundary, which then renders its fallback.
 
 This lets you control exactly where loading fallbacks appear by placing [`<Suspense>`](https://react.dev/reference/react/Suspense) boundaries in your component tree:
 
@@ -132,7 +132,7 @@ function DataSection() {
 }
 ```
 
-In the above example, [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) is in a child component of `<Home>` and wrapped it with [`<Suspense>`](https://react.dev/reference/react/Suspense) to show a loading state.
+In the above example, [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) is in a child component of `<Home>` and wrapped it with [`<Suspense>`](https://react.dev/reference/react/Suspense) to show a loading state.
 
 ### Error handling
 

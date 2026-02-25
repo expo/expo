@@ -7,11 +7,11 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 > **important** `Stack.Toolbar` is an alpha API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes.
 
-[`Stack.Toolbar`](/versions/unversioned/sdk/router/#stacktoolbar) lets you add native iOS toolbar items to your Stack screens. You can place buttons, menus, and custom views in the header (left or right side) or in the bottom toolbar area.
+[`Stack.Toolbar`](/versions/latest/sdk/router/#stacktoolbar) lets you add native iOS toolbar items to your Stack screens. You can place buttons, menus, and custom views in the header (left or right side) or in the bottom toolbar area.
 
 ## Adding header buttons
 
-Use [`Stack.Toolbar.Button`](/versions/unversioned/sdk/router/#stacktoolbarbutton) within `Stack.Toolbar` with `placement="right"` or `placement="left"` to add buttons to the navigation header. This is useful for actions like favoriting, sharing, or editing content.
+Use [`Stack.Toolbar.Button`](/versions/latest/sdk/router/#stacktoolbarbutton) within `Stack.Toolbar` with `placement="right"` or `placement="left"` to add buttons to the navigation header. This is useful for actions like favoriting, sharing, or editing content.
 
 ```tsx app/notes/[id].tsx
 import { useState } from 'react';
@@ -104,7 +104,7 @@ export default function Page() {
 
 ## Building action menus
 
-For screens with multiple actions, use [`Stack.Toolbar.Menu`](/versions/unversioned/sdk/router/#stacktoolbarmenu) to group them into a dropdown menu:
+For screens with multiple actions, use [`Stack.Toolbar.Menu`](/versions/latest/sdk/router/#stacktoolbarmenu) to group them into a dropdown menu:
 
 ```tsx app/mail/[id].tsx
 import { useState } from 'react';
@@ -148,7 +148,7 @@ export default function EmailScreen() {
 }
 ```
 
-The `isOn` prop on [`Stack.Toolbar.MenuAction`](/versions/unversioned/sdk/router/#stacktoolbarmenuaction) shows a checkmark next to the action, useful for toggle states. The `destructive` prop styles the action in red to indicate a dangerous operation.
+The `isOn` prop on [`Stack.Toolbar.MenuAction`](/versions/latest/sdk/router/#stacktoolbarmenuaction) shows a checkmark next to the action, useful for toggle states. The `destructive` prop styles the action in red to indicate a dangerous operation.
 
 ### Nested submenus
 
@@ -220,13 +220,13 @@ export default function PhotosScreen() {
 }
 ```
 
-[`Stack.Toolbar.Spacer`](/versions/unversioned/sdk/router/#stacktoolbarspacer) creates flexible space between items, pushing them to opposite sides. This is how you achieve layouts like having buttons on both ends of the toolbar.
+[`Stack.Toolbar.Spacer`](/versions/latest/sdk/router/#stacktoolbarspacer) creates flexible space between items, pushing them to opposite sides. This is how you achieve layouts like having buttons on both ends of the toolbar.
 
 > **info** Bottom toolbars can only be used inside page components, not in layout files.
 
 ## Adding badges to buttons
 
-In header toolbars, you can add badges to indicate counts or status. Use [`Stack.Toolbar.Icon`](/versions/unversioned/sdk/router/#stacktoolbaricon), [`Stack.Toolbar.Label`](/versions/unversioned/sdk/router/#stacktoolbarlabel), and [`Stack.Toolbar.Badge`](/versions/unversioned/sdk/router/#stacktoolbarbadge) to compose the button content:
+In header toolbars, you can add badges to indicate counts or status. Use [`Stack.Toolbar.Icon`](/versions/latest/sdk/router/#stacktoolbaricon), [`Stack.Toolbar.Label`](/versions/latest/sdk/router/#stacktoolbarlabel), and [`Stack.Toolbar.Badge`](/versions/latest/sdk/router/#stacktoolbarbadge) to compose the button content:
 
 ```tsx app/inbox.tsx
 import { Stack } from 'expo-router';
@@ -253,7 +253,7 @@ export default function InboxScreen() {
 
 ## Embedding custom views
 
-When you need something beyond buttons and menus, use [`Stack.Toolbar.View`](/versions/unversioned/sdk/router/#stacktoolbarview) to embed any React Native component:
+When you need something beyond buttons and menus, use [`Stack.Toolbar.View`](/versions/latest/sdk/router/#stacktoolbarview) to embed any React Native component:
 
 ```tsx app/search.tsx
 import { Stack } from 'expo-router';
@@ -431,4 +431,4 @@ You cannot nest `Stack.Toolbar` components inside each other.
 
 ## Learn more
 
-For complete API documentation, including all available props, see the [`Stack.Toolbar` API reference](/versions/unversioned/sdk/router/#stacktoolbar).
+For complete API documentation, including all available props, see the [`Stack.Toolbar` API reference](/versions/latest/sdk/router/#stacktoolbar).

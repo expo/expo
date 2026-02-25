@@ -349,6 +349,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/latest/sdk/router/#href-1',
     BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
+    ScrubbingModeOptions: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
     BaseNativeTabsTriggerIconProps:
       '/versions/latest/sdk/router-native-tabs/#basenativetabstriggericonprops',
     NativeTabsTriggerBadgeProps:
