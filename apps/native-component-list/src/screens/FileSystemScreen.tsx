@@ -1,4 +1,4 @@
-import { Paths, File } from 'expo-file-system';
+import { Paths, File, Directory } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { useState } from 'react';
 import {
@@ -28,27 +28,22 @@ export default function FileSystemScreen() {
   const openPicker = async () => {
     try {
       const time = Date.now();
-      let canceled = false;
-      let result = null;
-      try {
-        result = multiple
-          ? await File.pickFileAsync({
-              multipleFiles: true,
-            })
-          : await File.pickFileAsync({ multipleFiles: false });
-      } catch (e) {
-        canceled = true;
-      }
+      const { result, canceled } = multiple
+        ? await File.pickFileAsync({
+            multipleFiles: true,
+          })
+        : await File.pickFileAsync({ multipleFiles: false });
+
       console.log(`Duration: ${Date.now() - time}ms`);
       console.log(`Results:`, result);
-      if (result) {
+      if (!canceled) {
         setPickerResult(result);
       } else {
         setTimeout(() => {
           if (Platform.OS === 'web') {
-            alert('Cancelled');
+            alert('canceled');
           } else {
-            Alert.alert('Cancelled');
+            Alert.alert('canceled');
           }
         }, 100);
       }
