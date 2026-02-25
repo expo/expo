@@ -242,6 +242,42 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       await db.closeAsync();
     });
 
+    nativeIt('should remove WAL and SHM files when deleting a database', async () => {
+      const dbName = 'test-wal-cleanup.db';
+      let db = await SQLite.openDatabaseAsync(dbName);
+
+      // Enable WAL mode to create sidecar files
+      await db.execAsync('PRAGMA journal_mode = WAL');
+      await db.execAsync(`
+DROP TABLE IF EXISTS data;
+CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY NOT NULL, value TEXT);
+INSERT INTO data (value) VALUES ('test');
+`);
+      await db.closeAsync();
+
+      // Verify the database and sidecar files exist
+      const dbPath = `${FS.documentDirectory}SQLite/${dbName}`;
+      const dbInfo = await FS.getInfoAsync(dbPath);
+      expect(dbInfo.exists).toBeTruthy();
+
+      // At least the WAL file should exist after WAL-mode writes
+      const walInfo = await FS.getInfoAsync(dbPath + '-wal');
+      const shmInfo = await FS.getInfoAsync(dbPath + '-shm');
+      // WAL and SHM files are typically created together
+      expect(walInfo.exists || shmInfo.exists).toBeTruthy();
+
+      // Delete the database
+      await SQLite.deleteDatabaseAsync(dbName);
+
+      // Verify all files are removed (main db + sidecars)
+      const dbInfoAfter = await FS.getInfoAsync(dbPath);
+      expect(dbInfoAfter.exists).toBeFalsy();
+      const walInfoAfter = await FS.getInfoAsync(dbPath + '-wal');
+      expect(walInfoAfter.exists).toBeFalsy();
+      const shmInfoAfter = await FS.getInfoAsync(dbPath + '-shm');
+      expect(shmInfoAfter.exists).toBeFalsy();
+    });
+
     nativeIt('should be able to recreate db from scratch by deleting file', async () => {
       let db = await SQLite.openDatabaseAsync('test.db');
       await db.execAsync(`

@@ -535,6 +535,11 @@ class SQLiteModule : Module() {
     if (!dbFile.delete()) {
       throw DeleteDatabaseFileException(databasePath)
     }
+
+    // Also remove WAL and SHM sidecar files if they exist.
+    // SQLite in WAL mode creates these alongside the main database file.
+    File(dbFile.path + "-wal").delete()
+    File(dbFile.path + "-shm").delete()
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
