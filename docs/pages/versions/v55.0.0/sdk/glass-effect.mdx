@@ -14,15 +14,15 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 React components that render native iOS liquid glass effect using [`UIVisualEffectView`](https://developer.apple.com/documentation/uikit/uivisualeffectview). Supports customizable glass styles and tint color.
 
+#### Known issues
+
+- The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
+
+- Setting `opacity` to `0` on `GlassView` or any of its parent views causes the glass effect to not render at all. To fade in/out the glass effect, use the built-in [`animate` and `animationDuration`](#animated-glass-effect-style) props in `glassEffectStyle` instead of changing opacity. If you still want to use `opacity`, see the [opacity animation workaround](#opacity-animation-workaround) example. For more details, see [Apple's documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) and [GitHub issue #41024](https://github.com/expo/expo/issues/41024).
+
 ## Installation
 
 <APIInstallSection />
-
-### Known issues
-
-The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
-
-Avoid `opacity` values less than `1` on `GlassView` or its parent views, as this causes effects to render incorrectly. See [Apple's documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) and [issue #41024](https://github.com/expo/expo/issues/41024).
 
 ## Usage
 
@@ -164,6 +164,181 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+### Animated glass effect style
+
+The `glassEffectStyle` prop accepts a config object with `animate` and `animationDuration` properties to natively animate transitions between glass styles. This is the recommended way to fade in/out the glass effect without modifying `opacity`.
+
+<SnackInline label='Animated glass effect style' dependencies={['expo-glass-effect']} platforms={['ios']}>
+
+```jsx
+import { useState } from 'react';
+import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { GlassView } from 'expo-glass-effect';
+
+export default function AnimatedGlassStyleExample() {
+  const [visible, setVisible] = useState(true);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.backgroundImage}>
+        <Image
+          style={{
+            width: 300,
+            height: 200,
+          }}
+          source={{
+            uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+          }}
+        />
+        <GlassView
+          style={styles.glassView}
+          glassEffectStyle={{
+            style: visible ? 'clear' : 'none',
+            animate: true,
+            animationDuration: 0.5,
+          }}
+        />
+      </View>
+      <Pressable style={styles.toggleButton} onPress={() => setVisible(prev => !prev)}>
+        <Text style={styles.toggleButtonText}>{visible ? 'Hide' : 'Show'} Glass Effect</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    height: 300,
+    width: 300,
+  },
+  backgroundImage: {
+    position: 'absolute',
+  },
+  glassView: {
+    position: 'absolute',
+    width: 200,
+    height: 120,
+    borderRadius: 12,
+  },
+  toggleButton: {
+    position: 'absolute',
+    bottom: 100,
+    alignSelf: 'center',
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+  },
+  toggleButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+```
+
+</SnackInline>
+
+### Opacity animation workaround
+
+Since setting `opacity` to `0` on `GlassView` or its parent views causes the glass effect to not render at all, you can use Reanimated to animate a wrapper view's opacity while toggling the `glassEffectStyle` between the desired style and `'none'`.
+
+<SnackInline label='Glass effect opacity animation workaround' dependencies={['expo-glass-effect', 'react-native-reanimated']} platforms={['ios']}>
+
+```jsx
+import { GlassView } from 'expo-glass-effect';
+import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import Animated, {
+  useAnimatedProps,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);
+
+export default function GlassOpacityAnimationExample() {
+  const fadeOpacity = useSharedValue(0);
+
+  const glassViewProps = useAnimatedProps(() => {
+    const glassEffectStyle = fadeOpacity.value > 0.01 ? 'regular' : 'none';
+    return {
+      glassEffectStyle,
+      style: {
+        width: 150,
+        height: 100,
+        borderRadius: 12,
+        position: 'absolute',
+      },
+    };
+  });
+
+  const fadeOpacityStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    opacity: fadeOpacity.value,
+    width: 150,
+    height: 100,
+    borderRadius: 12,
+  }));
+
+  return (
+    <>
+      <Text style={styles.title}>Opacity Animation Workaround (iOS 26.1+)</Text>
+      <View style={styles.backgroundContainer}>
+        <Image
+          style={styles.backgroundImage}
+          source={{
+            uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+          }}
+        />
+        <Animated.View style={fadeOpacityStyle}>
+          <AnimatedGlassView animatedProps={glassViewProps} />
+        </Animated.View>
+      </View>
+
+      <Pressable
+        style={styles.toggleButton}
+        onPress={() => {
+          fadeOpacity.value = withTiming(fadeOpacity.value > 0.5 ? 0 : 1, { duration: 500 });
+        }}>
+        <Text style={styles.toggleButtonText}>Toggle Glass Visibility</Text>
+      </Pressable>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  backgroundContainer: {
+    height: 300,
+    borderRadius: 12,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+  },
+  toggleButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  toggleButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+```
+
+</SnackInline>
+
 ### `isLiquidGlassAvailable`
 
 The `isLiquidGlassAvailable` function let's you check, if the Liquid Glass effect is available in the compiled application.
@@ -187,7 +362,7 @@ export default function CheckLiquidGlass() {
 
 The `isGlassEffectAPIAvailable` function checks whether the Liquid Glass API is available at runtime on the device.
 
-> **Warning** This API was added because some iOS 26 beta versions do not have the Liquid Glass API available, which can lead to crashes. You should check this before using `GlassView` in your app to ensure compatibility. See [issue #40911](https://github.com/expo/expo/issues/40911) for more details.
+> **Warning** This API was added because some iOS 26 beta versions do not have the Liquid Glass API available, which can lead to crashes. You should check this before using `GlassView` in your app to ensure compatibility. See [GitHub issue #40911](https://github.com/expo/expo/issues/40911) for more information.
 
 ```tsx
 import { isGlassEffectAPIAvailable } from 'expo-glass-effect';

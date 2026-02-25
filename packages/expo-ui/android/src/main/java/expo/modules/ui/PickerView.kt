@@ -88,7 +88,7 @@ fun FunctionalComposableScope.PickerContent(
   @Composable
   fun SegmentedComposable() {
     SingleChoiceSegmentedButtonRow(
-      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
+      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
     ) {
       options.forEachIndexed { index, label ->
         SegmentedButton(
@@ -99,7 +99,7 @@ fun FunctionalComposableScope.PickerContent(
           onClick = {
             onOptionSelected(PickerOptionSelectedEvent(index, label))
           },
-          modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
+          modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
           selected = index == selectedIndex,
           label = { Text(label) },
           colors = SegmentedButtonDefaults.colors(

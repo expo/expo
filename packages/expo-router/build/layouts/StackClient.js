@@ -46,7 +46,6 @@ const useScreens_1 = require("../useScreens");
 const stack_utils_1 = require("./stack-utils");
 const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
-const Screen_1 = require("../views/Screen");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
 function isStackAction(action) {
@@ -409,37 +408,6 @@ function filterSingular(state, getId) {
         routes,
     };
 }
-function mapProtectedScreen(props) {
-    return {
-        ...props,
-        children: react_1.Children.toArray(props.children)
-            .map((child, index) => {
-            if ((0, children_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
-                const options = (0, stack_utils_1.appendScreenStackPropsToOptions)({}, child.props);
-                const { children, ...rest } = child.props;
-                return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
-            }
-            else if ((0, children_1.isChildOfType)(child, Protected_1.Protected)) {
-                return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
-            }
-            else if ((0, children_1.isChildOfType)(child, stack_utils_1.StackHeader)) {
-                // Ignore Stack.Header, because it can be used to set header options for Stack
-                // and we use this function to process children of Stack, as well.
-                return null;
-            }
-            else {
-                if (react_1.default.isValidElement(child)) {
-                    console.warn(`Unknown child element passed to Stack: ${child.type}`);
-                }
-                else {
-                    console.warn(`Unknown child element passed to Stack: ${child}`);
-                }
-            }
-            return null;
-        })
-            .filter(Boolean),
-    };
-}
 /**
  * Renders a native stack navigator.
  *
@@ -465,15 +433,20 @@ const Stack = Object.assign((props) => {
                 return (0, stack_utils_1.appendScreenStackPropsToOptions)({}, screenStackProps);
             }
         }
-        else {
-            return props.screenOptions;
+        else if (props.screenOptions) {
+            const screenOptions = props.screenOptions;
+            if (typeof screenOptions === 'function') {
+                return (0, stack_utils_1.validateStackPresentation)(screenOptions);
+            }
+            return (0, stack_utils_1.validateStackPresentation)(screenOptions);
         }
+        return props.screenOptions;
     }, [props.screenOptions, props.children]);
     const screenOptions = (0, react_1.useMemo)(() => {
         const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
         return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
     }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
-    const rnChildren = (0, react_1.useMemo)(() => mapProtectedScreen({ guard: true, children: props.children }).children, [props.children]);
+    const rnChildren = (0, react_1.useMemo)(() => (0, stack_utils_1.mapProtectedScreen)({ guard: true, children: props.children }).children, [props.children]);
     return (<RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: stack_utils_1.StackScreen,

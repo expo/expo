@@ -121,10 +121,11 @@ internal struct OpacityModifier: ViewModifier, Record {
 }
 
 internal struct ScaleEffectModifier: ViewModifier, Record {
-  @Field var scale: CGFloat = 1.0
+  @Field var x: CGFloat = 1.0
+  @Field var y: CGFloat = 1.0
 
   func body(content: Content) -> some View {
-    content.scaleEffect(scale)
+    content.scaleEffect(x: x, y: y)
   }
 }
 
@@ -157,6 +158,12 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
+internal struct LuminanceToAlphaModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.luminanceToAlpha()
+  }
+}
+
 internal struct BoldModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
@@ -173,95 +180,9 @@ internal struct ItalicModifier: ViewModifier, Record {
   }
 }
 
-internal enum ForegroundStyleType: String, Enumerable {
-  case color
-  case hierarchical
-  case linearGradient
-  case radialGradient
-  case angularGradient
-}
-
-internal enum ForegroundHierarchicalStyleType: String, Enumerable {
-  case primary
-  case secondary
-  case tertiary
-  case quaternary
-  case quinary
-}
-
-internal struct ForegroundStyleModifier: ViewModifier, Record {
-  @Field var styleType: ForegroundStyleType = .color
-  @Field var hierarchicalStyle: ForegroundHierarchicalStyleType = .primary
-  @Field var color: Color?
-  @Field var colors: [Color]?
-  @Field var startPoint: UnitPoint?
-  @Field var endPoint: UnitPoint?
-  @Field var center: UnitPoint?
-  @Field var startRadius: CGFloat?
-  @Field var endRadius: CGFloat?
-
+internal struct MonospacedDigitModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
-    switch styleType {
-    case .color:
-      if let color {
-        content.foregroundStyle(color)
-      } else {
-        content
-      }
-    case .hierarchical:
-      switch hierarchicalStyle {
-      case .primary:
-        content.foregroundStyle(.primary)
-      case .secondary:
-        content.foregroundStyle(.secondary)
-      case .tertiary:
-        content.foregroundStyle(.tertiary)
-      case .quaternary:
-        content.foregroundStyle(.quaternary)
-      case .quinary:
-        if #available(iOS 16.0, tvOS 17.0, *) {
-          content.foregroundStyle(.quinary)
-        } else {
-          content.foregroundStyle(.quaternary)
-        }
-      }
-    case .linearGradient:
-      if let colors, let startPoint, let endPoint {
-        content.foregroundStyle(
-          LinearGradient(
-            colors: colors,
-            startPoint: startPoint,
-            endPoint: endPoint
-          )
-        )
-      } else {
-        content
-      }
-    case .radialGradient:
-      if let colors, let center, let startRadius, let endRadius {
-        content.foregroundStyle(
-          RadialGradient(
-            colors: colors,
-            center: center,
-            startRadius: startRadius,
-            endRadius: endRadius
-          )
-        )
-      } else {
-        content
-      }
-    case .angularGradient:
-      if let colors, let center {
-        content.foregroundStyle(
-          AngularGradient(
-            colors: colors,
-            center: center
-          )
-        )
-      } else {
-        content
-      }
-    }
+    content.monospacedDigit()
   }
 }
 
@@ -373,18 +294,24 @@ internal struct BorderModifier: ViewModifier, Record {
 }
 
 internal struct ClipShapeModifier: ViewModifier, Record {
-  @Field var shape: String = "rectangle"
+  @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 8
+  @Field var roundedCornerStyle: RoundedCornerStyle?
+  @Field var cornerSize: CornerSize?
 
   @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
-    case "circle":
+    case .capsule:
+      content.clipShape(makeCapsule(style: roundedCornerStyle))
+    case .circle:
       content.clipShape(Circle())
-    case "roundedRectangle":
-      content.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-    default:
+    case .ellipse:
+      content.clipShape(Ellipse())
+    case .rectangle:
       content.clipShape(Rectangle())
+    case .roundedRectangle:
+      content.clipShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
     }
   }
 }
@@ -587,18 +514,24 @@ internal struct ClippedModifier: ViewModifier, Record {
 }
 
 internal struct MaskModifier: ViewModifier, Record {
-  @Field var shape: String = "rectangle"
+  @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 8
+  @Field var roundedCornerStyle: RoundedCornerStyle?
+  @Field var cornerSize: CornerSize?
 
   @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
-    case "circle":
+    case .capsule:
+      content.mask(makeCapsule(style: roundedCornerStyle))
+    case .circle:
       content.mask(Circle())
-    case "roundedRectangle":
-      content.mask(RoundedRectangle(cornerRadius: cornerRadius))
-    default:
+    case .ellipse:
+      content.mask(Ellipse())
+    case .rectangle:
       content.mask(Rectangle())
+    case .roundedRectangle:
+      content.mask(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
     }
   }
 }
@@ -707,7 +640,7 @@ internal struct AnimationConfig: Record {
 
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
-  @Field var animatedValue: Either<Bool, Double>?
+  @Field var animatedValue: Either<Double, Bool>?
 
   func body(content: Content) -> some View {
     let animationValue = parseAnimation(animation)
@@ -847,22 +780,6 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
-internal enum ListRowSeparatorVisibility: String, Enumerable {
-  case automatic
-  case visible
-  case hidden
-
-  func toVisibility() -> Visibility {
-    switch self {
-    case .visible:
-      return .visible
-    case .hidden:
-      return .hidden
-    default:
-      return .automatic
-    }
-  }
-}
 
 internal enum VerticalEdgeOptions: String, Enumerable {
   case all
@@ -882,7 +799,7 @@ internal enum VerticalEdgeOptions: String, Enumerable {
 }
 
 internal struct ListRowSeparator: ViewModifier, Record {
-  @Field var visibility: ListRowSeparatorVisibility = .automatic
+  @Field var visibility: VisibilityOptions = .automatic
   @Field var edges: VerticalEdgeOptions?
 
   func body(content: Content) -> some View {
@@ -1188,6 +1105,18 @@ internal struct ListSectionMargins: ViewModifier, Record {
 internal enum AxisOptions: String, Enumerable {
   case horizontal
   case vertical
+  case both
+  
+  func toAxis() -> Axis.Set {
+    switch self {
+    case .vertical:
+      return .vertical
+    case .horizontal:
+      return .horizontal
+    case .both:
+      return [.vertical, .horizontal]
+    }
+  }
 }
 
 internal struct GridCellUnsizedAxes: ViewModifier, Record {
@@ -1196,12 +1125,7 @@ internal struct GridCellUnsizedAxes: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       if let axes {
-        switch axes {
-        case .horizontal:
-          content.gridCellUnsizedAxes(.horizontal)
-        case .vertical:
-          content.gridCellUnsizedAxes(.vertical)
-        }
+        content.gridCellUnsizedAxes(axes.toAxis())
       } else {
         content
       }
@@ -1311,25 +1235,57 @@ internal struct GridCellAnchor: ViewModifier, Record {
  * Registry for SwiftUI view modifiers that can be applied from React Native.
  * This system uses ViewModifier structs for better performance than AnyView wrapping.
  */
-internal class ViewModifierRegistry {
+public class ViewModifierRegistry {
   static let shared = ViewModifierRegistry()
 
-  internal typealias ModiferFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
-  private(set) internal var modifierFactories: [String: ModiferFactory] = [:]
+  public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
+  private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
 
   private init() {
     registerBuiltInModifiers()
   }
 
   /**
+   * Public API to register a custom modifier with the given type name.
+   *
+   * - Important: Call this in `OnCreate` of your module definition to ensure modifiers
+   *   are registered before any views are rendered.
+   */
+  public static func register(
+    _ type: String,
+    factory: @escaping ModifierFactory
+  ) {
+    shared.register(type, factory: factory)
+  }
+
+  /**
+   * Public API to unregister a custom modifier by type name.
+   *
+   * - Important: Call this in `OnDestroy` of your module definition for proper cleanup.
+   */
+  public static func unregister(_ type: String) {
+    shared.unregister(type)
+  }
+
+  /**
    * Registers a new modifier with the given type name.
    * The modifier factory creates a ViewModifier from parameters.
    */
-  func register(
+  internal func register(
     _ type: String,
-    factory: @escaping ModiferFactory
+    factory: @escaping ModifierFactory
   ) {
+    if modifierFactories[type] != nil {
+      log.warn("ViewModifierRegistry: Overwriting existing modifier '\(type)'. This may cause unexpected behavior.")
+    }
     modifierFactories[type] = factory
+  }
+
+  /**
+   * Unregisters a modifier by type name.
+   */
+  internal func unregister(_ type: String) {
+    modifierFactories.removeValue(forKey: type)
   }
 
   /**
@@ -1364,6 +1320,8 @@ internal class ViewModifierRegistry {
       return text.bold()
     case "italic":
       return text.italic()
+    case "monospacedDigit":
+      return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
       if let family = modifier.family {
@@ -1380,14 +1338,11 @@ internal class ViewModifierRegistry {
       return text.foregroundColor(color)
     case "foregroundStyle":
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
-      if modifier.styleType == .color, let color = modifier.color {
-        if #available(iOS 17.0, tvOS 17.0, *) {
-          return text.foregroundStyle(color)
-        } else {
-          // Fallback for earlier version
+      if #available(iOS 17.0, tvOS 17.0, *) {
+        return applyForegroundStyle(modifier, to: text)
+      } else if modifier.styleType == .color, let color = modifier.color {
           return text.foregroundColor(color)
-        }
-      }
+      } 
       return text
     default:
       #if DEBUG
@@ -1557,12 +1512,20 @@ extension ViewModifierRegistry {
       return try ForegroundStyleModifier(from: params, appContext: appContext)
     }
 
+    register("luminanceToAlpha") { params, appContext, _ in
+      return try LuminanceToAlphaModifier(from: params, appContext: appContext)
+    }
+
     register("bold") { params, appContext, _ in
       return try BoldModifier(from: params, appContext: appContext)
     }
 
     register("italic") { params, appContext, _ in
       return try ItalicModifier(from: params, appContext: appContext)
+    }
+
+    register("monospacedDigit") { params, appContext, _ in
+      return try MonospacedDigitModifier(from: params, appContext: appContext)
     }
 
     register("tint") { params, appContext, _ in
@@ -1703,6 +1666,10 @@ extension ViewModifierRegistry {
 
     register("containerShape") { params, appContext, _ in
       return try ContainerShapeModifier(from: params, appContext: appContext)
+    }
+
+    register("contentShape") { params, appContext, _ in
+      return try ContentShapeModifier(from: params, appContext: appContext)
     }
 
     register("containerRelativeFrame") { params, appContext, _ in
@@ -1857,8 +1824,8 @@ extension ViewModifierRegistry {
       return try GaugeStyleModifier(from: params, appContext: appContext)
     }
 
-    register("presentationDetents") { params, appContext, _ in
-      return try PresentationDetentsModifier(from: params, appContext: appContext)
+    register("presentationDetents") { params, appContext, eventDispatcher in
+      return try PresentationDetentsModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
     register("presentationDragIndicator") { params, appContext, _ in
@@ -1887,6 +1854,10 @@ extension ViewModifierRegistry {
 
     register("environment") { params, appContext, _ in
       return try EnvironmentModifier(from: params, appContext: appContext)
+    }
+
+    register("contentTransition") { params, appContext, _ in
+      return try ContentTransitionModifier(from: params, appContext: appContext)
     }
   }
 }

@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 💡 Others
+
+- [ios] refactor distance and hit detection ([#43087](https://github.com/expo/expo/pull/43087) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.6 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- Fixed geodesic polyline rendering on iOS by properly applying MapContourStyle enum. ([#39814](https://github.com/expo/expo/pull/39814) by [@sgup](https://github.com/sgup))
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.4 — 2026-02-03
 
 _This version does not introduce any user-facing changes._

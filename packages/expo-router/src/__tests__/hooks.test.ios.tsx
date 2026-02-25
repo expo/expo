@@ -75,7 +75,7 @@ describe(useSegments, () => {
     expectType<'alpha'>(segments[0]);
   });
   it(`allows abstract union types`, () => {
-    const segments = renderHookOnce(() => useSegments<['a'] | ['b'] | ['b', 'c']>());
+    const segments = renderHookOnce(() => useSegments<'/a' | '/b' | '/b/c'>());
     expectType<'a' | 'b'>(segments[0]);
     if (segments[0] === 'b') expectType<'c' | undefined>(segments[1]);
   });
@@ -479,8 +479,8 @@ describe(useSearchParams, () => {
   });
 
   it('is local by default', () => {
-    const results1: [] = [];
-    const results2: [] = [];
+    const results1: [string, string][] = [];
+    const results2: [string, string][] = [];
 
     renderRouter(
       {
@@ -736,13 +736,13 @@ describe(useLoaderData, () => {
 
   afterEach(() => {
     global.window = originalWindow;
-    delete (globalThis as any).__EXPO_ROUTER_LOADER_DATA__;
+    delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
   });
 
   it.each([
-    { route: 'index', initialUrl: '/', expectedPath: '/' },
-    { route: 'users/index', initialUrl: '/users', expectedPath: '/users' },
-    { route: '(group)/index', initialUrl: '/', expectedPath: '/(group)' },
+    { route: 'index', initialUrl: '/', expectedPath: '/index' },
+    { route: 'users/index', initialUrl: '/users', expectedPath: '/users/index' },
+    { route: '(group)/index', initialUrl: '/', expectedPath: '/(group)/index' },
     { route: 'users/[id]', initialUrl: '/users/123', expectedPath: '/users/123' },
   ])('resolves $route to $expectedPath', ({ route, initialUrl, expectedPath }) => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
@@ -754,14 +754,47 @@ describe(useLoaderData, () => {
     expect(result.current).toEqual({ correct: true });
   });
 
+  it('resolves nested route under `_layout` to full pathname', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/nested/index': { correct: true },
+    };
+
+    let loaderResult: any;
+
+    renderRouter(
+      {
+        'nested/_layout': () => <Slot />,
+        'nested/index': function NestedIndex() {
+          loaderResult = useLoaderData();
+          return <Text>Nested</Text>;
+        },
+      },
+      { initialUrl: '/nested' }
+    );
+
+    expect(loaderResult).toEqual({ correct: true });
+  });
+
+  it('includes search params in the lookup key', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/request?foo=bar': { correct: true },
+    };
+
+    const { result } = renderHook(() => useLoaderData(), ['request'], {
+      initialUrl: '/request?foo=bar',
+    });
+
+    expect(result.current).toEqual({ correct: true });
+  });
+
   it('retrieves server-side data from `ServerDataLoaderContext`', () => {
     // Added to ensure that data is not fetched from global scope
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { source: 'global' },
+      '/index': { source: 'global' },
     };
 
     const ServerWrapper = ({ children }: { children: React.ReactNode }) => (
-      <ServerDataLoaderContext value={{ '/': { source: 'server' } }}>
+      <ServerDataLoaderContext value={{ '/index': { source: 'server' } }}>
         {children}
       </ServerDataLoaderContext>
     );
@@ -776,7 +809,7 @@ describe(useLoaderData, () => {
 
   it('retrieves server-injected data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { some: 'data' },
+      '/index': { some: 'data' },
     };
 
     const { result } = renderHook(() => useLoaderData(), ['index'], {
@@ -840,7 +873,7 @@ describe(useLoaderData, () => {
     };
 
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+      '/index': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
     };
 
     const { result } = renderHook(() => useLoaderData<typeof asyncLoader>(), ['index'], {
@@ -848,5 +881,40 @@ describe(useLoaderData, () => {
     });
 
     expectType<{ user: { id: number; name: string }; timestamp: number }>(result.current);
+  });
+
+  it('resolves loader data for non-focused tab route', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { tab: 'home' },
+      '/profile': { tab: 'profile' },
+    };
+
+    const homeResults: any[] = [];
+    const profileResults: any[] = [];
+
+    renderRouter(
+      {
+        _layout: () => <Tabs />,
+        index: function Home() {
+          homeResults.push(useLoaderData());
+          return <Text>Home</Text>;
+        },
+        profile: function Profile() {
+          profileResults.push(useLoaderData());
+          return <Text>Profile</Text>;
+        },
+      },
+      {
+        initialUrl: '/',
+      }
+    );
+
+    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
+
+    act(() => router.push('/profile'));
+
+    expect(profileResults[profileResults.length - 1]).toEqual({ tab: 'profile' });
+    // Home screen should still be showing its own results
+    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
   });
 });

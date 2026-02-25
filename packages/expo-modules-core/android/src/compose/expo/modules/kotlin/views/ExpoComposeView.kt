@@ -1,5 +1,6 @@
 package expo.modules.kotlin.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
@@ -7,21 +8,33 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.RecomposeScope
+import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.CoalescingKey
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.viewevent.ViewEvent
 import expo.modules.kotlin.viewevent.ViewEventDelegate
 
 data class ComposableScope(
   val rowScope: RowScope? = null,
   val columnScope: ColumnScope? = null,
-  val boxScope: BoxScope? = null
+  val boxScope: BoxScope? = null,
+  val nestedScrollConnection: NestedScrollConnection? = null
 )
+
+inline fun ComposableScope.withIf(
+  condition: Boolean,
+  block: ComposableScope.() -> ComposableScope
+): ComposableScope {
+  return if (condition) block() else this
+}
 
 fun ComposableScope.with(rowScope: RowScope?): ComposableScope {
   return this.copy(rowScope = rowScope)
@@ -35,6 +48,10 @@ fun ComposableScope.with(boxScope: BoxScope?): ComposableScope {
   return this.copy(boxScope = boxScope)
 }
 
+fun ComposableScope.with(nestedScrollConnection: NestedScrollConnection?): ComposableScope {
+  return this.copy(nestedScrollConnection = nestedScrollConnection)
+}
+
 /**
  * A base class that should be used by compose views.
  */
@@ -44,6 +61,16 @@ abstract class ExpoComposeView<T : ComposeProps>(
   private val withHostingView: Boolean = false
 ) : ExpoView(context, appContext) {
   open val props: T? = null
+  protected var recomposeScope: RecomposeScope? = null
+
+  private val globalEvent = ViewEvent<Pair<String, Map<String, Any?>>>(GLOBAL_EVENT_NAME, this, null)
+
+  /**
+   * A global event dispatcher
+   */
+  val globalEventDispatcher: (String, Map<String, Any?>) -> Unit = { name, params ->
+    globalEvent.invoke(Pair(name, params))
+  }
 
   @Composable
   abstract fun ComposableScope.Content()
@@ -77,6 +104,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   @Composable
   fun Children(composableScope: ComposableScope?) {
+    recomposeScope = currentRecomposeScope
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
       with(composableScope ?: ComposableScope()) {
@@ -88,7 +116,24 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   @Composable
+  fun Children(composableScope: ComposableScope?, filter: (child: ExpoComposeView<*>) -> Boolean) {
+    recomposeScope = currentRecomposeScope
+    for (index in 0..<this.size) {
+      val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+      if (!filter(child)) {
+        continue
+      }
+      with(composableScope ?: ComposableScope()) {
+        with(child) {
+          Content()
+        }
+      }
+    }
+  }
+
+  @Composable
   fun Child(composableScope: ComposableScope, index: Int) {
+    recomposeScope = currentRecomposeScope
     val child = getChildAt(index) as? ExpoComposeView<*> ?: return
     with(composableScope) {
       with(child) {
@@ -132,12 +177,22 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
-    val view = if (child !is ExpoComposeView<*> && child !is ComposeView) {
+    val view = if (child !is ExpoComposeView<*> && child !is ComposeView && this !is RNHostViewInterface) {
       ExpoComposeAndroidView(child, appContext)
     } else {
       child
     }
     super.addView(view, index, params)
+  }
+
+  override fun onViewAdded(child: View?) {
+    super.onViewAdded(child)
+    recomposeScope?.invalidate()
+  }
+
+  override fun onViewRemoved(child: View?) {
+    super.onViewRemoved(child)
+    recomposeScope?.invalidate()
   }
 }
 
@@ -152,6 +207,7 @@ class FunctionalComposableScope(
   val composableScope: ComposableScope
 ) {
   val appContext = view.appContext
+  val globalEventDispatcher = view.globalEventDispatcher
 
   @Composable
   fun Child(composableScope: ComposableScope, index: Int) {
@@ -168,11 +224,17 @@ class FunctionalComposableScope(
     view.Children(composableScope)
   }
 
+  @Composable
+  fun Children(composableScope: ComposableScope?, filter: (child: ExpoComposeView<*>) -> Boolean) {
+    view.Children(composableScope, filter)
+  }
+
   inline fun <reified T> EventDispatcher(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
     return view.EventDispatcher<T>(coalescingKey)
   }
 }
 
+@SuppressLint("ViewConstructor")
 class ComposeFunctionHolder<Props : ComposeProps>(
   context: Context,
   appContext: AppContext,

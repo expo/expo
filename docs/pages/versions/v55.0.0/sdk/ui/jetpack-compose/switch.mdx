@@ -8,78 +8,89 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A switch component that provides toggle functionality with different visual styles.
+Expo UI Switch matches the official Jetpack Compose [Switch](https://developer.android.com/develop/ui/compose/components/switch) and [Checkbox](https://developer.android.com/develop/ui/compose/components/checkbox) APIs and supports switch, checkbox, and button variants.
 
 ## Installation
 
 <APIInstallSection />
 
-## Toggle switch
+## Usage
 
-> **Note:** also known as **Toggle**.
+### Toggle switch
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Switch component on Android."
-      src="/static/images/expo-ui/switch/android.png"
-      className="max-w-[480px]"
-    />
+Use the `variant="switch"` prop to display a standard toggle switch.
 
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Switch } from '@expo/ui/jetpack-compose';
+```tsx ToggleSwitchExample.tsx
+import { useState } from 'react';
+import { Host, Switch } from '@expo/ui/jetpack-compose';
 
-    <Switch
-      value={checked}
-      onValueChange={checked => {
-        setChecked(checked);
-      }}
-      color="#ff0000"
-      label="Play music"
-      variant="switch"
-    />
-    ```
+export default function ToggleSwitchExample() {
+  const [checked, setChecked] = useState(false);
 
-  </Tab>
-</Tabs>
+  return (
+    <Host matchContents>
+      <Switch
+        value={checked}
+        onValueChange={setChecked}
+        label="Play music"
+        variant="switch"
+        color="#6200EE"
+      />
+    </Host>
+  );
+}
+```
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/switch) for more information.
+### Checkbox
 
-## Checkbox
+Use the `variant="checkbox"` prop to display a checkbox control.
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Switch (checkbox variant) component on Android."
-      src="/static/images/expo-ui/checkbox/android.png"
-      className="max-w-[480px]"
-    />
+```tsx CheckboxExample.tsx
+import { useState } from 'react';
+import { Host, Switch } from '@expo/ui/jetpack-compose';
 
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Switch } from '@expo/ui/jetpack-compose';
+export default function CheckboxExample() {
+  const [checked, setChecked] = useState(false);
 
-    <Switch
-      value={checked}
-      onValueChange={checked => {
-        setChecked(checked);
-      }}
-      label="Play music"
-      color="#ff0000"
-      variant="checkbox"
-    />
-    ```
+  return (
+    <Host matchContents>
+      <Switch
+        value={checked}
+        onValueChange={setChecked}
+        label="Accept terms"
+        variant="checkbox"
+        color="#6200EE"
+      />
+    </Host>
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+### Button variant
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/checkbox) for more information.
+Use the `variant="button"` prop to display a toggle button.
+
+```tsx ButtonVariantExample.tsx
+import { useState } from 'react';
+import { Host, Switch } from '@expo/ui/jetpack-compose';
+
+export default function ButtonVariantExample() {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Switch
+        value={checked}
+        onValueChange={setChecked}
+        label="Notifications"
+        variant="button"
+        color="#6200EE"
+      />
+    </Host>
+  );
+}
+```
 
 ## API
 

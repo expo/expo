@@ -1,20 +1,21 @@
 'use client';
 
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation, useStateForPath } from '@react-navigation/native';
 import type { LoaderFunction } from 'expo-server';
-import React, { use } from 'react';
+import React, { use, useMemo } from 'react';
 
-import { LocalRouteParamsContext, useRouteNode } from './Route';
+import { LocalRouteParamsContext, useContextKey } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
+import { getRouteInfoFromState } from './global-state/routeInfo';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
-import { resolveHref } from './link/href';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
 import { LoaderCacheContext } from './loaders/LoaderCache';
 import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
 import { getLoaderData } from './loaders/getLoaderData';
 import { fetchLoader } from './loaders/utils';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { getSingularId } from './useScreens';
 
 export { useRouteInfo };
 
@@ -370,34 +371,36 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  * }
  */
 export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T> {
-  const routeNode = useRouteNode();
-  const params = useLocalSearchParams();
   const serverDataLoaderContext = use(ServerDataLoaderContext);
   const loaderCache = use(LoaderCacheContext);
 
-  if (!routeNode) {
-    throw new Error('No route node found. This is likely a bug in expo-router.');
-  }
+  const stateForPath = useStateForPath();
+  const contextKey = useContextKey();
 
-  const resolvedPath = `/${resolveHref({ pathname: routeNode?.route, params })}`;
-  // Normalize by stripping trailing `/index` to match URL pathname
-  const normalizedPath = resolvedPath.replace(/\/index$/, '') || '/';
+  const resolvedPath = useMemo(() => {
+    const routeInfo = getRouteInfoFromState(stateForPath);
+    const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
+    const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
+    const searchString = routeInfo.searchParams?.toString() || '';
+
+    return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
+  }, [contextKey, stateForPath]);
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {
-    return serverDataLoaderContext[normalizedPath];
+    return serverDataLoaderContext[resolvedPath];
   }
 
   // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
   // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
   if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath]) {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath];
+    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
+      return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
     }
   }
 
   const result = getLoaderData<LoaderFunctionResult<T>>({
-    resolvedPath: normalizedPath,
+    resolvedPath,
     cache: loaderCache,
     fetcher: fetchLoader,
   });

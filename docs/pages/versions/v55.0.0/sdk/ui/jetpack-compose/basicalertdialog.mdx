@@ -1,0 +1,55 @@
+---
+title: BasicAlertDialog
+description: A Jetpack Compose BasicAlertDialog component for displaying dialogs with custom content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog API](https://developer.android.com/develop/ui/compose/components/dialog) and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic dialog with custom content
+
+```tsx BasicAlertDialogExample.tsx
+import { useState } from 'react';
+import { Host, BasicAlertDialog, Button, Text, Surface, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicAlertDialogExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onPress={() => setVisible(true)}>Show Dialog</Button>
+      {visible && (
+        <BasicAlertDialog onDismissRequest={() => setVisible(false)}>
+          <Surface color="#FFFFFF" modifiers={[paddingAll(24)]}>
+            <Column verticalArrangement={{ spacedBy: 8 }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Custom Dialog</Text>
+              <Text>This dialog contains fully custom content defined as children.</Text>
+              <Button onPress={() => setVisible(false)}>Close</Button>
+            </Column>
+          </Surface>
+        </BasicAlertDialog>
+      )}
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { BasicAlertDialog } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/basicalertdialog" apiName="BasicAlertDialog" />

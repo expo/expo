@@ -305,6 +305,104 @@ export default function DocumentScreen() {
 }
 ```
 
+## Common problems
+
+<Collapsible summary="Liquid glass toolbar buttons flicker in dark mode on iOS 26">
+
+Toolbar buttons with liquid glass styling may flicker or flash their background when navigating between screens in dark mode on iOS 26. This happens because React Navigation's default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
+
+To fix this, wrap your root layout with `<ThemeProvider>` from `@react-navigation/native` using the appropriate theme:
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { Stack } from 'expo-router';
+import { useColorScheme } from 'react-native';
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    /* @info Wrap your layout with ThemeProvider to fix liquid glass flickering */
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      /* @end */
+      <Stack />
+    </ThemeProvider>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="White background flashes when navigating between screens">
+
+A white flash between screen transitions usually means the navigation stack is using a light background while your app uses a dark theme. This is especially noticeable when screens contain toolbar items, as the flash contrasts with the toolbar styling.
+
+To fix this, wrap your root layout with React Navigation's `<ThemeProvider>` and pass the appropriate theme:
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { Stack } from 'expo-router';
+import { useColorScheme } from 'react-native';
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    /* @info Wrap your layout with ThemeProvider to set backgrounds for all screens */
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      /* @end */
+      <Stack />
+    </ThemeProvider>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Large title does not collapse when scrolling">
+
+When using `headerLargeTitle: true` (or `<Stack.Screen.Title large>`) alongside `Stack.Toolbar`, the large title may not collapse on scroll. This happens when the scrollable view is not the direct first child of the screen component.
+
+To fix this, ensure `ScrollView` or `FlatList` is the first child rendered by your screen component. If you need a wrapper, set `collapsable={false}` on it:
+
+```tsx app/index.tsx
+import { Stack } from 'expo-router';
+import { ScrollView, View, Text } from 'react-native';
+
+/* @info Correct: ScrollView is the direct first child */
+export default function Home() {
+  return (
+    <ScrollView>
+      <Stack.Screen.Title large>Home</Stack.Screen.Title>
+      <Text>Content here</Text>
+    </ScrollView>
+  );
+}
+/* @end */
+```
+
+If you need to wrap the `ScrollView`, set `collapsable={false}` on the wrapper:
+
+```tsx app/index.tsx
+import { Stack } from 'expo-router';
+import { ScrollView, View, Text } from 'react-native';
+
+export default function Home() {
+  return (
+    /* @info Set collapsable={false} on any wrapper around ScrollView */
+    <View collapsable={false}>
+      /* @end */
+      <ScrollView>
+        <Stack.Screen.Title large>Home</Stack.Screen.Title>
+        <Text>Content here</Text>
+      </ScrollView>
+    </View>
+  );
+}
+```
+
+</Collapsible>
+
 ## Known limitations
 
 <Collapsible summary="iOS only">

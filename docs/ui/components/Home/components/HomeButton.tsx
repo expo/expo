@@ -4,6 +4,7 @@ export function HomeButton({ children, style, href, className, ...rest }: Button
   return (
     <Button
       {...rest}
+      data-md="link"
       href={href}
       openInNewTab={href?.startsWith('http')}
       className={mergeClasses('absolute bottom-7 z-10 px-3.5', 'hocus:opacity-80', className)}>

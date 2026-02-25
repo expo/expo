@@ -8,6 +8,70 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.11 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- Implement exponential retry for transient `devicectl` disconnects and fix null error logs. ([#43326](https://github.com/expo/expo/pull/43326) by [@balenamiaa](https://github.com/balenamiaa))
+
+### 💡 Others
+
+- Replace `minimatch` with `picomatch` and update ([#43323](https://github.com/expo/expo/pull/43323) by [@kitten](https://github.com/kitten))
+- Expand logging events ([#43247](https://github.com/expo/expo/pull/43247) by [@kitten](https://github.com/kitten))
+
+## 55.0.10 — 2026-02-20
+
+### 💡 Others
+
+- Force `forceNodeFilesystemAPI` when watchman is enabled (the default) but not present ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+- Add `EXPO_NO_QR_CODE` env variable to disable QR code generation ([#43187](https://github.com/expo/expo/pull/43187) by [@cortinico](https://github.com/cortinico))
+
+## 55.0.9 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- Add missing `Content-Type: application/json` to internal `/symbolicate` call ([#43074](https://github.com/expo/expo/pull/43074) by [@kitten](https://github.com/kitten))
+- Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
+- Fix port prompt causing process hangs on some systems when checking the conflicting process's info ([#43054](https://github.com/expo/expo/pull/43054) by [@kitten](https://github.com/kitten))
+- Fix editor opening to not spawn terminal editors and have more fallbacks ([#43073](https://github.com/expo/expo/pull/43073) by [@kitten](https://github.com/kitten))
+- Fix `setResponseHeaders()` failing on responses with immutable headers ([#43111](https://github.com/expo/expo/pull/43111) by [@hassankhan](https://github.com/hassankhan))
+
+### 💡 Others
+
+- Bump to `dnssd-advertise@^1.1.3` ([#42928](https://github.com/expo/expo/pull/42928) by [@kitten](https://github.com/kitten))
+- Add more compact QR code rendering for terminals that support it, unless `COLOR=0` is set or TTY is non-interactive ([#42834](https://github.com/expo/expo/pull/42834) by [@kitten](https://github.com/kitten))
+- Collapse usage guide on `expo start` if space is insufficient ([#42835](https://github.com/expo/expo/pull/42835) by [@kitten](https://gthub.com/kitten))
+- Drop obsolete `rawBody` parsing from Metro middleware stack ([#43074](https://github.com/expo/expo/pull/43074) by [@kitten](https://github.com/kitten))
+- Add minimum Node.js version check and warning to CLI startup ([#43076](https://github.com/expo/expo/pull/43076) by [@kitten](https://github.com/kitten))
+- Retrieve default route's IP address concurrently ([#42923](https://github.com/expo/expo/pull/42923) by [@kitten](https://github.com/kitten))
+- Replace `require-from-string` with `@expo/require-utils` ([#42884](https://github.com/expo/expo/pull/42884) by [@kitten](https://github.com/kitten))
+- Refactor env loading and reloading to unified logic and don't overwrite original system values ([#43038](https://github.com/expo/expo/pull/43038) by [@kitten](https://github.com/kitten))
+- Add initial event logging system ([#43013](https://github.com/expo/expo/pull/43013) by [@kitten](https://github.com/kitten))
+
+## 55.0.7 — 2026-02-08
+
+### 🎉 New features
+
+- Add `--browser` option to `expo login`. ([#42614](https://github.com/expo/expo/pull/42614) by [@byronkarlen](https://github.com/byronkarlen))
+
+### 💡 Others
+
+- delete old expo go artifacts to save disk space ([#42860](https://github.com/expo/expo/pull/42860) by [@vonovak](https://github.com/vonovak))
+- Bump to `fetch-nodeshim@^0.4.5` ([#42896](https://github.com/expo/expo/pull/42896) by [@kitten](https://github.com/kitten))
+- Enable `experiments.autolinkingModuleResolution` by default for workspaces/monorepos ([#40606](https://github.com/expo/expo/pull/40606) by [@kitten](https://github.com/kitten))
+- Add flag to preconfigure other flags for headless environment ([#42909](https://github.com/expo/expo/pull/42909) by [@kitten](https://github.com/kitten))
+- (Beta) Enable Bonjour by default ([#42929](https://github.com/expo/expo/pull/42929) by [@kitten](https://github.com/kitten))
+
+## 55.0.6 — 2026-02-03
+
+### 🐛 Bug fixes
+
 - Listen only on `localhost` when `--localhost` is passed ([#42760](https://github.com/expo/expo/pull/42760) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
@@ -27,6 +91,7 @@
 - Fix loader URL resolution for nested `/index` paths ([#42629](https://github.com/expo/expo/pull/42629) by [@hassankhan](https://github.com/hassankhan))
 - [web] Ensure `<Head>` component re-renders when focus changes ([#42681](https://github.com/expo/expo/pull/42681) by [@hassankhan](https://github.com/hassankhan))
 - Mark `expo-router` as optional peer to prevent auto-installation ([#42728](https://github.com/expo/expo/pull/42728) by [@kitten](https://github.com/kitten))
+- [android] Support `debugOptimized` build variant for active architecture filtering ([#42766](https://github.com/expo/expo/pull/42766) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 💡 Others
 
@@ -126,6 +191,7 @@ _This version does not introduce any user-facing changes._
 - Skip adding unnecessary CORS response header for `localhost` requests ([#41542](https://github.com/expo/expo/pull/41542) by [@kitten](https://github.com/kitten))
 - Embed `/_expo/touch` templates ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
+- Support `devicectl` jsonVersion 3 for Xcode 26 ([#42859](https://github.com/expo/expo/pull/42859) by [@kimchi-developer](https://github.com/kimchi-developer))
 - Bump `node-forge` dependency range to `^1.3.3` ([#41753](https://github.com/expo/expo/pull/41753) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/code-signing-certificates@^0.0.6` ([#41965](https://github.com/expo/expo/pull/41965) by [@kitten](https://github.com/kitten))
 - Unify nullish value handling for data loaders ([#42070](https://github.com/expo/expo/pull/42070) by [@hassankhan](https://github.com/hassankhan))

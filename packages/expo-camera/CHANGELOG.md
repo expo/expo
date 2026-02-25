@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+- [Web] Expands support for barcode types that can be scanned. ([#43403](https://github.com/expo/expo/pull/43403) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed a number of configuration issues and error inconsistencies. ([#42926](https://github.com/expo/expo/pull/42926) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.4 — 2026-02-03
 
@@ -39,6 +59,7 @@ _This version does not introduce any user-facing changes._
 - [Android] Fix certain exif keys being dropped because of invalid values. ([#41043](https://github.com/expo/expo/pull/41043) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix camera not being recreated on the old architecture. ([#41405](https://github.com/expo/expo/pull/41405) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Return correct size information when using image refs. ([#41658](https://github.com/expo/expo/pull/41658) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix incorrect isPinchToZoomEnabled default value for scanner. ([#41803](https://github.com/expo/expo/pull/41803) by [@hssdiv](https://github.com/hssdiv))
 
 ## 17.0.10 - 2025-12-05
 

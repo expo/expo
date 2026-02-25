@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- Added missing export of `clipboardEventName` on Web. ([#42610](https://github.com/expo/expo/pull/42610) by [@Bram-dc](https://github.com/Bram-dc))
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.4 — 2026-02-03
 
 _This version does not introduce any user-facing changes._

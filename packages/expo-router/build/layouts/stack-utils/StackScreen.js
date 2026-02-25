@@ -2,6 +2,7 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackScreen = void 0;
+exports.validateStackPresentation = validateStackPresentation;
 exports.appendScreenStackPropsToOptions = appendScreenStackPropsToOptions;
 const react_1 = require("react");
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
@@ -9,9 +10,6 @@ const screen_1 = require("./screen");
 const toolbar_1 = require("./toolbar");
 const children_1 = require("../../utils/children");
 const Screen_1 = require("../../views/Screen");
-function extractBottomToolbars(children) {
-    return ((0, children_1.getAllChildrenOfType)(children, toolbar_1.StackToolbar).filter((child) => child.props.placement === 'bottom' || child.props.placement === undefined) ?? []);
-}
 /**
  * Component used to define a screen in a native stack navigator.
  *
@@ -54,21 +52,46 @@ function extractBottomToolbars(children) {
  */
 exports.StackScreen = Object.assign(function StackScreen({ children, options, ...rest }) {
     // This component will only render when used inside a page.
-    const updatedOptions = (0, react_1.useMemo)(() => appendScreenStackPropsToOptions(options ?? {}, {
-        children,
-    }), [options, children]);
-    const bottomToolbars = (0, react_1.useMemo)(() => extractBottomToolbars(children), [children]);
+    if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
+        console.warn('Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.');
+    }
+    const ownOptions = (0, react_1.useMemo)(() => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})), [options]);
     return (<>
-        <Screen_1.Screen {...rest} options={updatedOptions}/>
-        {/* Bottom toolbar is a native component rendered separately */}
-        {bottomToolbars}
+        <Screen_1.Screen {...rest} options={ownOptions}/>
+        {children}
       </>);
 }, {
     Title: screen_1.StackScreenTitle,
     BackButton: screen_1.StackScreenBackButton,
 });
+const VALID_PRESENTATIONS = [
+    'card',
+    'modal',
+    'transparentModal',
+    'containedModal',
+    'containedTransparentModal',
+    'fullScreenModal',
+    'formSheet',
+    'pageSheet',
+];
+function validateStackPresentation(options) {
+    if (typeof options === 'function') {
+        return (...args) => {
+            const resolved = options(...args);
+            validateStackPresentation(resolved);
+            return resolved;
+        };
+    }
+    const presentation = options.presentation;
+    if (presentation &&
+        !VALID_PRESENTATIONS.includes(presentation)) {
+        throw new Error(`Invalid presentation value "${presentation}" passed to Stack.Screen. Valid values are: ${VALID_PRESENTATIONS.map((v) => `"${v}"`).join(', ')}.`);
+    }
+    return options;
+}
 function appendScreenStackPropsToOptions(options, props) {
     let updatedOptions = { ...options, ...props.options };
+    validateStackPresentation(updatedOptions);
     function appendChildOptions(child, opts) {
         if ((0, children_1.isChildOfType)(child, StackHeaderComponent_1.StackHeaderComponent)) {
             return (0, StackHeaderComponent_1.appendStackHeaderPropsToOptions)(opts, child.props);

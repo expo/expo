@@ -8,9 +8,50 @@
 
 ### 🐛 Bug fixes
 
-- Fix global type declaration chain to point to `expo -> expo-modules-core/types -> ./build/global` rather than `types="node"` ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
+### 💡 Others
+
+## 55.0.11 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `field.options.insert()` silently failing in `fieldsOf()` due to mutation on protocol existential. ([#43341](https://github.com/expo/expo/pull/43341) by [@just1and0](https://github.com/just1and0))
+- [iOS] Fixed warnings in `Prop` definition component by isolating its setter to the main actor. ([#43348](https://github.com/expo/expo/pull/43348) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.10 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash from `PersistentFileLog`. ([#43283](https://github.com/expo/expo/pull/43283) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- Fixed view updates for Jetpack Compose integration. ([#42732](https://github.com/expo/expo/pull/42732) by [@kudo](https://github.com/kudo))
+- [Android] Promoted `Either` type stable. ([#43267](https://github.com/expo/expo/pull/43267) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Remove legacy `ExpoModulesCorePlugin`. ([#43312](https://github.com/expo/expo/pull/43312) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.9 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- [iOS] Added `DynamicBoolType` to correctly distinguish boolean values from numeric 0/1. ([#42978](https://github.com/expo/expo/pull/42978) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `DynamicBoolType` to throw `NullCastException` for nil values, matching `DynamicRawType` behavior. ([#43085](https://github.com/expo/expo/pull/43085) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+- Removed needless warning when `NativeModulesProxy` is absent. ([#43020](https://github.com/expo/expo/pull/43020) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Removed some unused code. ([#42949](https://github.com/expo/expo/pull/42949) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.8 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing dependencies when building from source ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.7 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- Fix global type declaration chain to point to `expo -> expo-modules-core/types -> ./build/global` rather than `types="node"` ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
 
 ## 55.0.6 — 2026-02-03
 
@@ -25,6 +66,8 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed a crash in Fabric when unmounting a view while a geometry change event is being dispatched. ([#42628](https://github.com/expo/expo/issues/42628) by [@danishshaik](https://github.com/danishshaik)) ([#42634](https://github.com/expo/expo/pull/42634) by [@danishshaik](https://github.com/danishshaik))
+- [iOS] Fix crashes when converting a single JSValue into an Array. ([#42694](https://github.com/expo/expo/pull/42694) by [@behenate](https://github.com/behenate))
+- Added more Jetpack Compose support. ([#42734](https://github.com/expo/expo/pull/42734) by [@kudo](https://github.com/kudo))
 
 ## 55.0.5 — 2026-01-27
 

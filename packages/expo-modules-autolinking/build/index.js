@@ -9,6 +9,7 @@ const reactNativeConfigCommand_1 = require("./commands/reactNativeConfigCommand"
 const resolveCommand_1 = require("./commands/resolveCommand");
 const searchCommand_1 = require("./commands/searchCommand");
 const verifyCommand_1 = require("./commands/verifyCommand");
+const memoize_1 = require("./memoize");
 async function main(args) {
     const cli = commander_1.default
         .version(require('expo-modules-autolinking/package.json').version)
@@ -18,7 +19,9 @@ async function main(args) {
     (0, resolveCommand_1.resolveCommand)(cli);
     (0, generateModulesProviderCommand_1.generateModulesProviderCommand)(cli);
     (0, reactNativeConfigCommand_1.reactNativeConfigCommand)(cli);
-    await cli.parseAsync(args, { from: 'user' });
+    await (0, memoize_1.createMemoizer)().withMemoizer(async () => {
+        await cli.parseAsync(args, { from: 'user' });
+    });
 }
 module.exports = main;
 //# sourceMappingURL=index.js.map

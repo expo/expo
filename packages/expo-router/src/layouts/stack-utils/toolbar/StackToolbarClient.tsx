@@ -1,7 +1,6 @@
 'use client';
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { Fragment, isValidElement, useEffect, type ReactNode } from 'react';
-import { useMemo } from 'react';
+import React, { Fragment, isValidElement, useMemo, type ReactNode } from 'react';
 
 import {
   convertStackToolbarButtonPropsToRNHeaderItem,
@@ -20,11 +19,10 @@ import {
 import { convertStackToolbarViewPropsToRNHeaderItem, StackToolbarView } from './StackToolbarView';
 import { ToolbarPlacementContext, useToolbarPlacement, type ToolbarPlacement } from './context';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
+import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
 import { RouterToolbarHost } from '../../../toolbar/native';
-import { useNavigation } from '../../../useNavigation';
 import { isChildOfType } from '../../../utils/children';
-import { Screen } from '../../../views/Screen';
 
 export interface StackToolbarProps {
   /**
@@ -61,6 +59,9 @@ export interface StackToolbarProps {
  * - Use `placement="right"` to customize the right side of the header.
  * - Use `placement="bottom"` (default) to show a bottom toolbar (iOS only).
  *
+ * If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
+ *
  * > **Note:** Using `Stack.Toolbar` with `placement="left"` or `placement="right"` will
  * automatically make the header visible (`headerShown: true`), as the toolbar is rendered
  * as part of the native header.
@@ -68,7 +69,6 @@ export interface StackToolbarProps {
  * > **Note:** `Stack.Toolbar` with `placement="bottom"` can only be used inside **page**
  * components, not in layout components.
  *
- * > **Note**: Stack.Toolbar is an experimental API and may change without notice.
  *
  * @example
  * ```tsx
@@ -111,6 +111,7 @@ export interface StackToolbarProps {
  * }
  * ```
  *
+ * @experimental
  * @platform ios
  */
 export const StackToolbar = (props: StackToolbarProps) => {
@@ -137,34 +138,24 @@ const StackToolbarBottom = ({ children }: StackToolbarProps) => {
 };
 
 const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps) => {
-  const navigation = useNavigation();
-
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
       `Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`
     );
   }
 
-  useEffect(() => {
-    return () => {
-      const optionKey =
-        placement === 'right' ? 'unstable_headerRightItems' : 'unstable_headerLeftItems';
-      navigation.setOptions({
-        [optionKey]: () => [],
-      } as NativeStackNavigationOptions);
-    };
-  }, [navigation, placement]);
-
-  const updatedOptions = useMemo(
-    () => appendStackToolbarPropsToOptions({}, { children, placement, asChild }),
+  const options = useMemo(
+    () =>
+      appendStackToolbarPropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        { children, placement, asChild } satisfies Record<keyof StackToolbarProps, unknown>
+      ),
     [children, placement, asChild]
   );
+  useCompositionOption(options);
 
-  return (
-    <ToolbarPlacementContext.Provider value={placement}>
-      <Screen options={updatedOptions} />
-    </ToolbarPlacementContext.Provider>
-  );
+  return null;
 };
 
 function convertToolbarChildrenToUnstableItems(

@@ -8,10 +8,36 @@
 
 ### 🐛 Bug fixes
 
-- Fix global type declaration chain to point to `expo -> expo-modules-core/types -> ./build/global` rather than `types="node"` ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
-- Fix missing `module` type declaration when `@types/node` is missing ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
+### 💡 Others
+
+## 55.0.0 — 2026-02-25
 
 ### 💡 Others
+
+- [Android] Remove legacy autolinking integration. ([#43303](https://github.com/expo/expo/pull/43303) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.0-preview.12 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Add missing `Request`-like input handling, `method` normalization, and URL argument support to `fetch` ([#43194](https://github.com/expo/expo/pull/43194) by [@kitten](https://github.com/kitten))
+
+## 55.0.0-preview.11 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-preview.10 — 2026-02-08
+
+### 💡 Others
+
+- [iOS] Optimized `response.arrayBuffer` implementation. ([#42643](https://github.com/expo/expo/pull/42643) by [@barthap](https://github.com/barthap))
+
+## 55.0.0-preview.9 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- Fix global type declaration chain to point to `expo -> expo-modules-core/types -> ./build/global` rather than `types="node"` ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
+- Fix missing `module` type declaration when `@types/node` is missing ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
 
 ## 55.0.0-preview.8 — 2026-02-03
 

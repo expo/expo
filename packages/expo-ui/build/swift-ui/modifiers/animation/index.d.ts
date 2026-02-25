@@ -38,6 +38,6 @@ export declare const Animation: {
     default: ChainableAnimationType;
 };
 declare function ChainableAnimation(animation: AnimationObject): ChainableAnimationType;
-export declare const animation: (animationObject: ReturnType<typeof ChainableAnimation>, animatedValue: number | boolean) => import("../createModifier").ModifierConfig;
+export declare const animation: (animationObject: ReturnType<typeof ChainableAnimation>, animatedValue: number | boolean) => import("..").ModifierConfig;
 export {};
 //# sourceMappingURL=index.d.ts.map

@@ -10,6 +10,33 @@
 
 ### 💡 Others
 
+## 55.0.8 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- Fix basename matching for `picomatch` in side-effect matcher ([#43395](https://github.com/expo/expo/pull/43395) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Revert: Set default `resolver.useWatchman: undefined` value (enables it by default, as before) ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+- Replace `minimatch` with `picomatch` ([#43323](https://github.com/expo/expo/pull/43323) by [@kitten](https://github.com/kitten))
+
+## 55.0.7 — 2026-02-20
+
+### 💡 Others
+
+- Set default `resolver.useWatchman: undefined` value (enables it by default, as before) ([#43251](https://github.com/expo/expo/pull/43251) by [@kitten](https://github.com/kitten))
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+### 💡 Others
+
+- Switch to `@expo/env`'s `parseEnv` helper ([#42763](https://github.com/expo/expo/pull/42763) by [@kitten](https://github.com/kitten))
+
 ## 55.0.4 — 2026-02-03
 
 _This version does not introduce any user-facing changes._

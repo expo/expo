@@ -25,7 +25,7 @@ Expo is primarily built with greenfield apps in mind, but we are increasingly in
 | ---------------------------------------------------------------------------------------------------- | -------------------- |
 | [Expo SDK](/versions/latest/) - an extended standard library for React Native                        | Yes                  |
 | [Expo Modules API](/modules/overview/) - build native extensions using an idiomatic Swift/Kotlin API | Yes                  |
-| [Expo Router](/router/introduction/) - file-based routing and navigation                             | No                   |
+| [Expo Router](/router/introduction/) - file-based routing and navigation                             | Yes                  |
 | [Expo CLI](/more/expo-cli/) - tools to run and develop your app from your terminal                   | Yes                  |
 | [Expo Dev Client](/versions/latest/sdk/dev-client/) - adds in-app developer tooling to Debug builds  | No                   |
 | [EAS Build](/build/introduction/) - a CI/CD service built specifically for Expo/React Native         | Yes                  |
@@ -65,8 +65,14 @@ This separation simplifies the workflow for native developers, as they don't nee
 ## Next steps
 
 <BoxLink
-  title="How to add Expo to an existing native (brownfield) app"
-  description="Learn how to add Expo and React Native root view into existing native apps."
-  href="/brownfield/get-started/"
+  title="Isolated approach: Package Expo as a native library"
+  description="Build your React Native code as AAR/ XCFramework artifacts and integrate them into any native app."
+  href="/brownfield/isolated-approach/"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="Integrated approach: Add Expo directly to your native project"
+  description="Configure your existing native project to use React Native and Expo directly."
+  href="/brownfield/integrated-approach/"
   Icon={BookOpen02Icon}
 />

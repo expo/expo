@@ -13,6 +13,7 @@ import {
   Slider,
   Capsule,
   Stepper,
+  Spacer,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -48,6 +49,7 @@ import {
   allowsTightening,
   truncationMode,
   kerning,
+  monospacedDigit,
   textCase,
   underline,
   strikethrough,
@@ -62,9 +64,18 @@ import {
   tag,
   font,
   lineLimit,
+  contentShape,
+  shapes,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text as RNText,
+  View,
+  useWindowDimensions,
+  Alert,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
@@ -111,6 +122,7 @@ export default function ModifiersScreen() {
   const [badgeIndex, setBadgeIndex] = useState(0);
 
   const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
+  const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
 
   return (
     <ScrollView>
@@ -240,6 +252,19 @@ export default function ModifiersScreen() {
             />
             <Text modifiers={[font({ size: 14 }), kerning(kerningValue)]}>Kerning Text</Text>
             <Slider min={0} max={10} onValueChange={setKerning} />
+
+            <HStack alignment="center" spacing={40}>
+              <VStack spacing={4}>
+                <Text modifiers={[font({ size: 12 })]}>Default</Text>
+                <Text modifiers={[font({ size: 20 })]}>1111111111</Text>
+                <Text modifiers={[font({ size: 20 })]}>0000000000</Text>
+              </VStack>
+              <VStack spacing={4}>
+                <Text modifiers={[font({ size: 12 })]}>monospacedDigit</Text>
+                <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>1111111111</Text>
+                <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>0000000000</Text>
+              </VStack>
+            </HStack>
 
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>
@@ -671,6 +696,41 @@ export default function ModifiersScreen() {
           </Section>
 
           <AppearSection />
+
+          {/* Container Shape Modifier */}
+          <Section title="Content Shape Modifier">
+            <Text>Try tapping the empty space between texts:</Text>
+            <HStack
+              modifiers={[
+                cornerRadius(8),
+                onTapGesture(() => {
+                  Alert.alert('Without contentShape', 'Tapped! (Only works on text)');
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+
+            <Text>{'WITH contentShape\nNow tap the empty space:'}</Text>
+            <HStack
+              spacing={0}
+              modifiers={[
+                contentShape(shapes.rectangle()),
+                onTapGesture(() => {
+                  setcontentShapeButtonCounter((prev) => {
+                    const nextCount = prev + 1;
+                    Alert.alert('With contentShape', `Works everywhere! Count: ${nextCount}`);
+                    return nextCount;
+                  });
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+            <Text>Taps: {contentShapeButtonCounter}</Text>
+          </Section>
 
           <Section title="Misc">
             <VStack

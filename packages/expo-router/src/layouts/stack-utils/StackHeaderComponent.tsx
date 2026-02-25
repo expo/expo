@@ -3,7 +3,7 @@ import { useMemo, type ReactNode } from 'react';
 import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
-import { Screen } from '../../views/Screen';
+import { useCompositionOption } from '../../fork/native-stack/composition-options';
 
 export interface StackHeaderProps {
   /**
@@ -103,12 +103,33 @@ export interface StackHeaderProps {
  *   );
  * }
  * ```
+ *
+ * > **Note:** If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
  */
-export function StackHeaderComponent(props: StackHeaderProps) {
-  // This component will only render when used inside a page
-  // but only if it is not wrapped in Stack.Screen
-  const updatedOptions = useMemo(() => appendStackHeaderPropsToOptions({}, props), [props]);
-  return <Screen options={updatedOptions} />;
+export function StackHeaderComponent({
+  children,
+  hidden,
+  asChild,
+  transparent,
+  blurEffect,
+  style,
+  largeStyle,
+}: StackHeaderProps) {
+  const options = useMemo(
+    () =>
+      appendStackHeaderPropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        { children, hidden, asChild, transparent, blurEffect, style, largeStyle } satisfies Record<
+          keyof StackHeaderProps,
+          unknown
+        >
+      ),
+    [children, hidden, asChild, transparent, blurEffect, style, largeStyle]
+  );
+  useCompositionOption(options);
+  return null;
 }
 
 export function appendStackHeaderPropsToOptions(

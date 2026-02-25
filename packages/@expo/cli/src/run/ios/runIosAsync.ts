@@ -15,7 +15,7 @@ import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/si
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
 import { CommandError } from '../../utils/errors';
-import { setNodeEnv } from '../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
@@ -27,7 +27,7 @@ const debug = require('debug')('expo:run:ios');
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   assertPlatform();
 

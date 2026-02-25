@@ -10,6 +10,9 @@ on:
       - packages/expo-modules-core/**
       - packages/expo-dev-client/**
       - packages/expo-updates/**
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -69,7 +72,6 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🍏 Build iOS Project
         working-directory: ./apps/brownfield-tester
@@ -127,7 +129,6 @@ jobs:
           yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🤖 Build Android project
         run: |

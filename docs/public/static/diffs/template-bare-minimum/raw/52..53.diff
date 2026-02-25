@@ -463,117 +463,6 @@ index 1ccb9b422d5..1b7513bd31b 100644
  				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
  				MTL_ENABLE_DEBUG_INFO = NO;
  				SDKROOT = iphoneos;
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
-deleted file mode 100644
-index 6a99d7d589a..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/contents.xcworkspacedata
-+++ /dev/null
-@@ -1,10 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<Workspace
--   version = "1.0">
--   <FileRef
--      location = "group:HelloWorld.xcodeproj">
--   </FileRef>
--   <FileRef
--      location = "group:Pods/Pods.xcodeproj">
--   </FileRef>
--</Workspace>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist b/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
-deleted file mode 100644
-index 18d981003d6..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
-+++ /dev/null
-@@ -1,8 +0,0 @@
--<?xml version="1.0" encoding="UTF-8"?>
--<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
--<plist version="1.0">
--<dict>
--	<key>IDEDidComputeMac32BitWarning</key>
--	<true/>
--</dict>
--</plist>
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
-deleted file mode 100644
-index 1658a437eb3..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.h
-+++ /dev/null
-@@ -1,7 +0,0 @@
--#import <RCTAppDelegate.h>
--#import <UIKit/UIKit.h>
--#import <Expo/Expo.h>
--
--@interface AppDelegate : EXAppDelegateWrapper
--
--@end
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-deleted file mode 100644
-index b27f83286d2..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-+++ /dev/null
-@@ -1,62 +0,0 @@
--#import "AppDelegate.h"
--
--#import <React/RCTBundleURLProvider.h>
--#import <React/RCTLinkingManager.h>
--
--@implementation AppDelegate
--
--- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
--{
--  self.moduleName = @"main";
--
--  // You can add your custom initial props in the dictionary below.
--  // They will be passed down to the ViewController used by React Native.
--  self.initialProps = @{};
--
--  return [super application:application didFinishLaunchingWithOptions:launchOptions];
--}
--
--- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
--{
--  return [self bundleURL];
--}
--
--- (NSURL *)bundleURL
--{
--#if DEBUG
--  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
--#else
--  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
--#endif
--}
--
--// Linking API
--- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
--  return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
--}
--
--// Universal Links
--- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
--  BOOL result = [RCTLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
--  return [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler] || result;
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
--{
--  return [super application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
--{
--  return [super application:application didFailToRegisterForRemoteNotificationsWithError:error];
--}
--
--// Explicitly define remote notification delegates to ensure compatibility with some third-party libraries
--- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
--{
--  return [super application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
--}
--
--@end
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 new file mode 100644
 index 00000000000..a7887e1e5b1
@@ -659,22 +548,6 @@ index 00000000000..8361941afc2
 +//
 +// Use this file to import your target's public headers that you would like to expose to Swift.
 +//
-diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m b/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
-deleted file mode 100644
-index 25181b6ccb5..00000000000
---- a/templates/expo-template-bare-minimum/ios/HelloWorld/main.m
-+++ /dev/null
-@@ -1,10 +0,0 @@
--#import <UIKit/UIKit.h>
--
--#import "AppDelegate.h"
--
--int main(int argc, char * argv[]) {
--  @autoreleasepool {
--    return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
--  }
--}
--
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
 index f740040e7be..29503ff0cc1 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
@@ -702,15 +575,15 @@ index f740040e7be..29503ff0cc1 100644
        '--json',
        '--platform',
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 7d0eda00285..870e8456316 100644
+index b51159163bf..911f7ee9a53 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "52.0.78",
-+  "version": "53.0.40",
+-  "version": "52.0.79",
++  "version": "53.0.41",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -718,11 +591,11 @@ index 7d0eda00285..870e8456316 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~52.0.48",
+-    "expo": "~52.0.49",
 -    "expo-status-bar": "~2.0.1",
 -    "react": "18.3.1",
 -    "react-native": "0.76.9"
-+    "expo": "~53.0.24",
++    "expo": "~53.0.26",
 +    "expo-status-bar": "~2.2.3",
 +    "react": "19.0.0",
 +    "react-native": "0.79.6"

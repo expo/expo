@@ -10,12 +10,41 @@
 
 ### 💡 Others
 
+## 55.0.9 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [ios] Fix truncated text labels in `LocalNetworkPermissionView` ([#43353](https://github.com/expo/expo/pull/43353) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.8 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [android] fixed crash when returning from notification settings after disabling notification permissions ([#43217](https://github.com/expo/expo/pull/43217) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.7 — 2026-02-16
+
+### 🎉 New features
+
+- Full native interface for updates. ([#42981](https://github.com/expo/expo/pull/42981) by [@douglowder](https://github.com/douglowder))
+
+### 🐛 Bug fixes
+
+- fixes to error handling ([#42873](https://github.com/expo/expo/pull/42873) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.6 — 2026-02-08
+
+### 🎉 New features
+
+- [iOS] Add Bonjour service discovery ([#42384](https://github.com/expo/expo/pull/42384) by [@kitten](https://github.com/kitten))
+
 ## 55.0.5 — 2026-02-03
 
 ### 🐛 Bug fixes
 
 - [Android] Fix sometimes two dev menus would open. ([#42567](https://github.com/expo/expo/pull/42567) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix color of placeholder text in URL input. ([#42677](https://github.com/expo/expo/pull/42677) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Dev launcher should respond to screen rotations. ([#42799](https://github.com/expo/expo/pull/42799) by [@douglowder](https://github.com/douglowder))
 
 ## 55.0.4 — 2026-01-27
 

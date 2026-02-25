@@ -129,6 +129,7 @@ export const home = [
       ],
       { expanded: false }
     ),
+    makePage('develop/database.mdx'),
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
@@ -222,7 +223,8 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
-      makePage('brownfield/get-started.mdx'),
+      makePage('brownfield/isolated-approach.mdx'),
+      makePage('brownfield/integrated-approach.mdx'),
       makePage('brownfield/lifecycle-listeners.mdx'),
     ]),
     makeGroup(
@@ -358,6 +360,7 @@ export const general = [
     ]),
     makeGroup('CMS', [makePage('guides/using-a-cms.mdx')]),
     makeGroup('Database and SDKs', [
+      makePage('guides/using-convex.mdx'),
       makePage('guides/using-firebase.mdx'),
       makePage('guides/using-supabase.mdx'),
     ]),
@@ -385,7 +388,10 @@ export const general = [
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
-        makePage('guides/expo-ui-swift-ui.mdx'),
+      ]),
+      makeSection('Expo UI', [
+        makePage('guides/expo-ui-swift-ui/index.mdx'),
+        makePage('guides/expo-ui-swift-ui/extending.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
@@ -430,6 +436,7 @@ export const eas = [
   ),
   makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
+    makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),

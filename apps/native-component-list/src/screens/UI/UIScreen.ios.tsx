@@ -75,6 +75,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ConfirmationDialog component',
+    route: 'ui/confirmation-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ConfirmationDialogScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
@@ -171,6 +179,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Content Transition',
+    route: 'ui/content-transition',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ContentTransitionScreen'));
+    },
+  },
+  {
     name: 'Glass Effect',
     route: 'ui/glass-effect',
     options: {},
@@ -184,6 +200,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
+  {
+    name: 'ScrollView component',
+    route: 'ui/scrollview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewScreen'));
     },
   },
   {
@@ -240,6 +264,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
+    },
+  },
+  {
+    name: 'Extending Expo UI',
+    route: 'ui/extending',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
 ];

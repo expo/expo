@@ -25,6 +25,7 @@ export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconCol
 type AwaitedIcon =
   | {
       sf?: SFSymbol;
+      xcasset?: string;
       drawable?: string;
     }
   | {
@@ -83,13 +84,18 @@ export function convertOptionsIconToIOSPropsIcon(
       name: icon.sf,
     };
   }
-  if (icon && 'src' in icon && icon.src) {
+  if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
+    const imageSource =
+      'xcasset' in icon && icon.xcasset
+        ? { uri: icon.xcasset }
+        : (icon as { src: ImageSourcePropType }).src;
+    const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
     const effectiveRenderingMode =
-      icon.renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
+      renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
     if (effectiveRenderingMode === 'original') {
-      return { type: 'imageSource', imageSource: icon.src };
+      return { type: 'imageSource', imageSource };
     }
-    return { type: 'templateSource', templateSource: icon.src };
+    return { type: 'templateSource', templateSource: imageSource };
   }
   return undefined;
 }

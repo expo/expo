@@ -148,13 +148,13 @@ To verify our runtime version, we make sure our app config (**app.json**/**app.c
 {
   "expo": {
     "runtimeVersion": {
-      "policy": "sdkVersion"
+      "policy": "appVersion"
     }
   }
 }
 ```
 
-By default, it is `{ "policy": "sdkVersion" }`, but we can change our runtime to [use a different policy or a specific version](/eas-update/runtime-versions). Then, we can run a command like `eas build --profile preview` to create a build with the runtime version we expect.
+By default, it is `{ "policy": "appVersion" }`, but we can change our runtime to [use a different policy or a specific version](/eas-update/runtime-versions). Then, we can run a command like `eas build --profile preview` to create a build with the runtime version we expect.
 
 ### Map channel to branch
 
@@ -207,7 +207,7 @@ The `expo-updates` library runs inside an end-user's app and makes requests to a
 
 When we set up EAS Update, we likely ran `eas update:configure` to configure expo-updates to work with EAS Update. This command makes changes to our app config (**app.json**/**app.config.js**). Here are the fields we'd expect to see:
 
-- `runtimeVersion` should be set. By default, it is `{ "policy": "sdkVersion" }`. If our project has **android** and **ios** directories, we'll have to set the `runtimeVersion` manually.
+- `runtimeVersion` should be set. By default, it is `{ "policy": "appVersion" }`. If our project has **android** and **ios** directories, we'll have to set the `runtimeVersion` manually.
 - `updates.url` should be a value like `https://u.expo.dev/your-project-id`, where `your-project-id` matches the ID of our project. We can see this ID on [our website](https://expo.dev/accounts/[account]/projects/[project]).
 - `updates.enabled` should not be `false`. It's `true` by default if it is not specified.
 

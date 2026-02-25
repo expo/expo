@@ -37,7 +37,6 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🍏 Build iOS Project
         working-directory: ./apps/bare-expo

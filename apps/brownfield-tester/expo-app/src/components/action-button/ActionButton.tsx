@@ -9,11 +9,13 @@ const ActionButton = ({
   description,
   onPress,
   type = 'button',
+  testID,
 }: ActionButtonProps) => {
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.focused]}
-      onPress={onPress}>
+      onPress={onPress}
+      testID={testID}>
       <View style={styles.titleContainer}>
         {icon && <Feather name={icon} size={24} color="black" />}
         <View>

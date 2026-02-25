@@ -38,10 +38,11 @@ import {
   StackSearchBar,
   StackToolbar,
   appendScreenStackPropsToOptions,
+  mapProtectedScreen,
+  validateStackPresentation,
 } from './stack-utils';
 import { isChildOfType } from '../utils/children';
-import { Protected, type ProtectedProps } from '../views/Protected';
-import { Screen } from '../views/Screen';
+import { Protected } from '../views/Protected';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -543,34 +544,6 @@ function filterSingular<
   };
 }
 
-function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
-  return {
-    ...props,
-    children: Children.toArray(props.children)
-      .map((child, index) => {
-        if (isChildOfType(child, StackScreen)) {
-          const options = appendScreenStackPropsToOptions({}, child.props);
-          const { children, ...rest } = child.props;
-          return <Screen key={child.props.name} {...rest} options={options} />;
-        } else if (isChildOfType(child, Protected)) {
-          return <Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)} />;
-        } else if (isChildOfType(child, StackHeader)) {
-          // Ignore Stack.Header, because it can be used to set header options for Stack
-          // and we use this function to process children of Stack, as well.
-          return null;
-        } else {
-          if (React.isValidElement(child)) {
-            console.warn(`Unknown child element passed to Stack: ${child.type}`);
-          } else {
-            console.warn(`Unknown child element passed to Stack: ${child}`);
-          }
-        }
-        return null;
-      })
-      .filter(Boolean),
-  };
-}
-
 /**
  * Renders a native stack navigator.
  *
@@ -598,9 +571,14 @@ const Stack = Object.assign(
         } else {
           return appendScreenStackPropsToOptions({}, screenStackProps);
         }
-      } else {
-        return props.screenOptions;
+      } else if (props.screenOptions) {
+        const screenOptions = props.screenOptions;
+        if (typeof screenOptions === 'function') {
+          return validateStackPresentation(screenOptions);
+        }
+        return validateStackPresentation(screenOptions);
       }
+      return props.screenOptions;
     }, [props.screenOptions, props.children]);
 
     const screenOptions = useMemo(() => {

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 55.0.7 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- Add missing `Content-Type: application/json` to `/symbolicate` requests ([#43074](https://github.com/expo/expo/pull/43074) by [@kitten](https://github.com/kitten))
+
+## 55.0.6 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- Migrate away from react-native-web to fix styles in SPA output. ([#42853](https://github.com/expo/expo/pull/42853) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 55.0.5 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.4 — 2026-02-03
 
 ### 🐛 Bug fixes

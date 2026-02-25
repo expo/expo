@@ -3,7 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withSettingsGradlePlugin = exports.withProjectFilesPlugin = exports.withProjectBuildGradlePlugin = void 0;
+exports.withSettingsGradlePlugin = exports.withProjectFilesPlugin = exports.withProjectBuildGradlePlugin = exports.withGradlePropertiesPlugin = void 0;
+var withGradlePropertiesPlugin_1 = require("./withGradlePropertiesPlugin");
+Object.defineProperty(exports, "withGradlePropertiesPlugin", { enumerable: true, get: function () { return __importDefault(withGradlePropertiesPlugin_1).default; } });
 var withProjectBuildGradlePlugin_1 = require("./withProjectBuildGradlePlugin");
 Object.defineProperty(exports, "withProjectBuildGradlePlugin", { enumerable: true, get: function () { return __importDefault(withProjectBuildGradlePlugin_1).default; } });
 var withProjectFilesPlugin_1 = require("./withProjectFilesPlugin");

@@ -15,6 +15,9 @@ struct ListView: ExpoSwiftUI.View {
 
   init(props: ListProps) {
     self.props = props
+    let initialSelection = Self.getHashableSetFromEither(props.selection)
+    _selection = State(initialValue: initialSelection)
+    _prevSelection = State(initialValue: initialSelection)
   }
 
   var body: some View {
@@ -25,7 +28,7 @@ struct ListView: ExpoSwiftUI.View {
       handleSelectionChange(selection: newSelection)
     }
     .onReceive(props.selection.publisher) { newValue in
-      let hashableSet = getHashableSetFromEither(newValue)
+      let hashableSet = Self.getHashableSetFromEither(newValue)
       if prevSelection == hashableSet { return }
       selection = hashableSet
       prevSelection = hashableSet
@@ -33,7 +36,7 @@ struct ListView: ExpoSwiftUI.View {
   }
 
   func handleSelectionChange(selection: Set<AnyHashable>) {
-    let propsSelection = getHashableSetFromEither(props.selection)
+    let propsSelection = Self.getHashableSetFromEither(props.selection)
     if propsSelection == selection { return }
 
     let selectionArray: [Any] = selection.compactMap { value in
@@ -47,7 +50,7 @@ struct ListView: ExpoSwiftUI.View {
     props.onSelectionChange(["selection": selectionArray])
   }
 
-  private func getHashableSetFromEither(_ array: [Either<String, Double>]?) -> Set<AnyHashable> {
+  private static func getHashableSetFromEither(_ array: [Either<String, Double>]?) -> Set<AnyHashable> {
     guard let array else { return Set() }
     var result = Set<AnyHashable>()
     for item in array {

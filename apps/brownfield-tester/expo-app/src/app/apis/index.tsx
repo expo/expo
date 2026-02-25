@@ -7,7 +7,7 @@ import { ActionButton } from '@/components';
 const Index = () => {
   const router = useRouter();
 
-  const navigateToScreen = (screen: 'communication' | 'navigation') => {
+  const navigateToScreen = (screen: 'communication' | 'navigation' | 'state') => {
     router.navigate(`/apis/${screen}`);
   };
 
@@ -19,6 +19,7 @@ const Index = () => {
         title="Communication"
         description="Bi-directional communication API"
         onPress={() => navigateToScreen('communication')}
+        testID="apis-communication"
       />
       <ActionButton
         type="link"
@@ -26,6 +27,15 @@ const Index = () => {
         title="Navigation"
         description="Navigation API"
         onPress={() => navigateToScreen('navigation')}
+        testID="apis-navigation"
+      />
+      <ActionButton
+        type="link"
+        icon="database"
+        title="State"
+        description="State API"
+        onPress={() => navigateToScreen('state')}
+        testID="apis-state"
       />
     </SafeAreaView>
   );

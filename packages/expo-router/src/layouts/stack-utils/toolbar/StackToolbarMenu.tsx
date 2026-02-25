@@ -18,6 +18,8 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import { useToolbarPlacement } from './context';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
+  extractIconRenderingMode,
+  extractXcassetName,
   type StackHeaderItemSharedProps,
 } from './shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
@@ -218,11 +220,13 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     [props.children]
   );
 
-  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
 
   const computedLabel = sharedProps?.label;
   const computedMenuTitle = sharedProps?.menu?.title;
   const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+  const xcassetName = extractXcassetName(props);
+  const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
 
   if (process.env.NODE_ENV !== 'production') {
     const allChildren = Children.toArray(props.children);
@@ -247,8 +251,9 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     <NativeToolbarMenu
       {...props}
       icon={icon}
+      xcassetName={xcassetName}
       image={props.image}
-      imageRenderingMode={props.iconRenderingMode}
+      imageRenderingMode={imageRenderingMode}
       label={computedLabel}
       title={computedMenuTitle}
       children={validChildren}
@@ -257,7 +262,8 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
 };
 
 export function convertStackToolbarMenuPropsToRNHeaderItem(
-  props: StackToolbarMenuProps
+  props: StackToolbarMenuProps,
+  isBottomPlacement: boolean = false
 ): NativeStackHeaderItemMenu | undefined {
   if (props.hidden) {
     return undefined;
@@ -273,7 +279,7 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
     title
   );
 
-  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(rest);
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(rest, isBottomPlacement);
 
   const item: NativeStackHeaderItemMenu = {
     ...sharedProps,
@@ -470,6 +476,7 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   const item: NativeStackHeaderItemMenuAction = {
     ...rest,
+    description: props.subtitle,
     type: 'action',
     label: sharedProps.label,
     state: isOn ? 'on' : 'off',
@@ -504,6 +511,7 @@ interface NativeToolbarMenuProps {
   hidden?: boolean;
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
+  xcassetName?: string;
   // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display for the menu item.
@@ -539,6 +547,7 @@ const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   destructive,
   children,
   icon,
+  xcassetName,
   image,
   imageRenderingMode,
   tintColor,
@@ -556,6 +565,7 @@ const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       hidesSharedBackground={hidesSharedBackground}
       hidden={hidden}
       icon={icon}
+      xcassetName={xcassetName}
       // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
       image={image}
       imageRenderingMode={renderingMode}

@@ -5,7 +5,7 @@
 // also see "Logging with multiple arguments is not supported."
 // https://docs.maestro.dev/advanced/javascript/logging#logging-in-a-separate-javascript-file
 
-const SERVER_URL = 'http://localhost:3000';
+const SERVER_URL = 'http://localhost:7123';
 
 function getParams() {
   /* eslint-disable no-undef */

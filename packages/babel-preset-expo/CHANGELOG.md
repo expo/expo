@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 55.0.7 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Strip loaders from server bundles ([#43212](https://github.com/expo/expo/pull/43212) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-08
+
+### 🎉 New features
+
+- Add babel plugin for `expo-widgets`. ([#42941](https://github.com/expo/expo/pull/42941) by [@jakex7](https://github.com/jakex7))
+
 ## 55.0.3 — 2026-02-03
 
 ### 💡 Others

@@ -8,7 +8,6 @@ import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
 import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
@@ -27,7 +26,6 @@ class FileSystemModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
   @RequiresApi(Build.VERSION_CODES.O)
-  @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
 
@@ -150,18 +148,19 @@ class FileSystemModule : Module() {
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+        val append = options?.append ?: false
         if (content.`is`(String::class)) {
           content.get(String::class).let {
             if (options?.encoding == EncodingType.BASE64) {
-              file.write(Base64.decode(it, Base64.DEFAULT))
+              file.write(Base64.decode(it, Base64.DEFAULT), append)
             } else {
-              file.write(it)
+              file.write(it, append)
             }
           }
         }
         if (content.`is`(TypedArray::class)) {
           content.get(TypedArray::class).let {
-            file.write(it)
+            file.write(it, append)
           }
         }
       }

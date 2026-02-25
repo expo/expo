@@ -285,7 +285,7 @@ export default function TabLayout() {
 
 > **important** Icon rendering mode is available in SDK 55 and later.
 
-When using the `src` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
+When using the `src` or `xcasset` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
 
 - **`template` (default)**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
 - **`original`**: The icon is rendered with its original colors preserved. This is useful for icons with gradients or multiple colors.
@@ -347,6 +347,51 @@ export default function TabLayout() {
 </Tabs>
 
 > **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
+
+#### Asset catalog icons (iOS)
+
+> **info** This feature is available in SDK 55 and later.
+
+On iOS, you can use images from the Xcode asset catalog as tab icons with the `xcasset` prop. This is useful when you want to manage your icons through Xcode's asset catalog instead of bundling image files.
+
+Pass a string with the asset name to use the same icon for both default and selected states:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon xcasset="home-icon" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+To use different icons for default and selected states, pass an object:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon
+          xcasset={{
+            default: 'home-outline',
+            selected: 'home-filled',
+          }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+> **info** Asset catalog icons support the `renderingMode` prop, just like `src` icons. When `iconColor` is set, icons default to `template` rendering. Otherwise, they default to `original`.
 
 ### Label
 
@@ -974,6 +1019,209 @@ export default function HomeScreen() {
 }
 ```
 
+### Lazy loading
+
+All tab screens in native tabs render eagerly when the navigator mounts. This behavior cannot be changed because the native tab bar needs each screen to be available for transitions. If a tab contains expensive content that you want to defer until the user actually visits the tab, you can use one of the following approaches.
+
+#### Render content only when focused
+
+Use `useIsFocused` to conditionally render content. The content unmounts when the user navigates away and re-renders when they come back. This means any local state (scroll position, form inputs) is lost on every tab switch.
+
+```tsx app/(tabs)/search.tsx
+import { useIsFocused } from 'expo-router';
+import { View, ActivityIndicator, Text } from 'react-native';
+
+export default function SearchScreen() {
+  const isFocused = useIsFocused();
+
+  if (!isFocused) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Text>Expensive content that only renders when this tab is focused</Text>
+    </View>
+  );
+}
+```
+
+#### Load once on first focus
+
+Use `useFocusEffect` with a state flag to load content the first time the tab is focused, then keep it mounted.
+
+```tsx app/(tabs)/search.tsx
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { View, ActivityIndicator, Text } from 'react-native';
+
+export default function SearchScreen() {
+  const [hasActivated, setHasActivated] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      setHasActivated(true);
+    }, [])
+  );
+
+  if (!hasActivated) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Text>Content that loads once and stays mounted</Text>
+    </View>
+  );
+}
+```
+
+### Custom web layout
+
+Native tabs render platform-specific tab bars on Android and iOS, but there is no standard system tab bar on web. On web, native tabs fall back to a basic implementation, loosely based on iPad design. You can use headless tabs from `expo-router/ui` to provide a custom web layout while keeping native tabs on mobile. There are two ways to set this up.
+
+#### Platform-specific layout files
+
+Use a **\_layout.web.tsx** file alongside your **\_layout.tsx**. The web file completely replaces the layout on web, so each platform can have an entirely different layout.
+
+<FileTree
+  files={[
+    'app/_layout.tsx — native tabs for Android and iOS',
+    'app/_layout.web.tsx — headless tabs for web',
+  ]}
+/>
+
+```tsx app/_layout.web.tsx
+import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
+import { StyleSheet } from 'react-native';
+
+export default function WebLayout() {
+  return (
+    <Tabs>
+      <TabSlot />
+      <TabList style={styles.tabList}>
+        <TabTrigger name="index" href="/" style={styles.tab}>
+          Home
+        </TabTrigger>
+        <TabTrigger name="settings" href="/settings" style={styles.tab}>
+          Settings
+        </TabTrigger>
+      </TabList>
+    </Tabs>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabList: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    padding: 16,
+  },
+  tab: {
+    padding: 8,
+  },
+});
+```
+
+#### Shared component with platform extensions
+
+Extract the tab UI into a component with platform-specific extensions. A single **\_layout.tsx** handles shared logic (providers, wrappers, analytics) and imports the tab component, which resolves to the correct platform file.
+
+<FileTree
+  files={[
+    'app/_layout.tsx — shared layout, imports AppTabs',
+    'components/app-tabs.tsx — native tabs for Android and iOS',
+    'components/app-tabs.web.tsx — headless tabs for web',
+  ]}
+/>
+
+```tsx app/_layout.tsx
+import AppTabs from '@/components/app-tabs';
+
+export default function Layout() {
+  return (
+    <ThemeProvider>
+      <AppTabs />
+    </ThemeProvider>
+  );
+}
+```
+
+```tsx components/app-tabs.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function AppTabs() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon sf="gear" md="settings" />
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+```tsx components/app-tabs.web.tsx
+import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
+import { StyleSheet } from 'react-native';
+
+export default function AppTabs() {
+  return (
+    <Tabs>
+      <TabSlot />
+      <TabList style={styles.tabList}>
+        <TabTrigger name="index" href="/" style={styles.tab}>
+          Home
+        </TabTrigger>
+        <TabTrigger name="settings" href="/settings" style={styles.tab}>
+          Settings
+        </TabTrigger>
+      </TabList>
+    </Tabs>
+  );
+}
+
+const styles = StyleSheet.create({
+  tabList: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    padding: 16,
+  },
+  tab: {
+    padding: 8,
+  },
+});
+```
+
+<BoxLink
+  title="Custom tabs"
+  href="/router/advanced/custom-tabs/"
+  description="Learn more about customizing headless tabs from expo-router/ui."
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Platform-specific extensions"
+  href="/router/advanced/platform-specific-modules/"
+  description="Learn how platform-specific file extensions like .web.tsx work in Expo Router."
+  Icon={BookOpen02Icon}
+/>
+
 ## Migrating native tabs from SDK 54 to 55
 
 SDK 55 changes how you access tab bar item components. Instead of importing `Icon`, `Label`, and `Badge` separately, use the compound component API: `NativeTabs.Trigger.Icon`, `NativeTabs.Trigger.Label`, and `NativeTabs.Trigger.Badge`. For Android icons, the `md` prop is the new recommended way to use Material Symbols.
@@ -1104,6 +1352,54 @@ export default function HomeScreen() {
     <View collapsable={false} style={{ flex: 1 }}>
       <ScrollView>{/* Screen content */}</ScrollView>
     </View>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Liquid glass header buttons flicker in dark mode on iOS 26">
+
+Header buttons with liquid glass styling may flicker or flash their background when switching tabs in dark mode on iOS 26. This happens because React Navigation's default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
+
+The fix is the same as for the white background flash issue: wrap your layout with `<ThemeProvider>` from `@react-navigation/native` using the appropriate theme.
+
+**For apps supporting both light and dark modes:**
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useColorScheme } from 'react-native';
+
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <NativeTabs>
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="settings">
+          <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    </ThemeProvider>
+  );
+}
+```
+
+**For dark-mode-only apps:**
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <ThemeProvider value={DarkTheme}>
+      <NativeTabs>{/* tabs */}</NativeTabs>
+    </ThemeProvider>
   );
 }
 ```

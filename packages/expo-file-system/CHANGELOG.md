@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 55.0.9 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- Fix incorrect return types for `File` and `Directory` static methods. ([#43282](https://github.com/expo/expo/pull/43282) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Fix Jest mock to support new `File`/`Directory`/`Paths` API. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))
+
+## 55.0.6 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- [Android] Fix bundle directory listing returning incorrect names, URIs and trailing slashes for files. ([#42882](https://github.com/expo/expo/pull/42882) by [@aleqsio](https://github.com/aleqsio))
+
+## 55.0.5 — 2026-02-08
+
+### 🎉 New features
+
+- Add `append` option to write methods. ([#42778](https://github.com/expo/expo/pull/42778) by [@aleqsio](https://github.com/aleqsio))
+
 ## 55.0.4 — 2026-02-03
 
 _This version does not introduce any user-facing changes._

@@ -45,6 +45,12 @@ const withProjectFilesPlugin = (config, pluginConfig) => {
         });
         (0, utils_1.createFileFromTemplate)('proguard-rules.pro', brownfieldPath);
         (0, utils_1.createFileFromTemplate)('consumer-rules.pro', brownfieldPath);
+        // Adjust ReactNativeHostManager and BrownfieldActivity to initialize dev menu
+        if ((0, common_1.checkPlugin)(config, 'expo-dev-menu')) {
+            (0, common_1.applyPatchToFile)('ReactNativeHostManager.patch', node_path_1.default.join(brownfieldSourcesPath, 'ReactNativeHostManager.kt'));
+            (0, common_1.applyPatchToFile)('BrownfieldActivity.patch', node_path_1.default.join(brownfieldSourcesPath, 'BrownfieldActivity.kt'));
+            (0, common_1.applyPatchToFile)('build.gradle.patch', node_path_1.default.join(brownfieldPath, 'build.gradle.kts'));
+        }
         return config;
     });
 };

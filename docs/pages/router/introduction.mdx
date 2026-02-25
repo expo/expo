@@ -1,51 +1,85 @@
 ---
 title: Introduction to Expo Router
 description: Expo Router is an open-source routing library for Universal React Native applications built with Expo.
-hideTOC: true
 sidebar_title: Introduction
 searchRank: 15
 ---
 
 import { DocsLogo } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 Expo Router is a file-based router for React Native and web applications. It allows you to manage navigation between screens in your app, allowing users to move seamlessly between different parts of your app's UI, using the same components on multiple platforms (Android, iOS, and web).
 
-It brings the best file-system routing concepts from the web to a universal application &mdash; allowing your routing to work across every platform. When a file is added to the **app** directory, the file automatically becomes a route in your navigation.
+Expo Router brings the best file-system routing concepts from the web to a universal application &mdash; allowing your routing to work across every platform. When a file is added to the **app** directory, the file automatically becomes a route in your navigation.
 
-<BoxLink
-  title="Expo Router reference"
-  Icon={DocsLogo}
-  description="For information on API components, hooks, methods, and more, see the Expo Router reference."
-  href="/versions/latest/sdk/router/"
+## Quick start
+
+<Step label="1">
+
+We recommend creating a new Expo app using `create-expo-app` to create a project with Expo Router library already installed and configured:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
+  }}
 />
 
-You can also see the following playlist to get started with Expo Router:
+</Step>
+
+<Step label="2">
+
+Now, you can start your project by running:
+
+<Terminal cmd={['$ npx expo start']} />
+
+- To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/set-up-your-environment/#how-would-you-like-to-develop). As your application grows in complexity and you need more control, you can create a [development build](/develop/development-builds/introduction/).
+- Open the project in a web browser by pressing <kbd>w</kbd> in the Terminal UI. Press <kbd>a</kbd> for Android (Android Studio is required), or <kbd>i</kbd> for iOS (macOS with Xcode is required).
+
+</Step>
+
+## Resources
 
 <BoxLink
-  title="Expo Router playlist"
+  title="Expo Tutorial"
+  Icon={GraduationHat02DuotoneIcon}
+  description="A step-by-step guide to build an Expo app that runs on Android, iOS, and web."
+  href="/tutorial/introduction/"
+/>
+<BoxLink
+  title="Expo Router API reference"
+  Icon={DocsLogo}
+  description="API components, hooks, methods, and configuration options."
+  href="/versions/latest/sdk/router/"
+/>
+<BoxLink
+  title="Expo Router video playlist"
   Icon={YoutubeIcon}
-  description="A tutorial series for Expo Router from the core concepts to more complex navigation flows."
+  description="A tutorial series from core concepts to more complex navigation flows."
   href="https://www.youtube.com/playlist?list=PLsXDmrmFV_AT17JDf-otXSNE_eH7s0uDD"
 />
 
-## Features
+## Key features
 
 - **Native**: Built on top of our powerful [React Navigation suite](https://reactnavigation.org/), Expo Router navigation is truly native and platform-optimized by default.
-- **Shareable**: Every screen in your app is automatically deep linkable. Making any route in your app shareable with links.
+- **Shareable**: Every screen in your app is automatically [deep linkable](/linking/overview/), making any route in your app shareable with links.
 - **Offline-first**: Apps are cached and run offline-first, with automatic updates when you publish a new version. Handles all incoming native URLs without a network connection or server.
-- **Optimized**: Routes are automatically optimized with lazy-evaluation in production, and deferred bundling in development.
+- **Optimized**: Routes are automatically optimized with [lazy-evaluation in production](/router/web/async-routes/), and deferred bundling in development.
 - **Iteration**: Universal Fast Refresh across Android, iOS, and web, along with artifact memoization in the bundler to keep you moving fast at scale.
 - **Universal**: Android, iOS, and web share a unified navigation structure, with the ability to drop-down to platform-specific APIs at the route level.
-- **Discoverable**: Expo Router enables build-time static rendering on web, and universal linking to native. Meaning your app content can be indexed by search engines.
+- **Discoverable**: Expo Router enables build-time [static rendering](/router/web/static-rendering/) on web, and [universal linking](/linking/overview/) to native. Meaning your app content can be indexed by search engines.
 
-### Using a different navigation library
+## Using a different navigation library
 
 You can use any other navigation library, like [React Navigation](https://reactnavigation.org/docs/getting-started#installation), in your Expo project. However, if you are building a new app, **we recommend using Expo Router for all the features described above**. With other navigation libraries, you might have to implement your own strategies for some of these features, such as shareable links or handling web and native navigation in the same project.
 
@@ -100,16 +134,10 @@ Basic static rendering (SSG) is supported in Expo Router. Server-side rendering 
 ## Next steps
 
 <BoxLink
-  title="Quick start"
-  Icon={Rocket02Icon}
-  description="Learn how to quickly get started using Expo Router."
-  href="/router/installation/#quick-start"
-/>
-<BoxLink
   title="Manual installation"
   Icon={BookOpen02Icon}
   description="Detailed instructions on how to get started and add Expo Router to your existing app."
-  href="/router/installation/#manual-installation"
+  href="/router/installation/"
 />
 <BoxLink
   title="Router 101"

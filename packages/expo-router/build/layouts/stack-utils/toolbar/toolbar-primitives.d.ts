@@ -24,6 +24,26 @@ export type StackToolbarIconProps = {
     renderingMode?: 'template' | 'original';
 } | {
     sf: SFSymbol;
+} | {
+    /**
+     * Name of an image in your Xcode asset catalog (`.xcassets`).
+     *
+     * @platform ios
+     */
+    xcasset: string;
+    /**
+     * Controls how the xcasset icon is rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon
+     * - `'original'`: Preserves original icon colors
+     *
+     * Defaults based on parent component's `tintColor`:
+     * - With `tintColor`: defaults to `'template'`
+     * - Without `tintColor`: defaults to `'original'`
+     *
+     * @platform ios
+     */
+    renderingMode?: 'template' | 'original';
 };
 export declare const StackToolbarIcon: React.FC<StackToolbarIconProps>;
 export interface StackToolbarBadgeProps {

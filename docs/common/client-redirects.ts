@@ -135,7 +135,7 @@ function endsInNull(path: string) {
   return path.endsWith('/null');
 }
 
-// Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
+// Simple remapping of renamed pages, similar to public/_redirects but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating Home pages and route
@@ -525,7 +525,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 
   // After changing brownfield docs
-  '/brownfield/installing-expo-modules/': '/brownfield/get-started/',
+  '/brownfield/installing-expo-modules/': '/brownfield/overview/',
+  '/brownfield/get-started/': '/brownfield/isolated-approach/',
 
   // After removing Navigation section from Home and adding a Navigation page
   '/develop/file-based-routing/': '/develop/app-navigation/',
