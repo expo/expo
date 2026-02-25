@@ -1,8 +1,9 @@
 import { CodedError } from 'expo-modules-core';
 import { CryptoEncoding } from './Crypto.types';
-const getCrypto = () => window.crypto ?? window.msCrypto;
+const getCrypto = () => globalThis.crypto ?? window.crypto ?? window.msCrypto;
 export default {
     async digestStringAsync(algorithm, data, options) {
+        const crypto = getCrypto();
         if (!crypto.subtle) {
             throw new CodedError('ERR_CRYPTO_UNAVAILABLE', 'Access to the WebCrypto API is restricted to secure origins (localhost/https).');
         }
