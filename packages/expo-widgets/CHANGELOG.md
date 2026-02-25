@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix "blinking" on interactions.
+
 ### 💡 Others
 
 ## 55.0.0 — 2026-02-25
