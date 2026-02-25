@@ -6,11 +6,6 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
-
-- [iOS] Added `luminanceToAlpha` modifier. ([#43417](https://github.com/expo/expo/pull/43417) by [@jakex7](https://github.com/jakex7))
-### 🎉 New features
-
 - [iOS] Added `luminanceToAlpha` modifier. ([#43417](https://github.com/expo/expo/pull/43417) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
