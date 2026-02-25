@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove the `androidNavigationBar.enforceContrast` and `androidNavigationBar.visible` properties handling (moved to the `expo-navigation-bar` plugin config). ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.7 — 2026-02-25
+
+### 🛠 Breaking changes
+
+- Remove the `androidNavigationBar.enforceContrast` and `androidNavigationBar.visible` properties handling (moved to the `expo-navigation-bar` plugin config). ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 

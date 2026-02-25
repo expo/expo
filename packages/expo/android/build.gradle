@@ -10,7 +10,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '55.0.0-preview.12'
+version = '55.0.0'
 
 expoModule {
   // We can't prebuild the module because it depends on the generated files.
@@ -21,7 +21,7 @@ android {
   namespace "expo.core"
   defaultConfig {
     versionCode 1
-    versionName "55.0.0-preview.12"
+    versionName "55.0.0"
     consumerProguardFiles("proguard-rules.pro")
   }
   testOptions {

@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.10 — 2026-02-25
+
+### 🎉 New features
+
+- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
 
 ### 💡 Others
 

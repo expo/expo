@@ -23,6 +23,7 @@ import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -30,6 +31,30 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
+
+// prettier-ignore
+export const event = events('metro', (t) => [
+  t.event<'config', {
+    serverRoot: string;
+    projectRoot: string;
+    exporting: boolean;
+    flags: {
+      autolinkingModuleResolution: boolean;
+      serverActions: boolean;
+      serverComponents: boolean;
+      reactCompiler: boolean;
+      optimizeGraph?: boolean;
+      treeshaking?: boolean;
+      logbox?: boolean;
+    };
+  }>(),
+  t.event<'instantiate', {
+    atlas: boolean;
+    workers: number | null;
+    host: string | null;
+    port: number | null;
+  }>(),
+]);
 
 // NOTE(@kitten): We pass a custom createStableModuleIdFactory function into the Metro module ID factory sometimes
 interface MetroServerWithModuleIdMod extends MetroServer {
@@ -108,13 +133,13 @@ export async function loadMetroConfigAsync(
 
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
-
+  const serverComponentsEnabled = !!exp.experiments?.reactServerComponentRoutes;
   if (serverActionsEnabled) {
     process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS = '1';
   }
 
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
-  if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
+  if (serverComponentsEnabled || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
   }
 
@@ -181,12 +206,14 @@ export async function loadMetroConfigAsync(
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
+  const reduceLogs = shouldReduceLogs();
 
-  if (exp.experiments?.reactCompiler) {
+  const reactCompilerEnabled = !!exp.experiments?.reactCompiler;
+  if (!reduceLogs && reactCompilerEnabled) {
     Log.log(chalk.gray`React Compiler enabled`);
   }
 
-  if (autolinkingModuleResolutionEnabled) {
+  if (!reduceLogs && autolinkingModuleResolutionEnabled) {
     Log.log(chalk.gray`Expo Autolinking module resolution enabled`);
   }
 
@@ -196,17 +223,17 @@ export async function loadMetroConfigAsync(
     );
   }
 
-  if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
-  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
   }
-  if (env.EXPO_UNSTABLE_LOG_BOX) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_LOG_BOX) {
     Log.warn(`Experimental Expo LogBox is enabled.`);
   }
 
-  if (serverActionsEnabled) {
+  if (!reduceLogs && serverActionsEnabled) {
     Log.warn(
       `React Server Functions (beta) are enabled. Route rendering mode: ${exp.experiments?.reactServerComponentRoutes ? 'server' : 'client'}`
     );
@@ -220,8 +247,23 @@ export async function loadMetroConfigAsync(
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isExporting,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
-    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
+    isReactServerComponentsEnabled: serverComponentsEnabled,
     getMetroBundler,
+  });
+
+  event('config', {
+    serverRoot: event.path(serverRoot),
+    projectRoot: event.path(projectRoot),
+    exporting: isExporting,
+    flags: {
+      autolinkingModuleResolution: autolinkingModuleResolutionEnabled,
+      serverActions: serverActionsEnabled,
+      serverComponents: serverComponentsEnabled,
+      reactCompiler: reactCompilerEnabled,
+      optimizeGraph: env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH,
+      treeshaking: env.EXPO_UNSTABLE_TREE_SHAKING,
+      logbox: env.EXPO_UNSTABLE_LOG_BOX,
+    },
   });
 
   return {
@@ -317,7 +359,7 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
-  const { server, hmrServer, metro } = await runServer(
+  const { address, server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
     {
@@ -329,6 +371,13 @@ export async function instantiateMetroAsync(
       mockServer: isExporting,
     }
   );
+
+  event('instantiate', {
+    atlas: env.EXPO_ATLAS,
+    workers: metroConfig.maxWorkers ?? null,
+    host: address?.address ?? null,
+    port: address?.port ?? null,
+  });
 
   // Patch transform file to remove inconvenient customTransformOptions which are only used in single well-known files.
   const originalTransformFile = metro

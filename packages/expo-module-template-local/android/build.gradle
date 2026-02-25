@@ -4,13 +4,13 @@ plugins {
 }
 
 group = '<%- project.package %>'
-version = '0.7.6'
+version = '0.7.7'
 
 android {
   namespace "<%- project.package %>"
   defaultConfig {
     versionCode 1
-    versionName "0.7.6"
+    versionName "0.7.7"
   }
   lintOptions {
     abortOnError false

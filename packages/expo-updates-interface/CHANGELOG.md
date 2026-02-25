@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 55.1.3 — 2026-02-25
+
 ### ⚠️ Notices
 
 - Documentation for new native interface. ([#43230](https://github.com/expo/expo/pull/43230) by [@douglowder](https://github.com/douglowder))

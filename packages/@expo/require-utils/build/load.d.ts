@@ -8,10 +8,11 @@ declare global {
         }
     }
 }
+type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript';
 export interface ModuleOptions {
     paths?: string[];
 }
-declare function evalModule(code: string, filename: string, opts?: ModuleOptions): any;
+declare function evalModule(code: string, filename: string, opts?: ModuleOptions, format?: Format): any;
 declare function loadModule(filename: string): Promise<any>;
 /** Require module or evaluate with TypeScript
  * NOTE: Requiring ESM has been added in all LTS versions (Node 20.19+, 22.12+, 24).

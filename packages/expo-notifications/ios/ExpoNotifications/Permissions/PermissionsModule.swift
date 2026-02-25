@@ -2,7 +2,6 @@
 
 import ExpoModulesCore
 import UIKit
-import MachO
 
 public class PermissionsModule: Module {
   var permissionsManager: (any EXPermissionsInterface)?
@@ -34,13 +33,11 @@ public class PermissionsModule: Module {
         : defaultAuthorizationOptions
       requester.setAuthorizationOptions(options)
 
-      appContext?
-        .permissions?
-        .askForPermission(
-          usingRequesterClass: ExpoNotificationsPermissionsRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
+      // Call `requestAuthorization` directly to ensure new options are always
+      // forwarded to the OS, even if notifications were previously granted.
+      // iOS safely handles repeated calls to `requestAuthorization(options:)`.
+      // Expo Go notifications permissions are not scoped
+      requester.requestAuthorizationOptions(options, resolver: promise.resolver, rejecter: promise.legacyRejecter)
     }
   }
 }

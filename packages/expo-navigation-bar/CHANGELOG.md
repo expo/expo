@@ -4,13 +4,21 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.8 — 2026-02-25
+
+### 🛠 Breaking changes
+
 - Remove the `legacyVisible` plugin option. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ### 🎉 New features
 
 - Add the `enforceContrast` plugin option. Falls back to `androidNavigationBar.enforceContrast` if set. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

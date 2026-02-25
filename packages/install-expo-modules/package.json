@@ -1,6 +1,6 @@
 {
   "name": "install-expo-modules",
-  "version": "0.14.8",
+  "version": "0.14.9",
   "license": "MIT",
   "description": "Tools to install expo-modules for existing react-native projects",
   "keywords": [
@@ -36,8 +36,8 @@
     "directory": "packages/install-expo-modules"
   },
   "devDependencies": {
-    "@expo/config": "~55.0.7",
-    "@expo/config-plugins": "~55.0.5",
+    "@expo/config": "~55.0.8",
+    "@expo/config-plugins": "~55.0.6",
     "@expo/package-manager": "^1.10.3",
     "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
