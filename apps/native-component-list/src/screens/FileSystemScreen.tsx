@@ -1,14 +1,12 @@
-import { Paths, File, PickFileOptions } from 'expo-file-system';
+import { Paths, File } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { useState } from 'react';
 import {
-  Button,
   ScrollView,
   StyleSheet,
   View,
   Text,
   Alert,
-  FlatList,
   Image,
   Platform,
   useWindowDimensions,
@@ -16,7 +14,7 @@ import {
 
 import HeadingText from '../components/HeadingText';
 import TitleSwitch from '../components/TitledSwitch';
-import NCLButton from '../components/Button';
+import Button from '../components/Button';
 
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',
@@ -26,7 +24,7 @@ export default function FileSystemScreen() {
   const { width } = useWindowDimensions();
   const [copyToCache, setCopyToCache] = useState(false);
   const [multiple, setMultiple] = useState(false);
-  const [initialUri, setInitialUri] = useState(false);
+  const [initialUri, setInitialUri] = useState(null);
   const [pickerResult, setPickerResult] = useState<File | File[] | null>(null);
 
   const openPicker = async () => {
@@ -79,6 +77,7 @@ export default function FileSystemScreen() {
               type: 'text/plain',
             });
           }}
+          buttonStyle={{ width: '100%' }}
         />
         <Text>Open .pem certificate from BareExpo (should show modal that it's not possible)</Text>
         <Button
@@ -91,6 +90,7 @@ export default function FileSystemScreen() {
               type: 'application/x-pem-file',
             });
           }}
+          buttonStyle={{ width: '100%' }}
         />
         <Button
           title="From SAF"
@@ -103,17 +103,13 @@ export default function FileSystemScreen() {
               type: file.type,
             });
           }}
+          buttonStyle={{ width: '100%' }}
         />
       </View>
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+      <View style={styles.container}>
         <View
           style={{ marginBottom: 20, marginTop: 20, paddingHorizontal: 20, gap: 5, minWidth: 300 }}>
-          <NCLButton
+          <Button
             onPress={openPicker}
             title="Open document picker"
             buttonStyle={{ width: '100%' }}
