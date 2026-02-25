@@ -2,12 +2,12 @@
 
 import { Children, use, useEffect, type PropsWithChildren } from 'react';
 
-import { isZoomTransitionEnabled } from './ZoomTransitionEnabler.ios';
+import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import { ZoomTransitionSourceContext } from './zoom-transition-context';
 import { Slot } from '../../ui/Slot';
 import { LinkZoomTransitionSource } from '../preview/native';
 
-interface LinkAppleZoomProps extends PropsWithChildren {
+export interface LinkAppleZoomProps extends PropsWithChildren {
   /**
    * Defines the rectangle used for the zoom transition's alignment. This rectangle is specified in the zoomed screen's coordinate space.
    *

@@ -1,6 +1,7 @@
+import { type ColorValue } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { ButtonElementColors } from '../Button';
-import { ShapeJSXElement, ShapeProps } from '../Shape';
+import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
 /**
  * The built-in button styles available on Android.
  * - `outlined` - A button with an outline.
@@ -28,7 +29,7 @@ export type IconButtonProps = {
     /**
      * Button color.
      */
-    color?: string;
+    color?: ColorValue;
     shape?: ShapeJSXElement;
     /**
      * Disabled state of the button.
@@ -43,12 +44,8 @@ export type IconButtonProps = {
  * @hidden
  */
 export type NativeIconButtonProps = Omit<IconButtonProps, 'role' | 'onPress' | 'shape'> & {
-    shape: ShapeProps;
+    shape?: ShapeRecordProps;
 } & ViewEvent<'onButtonPressed', void>;
-/**
- * @hidden
- */
-export declare function transformIconButtonProps(props: IconButtonProps): NativeIconButtonProps;
 /**
  * Displays a native button component.
  */

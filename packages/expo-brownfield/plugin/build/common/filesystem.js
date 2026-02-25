@@ -3,7 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.readFromTemplate = exports.createFileFromTemplateAs = exports.createFileFromTemplate = exports.mkdir = void 0;
+exports.applyPatchToFile = exports.readFromTemplate = exports.createFileFromTemplateAs = exports.createFileFromTemplate = exports.mkdir = void 0;
+const diff_1 = require("diff");
 const node_fs_1 = require("node:fs");
 const node_path_1 = __importDefault(require("node:path"));
 const mkdir = (path, recursive = false) => {
@@ -74,3 +75,25 @@ const readFromTemplate = (template, platform, variables) => {
     return templateContents;
 };
 exports.readFromTemplate = readFromTemplate;
+/**
+ * Applies a unified diff patch to a file.
+ * @param patchFile - The name of the patch file in the patches directory
+ * @param targetFilePath - The absolute path to the file to patch
+ */
+const applyPatchToFile = (patchFile, targetFilePath) => {
+    const patchPath = node_path_1.default.join(__filename, '../../..', 'templates', 'patches', patchFile);
+    if (!(0, node_fs_1.existsSync)(patchPath)) {
+        throw new Error(`Patch file ${patchFile} doesn't exist at ${patchPath}`);
+    }
+    if (!(0, node_fs_1.existsSync)(targetFilePath)) {
+        throw new Error(`Target file doesn't exist at ${targetFilePath}`);
+    }
+    const patchContent = (0, node_fs_1.readFileSync)(patchPath, 'utf-8');
+    const originalContent = (0, node_fs_1.readFileSync)(targetFilePath, 'utf-8');
+    const patchedContent = (0, diff_1.applyPatch)(originalContent, patchContent);
+    if (patchedContent === false) {
+        throw new Error(`Failed to apply patch ${patchFile} to ${targetFilePath}`);
+    }
+    (0, node_fs_1.writeFileSync)(targetFilePath, patchedContent);
+};
+exports.applyPatchToFile = applyPatchToFile;

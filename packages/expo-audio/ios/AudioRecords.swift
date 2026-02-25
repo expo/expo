@@ -5,6 +5,7 @@ struct AudioMode: Record {
   @Field var interruptionMode: InterruptionMode = .mixWithOthers
   @Field var allowsRecording: Bool = false
   @Field var shouldPlayInBackground: Bool = false
+  @Field var shouldRouteThroughEarpiece: Bool = false
   @Field var allowsBackgroundRecording: Bool = false
 }
 
@@ -12,6 +13,12 @@ enum InterruptionMode: String, Enumerable {
   case mixWithOthers
   case doNotMix
   case duckOthers
+}
+
+enum LoopMode: String, Enumerable {
+  case none
+  case single
+  case all
 }
 
 enum PitchCorrectionQuality: String, Enumerable {

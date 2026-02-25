@@ -39,6 +39,23 @@ export default function TextScreen() {
             Hello <Text modifiers={[bold(), foregroundStyle('blue')]}>world</Text>!
           </Text>
         </Section>
+        <Section title="Hierarchical Foreground Style">
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'primary' })]}>
+            Primary{' '}
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              Secondary
+            </Text>
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+            Secondary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'tertiary' })]}>
+            Tertiary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'quaternary' })]}>
+            Quaternary
+          </Text>
+        </Section>
         <Section title="Custom Font Families">
           <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>Inter Bold Font</Text>
           <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>Inter Medium Font</Text>
@@ -80,6 +97,19 @@ export default function TextScreen() {
           <Text modifiers={[font({ size: 18, weight: 'regular' })]}>18pt Font Size</Text>
           <Text modifiers={[font({ size: 20, weight: 'regular' })]}>20pt Font Size</Text>
           <Text modifiers={[font({ size: 24, weight: 'regular' })]}>24pt Font Size</Text>
+        </Section>
+
+        <Section title="Markdown Text">
+          <Text markdownEnabled>Regular text.</Text>
+          <Text markdownEnabled>
+            This is **bold text**, *italic text* and ***text in both bold and italic***.
+          </Text>
+          <Text markdownEnabled>~~Strikethrough text~~</Text>
+          <Text markdownEnabled>`This is monospaced text`</Text>
+          <Text markdownEnabled>
+            Visit the [Expo Docs](https://docs.expo.dev/versions/latest/sdk/ui/) to learn more about
+            Expo UI
+          </Text>
         </Section>
 
         <Section title="Combined Examples">

@@ -1,0 +1,58 @@
+---
+title: PullToRefreshBox
+description: A Jetpack Compose PullToRefreshBox component for pull-to-refresh interactions.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A pull-to-refresh container that wraps scrollable content and provides a standard refresh indicator when pulled. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/layouts/adaptive/support-different-screen-sizes) for more information.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic pull to refresh
+
+```tsx BasicPullToRefresh.tsx
+import { useState, useCallback } from 'react';
+import { Host, PullToRefreshBox, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
+
+export default function BasicPullToRefresh() {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  return (
+    <Host style={{ height: 400 }}>
+      <PullToRefreshBox isRefreshing={refreshing} onRefresh={onRefresh}>
+        <LazyColumn>
+          <ListItem headline="Item 1" />
+          <ListItem headline="Item 2" />
+          <ListItem headline="Item 3" />
+          <ListItem headline="Item 4" />
+          <ListItem headline="Item 5" />
+        </LazyColumn>
+      </PullToRefreshBox>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { PullToRefreshBox } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/pulltorefreshbox" apiName="PullToRefreshBox" />

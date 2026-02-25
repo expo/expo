@@ -4,7 +4,8 @@ import SwiftUI
 import ExpoModulesCore
 
 public final class TextViewProps: UIBaseViewProps {
-  @Field var text: String = ""
+  @Field public var text: String = ""
+  @Field public var markdownEnabled: Bool = false
 
   // Override default frame alignment for text views
   override var defaultFrameAlignment: Alignment { .leading }
@@ -23,9 +24,10 @@ public struct TextView: ExpoSwiftUI.View {
   }
 
   internal func buildText(applyModifiers: Bool = true) -> Text {
+    let text = props.markdownEnabled ? Text(LocalizedStringKey(props.text)) : Text(props.text)
     var result = applyModifiers
-    ? Text(props.text).applyTextModifiers(props.modifiers, appContext: props.appContext)
-    : Text(props.text)
+    ? text.applyTextModifiers(props.modifiers, appContext: props.appContext)
+    : text
 
     if let children = props.children {
       result = children

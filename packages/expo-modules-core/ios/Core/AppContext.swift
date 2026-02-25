@@ -95,6 +95,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  @objc
+  public var _uiRuntime: WorkletRuntime? {
+    didSet {
+      if _uiRuntime != oldValue {
+        MainActor.assumeIsolated {
+          try? prepareUIRuntime()
+        }
+      }
+    }
+  }
+
+  public var uiRuntime: WorkletRuntime {
+    get throws {
+      if let uiRuntime = _uiRuntime {
+        return uiRuntime
+      }
+      throw Exceptions.UIRuntimeLost()
+    }
+  }
+
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
    It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
@@ -102,14 +122,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   @objc
   public var appIdentifier: String? {
-    #if RCT_NEW_ARCH_ENABLED
     guard let moduleRegistry = reactBridge?.moduleRegistry else {
       return nil
     }
     return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
-    #else
-    return nil
-    #endif
   }
 
   /**
@@ -234,12 +250,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Provides access to the image loader from legacy module registry.
    */
   public var imageLoader: EXImageLoaderInterface? {
-    guard let bridge = reactBridge else {
-      // TODO: Find a way to do this without a bridge
-      log.warn("Unable to get the image loader because the bridge is not available.")
+    guard let loader = hostWrapper?.findModule(withName: "RCTImageLoader", lazilyLoadIfNecessary: true) as? RCTImageLoader else {
+      log.warn("Unable to get the RCTImageLoader module.")
       return nil
     }
-    return ImageLoader(bridge: bridge)
+    return ImageLoader(rctImageLoader: loader)
   }
 
   /**
@@ -346,27 +361,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   /**
-   Returns an array of event names supported by all Swift modules.
-   */
-  @objc
-  public func getSupportedEvents() -> [String] {
-    return moduleRegistry.reduce(into: [String]()) { events, holder in
-      events.append(contentsOf: holder.definition.eventNames)
-    }
-  }
-
-  /**
-   Modifies listeners count for module with given name. Depending on the listeners count,
-   `onStartObserving` and `onStopObserving` are called.
-   */
-  @objc
-  public func modifyEventListenersCount(_ moduleName: String, count: Int) {
-    moduleRegistry
-      .get(moduleHolderForName: moduleName)?
-      .modifyListenersCount(count)
-  }
-
-  /**
    Asynchronously calls module's function with given arguments.
    */
   @objc
@@ -460,19 +454,17 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Registers native views defined by registered native modules.
-   - Note: It should stay private as `registerNativeModules` should be the only call site. Works only with the New Architecture.
+   - Note: It should stay private as `registerNativeModules` should be the only call site.
    - Todo: `RCTComponentViewFactory` is thread-safe, so this function should be as well.
    */
   @MainActor
   private func registerNativeViews() {
-#if RCT_NEW_ARCH_ENABLED
     for holder in moduleRegistry {
       for (key, viewDefinition) in holder.definition.views {
         let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
         ExpoFabricView.registerComponent(viewModule, appContext: self)
       }
     }
-#endif
   }
 
   // MARK: - Runtime
@@ -505,6 +497,21 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+  }
+
+  @MainActor
+  internal func prepareUIRuntime() throws {
+    let uiRuntime = try uiRuntime
+    let coreObject = uiRuntime.createObject()
+
+    // Initialize `global.expo`.
+    uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
   }
 
   /**
@@ -560,7 +567,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if let providerClass = NSClassFromString(providerName) as? ModulesProvider.Type {
       return providerClass.init()
     }
-    
+
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
@@ -571,6 +578,16 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
+  }
+
+  public func reloadAppAsync(_ reason: String = "Reload from appContext") {
+    if moduleRegistry.has(moduleWithName: "ExpoGo") {
+      NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
+    } else {
+      DispatchQueue.main.async {
+        RCTTriggerReloadCommandListeners(reason)
+      }
+    }
   }
 }
 

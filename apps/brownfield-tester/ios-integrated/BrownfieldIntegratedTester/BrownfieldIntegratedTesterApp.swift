@@ -1,9 +1,9 @@
 import SwiftUI
-import minimaltesterbrownfield
+import expoappbrownfield
 
 @main
 struct BrownfieldIntegratedTesterApp: App {
-    @UIApplicationDelegateAdaptor var delegate: BrownfieldAppDelegate
+    @UIApplicationDelegateAdaptor var delegate: ExpoBrownfieldAppDelegate
 
     init() {
       ReactNativeHostManager.shared.initialize()

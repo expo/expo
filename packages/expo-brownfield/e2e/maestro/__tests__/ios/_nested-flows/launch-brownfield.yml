@@ -1,0 +1,16 @@
+appId: dev.expo.BrownfieldIntegratedTester
+name: Launch and verify the brownfield app
+---
+- launchApp
+- assertVisible:
+    id: openReactNativeButton
+- tapOn:
+    id: openReactNativeButton
+
+- runFlow: ./maybe-close-dev-menu.yml
+
+- assertVisible: Expo + Brownfield = 🖤
+- assertVisible:
+    id: home-tab
+- assertVisible:
+    id: apis-tab

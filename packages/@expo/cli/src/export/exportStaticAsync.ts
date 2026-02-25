@@ -7,8 +7,7 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
-import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
-import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import { type RoutesManifest } from 'expo-server/private';
 import path from 'path';
@@ -206,14 +205,16 @@ export async function exportFromServerAsync(
     scriptTags,
   }: Options
 ): Promise<ExportAssetMap> {
-  Log.log(
-    `Static rendering is enabled. ` +
-      learnMore('https://docs.expo.dev/router/reference/static-rendering/')
-  );
+  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
+
+  const logOutput =
+    exp?.web?.output === 'server' && useServerRendering
+      ? `Server rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/server-rendering/')}`
+      : `Static rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/static-rendering/')}`;
+  Log.log(logOutput);
 
   const platform = 'web';
   const isExporting = true;
-  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
@@ -250,18 +251,21 @@ export async function exportFromServerAsync(
       let renderOpts;
 
       if (useServerLoaders) {
-        const loaderResult = await executeLoaderAsync(normalizedPathname, route);
+        const loaderResponse = await executeLoaderAsync(normalizedPathname, route);
 
-        if (loaderResult !== undefined) {
-          const loaderPath = getLoaderModulePath(normalizedPathname);
-          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+        if (loaderResponse !== undefined) {
+          const data = await loaderResponse.json();
+          // Transforms a `route.contextKey` into a normalized path. For example,
+          // `./nested/[id]/index.tsx` becomes `/nested/[id]/index`
+          const loaderKey = getContextKey(route.contextKey);
+          const fileSystemPath = `_expo/loaders${loaderKey}`;
           files.set(fileSystemPath, {
-            contents: JSON.stringify(loaderResult.data, null, 2),
+            contents: JSON.stringify(data, null, 2),
             targetDomain: 'client',
-            loaderId: normalizedPathname,
+            loaderId: loaderKey,
           });
 
-          renderOpts = { loader: { data: loaderResult.data } };
+          renderOpts = { loader: { data, key: loaderKey } };
         }
       }
 

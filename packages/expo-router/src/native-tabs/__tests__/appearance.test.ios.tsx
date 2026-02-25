@@ -1,7 +1,7 @@
 import type {
-  BottomTabsScreenAppearance,
-  BottomTabsScreenItemAppearance,
-  BottomTabsScreenItemStateAppearance,
+  TabsScreenAppearance,
+  TabsScreenItemAppearance,
+  TabsScreenItemStateAppearance,
 } from 'react-native-screens';
 
 import {
@@ -18,13 +18,13 @@ describe(createStandardAppearanceFromOptions, () => {
   it('empty options should create empty appearance', () => {
     const options: NativeTabOptions = {};
     const result = createStandardAppearanceFromOptions(options);
-    const expectedItemAppearance: BottomTabsScreenItemAppearance = {
+    const expectedItemAppearance: TabsScreenItemAppearance = {
       normal: {},
       selected: {},
       disabled: {},
       focused: {},
     };
-    const expectedAppearance: BottomTabsScreenAppearance = {
+    const expectedAppearance: TabsScreenAppearance = {
       stacked: expectedItemAppearance,
       inline: expectedItemAppearance,
       compactInline: expectedItemAppearance,
@@ -53,7 +53,7 @@ describe(createStandardAppearanceFromOptions, () => {
 
       const result = createStandardAppearanceFromOptions(options);
 
-      const expectedItemAppearance: BottomTabsScreenItemAppearance = {
+      const expectedItemAppearance: TabsScreenItemAppearance = {
         normal: {
           tabBarItemBadgeBackgroundColor: 'green',
           tabBarItemIconColor: 'red',
@@ -74,7 +74,7 @@ describe(createStandardAppearanceFromOptions, () => {
         },
         disabled: {},
       };
-      const expectedAppearance: BottomTabsScreenAppearance = {
+      const expectedAppearance: TabsScreenAppearance = {
         stacked: expectedItemAppearance,
         inline: expectedItemAppearance,
         compactInline: expectedItemAppearance,
@@ -90,15 +90,14 @@ describe(createStandardAppearanceFromOptions, () => {
 describe(createScrollEdgeAppearanceFromOptions, () => {
   it('empty options should create empty appearance', () => {
     const options: NativeTabOptions = {};
-    const baseAppearance = {};
-    const result = createScrollEdgeAppearanceFromOptions(options, baseAppearance);
-    const expectedItemAppearance: BottomTabsScreenItemAppearance = {
+    const result = createScrollEdgeAppearanceFromOptions(options);
+    const expectedItemAppearance: TabsScreenItemAppearance = {
       normal: {},
       selected: {},
       disabled: {},
       focused: {},
     };
-    const expectedAppearance: BottomTabsScreenAppearance = {
+    const expectedAppearance: TabsScreenAppearance = {
       stacked: expectedItemAppearance,
       inline: expectedItemAppearance,
       compactInline: expectedItemAppearance,
@@ -129,7 +128,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
       };
 
       const result = createScrollEdgeAppearanceFromOptions(options);
-      const expectedItemAppearance: BottomTabsScreenItemAppearance = {
+      const expectedItemAppearance: TabsScreenItemAppearance = {
         normal: {
           tabBarItemBadgeBackgroundColor: 'green',
           tabBarItemIconColor: 'red',
@@ -150,7 +149,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
         },
         disabled: {},
       };
-      const expectedAppearance: BottomTabsScreenAppearance = {
+      const expectedAppearance: TabsScreenAppearance = {
         stacked: expectedItemAppearance,
         inline: expectedItemAppearance,
         compactInline: expectedItemAppearance,
@@ -168,7 +167,7 @@ describe(appendStyleToAppearance, () => {
     [['normal']],
     [['normal', 'focused']],
     [['normal', 'focused', 'selected']],
-  ] as (keyof BottomTabsScreenItemAppearance)[][][])('for states %p', (states) => {
+  ] as (keyof TabsScreenItemAppearance)[][][])('for states %p', (states) => {
     it.each([
       [
         {
@@ -214,15 +213,12 @@ describe(appendStyleToAppearance, () => {
           },
         },
       ],
-    ] as [BottomTabsScreenAppearance][])(
-      'empty style should not change appearance %p',
-      (appearance) => {
-        const result = appendStyleToAppearance({}, appearance, states);
-        expect(result).toEqual(appearance);
-      }
-    );
+    ] as [TabsScreenAppearance][])('empty style should not change appearance %p', (appearance) => {
+      const result = appendStyleToAppearance({}, appearance, states);
+      expect(result).toEqual(appearance);
+    });
     it('should append style correctly', () => {
-      const item: BottomTabsScreenItemAppearance = {
+      const item: TabsScreenItemAppearance = {
         normal: {
           tabBarItemIconColor: '#f00',
           tabBarItemBadgeBackgroundColor: '#0f0',
@@ -234,7 +230,7 @@ describe(appendStyleToAppearance, () => {
         focused: {},
         disabled: {},
       };
-      const appearance: BottomTabsScreenAppearance = {
+      const appearance: TabsScreenAppearance = {
         stacked: item,
         inline: item,
         compactInline: item,
@@ -273,7 +269,7 @@ describe(appendStyleToAppearance, () => {
             ...newStateAppearance,
           }
         : item.focused;
-      const expectedItem: BottomTabsScreenItemAppearance = {
+      const expectedItem: TabsScreenItemAppearance = {
         normal,
         selected,
         focused,
@@ -304,7 +300,7 @@ describe(appendStyleToAppearance, () => {
       const normal = states.includes('normal') ? newStateAppearance : {};
       const selected = states.includes('selected') ? newStateAppearance : {};
       const focused = states.includes('focused') ? newStateAppearance : {};
-      const expectedItem: BottomTabsScreenItemAppearance = {
+      const expectedItem: TabsScreenItemAppearance = {
         normal,
         selected,
         focused,
@@ -327,7 +323,7 @@ describe(convertStyleToAppearance, () => {
       blurEffect: 'light',
       fontFamily: 'Arial',
     };
-    const expected: BottomTabsScreenItemStateAppearance = {
+    const expected: TabsScreenItemStateAppearance = {
       tabBarItemTitleFontFamily: 'Arial',
     };
     const result = convertStyleToAppearance(style);
@@ -345,7 +341,7 @@ describe(convertStyleToAppearance, () => {
       tabBarBlurEffect: style.blurEffect,
     });
   });
-  const cases: [AppearanceStyle, BottomTabsScreenItemStateAppearance][] = [
+  const cases: [AppearanceStyle, TabsScreenItemStateAppearance][] = [
     [{}, {}],
     [{ fontFamily: 'xxx' }, { tabBarItemTitleFontFamily: 'xxx' }],
     [{ fontSize: 16 }, { tabBarItemTitleFontSize: 16 }],
@@ -424,7 +420,7 @@ describe(convertStyleToAppearance, () => {
   });
 });
 describe(convertStyleToItemStateAppearance, () => {
-  const cases: [AppearanceStyle, BottomTabsScreenItemStateAppearance][] = [
+  const cases: [AppearanceStyle, TabsScreenItemStateAppearance][] = [
     [{}, {}],
     [{ backgroundColor: '#fff' }, {}],
     [{ blurEffect: 'none' }, {}],

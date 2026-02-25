@@ -71,13 +71,13 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
         return <Navigator_1.Slot />;
     }
     // The key is needed, because number of columns cannot be changed dynamically
-    return (<experimental_1.SplitViewHost key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
+    return (<experimental_1.Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
       {columnChildren}
-      <experimental_1.SplitViewScreen.Column>
+      <experimental_1.Split.Column>
         <WrappedSlot />
-      </experimental_1.SplitViewScreen.Column>
+      </experimental_1.Split.Column>
       {inspectorChildren}
-    </experimental_1.SplitViewHost>);
+    </experimental_1.Split.Host>);
 }
 exports.SplitView = Object.assign(SplitViewNavigator, {
     Column: elements_1.SplitViewColumn,

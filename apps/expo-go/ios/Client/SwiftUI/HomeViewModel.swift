@@ -105,12 +105,14 @@ class HomeViewModel: ObservableObject {
 
   func signOut() {
     authService.signOut()
+    clearRecentlyOpenedApps()
     dataService.clearData()
     dataService.stopPolling()
   }
 
   func selectAccount(accountId: String) {
     authService.selectAccount(accountId: accountId)
+    clearRecentlyOpenedApps()
     if let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
     }
@@ -119,11 +121,11 @@ class HomeViewModel: ObservableObject {
   func refreshData() async {
     guard let account = selectedAccount else { return }
 
-    async let task = dataService.fetchProjectsAndData(accountName: account.name)
-    serverService.discoverDevelopmentServers()
-    serverService.refreshRemoteSessions()
+    async let fetchTask: Void = dataService.fetchProjectsAndData(accountName: account.name)
+    async let discoveryTask: Void = serverService.discoverDevelopmentServers()
+    async let remoteTask: Void = serverService.refreshRemoteSessions()
 
-    await task
+    _ = await (fetchTask, discoveryTask, remoteTask)
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
@@ -275,7 +277,7 @@ struct RecentlyOpenedApp: Identifiable, Codable {
   var iconUrl: String?
 }
 
-struct DevelopmentServer: Identifiable {
+struct DevelopmentServer: Identifiable, Equatable {
   var id: String { url }
   let url: String
   let description: String
@@ -284,7 +286,7 @@ struct DevelopmentServer: Identifiable {
   var iconUrl: String?
 }
 
-struct ExpoProject: Identifiable, Codable {
+struct ExpoProject: Identifiable, Codable, Equatable {
   let id: String
   let name: String
   let fullName: String

@@ -19,6 +19,9 @@ jobs:
         with:
           yarn-tools: 'true'
       - name: 🔎 Close Linear issue
+        # accepted issues should have a corresponding Linear issue (from issue-triage.yml)
+        # if not, we don't want to fail the workflow
+        continue-on-error: true
         run: expotools close-linear-issue-from-github --issue "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

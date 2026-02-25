@@ -9,7 +9,7 @@ enum HomeTab: Hashable {
   case settings
 }
 
-public struct HomeRootView: View {
+struct HomeRootView: View {
   @ObservedObject var viewModel: HomeViewModel
   @State private var showingUserProfile = false
   @State private var selectedTab: HomeTab = .home

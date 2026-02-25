@@ -107,6 +107,18 @@ public final class ImageModule: Module {
         view.autoplay = autoplay ?? true
       }
 
+      Prop("sfEffect") { (view, sfEffect: [SFSymbolEffect]?) in
+        view.sfEffect = sfEffect
+      }
+
+      Prop("symbolWeight") { (view, symbolWeight: String?) in
+        view.symbolWeight = symbolWeight
+      }
+
+      Prop("symbolSize") { (view, symbolSize: Double?) in
+        view.symbolSize = symbolSize
+      }
+
       Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
         view.useAppleWebpCodec = useAppleWebpCodec
       }
@@ -122,11 +134,19 @@ public final class ImageModule: Module {
       }
 
       AsyncFunction("startAnimating") { (view: ImageView) in
-        view.sdImageView.startAnimating()
+        if view.isSFSymbolSource {
+          view.startSymbolAnimation()
+        } else {
+          view.sdImageView.startAnimating()
+        }
       }
 
       AsyncFunction("stopAnimating") { (view: ImageView) in
-        view.sdImageView.stopAnimating()
+        if view.isSFSymbolSource {
+          view.stopSymbolAnimation()
+        } else {
+          view.sdImageView.stopAnimating()
+        }
       }
 
       AsyncFunction("lockResourceAsync") { (view: ImageView) in
@@ -226,7 +246,7 @@ public final class ImageModule: Module {
     }
 
     AsyncFunction("loadAsync") { (source: ImageSource, options: ImageLoadOptions?) -> Image? in
-      let image = try await ImageLoadTask(source, maxSize: options?.getMaxSize()).load()
+      let image = try await ImageLoadTask(source, options: options ?? ImageLoadOptions()).load()
       return Image(image)
     }
 
@@ -271,6 +291,7 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
+    SDImageLoadersManager.shared.addLoader(SFSymbolLoader())
   }
 
   static func configureCache(config: ImageCacheConfig) {

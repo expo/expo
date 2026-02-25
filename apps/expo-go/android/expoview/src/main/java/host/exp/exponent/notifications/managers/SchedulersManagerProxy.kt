@@ -1,7 +1,6 @@
 package host.exp.exponent.notifications.managers
 
 import android.content.Context
-import expo.modules.core.interfaces.Function
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.notifications.schedulers.*
 import java.util.concurrent.Executor
@@ -30,7 +29,7 @@ class SchedulersManagerProxy private constructor(private val schedulersManager: 
     singleThreadExecutor.execute { schedulersManager.removeScheduler(id) }
   }
 
-  override fun addScheduler(scheduler: Scheduler, handler: Function<String, Boolean>) {
+  override fun addScheduler(scheduler: Scheduler, handler: (String?) -> Boolean) {
     singleThreadExecutor.execute { schedulersManager.addScheduler(scheduler, handler) }
   }
 

@@ -7,14 +7,14 @@ import { WebSupportProjectPrerequisite } from '../../start/doctor/web/WebSupport
 import { getPlatformBundlers } from '../../start/server/platformBundlers';
 import { WebpackBundlerDevServer } from '../../start/server/webpack/WebpackBundlerDevServer';
 import { CommandError } from '../../utils/errors';
-import { setNodeEnv } from '../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 
 export async function exportWebAsync(projectRoot: string, options: Options) {
   // Ensure webpack is available
   await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
 
   setNodeEnv(options.dev ? 'development' : 'production');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   const { exp } = getConfig(projectRoot);
   const platformBundlers = getPlatformBundlers(projectRoot, exp);

@@ -16,6 +16,7 @@ import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsService
 import expo.modules.contacts.ContactsModule
+import expo.modules.contacts.next.ContactsNextModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
 import expo.modules.crypto.aes.AesCryptoModule
@@ -58,6 +59,7 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
+import expo.modules.router.ExpoRouterModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.sensors.modules.AccelerometerModule
@@ -146,12 +148,14 @@ object ExperiencePackagePicker : ModulesProvider {
     CryptoModule::class.java to null,
     ConstantsModule::class.java to null,
     ContactsModule::class.java to null,
+    ContactsNextModule::class.java to null,
     DeviceModule::class.java to null,
     DocumentPickerModule::class.java to null,
     EASClientModule::class.java to null,
     ExpoFetchModule::class.java to null,
     FontUtilsModule::class.java to null,
     ExpoLinkingModule::class.java to null,
+    ExpoRouterModule::class.java to null,
     FileSystemModule::class.java to null,
     FileSystemLegacyModule::class.java to null,
     FontLoaderModule::class.java to null,

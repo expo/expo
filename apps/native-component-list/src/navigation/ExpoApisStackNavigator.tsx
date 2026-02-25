@@ -13,10 +13,12 @@ import { CalendarsNextScreens } from '../screens/CalendarsNextScreen';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { apiScreensToListElements } from '../screens/ComponentListScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
+import { ContactsNextScreens } from '../screens/Contacts@Next/ContactsNextScreen';
 import { CryptoScreens } from '../screens/Crypto/CryptoScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
+import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createNativeStackNavigator();
@@ -73,25 +75,27 @@ export const ScreensList: ScreenConfig[] = [
     name: 'ActionSheet',
     options: { title: 'Action Sheet' },
   },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/AgeRangeScreen'));
-    },
-    name: 'AgeRange',
-    options: { title: 'Age Range' },
-  },
+  // TODO: fix this, module not available in Expo Go
+  // {
+  //   getComponent() {
+  //     return optionalRequire(() => require('../screens/AgeRangeScreen'));
+  //   },
+  //   name: 'AgeRange',
+  //   options: { title: 'Age Range' },
+  // },
   {
     getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));
     },
     name: 'Appearance',
   },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/AppIntegrity/AppIntegrityScreen'));
-    },
-    name: 'AppIntegrity',
-  },
+  // TODO: fix this, erroring in release in Expo Go
+  // {
+  //   getComponent() {
+  //     return optionalRequire(() => require('../screens/AppIntegrity/AppIntegrityScreen'));
+  //   },
+  //   name: 'AppIntegrity',
+  // },
   {
     getComponent() {
       return optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
@@ -111,12 +115,13 @@ export const ScreensList: ScreenConfig[] = [
     },
     name: 'Audio',
   },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/AuthSession/AuthSessionScreen'));
-    },
-    name: 'AuthSession',
-  },
+  // TODO: fix this, erroring in release in Expo Go
+  // {
+  //   getComponent() {
+  //     return optionalRequire(() => require('../screens/AuthSession/AuthSessionScreen'));
+  //   },
+  //   name: 'AuthSession',
+  // },
   {
     getComponent() {
       return optionalRequire(() => require('../screens/Location/BackgroundLocationMapScreen'));
@@ -222,6 +227,13 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
     },
     name: 'Contacts',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Contacts@Next/ContactsNextScreen'));
+    },
+    name: 'Contacts@Next',
+    options: { title: 'Contacts@Next' },
   },
   {
     getComponent() {
@@ -448,6 +460,13 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Worklets/WorkletsScreen'));
+    },
+    name: 'Worklets integration',
+    route: 'worklets',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',
@@ -473,9 +492,11 @@ export const Screens: ScreenConfig[] = [
   ...AudioScreens,
   ...BlobScreens,
   ...ContactsScreens,
+  ...ContactsNextScreens,
   ...CalendarsScreens,
   ...CalendarsNextScreens,
   ...CryptoScreens,
+  ...WorkletsScreens,
 ];
 
 export const screenApiItems = apiScreensToListElements(ScreensList);

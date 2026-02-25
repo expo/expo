@@ -6,6 +6,7 @@ import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
+import { NativeMenuContext } from './NativeMenuContext';
 import { Icon, Label } from '../primitives';
 import { HrefPreview } from './preview/HrefPreview';
 import { useIsPreview } from './preview/PreviewRouteContext';
@@ -69,6 +70,17 @@ export interface LinkMenuActionProps {
    */
   image?: ImageRef | null;
   /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon
+   * - `'original'`: Preserves original icon colors
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  imageRenderingMode?: 'template' | 'original';
+  /**
    * If `true`, the menu item will be displayed as selected.
    */
   isOn?: boolean;
@@ -99,13 +111,11 @@ export interface LinkMenuActionProps {
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
  *
- * > **Note**: You can use the alias `Link.MenuAction` for this component.
- *
  * @platform ios
  */
 export function LinkMenuAction(props: LinkMenuActionProps) {
   const identifier = useId();
-  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(NativeMenuContext)) {
     return null;
   }
   const { unstable_keepPresented, onPress, children, title, ...rest } = props;
@@ -119,11 +129,17 @@ export function LinkMenuAction(props: LinkMenuActionProps) {
     props.icon ??
     (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
   const sf = typeof icon === 'string' ? icon : undefined;
+  const rawXcasset =
+    iconComponent?.props && 'xcasset' in iconComponent.props
+      ? iconComponent.props.xcasset
+      : undefined;
+  const xcassetName = typeof rawXcasset === 'string' ? rawXcasset : undefined;
   return (
     <NativeLinkPreviewAction
       {...rest}
       identifier={identifier}
       icon={sf}
+      xcassetName={xcassetName}
       title={label ?? title ?? ''}
       keepPresented={unstable_keepPresented}
       onSelected={() => onPress?.()}
@@ -213,7 +229,7 @@ export interface LinkMenuProps {
  * Groups context menu actions for a link.
  *
  * If multiple `Link.Menu` components are used within a single `Link`, only the first will be rendered.
- * Only `Link.MenuAction` and `LinkMenuAction` components are allowed as children.
+ * Only `Link.MenuAction` and `Link.Menu` components are allowed as children.
  *
  * @example
  * ```tsx
@@ -223,13 +239,11 @@ export interface LinkMenuProps {
  * </Link.Menu>
  * ```
  *
- * > **Note**: You can use the alias `Link.Menu` for this component.
- *
  * @platform ios
  */
-export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
+export const LinkMenu = (props: LinkMenuProps) => {
   const identifier = useId();
-  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(NativeMenuContext)) {
     return null;
   }
   const children = React.Children.toArray(props.children).filter(
@@ -304,8 +318,6 @@ export interface LinkPreviewProps {
  * </Link>
  * ```
  *
- * > **Note**: You can use the alias `Link.Preview` for this component.
- *
  * @platform ios
  */
 export function LinkPreview(props: LinkPreviewProps) {
@@ -361,8 +373,6 @@ export interface LinkTriggerProps extends PropsWithChildren {
  *   </Link.Trigger>
  * </Link>
  * ```
- *
- * > **Note**: You can use the alias `Link.Trigger` for this component.
  *
  * @platform ios
  */

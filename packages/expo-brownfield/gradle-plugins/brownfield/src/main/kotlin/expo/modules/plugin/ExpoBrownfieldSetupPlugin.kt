@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.json.JSONObject
+import org.gradle.api.GradleException
 
 class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -18,6 +19,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       setupBundleDependencyForRelease(project)
       setupCopyingNativeLibsForType(project, "Release")
       setupCopyingNativeLibsForType(project, "Debug")
+      wireDevLauncherTasks(project)
     }
   }
 
@@ -259,5 +261,30 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
         ?: throw IllegalStateException("react-native not found in package.json dependencies")
 
     return version.removePrefix("^").removePrefix("~")
+  }
+
+  /**
+   * Add explicit dependency between the `sourceDebugJar` and `generateServiceApolloSources`
+   * tasks in `expo-dev-launcher` project.
+   * 
+   * @param brownfieldProject The brownfield project
+   */
+  private fun wireDevLauncherTasks(brownfieldProject: Project) {
+    try {
+      val devLauncherProject = brownfieldProject.rootProject.project(":expo-dev-launcher")
+
+      val sourceDebugTask = devLauncherProject.tasks.findByName("sourceDebugJar")
+      val apolloSourcesTask = devLauncherProject.tasks.findByName("generateServiceApolloSources")
+      
+      if (sourceDebugTask == null || apolloSourcesTask == null) {
+        brownfieldProject.logger.warn("WARNING: Application uses expo-dev-launcher but tasks: sourceDebugJar and generateServiceApolloSources")
+        brownfieldProject.logger.warn("Skipping explicitly defining dependency between the tasks...")
+        return
+      }
+
+      sourceDebugTask.dependsOn(apolloSourcesTask)
+    } catch (e: GradleException) {
+      // no-op  
+    }
   }
 }

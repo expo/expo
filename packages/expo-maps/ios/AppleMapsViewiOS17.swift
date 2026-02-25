@@ -57,7 +57,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         }
 
         ForEach(props.polylines) { polyline in
-          MapPolyline(coordinates: polyline.clLocationCoordinates2D)
+          MapPolyline(
+            coordinates: polyline.clLocationCoordinates2D,
+            contourStyle: polyline.contourStyle.toContourStyle()
+          )
             .stroke(polyline.color, lineWidth: polyline.width)
         }
 
@@ -156,6 +159,9 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
           state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
           state.hasInitializedCamera = true
         }
+      }
+      .let(props.colorScheme.toColorScheme()) { view, colorScheme in
+        view.environment(\.colorScheme, colorScheme)
       }
     }
   }

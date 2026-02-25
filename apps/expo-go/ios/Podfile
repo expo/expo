@@ -52,7 +52,8 @@ target 'Expo Go' do
       'expo-splash-screen',
       '@expo/ui',
       '@expo/app-integrity',
-      'expo-brownfield'
+      'expo-brownfield',
+      'expo-widgets'
     ],
     includeTests: true,
     flags: {
@@ -91,7 +92,8 @@ target 'Expo Go' do
       react_native_post_install(
         installer,
         react_native_path,
-        :mac_catalyst_enabled => false
+        :mac_catalyst_enabled => false,
+        :ccache_enabled => false
       )
     end
 

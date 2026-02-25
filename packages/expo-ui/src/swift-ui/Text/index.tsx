@@ -9,11 +9,17 @@ export interface TextProps extends CommonViewModifierProps {
    * Text content or nested Text components.
    */
   children?: React.ReactNode;
+
+  /**
+   * Enables Markdown formatting for the text content using SwiftUI LocalizedStringKey.
+   */
+  markdownEnabled?: boolean;
 }
 
 type NativeTextProps = CommonViewModifierProps & {
   text?: string;
   children?: React.ReactNode;
+  markdownEnabled?: boolean;
 };
 
 const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
@@ -24,7 +30,7 @@ const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
 export function Text(props: TextProps) {
   const { children, modifiers, ...restProps } = props;
 
-  if (!children) {
+  if (children === undefined || children === null) {
     return null;
   }
 

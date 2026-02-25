@@ -36,11 +36,11 @@ export type HostProps = {
      */
     layoutDirection?: 'leftToRight' | 'rightToLeft';
     /**
-     * When `true`, the SwiftUI content will not perform keyboard avoidance behaviour when keyboard is shown.
-     * Can be only set once on mount.
-     * @default false
+     * Controls which safe area regions the SwiftUI hosting view should ignore. Can only be set once on mount.
+     * - `'all'`- ignores all safe area insets.
+     * - `'keyboard'` - ignores only the keyboard safe area.
      */
-    ignoreSafeAreaKeyboardInsets?: boolean;
+    ignoreSafeArea?: 'all' | 'keyboard';
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;

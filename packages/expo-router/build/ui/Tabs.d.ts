@@ -167,7 +167,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
         getState(): TabNavigationState<any>;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
-        getParent<T = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
+        getParent<T = import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, Readonly<{
             key: string;
             index: number;
             routeNames: string[];
@@ -219,7 +219,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
         getState(): TabNavigationState<any>;
     } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
-        getParent<T = import("@react-navigation/native").NavigationProp<ParamListBase, string, undefined, Readonly<{
+        getParent<T = import("@react-navigation/native").NavigationProp<ParamListBase, string, string | undefined, Readonly<{
             key: string;
             index: number;
             routeNames: string[];

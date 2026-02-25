@@ -1,6 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
-import { green } from 'chalk';
+import chalk from 'chalk';
 import fs from 'fs-extra';
+import { glob } from 'glob';
+import inquirer from 'inquirer';
 import path from 'path';
 
 import { EXPO_DIR } from '../../Constants';
@@ -11,6 +13,74 @@ import type { CommandOptions, Parcel, TaskArgs } from '../types';
 import { updateAndroidProjects } from './updateAndroidProjects';
 
 const EXCLUDE = ['expo-module-template-local', 'expo-module-template'];
+
+/**
+ * Finds and removes stale build directories (*.cxx and android/build) that can cause build issues.
+ * Prompts the user for confirmation before deletion.
+ *
+ * This cleanup may slow down the publish process, but skipping it often leads to compile errors
+ * during Android artifact publishing that make the whole process more tedious to recover from.
+ */
+async function cleanupStaleBuildDirectories(): Promise<void> {
+  const packagesDir = path.join(EXPO_DIR, 'packages');
+
+  // Find all *.cxx directories and android/build directories
+  // Use trailing slash to match only directories
+  const cxxDirs = await glob('**/*.cxx/', {
+    cwd: packagesDir,
+    absolute: true,
+  });
+
+  const androidBuildDirs = await glob('**/android/build/', {
+    cwd: packagesDir,
+    absolute: true,
+  });
+
+  // Remove trailing slashes from paths
+  const dirsToRemove = [...cxxDirs, ...androidBuildDirs].map((dir) => dir.replace(/\/$/, ''));
+
+  if (dirsToRemove.length === 0) {
+    return;
+  }
+
+  const promptForCleanup = async (): Promise<boolean> => {
+    const { action } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'action',
+        prefix: '🧹',
+        message: chalk.cyan(
+          `Found ${dirsToRemove.length} stale build director${dirsToRemove.length === 1 ? 'y' : 'ies'} (*.cxx, android/build). Remove?`
+        ),
+        choices: [
+          { name: 'Yes', value: 'yes' },
+          { name: 'No', value: 'no' },
+          { name: 'List all', value: 'list' },
+        ],
+        default: 'yes',
+      },
+    ]);
+
+    if (action === 'list') {
+      logger.log();
+      for (const dir of dirsToRemove) {
+        logger.log('  ', chalk.gray(path.relative(EXPO_DIR, dir)));
+      }
+      logger.log();
+      return promptForCleanup();
+    }
+
+    return action === 'yes';
+  };
+
+  if (await promptForCleanup()) {
+    logger.log('  ', 'Removing stale build directories...');
+    await Promise.all(dirsToRemove.map((dir) => fs.remove(dir)));
+    logger.success('  ', 'Removed stale build directories.');
+  } else {
+    logger.log('  ', 'Skipping cleanup of stale build directories.');
+  }
+}
 
 export const publishAndroidArtifacts = new Task<TaskArgs>(
   {
@@ -27,6 +97,9 @@ export const publishAndroidArtifacts = new Task<TaskArgs>(
       logger.log('\n🤖 Skipping publishing Android artifacts.');
       return;
     }
+
+    // Clean up stale build directories before building
+    await cleanupStaleBuildDirectories();
 
     const packages = parcels.map((parcels) => parcels.pkg);
 
@@ -64,9 +137,9 @@ export const publishAndroidArtifacts = new Task<TaskArgs>(
 
       if (publicationCommands.length === 1) {
         const publicationCommand = publicationCommands[0];
-        batch.log('  ', '  ', `${green(pkg.packageName)}: ${publicationCommand}`);
+        batch.log('  ', '  ', `${chalk.green(pkg.packageName)}: ${publicationCommand}`);
       } else {
-        batch.log('  ', '  ', `${green(pkg.packageName)}:`);
+        batch.log('  ', '  ', `${chalk.green(pkg.packageName)}:`);
         for (const command of publicationCommands) {
           batch.log('  ', '  ', '  ', `${command}`);
         }

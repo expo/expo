@@ -239,11 +239,13 @@ export const resolveTypeName = (
           sdkVersion,
         });
       } else if (type === 'array') {
-        return resolveTypeName(elementType, sdkVersion) + '[]';
+        return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
       }
       return elementType.name + type;
+    } else if (type === 'rest' && elementType) {
+      return <>...{resolveTypeName(elementType, sdkVersion)}</>;
     } else if (elementType?.type === 'array') {
-      return resolveTypeName(elementType, sdkVersion) + '[]';
+      return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
     } else if (elementType?.declaration) {
       if (type === 'array') {
         const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
@@ -268,7 +270,7 @@ export const resolveTypeName = (
         return 'See description for available values.';
       }
       return renderUnion(types, { sdkVersion });
-    } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
+    } else if (elementType?.type === 'union' && elementType?.types?.length) {
       const unionTypes = elementType?.types ?? [];
       return (
         <>
@@ -395,8 +397,6 @@ export const resolveTypeName = (
       return operator ?? 'undefined';
     } else if (type === 'intrinsic') {
       return name ?? 'undefined';
-    } else if (type === 'rest' && elementType) {
-      return `...${resolveTypeName(elementType, sdkVersion)}`;
     } else if (value === null) {
       return 'null';
     }
@@ -522,7 +522,7 @@ export const getCommentContent = (content: CommentContentData[]) => {
   return content
     .map(entry => {
       if (entry.tag === '@link' && !entry.text.includes('/')) {
-        return `[${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}](#${slug(entry.text)})`;
+        return `[\`${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}\`](#${slug(entry.text)})`;
       }
       return entry.text;
     })

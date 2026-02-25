@@ -114,11 +114,6 @@ const renderInterface = (
   sdkVersion: string
 ) => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
-
-  if (interfaceChildren.length === 0) {
-    return null;
-  }
-
   const interfaceMethods = interfaceChildren.filter(child => child.signatures);
   const interfaceFields = interfaceChildren.filter(child => !child.signatures);
 

@@ -44,27 +44,32 @@ function useAwaitedScreensIcon(icon) {
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
 }
-function convertOptionsIconToRNScreensPropsIcon(icon) {
+function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
     if (!icon) {
         return undefined;
     }
     return {
-        ios: convertOptionsIconToIOSPropsIcon(icon),
+        ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
         android: convertOptionsIconToAndroidPropsIcon(icon),
     };
 }
-function convertOptionsIconToIOSPropsIcon(icon) {
+function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
     if (icon && 'sf' in icon && icon.sf) {
         return {
             type: 'sfSymbol',
             name: icon.sf,
         };
     }
-    if (icon && 'src' in icon && icon.src) {
-        if (icon.renderingMode === 'original') {
-            return { type: 'imageSource', imageSource: icon.src };
+    if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
+        const imageSource = 'xcasset' in icon && icon.xcasset
+            ? { uri: icon.xcasset }
+            : icon.src;
+        const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
+        const effectiveRenderingMode = renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
+        if (effectiveRenderingMode === 'original') {
+            return { type: 'imageSource', imageSource };
         }
-        return { type: 'templateSource', templateSource: icon.src };
+        return { type: 'templateSource', templateSource: imageSource };
     }
     return undefined;
 }

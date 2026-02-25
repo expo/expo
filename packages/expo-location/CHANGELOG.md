@@ -6,6 +6,56 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.1.2 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.1.1 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.1.0 — 2026-02-20
+
+### 🎉 New features
+
+- [iOS] Added `accuracy` field to `PermissionDetailsLocationIOS` exposing iOS 14+ precise/reduced location authorization. ([#42931](https://github.com/expo/expo/pull/42931) by [@sbs44](https://github.com/sbs44))
+
+## 55.0.7 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [Android] Add option `androidForegroundServiceIcon` for controlling the icon for the foreground service. ([#41132](https://github.com/expo/expo/pull/41132) by [@jeppester](https://github.com/jeppester))
 
 ### 🐛 Bug fixes

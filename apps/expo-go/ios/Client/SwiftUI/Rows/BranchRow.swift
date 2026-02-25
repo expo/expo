@@ -40,7 +40,7 @@ struct BranchRowContent: View {
                 .lineLimit(1)
             }
           }
-          
+
           Text("Published \(formattedDate(update.createdAt))")
             .font(.caption)
             .foregroundColor(.secondary)
@@ -57,7 +57,7 @@ struct BranchRowContent: View {
     .background(Color.expoSecondarySystemBackground)
     .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
-  
+
   private func formattedDate(_ value: String) -> String {
     let formatters = [
       isoFormatter(withFractionalSeconds: true),

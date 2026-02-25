@@ -19,7 +19,7 @@ interface UnifiedFileInterface {
   val creationTime: Long?
   val fileName: String?
   fun getContentUri(appContext: AppContext): Uri
-  fun outputStream(): java.io.OutputStream
+  fun outputStream(append: Boolean = false): java.io.OutputStream
   fun inputStream(): java.io.InputStream
   fun length(): Long
   fun walkTopDown(): Sequence<UnifiedFileInterface>

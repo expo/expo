@@ -1,6 +1,7 @@
 package host.exp.exponent.home
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import host.exp.exponent.home.qrScanner.QRScannerActivity
 import host.exp.expoview.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +54,11 @@ fun HomeScreen(
 
   val context = LocalContext.current
   val uriHandler = LocalUriHandler.current
+  val fallbackQrScannerLauncher = rememberLauncherForActivityResult(
+    contract = QRScannerActivity.Contract()
+  ) { url ->
+    url?.let { uriHandler.openUri(it) }
+  }
 
   val state = rememberPullToRefreshState()
   val onRefresh: () -> Unit = {
@@ -135,6 +142,9 @@ fun HomeScreen(
                 },
                 onError = { error ->
                   Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                },
+                onNoPlayServices = {
+                  fallbackQrScannerLauncher.launch(Unit)
                 }
               )
             }

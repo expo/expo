@@ -17,6 +17,16 @@ describe(collapseAliases, () => {
     const actual = collapseAliases(arg, args);
     expect(actual).toEqual(['--basic', '--help']);
   });
+
+  it(`will collapse all occurrences of an alias`, () => {
+    const arg = {
+      '--platform': [String],
+      '-p': '--platform',
+    };
+    const args = ['-p', 'web', '-p', 'ios'];
+    const actual = collapseAliases(arg, args);
+    expect(actual).toEqual(['--platform', 'web', '--platform', 'ios']);
+  });
 });
 
 describe(_resolveStringOrBooleanArgs, () => {
@@ -95,14 +105,8 @@ describe(resolveStringOrBooleanArgsAsync, () => {
     await expect(
       resolveStringOrBooleanArgsAsync(
         ['--no-bundler', '--scheme', '-d', 'my-device', 'custom-root'],
-        {
-          '--no-bundler': Boolean,
-        },
-        {
-          '--scheme': Boolean,
-          '--device': Boolean,
-          '-d': '--device',
-        }
+        { '--no-bundler': Boolean },
+        { '--scheme': Boolean, '--device': Boolean, '-d': '--device' }
       )
     ).resolves.toEqual({
       args: {
@@ -118,12 +122,8 @@ describe(resolveStringOrBooleanArgsAsync, () => {
     await expect(
       resolveStringOrBooleanArgsAsync(
         ['--dev=false', '--minify=false', '--minify', 'true', '--dev', 'true', 'custom-root'],
-        {
-          '--dev': Boolean,
-        },
-        {
-          '--minify': Boolean,
-        }
+        { '--dev': Boolean },
+        { '--minify': Boolean }
       )
     ).resolves.toEqual({
       args: {
@@ -131,6 +131,73 @@ describe(resolveStringOrBooleanArgsAsync, () => {
         '--dev': 'true',
       },
       projectRoot: 'custom-root',
+    });
+  });
+
+  it(`handles array-type arguments in rawMap`, async () => {
+    // This simulates `expo export -p web -p ios --source-maps`
+    // Array-type args like --platform should be filtered out and not cause errors
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '-p', 'ios', '--source-maps'],
+        { '--platform': [String], '-p': '--platform' },
+        { '--source-maps': Boolean }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': true,
+      },
+      projectRoot: '.',
+    });
+  });
+
+  it(`handles array-type arguments with extra args value`, async () => {
+    // This simulates `expo export -p web -p ios --source-maps inline`
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '-p', 'ios', '--source-maps', 'inline', 'custom-root'],
+        { '--platform': [String], '-p': '--platform' },
+        { '--source-maps': Boolean }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': 'inline',
+      },
+      projectRoot: 'custom-root',
+    });
+  });
+
+  it(`treats unrecognized value after string-or-boolean flag as project root when allowedValues is specified`, async () => {
+    // With allowedValues, `--source-maps custom-root` treats `custom-root` as project root
+    // because it's not in the allowed values list.
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '--source-maps', 'custom-root'],
+        { '--platform': [String], '-p': '--platform' },
+        // [Boolean, 'inline', 'external'] restricts to 'true', 'false', 'inline', 'external'
+        { '--source-maps': [Boolean, 'inline', 'external'] }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': true,
+      },
+      projectRoot: 'custom-root',
+    });
+  });
+
+  it(`treats value after string-or-boolean flag as flag value when no allowedValues specified`, async () => {
+    // Without allowedValues, any value after the flag is treated as the flag's value
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '--source-maps', 'custom-root'],
+        { '--platform': [String], '-p': '--platform' },
+        { '--source-maps': Boolean }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': 'custom-root',
+      },
+      projectRoot: '.',
     });
   });
 });
@@ -144,5 +211,15 @@ describe(assertDuplicateArgs, () => {
     expect(() =>
       assertDuplicateArgs(['--device', '--bar', '--device'], [['--device', '-d']])
     ).toThrowErrorMatchingInlineSnapshot(`"Can only provide one instance of --device or -d"`);
+  });
+  it(`does not assert for array-type arguments`, () => {
+    const spec = {
+      '--platform': [String],
+      '-p': '--platform',
+    };
+    // Multiple --platform flags should be allowed when it's an array type
+    expect(() =>
+      assertDuplicateArgs(['--platform', 'web', '--platform', 'ios'], [['-p', '--platform']], spec)
+    ).not.toThrow();
   });
 });

@@ -1,0 +1,10 @@
+appId: dev.expo.BrownfieldIntegratedTester
+name: Ckose dev menu if visible
+---
+- runFlow:
+    when:
+      visible:
+        id: xmark
+    commands:
+        - tapOn:
+            id: xmark

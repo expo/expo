@@ -10,7 +10,7 @@ import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
-import { setNodeEnv } from '../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -63,7 +63,7 @@ export async function prebuildAsync(
   }
 ): Promise<PrebuildResults | null> {
   setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   const { platforms } = getConfig(projectRoot).exp;
   if (platforms?.length) {

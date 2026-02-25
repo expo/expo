@@ -141,7 +141,7 @@ export async function setUpdatesConfigAsync(
   }
 
   const bsPatchSupport = getUpdatesBsdiffPatchSupportEnabled(config);
-  if (!bsPatchSupport) {
+  if (bsPatchSupport) {
     newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = bsPatchSupport;
   } else {
     delete newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT];

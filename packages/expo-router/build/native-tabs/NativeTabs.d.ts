@@ -3,8 +3,7 @@ import type { NativeTabsProps } from './types';
  * The component used to create native tabs layout.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {

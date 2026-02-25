@@ -1,8 +1,8 @@
 import type { ColorValue } from 'react-native';
 import type {
-  BottomTabsScreenAppearance,
-  BottomTabsScreenItemAppearance,
-  BottomTabsScreenItemStateAppearance,
+  TabsScreenAppearance,
+  TabsScreenItemAppearance,
+  TabsScreenItemStateAppearance,
 } from 'react-native-screens';
 
 import {
@@ -17,7 +17,7 @@ const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
 export function createStandardAppearanceFromOptions(
   options: NativeTabOptions
-): BottomTabsScreenAppearance {
+): TabsScreenAppearance {
   let blurEffect = options.blurEffect;
   if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
     console.warn(
@@ -53,7 +53,7 @@ export function createStandardAppearanceFromOptions(
 
 export function createScrollEdgeAppearanceFromOptions(
   options: NativeTabOptions
-): BottomTabsScreenAppearance {
+): TabsScreenAppearance {
   let blurEffect = options.disableTransparentOnScrollEdge ? options.blurEffect : 'none';
   if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
     console.warn(
@@ -101,12 +101,12 @@ export interface AppearanceStyle extends NativeTabsLabelStyle {
 
 export function appendSelectedStyleToAppearance(
   selectedStyle: AppearanceStyle,
-  appearance: BottomTabsScreenAppearance
-): BottomTabsScreenAppearance {
+  appearance: TabsScreenAppearance
+): TabsScreenAppearance {
   return appendStyleToAppearance(selectedStyle, appearance, ['selected', 'focused']);
 }
 
-const EMPTY_APPEARANCE_ITEM: BottomTabsScreenItemAppearance = {
+const EMPTY_APPEARANCE_ITEM: TabsScreenItemAppearance = {
   normal: {},
   selected: {},
   focused: {},
@@ -115,9 +115,9 @@ const EMPTY_APPEARANCE_ITEM: BottomTabsScreenItemAppearance = {
 
 export function appendStyleToAppearance(
   style: AppearanceStyle,
-  appearance: BottomTabsScreenAppearance,
+  appearance: TabsScreenAppearance,
   states: ('selected' | 'focused' | 'disabled' | 'normal')[]
-): BottomTabsScreenAppearance {
+): TabsScreenAppearance {
   const baseItemAppearance =
     appearance.stacked || appearance.inline || appearance.compactInline || {};
 
@@ -131,7 +131,7 @@ export function appendStyleToAppearance(
     },
   }));
 
-  const itemAppearance: BottomTabsScreenItemAppearance = {
+  const itemAppearance: TabsScreenItemAppearance = {
     ...EMPTY_APPEARANCE_ITEM,
     ...baseItemAppearance,
     ...Object.fromEntries(newAppearances.map(({ key, appearance }) => [key, appearance])),
@@ -149,14 +149,12 @@ export function appendStyleToAppearance(
   };
 }
 
-export function convertStyleToAppearance(
-  style: AppearanceStyle | undefined
-): BottomTabsScreenAppearance {
+export function convertStyleToAppearance(style: AppearanceStyle | undefined): TabsScreenAppearance {
   if (!style) {
     return {};
   }
   const stateAppearance = convertStyleToItemStateAppearance(style);
-  const itemAppearance: BottomTabsScreenItemAppearance = {
+  const itemAppearance: TabsScreenItemAppearance = {
     normal: stateAppearance,
     selected: stateAppearance,
     focused: stateAppearance,
@@ -174,11 +172,11 @@ export function convertStyleToAppearance(
 
 export function convertStyleToItemStateAppearance(
   style: AppearanceStyle | undefined
-): BottomTabsScreenItemStateAppearance {
+): TabsScreenItemStateAppearance {
   if (!style) {
     return {};
   }
-  const stateAppearance: BottomTabsScreenItemStateAppearance = {
+  const stateAppearance: TabsScreenItemStateAppearance = {
     tabBarItemBadgeBackgroundColor: style.badgeBackgroundColor,
     tabBarItemTitlePositionAdjustment: style.titlePositionAdjustment,
     tabBarItemIconColor: style.iconColor,
@@ -189,7 +187,7 @@ export function convertStyleToItemStateAppearance(
     tabBarItemTitleFontColor: style.color,
   };
 
-  (Object.keys(stateAppearance) as (keyof BottomTabsScreenItemStateAppearance)[]).forEach((key) => {
+  (Object.keys(stateAppearance) as (keyof TabsScreenItemStateAppearance)[]).forEach((key) => {
     if (stateAppearance[key] === undefined) {
       delete stateAppearance[key];
     }

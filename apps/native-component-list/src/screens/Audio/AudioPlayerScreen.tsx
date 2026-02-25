@@ -30,6 +30,7 @@ export default function AudioScreen(props: any) {
             Auth: 'Bearer some-token',
           },
         }}
+        crossOrigin="anonymous"
         style={styles.player}
       />
       <HeadingText>Local asset player</HeadingText>

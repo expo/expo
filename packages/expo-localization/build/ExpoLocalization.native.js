@@ -10,6 +10,9 @@ export function addCalendarListener(
 listener) {
     return ExpoLocalizationModule.addListener('onCalendarSettingsChanged', listener);
 }
+/**
+ * @deprecated use subscription.remove() instead.
+ */
 export function removeSubscription(subscription) {
     subscription.remove();
 }

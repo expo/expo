@@ -37,7 +37,6 @@ jobs:
           ndk: 'true'
           ndk-version: ${{ matrix.ndk-version }}
       - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: Init new expo app
         working-directory: ../
@@ -92,7 +91,6 @@ jobs:
         with:
           yarn-workspace: 'true'
       - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: Init new expo app
         working-directory: ../

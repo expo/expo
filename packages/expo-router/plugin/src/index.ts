@@ -54,6 +54,8 @@ const withRouter: ConfigPlugin<
     unstable_useServerDataLoaders?: boolean;
     /** Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time. */
     unstable_useServerRendering?: boolean;
+    /** Enable automatic app rerender on color scheme changes. Defaults to `true`. */
+    adaptiveColors?: boolean;
   } | void
 > = (config, _props) => {
   const props = _props || {};

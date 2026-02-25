@@ -39,9 +39,16 @@ export function createRouteHandlerMiddleware(
     executeLoaderAsync: (
       route: RouteInfo<RegExp>,
       request: ImmutableRequest
-    ) => Promise<{ data: unknown } | undefined>;
+    ) => Promise<Response | undefined>;
     config: ProjectConfig;
     headers: Record<string, string | string[]>;
+    rsc?: {
+      path: string;
+      handler: {
+        GET: (req: Request) => Promise<Response>;
+        POST: (req: Request) => Promise<Response>;
+      };
+    };
   } & import('@expo/router-server/build/routes-manifest').Options
 ) {
   if (!resolveFrom.silent(projectRoot, 'expo-router')) {
@@ -51,11 +58,27 @@ export function createRouteHandlerMiddleware(
   }
 
   return createRequestHandler(
-    { build: '' },
+    { build: '', isDevelopment: true },
     {
       async getRoutesManifest() {
         const manifest = await fetchManifest(projectRoot, options);
         debug('manifest', manifest);
+
+        // TODO(@hassankhan): Invert the conditionals for an early return if no manifest if found
+
+        if (
+          manifest &&
+          options.rsc &&
+          !manifest.apiRoutes.find((route) => route.page.startsWith(options.rsc!.path))
+        ) {
+          // Insert the route before any catch-all routes that might match the RSC path.
+          manifest.apiRoutes.unshift({
+            file: require.resolve('@expo/cli/static/template/[...rsc]+api.ts'),
+            page: `${options.rsc.path}/[...rsc]`,
+            namedRegex: new RegExp(`^${options.rsc.path}(?:/(?<rsc>.+?))?(?:/)?$`),
+            routeKeys: { rsc: 'rsc' },
+          });
+        }
 
         const { exp } = options.config;
 
@@ -63,7 +86,7 @@ export function createRouteHandlerMiddleware(
           // In development, set `loader` property on all HTML routes. We can't know which routes
           // have loaders without bundling via Metro to detect exports. In production, this is
           // populated by `exportStaticAsync.ts` after bundling.
-          // At runtime, `getLoaderData()` returns `undefined` if no loader exists.
+          // At runtime, `getLoaderData()` returns a 404 response if no loader exists.
           for (const route of manifest.htmlRoutes) {
             route.loader = `_expo/loaders${route.page}.js`;
           }
@@ -159,6 +182,12 @@ export function createRouteHandlerMiddleware(
         });
       },
       async getApiRoute(route) {
+        // We check if RSC is enabled before the warning check, as `web.output` could be set to
+        // `single`
+        if (options.rsc && route.page.startsWith(options.rsc.path)) {
+          return options.rsc.handler;
+        }
+
         const { exp } = options.config;
         if (exp.web?.output !== 'server') {
           warnInvalidWebOutput();
@@ -233,7 +262,8 @@ export function createRouteHandlerMiddleware(
         }
       },
       async getLoaderData(request, route) {
-        return options.executeLoaderAsync(route, new ImmutableRequest(request));
+        const response = await options.executeLoaderAsync(route, new ImmutableRequest(request));
+        return response ?? new Response(null, { status: 404 });
       },
     }
   );

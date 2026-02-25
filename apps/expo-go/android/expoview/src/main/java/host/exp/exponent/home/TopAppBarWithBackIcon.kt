@@ -14,7 +14,8 @@ import host.exp.expoview.R
 @Composable
 fun TopAppBarWithBackIcon(
   label: String,
-  onGoBack: () -> Unit
+  onGoBack: () -> Unit,
+  actions: @Composable () -> Unit = { }
 ) {
   TopAppBar(
     navigationIcon = {
@@ -27,6 +28,7 @@ fun TopAppBarWithBackIcon(
     },
     title = {
       Text(label, fontWeight = FontWeight.Bold)
-    }
+    },
+    actions = { actions() }
   )
 }

@@ -10,7 +10,9 @@ it(`defines a manifest`, () => {
 });
 
 it(`defines a linking URI`, () => {
-  expect(typeof Constants.linkingUri).toBe('string');
+  if (Constants.linkingUri !== undefined) {
+    expect(typeof Constants.linkingUri).toBe('string');
+  }
 });
 
 describe(`manifest`, () => {

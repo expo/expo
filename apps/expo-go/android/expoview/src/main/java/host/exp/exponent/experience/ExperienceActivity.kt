@@ -74,6 +74,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import versioned.host.exp.exponent.ExponentPackageDelegate
 import versioned.host.exp.exponent.ReactUnthemedRootView
+import versioned.host.exp.exponent.VersionedUtils
 import java.lang.ref.WeakReference
 
 open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDelegate {
@@ -329,6 +330,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           reactHostHolder = reactHost.weak(),
           goToHomeAction = {
             kernel.openHomeActivity()
+          },
+          reloadAction = {
+            VersionedUtils.reloadExpoApp()
           },
           appInfoProvider = { _, _ ->
             DevMenuState.AppInfo(

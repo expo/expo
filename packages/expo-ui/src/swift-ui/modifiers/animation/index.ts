@@ -8,6 +8,35 @@ import {
   TimingAnimationParams,
 } from './types';
 
+/**
+ * Built-in animation presets for the `animation` modifier.
+ * Presets:
+ * - Timing presets (`easeInOut`, `easeIn`, `easeOut`, `linear`) accept
+ * [`TimingAnimationParams`](#timinganimationparams).
+ * - `spring` accepts [`SpringAnimationParams`](#springanimationparams).
+ * - `interpolatingSpring` accepts
+ * [`InterpolatingSpringAnimationParams`](#interpolatingspringanimationparams).
+ * - Chaining returns [`ChainableAnimationType`](#chainableanimationtype).
+ *
+ * @example
+ * ```tsx
+ * import { Host, VStack } from '@expo/ui/swift-ui';
+ * import { animation, Animation } from '@expo/ui/swift-ui/modifiers';
+ *
+ * function Example() {
+ *   const [isExpanded, setIsExpanded] = useState(false);
+ *
+ *   return (
+ *     <Host style={{ flex: 1 }}>
+ *       <VStack modifiers={[animation(Animation.spring({ duration: 0.8 }), isExpanded)]}>
+ *         //...
+ *       </VStack>
+ *     </Host>
+ *   );
+ * }
+ * ```
+ * @hideType
+ */
 export const Animation = {
   // timing animations
   easeInOut: (params?: TimingAnimationParams) =>

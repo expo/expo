@@ -66,6 +66,9 @@ public final class ExpoUIModule: Module {
     View(ContextMenuActivationElement.self)
     View(ContextMenuPreview.self)
     View(ContextMenuContent.self)
+    View(ConfirmationDialogTrigger.self)
+    View(ConfirmationDialogActions.self)
+    View(ConfirmationDialogMessage.self)
     View(NamespaceView.self)
     View(PopoverViewContent.self)
     View(PopoverViewPopContent.self)
@@ -88,6 +91,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DatePickerView.self)
     ExpoUIView(DisclosureGroupView.self)
     ExpoUIView(ExpoUI.ContentUnavailableView.self)
+    ExpoUIView(ConfirmationDialogView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)
     
     // Menu component
@@ -102,6 +106,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
+    ExpoUIView(ListForEachView.self)
 
     // Picker
     ExpoUIView(PickerView.self)
@@ -122,6 +127,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ZStackView.self)
     ExpoUIView(GlassEffectContainerView.self)
     ExpoUIView(LabeledContentView.self)
+    ExpoUIView(ScrollViewComponent.self)
     ExpoUIView(RectangleView.self)
     ExpoUIView(RoundedRectangleView.self)
     ExpoUIView(EllipseView.self)

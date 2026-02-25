@@ -6,6 +6,42 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.5 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed compilation errors in Xcode 26.4 Beta 1 ([#43346](https://github.com/expo/expo/pull/43346) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.4 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Android] Uses shared cookie jar for image requests. ([#43257](https://github.com/expo/expo/pull/43257) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `useImage` crashing on SVGs when the max dimensions are not set. ([#42496](https://github.com/expo/expo/pull/42496) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS] Add `color` and `fontSize` style props for SF Symbols to set tint color and size. ([#42320](https://github.com/expo/expo/pull/42320) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Add support for SF Symbols `source="sf:star"`. ([#41907](https://github.com/expo/expo/pull/41907) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Upgrades Glide to `5.0.5`. ([#39713](https://github.com/expo/expo/pull/39713) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added support for HDR images ([#40242](https://github.com/expo/expo/pull/40242) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
@@ -17,6 +53,7 @@
 ### 🐛 Bug fixes
 
 - [android] Fix loading delayed placeholder ([#40956](https://github.com/expo/expo/pull/40956) by [@kosmydel](https://github.com/kosmydel))
+- Fix tvOS SymbolEffectOptions availability check ([#42393](https://github.com/expo/expo/pull/42393) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

@@ -208,6 +208,7 @@ function parseModuleDefinition(moduleDefinition, file) {
         events: findGroupedDefinitionsOfType('Events', preparedModuleDefinition, file),
         properties: findNamedDefinitionsOfType('Property', preparedModuleDefinition, file),
         props: omitParamsFromClosureArguments(findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file), ['view']),
+        constants: findNamedDefinitionsOfType('Constant', preparedModuleDefinition, file),
         views: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View'),
         classes: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'Class'),
     };

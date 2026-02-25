@@ -1,6 +1,15 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import { StatusError, environment, origin, runTask, deferTask, setResponseHeaders } from '../api';
+import { ImmutableHeaders } from '../../ImmutableRequest';
+import {
+  StatusError,
+  environment,
+  origin,
+  runTask,
+  deferTask,
+  setResponseHeaders,
+  requestHeaders,
+} from '../api';
 import { createRequestScope } from '../index';
 
 const STORE = new AsyncLocalStorage();
@@ -45,6 +54,22 @@ it('provides specified origin as a global', async () => {
     return Response.json({ ok: true });
   });
   expect(result).toBeInstanceOf(Response);
+});
+
+describe('requestHeaders', () => {
+  it('returns an `ImmutableHeaders` object', async () => {
+    const run = createRequestScope(STORE, () => ({
+      requestHeaders: new Headers({ 'x-test': 'value', 'content-type': 'application/json' }),
+    }));
+
+    await run(async () => {
+      const headers = requestHeaders();
+      expect(headers).toBeInstanceOf(ImmutableHeaders);
+      expect(headers.get('x-test')).toBe('value');
+      expect(headers.get('content-type')).toBe('application/json');
+      return Response.json({ ok: true });
+    });
+  });
 });
 
 describe('runTask', () => {
@@ -160,6 +185,33 @@ describe('setResponseHeaders', () => {
     const result = await run(async () => {
       setResponseHeaders(new Headers({ 'X-Test': 'true' }));
       return new Response(null, { status: 204 });
+    });
+    expect(result).toBeInstanceOf(Response);
+    expect(result.status).toBe(204);
+    expect(result.headers.get('X-Test')).toBe('true');
+  });
+
+  it('updates response headers when using `Response.redirect()`', async () => {
+    const run = createRequestScope(STORE, () => ({}));
+    const result = await run(async () => {
+      setResponseHeaders({
+        'X-Test': 'true',
+      });
+      return Response.redirect('http://test.local/second', 302);
+    });
+    expect(result).toBeInstanceOf(Response);
+    expect(result.status).toBe(302);
+    expect(result.headers.get('location')).toBe('http://test.local/second');
+    expect(result.headers.get('X-Test')).toBe('true');
+  });
+
+  it('updates response headers when the response is thrown', async () => {
+    const run = createRequestScope(STORE, () => ({}));
+    const result = await run(async () => {
+      setResponseHeaders({
+        'X-Test': 'true',
+      });
+      throw new Response(null, { status: 204 });
     });
     expect(result).toBeInstanceOf(Response);
     expect(result.status).toBe(204);

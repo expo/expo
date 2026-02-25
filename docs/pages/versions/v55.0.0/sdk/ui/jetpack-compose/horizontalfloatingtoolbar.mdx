@@ -1,0 +1,55 @@
+---
+title: HorizontalFloatingToolbar
+description: A Jetpack Compose HorizontalFloatingToolbar component for displaying a floating action bar.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI HorizontalFloatingToolbar matches the official Jetpack Compose [FloatingActionButton API](https://developer.android.com/develop/ui/compose/components/floating-action-button) and displays a horizontal toolbar that floats above content, containing action buttons.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Toolbar with FloatingActionButton
+
+Use `IconButton` as direct children for toolbar items, and `HorizontalFloatingToolbar.FloatingActionButton` for the primary action.
+
+```tsx ToolbarWithFABExample.tsx
+import { Host, HorizontalFloatingToolbar, IconButton, Icon } from '@expo/ui/jetpack-compose';
+
+export default function ToolbarWithFABExample() {
+  return (
+    <Host matchContents>
+      <HorizontalFloatingToolbar>
+        <IconButton onPress={() => console.log('Edit pressed')}>
+          <Icon source={require('./assets/edit.xml')} contentDescription="Edit" />
+        </IconButton>
+        <IconButton onPress={() => console.log('Share pressed')}>
+          <Icon source={require('./assets/share.xml')} contentDescription="Share" />
+        </IconButton>
+        <HorizontalFloatingToolbar.FloatingActionButton onPress={() => console.log('Add pressed')}>
+          <Icon source={require('./assets/add.xml')} contentDescription="Add" />
+        </HorizontalFloatingToolbar.FloatingActionButton>
+      </HorizontalFloatingToolbar>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { HorizontalFloatingToolbar } from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/horizontalfloatingtoolbar"
+  apiName="HorizontalFloatingToolbar"
+/>

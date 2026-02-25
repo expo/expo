@@ -127,18 +127,6 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
     }
 };
 exports.minifyCode = minifyCode;
-function renameTopLevelModuleVariables() {
-    // A babel plugin which renames variables in the top-level scope that are named "module".
-    return {
-        visitor: {
-            Program(path) {
-                ['global', 'require', 'module', 'exports'].forEach((name) => {
-                    path.scope.rename(name, path.scope.generateUidIdentifier(name).name);
-                });
-            },
-        },
-    };
-}
 function applyUseStrictDirective(ast) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
@@ -407,6 +395,8 @@ async function transformJS(file, { config, options }) {
         : undefined;
     let lineCount;
     ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
+    // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
+    // that React Compiler and other Babel plugins may add.
     const output = [
         {
             data: {
@@ -431,6 +421,22 @@ async function transformJS(file, { config, options }) {
             type: file.type,
         },
     ];
+    if (possibleReconcile) {
+        const reactCompilerFlag = options.customTransformOptions?.reactCompiler;
+        if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
+            try {
+                return {
+                    dependencies,
+                    // React compiler adds symbols to the AST which break threading. This will ensure the
+                    // AST and other properties are fully serialized before being sent to the worker.
+                    output: JSON.parse(JSON.stringify(output)),
+                };
+            }
+            catch (error) {
+                throw new Error(`Failed to serialize output for file ${file.filename}: ${error}`);
+            }
+        }
+    }
     return {
         dependencies,
         output,

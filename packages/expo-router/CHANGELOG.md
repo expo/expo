@@ -4,6 +4,146 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.1 — 2026-02-25
+
+### 🎉 New features
+
+- [ios] support custom images in submenus ([#43414](https://github.com/expo/expo/pull/43414) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [android] Fix `Color.android.dynamic.background` always returning null by adding missing `background` mapping to `attrMap`. ([#43336](https://github.com/expo/expo/pull/43336) by [@just1and0](https://github.com/just1and0))
+- [ios] add better modal and preview handling when using zoom transition ([#43370](https://github.com/expo/expo/pull/43370) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.0 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- fix stack composition options in link preview ([#43334](https://github.com/expo/expo/pull/43334) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Pin screens to 4.24.0 ([#43379](https://github.com/expo/expo/pull/43379) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.0-preview.9 — 2026-02-20
+
+### 🎉 New features
+
+- [ios] add support for renderingMode of xcassets in header items and bottom tabs ([#43185](https://github.com/expo/expo/pull/43185) by [@Ubax](https://github.com/Ubax))
+- use scoped dynamic options in stack ([#43184](https://github.com/expo/expo/pull/43184) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [ios] fix gestureEnabled: false when using zoom transition ([#43202](https://github.com/expo/expo/pull/43202) by [@Ubax](https://github.com/Ubax))
+- [web] fix Stack.Screen in expo modal ([#43188](https://github.com/expo/expo/pull/43188) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- extract usePreviewTransition from NativeStackNavigator ([#43182](https://github.com/expo/expo/pull/43182) by [@Ubax](https://github.com/Ubax))
+- Updated `react-native-is-edge-to-edge` to `^1.2.1`. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.0-preview.8 — 2026-02-16
+
+### 🎉 New features
+
+- [ios] Add xcasset icon support to native tabs ([#42867](https://github.com/expo/expo/pull/42867) by [@Ubax](https://github.com/Ubax))
+- [ios] activate `iosPreventReattachmentOfDismissedScreens` by default ([#43001](https://github.com/expo/expo/pull/43001) by [@Ubax](https://github.com/Ubax))
+- [ios] support xcasset in header items ([#43046](https://github.com/expo/expo/pull/43046) by [@Ubax](https://github.com/Ubax))
+- [ios] support xcassets in bottom toolbar ([#43068](https://github.com/expo/expo/pull/43068) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [web] Fix route URL detection in `useLoaderData` ([#42912](https://github.com/expo/expo/pull/42912) by [@hassankhan](https://github.com/hassankhan))
+- [web] Key loader data by `contextKey` instead of URL pathname ([#43017](https://github.com/expo/expo/pull/43017) by [@hassankhan]
+- [ios] fix immediate navigation when opening Link.Preview ([#43071](https://github.com/expo/expo/pull/43071) by [@Ubax](https://github.com/Ubax))
+- [ios] fix link preview background color ([#43120](https://github.com/expo/expo/pull/43120) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Bump peer dependency to `@testing-library/react-native@^13.2.0` ([#43084](https://github.com/expo/expo/pull/43084) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.0-preview.7 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- Use `useRouteInfo()` instead of `useRoute()` to construct loader lookup key ([#42874](https://github.com/expo/expo/pull/42874) by [@hassankhan](https://github.com/hassankhan))
+- fix Stack.Screen types ([#42897](https://github.com/expo/expo/pull/42897) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- add `yarn test:types` for checking types in jest tests ([#42935](https://github.com/expo/expo/pull/42935) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.0-preview.6 — 2026-02-03
+
+### 🎉 New features
+
+- [iOS] Wrap native tab content in SafeAreaProvider to expose tabs insets ([#42770](https://github.com/expo/expo/pull/42770) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Fix `expo-image` dependency range in `expo-router` ([#42808](https://github.com/expo/expo/pull/42808) by [@kitten](https://github.com/kitten))
+- [android] fix linking in two places and state restoration after activity recreation ([#42644](https://github.com/expo/expo/pull/42644) by [@Ubax](https://github.com/Ubax))
+- detect incorrect screen presentation ([#42829](https://github.com/expo/expo/pull/42829) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Consolidate native toolbar components into StackToolbar\* files ([#42712](https://github.com/expo/expo/pull/42712) by [@Ubax](https://github.com/Ubax))
+- remove warnings from Color API ([#42790](https://github.com/expo/expo/pull/42790) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.0-preview.5 — 2026-02-03
+
+### 🎉 New features
+
+- improve assignment of Stack.Header props to Stack options ([#42544](https://github.com/expo/expo/pull/42544) by [@Ubax](https://github.com/Ubax))
+- fallback to title when label is not present in Stack.Toolbar.Menu ([#42531](https://github.com/expo/expo/pull/42531) by [@Ubax](https://github.com/Ubax))
+- [ios] add iconRenderingMode to toolbar items ([#42346](https://github.com/expo/expo/pull/42346) by [@Ubax](https://github.com/Ubax))
+- add disableTransparentOnScrollEdge to NativeTabs.Trigger ([#42664](https://github.com/expo/expo/pull/42664) by [@Ubax](https://github.com/Ubax))
+- [ios] Default formSheet presentation to transparent background and header on iOS 26 with liquid glass by [@evanbacon](https://github.com/evanbacon)) ([#42741](https://github.com/expo/expo/pull/42741) by [@EvanBacon](https://github.com/EvanBacon))
+- Add asChild prop to Stack.Screen.Title ([#42650](https://github.com/expo/expo/pull/42650) by [@Ubax](https://github.com/Ubax))
+- [ios] unify the separateBackground prop on SearchBarSlot with other components ([#42530](https://github.com/expo/expo/pull/42530) by [@Ubax](https://github.com/Ubax))
+- [ios] accept Label, Icon and Badge prop in menu and button ([#42546](https://github.com/expo/expo/pull/42546) by [@Ubax](https://github.com/Ubax))
+- rerender router app on color scheme changes ([#42776](https://github.com/expo/expo/pull/42776) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- fix toolbar placement updates ([#42585](https://github.com/expo/expo/pull/42585) by [@Ubax](https://github.com/Ubax))
+- [ios] activate native zoom preventDismissal only when hook is used ([#42533](https://github.com/expo/expo/pull/42533) by [@Ubax](https://github.com/Ubax))
+- Fix loader URL resolution for nested `/index` paths ([#42629](https://github.com/expo/expo/pull/42629) by [@hassankhan](https://github.com/hassankhan))
+- [web] Ensure `<Head>` component re-renders when focus changes ([#42681](https://github.com/expo/expo/pull/42681) by [@hassankhan](https://github.com/hassankhan))
+
+### 💡 Others
+
+- Deprecate undocumented `expo-router/rsc/headers` RSC API in favor of `expo-server`'s `requestHeaders` runtime API ([#42678](https://github.com/expo/expo/pull/42678) by [@hassankhan](https://github.com/hassankhan))
+- Refactor `useLoaderData` hook for better testability ([#42368](https://github.com/expo/expo/pull/42368) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.0-beta.4 — 2026-01-27
+
+### 💡 Others
+
+- Bump `react-server-dom-webpack` ([#42570](https://github.com/expo/expo/pull/42570) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.0-beta.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-beta.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-beta.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-beta.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
 - Change `reset` props to `resetOnFocus` in headless tabs ([#40349](https://github.com/expo/expo/pull/40349) by [@Ubax](https://github.com/Ubax))
 - replace NativeTabs.Trigger `options` with `unstable_nativeProps` ([#40702](https://github.com/expo/expo/pull/40702) by [@Ubax](https://github.com/Ubax))
 - remove NativeTabs.Trigger.TabBar component ([#40725](https://github.com/expo/expo/pull/40725) by [@Ubax](https://github.com/Ubax))
@@ -46,6 +186,8 @@
 - [iOS] expose image prop from Link.Menu and Toolbar.Menu ([#41883](https://github.com/expo/expo/pull/41883) by [@Ubax](https://github.com/Ubax))
 - use screen's synchronous layout updates by default in router ([#42154](https://github.com/expo/expo/pull/42154) by [@Ubax](https://github.com/Ubax))
 - Add support for `renderingMode` prop on native tabs icon ([#41788](https://github.com/expo/expo/pull/41788) by [@b-bot](https://github.com/b-bot))
+- unify <Toolbar> and <Stack.Header> into <Stack.Toolbar> ([#42192](https://github.com/expo/expo/pull/42192) by [@Ubax](https://github.com/Ubax))
+- add listeners and screenListeners to NativeTabs ([#42285](https://github.com/expo/expo/pull/42285) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -67,6 +209,14 @@
 - Fix unknown key in link preview ([#41756](https://github.com/expo/expo/pull/41756) by [@Ubax](https://github.com/Ubax))
 - add replace action handling to headless tabs ([#41815](https://github.com/expo/expo/pull/41815) by [@Ubax](https://github.com/Ubax))
 - [ios] fix build error 'Logger' is ambiguous ([#42229](https://github.com/expo/expo/pull/42229) by [@Ubax](https://github.com/Ubax))
+- [ios] fix shadow color in native tabs ([#42125](https://github.com/expo/expo/pull/42125) by [@Ubax](https://github.com/Ubax))
+- Preserve search params for loader data fetches ([#42227](https://github.com/expo/expo/pull/42227) by [@hassankhan](https://github.com/hassankhan))
+- fix withAnchor for deeply nested routes ([#40528](https://github.com/expo/expo/pull/40528) by [@Ubax](https://github.com/Ubax))
+- [ios] fix toolbar updates ([#42338](https://github.com/expo/expo/pull/42338) by [@Ubax](https://github.com/Ubax))
+- unify focused tab navigation behavior between JS and headless tabs ([#42235](https://github.com/expo/expo/pull/42235) by [@Ubax](https://github.com/Ubax))
+- remount native tabs, when visibility is changed ([#42329](https://github.com/expo/expo/pull/42329) by [@Ubax](https://github.com/Ubax))
+- Update react-navigation to latest version ([#42379](https://github.com/expo/expo/pull/42379) by [@Ubax](https://github.com/Ubax))
+- Improve error handling in `useLoaderData()` hook ([#42260](https://github.com/expo/expo/pull/42260) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
@@ -107,6 +257,11 @@
 - [ios] remove unstable_splitView and enable split view by default ([#42128](https://github.com/expo/expo/pull/42128) by [@Ubax](https://github.com/Ubax))
 - [iOS] reduce number of times UIBarButtonItem is recreated ([#41900](https://github.com/expo/expo/pull/41900) by [@Ubax](https://github.com/Ubax))
 - [ios] add comment to ENV['RNS_GAMMA_ENABLED'] set by config plugin ([#42231](https://github.com/expo/expo/pull/42231) by [@Ubax](https://github.com/Ubax))
+- add `unstable_navigationEvents` to `globalThis.expo` ([#42238](https://github.com/expo/expo/pull/42238) by [@Ubax](https://github.com/Ubax))
+- Upgrade react-native-screens to 4.20.0 ([#42282](https://github.com/expo/expo/pull/42282) by [@Ubax](https://github.com/Ubax))
+- Change loader function signature to `(request, params)` ([#42318](https://github.com/expo/expo/pull/42318) by [@hassankhan](https://github.com/hassankhan))
+- Remove deprecated `ExpoRequest` and `ExpoResponse` types ([#42363](https://github.com/expo/expo/pull/42363) by [@hassankhan](https://github.com/hassankhan))
+- Migrate `LoaderFunction` type from `expo-router` ([#42362](https://github.com/expo/expo/pull/42362) by [@hassankhan](https://github.com/hassankhan))
 
 ## 6.0.17 - 2025-12-05
 

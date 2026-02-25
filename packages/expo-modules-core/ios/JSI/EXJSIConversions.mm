@@ -28,7 +28,6 @@ jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *value)
 
 jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-#if !TARGET_OS_OSX
   const uint8_t *utf8 = (const uint8_t *)[value UTF8String];
   const size_t length = [value length];
 
@@ -37,10 +36,6 @@ jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
   }
   // Using cStringUsingEncoding should be fine as long as we provide the length.
   return jsi::String::createFromUtf16(runtime, (const char16_t *)[value cStringUsingEncoding:NSUTF16StringEncoding], length);
-#else
-  // TODO(@jakex7): Remove after update to react-native-macos@0.79.0
-  return jsi::String::createFromUtf8(runtime, [value UTF8String]);
-#endif
 }
 
 jsi::String convertNSURLToJSIString(jsi::Runtime &runtime, NSURL *value)
@@ -228,7 +223,7 @@ id convertJSIValueToObjCObjectAsDictValue(jsi::Runtime &runtime, const jsi::Valu
     }
     return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
   }
-  
+
   throw std::runtime_error("Unsupported jsi::jsi::Value kind");
 }
 

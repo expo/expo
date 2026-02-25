@@ -106,7 +106,7 @@ class VideoManager {
       do {
         try audioSession.setCategory(.playback, mode: .moviePlayback, options: audioSessionCategoryOptions)
       } catch {
-        log.warn("Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
+        log.warn("[expo-video] Failed to set audio session category. This might cause issues with audio playback and Picture in Picture. \(error.localizedDescription)")
       }
     }
 
@@ -115,7 +115,7 @@ class VideoManager {
       do {
         try audioSession.setActive(true)
       } catch {
-        log.warn("Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
+        log.warn("[expo-video] Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
       }
     }
   }

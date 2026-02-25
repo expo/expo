@@ -4,10 +4,110 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.12 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `field.options.insert()` silently failing in `fieldsOf()` due to mutation on protocol existential. ([#43341](https://github.com/expo/expo/pull/43341) by [@just1and0](https://github.com/just1and0))
+- [iOS] Fixed warnings in `Prop` definition component by isolating its setter to the main actor. ([#43348](https://github.com/expo/expo/pull/43348) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.10 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash from `PersistentFileLog`. ([#43283](https://github.com/expo/expo/pull/43283) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Fixed view updates for Jetpack Compose integration. ([#42732](https://github.com/expo/expo/pull/42732) by [@kudo](https://github.com/kudo))
+- [Android] Promoted `Either` type stable. ([#43267](https://github.com/expo/expo/pull/43267) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.9 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- [iOS] Added `DynamicBoolType` to correctly distinguish boolean values from numeric 0/1. ([#42978](https://github.com/expo/expo/pull/42978) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `DynamicBoolType` to throw `NullCastException` for nil values, matching `DynamicRawType` behavior. ([#43085](https://github.com/expo/expo/pull/43085) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+- Removed needless warning when `NativeModulesProxy` is absent. ([#43020](https://github.com/expo/expo/pull/43020) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Removed some unused code. ([#42949](https://github.com/expo/expo/pull/42949) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.8 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing dependencies when building from source ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.7 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- Fix global type declaration chain to point to `expo -> expo-modules-core/types -> ./build/global` rather than `types="node"` ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
+
+## 55.0.6 — 2026-02-03
+
+### 🛠 Breaking changes
+
+- [iOS] Renamed `ignoreSafeAreaKeyboardInsets` to `ignoreSafeArea` on `Host` component. It now accepts `'all'` or `'keyboard'` instead of a boolean. ([#42598](https://github.com/expo/expo/pull/42598) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🎉 New features
+
+- [macOS] Added `NSEdgeInsets.zero` extension to better match `UIEdgeInsets`. ([#42675](https://github.com/expo/expo/pull/42675) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed a crash in Fabric when unmounting a view while a geometry change event is being dispatched. ([#42628](https://github.com/expo/expo/issues/42628) by [@danishshaik](https://github.com/danishshaik)) ([#42634](https://github.com/expo/expo/pull/42634) by [@danishshaik](https://github.com/danishshaik))
+- [iOS] Fix crashes when converting a single JSValue into an Array. ([#42694](https://github.com/expo/expo/pull/42694) by [@behenate](https://github.com/behenate))
+- Added more Jetpack Compose support. ([#42734](https://github.com/expo/expo/pull/42734) by [@kudo](https://github.com/kudo))
+
+## 55.0.5 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-01-26
+
+### 🐛 Bug fixes
+
+- [Android] Added missing checks in the promise implementation. ([#42467](https://github.com/expo/expo/pull/42467) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.3 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed crashes in JavaScriptValue/JavaScriptObject destructor caused by freeing memory after the runtime is destroyed. ([#42440](https://github.com/expo/expo/pull/42440) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.2 — 2026-01-22
+
+### 💡 Others
+
+- [macos] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
 - [Android] Drop support for legacy architecture.
 
 ### 🎉 New features
 
+- Add `reloadAppAsync` method to AppContext. ([#42295](https://github.com/expo/expo/pull/42295) by [@aleqsio](https://github.com/aleqsio))
 - Add `map` to `ValueOrUndefined`. ([#40593](https://github.com/expo/expo/pull/40593) by [@Wenszel](https://github.com/Wenszel))
 - Add types for `process.env.EXPO_DOM_HOST_OS`. ([#40382](https://github.com/expo/expo/pull/40382) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Add `ComposableScope` for compose Content functions. ([#39155](https://github.com/expo/expo/pull/39155) by [@aleqsio](https://github.com/aleqsio))
@@ -33,7 +133,8 @@
 
 ### 🐛 Bug fixes
 
-- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
+- [Android] Fixed DSL view props using stale state when updating. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
 - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
@@ -46,6 +147,8 @@
 - [iOS] Fixed `null` not being correctly converted to `ValueOrUndefined` in `Record`. ([#41005](https://github.com/expo/expo/pull/41005) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `NativeModule` extending `Record<string, any>`, which made it not type-safe. ([#41320](https://github.com/expo/expo/pull/41320) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix missing headers when using static frameworks ([#41970](https://github.com/expo/expo/pull/41970) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add shallow equality check before triggering view prop setters to avoid unnecessary calls. ([#39331](https://github.com/expo/expo/pull/39331) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix react-native-macos 0.81 support ([#42366](https://github.com/expo/expo/pull/42366) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

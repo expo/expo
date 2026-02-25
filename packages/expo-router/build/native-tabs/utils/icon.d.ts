@@ -1,5 +1,5 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { BottomTabsScreenProps, PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
+import type { TabsScreenProps, PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type { NativeTabOptions, NativeTabsProps } from '../types';
 export declare function convertIconColorPropToObject(iconColor: NativeTabsProps['iconColor']): {
@@ -8,6 +8,7 @@ export declare function convertIconColorPropToObject(iconColor: NativeTabsProps[
 };
 type AwaitedIcon = {
     sf?: SFSymbol;
+    xcasset?: string;
     drawable?: string;
 } | {
     src?: ImageSourcePropType;
@@ -15,13 +16,14 @@ type AwaitedIcon = {
 };
 export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
     sf?: SFSymbol;
+    xcasset?: string;
     drawable?: string;
 } | {
     src?: ImageSourcePropType;
     renderingMode?: "template" | "original";
 } | undefined;
-export declare function convertOptionsIconToRNScreensPropsIcon(icon: AwaitedIcon | undefined): BottomTabsScreenProps['icon'];
-export declare function convertOptionsIconToIOSPropsIcon(icon: AwaitedIcon | undefined): PlatformIconIOS | undefined;
+export declare function convertOptionsIconToRNScreensPropsIcon(icon: AwaitedIcon | undefined, iconColor?: ColorValue): TabsScreenProps['icon'];
+export declare function convertOptionsIconToIOSPropsIcon(icon: AwaitedIcon | undefined, iconColor?: ColorValue): PlatformIconIOS | undefined;
 export declare function convertOptionsIconToAndroidPropsIcon(icon: AwaitedIcon): PlatformIconAndroid | undefined;
 export declare function convertComponentSrcToImageSource(src: React.ReactElement): {
     src: Promise<ImageSourcePropType | null>;

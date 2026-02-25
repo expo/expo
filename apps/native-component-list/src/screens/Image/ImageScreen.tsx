@@ -166,6 +166,13 @@ export const ImageScreens = [
 if (Platform.OS === 'ios') {
   ImageScreens.push(
     {
+      name: 'SF Symbols',
+      route: 'image/sf-symbols',
+      getComponent() {
+        return optionalRequire(() => require('./ImageSFSymbolScreen'));
+      },
+    },
+    {
       name: 'Live Text Interaction',
       route: 'image/live-text-interaction',
       getComponent() {

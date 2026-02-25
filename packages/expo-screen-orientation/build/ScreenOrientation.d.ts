@@ -64,6 +64,7 @@ export declare function supportsOrientationLockAsync(orientationLock: Orientatio
 export declare function addOrientationChangeListener(listener: OrientationChangeListener): EventSubscription;
 /**
  * Removes all listeners subscribed to orientation change updates.
+ * @deprecated this function will be removed in future versions. Keep track of your own subscriptions.
  */
 export declare function removeOrientationChangeListeners(): void;
 /**
@@ -71,6 +72,7 @@ export declare function removeOrientationChangeListeners(): void;
  * updates.
  * @param subscription A subscription object that manages the updates passed to a listener function
  * on an orientation change.
+ * @deprecated this function will be removed in a future version. Use `subscription.remove()` instead.
  */
 export declare function removeOrientationChangeListener(subscription: EventSubscription): void;
 //# sourceMappingURL=ScreenOrientation.d.ts.map

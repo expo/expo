@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import { validate, type JSONSchema } from '@expo/schema-utils';
 
 /**
  * Type representing base dev launcher configuration.
@@ -42,7 +42,8 @@ export type PluginConfigOptions = {
   launchModeExperimental?: 'most-recent' | 'launcher';
 };
 
-const schema: JSONSchemaType<PluginConfigType> = {
+const schema: JSONSchema<PluginConfigType> = {
+  title: 'expo-dev-launcher',
   type: 'object',
   properties: {
     launchMode: {
@@ -94,10 +95,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
  * @ignore
  */
 export function validateConfig<T>(config: T): PluginConfigType {
-  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
-  if (!validate(config)) {
-    throw new Error('Invalid expo-dev-launcher config: ' + JSON.stringify(validate.errors));
-  }
+  validate(schema, config);
 
   if (
     config.launchModeExperimental ||

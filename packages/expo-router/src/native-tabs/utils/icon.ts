@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type {
-  BottomTabsScreenProps,
-  PlatformIconAndroid,
-  PlatformIconIOS,
-} from 'react-native-screens';
+import type { TabsScreenProps, PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { isChildOfType } from '../../utils/children';
@@ -29,6 +25,7 @@ export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconCol
 type AwaitedIcon =
   | {
       sf?: SFSymbol;
+      xcasset?: string;
       drawable?: string;
     }
   | {
@@ -65,19 +62,21 @@ function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
 }
 
 export function convertOptionsIconToRNScreensPropsIcon(
-  icon: AwaitedIcon | undefined
-): BottomTabsScreenProps['icon'] {
+  icon: AwaitedIcon | undefined,
+  iconColor?: ColorValue
+): TabsScreenProps['icon'] {
   if (!icon) {
     return undefined;
   }
   return {
-    ios: convertOptionsIconToIOSPropsIcon(icon),
+    ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
     android: convertOptionsIconToAndroidPropsIcon(icon),
   };
 }
 
 export function convertOptionsIconToIOSPropsIcon(
-  icon: AwaitedIcon | undefined
+  icon: AwaitedIcon | undefined,
+  iconColor?: ColorValue
 ): PlatformIconIOS | undefined {
   if (icon && 'sf' in icon && icon.sf) {
     return {
@@ -85,11 +84,18 @@ export function convertOptionsIconToIOSPropsIcon(
       name: icon.sf,
     };
   }
-  if (icon && 'src' in icon && icon.src) {
-    if (icon.renderingMode === 'original') {
-      return { type: 'imageSource', imageSource: icon.src };
+  if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
+    const imageSource =
+      'xcasset' in icon && icon.xcasset
+        ? { uri: icon.xcasset }
+        : (icon as { src: ImageSourcePropType }).src;
+    const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
+    const effectiveRenderingMode =
+      renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
+    if (effectiveRenderingMode === 'original') {
+      return { type: 'imageSource', imageSource };
     }
-    return { type: 'templateSource', templateSource: icon.src };
+    return { type: 'templateSource', templateSource: imageSource };
   }
   return undefined;
 }

@@ -6,6 +6,50 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [next] Add `asset.getShape()` ([#40110](https://github.com/expo/expo/pull/40110) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add `asset.getInfo()` ([#40146](https://github.com/expo/expo/pull/40146) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add exif support ([#39992](https://github.com/expo/expo/pull/39992) by [@Wenszel](https://github.com/Wenszel))
@@ -13,6 +57,8 @@
 
 ### 🐛 Bug fixes
 
+- [next][android] Fix Failed To Build Unique File exception ([#42222](https://github.com/expo/expo/pull/42222) by [@Wenszel](https://github.com/Wenszel))
+- [next][android] Fix creating album with name with spaces ([#42220](https://github.com/expo/expo/pull/42220) by [@Wenszel](https://github.com/Wenszel))
 - Fix `endCursor` description in the documentation. ([#39120](https://github.com/expo/expo/pull/39120) by [@Wenszel](https://github.com/Wenszel))
 - [next][iOS] Convert `id` to URI format ([#39920](https://github.com/expo/expo/pull/39920) by [@Wenszel](https://github.com/Wenszel))
 - [next][android] Fix `delete()` throwing security exception ([#39914](https://github.com/expo/expo/pull/39914) by [@Wenszel](https://github.com/Wenszel))
@@ -24,6 +70,7 @@
 - [next][android] Refactor permissions ([#40076](https://github.com/expo/expo/pull/40076) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add test screens ([#39951](https://github.com/expo/expo/pull/39951) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add documentation ([#39754](https://github.com/expo/expo/pull/39754) by [@Wenszel](https://github.com/Wenszel))
+- mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
 

@@ -10,12 +10,14 @@ class RouterToolbarItemView: RouterViewWithLogger {
   // Properties allowing in-place updates
   @ReactiveProp var title: String?
   @ReactiveProp var systemImageName: String?
+  @ReactiveProp var xcassetName: String?
   var customImage: SharedRef<UIImage>? {
     didSet {
       performUpdate()
     }
   }
   @ReactiveProp var customTintColor: UIColor?
+  @ReactiveProp var imageRenderingMode: ImageRenderingMode?
   @ReactiveProp var hidesSharedBackground: Bool = false
   @ReactiveProp var sharesBackground: Bool = true
   @ReactiveProp var barButtonItemStyle: UIBarButtonItem.Style?
@@ -71,7 +73,6 @@ class RouterToolbarItemView: RouterViewWithLogger {
     guard let item = currentBarButtonItem else {
       // If no current item exists, create one
       rebuildBarButtonItem()
-      self.host?.updateToolbarItem(withId: self.identifier)
       return
     }
 
@@ -132,20 +133,28 @@ class RouterToolbarItemView: RouterViewWithLogger {
     if type == .normal || type == nil {
       if let title {
         item.title = title
+      } else {
+        item.title = ""
       }
       item.possibleTitles = possibleTitles
       if let customImage {
         // Use the UIImage from the SharedRef
-        item.image = customImage.ref.withRenderingMode(.alwaysOriginal)
+        let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+        item.image = customImage.ref.withRenderingMode(renderingMode)
+      } else if let xcassetName {
+        let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+        item.image = UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
       } else if let systemImageName {
         // Fallback to SF Symbol
         item.image = UIImage(systemName: systemImageName)
+      } else {
+        item.image = nil
       }
-      if let tintColor = customTintColor {
-        item.tintColor = tintColor
-      }
+      item.tintColor = customTintColor
       if let titleStyle {
         RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
+      } else {
+        RouterFontUtils.clearTitleStyle(for: item)
       }
     }
   }
@@ -155,19 +164,11 @@ class RouterToolbarItemView: RouterViewWithLogger {
       item.hidesSharedBackground = hidesSharedBackground
       item.sharesBackground = sharesBackground
     }
-    if let barButtonItemStyle {
-      item.style = barButtonItemStyle
-    }
-    if let width = width {
-      item.width = CGFloat(width)
-    }
+    item.style = barButtonItemStyle ?? .plain
+    item.width = width.map { CGFloat($0) } ?? 0
     item.isSelected = selected
-    if let routerAccessibilityLabel = routerAccessibilityLabel {
-      item.accessibilityLabel = routerAccessibilityLabel
-    }
-    if let routerAccessibilityHint = routerAccessibilityHint {
-      item.accessibilityHint = routerAccessibilityHint
-    }
+    item.accessibilityLabel = routerAccessibilityLabel
+    item.accessibilityHint = routerAccessibilityHint
     item.isEnabled = !disabled
     if #available(iOS 26.0, *) {
       if let badgeConfig = badgeConfiguration {
@@ -192,6 +193,8 @@ class RouterToolbarItemView: RouterViewWithLogger {
           badge.font = font
         }
         item.badge = badge
+      } else {
+        item.badge = nil
       }
     }
   }

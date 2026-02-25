@@ -1,24 +1,24 @@
-import { NativeSyntheticEvent } from 'react-native';
+import { type ColorValue } from 'react-native';
 import { ExpoModifier } from '../../types';
 /**
  * Only for switch.
  */
 type SwitchElementColors = {
-    checkedThumbColor?: string;
-    checkedTrackColor?: string;
-    uncheckedThumbColor?: string;
-    uncheckedTrackColor?: string;
+    checkedThumbColor?: ColorValue;
+    checkedTrackColor?: ColorValue;
+    uncheckedThumbColor?: ColorValue;
+    uncheckedTrackColor?: ColorValue;
 };
 /**
  * Only for checkbox.
  */
 type CheckboxElementColors = {
-    checkedColor?: string;
-    disabledCheckedColor?: string;
-    uncheckedColor?: string;
-    disabledUncheckedColor?: string;
-    checkmarkColor?: string;
-    disabledIndeterminateColor?: string;
+    checkedColor?: ColorValue;
+    disabledCheckedColor?: ColorValue;
+    uncheckedColor?: ColorValue;
+    disabledUncheckedColor?: ColorValue;
+    checkmarkColor?: ColorValue;
+    disabledIndeterminateColor?: ColorValue;
 };
 export type SwitchProps = {
     /**
@@ -43,11 +43,16 @@ export type SwitchProps = {
     /**
      * Picker color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Modifiers for the component.
      */
     modifiers?: ExpoModifier[];
+    /**
+     * Children containing ThumbContent slot.
+     * @platform android
+     */
+    children?: React.ReactNode;
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 export type SwitchSwitchVariantProps = {
     variant?: 'switch';
@@ -69,15 +74,18 @@ export type SwitchButtonVariantProps = {
     variant: 'button';
     elementColors?: undefined;
 };
-type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
-    onValueChange: (event: NativeSyntheticEvent<{
-        value: boolean;
-    }>) => void;
+type ThumbContentProps = {
+    children: React.ReactNode;
 };
 /**
- * @hidden
+ * Custom content to be displayed inside the switch thumb.
+ * @platform android
  */
-export declare function transformSwitchProps(props: SwitchProps): NativeSwitchProps;
-export declare function Switch(props: SwitchProps): import("react").JSX.Element;
-export {};
+export declare function SwitchThumbContent(props: ThumbContentProps): import("react").JSX.Element;
+declare function SwitchComponent(props: SwitchProps): import("react").JSX.Element;
+declare namespace SwitchComponent {
+    var ThumbContent: typeof SwitchThumbContent;
+    var DefaultIconSize: any;
+}
+export { SwitchComponent as Switch };
 //# sourceMappingURL=index.d.ts.map

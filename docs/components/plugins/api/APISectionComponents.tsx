@@ -8,9 +8,10 @@ import {
   CommentData,
   GeneratedData,
   PropsDefinitionData,
-  TypeSignaturesData,
   TypeDefinitionData,
+  TypeSignaturesData,
 } from './APIDataTypes';
+import { buildCompoundNameByComponent } from './APISectionCompoundNames';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import APISectionProps from './APISectionProps';
 import {
@@ -18,6 +19,7 @@ import {
   getComponentName,
   getPossibleComponentPropsNames,
   getAllTagData,
+  getTagData,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -88,7 +90,8 @@ const getComponentTypeParameters = ({
 const renderComponent = (
   { name, comment, type, extendedTypes, children, signatures }: GeneratedData,
   sdkVersion: string,
-  componentsProps?: PropsDefinitionData[]
+  componentsProps?: PropsDefinitionData[],
+  compoundNameByComponent?: Map<string, string>
 ) => {
   const resolvedSignatures = getComponentSignatures({ signatures, type });
   const resolvedType = getComponentType({ signatures: resolvedSignatures });
@@ -97,8 +100,10 @@ const renderComponent = (
     extendedTypes,
     signatures: resolvedSignatures,
   });
-  const resolvedName = getComponentName(name, children);
+  const baseName = getComponentName(name, children);
+  const resolvedName = compoundNameByComponent?.get(baseName) ?? baseName;
   const extractedComment = getComponentComment(comment, resolvedSignatures);
+  const hideType = Boolean(getTagData('hideType', extractedComment));
 
   return (
     <div
@@ -106,7 +111,7 @@ const renderComponent = (
       className={mergeClasses(STYLES_APIBOX, '!shadow-none')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <APIBoxHeader name={resolvedName} comment={extractedComment} />
-      {resolvedType && resolvedTypeParameters && (
+      {resolvedType && resolvedTypeParameters && !hideType && (
         <CALLOUT className={mergeClasses(ELEMENT_SPACING, VERTICAL_SPACING)}>
           <DEMI className={STYLES_SECONDARY}>Type:</DEMI>{' '}
           <CODE>
@@ -128,7 +133,7 @@ const renderComponent = (
         <APISectionProps
           sdkVersion={sdkVersion}
           data={componentsProps}
-          header={`${resolvedName}Props`}
+          header={`${baseName}Props`}
           parentPlatforms={getAllTagData('platform', extractedComment)}
         />
       ) : null}
@@ -136,8 +141,12 @@ const renderComponent = (
   );
 };
 
-const APISectionComponents = ({ data, sdkVersion, componentsProps }: APISectionComponentsProps) =>
-  data?.length ? (
+const APISectionComponents = ({ data, sdkVersion, componentsProps }: APISectionComponentsProps) => {
+  if (!data?.length) {
+    return null;
+  }
+  const compoundNameByComponent = buildCompoundNameByComponent(data);
+  return (
     <>
       <H2 key="components-header">{data.length === 1 ? 'Component' : 'Components'}</H2>
       {data.map(component =>
@@ -146,10 +155,12 @@ const APISectionComponents = ({ data, sdkVersion, componentsProps }: APISectionC
           sdkVersion,
           componentsProps.filter(cp =>
             getPossibleComponentPropsNames(component.name, component.children).includes(cp.name)
-          )
+          ),
+          compoundNameByComponent
         )
       )}
     </>
-  ) : null;
+  );
+};
 
 export default APISectionComponents;

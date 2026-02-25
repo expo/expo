@@ -5,8 +5,11 @@ import type { BasicTextStyle } from '../../utils/font';
 export interface NativeLinkPreviewActionProps {
     identifier: string;
     title: string;
+    label?: string;
     icon?: string;
+    xcassetName?: string;
     image?: ImageRef | null;
+    imageRenderingMode?: 'template' | 'original';
     children?: React.ReactNode;
     disabled?: boolean;
     destructive?: boolean;

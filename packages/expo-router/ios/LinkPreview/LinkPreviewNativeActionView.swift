@@ -4,13 +4,16 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   var identifier: String = ""
   // MARK: - Shared props
   @NativeActionProp(updateAction: true, updateMenu: true) var title: String = ""
+  @NativeActionProp(updateMenu: true) var label: String?
   @NativeActionProp(updateAction: true, updateMenu: true) var icon: String?
+  @NativeActionProp(updateAction: true, updateMenu: true) var xcassetName: String?
   var customImage: SharedRef<UIImage>? {
     didSet {
       updateUiAction()
       updateMenu()
     }
   }
+  @NativeActionProp(updateAction: true, updateMenu: true) var imageRenderingMode: ImageRenderingMode?
   @NativeActionProp(updateAction: true, updateMenu: true) var destructive: Bool?
   @NativeActionProp(updateAction: true, updateMenu: true) var disabled: Bool = false
 
@@ -54,9 +57,14 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     isMenuAction ? menuAction : baseUiAction
   }
 
-  private var image: UIImage? {
+  var image: UIImage? {
     if let customImage = customImage {
-      return customImage.ref
+      let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      return customImage.ref.withRenderingMode(renderingMode)
+    }
+    if let xcassetName = xcassetName {
+      let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      return UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
     }
     if let icon = icon {
       return UIImage(systemName: icon)

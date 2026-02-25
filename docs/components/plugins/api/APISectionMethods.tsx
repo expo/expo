@@ -152,6 +152,7 @@ export const renderMethod = (
             parameters,
             typeParameter
           )}
+          comment={method?.comment ?? comment}
           platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
           // only show first overload in sidebar to avoid duplicates
@@ -177,6 +178,7 @@ export const renderMethod = (
             type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
               <>
                 <div
+                  data-md="api-returns"
                   className={mergeClasses(
                     'flex flex-row items-start gap-2',
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING

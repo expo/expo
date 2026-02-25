@@ -46,13 +46,18 @@ export interface SrcIcon {
         selected: ImageSourcePropType | React.ReactElement;
     };
     /**
-     * Controls how the icon is rendered on iOS.
+     * Controls how the image icon is rendered on iOS.
      *
-     * - `template` (default): Icon is rendered as a template image, allowing iOS to apply the selected/unselected tint color.
-     * - `original`: Icon is rendered with its original colors preserved, useful for icons with gradients or multiple colors.
+     * - `'template'`: iOS applies tint color to the icon (selected/unselected states)
+     * - `'original'`: Preserves original icon colors
+     *
+     * **Default behavior:**
+     * - If tab bar icon color is configured, defaults to `'template'`
+     * - If no icon color is set, defaults to `'original'`
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
      *
      * @platform ios
-     * @default "template"
      */
     renderingMode?: 'template' | 'original';
 }
@@ -81,6 +86,38 @@ export interface SFSymbolIcon {
         selected: SFSymbol;
     };
 }
+export interface XcassetIcon {
+    /**
+     * The name of the iOS asset catalog image to use as an icon.
+     *
+     * Xcassets provide automatic multi-resolution (@1x/@2x/@3x), dark mode variants,
+     * and device-specific images via `[UIImage imageNamed:]`.
+     *
+     * The rendering mode (template vs original) can be controlled via the `renderingMode` prop
+     * on the `Icon` component. By default, icons are tinted when `iconColor` is set, and
+     * rendered as original otherwise.
+     *
+     * The value can be provided in two ways:
+     * - As a string with the asset catalog image name
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon xcasset="custom-icon" />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon xcasset={{ default: "home-outline", selected: "home-filled" }} />
+     * ```
+     *
+     * @platform iOS
+     */
+    xcasset?: string | {
+        default?: string;
+        selected: string;
+    };
+}
 export interface DrawableIcon {
     /**
      * The name of the drawable resource to use as an icon.
@@ -102,17 +139,22 @@ export interface MaterialIcon {
 export type BaseNativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
 };
-export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
+export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (XcassetIcon & DrawableIcon) | (XcassetIcon & MaterialIcon) | (XcassetIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
  *
- * Accepts various icon sources such as SF Symbols, drawable resources, material icons, or image sources.
+ * Accepts various icon sources such as SF Symbols, xcasset images, drawable resources, material icons, or image sources.
  *
  * Acceptable props combinations:
  * - `sf` and `drawable` - `sf` will be used for iOS icon, `drawable` for Android icon
  * - `sf` and `src` - `sf` will be used for iOS icon, `src` for Android icon
+ * - `xcasset` and `drawable` - `xcasset` will be used for iOS icon, `drawable` for Android icon
+ * - `xcasset` and `md` - `xcasset` will be used for iOS icon, `md` for Android icon
+ * - `xcasset` and `src` - `xcasset` will be used for iOS icon, `src` for Android icon
  * - `src` and `drawable` - `src` will be used for iOS icon, `drawable` for Android icon
  * - `src` only - `src` will be used for both iOS and Android icons
+ *
+ * Priority on iOS: `sf` > `xcasset` > `src`. Priority on Android: `drawable` > `md` > `src`.
  *
  * @platform ios
  * @platform android

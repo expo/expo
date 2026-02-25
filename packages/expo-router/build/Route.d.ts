@@ -1,6 +1,6 @@
+import type { LoaderFunction } from 'expo-server';
 import { type ComponentType, type PropsWithChildren } from 'react';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { LoaderFunction } from './types';
 import { type ErrorBoundaryProps } from './views/Try';
 export type DynamicConvention = {
     name: string;
@@ -36,7 +36,7 @@ export type RouteNode = {
     children: RouteNode[];
     /** Is the route a dynamic path */
     dynamic: null | DynamicConvention[];
-    /** `index`, `error-boundary`, etc. */
+    /** `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx` */
     route: string;
     /** Context Module ID, used for matching children. */
     contextKey: string;

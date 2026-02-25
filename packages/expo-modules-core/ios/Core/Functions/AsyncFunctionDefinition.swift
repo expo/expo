@@ -138,7 +138,6 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     let maxRetryCount = 3
 
     queue.async {
-#if RCT_NEW_ARCH_ENABLED
       // Checks if this is a view function unregistered in the view registry. The check can be performed from the main thread only.
       if retryCount < maxRetryCount,
         let viewTag = arguments.first as? Int,
@@ -150,7 +149,6 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
         self.dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: arguments, queue: queue, retryCount: retryCount + 1, block)
         return
       }
-#endif
       // Schedule the block as normal.
       block()
     }

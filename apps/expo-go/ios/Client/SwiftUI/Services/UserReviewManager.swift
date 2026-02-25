@@ -70,11 +70,15 @@ final class UserReviewManager: ObservableObject {
     let hasFeedbackForm = info.showFeedbackFormDate != nil
     let meetsUsageThreshold = info.appOpenedCounter >= 50 || appsCount >= 5 || snacksCount >= 5
 
+    #if targetEnvironment(simulator)
+    shouldShowReviewSection = false
+    #else
     shouldShowReviewSection = noRecentDismisses
       && !hasAskedForReview
       && !hasFeedbackForm
       && noRecentCrashes
       && meetsUsageThreshold
+    #endif
   }
 
   private func requestStoreReview() {

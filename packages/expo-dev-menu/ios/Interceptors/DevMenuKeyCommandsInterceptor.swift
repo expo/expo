@@ -10,10 +10,12 @@ class DevMenuKeyCommandsInterceptor {
   static var isInstalled: Bool = false {
     willSet {
       if isInstalled != newValue {
-        if newValue {
-          registerKeyCommands()
-        } else {
-          unregisterKeyCommands()
+        DispatchQueue.main.async {
+          if newValue {
+            registerKeyCommands()
+          } else {
+            unregisterKeyCommands()
+          }
         }
       }
     }

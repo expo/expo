@@ -18,4 +18,10 @@ public protocol DevMenuHostDelegate: NSObjectProtocol {
    Optional function to toggle the element inspector.
    */
   @objc optional func devMenuToggleElementInspector()
+
+  /**
+   Optional function to control whether the "Open React Native dev menu" option is shown.
+   Defaults to `true` if not implemented.
+   */
+  @objc optional func devMenuShouldShowReactNativeDevMenu() -> Bool
 }

@@ -5,6 +5,7 @@
 // Swift classes need forward-declaration in the headers.
 @class EXAppContext;
 @class EXRuntime;
+@class EXJavaScriptRuntime;
 
 #if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
 @class RCTRuntimeExecutor;
@@ -36,21 +37,21 @@ extern NSString *_Nonnull const EXGlobalCoreObjectPropertyName;
 /**
  Installs the base class for shared objects, i.e. `global.expo.SharedObject`.
  */
-+ (void)installSharedObjectClass:(nonnull EXRuntime *)runtime releaser:(void (^)(long))releaser;
++ (void)installSharedObjectClass:(nonnull EXJavaScriptRuntime *)runtime releaser:(void (^)(long))releaser;
 
 /**
  Installs the base class for shared refs, i.e. `global.expo.SharedRef`.
  */
-+ (void)installSharedRefClass:(nonnull EXRuntime *)runtime;
++ (void)installSharedRefClass:(nonnull EXJavaScriptRuntime *)runtime;
 
 /**
  Installs the EventEmitter class in the given runtime as `global.expo.EventEmitter`.
  */
-+ (void)installEventEmitterClass:(nonnull EXRuntime *)runtime;
++ (void)installEventEmitterClass:(nonnull EXJavaScriptRuntime *)runtime;
 
 /**
  Installs the NativeModule class in the given runtime as `global.expo.NativeModule`.
  */
-+ (void)installNativeModuleClass:(nonnull EXRuntime *)runtime;
++ (void)installNativeModuleClass:(nonnull EXJavaScriptRuntime *)runtime;
 
 @end

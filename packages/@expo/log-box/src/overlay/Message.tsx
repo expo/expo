@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import React from 'react';
-import type { StyleProp, TextStyle } from 'react-native';
 
 import type { Message } from '../Data/Types';
 
@@ -14,10 +13,10 @@ export function LogBoxMessage(props: { message: Message; maxLength?: number }): 
   const { content, substitutions }: Message = props.message;
 
   const maxLength = props.maxLength != null ? props.maxLength : Infinity;
-  const substitutionStyle: StyleProp<TextStyle> = { opacity: 0.6 };
+  const substitutionStyle: React.CSSProperties = { opacity: 0.6 };
   const elements: React.ReactElement[] = [];
   let length = 0;
-  const createUnderLength = (key: string | '-1', message: string, style?: StyleProp<TextStyle>) => {
+  const createUnderLength = (key: string | '-1', message: string, style?: React.CSSProperties) => {
     let cleanMessage = message;
 
     if (props.maxLength != null) {
@@ -26,10 +25,7 @@ export function LogBoxMessage(props: { message: Message; maxLength?: number }): 
 
     if (length < maxLength) {
       elements.push(
-        <span
-          key={key}
-          //@ts-expect-error
-          style={style}>
+        <span key={key} style={style}>
           {cleanMessage}
         </span>
       );

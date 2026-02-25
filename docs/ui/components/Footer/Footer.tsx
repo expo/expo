@@ -1,4 +1,5 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { PrivacyChoicesButton } from '@expo/styleguide-cookie-consent';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
@@ -6,10 +7,10 @@ import { useRouter } from 'next/compat/router';
 import { isEasPath } from '~/common/routes';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRouteWithSection } from '~/types/common';
+import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
 import { ForumsLink, EditPageLink, IssuesLink, LlmsTxtLink, ShareFeedbackLink } from './Links';
-import { NewsletterSignUp } from './NewsletterSignUp';
 import { PageVote } from './PageVote';
 
 type Props = {
@@ -131,6 +132,7 @@ export const Footer = ({
         </div>
         <NewsletterSignUp />
       </div>
+      <PrivacyChoicesButton />
     </footer>
   );
 };

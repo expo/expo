@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import path from 'path';
 import ProgressBar from 'progress';
 import { gt } from 'semver';
@@ -66,6 +67,35 @@ export async function getExpoGoVersionEntryAsync(sdkVersion: string): Promise<SD
   return version;
 }
 
+const SIX_MONTHS_IN_MS = 6 * 30 * 24 * 60 * 60 * 1000;
+
+/** Remove cached Expo Go apps (.apk / .app) that are older than `maxAge` from the given directory. */
+export async function cleanupOldExpoGoCacheEntriesAsync(
+  cacheDirectory: string,
+  maxAgeMs: number = SIX_MONTHS_IN_MS
+): Promise<void> {
+  let cacheEntries: string[];
+  try {
+    cacheEntries = await fs.readdir(cacheDirectory);
+  } catch {
+    return;
+  }
+
+  const now = Date.now();
+  for (const entry of cacheEntries) {
+    const filePath = path.join(cacheDirectory, entry);
+    try {
+      const stat = await fs.lstat(filePath);
+      if (now - stat.mtimeMs > maxAgeMs) {
+        debug(`Removing old app cache entry: ${filePath}`);
+        await fs.rm(filePath, { recursive: true, force: true });
+      }
+    } catch {
+      // continue
+    }
+  }
+}
+
 /** Download the Expo Go app from the Expo servers (if only it was this easy for every app). */
 export async function downloadExpoGoAsync(
   platform: keyof typeof platformSettings,
@@ -99,6 +129,7 @@ export async function downloadExpoGoAsync(
 
   try {
     const outputPath = getFilePath(filename);
+    cleanupOldExpoGoCacheEntriesAsync(path.dirname(outputPath));
     debug(`Downloading Expo Go from "${url}" to "${outputPath}".`);
     debug(
       `The requested copy of Expo Go might already be cached in: "${getExpoHomeDirectory()}". You can disable the cache with EXPO_NO_CACHE=1`

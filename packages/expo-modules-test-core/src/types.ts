@@ -45,6 +45,11 @@ export type Prop = {
   types: Omit<ClosureTypes, 'returnType'>;
 };
 
+export type Constant = {
+  name: string;
+  types: ClosureTypes | null;
+};
+
 export type OutputModuleDefinition = {
   name: string;
   views: OutputNestedClassDefinition[];
@@ -52,6 +57,7 @@ export type OutputModuleDefinition = {
   events: {
     name: string;
   }[];
+  constants: Constant[];
 } & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]> &
   Record<'props', Prop[]>;
 

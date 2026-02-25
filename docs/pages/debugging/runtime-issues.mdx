@@ -17,6 +17,8 @@ Whether you're developing your app locally, sending it out to select beta tester
 
 Let's go through recommended practices when dealing with each of the above situations.
 
+> **info** Already familiar with React Native debugging? See [Debugging tools](/debugging/tools/) for Expo-specific tooling like React Native DevTools and the built-in profiler.
+
 ## Development errors
 
 They are common errors that you encounter while developing your app. Delving into them isn't always straightforward. Usually, debugging when running your app with [Expo CLI](/more/expo-cli/) is enough.
@@ -99,42 +101,29 @@ You can now utilize [**Low-level debugger (LLDB)**](https://developer.apple.com/
 
 </Step>
 
-> You can delete the **ios** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself.
+> You can delete or gitignore the **ios** directory when you are done with this process. This ensures that your project remains managed by Expo CLI. Keeping the directory around and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries yourself.
 
-## Production errors
+## Viewing native logs
 
-Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (that is, where, how, and why did the error occur?).
-
-**The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
-
-> **info** **Tip**: Sometimes, running your app in **production mode** locally will show errors that normally wouldn't be thrown. You can run the app locally in production by running `npx expo start --no-dev --minify`.
-> `--no-dev` tells the server not to be run in development mode, and `--minify` is used to minify your code the same way it is for production JavaScript bundles.
-
-### Production app is crashing
-
-It can be a frustrating scenario when a production app crashes. There is very little information to look into when it happens. It's important to reproduce the issue, and even if you can't do that, to find any related crash reports.
-
-Start by reproducing the crash using your production app and then **find an associated crash report**. For Android, you can use `adb logcat` and for iOS you can use the Console app in Xcode.
+When your app crashes or behaves unexpectedly, the JavaScript error output doesn't always tell the full story. Native logs from Android and iOS can reveal crash reasons, native module errors, and system-level warnings that don't surface in the Metro bundler or React Native DevTools.
 
 <VideoBoxLink
   videoId="LvCci4Bwmpc"
-  title="How to use Logcat & macOS Console to debug"
+  title="How to use ADB Logcat & macOS Console to debug"
   description="In this tutorial, you'll learn how to use native device logging features like ADB Logcat and macOS Console to find bugs in your code and quickly fix them."
 />
 
-#### Crash reports using adb logcat
+### Android: adb logcat
 
-If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run the following command:
+Connect your Android device (or use an emulator) and run the following command:
 
 <Terminal cmd={['$ adb logcat']} />
 
-The Android Debug Bridge (`adb`) program is part of the Android SDK and allows you to view streaming logs. An alternative to avoid installing Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
+The Android Debug Bridge (`adb`) program is part of the Android SDK and allows you to view streaming logs. An alternative to avoid installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
 
-#### Crash reports using Console app
+### iOS: Console app
 
-If your iOS app is on TestFlight or the App Store, you can use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode.
-
-If not, you can use the **Console** app in Xcode by connecting your device to your Mac. Follow the steps below on how to access the Console app:
+You can use the **Console** app in Xcode by connecting your device to your Mac (or while running an iOS Simulator). Follow the steps below to access the Console app:
 
 <Step label="1">
 
@@ -158,7 +147,7 @@ If you have connected a physical device, select it under **Devices**. Otherwise,
 Click on **Open Console** button shown in the window to open the console app.
 
 <ContentSpotlight
-  alt="Devices and Simulators window in Xcode."
+  alt="Open Console button in Devices and Simulators window in Xcode."
   src="/static/images/debugging/open-console.png"
 />
 
@@ -166,7 +155,22 @@ This will open the console app for you to view logs from your device or simulato
 
 </Step>
 
-For more information, see Apple's [Diagnosing Issues Using Crash Reports and Device Logs](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs) guide.
+## Production errors
+
+Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (that is, where, how, and why did the error occur?).
+
+**The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
+
+### Production app is crashing
+
+When a production app crashes, there is very little information available compared to development. Start by trying to reproduce the crash locally, then work through these steps to narrow down the cause:
+
+- **Check platform-specific crash reports.**
+  - For Android apps on Google Play Store, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/).
+  - For iOS apps on TestFlight or the App Store, use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode. See also Apple's [Diagnosing Issues Using Crash Reports and Device Logs](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs) guide.
+- **Use native log tools.** Connect a device that reproduces the crash and use [`adb logcat` or the Console app](#viewing-native-logs) to capture the native log output. Native logs often reveal the root cause when JavaScript error boundaries don't catch the problem.
+- **Try production mode locally.** Running your app in **production mode** locally will show errors that normally wouldn't be thrown. To do so, you can run `npx expo start --no-dev --minify`. The `--no-dev` flag tells the server to run in production mode, and `--minify` is used to minify your code the same way it is for production JavaScript bundles.
+- **Check your crash reporting dashboard.** If you use [Sentry](/guides/using-sentry/), [BugSnag](/guides/using-bugsnag/), or a similar service, check for the crash there first. These services provide stack traces, device info, and reproduction context.
 
 ### App crashes on certain (older) devices
 
