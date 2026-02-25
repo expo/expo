@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump to `babel-plugin-syntax-hermes-parser@^0.32.0` ([#43429](https://github.com/expo/expo/pull/43429) by [@kitten](https://github.com/kitten))
+
 ## 55.0.8 — 2026-02-25
 
 ### 🐛 Bug fixes
