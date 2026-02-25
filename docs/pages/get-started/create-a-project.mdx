@@ -15,7 +15,9 @@ We recommend starting with the default project created by `create-expo-app`. The
 
 To create a new project, run the following command:
 
-<Terminal cmd={['$ npx create-expo-app@latest']} />
+<Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-55']} />
+
+> **Note:** During the SDK 55 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. Use `--template default@sdk-55` to create an SDK 55 project.
 
 > You can choose a different template by adding the [`--template` option](/more/create-expo/#--template).
 
