@@ -1,11 +1,14 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-const config = getDefaultConfig(process.cwd());
+const appRoot = process.cwd();
+const config = getDefaultConfig(appRoot);
 
 const expoStubPath = path.resolve(__dirname, './bundle/expo-module-stub.ts');
 const reactStubPath = path.resolve(__dirname, './bundle/react-stub.ts');
 const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts');
+
+const appNodeModules = path.resolve(appRoot, 'node_modules');
 
 const buildConfig = {
   ...config,
@@ -13,9 +16,14 @@ const buildConfig = {
   watchFolders: [
     ...config.watchFolders,
     __dirname,
+    appNodeModules,
   ],
   resolver: {
     ...config.resolver,
+    nodeModulesPaths: [
+      ...(config.resolver.nodeModulesPaths ?? []),
+      appNodeModules,
+    ],
     resolveRequest(context, moduleName, platform) {
       const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
       if (fileSpecifierRe.test(moduleName)) {
