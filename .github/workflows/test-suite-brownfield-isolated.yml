@@ -94,12 +94,21 @@ jobs:
           npx expo prebuild --clean -p android
           npx expo-brownfield build:android --repo MavenLocal --verbose
         working-directory: apps/brownfield-tester/expo-app
-      - name: 🏗️ Build APK
+      - name: 🏗️ Build Debug APK
+        run: |
+          ./gradlew clean assembleDebug --refresh-dependencies
+        working-directory: apps/brownfield-tester/android-integrated
+      - name: 💾 Store Debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: expo-brownfield-android-debug
+          path: apps/brownfield-tester/android-integrated/app/build/outputs/apk/debug/app-debug.apk
+      - name: 🏗️ Build Release APK
         run: |
           ./gradlew clean
           ./gradlew assembleRelease --refresh-dependencies
         working-directory: apps/brownfield-tester/android-integrated
-      - name: 💾 Store APK artifact
+      - name: 💾 Store Release APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: expo-brownfield-android-release
@@ -131,13 +140,24 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-      - name: 🧪 Run e2e tests (isolated brownfield)
+      - name: 🧪 Run e2e tests (Release)
         uses: ./.github/actions/use-android-emulator
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            adb install -r apps/brownfield-tester/android-integrated/apk/*.apk
+            adb install -r apps/brownfield-tester/android-integrated/apk/app-release.apk
+            cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
+      - name: 🚇 Start Metro server
+        run: yarn start --clear
+        working-directory: apps/brownfield-tester/expo-app
+      - name: 🧪 Run e2e tests (Debug)
+        uses: ./.github/actions/use-android-emulator
+        with:
+          avd-api: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
+          script: |
+            adb install -r apps/brownfield-tester/android-integrated/apk/app-debug.apk
             cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
