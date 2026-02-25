@@ -7,7 +7,7 @@ exports.assertInternalProjectRoot = assertInternalProjectRoot;
 exports.moduleNameIsDirectFileReference = moduleNameIsDirectFileReference;
 exports.moduleNameIsPackageReference = moduleNameIsPackageReference;
 exports.normalizeStaticPlugin = normalizeStaticPlugin;
-exports.pluginFileName = void 0;
+exports.pluginFileNames = void 0;
 exports.resolveConfigPluginExport = resolveConfigPluginExport;
 exports.resolveConfigPluginFunction = resolveConfigPluginFunction;
 exports.resolveConfigPluginFunctionWithInfo = resolveConfigPluginFunctionWithInfo;
@@ -50,8 +50,8 @@ function _modules() {
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-// Default plugin entry file name.
-const pluginFileName = exports.pluginFileName = 'app.plugin.js';
+// Default plugin entry file names.
+const pluginFileNames = exports.pluginFileNames = ['app.plugin.js', 'app.plugin.cjs'];
 
 /**
  * Resolve the config plugin from a node module or package.
@@ -60,7 +60,7 @@ const pluginFileName = exports.pluginFileName = 'app.plugin.js';
  *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
  *     - Resolve the config plugin as-is
  *   2. If the reference a module? e.g. `expo-font`
- *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *     - Resolve the root `app.plugin.js` or `app.plugin.cjs` file within the module, e.g. `expo-font/app.plugin.js`
  *   3. Does the module have a valid config plugin in the `main` field?
  *     - Resolve the `main` entry point as config plugin
  */
@@ -71,20 +71,27 @@ function resolvePluginForModule(projectRoot, pluginReference) {
     if (pluginScriptFile) {
       return {
         // NOTE(cedric): `path.sep` is required here, we are resolving the absolute path, not the plugin reference
-        isPluginFile: pluginScriptFile.endsWith(path().sep + pluginFileName),
+        isPluginFile: pluginFileNames.some(name => pluginScriptFile.endsWith(path().sep + name)),
         filePath: pluginScriptFile
       };
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
-    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
-    const pluginPackageFile = _resolveFrom().default.silent(projectRoot, `${pluginReference}/${pluginFileName}`);
-    if (pluginPackageFile && (0, _modules().fileExists)(pluginPackageFile)) {
+    // Only resolve `package -> package/app.plugin.{js,cjs}`, `@org/package -> @org/package/app.plugin.{js,cjs}`
+    const resolved = pluginFileNames.map(name => ({
+      name,
+      filePath: _resolveFrom().default.silent(projectRoot, `${pluginReference}/${name}`)
+    })).filter(entry => entry.filePath && (0, _modules().fileExists)(entry.filePath));
+    if (resolved.length > 1) {
+      throw new (_errors().PluginError)(`Found both "app.plugin.js" and "app.plugin.cjs" in "${pluginReference}". Remove one to avoid ambiguity.`, 'AMBIGUOUS_PLUGIN');
+    }
+    if (resolved.length === 1) {
       return {
         isPluginFile: true,
-        filePath: pluginPackageFile
+        filePath: resolved[0].filePath
       };
     }
-    // Try to resole the `main` entry as config plugin
+
+    // Try to resolve the `main` entry as config plugin
     const packageMainEntry = _resolveFrom().default.silent(projectRoot, pluginReference);
     if (packageMainEntry) {
       return {
@@ -159,7 +166,7 @@ function resolveConfigPluginFunctionWithInfo(projectRoot, pluginReference) {
     }
     let errorMessage = `Unable to resolve a valid config plugin for ${pluginReference}.\n`;
     if (!isPluginFile) {
-      errorMessage += `• No "${pluginFileName}" file found in ${pluginReference}: config plugins are typically exported from an "${pluginFileName}" file in the package root.\n`;
+      errorMessage += `• No "${pluginFileNames.join('" or "')}" file found in ${pluginReference}: config plugins are typically exported from an "${pluginFileNames[0]}" file in the package root.\n`;
     }
     errorMessage += `• main export of ${pluginReference} does not appear to be a config plugin: the following error was thrown when importing ${pluginFile}: ${underlyingError}\n`;
     errorMessage += `Verify that ${pluginReference} includes a config plugin. If it does not, then remove the entry from plugins in your app config file. ${learnMoreLink}`;
@@ -192,7 +199,7 @@ function resolveConfigPluginFunctionWithInfo(projectRoot, pluginReference) {
  * @param props.plugin plugin results
  * @param props.pluginFile plugin file path
  * @param props.pluginReference the string used to reference the plugin
- * @param props.isPluginFile is file path from the app.plugin.js module root
+ * @param props.isPluginFile is file path from the app.plugin.js or app.plugin.cjs module root
  */
 function resolveConfigPluginExport({
   plugin,
