@@ -173,7 +173,11 @@ To test the published module in a new project, create a new app and install the 
 
 <Terminal
   cmdCopy="npx create-expo-app@latest my-app --template default@sdk-55 && cd my-app && npx expo install expo-settings"
-  cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55', '$ cd my-app', '$ npx expo install expo-settings']}
+  cmd={[
+    '$ npx create-expo-app@latest my-app --template default@sdk-55',
+    '$ cd my-app',
+    '$ npx expo install expo-settings',
+  ]}
 />
 
 You can now use the module in your app! To test it, edit **app/(tabs)/index.tsx** and render the text message from **expo-settings**.
