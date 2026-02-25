@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `scrollClipDisabled` modifier for SwiftUI `ScrollView`, allowing shadows and effects to render outside the scroll view's bounds.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
