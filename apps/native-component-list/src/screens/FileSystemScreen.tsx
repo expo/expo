@@ -1,4 +1,4 @@
-import { Paths, File, Directory } from 'expo-file-system';
+import { Paths, File } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { useState } from 'react';
 import {
@@ -12,9 +12,9 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
+import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import TitleSwitch from '../components/TitledSwitch';
-import Button from '../components/Button';
 
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',
