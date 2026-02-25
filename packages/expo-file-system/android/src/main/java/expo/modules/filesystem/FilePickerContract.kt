@@ -54,12 +54,12 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
         }
 
         for (uri in uris) {
-           contentResolver.takePersistableUriPermission(uri, takeFlags)
+          contentResolver.takePersistableUriPermission(uri, takeFlags)
         }
 
-        when(input.pickerType) {
-          PickerType.DIRECTORY -> FilePickerContractResult.Success(uris.map{uri -> FileSystemDirectory(uri)})
-          PickerType.FILE -> FilePickerContractResult.Success(uris.map{ uri -> FileSystemFile(uri)})
+        when (input.pickerType) {
+          PickerType.DIRECTORY -> FilePickerContractResult.Success(uris.map { uri -> FileSystemDirectory(uri) })
+          PickerType.FILE -> FilePickerContractResult.Success(uris.map { uri -> FileSystemFile(uri) })
         }
       } else {
         val uri = intent.data
@@ -68,10 +68,12 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
         }
         when (input.pickerType) {
           PickerType.DIRECTORY -> FilePickerContractResult.Success(
-            listOf(FileSystemDirectory(
-              uri
-                ?: Uri.EMPTY
-            ))
+            listOf(
+              FileSystemDirectory(
+                uri
+                  ?: Uri.EMPTY
+              )
+            )
           )
 
           PickerType.FILE -> {

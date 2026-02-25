@@ -112,7 +112,7 @@ class FileSystemModule : Module() {
       )
       when (result) {
         is FilePickerContractResult.Success ->
-          if (options?.multipleFiles == true){
+          if (options?.multipleFiles == true) {
             result.paths
           } else {
             result.paths.first()
