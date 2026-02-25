@@ -1,5 +1,11 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
+import type {
+  DownloadOptions,
+  PathInfo,
+  PickFileOptions,
+  PickMultipleFilesResult,
+  PickSingleFileResult,
+} from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -75,8 +81,6 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     options?: DownloadOptions
   ) => Promise<File>;
 
-  static pickFileAsync: (initialUri?: string, mimeType?: string) => Promise<File | File[]>;
-
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
@@ -146,10 +150,63 @@ File.downloadFileAsync = async function downloadFileAsync(
   return new File(outputURI);
 };
 
-File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
-  const file = (await ExpoFileSystem.pickFileAsync(initialUri, mimeType)).uri;
-  return new File(file);
-};
+/**
+ * Used to parse different APIs merged together.
+ * @hidden
+ */
+function parsePickFileOptions(
+  initialUriOrOptions?: string | PickFileOptions,
+  mimeType?: string
+): { options: PickFileOptions; usingOldAPI: boolean } {
+  if (typeof initialUriOrOptions === 'object') {
+    return { options: initialUriOrOptions, usingOldAPI: false };
+  }
+  return {
+    options: {
+      initialUri: initialUriOrOptions,
+      mimeTypes: mimeType,
+      multipleFiles: false,
+    },
+    usingOldAPI: mimeType !== undefined || typeof initialUriOrOptions === 'string',
+  };
+}
+
+/**
+ * Note that the original function had a signature (initialUri?: string, mimeType?: string) => Promise<File | File[]>
+ * The new signatures are:
+ *    (options?: PickSingleFileOptions) => Promise<PickSingleFileResult>
+ *    (options?: PickMultipleFilesOptions) => Promise<PickMultipleFilesResult>
+ * Also the new API doesn't throw on pick cancel, instead it sets the canceled flag in the result.
+ * @hidden
+ */
+File.pickFileAsync = async function (
+  initialUriOrOptions?: string | PickFileOptions,
+  mimeType?: string
+): Promise<File | File[] | PickSingleFileResult | PickMultipleFilesResult> {
+  const { options, usingOldAPI } = parsePickFileOptions(initialUriOrOptions, mimeType);
+  try {
+    if (options.multipleFiles) {
+      const files = await ExpoFileSystem.pickFileAsync(options);
+      return { result: files.map((file) => new File(file)), canceled: false };
+    }
+    const file = await ExpoFileSystem.pickFileAsync(options);
+    if (usingOldAPI) {
+      return new File(file);
+    }
+    return {
+      result: new File(file),
+      canceled: false,
+    };
+  } catch (e) {
+    if (usingOldAPI) {
+      throw e;
+    }
+    return {
+      result: null,
+      canceled: true,
+    };
+  }
+} as typeof ExpoFileSystem.FileSystemFile.pickFileAsync;
 
 /**
  * Represents a directory on the filesystem.

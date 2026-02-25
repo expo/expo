@@ -116,7 +116,8 @@ public final class FileSystemModule: Module {
         picker: createDirectoryPicker(initialUri: initialUri),
         isDirectory: true,
         initialUri: initialUri,
-        mimeType: nil,
+        mimeTypes: [],
+        multipleDocuments: false,
         promise: promise
       )
       #else
@@ -124,20 +125,21 @@ public final class FileSystemModule: Module {
       #endif
     }.runOnQueue(.main)
 
-    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+      AsyncFunction("pickFileAsync") { (options: FilePickingOptions?, promise: Promise) in
       #if os(iOS)
       filePickingHandler.presentDocumentPicker(
-        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
+        picker: createFilePicker(initialUri: options?.initialUri, mimeTypes: options?.mimeTypes ?? []),
         isDirectory: false,
-        initialUri: initialUri,
-        mimeType: mimeType,
+        initialUri: options?.initialUri,
+        mimeTypes: options?.mimeTypes ?? [],
+        multipleDocuments: options?.multipleFiles ?? false,
         promise: promise
       )
       #else
       promise.reject(FeatureNotAvailableOnPlatformException())
       #endif
     }.runOnQueue(.main)
-
+      
     Function("info") { (url: URL) in
       let output = PathInfo()
       output.exists = false

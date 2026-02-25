@@ -116,6 +116,8 @@ export declare class Directory {
      * Lists the contents of a directory.
      */
     list(): (Directory | File)[];
+    get parentDirectory(): Directory;
+    get name(): string;
     /**
      * Retrieves an object containing properties of a directory.
      *
@@ -159,7 +161,7 @@ export type DownloadOptions = {
 /**
  * Represents a file on the file system.
  */
-export declare class File {
+export declare class File extends Blob {
     /**
      * Creates an instance of File.
      *
@@ -169,7 +171,21 @@ export declare class File {
     /**
      * Represents the file URI. The field is read-only, but it may change as a result of calling some methods such as `move`.
      */
-    readonly uri: string;
+    get uri(): string;
+    get parentDirectory(): Directory;
+    get extension(): string;
+    /**
+     * Basename of the file.
+     */
+    get name(): string;
+    /**
+     * Creates a readable stream from the file.
+     */
+    readableStream(): ReadableStream;
+    /**
+     * Creates a writeable stream to the file.
+     */
+    writableStream(): WritableStream<Uint8Array>;
     /**
      * @hidden This method is not meant to be used directly. It is called by the JS constructor.
      * Validates a directory path.
@@ -283,6 +299,18 @@ export declare class File {
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
     /**
+     * An overload of pickFileAsync method which picks and returns a single `File`.
+     * This overload requires options to have `multipleFiles` flag be `undefined` or `false`.
+     * @param options options
+     */
+    static pickFileAsync(options?: PickSingleFileOptions): Promise<PickSingleFileResult>;
+    /**
+     * An overload of pickFileAsync method which picks and returns a list of `File`'s.
+     * This overload requires options to have `multipleFiles` flag be `true`.
+     * @param options options
+     */
+    static pickFileAsync(options?: PickMultipleFilesOptions): Promise<PickMultipleFilesResult>;
+    /**
      * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
      */
     size: number;
@@ -292,8 +320,13 @@ export declare class File {
     md5: string | null;
     /**
      * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+     * @deprecated in favor of `lastModified` to be more in line with web [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
      */
     modificationTime: number | null;
+    /**
+     * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+     */
+    lastModified: number | null;
     /**
      * A creation time of the file expressed in milliseconds since epoch. Returns null if the file does not exist, cannot be read or the Android version is earlier than API 26.
      */
@@ -385,5 +418,68 @@ export type DirectoryInfo = {
      * A list of file names contained within a directory.
      */
     files?: string[];
+};
+export type PickFileGeneralOptions = {
+    /**
+     * A uri pointing to an initial folder in which the file picker is opened.
+     */
+    initialUri?: string;
+    /**
+     * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
+     * to be picked. It also supports wildcards like `'image/*'` to choose any image. To allow any type
+     * of document you can use `'&ast;/*'`.
+     * @default '&ast;/*'
+     */
+    mimeTypes?: string | string[];
+};
+/**
+ * Options for picking a single file
+ */
+export type PickSingleFileOptions = PickFileGeneralOptions & {
+    /**
+     * Allows multiple files to be selected from the system UI.
+     * @default false
+     */
+    multipleFiles?: false;
+};
+export type PickMultipleFilesOptions = PickFileGeneralOptions & {
+    /**
+     * Allows multiple files to be selected from the system UI.
+     * @default false
+     */
+    multipleFiles: true;
+};
+/**
+ * Options type for file picking
+ */
+export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
+/**
+ * Result type for picking a single file.
+ */
+export type PickSingleFileResult = PickSingleFileSuccessResult | PickFileCanceledResult;
+/**
+ * Result type for picking multiple files.
+ */
+export type PickMultipleFilesResult = PickMultipleFilesSuccessResult | PickFileCanceledResult;
+/**
+ * Result type for successfully picking a single file.
+ */
+export type PickSingleFileSuccessResult = {
+    result: File;
+    canceled: false;
+};
+/**
+ * Result type for a successful picking multiple files.
+ */
+export type PickMultipleFilesSuccessResult = {
+    result: File[];
+    canceled: false;
+};
+/**
+ * Result type for a canceled file pick.
+ */
+export type PickFileCanceledResult = {
+    result: null;
+    canceled: true;
 };
 //# sourceMappingURL=ExpoFileSystem.types.d.ts.map
