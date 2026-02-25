@@ -1,13 +1,69 @@
-import { Paths, File } from 'expo-file-system';
+import { Paths, File, PickFileOptions } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
-import { Button, ScrollView, StyleSheet, View, Text } from 'react-native';
+import { useState } from 'react';
+import {
+  Button,
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  Alert,
+  FlatList,
+  Image,
+  Platform,
+  useWindowDimensions,
+} from 'react-native';
 
 import HeadingText from '../components/HeadingText';
+import TitleSwitch from '../components/TitledSwitch';
+import NCLButton from '../components/Button';
+
 FileSystemScreen.navigationOptions = {
   title: 'FileSystem',
 };
 
 export default function FileSystemScreen() {
+  const { width } = useWindowDimensions();
+  const [copyToCache, setCopyToCache] = useState(false);
+  const [multiple, setMultiple] = useState(false);
+  const [initialUri, setInitialUri] = useState(false);
+  const [pickerResult, setPickerResult] = useState<File | File[] | null>(null);
+
+  const openPicker = async () => {
+    try {
+      const time = Date.now();
+      let canceled = false;
+      let result = null;
+      try {
+        result = multiple
+          ? await File.pickFileAsync({
+              multipleFiles: true,
+            })
+          : await File.pickFileAsync({ multipleFiles: false });
+      } catch (e) {
+        canceled = true;
+      }
+      console.log(`Duration: ${Date.now() - time}ms`);
+      console.log(`Results:`, result);
+      if (result) {
+        setPickerResult(result);
+      } else {
+        setTimeout(() => {
+          if (Platform.OS === 'web') {
+            alert('Cancelled');
+          } else {
+            Alert.alert('Cancelled');
+          }
+        }, 100);
+      }
+    } catch (err) {
+      console.error('Error picking document:', err);
+      setTimeout(() => {
+        Alert.alert('error', `Error picking document: ${err}`);
+      }, 150);
+    }
+  };
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -48,6 +104,71 @@ export default function FileSystemScreen() {
             });
           }}
         />
+      </View>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <View
+          style={{ marginBottom: 20, marginTop: 20, paddingHorizontal: 20, gap: 5, minWidth: 300 }}>
+          <NCLButton
+            onPress={openPicker}
+            title="Open document picker"
+            buttonStyle={{ width: '100%' }}
+          />
+          <TitleSwitch
+            style={{ marginVertical: 10 }}
+            value={copyToCache}
+            setValue={setCopyToCache}
+            title="Copy to cache"
+          />
+          <TitleSwitch
+            style={{ marginVertical: 10 }}
+            value={multiple}
+            setValue={setMultiple}
+            title="Pick multiple"
+          />
+        </View>
+
+        <View
+          style={{
+            padding: 20,
+            maxWidth: width - 40,
+            width: '100%',
+            justifyContent: 'flex-start',
+          }}>
+          {Array.of(pickerResult)
+            .flat()
+            .map((document, index) => {
+              if (!document) return null;
+
+              return (
+                <View
+                  key={`${index}-${document?.contentUri}`}
+                  style={{ marginBottom: 20, width: '100%', flex: 1 }}>
+                  {document?.name!.match(/\.(png|jpg)$/gi) ? (
+                    <Image
+                      source={{ uri: document.uri }}
+                      resizeMode="cover"
+                      style={{ width: 100, height: 100 }}
+                    />
+                  ) : null}
+                  <Text numberOfLines={1} ellipsizeMode="middle">
+                    {document?.name} ({document?.size! / 1000} KB)
+                  </Text>
+                  <Text numberOfLines={1} ellipsizeMode="middle">
+                    URI: {document?.uri}
+                  </Text>
+                  <Text numberOfLines={1} ellipsizeMode="middle">
+                    MimeType: {document?.type}
+                  </Text>
+                  <Text>Last Modified: {document?.lastModified}</Text>
+                </View>
+              );
+            })}
+        </View>
       </View>
     </ScrollView>
   );
