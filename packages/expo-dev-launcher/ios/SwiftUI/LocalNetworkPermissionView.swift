@@ -46,15 +46,7 @@ struct LocalNetworkPermissionView: View {
           }
         }
       }
-
       Spacer()
-      
-      HStack(alignment: .firstTextBaseline) {
-        Image(systemName: "info.circle")
-        Text("Dev servers advertise themselves on your local network using Bonjour. This permission allows the development client to discover them automatically.")
-          .fontWeight(.semibold)
-      }
-      .foregroundColor(.secondary)
     }
     .padding()
     .background(Color.expoSystemBackground)
