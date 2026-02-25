@@ -86,6 +86,6 @@ const resolveScheme = (options) => {
     return options.scheme || (0, ios_1.findScheme)();
 };
 const resolveWorkspace = (options) => {
-    return options.xcworkspace || (0, ios_1.findWorkspace)();
+    return options.xcworkspace || (0, ios_1.findWorkspace)(options.dryRun);
 };
 // END SECTION: iOS Helpers

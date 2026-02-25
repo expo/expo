@@ -4,6 +4,6 @@ export declare const buildFramework: (config: IosConfig) => Promise<import("./ty
 export declare const copyHermesXcframework: (config: IosConfig) => Promise<void>;
 export declare const createXcframework: (config: IosConfig) => Promise<import("./types").RunCommandResult | undefined>;
 export declare const findScheme: () => string | undefined;
-export declare const findWorkspace: () => string | undefined;
+export declare const findWorkspace: (dryRun: boolean) => string | undefined;
 export declare const makeArtifactsDirectory: (config: IosConfig) => void;
 export declare const printIosConfig: (config: IosConfig) => void;

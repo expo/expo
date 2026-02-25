@@ -123,6 +123,8 @@ export async function generateStaticParams(params: {
 
 </PaddedAPIBox>
 
+> **warning** Avoid creating a top-level route named `assets` (like `/app/assets.tsx` or `/app/assets/[other-pages].tsx`). The path `/assets` is reserved by Metro and will cause errors when trying to access it from the URL.
+
 ### Read files using `process.cwd()`
 
 Since Expo Router compiles your code into a separate directory you cannot use `__dirname` to form a path as its value will be different than expected.
@@ -226,6 +228,8 @@ Expo CLI supports a root **public** directory that gets copied to the **dist** d
 <FileTree
   files={['public/favicon.ico', 'public/logo.png', 'public/.well-known/apple-app-site-association']}
 />
+
+> **warning** Avoid creating the directory `/public/assets/`. The path `/assets` is reserved by Metro and will cause file access errors during development.
 
 These files will be copied to the **dist** directory during static rendering:
 

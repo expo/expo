@@ -9,14 +9,14 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~55.0.0-preview.12",
-    "expo-clipboard": "55.0.7",
-    "expo-dev-client": "~55.0.7",
-    "expo-image": "~55.0.4",
-    "expo-media-library": "55.0.8",
-    "expo-notifications": "~55.0.9",
-    "expo-splash-screen": "~55.0.8",
-    "expo-updates": "55.0.10",
+    "expo": "~55.0.0",
+    "expo-clipboard": "55.0.8",
+    "expo-dev-client": "~55.0.8",
+    "expo-image": "~55.0.5",
+    "expo-media-library": "55.0.9",
+    "expo-notifications": "~55.0.10",
+    "expo-splash-screen": "~55.0.9",
+    "expo-updates": "55.0.11",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-native": "0.83.2"

@@ -1,0 +1,61 @@
+appId: dev.expo.BrownfieldIntegratedTester
+---
+- runFlow: ./_nested-flows/launch-brownfield.yml
+
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
+- assertVisible:
+    id: navigation-enable-native-back
+
+- tapOn:
+    id: navigation-pop-to-native
+- assertVisible:
+    id: openReactNativeButton
+
+- tapOn:
+    id: openReactNativeButton
+- swipe:
+    direction: RIGHT
+- assertVisible:
+    id: openReactNativeButton
+
+- tapOn:
+    id: openReactNativeButton
+- runFlow: ./_nested-flows/maybe-close-dev-menu.yml
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
+- tapOn:
+    id: navigation-disable-native-back
+- swipe:
+    direction: RIGHT
+- assertVisible:
+    id: apis-communication
+- assertVisible:
+    id: apis-navigation
+
+- tapOn:
+    id: apis-navigation
+- tapOn:
+    id: navigation-pop-to-native
+- assertVisible:
+    id: openReactNativeButton
+
+- tapOn:
+    id: openReactNativeButton
+- runFlow: ./_nested-flows/maybe-close-dev-menu.yml
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
+- tapOn:
+    id: navigation-enable-native-back
+- swipe:
+    direction: RIGHT
+- swipe:
+    direction: RIGHT
+- assertVisible:
+    id: openReactNativeButton

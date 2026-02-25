@@ -149,25 +149,8 @@ private struct PresentationDetentsSelectionView<WrappedContent: View>: View {
 
 // MARK: - Presentation Drag Indicator
 
-internal enum PresentationDragIndicatorVisibilityModifier: String, Enumerable {
-  case automatic
-  case visible
-  case hidden
-
-  func toVisibility() -> Visibility {
-    switch self {
-    case .visible:
-      return .visible
-    case .hidden:
-      return .hidden
-    default:
-      return .automatic
-    }
-  }
-}
-
 internal struct PresentationDragIndicatorModifier: ViewModifier, Record {
-  @Field var visibility: PresentationDragIndicatorVisibilityModifier = .automatic
+  @Field var visibility: VisibilityOptions = .automatic
 
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {

@@ -30,13 +30,13 @@ export function addVisibilityListener(
 /**
  * Changes the navigation bar's background color.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
+ * @deprecated Due to Android edge-to-edge enforcement, setting the navigation bar background color is deprecated and has no effect. This will be removed in a future release.
  *
  * @example
  * ```ts
  * NavigationBar.setBackgroundColorAsync("white");
  * ```
- * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBackgroundColorAsync(color: string): Promise<void> {
   console.warn('`setBackgroundColorAsync` is only available on Android');
@@ -45,14 +45,13 @@ export async function setBackgroundColorAsync(color: string): Promise<void> {
 /**
  * Gets the navigation bar's background color.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @returns Current navigation bar color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
+ * @deprecated Due to Android edge-to-edge enforcement, getting the navigation bar background color is deprecated and always returns `#00000000` (transparent). This will be removed in a future release.
  *
  * @example
  * ```ts
  * const color = await NavigationBar.getBackgroundColorAsync();
  * ```
- * @returns Current navigation bar color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
- *
  */
 export async function getBackgroundColorAsync(): Promise<string> {
   console.warn('`getBackgroundColorAsync` is only available on Android');
@@ -62,13 +61,13 @@ export async function getBackgroundColorAsync(): Promise<string> {
 /**
  * Changes the navigation bar's border color.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
+ * @deprecated Due to Android edge-to-edge enforcement, setting the navigation bar border color is deprecated and has no effect. This will be removed in a future release.
  *
  * @example
  * ```ts
  * NavigationBar.setBorderColorAsync("red");
  * ```
- * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBorderColorAsync(color: string): Promise<void> {
   console.warn('`setBorderColorAsync` is only available on Android');
@@ -77,13 +76,13 @@ export async function setBorderColorAsync(color: string): Promise<void> {
 /**
  * Gets the navigation bar's top border color, also known as the "divider color".
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @returns Navigation bar top border color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
+ * @deprecated Due to Android edge-to-edge enforcement, getting the navigation bar border color is deprecated and always returns `#00000000` (transparent). This will be removed in a future release.
  *
  * @example
  * ```ts
  * const color = await NavigationBar.getBorderColorAsync();
  * ```
- * @returns Navigation bar top border color in hex format. Returns `#00000000` (transparent) on unsupported platforms (iOS, web).
  */
 export async function getBorderColorAsync(): Promise<string> {
   console.warn('`getBorderColorAsync` is only available on Android');
@@ -93,12 +92,13 @@ export async function getBorderColorAsync(): Promise<string> {
 /**
  * Set the navigation bar's visibility.
  *
+ * @param visibility Based on CSS visibility property.
+ * @platform android
+ *
  * @example
  * ```ts
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
- * @param visibility Based on CSS visibility property.
- * @platform android
  */
 export async function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
   console.warn('`setVisibilityAsync` is only available on Android');
@@ -107,12 +107,12 @@ export async function setVisibilityAsync(visibility: NavigationBarVisibility): P
 /**
  * Get the navigation bar's visibility.
  *
+ * @returns Navigation bar's current visibility status. Returns `hidden` on unsupported platforms (iOS, web).
  *
  * @example
  * ```ts
  * const visibility = await NavigationBar.getVisibilityAsync();
  * ```
- * @returns Navigation bar's current visibility status. Returns `hidden` on unsupported platforms (iOS, web).
  */
 export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
   console.warn('`getVisibilityAsync` is only available on Android');
@@ -122,26 +122,28 @@ export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
 /**
  * Changes the navigation bar's button colors between white (`light`) and a dark gray color (`dark`).
  *
+ * @param style Dictates the color of the foreground element color.
+ * @deprecated Use `setStyle` instead. This will be removed in a future release.
+ *
  * @example
  * ```ts
  * NavigationBar.setButtonStyleAsync("light");
  * ```
- * @param style Dictates the color of the foreground element color.
  */
 export async function setButtonStyleAsync(style: NavigationBarButtonStyle): Promise<void> {
   console.warn('`setButtonStyleAsync` is only available on Android');
 }
 
 /**
- * Gets the navigation bar's button color styles.
+ * Gets the navigation bar's button color style.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
+ * @deprecated Due to Android edge-to-edge enforcement, getting the navigation bar button color style is deprecated and always returns `light`. This will be removed in a future release.
  *
  * @example
  * ```ts
  * const style = await NavigationBar.getButtonStyleAsync();
  * ```
- * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
  */
 export async function getButtonStyleAsync(): Promise<NavigationBarButtonStyle> {
   console.warn('`getButtonStyleAsync` is only available on Android');
@@ -155,7 +157,8 @@ export async function getButtonStyleAsync(): Promise<NavigationBarButtonStyle> {
  *
  * When drawing behind the status and navigation bars, ensure the safe area insets are adjusted accordingly.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @param position Based on CSS position property.
+ * @deprecated Due to Android edge-to-edge enforcement, setting the navigation bar position is deprecated and has no effect. This will be removed in a future release.
  *
  * @example
  * ```ts
@@ -164,7 +167,6 @@ export async function getButtonStyleAsync(): Promise<NavigationBarButtonStyle> {
  * // transparent backgrounds to see through
  * await NavigationBar.setBackgroundColorAsync('#ffffff00')
  * ```
- * @param position Based on CSS position property.
  */
 export async function setPositionAsync(position: NavigationBarPosition): Promise<void> {
   console.warn('`setPositionAsync` is only available on Android');
@@ -177,13 +179,13 @@ export async function setPositionAsync(position: NavigationBarPosition): Promise
  * This method is unstable because the position can be set via another native module and get out of sync.
  * Alternatively, you can get the position by measuring the insets returned by `react-native-safe-area-context`.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @returns Navigation bar positional rendering mode. Returns `relative` on unsupported platforms (iOS, web).
+ * @deprecated Due to Android edge-to-edge enforcement, getting the navigation bar position is deprecated and always returns `relative`. This will be removed in a future release.
  *
  * @example
  * ```ts
  * await NavigationBar.unstable_getPositionAsync()
  * ```
- * @returns Navigation bar positional rendering mode. Returns `relative` on unsupported platforms (iOS, web).
  */
 export async function unstable_getPositionAsync(): Promise<NavigationBarPosition> {
   console.warn('`unstable_getPositionAsync` is only available on Android');
@@ -200,13 +202,13 @@ export async function unstable_getPositionAsync(): Promise<NavigationBarPosition
  * - `'inset-swipe'`: Reveals the System UI after a swipe gesture (bottom or top) and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  * - `'inset-touch'`: Reveals the System UI after a touch anywhere on the screen and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @param behavior Dictates the interaction behavior of the navigation bar.
+ * @deprecated Due to Android edge-to-edge enforcement, setting the navigation bar behavior is deprecated and has no effect. This will be removed in a future release.
  *
  * @example
  * ```ts
  * await NavigationBar.setBehaviorAsync('overlay-swipe')
  * ```
- * @param behavior Dictates the interaction behavior of the navigation bar.
  */
 export async function setBehaviorAsync(behavior: NavigationBarBehavior): Promise<void> {
   console.warn('`setBehaviorAsync` is only available on Android');
@@ -215,13 +217,13 @@ export async function setBehaviorAsync(behavior: NavigationBarBehavior): Promise
 /**
  * Gets the behavior of the status and navigation bars when the user swipes or touches the screen.
  *
- * > This method is supported only when edge-to-edge is disabled.
+ * @returns Navigation bar interaction behavior. Returns `inset-touch` on unsupported platforms (iOS, web).
+ * @deprecated Due to Android edge-to-edge enforcement, getting the navigation bar behavior is deprecated and always returns `inset-touch`. This will be removed in a future release.
  *
  * @example
  * ```ts
  * await NavigationBar.getBehaviorAsync()
  * ```
- * @returns Navigation bar interaction behavior. Returns `inset-touch` on unsupported platforms (iOS, web).
  */
 export async function getBehaviorAsync(): Promise<NavigationBarBehavior> {
   console.warn('`getBehaviorAsync` is only available on Android');
@@ -231,8 +233,7 @@ export async function getBehaviorAsync(): Promise<NavigationBarBehavior> {
 /**
  * Sets the style of the navigation bar.
  * > This will have an effect when the following conditions are met:
- * > - Edge-to-edge is enabled
- * > - The `enforceNavigationBarContrast` option of the `react-native-edge-to-edge` plugin is set to `false`.
+ * > - The `enforceContrast` option of the `expo-navigation-bar` plugin is set to `false`.
  * > - The device is using the three-button navigation bar.
  *
  * > Due to a bug in the Android 15 emulator this function may have no effect. Try a physical device or an emulator with a different version of Android.
@@ -246,6 +247,8 @@ export function setStyle(style: NavigationBarStyle) {
 /**
  * React hook that statefully updates with the visibility of the system navigation bar.
  *
+ * @returns Visibility of the navigation bar, `null` during async initialization.
+ *
  * @example
  * ```ts
  * function App() {
@@ -253,7 +256,6 @@ export function setStyle(style: NavigationBarStyle) {
  *   // React Component...
  * }
  * ```
- * @returns Visibility of the navigation bar, `null` during async initialization.
  */
 export function useVisibility(): NavigationBarVisibility | null {
   const [visibility, setVisible] = useState<NavigationBarVisibility | null>(null);

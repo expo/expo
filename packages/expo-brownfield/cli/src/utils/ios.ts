@@ -143,7 +143,13 @@ export const findScheme = (): string | undefined => {
   }
 };
 
-export const findWorkspace = (): string | undefined => {
+export const findWorkspace = (dryRun: boolean): string | undefined => {
+  // XCWorkspace cannot be inferred on Ubuntu runners
+  // as pods cannot be installed
+  if (dryRun) {
+    return path.join(process.cwd(), 'ios/testappbuildiospb.xcworkspace');
+  }
+
   try {
     const iosPath = path.join(process.cwd(), 'ios');
     if (!fs.existsSync(iosPath)) {

@@ -1,3 +1,4 @@
+import { SharedObject } from 'expo';
 import { ReactNode } from 'react';
 
 /**
@@ -33,6 +34,17 @@ export type WidgetBase<T extends object = object> = {
   family: WidgetFamily;
 } & T;
 
+export type WidgetTimelineEntry<T extends object = object> = {
+  /**
+   * Date when widget should update.
+   */
+  date: Date;
+  /**
+   * Props to be passed to the widget.
+   */
+  props: T;
+};
+
 export type ExpoTimelineEntry = {
   timestamp: number;
   props: Record<string, any>;
@@ -41,7 +53,7 @@ export type ExpoTimelineEntry = {
 /**
  * Defines the layout sections for an iOS Live Activity.
  */
-export type ExpoLiveActivityEntry = {
+export type LiveActivityLayout = {
   /**
    * The main banner content displayed in Notifications Center.
    */
@@ -83,7 +95,7 @@ export type ExpoLiveActivityEntry = {
 /**
  * A function that returns the layout for a Live Activity.
  */
-export type LiveActivityComponent = () => ExpoLiveActivityEntry;
+export type LiveActivityComponent<T extends object = object> = (props?: T) => LiveActivityLayout;
 
 /**
  * Event emitted when a user interacts with a widget.
@@ -132,24 +144,6 @@ export type PushToStartTokenEvent = {
 };
 
 /**
- * Information about a running live activity.
- */
-export type LiveActivityInfo = {
-  /**
-   * The unique identifier of the live activity.
-   */
-  id: string;
-  /**
-   * The name of the live activity.
-   */
-  name: string;
-  /**
-   * The push token for the live activity, if available.
-   */
-  pushToken?: string;
-};
-
-/**
  * Dismissal policy for ending a live activity.
  */
 export type LiveActivityDismissalPolicy = 'default' | 'immediate';
@@ -165,9 +159,31 @@ export type ExpoWidgetsEvents = {
    * @param event Token event details.
    */
   onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
+};
+
+export type LiveActivityEvents = {
   /**
    * Function that is invoked when a push token is received for a live activity.
    * @param event Token event details.
    */
   onExpoWidgetsTokenReceived: (event: PushTokenEvent) => void;
 };
+
+export declare class NativeWidgetObject extends SharedObject {
+  constructor(name: string, layout: string);
+  reload(): void;
+  updateTimeline(entries: ExpoTimelineEntry[]): void;
+  getTimeline(): Promise<ExpoTimelineEntry[]>;
+}
+
+export declare class NativeLiveActivityFactory extends SharedObject {
+  constructor(name: string, layout: string);
+  start(props: string, url?: string): NativeLiveActivity;
+  getInstances(): NativeLiveActivity[];
+}
+
+export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
+  update(props: string): Promise<void>;
+  end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void>;
+  getPushToken(): Promise<string | null>;
+}

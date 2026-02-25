@@ -1,0 +1,87 @@
+---
+title: FilterChip
+description: A Jetpack Compose FilterChip component for displaying toggleable filter options.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI FilterChip matches the official Jetpack Compose [FilterChip API](https://developer.android.com/develop/ui/compose/components/chip) and displays a compact, toggleable element used to filter content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic filter chip
+
+```tsx BasicFilterChipExample.tsx
+import { useState } from 'react';
+import { Host, FilterChip } from '@expo/ui/jetpack-compose';
+
+export default function BasicFilterChipExample() {
+  const [selected, setSelected] = useState(false);
+
+  return (
+    <Host matchContents>
+      <FilterChip label="Favorites" selected={selected} onPress={() => setSelected(!selected)} />
+    </Host>
+  );
+}
+```
+
+### With leading icon
+
+Use the `FilterChip.LeadingIcon` slot component to display an icon before the label.
+
+```tsx FilterChipWithLeadingIconExample.tsx
+import { useState } from 'react';
+import { Host, FilterChip, Text } from '@expo/ui/jetpack-compose';
+
+export default function FilterChipWithLeadingIconExample() {
+  const [selected, setSelected] = useState(false);
+
+  return (
+    <Host matchContents>
+      <FilterChip label="Images" selected={selected} onPress={() => setSelected(!selected)}>
+        <FilterChip.LeadingIcon>
+          <Text>📷</Text>
+        </FilterChip.LeadingIcon>
+      </FilterChip>
+    </Host>
+  );
+}
+```
+
+### Disabled chip
+
+Set the `enabled` prop to `false` to prevent user interaction.
+
+```tsx DisabledFilterChipExample.tsx
+import { Host, FilterChip } from '@expo/ui/jetpack-compose';
+
+export default function DisabledFilterChipExample() {
+  return (
+    <Host matchContents>
+      <FilterChip
+        label="Unavailable"
+        selected={false}
+        enabled={false}
+        onPress={() => console.log('This will not fire')}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { FilterChip } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/filterchip" apiName="FilterChip" />

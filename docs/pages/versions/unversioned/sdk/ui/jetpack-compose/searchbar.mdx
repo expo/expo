@@ -1,0 +1,64 @@
+---
+title: SearchBar
+description: A Jetpack Compose SearchBar component for search input functionality.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI SearchBar matches the official Jetpack Compose [Search](https://developer.android.com/develop/ui/compose/components/search) API and provides a search input with support for placeholder text and expanded full-screen search.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic search bar
+
+```tsx BasicSearchBarExample.tsx
+import { useState } from 'react';
+import { Host, SearchBar } from '@expo/ui/jetpack-compose';
+
+export default function BasicSearchBarExample() {
+  const [query, setQuery] = useState('');
+
+  return (
+    <Host matchContents>
+      <SearchBar onSearch={searchText => setQuery(searchText)} />
+    </Host>
+  );
+}
+```
+
+### Search bar with placeholder
+
+Use the `SearchBar.Placeholder` sub-component to display hint text when the search field is empty.
+
+```tsx SearchBarPlaceholderExample.tsx
+import { useState } from 'react';
+import { Host, SearchBar } from '@expo/ui/jetpack-compose';
+
+export default function SearchBarPlaceholderExample() {
+  const [query, setQuery] = useState('');
+
+  return (
+    <Host matchContents>
+      <SearchBar onSearch={searchText => setQuery(searchText)}>
+        <SearchBar.Placeholder>Search items...</SearchBar.Placeholder>
+      </SearchBar>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { SearchBar } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/searchbar" apiName="SearchBar" />

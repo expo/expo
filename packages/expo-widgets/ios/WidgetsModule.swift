@@ -1,13 +1,12 @@
 import ExpoModulesCore
 import ActivityKit
 import WidgetKit
-import JavaScriptCore
 
-private let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
+let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
 
-private let onUserInteraction = "onExpoWidgetsUserInteraction"
-private let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
-private let onTokenReceived = "onExpoWidgetsTokenReceived"
+let onUserInteraction = "onExpoWidgetsUserInteraction"
+let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
+let onTokenReceived = "onExpoWidgetsTokenReceived"
 let onUserInteractionNotification = Notification.Name(onUserInteraction)
 
 public final class WidgetsModule: Module {
@@ -40,116 +39,60 @@ public final class WidgetsModule: Module {
         observePushToStartToken()
       }
     }
-    
+
     OnStopObserving(onPushToStartTokenReceived) {
       pushToStartTokenObserverTask?.cancel()
       pushToStartTokenObserverTask = nil
     }
 
-    Function("reloadWidget") { (name: String?) in
-      if let name = name {
-        WidgetCenter.shared.reloadTimelines(ofKind: name)
-      } else {
-        WidgetCenter.shared.reloadAllTimelines()
+    Function("reloadAllWidgets") {
+      WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    Class("Widget", WidgetObject.self) {
+      Constructor { (name: String, layout: String) in
+        WidgetObject(name: name, layout: layout)
+      }
+
+      Function("reload") { (widget: WidgetObject) in
+        widget.reload()
+      }
+
+      Function("updateTimeline") { (widget: WidgetObject, entries: [WidgetsJSTimelineEntry]) in
+        try widget.updateTimeline(entries: entries)
+      }
+
+      Function("getTimeline") { (widget: WidgetObject) in
+        try widget.getTimeline()
       }
     }
 
-    Function("startLiveActivity") { (name: String, props: String, url: URL?) throws -> String in
-      guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-      guard ActivityAuthorizationInfo().areActivitiesEnabled else {
-        throw LiveActivitiesNotSupportedException()
+    Class("LiveActivityFactory", LiveActivityFactory.self) {
+      Constructor { (name: String, layout: String) in
+        LiveActivityFactory(name: name, layout: layout)
       }
 
-      if let url {
-        WidgetsStorage.set(url.absoluteString, forKey: "__expo_widgets_live_activity_\(name)_url")
+      Function("start") { (liveActivity: LiveActivityFactory, props: String, url: URL?) in
+        try liveActivity.start(props: props, url: url)
       }
 
-      do {
-        let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
-
-        let activity = try Activity.request(
-          attributes: LiveActivityAttributes(),
-          content: .init(state: initialState, staleDate: nil),
-          pushType: pushNotificationsEnabled ? .token : nil
-        )
-        
-        if pushNotificationsEnabled {
-          self.observePushTokenUpdates(for: activity)
-        }
-
-        return activity.id
-      } catch {
-        throw StartLiveActivityException(error.localizedDescription)
+      Function("getInstances") { (liveActivity: LiveActivityFactory) in
+        try liveActivity.getInstances()
       }
     }
 
-    Function("updateLiveActivity") { (id: String, name: String, props: String) throws in
-      guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
-      guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id })
-      else { throw LiveActivityNotFoundException(id) }
-
-      Task {
-        let newState = LiveActivityAttributes.ContentState(name: name, props: props)
-        await activity.update(ActivityContent(state: newState, staleDate: nil))
+    Class("LiveActivity", LiveActivity.self) {
+      AsyncFunction("update") { (instance: LiveActivity, props: String) in
+        try await instance.update(props: props)
       }
-    }
 
-    Function("endLiveActivity") { (id: String, dismissalPolicy: String?) throws in
-      guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-      
-      guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id })
-      else { throw LiveActivityNotFoundException(id) }
-
-      Task {
-        let policy: ActivityUIDismissalPolicy
-        switch dismissalPolicy {
-        case "immediate":
-          policy = .immediate
-        default:
-          policy = .default
-        }
-
-        await activity.end(dismissalPolicy: policy)
+      AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: String?) in
+        try await instance.end(dismissalPolicy: dismissalPolicy)
       }
-    }
-    
-    AsyncFunction("getLiveActivityPushToken") { (id: String) throws -> String? in
-      guard #available(iOS 16.1, *) else { throw LiveActivitiesNotSupportedException() }
-      
-      guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id })
-      else { throw LiveActivityNotFoundException(id) }
 
-      guard let tokenData = activity.pushToken else { return nil }
-      
-      return tokenData.reduce("") { $0 + String(format: "%02x", $1) }
-    }
-
-    Function("getLiveActivities") { () throws -> [LiveActivityInfo] in
-      guard #available(iOS 16.1, *) else { throw LiveActivitiesNotSupportedException() }
-      
-      return Activity<LiveActivityAttributes>.activities.map { activity in
-        if #available(iOS 16.2, *) {
-          LiveActivityInfo(id: activity.id, name: activity.content.state.name, pushToken: activity.pushToken?.reduce("") { $0 + String(format: "%02x", $1) })
-        } else {
-          LiveActivityInfo(id: activity.id, pushToken: activity.pushToken?.reduce("") { $0 + String(format: "%02x", $1) })
-        }
+      AsyncFunction("getPushToken") { (instance: LiveActivity) in
+        try instance.getPushToken()
       }
-    }
-
-    Function("registerLiveActivityLayout") { (name: String, layout: String) in
-      WidgetsStorage.set(layout, forKey: "__expo_widgets_live_activity_\(name)_layout")
-    }
-
-    Function("registerWidgetLayout") { (name: String, layout: String) in
-      WidgetsStorage.set(layout, forKey: "__expo_widgets_\(name)_layout")
-    }
-
-    Function("updateWidgetTimeline") { (name: String, entries: [WidgetsJSTimelineEntry]) in
-      if WidgetsStorage.getString(forKey: "__expo_widgets_\(name)_layout") == nil {
-        throw UpdatedTimelineWithoutLayout(name)
-      }
-      WidgetsStorage.set(entries.map { $0.toDictionary()}, forKey: "__expo_widgets_\(name)_timeline")
     }
   }
 
@@ -159,12 +102,12 @@ public final class WidgetsModule: Module {
     else { return }
     self.sendEvent(onUserInteraction, eventData)
   }
-  
+
   private func sendPushToStartToken(activityPushToStartToken: String) {
     sendEvent(
       onPushToStartTokenReceived,
       [
-        "activityPushToStartToken": activityPushToStartToken,
+        "activityPushToStartToken": activityPushToStartToken
       ]
     )
   }
@@ -182,22 +125,6 @@ public final class WidgetsModule: Module {
         if token != initialToken {
           sendPushToStartToken(activityPushToStartToken: token)
         }
-      }
-    }
-  }
-
-  @available(iOS 16.1, *)
-  private func observePushTokenUpdates(for activity: Activity<LiveActivityAttributes>) {
-    Task {
-      for await data in activity.pushTokenUpdates {
-        let token = data.reduce("") { $0 + String(format: "%02x", $1) }
-        sendEvent(
-          onTokenReceived,
-          [
-            "activityId": activity.id,
-            "pushToken": token,
-          ]
-        )
       }
     }
   }

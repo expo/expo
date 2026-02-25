@@ -5,6 +5,7 @@ import url from 'node:url';
 import type * as ts from 'typescript';
 
 import { annotateError, formatDiagnostic } from './codeframe';
+import { toCommonJS } from './transform';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];
@@ -46,32 +47,36 @@ const tsExtensionMapping: Record<string, string | undefined> = {
   '.mts': '.mjs',
 };
 
-function toFormat(filename: string) {
+function maybeReadFileSync(filename: string) {
+  try {
+    return fs.readFileSync(filename, 'utf8');
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+}
+
+type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript' | 'typescript';
+
+function toFormat(filename: string, isLegacy: true): Format;
+function toFormat(filename: string, isLegacy: false): Format | null;
+function toFormat(filename: string, isLegacy: boolean): Format | null {
   if (filename.endsWith('.cjs')) {
     return 'commonjs';
   } else if (filename.endsWith('.mjs')) {
     return 'module';
   } else if (filename.endsWith('.js')) {
-    return undefined;
+    return isLegacy ? 'commonjs' : null;
   } else if (filename.endsWith('.mts')) {
     return 'module-typescript';
   } else if (filename.endsWith('.cts')) {
     return 'commonjs-typescript';
   } else if (filename.endsWith('.ts')) {
-    return 'typescript';
+    return isLegacy ? 'commonjs-typescript' : 'typescript';
   } else {
-    return undefined;
-  }
-}
-
-function isTypescriptFilename(filename: string) {
-  switch (toFormat(filename)) {
-    case 'module-typescript':
-    case 'commonjs-typescript':
-    case 'typescript':
-      return true;
-    default:
-      return false;
+    return null;
   }
 }
 
@@ -79,17 +84,18 @@ export interface ModuleOptions {
   paths?: string[];
 }
 
-function compileModule<T = any>(code: string, filename: string, opts: ModuleOptions): T {
-  const format = toFormat(filename);
+function compileModule(code: string, filename: string, opts: ModuleOptions) {
+  const format = toFormat(filename, false);
   const prependPaths = opts.paths ?? [];
   const nodeModulePaths = nodeModule._nodeModulePaths(path.dirname(filename));
   const paths = [...prependPaths, ...nodeModulePaths];
   try {
     const mod = Object.assign(new nodeModule.Module(filename, parent), { filename, paths });
-    mod._compile(code, filename, format);
+    mod._compile(code, filename, format != null ? format : undefined);
+    mod.loaded = true;
     require.cache[filename] = mod;
     parent?.children?.splice(parent.children.indexOf(mod), 1);
-    return mod.exports;
+    return mod;
   } catch (error: any) {
     delete require.cache[filename];
     throw error;
@@ -98,19 +104,27 @@ function compileModule<T = any>(code: string, filename: string, opts: ModuleOpti
 
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
 
-function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
+function evalModule(
+  code: string,
+  filename: string,
+  opts: ModuleOptions = {},
+  format: Format = toFormat(filename, true)
+) {
   let inputCode = code;
   let inputFilename = filename;
   let diagnostic: ts.Diagnostic | undefined;
-  if (filename.endsWith('.ts') || filename.endsWith('.cts') || filename.endsWith('.mts')) {
-    const ext = path.extname(filename);
+  if (
+    format === 'typescript' ||
+    format === 'module-typescript' ||
+    format === 'commonjs-typescript'
+  ) {
     const ts = loadTypescript();
 
     if (ts) {
       let module: ts.ModuleKind;
-      if (ext === '.cts') {
+      if (format === 'commonjs-typescript') {
         module = ts.ModuleKind.CommonJS;
-      } else if (ext === '.mts') {
+      } else if (format === 'module-typescript') {
         module = ts.ModuleKind.ESNext;
       } else {
         // NOTE(@kitten): We can "preserve" the output, meaning, it can either be ESM or CJS
@@ -148,11 +162,14 @@ function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
     }
 
     if (inputCode !== code) {
+      const ext = path.extname(filename);
       const inputExt = tsExtensionMapping[ext] ?? ext;
       if (inputExt !== ext) {
         inputFilename = path.join(path.dirname(filename), path.basename(filename, ext) + inputExt);
       }
     }
+  } else if (format === 'commonjs') {
+    inputCode = toCommonJS(filename, code);
   }
 
   try {
@@ -160,11 +177,15 @@ function evalModule(code: string, filename: string, opts: ModuleOptions = {}) {
     if (inputFilename !== filename) {
       require.cache[filename] = mod;
     }
-    return mod;
+    return mod.exports;
   } catch (error: any) {
     // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
     // since it's likely more useful than the eval error
-    throw formatDiagnostic(diagnostic) ?? annotateError(code, filename, error) ?? error;
+    const diagnosticError = formatDiagnostic(diagnostic);
+    if (diagnosticError) {
+      throw diagnosticError;
+    }
+    throw annotateError(code, filename, error) ?? error;
   }
 }
 
@@ -194,20 +215,33 @@ async function loadModule(filename: string) {
  * NOTE: Requiring ESM has been added in all LTS versions (Node 20.19+, 22.12+, 24).
  * This already forms the minimum required Node version as of Expo SDK 54 */
 function loadModuleSync(filename: string) {
+  const format = toFormat(filename, true);
+  const isTypeScript =
+    format === 'module-typescript' || format === 'commonjs-typescript' || format === 'typescript';
   try {
-    if (!isTypescriptFilename(filename)) {
+    if (format !== 'module' && !isTypeScript) {
       return require(filename);
     }
   } catch (error: any) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw error;
+    } else if (format == null) {
+      const code = maybeReadFileSync(filename);
+      throw annotateError(code, filename, error) || error;
     }
     // We fallback to always evaluating the entrypoint module
     // This is out of safety, since we're not trusting the requiring ESM feature
     // and evaluating the module manually bypasses the error when it's flagged off
   }
+
+  // Load from cache manually, if `loaded` is set and exports are defined, to avoid
+  // double transform or double evaluation
+  if (require.cache[filename]?.exports && require.cache[filename].loaded) {
+    return require.cache[filename].exports;
+  }
+
   const code = fs.readFileSync(filename, 'utf8');
-  return evalModule(code, filename);
+  return evalModule(code, filename, {}, format);
 }
 
 export { evalModule, loadModule, loadModuleSync };

@@ -30,8 +30,11 @@ export interface DismissalBoundsRect {
 }
 export interface ZoomTransitionTargetContextValueType {
     identifier: string | null;
-    dismissalBoundsRect?: DismissalBoundsRect | null;
-    setDismissalBoundsRect?: (rect: DismissalBoundsRect | null) => void;
+    dismissalBoundsRect: DismissalBoundsRect | undefined | null;
+    setDismissalBoundsRect: (rect: DismissalBoundsRect | null) => void;
+    addEnabler: () => void;
+    removeEnabler: () => void;
+    hasEnabler: boolean;
 }
 export declare const ZoomTransitionTargetContext: import("react").Context<ZoomTransitionTargetContextValueType>;
 //# sourceMappingURL=zoom-transition-context.d.ts.map

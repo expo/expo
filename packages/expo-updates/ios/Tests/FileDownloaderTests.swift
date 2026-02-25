@@ -98,6 +98,7 @@ private class MockURLProtocol: URLProtocol {
 }
 
 @Suite("FileDownloader", .serialized)
+@MainActor
 class FileDownloaderTests {
   var testDatabaseDir: URL
   var testUpdatesDir: URL

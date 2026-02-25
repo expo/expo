@@ -147,5 +147,119 @@ jobs:
           channel: '#expo-android'
           author_name: E2E Test Suite for Expo Brownfield
 
-  # TODO(pmleczek): Add iOS job
-  # ios-e2e:
+  ios-e2e:
+    runs-on: macos-15
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_ios == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [release]
+        # TODO(pmleczek): Add dev menu tests for iOS and Android
+        # build-type: [debug, release]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
+          # TODO(cedric): swap `latest` back once the issue is resolved
+          bun-version: latest
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
+      - name: 🍺 Install required tools
+        run: |
+          brew install watchman || true
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
+      - name: 🔄 Setup ccache
+        run: |
+          brew install ccache
+
+          # In order to use ccache with Xcode, unlike on Android, we can't just change env variables - we need to change PATH.
+          MKDIR_PATH=$HOME/.ccache_bin
+          mkdir -p $MKDIR_PATH
+          ln -sf $(which ccache) $MKDIR_PATH/clang
+          ln -sf $(which ccache) $MKDIR_PATH/clang++
+          ln -sf $(which ccache) $MKDIR_PATH/cc
+          ln -sf $(which ccache) $MKDIR_PATH/c++
+          echo "$MKDIR_PATH" >> $GITHUB_PATH
+          echo "CC=$MKDIR_PATH/clang" >> $GITHUB_ENV
+          echo "CXX=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+          echo "LD=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+          echo "LDPLUSPLUS=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+
+          # By default ccache includes mtime of a compiler in hashes, for each CI run mtime varies.
+          echo "CCACHE_COMPILERCHECK=content" >> $GITHUB_ENV
+
+          # It must be the same as in .github/actions/expo-caches/action.yml
+          echo "CCACHE_DIR=${{ runner.temp }}/.ccache" >> $GITHUB_ENV
+
+          # Sloppiness options disable some of the ccache checks to increase hit rate.
+          # We exclude ctime and mtime so the cache is hit based on file content.
+          # time_macros might help if in included modules there are macros like __TIME__ which would trigger a cache miss.
+          # modules, clang_index_store, system_headers, and ivfsoverlay are Xcode-specific options.
+          echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,modules,clang_index_store,system_headers,ivfsoverlay" >> $GITHUB_ENV
+
+          # Speeds up the process on cache misses by skipping the preprocessing step.
+          echo "CCACHE_DEPEND=true" >> $GITHUB_ENV
+
+          # Speeds up copying files on cache hits; natively supported by macOS APFS.
+          echo "CCACHE_FILECLONE=true" >> $GITHUB_ENV
+      - name: ♻️ Restore ccache
+        id: ccache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/.ccache
+          key: ccache-ios-brownfield-${{ hashFiles('yarn.lock', '**/Podfile.lock') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-ios-brownfield-${{ hashFiles('yarn.lock', '**/Podfile.lock') }}-
+            ccache-ios-brownfield-
+      - name: 🔄 Reset ccache statistics
+        run: ccache -z
+      - name: 💎 Install xcodeproj gem
+        run: gem install xcodeproj
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
+      - name: 🍏 Build iOS artifacts (apps/brownfield-tester/expo-app)
+        run: |
+          npx expo prebuild --clean -p ios
+          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose -a ../../../artifacts
+        working-directory: apps/brownfield-tester/expo-app
+      - name: 💾 Save ccache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/.ccache
+          key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
+      - name: 🔨 Add XCFrameworks to SwiftUI project
+        run: ruby packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
+      - name: 🍺 Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🧪 Run e2e tests (isolated brownfield)
+        run: ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
+      - name: Show ccache stats
+        run: ccache -s -v
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        with:
+          webhook: ${{ secrets.slack_webhook_ios }}
+          channel: '#expo-ios'
+          author_name: E2E Test Suite for Expo Brownfield

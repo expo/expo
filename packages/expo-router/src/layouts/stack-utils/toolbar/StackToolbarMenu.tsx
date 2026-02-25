@@ -13,6 +13,7 @@ import {
   type StyleProp,
   type TextStyle,
 } from 'react-native';
+import type { PlatformIconIOS } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { useToolbarPlacement } from './context';
@@ -304,6 +305,19 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
   return item;
 }
 
+// Custom menu action icons are not supported in react-navigation yet
+// But they are supported in react-native-screens
+// TODO(@ubax): Remove this workaround once react-navigation supports custom icons for menu actions.
+// https://linear.app/expo/issue/ENG-19853/remove-custom-conversion-logic-for-icon-from-packagesexpo
+function convertImageIconToPlatformIcon(icon: {
+  source: ImageSourcePropType;
+  tinted?: boolean;
+}): PlatformIconIOS {
+  return icon.tinted
+    ? { type: 'templateSource', templateSource: icon.source }
+    : { type: 'imageSource', imageSource: icon.source };
+}
+
 function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
   props: StackToolbarMenuProps
 ): NativeStackHeaderItemMenuSubmenu | undefined {
@@ -342,14 +356,12 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
   // TODO: Add elementSize to react-native-screens
 
   if (sharedProps.icon) {
-    // Only SF Symbols are supported in submenu icons
-    // TODO(@ubax): Add support for other images in react-native-screens
     if (sharedProps.icon.type === 'sfSymbol') {
       item.icon = sharedProps.icon;
     } else {
-      console.warn(
-        'When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
-      );
+      item.icon = convertImageIconToPlatformIcon(
+        sharedProps.icon
+      ) as unknown as NativeStackHeaderItemMenuSubmenu['icon'];
     }
   }
 
@@ -486,14 +498,12 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
     item.keepsMenuPresented = unstable_keepPresented;
   }
   if (sharedProps.icon) {
-    // Only SF Symbols are supported in submenu icons
-    // TODO(@ubax): Add support for other images in react-native-screens
     if (sharedProps.icon.type === 'sfSymbol') {
       item.icon = sharedProps.icon;
     } else {
-      console.warn(
-        'When Icon is used inside Stack.Toolbar.MenuAction, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
-      );
+      item.icon = convertImageIconToPlatformIcon(
+        sharedProps.icon
+      ) as unknown as NativeStackHeaderItemMenuAction['icon'];
     }
   }
   return item;

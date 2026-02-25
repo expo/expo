@@ -978,6 +978,12 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
  */
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
 
+/**
+ * Adds a luminance to alpha effect to this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
+ */
+export const luminanceToAlpha = () => createModifier('luminanceToAlpha', {});
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -999,6 +1005,7 @@ export type BuiltInModifier =
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
   | ReturnType<typeof onAppear>
+  | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>

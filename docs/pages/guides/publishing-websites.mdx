@@ -57,6 +57,8 @@ Run the universal export command to compile the project for web:
 
 The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
 
+> **warning** Avoid creating the directory `/public/assets/`. The path `/assets` is reserved by Metro and will cause file access errors during development.
+
 ## Serve locally
 
 Use `npx expo serve` to quickly test locally how your website will be hosted in production. Run the following command to serve the static bundle:

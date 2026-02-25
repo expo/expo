@@ -34,7 +34,8 @@ struct LocalNetworkPermissionView: View {
           .font(.body)
           .foregroundColor(.secondary)
           .multilineTextAlignment(.center)
-        
+          .fixedSize(horizontal: false, vertical: true)
+
         VStack(spacing: 12) {
           if !hasRequestedPermission {
             continueButton
@@ -98,6 +99,7 @@ struct LocalNetworkPermissionView: View {
         .font(.footnote)
         .foregroundColor(.secondary)
         .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
     }
   }
 
@@ -128,10 +130,11 @@ struct LocalNetworkPermissionView: View {
 
   private var noAccessButtons: some View {
     Group {
-      Text("Local network permission was not granted. Please enable it in Settings \u{2192} Privacy & Security \u{2192} Local Network.")
+      Text("Local network permission was not granted. Enable it in Settings \u{2192} Privacy & Security \u{2192} Local Network.")
         .font(.footnote)
         .foregroundColor(.secondary)
         .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
 
       Button {
         #if os(iOS)
