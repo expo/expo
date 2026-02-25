@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `deleteDatabaseSync` not removing WAL and SHM sidecar files on iOS and Android. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@jmalmo](https://github.com/jmalmo))
+- Fixed `deleteDatabaseSync` not removing WAL and SHM sidecar files on iOS and Android. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@jmalmo](https://github.com/jmalmo)) ([#43442](https://github.com/expo/expo/pull/43442) by [@jmalmo](https://github.com/jmalmo))
 
 ### 💡 Others
 
