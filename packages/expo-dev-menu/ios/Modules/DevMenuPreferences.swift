@@ -42,7 +42,7 @@ public class DevMenuPreferences: Module {
       keyCommandsEnabledKey: true,
       showsAtLaunchKey: false,
       isOnboardingFinishedKey: false,
-      showFloatingActionButtonKey: false
+      showFloatingActionButtonKey: true
     ])
     #endif
 

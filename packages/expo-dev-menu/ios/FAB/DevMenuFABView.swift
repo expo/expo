@@ -6,8 +6,8 @@ import SwiftUI
 
 enum FABConstants {
   static let iconSize: CGFloat = 44
-  static let margin: CGFloat = 16
-  static let verticalPadding: CGFloat = 20
+  static let margin: CGFloat = 10
+  static let verticalPadding: CGFloat = 0
   static let dragThreshold: CGFloat = 10
   static let momentumFactor: CGFloat = 0.35
   static let labelDismissDelay: TimeInterval = 10
@@ -52,7 +52,7 @@ struct FabPill: View {
         }
 
       if showLabel {
-        Text("Dev menu")
+        Text("Tools")
           .font(.system(size: 11, weight: .medium))
           .foregroundStyle(.secondary)
           .fixedSize()
@@ -77,15 +77,6 @@ struct FabPill: View {
     }
   }
 
-  @ViewBuilder
-  private var actionButton: some View {
-    if #available(iOS 26.0, *) {
-      liquidGlassButton
-    } else {
-      classicButton
-    }
-  }
-
   private func startIdleTimer() {
     idleTask?.cancel()
     idleTask = Task {
@@ -99,22 +90,7 @@ struct FabPill: View {
     }
   }
 
-  @available(iOS 26.0, *)
-  private var liquidGlassButton: some View {
-    Image(systemName: "gearshape.fill")
-      .resizable()
-      .frame(width: FABConstants.imageSize, height: FABConstants.imageSize)
-      .foregroundStyle(.white)
-      .frame(width: FABConstants.iconSize, height: FABConstants.iconSize)
-      .background(
-        Circle()
-          .frame(width: FABConstants.iconSize + 10, height: FABConstants.iconSize + 10)
-          .glassEffect(.clear, in: Circle())
-      )
-      .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
-  }
-
-  private var classicButton: some View {
+  private var actionButton: some View {
     Image(systemName: "gearshape.fill")
       .resizable()
       .frame(width: FABConstants.imageSize, height: FABConstants.imageSize)
@@ -136,15 +112,32 @@ struct DevMenuFABView: View {
 
   private let fabSize = CGSize(width: 72, height: FABConstants.iconSize + 50)
 
+  // UserDefaults keys for persisting position
+  private static let positionXKey = "DevMenuFAB.positionX"
+  private static let positionYKey = "DevMenuFAB.positionY"
+  private static let hasStoredPositionKey = "DevMenuFAB.hasStoredPosition"
+
+  private static func loadStoredPosition() -> CGPoint? {
+    guard UserDefaults.standard.bool(forKey: hasStoredPositionKey) else { return nil }
+    let x = UserDefaults.standard.double(forKey: positionXKey)
+    let y = UserDefaults.standard.double(forKey: positionYKey)
+    return CGPoint(x: x, y: y)
+  }
+
+  private static func savePosition(_ position: CGPoint) {
+    UserDefaults.standard.set(position.x, forKey: positionXKey)
+    UserDefaults.standard.set(position.y, forKey: positionYKey)
+    UserDefaults.standard.set(true, forKey: hasStoredPositionKey)
+  }
+
   @State private var position: CGPoint = .zero
-  @State private var targetPosition: CGPoint = .zero
   @State private var isDragging = false
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
 
   private let dragSpring: Animation = .spring(
-    response: 0.35,
-    dampingFraction: 0.35,
+    response: 0.25,
+    dampingFraction: 0.85,
     blendDuration: 0
   )
 
@@ -161,7 +154,21 @@ struct DevMenuFABView: View {
         .position(x: currentFrame.midX, y: currentFrame.midY)
         .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
         .onAppear {
-          let initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
+          let initialPos: CGPoint
+          if let storedPos = Self.loadStoredPosition() {
+            let margin = FABConstants.margin
+            let minX = margin / 2
+            let maxX = geometry.size.width - fabSize.width - margin / 2
+            let minY = safeArea.top + FABConstants.verticalPadding
+            let maxY = geometry.size.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
+
+            initialPos = CGPoint(
+              x: storedPos.x.clamped(to: minX...maxX),
+              y: storedPos.y.clamped(to: minY...maxY)
+            )
+          } else {
+            initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
+          }
           position = initialPos
           onFrameChange(CGRect(origin: initialPos, size: fabSize))
         }
@@ -192,19 +199,10 @@ struct DevMenuFABView: View {
           dragStartPosition = position
         }
         if isDragging {
-          let margin = FABConstants.margin
-          let minX = margin
-          let maxX = bounds.width - fabSize.width - margin
-          let minY = margin + safeArea.top + FABConstants.verticalPadding
-          let maxY = bounds.height - fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
-
           let rawX = dragStartPosition.x + value.translation.width
           let rawY = dragStartPosition.y + value.translation.height
 
-          position = CGPoint(
-            x: rawX.clamped(to: minX...maxX),
-            y: rawY.clamped(to: minY...maxY)
-          )
+          position = CGPoint(x: rawX, y: rawY)
           onFrameChange(currentFrame)
         }
       }
@@ -231,6 +229,7 @@ struct DevMenuFABView: View {
           DispatchQueue.main.async {
             isDragging = false
             position = newPos
+            Self.savePosition(newPos)
             onFrameChange(CGRect(origin: newPos, size: fabSize))
           }
         }
@@ -239,8 +238,8 @@ struct DevMenuFABView: View {
 
   private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
     CGPoint(
-      x: bounds.width - fabSize.width - FABConstants.margin,
-      y: bounds.height * 0.25
+      x: bounds.width - fabSize.width - FABConstants.margin / 2,
+      y: safeArea.top + FABConstants.verticalPadding
     )
   }
 
@@ -251,16 +250,17 @@ struct DevMenuFABView: View {
     safeArea: EdgeInsets
   ) -> CGPoint {
     let margin = FABConstants.margin
+    let edgeMargin = margin / 2  // Closer to screen edge when snapped
     let momentumX = velocity.x * FABConstants.momentumFactor
     let momentumY = velocity.y * FABConstants.momentumFactor
 
     let estimatedCenterX = point.x + self.fabSize.width / 2 + momentumX
     let targetX: CGFloat = estimatedCenterX < bounds.width / 2
-      ? margin
-    : bounds.width - self.fabSize.width - margin
+      ? edgeMargin
+    : bounds.width - self.fabSize.width - edgeMargin
 
-    let minY = margin + safeArea.top + FABConstants.verticalPadding
-    let maxY = bounds.height - self.fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
+    let minY = safeArea.top + FABConstants.verticalPadding
+    let maxY = bounds.height - self.fabSize.height - safeArea.bottom - FABConstants.verticalPadding
     let targetY = (point.y + momentumY).clamped(to: minY...maxY)
 
     return CGPoint(x: targetX, y: targetY)
