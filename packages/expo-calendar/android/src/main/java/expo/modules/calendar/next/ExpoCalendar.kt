@@ -7,15 +7,21 @@ import android.database.Cursor
 import android.provider.CalendarContract
 import expo.modules.calendar.domain.calendar.CalendarRepository
 import expo.modules.calendar.domain.event.enums.Availability
+import expo.modules.calendar.next.domain.CalendarEntity
 import expo.modules.calendar.next.exceptions.CalendarCouldNotBeUpdatedException
 import expo.modules.calendar.next.exceptions.CalendarNotFoundException
 import expo.modules.calendar.next.exceptions.CalendarNotSupportedException
 import expo.modules.calendar.next.exceptions.EventNotFoundException
 import expo.modules.calendar.next.exceptions.EventsCouldNotBeCreatedException
-import expo.modules.calendar.next.extensions.toCalendarRecord
+import expo.modules.calendar.next.extensions.toCalendarEntity
 import expo.modules.calendar.next.extensions.toEventRecord
+import expo.modules.calendar.next.mappers.CalendarMapper
+import expo.modules.calendar.next.records.AlarmMethod as AlarmMethodRecord
+import expo.modules.calendar.next.records.AttendeeType
+import expo.modules.calendar.next.records.CalendarAccessLevel
 import expo.modules.calendar.next.records.CalendarRecord
 import expo.modules.calendar.next.records.EventRecord
+import expo.modules.calendar.next.records.Source
 import expo.modules.calendar.next.utils.findEvents
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
@@ -23,18 +29,56 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.TimeZone
+import androidx.core.graphics.toColorInt
 
 class ExpoCalendar(
   context: AppContext,
-  var calendarRecord: CalendarRecord? = CalendarRecord()
+  mapper: CalendarMapper,
+  entity: CalendarEntity
 ) : SharedObject(context) {
+  var id: String? private set
+  var title: String? private set
+  var name: String? private set
+  var source: Source? private set
+  var color: String? private set
+  var isVisible: Boolean private set
+  var isSynced: Boolean private set
+  var timeZone: String? private set
+  var isPrimary: Boolean private set
+  var allowsModifications: Boolean private set
+  var allowedAvailabilities: List<String> private set
+  var allowedReminders: List<AlarmMethodRecord> private set
+  var allowedAttendeeTypes: List<AttendeeType> private set
+  var ownerAccount: String? private set
+  var accessLevel: CalendarAccessLevel? private set
+
+  init {
+    mapper.toExpoCalendarData(entity)
+      .also { data ->
+        id = data.id
+        title = data.title
+        name = data.name
+        source = data.source
+        color = data.color
+        isVisible = data.isVisible
+        isSynced = data.isSynced
+        timeZone = data.timeZone
+        isPrimary = data.isPrimary
+        allowsModifications = data.allowsModifications
+        ownerAccount = data.ownerAccount
+        accessLevel = data.accessLevel
+        allowedAvailabilities = data.allowedAvailabilities
+        allowedReminders = data.allowedReminders
+        allowedAttendeeTypes = data.allowedAttendeeTypes
+      }
+  }
 
   val reactContext: Context
     get() = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
 
   suspend fun getEvents(startDate: String, endDate: String): List<ExpoCalendarEvent> {
     try {
-      if (calendarRecord?.id == null) {
+      if (id == null) {
         throw EventNotFoundException("Calendar id is null")
       }
       val contentResolver = reactContext.contentResolver
@@ -43,7 +87,7 @@ class ExpoCalendar(
         contentResolver,
         startDate,
         endDate,
-        listOf(calendarRecord?.id ?: "")
+        listOf(id ?: "")
       ).use { serializeExpoCalendarEvents(it) }
     } catch (e: Exception) {
       throw EventNotFoundException("Events could not be found", e)
@@ -52,12 +96,12 @@ class ExpoCalendar(
 
   suspend fun deleteCalendar(): Boolean {
     return withContext(Dispatchers.IO) {
-      val calendarID = calendarRecord?.id?.toLongOrNull()
+      val calendarID = id?.toLongOrNull()
         ?: throw EventNotFoundException("Calendar id is null")
       val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID)
       val contentResolver = reactContext.contentResolver
       val rows = contentResolver.delete(uri, null, null)
-      calendarRecord = null
+      update(CalendarRecord())
       rows > 0
     }
   }
@@ -69,7 +113,7 @@ class ExpoCalendar(
           ?: throw Exceptions.AppContextLost(),
         record
       )
-      val calendarId = calendarRecord?.id
+      val calendarId = id
         ?: throw EventsCouldNotBeCreatedException("Calendar id is null")
       val newEventId = event.saveEvent(record, calendarId)
       event.reloadEvent(newEventId.toString())
@@ -79,9 +123,26 @@ class ExpoCalendar(
     }
   }
 
+  fun update(record: CalendarRecord) {
+    id = record.id
+    title = record.title
+    name = record.name
+    source = record.source
+    color = record.color?.let { String.format("#%06X", 0xFFFFFF and it) }
+    isVisible = record.isVisible
+    isSynced = record.isSynced
+    timeZone = record.timeZone
+    isPrimary = record.isPrimary
+    allowsModifications = record.allowsModifications
+    allowedAvailabilities = record.allowedAvailabilities
+    allowedReminders = record.allowedReminders
+    allowedAttendeeTypes = record.allowedAttendeeTypes
+    ownerAccount = record.ownerAccount
+    accessLevel = record.accessLevel
+  }
+
   fun getUpdatedRecord(other: CalendarRecord, nullableFields: List<String>? = null): CalendarRecord {
     val nullableSet = nullableFields?.toSet() ?: emptySet()
-    val current = calendarRecord ?: CalendarRecord()
 
     fun <T> getValue(fieldName: String, otherValue: T?, currentValue: T): T =
       if (fieldName in nullableSet) currentValue else otherValue ?: currentValue
@@ -90,21 +151,22 @@ class ExpoCalendar(
       if (fieldName in nullableSet) null else otherValue ?: currentValue
 
     return CalendarRecord(
-      id = getNullableValue("id", other.id, current.id),
-      title = getNullableValue("title", other.title, current.title),
-      name = getNullableValue("name", other.name, current.name),
-      source = getNullableValue("source", other.source, current.source),
-      color = getNullableValue("color", other.color, current.color),
-      isVisible = getValue("isVisible", other.isVisible, current.isVisible),
-      isSynced = getValue("isSynced", other.isSynced, current.isSynced),
-      timeZone = getNullableValue("timeZone", other.timeZone, current.timeZone),
-      isPrimary = getValue("isPrimary", other.isPrimary, current.isPrimary),
-      allowsModifications = getValue("allowsModifications", other.allowsModifications, current.allowsModifications),
-      allowedAvailabilities = getValue("allowedAvailabilities", other.allowedAvailabilities, current.allowedAvailabilities),
-      allowedReminders = getValue("allowedReminders", other.allowedReminders, current.allowedReminders),
-      allowedAttendeeTypes = getValue("allowedAttendeeTypes", other.allowedAttendeeTypes, current.allowedAttendeeTypes),
-      ownerAccount = getNullableValue("ownerAccount", other.ownerAccount, current.ownerAccount),
-      accessLevel = getNullableValue("accessLevel", other.accessLevel, current.accessLevel)
+      id = getNullableValue("id", other.id, id),
+      title = getNullableValue("title", other.title, title),
+      name = getNullableValue("name", other.name, name),
+      source = getNullableValue("source", other.source, source),
+      // TODO: Remove temporary color parsing
+      color = getNullableValue("color", other.color, color?.toColorInt()),
+      isVisible = getValue("isVisible", other.isVisible, isVisible),
+      isSynced = getValue("isSynced", other.isSynced, isSynced),
+      timeZone = getNullableValue("timeZone", other.timeZone, timeZone),
+      isPrimary = getValue("isPrimary", other.isPrimary, isPrimary),
+      allowsModifications = getValue("allowsModifications", other.allowsModifications, allowsModifications),
+      allowedAvailabilities = getValue("allowedAvailabilities", other.allowedAvailabilities, allowedAvailabilities),
+      allowedReminders = getValue("allowedReminders", other.allowedReminders, allowedReminders),
+      allowedAttendeeTypes = getValue("allowedAttendeeTypes", other.allowedAttendeeTypes, allowedAttendeeTypes),
+      ownerAccount = getNullableValue("ownerAccount", other.ownerAccount, ownerAccount),
+      accessLevel = getNullableValue("accessLevel", other.accessLevel, accessLevel)
     )
   }
 
@@ -217,7 +279,7 @@ class ExpoCalendar(
       }
     }
 
-    suspend fun findExpoCalendars(context: AppContext, type: String?): List<ExpoCalendar> {
+    suspend fun findExpoCalendars(context: AppContext, mapper: CalendarMapper, type: String?): List<ExpoCalendar> {
       return withContext(Dispatchers.IO) {
         try {
           if (type != null && type == "reminder") {
@@ -231,14 +293,14 @@ class ExpoCalendar(
           val projection = CalendarRepository.findCalendarsQueryParameters
           val cursor = contentResolver.query(uri, projection, null, null, null)
           requireNotNull(cursor) { "Cursor shouldn't be null" }
-          cursor.use { serializeExpoCalendars(context, it) }
+          cursor.use { serializeExpoCalendars(context, mapper, it) }
         } catch (e: Exception) {
           throw CalendarNotFoundException("Calendars could not be found", e)
         }
       }
     }
 
-    suspend fun findExpoCalendarById(context: AppContext, calendarID: String): ExpoCalendar? {
+    suspend fun findExpoCalendarById(context: AppContext, mapper: CalendarMapper, calendarID: String): ExpoCalendar? {
       return withContext(Dispatchers.IO) {
         val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
         val contentResolver = (
@@ -257,7 +319,7 @@ class ExpoCalendar(
         cursor.use {
           if (it.count > 0) {
             it.moveToFirst()
-            ExpoCalendar(context, calendarRecord = cursor.toCalendarRecord())
+            ExpoCalendar(context, mapper, entity = cursor.toCalendarEntity())
           } else {
             null
           }
@@ -285,10 +347,10 @@ class ExpoCalendar(
       }
     }
 
-    private fun serializeExpoCalendars(context: AppContext, cursor: Cursor): List<ExpoCalendar> {
+    private fun serializeExpoCalendars(context: AppContext, mapper: CalendarMapper, cursor: Cursor): List<ExpoCalendar> {
       val results = mutableListOf<ExpoCalendar>()
       while (cursor.moveToNext()) {
-        results.add(ExpoCalendar(context, calendarRecord = cursor.toCalendarRecord()))
+        results.add(ExpoCalendar(context, mapper, entity = cursor.toCalendarEntity()))
       }
       return results
     }

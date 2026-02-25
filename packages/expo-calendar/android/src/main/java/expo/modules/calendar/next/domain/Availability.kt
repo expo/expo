@@ -1,0 +1,29 @@
+package expo.modules.calendar.next.domain
+
+import android.provider.CalendarContract
+
+enum class Availability(val value: String) {
+  FREE("free"),
+  TENTATIVE("tentative"),
+  BUSY("busy");
+
+  val contentProviderValue: Int get() =
+    when (this) {
+      FREE -> CalendarContract.Events.AVAILABILITY_FREE
+      TENTATIVE -> CalendarContract.Events.AVAILABILITY_TENTATIVE
+      else -> CalendarContract.Events.AVAILABILITY_BUSY
+    }
+
+  companion object {
+    fun fromString(value: String): Availability =
+      entries.find { it.value == value } ?: BUSY
+
+    fun fromContentProviderValue(constant: Int): Availability =
+      when (constant) {
+        CalendarContract.Events.AVAILABILITY_FREE -> FREE
+        CalendarContract.Events.AVAILABILITY_TENTATIVE -> TENTATIVE
+        CalendarContract.Events.AVAILABILITY_BUSY -> BUSY
+        else -> BUSY
+      }
+  }
+}
