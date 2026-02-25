@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added `luminanceToAlpha` modifier. ([#43417](https://github.com/expo/expo/pull/43417) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 55.0.0 — 2026-02-25

@@ -158,6 +158,12 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
+internal struct LuminanceToAlphaModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.luminanceToAlpha()
+  }
+}
+
 internal struct BoldModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
@@ -1504,6 +1510,10 @@ extension ViewModifierRegistry {
 
     register("foregroundStyle") { params, appContext, _ in
       return try ForegroundStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("luminanceToAlpha") { params, appContext, _ in
+      return try LuminanceToAlphaModifier(from: params, appContext: appContext)
     }
 
     register("bold") { params, appContext, _ in
