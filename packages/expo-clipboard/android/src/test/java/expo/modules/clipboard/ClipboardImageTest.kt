@@ -1,9 +1,11 @@
 package expo.modules.clipboard
 
+import android.content.ClipDescription
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.util.Base64
 import androidx.test.core.app.ApplicationProvider
 import io.mockk.clearAllMocks
@@ -17,6 +19,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -111,6 +114,51 @@ class ClipboardImageTest {
   @Test(expected = InvalidImageException::class)
   fun `bitmapFromBase64String throws when not a base64`() {
     val bitmap = bitmapFromBase64String("invalid bitmap")
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // API 33
+  fun `image clip should set isSensitive flag on Android 13+`() = runBlocking {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val clipboardTmpDir = tempFolder.newFolder()
+
+    mockkObject(ClipboardFileProvider)
+    every { ClipboardFileProvider.getUriForFile(any(), any(), any()) } returns Uri.parse("content:/image")
+
+    val clip = clipDataFromBase64Image(context, IMG_BASE64, clipboardTmpDir).applyIsSensitive(true)
+    val extras = clip.description.extras
+
+    assertTrue("isSensitive flag should be set", extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true)
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.S]) // API 31
+  fun `image clip should set isSensitive flag on Android 12L and below`() = runBlocking {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val clipboardTmpDir = tempFolder.newFolder()
+
+    mockkObject(ClipboardFileProvider)
+    every { ClipboardFileProvider.getUriForFile(any(), any(), any()) } returns Uri.parse("content:/image")
+
+    val clip = clipDataFromBase64Image(context, IMG_BASE64, clipboardTmpDir).applyIsSensitive(true)
+    val extras = clip.description.extras
+
+    assertTrue("isSensitive flag should be set with legacy key", extras?.getBoolean("android.content.extra.IS_SENSITIVE") == true)
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.S]) // API 31
+  fun `image clip should not set isSensitive flag when false`() = runBlocking {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val clipboardTmpDir = tempFolder.newFolder()
+
+    mockkObject(ClipboardFileProvider)
+    every { ClipboardFileProvider.getUriForFile(any(), any(), any()) } returns Uri.parse("content:/image")
+
+    val clip = clipDataFromBase64Image(context, IMG_BASE64, clipboardTmpDir).applyIsSensitive(false)
+    val extras = clip.description.extras
+
+    assertNull("extras should be null when isSensitive is false", extras)
   }
 
   @Test

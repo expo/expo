@@ -1,6 +1,7 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
+import { flattenPlatformOptions } from './utils/options';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -29,7 +30,8 @@ export async function setStringAsync(text, options = {}) {
     if (!ExpoClipboard.setStringAsync) {
         throw new UnavailabilityError('Clipboard', 'setStringAsync');
     }
-    return ExpoClipboard.setStringAsync(text, options);
+    const flattenedOptions = flattenPlatformOptions(options);
+    return ExpoClipboard.setStringAsync(text, flattenedOptions);
 }
 /**
  * Sets the content of the user's clipboard.
@@ -134,6 +136,7 @@ export async function getImageAsync(options) {
  * Sets an image in the user's clipboard.
  *
  * @param base64Image Image encoded as a base64 string, without MIME type.
+ * @param options Options for the clipboard content to be set.
  *
  * @example
  * ```tsx
@@ -144,11 +147,12 @@ export async function getImageAsync(options) {
  * await Clipboard.setImageAsync(result.base64);
  * ```
  */
-export async function setImageAsync(base64Image) {
+export async function setImageAsync(base64Image, options = {}) {
     if (!ExpoClipboard.setImageAsync) {
         throw new UnavailabilityError('Clipboard', 'setImageAsync');
     }
-    return ExpoClipboard.setImageAsync(base64Image);
+    const flattenedOptions = flattenPlatformOptions(options);
+    return ExpoClipboard.setImageAsync(base64Image, flattenedOptions);
 }
 /**
  * Returns whether the clipboard has an image content.

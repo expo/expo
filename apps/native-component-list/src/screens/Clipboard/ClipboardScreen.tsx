@@ -57,11 +57,26 @@ const SET_STRING_ASYNC_CONFIG: FunctionDescription = {
             { name: 'StringFormat.HTML', value: Clipboard.StringFormat.HTML },
           ],
         },
+        {
+          name: 'android',
+          type: 'object',
+          platforms: ['android'],
+          properties: [
+            {
+              name: 'isSensitive',
+              type: 'boolean',
+              platforms: ['android'],
+              initial: false,
+            },
+          ],
+        },
       ],
     },
   ],
-  actions: (value: string, options: { inputFormat: Clipboard.StringFormat }) =>
-    Clipboard.setStringAsync(value, options),
+  actions: (
+    value: string,
+    options: { inputFormat: Clipboard.StringFormat; android?: { isSensitive?: boolean } }
+  ) => Clipboard.setStringAsync(value, options),
 };
 
 const GET_STRING_ASYNC_CONFIG: FunctionDescription = {
@@ -97,6 +112,27 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
       value: '[selected from image picker]',
     },
     {
+      name: 'options',
+      type: 'object',
+      properties: [
+        {
+          name: 'android',
+          type: 'object',
+          platforms: ['android'],
+          properties: [
+            {
+              name: 'isSensitive',
+              type: 'boolean',
+              platforms: ['android'],
+              initial: false,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  additionalParameters: [
+    {
       name: 'quality',
       type: 'enum',
       values: [
@@ -106,7 +142,7 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
       ],
     },
   ],
-  actions: async (_, quality) => {
+  actions: async (_, options: { android?: { isSensitive?: boolean } }, quality) => {
     const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (granted) {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -117,7 +153,7 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
       if (!result.canceled) {
         const [asset] = result.assets;
         if (asset.base64) {
-          await Clipboard.setImageAsync(asset.base64);
+          await Clipboard.setImageAsync(asset.base64, options);
           return 'Image copied to clipboard';
         }
       }

@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.os.Build
+import android.os.PersistableBundle
 import android.text.Html
 import android.text.Html.FROM_HTML_MODE_LEGACY
 import android.text.Spanned
@@ -53,7 +54,7 @@ class ClipboardModule : Module() {
           val plainText = plainTextFromHtml(content)
           ClipData.newHtmlText(null, plainText, content)
         }
-      }
+      }.applyIsSensitive(options.isSensitive)
       clipboardManager.setPrimaryClip(clip)
       return@AsyncFunction true
     }
@@ -89,9 +90,10 @@ class ClipboardModule : Module() {
       }
     }
 
-    AsyncFunction("setImageAsync") Coroutine { imageData: String ->
+    AsyncFunction("setImageAsync") Coroutine { imageData: String, options: SetImageOptions ->
       try {
         val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
+          .applyIsSensitive(options.isSensitive)
         clipboardManager.setPrimaryClip(clip)
       } catch (err: Throwable) {
         err.printStackTrace()
@@ -215,6 +217,32 @@ class ClipboardModule : Module() {
     get() = primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)
 
   // endregion
+}
+
+/**
+ * Applies the isSensitive flag to ClipData.
+ * When set to true, marks the clipboard content as sensitive which:
+ * - Prevents content from appearing in the clipboard preview on Android 13+
+ * - Helps protect sensitive data from shoulder surfing
+ */
+internal fun ClipData.applyIsSensitive(isSensitive: Boolean): ClipData {
+  if (!isSensitive) {
+    return this
+  }
+
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    // Android 13+ (API 33+)
+    description.extras = PersistableBundle().apply {
+      putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+    }
+  } else {
+    // Android 12L and below
+    description.extras = PersistableBundle().apply {
+      putBoolean("android.content.extra.IS_SENSITIVE", true)
+    }
+  }
+
+  return this
 }
 
 private fun plainTextFromHtml(htmlContent: String): String {

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Added `android.isSensitive` option to `setStringAsync` and `setImageAsync` methods. ([#43291](https://github.com/expo/expo/pull/43291) by [@maykonmichel](https://github.com/maykonmichel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -128,7 +128,7 @@ export default {
             throw new PasteFailureException(error.message);
         }
     },
-    async setImageAsync(base64image) {
+    async setImageAsync(base64image, _options) {
         if (!navigator.clipboard) {
             throw new ClipboardUnavailableException();
         }

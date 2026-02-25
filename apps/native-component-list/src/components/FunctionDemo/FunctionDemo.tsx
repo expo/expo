@@ -9,7 +9,6 @@ import Platforms from './Platforms';
 import {
   ActionFunction,
   ArgumentName,
-  ConstantParameter,
   FunctionArgument,
   FunctionParameter,
   OnArgumentChangeCallback,
@@ -208,7 +207,7 @@ Function call that failed:
   `);
 }
 
-function initialArgumentFromParameter(parameter: PrimitiveParameter | ConstantParameter) {
+function initialArgumentFromParameter(parameter: FunctionParameter): FunctionArgument {
   switch (parameter.type) {
     case 'boolean':
       return parameter.initial;
@@ -219,6 +218,12 @@ function initialArgumentFromParameter(parameter: PrimitiveParameter | ConstantPa
       return parameter.values[0].value;
     case 'constant':
       return parameter.value;
+    case 'object':
+      return Object.fromEntries(
+        parameter.properties.map((property) => {
+          return [property.name, initialArgumentFromParameter(property)];
+        })
+      );
   }
 }
 
@@ -237,6 +242,30 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
   });
 }
 
+function updateObjectArgument(
+  args: FunctionArgument,
+  path: string,
+  value: PrimitiveArgument
+): FunctionArgument {
+  if (typeof args !== 'object' || Array.isArray(args)) return args;
+
+  const [key, ...rest] = path.split('.');
+
+  if (rest.length === 0) {
+    return {
+      ...args,
+      [key]: value,
+    };
+  }
+
+  const remainingPath = rest.join('.');
+
+  return {
+    ...args,
+    [key]: updateObjectArgument(args[key], remainingPath, value),
+  };
+}
+
 /**
  * Hook that handles function arguments' values.
  * Initial value is constructed based on the description of each parameter.
@@ -253,10 +282,7 @@ export function useArguments(
       setArgs((currentArgs) => {
         const newArgs = [...currentArgs];
         newArgs[argumentIdx] = parameterIsObject
-          ? {
-              ...(currentArgs[argumentIdx] as object),
-              [name[1]]: newValue,
-            }
+          ? updateObjectArgument(currentArgs[argumentIdx], name[1], newValue)
           : newValue;
         return newArgs;
       });

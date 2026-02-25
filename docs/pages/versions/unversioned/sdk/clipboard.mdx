@@ -65,6 +65,30 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+## Mark clipboard content as sensitive (Android)
+
+When you copy sensitive data such as passwords, one-time passwords (OTPs), access tokens, payment details, or personally identifiable information (PII), set `android.isSensitive` in `setStringAsync` and `setImageAsync`.
+
+Setting `android.isSensitive: true` marks clipboard content as sensitive, based on Android guidance for [secure clipboard handling](https://developer.android.com/privacy-and-security/risks/secure-clipboard-handling#flag-sensitive-data). This can help:
+
+- Obfuscate clipboard previews shown by keyboards
+- Hide clipboard preview overlays on Android 13 and later
+- Reduce accidental exposure from shoulder surfing
+
+```js
+import * as Clipboard from 'expo-clipboard';
+
+// Sensitive text
+await Clipboard.setStringAsync('my-secret-token', {
+  android: { isSensitive: true },
+});
+
+// Sensitive image
+await Clipboard.setImageAsync(base64Image, {
+  android: { isSensitive: true },
+});
+```
+
 ## API
 
 ```js
