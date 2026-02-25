@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Fixed `selectedLens` prop to use stable `deviceType` identifiers instead of locale-dependent `localizedName` strings, enabling reliable programmatic lens selection across all device languages. ([#42916](https://github.com/expo/expo/pull/42916) by [@mplumador](https://github.com/mplumador))
+
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
