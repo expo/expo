@@ -550,6 +550,16 @@ export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
 /**
+ * Disables clipping of a scroll view's content, allowing shadows and other effects
+ * to render outside the scroll view's bounds.
+ * @param disabled - Whether to disable clipping. Default is `true`.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrollclipdisabled(_:)).
+ */
+export const scrollClipDisabled = (disabled: boolean = true) =>
+  createModifier('scrollClipDisabled', { disabled });
+
+/**
  * Disables the move action for a view in a list.
  * Apply to items within a `ForEach` to prevent them from being moved.
  * @param disabled - Whether moving should be disabled
@@ -1053,6 +1063,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>

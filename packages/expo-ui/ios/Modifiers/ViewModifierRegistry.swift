@@ -1816,6 +1816,10 @@ extension ViewModifierRegistry {
       return try ScrollDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("scrollClipDisabled") { params, appContext, _ in
+      return try ScrollClipDisabledModifier(from: params, appContext: appContext)
+    }
+
     register("progressViewStyle") { params, appContext, _ in
       return try ProgressViewStyleModifier(from: params, appContext: appContext)
     }
