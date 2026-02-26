@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Include `@react-navigation/native` and `@react-navigation/core` in duplicates check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
+
 ## 1.18.8 — 2026-02-25
 
 _This version does not introduce any user-facing changes._
