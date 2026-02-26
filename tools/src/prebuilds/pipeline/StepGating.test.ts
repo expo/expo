@@ -2,16 +2,14 @@
  * Tests for step gating — each step's `shouldRun` evaluated against
  * a minimal PrebuildContext built from createRequest/createContext.
  */
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import { createRequest, createContext } from './Context';
 import type { PrebuildCliOptions } from './Context';
-
-// Import individual steps
-import { prepareInputsStep, prepareCacheStep } from './RunSteps';
 import { cleanPackageStep } from './PackageSteps';
 import { cleanProductStep, generateStep, buildStep, composeStep, verifyStep } from './ProductSteps';
+import { prepareInputsStep, prepareCacheStep } from './RunSteps';
 
 // ---------------------------------------------------------------------------
 // Helper: build a context from partial CLI options
@@ -46,9 +44,7 @@ describe('prepare:inputs shouldRun', () => {
 
   it('returns true regardless of flags', () => {
     assert.equal(
-      prepareInputsStep.shouldRun(
-        ctxWith({ clean: true, cleanCache: true, skipGenerate: true })
-      ),
+      prepareInputsStep.shouldRun(ctxWith({ clean: true, cleanCache: true, skipGenerate: true })),
       true
     );
   });

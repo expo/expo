@@ -11,7 +11,6 @@ import chalk from 'chalk';
 import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Dependencies } from '../Dependencies';
-
 import type { PrebuildContext } from './Context';
 import { packageSteps } from './PackageSteps';
 import { productSteps } from './ProductSteps';

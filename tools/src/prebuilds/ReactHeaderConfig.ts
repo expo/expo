@@ -113,12 +113,8 @@ export const PodspecExceptions: Record<string, PodSpecConfiguration | { disabled
           },
           {
             name: 'legacyviewmanagerinterop',
-            headerPatterns: [
-              'react/renderer/components/legacyviewmanagerinterop/**/*.h',
-            ],
-            excludePatterns: [
-              'react/renderer/components/legacyviewmanagerinterop/tests',
-            ],
+            headerPatterns: ['react/renderer/components/legacyviewmanagerinterop/**/*.h'],
+            excludePatterns: ['react/renderer/components/legacyviewmanagerinterop/tests'],
             headerDir: 'react/renderer/components/legacyviewmanagerinterop',
           },
         ],
@@ -256,9 +252,7 @@ export const PodspecExceptions: Record<string, PodSpecConfiguration | { disabled
     subSpecs: [
       {
         name: 'components',
-        headerPatterns: [
-          'FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.h',
-        ],
+        headerPatterns: ['FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.h'],
         headerDir: 'react/renderer/components/FBReactNativeSpec',
       },
     ],
@@ -318,12 +312,8 @@ export const PodspecExceptions: Record<string, PodSpecConfiguration | { disabled
           },
           {
             name: 'switch',
-            headerPatterns: [
-              'react/renderer/components/switch/iosswitch/**/*.h',
-            ],
-            excludePatterns: [
-              'react/renderer/components/switch/iosswitch/**/MacOS*.{m,mm,cpp,h}',
-            ],
+            headerPatterns: ['react/renderer/components/switch/iosswitch/**/*.h'],
+            excludePatterns: ['react/renderer/components/switch/iosswitch/**/MacOS*.{m,mm,cpp,h}'],
             headerDir: 'react/renderer/components/switch/',
           },
           {
@@ -333,30 +323,20 @@ export const PodspecExceptions: Record<string, PodSpecConfiguration | { disabled
           },
           {
             name: 'unimplementedview',
-            headerPatterns: [
-              'react/renderer/components/unimplementedview/**/*.h',
-            ],
-            excludePatterns: [
-              'react/renderer/components/unimplementedview/tests',
-            ],
+            headerPatterns: ['react/renderer/components/unimplementedview/**/*.h'],
+            excludePatterns: ['react/renderer/components/unimplementedview/tests'],
             headerDir: 'react/renderer/components/unimplementedview',
           },
           {
             name: 'virtualview',
-            headerPatterns: [
-              'react/renderer/components/virtualview/**/*.{m,mm,cpp,h}',
-            ],
+            headerPatterns: ['react/renderer/components/virtualview/**/*.{m,mm,cpp,h}'],
             excludePatterns: ['react/renderer/components/virtualview/tests'],
             headerDir: 'react/renderer/components/virtualview',
           },
           {
             name: 'virtualviewexperimental',
-            headerPatterns: [
-              'react/renderer/components/virtualviewexperimental/**/*.h',
-            ],
-            excludePatterns: [
-              'react/renderer/components/virtualviewexperimental/tests',
-            ],
+            headerPatterns: ['react/renderer/components/virtualviewexperimental/**/*.h'],
+            excludePatterns: ['react/renderer/components/virtualviewexperimental/tests'],
             headerDir: 'react/renderer/components/virtualviewexperimental',
           },
           {
@@ -419,9 +399,7 @@ export const PodspecExceptions: Record<string, PodSpecConfiguration | { disabled
       },
       {
         name: 'RCTBlobHeaders',
-        headerPatterns: [
-          'Libraries/Blob/{RCTBlobManager,RCTFileReaderModule}.h',
-        ],
+        headerPatterns: ['Libraries/Blob/{RCTBlobManager,RCTFileReaderModule}.h'],
       },
       { name: 'RCTImageHeaders', headerPatterns: ['Libraries/Image/*.h'] },
       {

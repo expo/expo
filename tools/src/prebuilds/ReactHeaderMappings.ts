@@ -147,10 +147,7 @@ function getHeaderFilesFromPodspec(
 
   const headerMaps: HeaderMap[] = [];
 
-  const processConfig = (
-    config: PodSpecConfiguration,
-    parents: PodSpecConfiguration[]
-  ) => {
+  const processConfig = (config: PodSpecConfiguration, parents: PodSpecConfiguration[]) => {
     if (config.disabled === true) {
       return;
     }

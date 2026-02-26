@@ -5,12 +5,11 @@
  * doesn't throw with valid inputs. More detailed output testing would
  * require mocking the logger.
  */
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { BuildFlavor } from '../Prebuilder.types';
-
 import { logPackageBanner } from './Reporter';
 
 // ---------------------------------------------------------------------------
@@ -35,13 +34,25 @@ function stubPkg(overrides: Partial<SPMPackageSource> = {}): SPMPackageSource {
 describe('logPackageBanner', () => {
   it('does not throw with a single flavor', () => {
     assert.doesNotThrow(() => {
-      logPackageBanner(stubPkg(), 0, 5, ['Debug'] as BuildFlavor[], '/repo/packages/precompile/.cache');
+      logPackageBanner(
+        stubPkg(),
+        0,
+        5,
+        ['Debug'] as BuildFlavor[],
+        '/repo/packages/precompile/.cache'
+      );
     });
   });
 
   it('does not throw with multiple flavors', () => {
     assert.doesNotThrow(() => {
-      logPackageBanner(stubPkg(), 2, 10, ['Debug', 'Release'] as BuildFlavor[], '/repo/packages/precompile/.cache');
+      logPackageBanner(
+        stubPkg(),
+        2,
+        10,
+        ['Debug', 'Release'] as BuildFlavor[],
+        '/repo/packages/precompile/.cache'
+      );
     });
   });
 
@@ -59,7 +70,13 @@ describe('logPackageBanner', () => {
 
   it('does not throw at boundary index (last package)', () => {
     assert.doesNotThrow(() => {
-      logPackageBanner(stubPkg(), 4, 5, ['Debug'] as BuildFlavor[], '/repo/packages/precompile/.cache');
+      logPackageBanner(
+        stubPkg(),
+        4,
+        5,
+        ['Debug'] as BuildFlavor[],
+        '/repo/packages/precompile/.cache'
+      );
     });
   });
 });

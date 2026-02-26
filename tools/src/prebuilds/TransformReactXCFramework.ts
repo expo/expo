@@ -103,11 +103,10 @@ function inventoryStockHeaders(xcframeworkPath: string): Map<string, Set<string>
  *
  * Example: Yoga has both yoga/enums/FlexDirection.h and yoga/algorithm/FlexDirection.h
  */
-function findDuplicateBasenames(
-  headerMappings: PodspecHeaderMappings
-): Map<string, Set<string>> {
+function findDuplicateBasenames(headerMappings: PodspecHeaderMappings): Map<string, Set<string>> {
   const result = new Map<string, Set<string>>();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_podspecPath, headerMaps] of Object.entries(headerMappings)) {
     const podSpecName = headerMaps[0].specName.replace(/-/g, '_');
     const basenameCount = new Map<string, number>();
@@ -158,6 +157,7 @@ async function stageMissingHeadersAsync(
 
   let stagedCount = 0;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [_podspecPath, headerMaps] of Object.entries(headerMappings)) {
     const podSpecName = headerMaps[0].specName.replace(/-/g, '_');
     const podStockHeaders = stockHeaders.get(podSpecName) || new Set<string>();

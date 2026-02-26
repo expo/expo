@@ -5,6 +5,15 @@ import ora from 'ora';
 import path from 'path';
 
 import logger from '../Logger';
+import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
+import {
+  discoverExternalPackagesAsync,
+  ExternalPackage,
+  getExternalPackageByName,
+  isExternalPackage,
+  SPMPackageSource,
+} from './ExternalPackage';
+import { SPMProduct } from './SPMConfig.types';
 
 let _forceNonInteractive = false;
 
@@ -84,15 +93,6 @@ export function hasFileContentChanged(sourcePath: string, destPath: string): boo
     fs.closeSync(destFd);
   }
 }
-import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
-import {
-  discoverExternalPackagesAsync,
-  ExternalPackage,
-  getExternalPackageByName,
-  isExternalPackage,
-  SPMPackageSource,
-} from './ExternalPackage';
-import { SPMProduct } from './SPMConfig.types';
 
 /**
  * Discovers all Expo packages that have spm.config.json files.

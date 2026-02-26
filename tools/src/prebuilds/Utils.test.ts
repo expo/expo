@@ -1,8 +1,8 @@
 /**
  * Tests for Utils — isNonInteractive / setForceNonInteractive.
  */
-import { describe, it, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it, afterEach } from 'node:test';
 
 import { isNonInteractive, setForceNonInteractive } from './Utils';
 

@@ -3,6 +3,8 @@
  *
  * Re-exports the public API and installs signal handling for graceful cancellation.
  */
+import type { PrebuildContext } from './Context';
+
 export { createRequest, createContext } from './Context';
 export type { PrebuildCliOptions, PrebuildRequest, PrebuildContext } from './Context';
 
@@ -28,8 +30,6 @@ export {
   resolveFlavorTemplatedPath,
   CACHE_DEPS,
 } from './RunSteps';
-
-import type { PrebuildContext } from './Context';
 
 /**
  * Install SIGINT/SIGTERM handlers that set `ctx.cancelled = true`

@@ -6,11 +6,7 @@ import path from 'path';
 import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
-import {
-  getBuildFolderPrefixForPlatform,
-  getBuildPlatformsForProduct,
-  SPMBuild,
-} from './SPMBuild';
+import { getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct, SPMBuild } from './SPMBuild';
 import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';

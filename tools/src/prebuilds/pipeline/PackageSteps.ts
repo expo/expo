@@ -4,7 +4,6 @@
  * These run once per package (before iterating over flavors/products).
  */
 import { Dependencies } from '../Dependencies';
-
 import type { PrebuildContext } from './Context';
 import type { Step } from './Types';
 

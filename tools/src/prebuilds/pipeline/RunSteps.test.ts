@@ -4,14 +4,10 @@
  *  - sortPackagesByDependencies
  *  - expandWithUnbuiltDependencies (with mocked fs/getPackageByName)
  */
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
-import {
-  resolveFlavorTemplatedPath,
-  sortPackagesByDependencies,
-  CACHE_DEPS,
-} from './RunSteps';
+import { resolveFlavorTemplatedPath, sortPackagesByDependencies, CACHE_DEPS } from './RunSteps';
 import type { SPMPackageSource } from '../ExternalPackage';
 import type { SPMProduct } from '../SPMConfig.types';
 
@@ -54,7 +50,10 @@ describe('resolveFlavorTemplatedPath', () => {
   });
 
   it('returns path unchanged when no placeholder', () => {
-    assert.equal(resolveFlavorTemplatedPath('/path/to/file.tar.gz', 'Debug'), '/path/to/file.tar.gz');
+    assert.equal(
+      resolveFlavorTemplatedPath('/path/to/file.tar.gz', 'Debug'),
+      '/path/to/file.tar.gz'
+    );
   });
 
   it('substitutes {flavor} with Debug', () => {

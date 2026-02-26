@@ -4,17 +4,17 @@
  * These test the string-returning path functions from Frameworks, SPMBuild,
  * SPMGenerator, Artifacts, and Dependencies — no filesystem, no mocking.
  */
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 import path from 'path';
 
-import { Frameworks } from './Frameworks';
-import { SPMBuild, getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct } from './SPMBuild';
-import { SPMGenerator } from './SPMGenerator';
 import { Artifacts } from './Artifacts';
 import { Dependencies } from './Dependencies';
 import type { SPMPackageSource } from './ExternalPackage';
+import { Frameworks } from './Frameworks';
+import { SPMBuild, getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct } from './SPMBuild';
 import type { SPMProduct, SPMTarget, BuildPlatform } from './SPMConfig.types';
+import { SPMGenerator } from './SPMGenerator';
 
 // ---------------------------------------------------------------------------
 // Stub helpers — minimal objects with only the fields the path functions read
@@ -123,10 +123,7 @@ describe('SPMBuild path functions', () => {
   describe('getPackageBuildPath', () => {
     it('returns frameworks subdirectory under output/<flavor>', () => {
       const result = SPMBuild.getPackageBuildPath(pkg, product, 'Debug');
-      assert.equal(
-        result,
-        path.join(pkg.buildPath, 'output', 'debug', 'frameworks', product.name)
-      );
+      assert.equal(result, path.join(pkg.buildPath, 'output', 'debug', 'frameworks', product.name));
     });
 
     it('uses lowercase flavor', () => {

@@ -20,6 +20,7 @@ import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
 import { isExternalPackage } from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
+import type { BuildFlavor } from '../Prebuilder.types';
 import {
   getVersionsInfoAsync,
   setForceNonInteractive,
@@ -27,8 +28,6 @@ import {
   verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
 } from '../Utils';
-import type { BuildFlavor } from '../Prebuilder.types';
-
 import type { PrebuildContext } from './Context';
 import type { Step } from './Types';
 

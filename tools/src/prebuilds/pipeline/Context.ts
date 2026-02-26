@@ -5,12 +5,11 @@
  * - `PrebuildRequest`     — immutable, normalized intent derived from CLI options
  * - `PrebuildContext`     — mutable runtime state threaded through every step
  */
-import { BuildFlavor, BuildPlatform } from '../index';
 import type { DownloadedDependencies } from '../Artifacts.types';
 import type { SPMPackageSource } from '../ExternalPackage';
-import type { SPMProduct } from '../SPMConfig.types';
 import type { SigningOptions } from '../Frameworks';
-
+import type { SPMProduct } from '../SPMConfig.types';
+import { BuildFlavor, BuildPlatform } from '../index';
 import type { UnitError, UnitStatus } from './Types';
 
 // ---------------------------------------------------------------------------

@@ -9,11 +9,9 @@ import fs from 'fs';
 import path from 'path';
 
 import logger from '../../Logger';
-
 import type { SPMPackageSource } from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
 import type { BuildFlavor } from '../Prebuilder.types';
-
 import type { UnitError, UnitStatus, StageStatus } from './Types';
 
 // ---------------------------------------------------------------------------
@@ -25,11 +23,9 @@ export function logPackageBanner(
   index: number,
   total: number,
   flavors: BuildFlavor[],
-  artifactsPath: string,
+  artifactsPath: string
 ): void {
-  const flavorInfo = flavors.length > 1
-    ? ` [${flavors.join(' + ')}]`
-    : ` [${flavors[0]}]`;
+  const flavorInfo = flavors.length > 1 ? ` [${flavors.join(' + ')}]` : ` [${flavors[0]}]`;
   logger.info(`\n📦 [${index + 1}/${total}] ${chalk.green(pkg.packageName)}${flavorInfo}`);
   logger.info(`${'─'.repeat(60)}`);
   const relPath = (p: string) => path.relative(process.cwd(), p);

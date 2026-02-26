@@ -3,17 +3,16 @@
  *
  * Each step wraps existing module calls without changing their internals.
  */
-import path from 'path';
 
 import chalk from 'chalk';
+import path from 'path';
 
 import logger from '../../Logger';
 import { Codegen } from '../Codegen';
 import { Frameworks } from '../Frameworks';
-import { FrameworkVerifier } from '../Verifier';
 import { SPMBuild } from '../SPMBuild';
 import { SPMGenerator } from '../SPMGenerator';
-
+import { FrameworkVerifier } from '../Verifier';
 import type { PrebuildContext } from './Context';
 import type { Step, ProductStage } from './Types';
 
@@ -27,7 +26,11 @@ function getCurrentUnit(ctx: PrebuildContext) {
   return ctx.statuses.find((s) => s.unitId === unitId);
 }
 
-function setStage(ctx: PrebuildContext, stage: ProductStage, status: 'success' | 'failed' | 'warning') {
+function setStage(
+  ctx: PrebuildContext,
+  stage: ProductStage,
+  status: 'success' | 'failed' | 'warning'
+) {
   const unit = getCurrentUnit(ctx);
   if (unit) {
     unit.stages[stage] = status;
@@ -180,14 +183,11 @@ export const verifyStep: Step<PrebuildContext> = {
     const verifyResults = await FrameworkVerifier.verifyXCFrameworkAsync(pkg, product, flavor);
 
     // Check if verification actually passed
-    const verificationFailed = [...verifyResults.values()].some(
-      (report) => !report.overallSuccess
-    );
+    const verificationFailed = [...verifyResults.values()].some((report) => !report.overallSuccess);
 
     // Check for clang warnings (clang failed but overall passed)
     const hasClangWarnings = [...verifyResults.values()].some(
-      (report) =>
-        report.overallSuccess && report.slices.some((s) => !s.clangModuleImport.success)
+      (report) => report.overallSuccess && report.slices.some((s) => !s.clangModuleImport.success)
     );
 
     if (verificationFailed) {

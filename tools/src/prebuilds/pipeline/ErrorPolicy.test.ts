@@ -3,13 +3,13 @@
  *  - executeStep behavior with each onError policy
  *  - runPrebuildPipeline failure propagation with mock steps
  */
-import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
 
-import { executeStep, runPrebuildPipeline } from './Executor';
-import type { PipelineSteps } from './Executor';
 import { createRequest, createContext } from './Context';
 import type { PrebuildContext, PrebuildCliOptions } from './Context';
+import { executeStep, runPrebuildPipeline } from './Executor';
+import type { PipelineSteps } from './Executor';
 import type { Step } from './Types';
 
 // ---------------------------------------------------------------------------
@@ -33,9 +33,7 @@ function makeCtx(overrides: Partial<PrebuildCliOptions> = {}): PrebuildContext {
   return createContext(createRequest([], opts));
 }
 
-function makeStep(
-  overrides: Partial<Step<PrebuildContext>> = {}
-): Step<PrebuildContext> {
+function makeStep(overrides: Partial<Step<PrebuildContext>> = {}): Step<PrebuildContext> {
   return {
     id: 'test-step',
     scope: 'product',
@@ -63,7 +61,11 @@ describe('executeStep', () => {
     const ctx = makeCtx();
     ctx.cancelled = true;
     let ran = false;
-    const step = makeStep({ run: async () => { ran = true; } });
+    const step = makeStep({
+      run: async () => {
+        ran = true;
+      },
+    });
     const result = await executeStep(step, ctx);
     assert.equal(result, 'stop-run');
     assert.equal(ran, false, 'step.run should not be called when cancelled');
@@ -74,7 +76,9 @@ describe('executeStep', () => {
     let ran = false;
     const step = makeStep({
       shouldRun: () => false,
-      run: async () => { ran = true; },
+      run: async () => {
+        ran = true;
+      },
     });
     const result = await executeStep(step, ctx);
     assert.equal(result, 'ok');
@@ -85,7 +89,9 @@ describe('executeStep', () => {
     const ctx = makeCtx();
     const step = makeStep({
       onError: 'stop-run',
-      run: async () => { throw new Error('boom'); },
+      run: async () => {
+        throw new Error('boom');
+      },
     });
     const result = await executeStep(step, ctx);
     assert.equal(result, 'stop-run');
@@ -98,7 +104,9 @@ describe('executeStep', () => {
     const step = makeStep({
       id: 'generate',
       onError: 'skip-remaining',
-      run: async () => { throw new Error('gen fail'); },
+      run: async () => {
+        throw new Error('gen fail');
+      },
     });
     const result = await executeStep(step, ctx);
     assert.equal(result, 'skip-remaining');
@@ -111,7 +119,9 @@ describe('executeStep', () => {
     const step = makeStep({
       id: 'verify',
       onError: 'continue',
-      run: async () => { throw new Error('verify fail'); },
+      run: async () => {
+        throw new Error('verify fail');
+      },
     });
     const result = await executeStep(step, ctx);
     assert.equal(result, 'ok');
@@ -148,7 +158,9 @@ describe('executeStep', () => {
     const step = makeStep({
       id: 'build',
       onError: 'skip-remaining',
-      run: async () => { throw new Error('build fail'); },
+      run: async () => {
+        throw new Error('build fail');
+      },
     });
 
     await executeStep(step, ctx);
@@ -166,7 +178,9 @@ describe('executeStep', () => {
     const step = makeStep({
       id: 'clean:product',
       onError: 'skip-remaining',
-      run: async () => { throw new Error('clean fail'); },
+      run: async () => {
+        throw new Error('clean fail');
+      },
     });
     await executeStep(step, ctx);
     assert.equal(ctx.errors[0].stage, 'clean');
@@ -177,7 +191,9 @@ describe('executeStep', () => {
     const step = makeStep({
       id: 'prepare:inputs',
       onError: 'stop-run',
-      run: async () => { throw new Error('prepare fail'); },
+      run: async () => {
+        throw new Error('prepare fail');
+      },
     });
     await executeStep(step, ctx);
     assert.equal(ctx.errors[0].stage, 'prepare');
@@ -192,20 +208,24 @@ describe('runPrebuildPipeline', () => {
   it('returns exitCode 0 when all steps succeed', async () => {
     const ctx = makeCtx({ flavor: 'Debug' });
     // Provide a package with a product so the pipeline has work to do
-    ctx.packages = [{
-      path: '/pkg',
-      buildPath: '/build',
-      packageName: 'test-pkg',
-      packageVersion: '1.0.0',
-      getSwiftPMConfiguration: () => ({
-        products: [{
-          name: 'TestProduct',
-          podName: 'TestProduct',
-          platforms: ['iOS(.v15)' as const],
-          targets: [],
-        }],
-      }),
-    }];
+    ctx.packages = [
+      {
+        path: '/pkg',
+        buildPath: '/build',
+        packageName: 'test-pkg',
+        packageVersion: '1.0.0',
+        getSwiftPMConfiguration: () => ({
+          products: [
+            {
+              name: 'TestProduct',
+              podName: 'TestProduct',
+              platforms: ['iOS(.v15)' as const],
+              targets: [],
+            },
+          ],
+        }),
+      },
+    ];
     ctx.reactNativeVersion = '0.76.0';
     ctx.hermesVersion = 'nightly';
     ctx.artifactsPath = '/cache';
@@ -214,9 +234,33 @@ describe('runPrebuildPipeline', () => {
 
     const ran: string[] = [];
     const noopSteps: PipelineSteps = {
-      run: [makeStep({ id: 'run-step', scope: 'run', run: async () => { ran.push('run'); } })],
-      package: [makeStep({ id: 'pkg-step', scope: 'package', run: async () => { ran.push('pkg'); } })],
-      product: [makeStep({ id: 'prod-step', scope: 'product', run: async () => { ran.push('prod'); } })],
+      run: [
+        makeStep({
+          id: 'run-step',
+          scope: 'run',
+          run: async () => {
+            ran.push('run');
+          },
+        }),
+      ],
+      package: [
+        makeStep({
+          id: 'pkg-step',
+          scope: 'package',
+          run: async () => {
+            ran.push('pkg');
+          },
+        }),
+      ],
+      product: [
+        makeStep({
+          id: 'prod-step',
+          scope: 'product',
+          run: async () => {
+            ran.push('prod');
+          },
+        }),
+      ],
     };
 
     const result = await runPrebuildPipeline(ctx, noopSteps);
@@ -227,12 +271,16 @@ describe('runPrebuildPipeline', () => {
   it('returns exitCode 1 when a run-scope step fails with stop-run', async () => {
     const ctx = makeCtx();
     const noopSteps: PipelineSteps = {
-      run: [makeStep({
-        id: 'run-fail',
-        scope: 'run',
-        onError: 'stop-run',
-        run: async () => { throw new Error('run fail'); },
-      })],
+      run: [
+        makeStep({
+          id: 'run-fail',
+          scope: 'run',
+          onError: 'stop-run',
+          run: async () => {
+            throw new Error('run fail');
+          },
+        }),
+      ],
       package: [],
       product: [],
     };
@@ -243,20 +291,24 @@ describe('runPrebuildPipeline', () => {
 
   it('skips remaining product steps after skip-remaining failure', async () => {
     const ctx = makeCtx({ flavor: 'Debug' });
-    ctx.packages = [{
-      path: '/pkg',
-      buildPath: '/build',
-      packageName: 'test-pkg',
-      packageVersion: '1.0.0',
-      getSwiftPMConfiguration: () => ({
-        products: [{
-          name: 'TestProduct',
-          podName: 'TestProduct',
-          platforms: ['iOS(.v15)' as const],
-          targets: [],
-        }],
-      }),
-    }];
+    ctx.packages = [
+      {
+        path: '/pkg',
+        buildPath: '/build',
+        packageName: 'test-pkg',
+        packageVersion: '1.0.0',
+        getSwiftPMConfiguration: () => ({
+          products: [
+            {
+              name: 'TestProduct',
+              podName: 'TestProduct',
+              platforms: ['iOS(.v15)' as const],
+              targets: [],
+            },
+          ],
+        }),
+      },
+    ];
     ctx.reactNativeVersion = '0.76.0';
     ctx.hermesVersion = 'nightly';
     ctx.artifactsPath = '/cache';
@@ -271,12 +323,16 @@ describe('runPrebuildPipeline', () => {
           id: 'generate',
           scope: 'product',
           onError: 'skip-remaining',
-          run: async () => { throw new Error('gen fail'); },
+          run: async () => {
+            throw new Error('gen fail');
+          },
         }),
         makeStep({
           id: 'build',
           scope: 'product',
-          run: async () => { ran.push('build'); },
+          run: async () => {
+            ran.push('build');
+          },
         }),
       ],
     };
@@ -291,20 +347,24 @@ describe('runPrebuildPipeline', () => {
 
   it('continues with next unit after continue-policy failure', async () => {
     const ctx = makeCtx({ flavor: 'Debug' });
-    ctx.packages = [{
-      path: '/pkg',
-      buildPath: '/build',
-      packageName: 'test-pkg',
-      packageVersion: '1.0.0',
-      getSwiftPMConfiguration: () => ({
-        products: [{
-          name: 'TestProduct',
-          podName: 'TestProduct',
-          platforms: ['iOS(.v15)' as const],
-          targets: [],
-        }],
-      }),
-    }];
+    ctx.packages = [
+      {
+        path: '/pkg',
+        buildPath: '/build',
+        packageName: 'test-pkg',
+        packageVersion: '1.0.0',
+        getSwiftPMConfiguration: () => ({
+          products: [
+            {
+              name: 'TestProduct',
+              podName: 'TestProduct',
+              platforms: ['iOS(.v15)' as const],
+              targets: [],
+            },
+          ],
+        }),
+      },
+    ];
     ctx.reactNativeVersion = '0.76.0';
     ctx.hermesVersion = 'nightly';
     ctx.artifactsPath = '/cache';
@@ -319,12 +379,16 @@ describe('runPrebuildPipeline', () => {
           id: 'verify',
           scope: 'product',
           onError: 'continue',
-          run: async () => { throw new Error('verify fail'); },
+          run: async () => {
+            throw new Error('verify fail');
+          },
         }),
         makeStep({
           id: 'post-verify',
           scope: 'product',
-          run: async () => { ran.push('post-verify'); },
+          run: async () => {
+            ran.push('post-verify');
+          },
         }),
       ],
     };
@@ -341,7 +405,15 @@ describe('runPrebuildPipeline', () => {
     // No packages, so only run-scope steps execute
     const ran: string[] = [];
     const steps: PipelineSteps = {
-      run: [makeStep({ id: 'run-step', scope: 'run', run: async () => { ran.push('run'); } })],
+      run: [
+        makeStep({
+          id: 'run-step',
+          scope: 'run',
+          run: async () => {
+            ran.push('run');
+          },
+        }),
+      ],
       package: [],
       product: [],
     };
