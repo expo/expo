@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-02-25
