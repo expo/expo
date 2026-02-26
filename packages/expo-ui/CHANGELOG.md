@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix memory leak due to retain cycle in SwiftUI views. ([#43468](https://github.com/expo/expo/pull/43468) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 55.0.1 — 2026-02-25
