@@ -36,6 +36,7 @@ export type CommandOptions = {
   grantAccess: boolean;
   checkIntegrity: boolean;
   assignSdkTag: boolean;
+  promptOtp?: boolean;
 };
 
 /**

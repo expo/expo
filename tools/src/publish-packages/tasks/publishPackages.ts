@@ -10,6 +10,7 @@ import { selectPackagesToPublish } from './selectPackagesToPublish';
 import Git from '../../Git';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
+import { promptOtp, withOtpRetry } from '../../NpmOtp';
 import { Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { sleepAsync } from '../../Utils';
@@ -30,9 +31,10 @@ export const publishPackages = new Task<TaskArgs>(
 
     const gitHead = await Git.getHeadCommitHashAsync();
 
-    // check if two factor auth is required for publishing
-    const npmProfile = await Npm.getProfileAsync();
-    const requiresOTP = npmProfile?.tfa?.mode === 'auth-and-writes';
+    // Prompt for OTP up front if requested; sets env var read by Npm commands.
+    if (options.promptOtp) {
+      process.env.NPM_OTP = await promptOtp();
+    }
 
     for (const { pkg, state } of parcels) {
       const packageJsonPath = path.join(pkg.path, 'package.json');
@@ -58,23 +60,22 @@ export const publishPackages = new Task<TaskArgs>(
 
       // Publish the package.
       try {
-        await Npm.publishPackageAsync(pkg.path, {
-          source: packageSource,
-          tagName: options.tag,
-          dryRun: options.dry,
-          spawnOptions: {
-            stdio: requiresOTP ? 'inherit' : undefined,
-          },
-        });
+        await withOtpRetry(() =>
+          Npm.publishPackageAsync(pkg.path, {
+            source: packageSource,
+            tagName: options.tag,
+            dryRun: options.dry,
+          })
+        );
         // Assign SDK tag when package is a template
         if (pkg.isTemplate() && !options.canary) {
           const sdkTag = `sdk-${semver.major(releaseVersion)}`;
           logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
           if (!options.dry) {
             await sleepAsync(1000); // wait for npm to process the package
-            await Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag, {
-              stdio: requiresOTP ? 'inherit' : undefined,
-            });
+            await withOtpRetry(() =>
+              Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag)
+            );
           }
         }
       } catch (error) {

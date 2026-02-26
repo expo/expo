@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.16.5 — 2026-02-25
+
+### 💡 Others
+
 - Bump to `minimatch@^10.2.2` ([#43325](https://github.com/expo/expo/pull/43325) by [@kitten](https://github.com/kitten))
 
 ## 0.16.4 — 2026-02-20

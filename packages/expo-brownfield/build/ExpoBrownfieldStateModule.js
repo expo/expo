@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 const ExpoBrownfieldStateModule = requireNativeModule('ExpoBrownfieldStateModule');
 const sharedObjectCache = new Map();
 // SECTION: Shared State API
@@ -76,15 +76,29 @@ export function useSharedState(key, initialValue) {
         return currentValue;
     });
     useEffect(() => {
-        const subscription = state.addListener('change', (event) => {
+        let subscription = state.addListener('change', (event) => {
             setValue(event?.['value']);
         });
-        return () => subscription.remove();
+        const keyRecreatedSubscription = ExpoBrownfieldStateModule.addListener('onKeyRecreated', (event) => {
+            if (event.key === key) {
+                const newState = ExpoBrownfieldStateModule.getSharedState(key);
+                sharedObjectCache.set(key, newState);
+                subscription.remove();
+                subscription = newState.addListener('change', (event) => {
+                    setValue(event?.['value']);
+                });
+                setValue(getSharedStateValue(key));
+            }
+        });
+        return () => {
+            subscription.remove();
+            keyRecreatedSubscription.remove();
+        };
     }, [state]);
-    const setSharedValue = (newValue) => {
+    const setSharedValue = useCallback((newValue) => {
         const valueToSet = typeof newValue === 'function' ? newValue(value) : newValue;
-        state.set(valueToSet);
-    };
+        getSharedObject(key).set(valueToSet);
+    }, [key, value]);
     return [value, setSharedValue];
 }
 // END SECTION: Shared State API

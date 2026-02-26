@@ -122,7 +122,7 @@ const resolveScheme = (options: OptionValues): string => {
 };
 
 const resolveWorkspace = (options: OptionValues): string => {
-  return options.xcworkspace || findWorkspace();
+  return options.xcworkspace || findWorkspace(options.dryRun);
 };
 
 // END SECTION: iOS Helpers

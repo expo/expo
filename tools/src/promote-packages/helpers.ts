@@ -54,7 +54,11 @@ function printPackagesToPromoteInternal(parcels: Parcel[], headerText: string): 
   if (parcels.length > 0) {
     logger.log('  ', magenta(headerText));
 
-    for (const { pkg, state } of parcels) {
+    const sorted = [...parcels].sort((a, b) =>
+      a.pkg.packageName.localeCompare(b.pkg.packageName)
+    );
+
+    for (const { pkg, state } of sorted) {
       logger.log(
         '    ',
         green(pkg.packageName),

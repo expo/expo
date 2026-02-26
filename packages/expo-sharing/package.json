@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "55.0.9",
+  "version": "55.0.10",
   "description": "Provides a way to share files directly with other compatible applications.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -36,8 +36,8 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
   "dependencies": {
     "@expo/plist": "^0.5.2",
-    "@expo/config-plugins": "^55.0.5",
-    "@expo/config-types": "^55.0.4"
+    "@expo/config-plugins": "^55.0.6",
+    "@expo/config-types": "^55.0.5"
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2"

@@ -29,7 +29,7 @@ export const loadRequestedParcels = new Task<TaskArgs>(
       'Loaded requested workspace packages'
     );
 
-    const graph = new PackagesGraph(allPackages);
+    const graph = new PackagesGraph(allPackages.filter((pkg) => !pkg.packageJson.private));
     const allPackagesObj = allPackages.reduce((acc, pkg) => {
       acc[pkg.packageName] = pkg;
       return acc;

@@ -151,6 +151,7 @@ export async function publishPackageAsync(
   if (options.dryRun) {
     args.push('--dry-run');
   }
+  args.push(...maybeNpmOtpFlag());
   await spawnAsync('npm', args, {
     cwd: packageDir,
     // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
@@ -185,18 +186,27 @@ export async function addTagAsync(
 }
 
 /**
- * Removes package's tag with given name.
+ * Removes package's tag with given name. Silently ignores errors when the tag doesn't exist.
  */
 export async function removeTagAsync(
   packageName: string,
   tagName: string,
   spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync(
-    'npm',
-    ['dist-tag', 'rm', packageName, tagName, ...maybeNpmOtpFlag()],
-    spawnOptions
-  );
+  try {
+    await spawnAsync(
+      'npm',
+      ['dist-tag', 'rm', packageName, tagName, ...maybeNpmOtpFlag()],
+      spawnOptions
+    );
+  } catch (error: any) {
+    const stderr = String(error?.stderr ?? '');
+    if (/is not a dist-tag on/i.test(stderr)) {
+      // Tag doesn't exist, nothing to remove.
+      return;
+    }
+    throw error;
+  }
 }
 
 /**

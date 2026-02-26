@@ -1,0 +1,107 @@
+---
+title: Text
+description: A Jetpack Compose Text component for displaying styled text.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Text matches the official Jetpack Compose [Text styling](https://developer.android.com/develop/ui/compose/text/style-text) API and displays text with Material 3 typography styles, custom fonts, and text formatting options.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic text
+
+```tsx BasicTextExample.tsx
+import { Host, Text } from '@expo/ui/jetpack-compose';
+
+export default function BasicTextExample() {
+  return (
+    <Host matchContents>
+      <Text>Hello, world!</Text>
+    </Host>
+  );
+}
+```
+
+### Typography styles
+
+Use the `style` prop with `typography` to apply Material 3 typography presets.
+
+```tsx TypographyExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function TypographyExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <Text style={{ typography: 'displayLarge' }}>Display Large</Text>
+        <Text style={{ typography: 'headlineMedium' }}>Headline Medium</Text>
+        <Text style={{ typography: 'bodySmall' }}>Body Small</Text>
+        <Text style={{ typography: 'labelLarge' }}>Label Large</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Text with maxLines and overflow
+
+Control text truncation with `maxLines` and `overflow`.
+
+```tsx TextOverflowExample.tsx
+import { Host, Text } from '@expo/ui/jetpack-compose';
+import { width } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function TextOverflowExample() {
+  return (
+    <Host matchContents>
+      <Text maxLines={2} overflow="ellipsis" modifiers={[width(200)]}>
+        This is a long paragraph of text that will be truncated after two lines with an ellipsis at
+        the end to indicate there is more content.
+      </Text>
+    </Host>
+  );
+}
+```
+
+### Styled text
+
+Apply custom text styles including font weight, style, size, and decoration.
+
+```tsx StyledTextExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function StyledTextExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Bold text</Text>
+        <Text style={{ fontStyle: 'italic' }}>Italic text</Text>
+        <Text style={{ textDecoration: 'underline' }}>Underlined text</Text>
+        <Text style={{ letterSpacing: 4 }}>Spaced out text</Text>
+        <Text color="#E91E63" style={{ fontSize: 18, textAlign: 'center' }}>
+          Colored and centered
+        </Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Text } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/text" apiName="Text" />

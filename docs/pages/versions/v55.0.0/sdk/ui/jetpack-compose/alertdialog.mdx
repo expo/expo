@@ -1,0 +1,58 @@
+---
+title: AlertDialog
+description: A Jetpack Compose AlertDialog component for displaying native alert dialogs.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI AlertDialog matches the official Jetpack Compose [AlertDialog API](https://developer.android.com/develop/ui/compose/components/dialog) and displays a modal dialog with a title, message text, and confirm/dismiss buttons.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic alert dialog
+
+```tsx BasicAlertDialogExample.tsx
+import { useState } from 'react';
+import { Host, AlertDialog, Button } from '@expo/ui/jetpack-compose';
+
+export default function BasicAlertDialogExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onPress={() => setVisible(true)}>Show Alert</Button>
+      <AlertDialog
+        visible={visible}
+        title="Confirm Action"
+        text="Are you sure you want to proceed?"
+        confirmButtonText="Confirm"
+        dismissButtonText="Cancel"
+        onConfirmPressed={() => {
+          console.log('Confirmed');
+          setVisible(false);
+        }}
+        onDismissPressed={() => {
+          console.log('Dismissed');
+          setVisible(false);
+        }}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { AlertDialog } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/alertdialog" apiName="AlertDialog" />

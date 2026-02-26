@@ -51,7 +51,10 @@ jobs:
       - run: |
           EVENT_NAME="${{ github.event_name }}"
           COMMIT_SHA="${{ github.sha }}"
-          COMMIT_MESSAGE="${{ github.commit_message }}"
+          COMMIT_MESSAGE=$(cat <<'COMMIT_MSG_EOF'
+          ${{ github.commit_message }}
+          COMMIT_MSG_EOF
+          )
           BRANCH="${{ github.ref_name }}"
           WF_ID="${{ workflow.id }}"
           ACTOR="${{ github.triggering_actor }}"

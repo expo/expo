@@ -8,6 +8,27 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.2 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-02-25
+
+### 🎉 New features
+
+- [ios] support custom images in submenus ([#43414](https://github.com/expo/expo/pull/43414) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [android] Fix `Color.android.dynamic.background` always returning null by adding missing `background` mapping to `attrMap`. ([#43336](https://github.com/expo/expo/pull/43336) by [@just1and0](https://github.com/just1and0))
+- [ios] add better modal and preview handling when using zoom transition ([#43370](https://github.com/expo/expo/pull/43370) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.0 — 2026-02-25
+
+### 🐛 Bug fixes
+
 - fix stack composition options in link preview ([#43334](https://github.com/expo/expo/pull/43334) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
@@ -27,6 +48,7 @@
 ### 💡 Others
 
 - extract usePreviewTransition from NativeStackNavigator ([#43182](https://github.com/expo/expo/pull/43182) by [@Ubax](https://github.com/Ubax))
+- Updated `react-native-is-edge-to-edge` to `^1.2.1`. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.0-preview.8 — 2026-02-16
 

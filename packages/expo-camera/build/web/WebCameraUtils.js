@@ -1,5 +1,4 @@
 /* eslint-env browser */
-import invariant from 'invariant';
 import * as CapabilityUtils from './WebCapabilityUtils';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
 import { requestUserMediaAsync } from './WebUserMediaManager';
@@ -13,11 +12,8 @@ export function getImageSize(videoWidth, videoHeight, scale) {
     };
 }
 export function toDataURL(canvas, imageType, quality) {
-    const types = ['png', 'jpg'];
-    invariant(types.includes(imageType), `expo-camera: ${imageType} is not a valid ImageType. Expected a string from: ${types.join(', ')}`);
     const format = ImageTypeFormat[imageType];
     if (imageType === 'jpg') {
-        invariant(quality <= 1 && quality >= 0, `expo-camera: ${quality} is not a valid image quality. Expected a number from 0...1`);
         return canvas.toDataURL(format, quality);
     }
     else {
@@ -42,18 +38,6 @@ function ensureCameraPictureOptions(config) {
     return captureOptions;
 }
 const DEFAULT_QUALITY = 0.92;
-export function captureImageData(video, pictureOptions = {}) {
-    if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
-        return null;
-    }
-    const canvas = captureImageContext(video, pictureOptions);
-    const context = canvas.getContext('2d', { alpha: false });
-    if (!context || !canvas.width || !canvas.height) {
-        return null;
-    }
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    return imageData;
-}
 export function captureImageContext(video, { scale = 1, isImageMirror = false }) {
     const { videoWidth, videoHeight } = video;
     const { width, height } = getImageSize(videoWidth, videoHeight, scale);
@@ -243,34 +227,11 @@ export function stopMediaStream(stream) {
     if (!stream) {
         return;
     }
-    if (stream.getAudioTracks) {
-        stream.getAudioTracks().forEach((track) => track.stop());
-    }
-    if (stream.getVideoTracks) {
-        stream.getVideoTracks().forEach((track) => track.stop());
-    }
-    if (isMediaStreamTrack(stream)) {
-        stream.stop();
-    }
+    stream.getAudioTracks().forEach((track) => track.stop());
+    stream.getVideoTracks().forEach((track) => track.stop());
 }
 export function setVideoSource(video, stream) {
-    const createObjectURL = window.URL.createObjectURL ?? window.webkitURL.createObjectURL;
-    if (typeof video.srcObject !== 'undefined') {
-        video.srcObject = stream;
-    }
-    else if (typeof video.mozSrcObject !== 'undefined') {
-        video.mozSrcObject = stream;
-    }
-    else if (stream && createObjectURL) {
-        video.src = createObjectURL(stream);
-    }
-    if (!stream) {
-        const revokeObjectURL = window.URL.revokeObjectURL ?? window.webkitURL.revokeObjectURL;
-        const source = video.src ?? video.srcObject ?? video.mozSrcObject;
-        if (revokeObjectURL && typeof source === 'string') {
-            revokeObjectURL(source);
-        }
-    }
+    video.srcObject = stream;
 }
 export function isCapabilityAvailable(video, keyName) {
     const stream = video.srcObject;
@@ -279,9 +240,6 @@ export function isCapabilityAvailable(video, keyName) {
         return !!videoTrack.getCapabilities?.()?.[keyName];
     }
     return false;
-}
-function isMediaStreamTrack(input) {
-    return typeof input.stop === 'function';
 }
 function convertNormalizedSetting(range, value) {
     if (!value) {

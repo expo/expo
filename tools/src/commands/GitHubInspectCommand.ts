@@ -1,6 +1,7 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import ora from 'ora';
+import readline from 'readline';
 
 import {
   getAuthenticatedUserAsync,
@@ -15,6 +16,7 @@ import {
   getPullRequestAsync,
 } from '../GitHub';
 import logger from '../Logger';
+import { askQuestionAsync, authenticateAsync, isAuthenticatedAsync, setApiKey } from '../Unblocked';
 
 type ActionOptions = {
   week?: string;
@@ -260,6 +262,26 @@ function waitForKey(validKeys: string[]): Promise<string> {
     };
 
     stdin.on('data', onData);
+  });
+}
+
+function promptYesNo(question: string): Promise<boolean> {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) => {
+    rl.question(`${question} (y/N) `, (answer) => {
+      rl.close();
+      resolve(answer.trim().toLowerCase() === 'y');
+    });
+  });
+}
+
+function promptInput(question: string): Promise<string> {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) => {
+    rl.question(`${question} `, (answer) => {
+      rl.close();
+      resolve(answer);
+    });
   });
 }
 
@@ -700,7 +722,79 @@ async function fetchDetailData(item: QueueItem): Promise<DetailData> {
   return base;
 }
 
-function renderDetailView(detail: DetailData, showBody: boolean, showComments: boolean): string[] {
+type Comment = Awaited<ReturnType<typeof listAllCommentsAsync>>[number];
+
+async function analyzeIssueAsync(detail: DetailData, comments: Comment[]): Promise<string> {
+  const authenticated = await isAuthenticatedAsync();
+  if (!authenticated) {
+    return 'Unblocked API not configured. Set UNBLOCKED_API_KEY env var.';
+  }
+
+  const type = detail.isPR ? 'PR' : 'issue';
+  const bodySnippet = detail.body ? truncate(detail.body, 2000) : '(no body)';
+
+  let prompt = `Analyze this GitHub ${type}.\n\n`;
+  prompt += `Number: #${detail.number}\n`;
+  prompt += `Title: ${detail.title}\n`;
+  prompt += `State: ${detail.state}\n`;
+  prompt += `Author: ${detail.author}\n`;
+  prompt += `Labels: ${detail.labels}\n`;
+  prompt += `Created: ${detail.created}\n`;
+  prompt += `Updated: ${detail.updated}\n`;
+
+  if (detail.isPR) {
+    if (detail.branch) prompt += `Branch: ${detail.branch}\n`;
+    if (detail.diffStats) prompt += `Diff: ${detail.diffStats}\n`;
+    if (detail.reviews && detail.reviews.length > 0) {
+      prompt += `Reviews:\n`;
+      for (const r of detail.reviews) {
+        prompt += `  - ${r.login}: ${r.state} (${r.date})\n`;
+      }
+    }
+  }
+
+  prompt += `\nBody:\n${bodySnippet}\n`;
+
+  const recentComments = comments.slice(-10);
+  if (recentComments.length > 0) {
+    prompt += `\nRecent comments (${recentComments.length} of ${comments.length}):\n`;
+    for (const c of recentComments) {
+      const badge = isTeamResponse(c) ? '[TEAM]' : '[EXTERNAL]';
+      const date = new Date(c.created_at).toISOString().slice(0, 10);
+      prompt += `\n${badge} ${c.user?.login ?? '-'} (${date}):\n${truncate(c.body ?? '', 500)}\n`;
+    }
+  }
+
+  prompt += `\nAs an on-call engineer assistant, please:`;
+  prompt += `\n1. Summarize the problem and current status.`;
+  prompt += `\n2. Search for duplicate or related issues that report the same problem — link them if found.`;
+  prompt += `\n3. Check if this is a known issue with an existing fix, workaround, or relevant PR.`;
+  prompt += `\n4. Recommend what action the on-call engineer should take next.`;
+  prompt += `\n5. Flag whether this needs urgent attention.`;
+  prompt += `\nBe concise. Always include links to duplicates, related issues, or solutions if you find any.`;
+
+  const answer = await askQuestionAsync(prompt);
+
+  if (answer.state === 'failed') {
+    return 'Analysis failed — Unblocked returned an error.';
+  }
+
+  let result = answer.answer ?? 'No analysis returned.';
+  if (answer.references && answer.references.length > 0) {
+    result += '\n\nReferences:';
+    for (const ref of answer.references) {
+      result += `\n  ${ref.htmlUrl}`;
+    }
+  }
+  return result;
+}
+
+function renderDetailView(
+  detail: DetailData,
+  showBody: boolean,
+  showComments: boolean,
+  analysisText: string | null = null
+): string[] {
   const lines: string[] = [];
   const type = detail.isPR ? 'PR' : 'Issue';
 
@@ -763,13 +857,22 @@ function renderDetailView(detail: DetailData, showBody: boolean, showComments: b
     lines.push(chalk.gray('  Loading...'));
   }
 
+  if (analysisText) {
+    lines.push('');
+    lines.push(chalk.bold('  --- AI Analysis ---'));
+    for (const line of analysisText.split('\n')) {
+      lines.push(`  ${line}`);
+    }
+  }
+
   lines.push('');
 
   // Hint line
   const bodyToggle = showBody ? chalk.yellow('(b)ody') : chalk.green('(b)ody');
   const commentsLabel = `(c)omments (${detail.comments})`;
   const commentsToggle = showComments ? chalk.yellow(commentsLabel) : chalk.green(commentsLabel);
-  const parts = [bodyToggle, commentsToggle, chalk.gray('Esc back')];
+  const analyzeToggle = analysisText ? chalk.yellow('(a)nalyze') : chalk.green('(a)nalyze');
+  const parts = [bodyToggle, commentsToggle, analyzeToggle, chalk.gray('Esc back')];
   lines.push(chalk.gray('  ') + parts.join(chalk.gray(' / ')));
 
   return lines;
@@ -782,13 +885,21 @@ async function showDetailInteractive(item: QueueItem): Promise<void> {
 
   let showBody = false;
   let showComments = false;
+  let showAnalysis = false;
   let commentLines: string[] | null = null;
+  let rawComments: Comment[] | null = null;
+  let analysisText: string | null = null;
   let lastRenderedCount = 0;
 
   const render = () => {
     if (lastRenderedCount > 0) clearLines(lastRenderedCount);
 
-    const lines = renderDetailView(detail, showBody, showComments);
+    const lines = renderDetailView(
+      detail,
+      showBody,
+      showComments,
+      showAnalysis ? analysisText : null
+    );
 
     // Replace "Loading..." placeholders with cached content
     if (showComments && commentLines) {
@@ -810,15 +921,16 @@ async function showDetailInteractive(item: QueueItem): Promise<void> {
 
   render();
 
-  const validKeys = ['escape', 'b', 'c'];
+  const validKeys = ['escape', 'b', 'c', 'a'];
 
   while (true) {
     const key = await waitForKey(validKeys);
 
     if (key === 'escape') {
-      if (showBody || showComments) {
+      if (showBody || showComments || showAnalysis) {
         showBody = false;
         showComments = false;
+        showAnalysis = false;
         render();
       } else {
         clearLines(lastRenderedCount);
@@ -832,6 +944,7 @@ async function showDetailInteractive(item: QueueItem): Promise<void> {
       if (showComments && !commentLines) {
         render(); // show "Loading..."
         const comments = detail.comments > 0 ? await listAllCommentsAsync(detail.number) : [];
+        rawComments = comments;
         commentLines = [];
         if (comments.length === 0) {
           commentLines.push(chalk.gray('  No comments.'));
@@ -843,6 +956,25 @@ async function showDetailInteractive(item: QueueItem): Promise<void> {
             commentLines.push(`    ${truncate(comment.body ?? '', 300)}`);
             commentLines.push('');
           }
+        }
+      }
+      render();
+    } else if (key === 'a') {
+      showAnalysis = !showAnalysis;
+      if (showAnalysis && !analysisText) {
+        // Ensure we have raw comments loaded
+        if (!rawComments) {
+          rawComments = detail.comments > 0 ? await listAllCommentsAsync(detail.number) : [];
+        }
+        if (lastRenderedCount > 0) clearLines(lastRenderedCount);
+        lastRenderedCount = 0;
+        const analyzeSpinner = ora('Analyzing with Unblocked…').start();
+        try {
+          analysisText = await analyzeIssueAsync(detail, rawComments);
+          analyzeSpinner.stop();
+        } catch (err: any) {
+          analyzeSpinner.stop();
+          analysisText = `Analysis error: ${err.message ?? err}`;
         }
       }
       render();
@@ -859,6 +991,25 @@ async function action(options: ActionOptions) {
   } catch {
     spinner.fail('GitHub authentication failed. Set the GITHUB_TOKEN environment variable.');
     process.exit(1);
+  }
+
+  if (!(await isAuthenticatedAsync())) {
+    spinner.stop();
+    logger.warn(chalk.yellow('Unblocked API not configured — (a)nalyze will be unavailable.'));
+    const shouldSetup = await promptYesNo('Set up Unblocked API key now?');
+    if (shouldSetup) {
+      await authenticateAsync();
+      const key = await promptInput('Paste your API token:');
+      if (key) {
+        setApiKey(key.trim());
+        if (await isAuthenticatedAsync()) {
+          logger.info(chalk.green('Unblocked authenticated successfully.'));
+        } else {
+          logger.warn(chalk.yellow('Token appears invalid — (a)nalyze will be unavailable.'));
+        }
+      }
+    }
+    spinner.start();
   }
 
   await interactiveDashboard(options, spinner);

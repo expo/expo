@@ -35,19 +35,21 @@ export function formatDiagnostic(diagnostic: Diagnostic | undefined) {
   return null;
 }
 
-export function annotateError(code: string, filename: string, error: Error) {
+export function annotateError(code: string | null, filename: string, error: Error) {
   if (typeof error !== 'object' || error == null) {
     return null;
   }
-  const loc = errorToLoc(filename, error);
-  if (loc) {
-    const { codeFrameColumns }: typeof import('@babel/code-frame') = require('@babel/code-frame');
-    const codeFrame = codeFrameColumns(code, { start: loc }, { highlightCode: true });
-    const annotatedError = error as Error & { codeFrame: string };
-    annotatedError.codeFrame = codeFrame;
-    annotatedError.message += `\n${codeFrame}`;
-    delete annotatedError.stack;
-    return annotatedError;
+  if (code) {
+    const loc = errorToLoc(filename, error);
+    if (loc) {
+      const { codeFrameColumns }: typeof import('@babel/code-frame') = require('@babel/code-frame');
+      const codeFrame = codeFrameColumns(code, { start: loc }, { highlightCode: true });
+      const annotatedError = error as Error & { codeFrame: string };
+      annotatedError.codeFrame = codeFrame;
+      annotatedError.message += `\n${codeFrame}`;
+      delete annotatedError.stack;
+      return annotatedError;
+    }
   }
   return null;
 }

@@ -161,8 +161,19 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
     setNodes(createNodes(highlightedNodeId, highlightedNodeIds));
   }, [highlightedNodeId, highlightedNodeIds, setNodes]);
 
+  const diagramAlt = nodesData
+    .map(n => {
+      const names = [n.title, n.extraTitle].filter(Boolean).join(', ');
+      const sub = n.subtitle ? ` (${n.subtitle})` : '';
+      return `${names}${sub} [${n.badge}]`;
+    })
+    .join('\n→ ');
+
   return (
-    <div className="mb-4 h-[300px] w-full overflow-hidden rounded-lg border border-default bg-default">
+    <div
+      className="mb-4 h-[300px] w-full overflow-hidden rounded-lg border border-default bg-default"
+      data-md="diagram"
+      data-md-alt={diagramAlt}>
       <style dangerouslySetInnerHTML={{ __html: nodeHandleStyles }} />
       <ReactFlow
         nodes={nodes}

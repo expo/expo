@@ -16,7 +16,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** SplitView is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`. You need to use a [development build](/develop/development-builds/introduction) since it is unavailable in Expo Go.
+> **important** SplitView is an alpha API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes and is not ready for production usage yet.
 
 `expo-router/unstable-split-view` is a submodule of `expo-router` and exports components to build split view layouts using [platform-native system split views](https://developer.apple.com/design/human-interface-guidelines/split-views).
 
@@ -25,6 +25,45 @@ import { FileTree } from '~/ui/components/FileTree';
 ## Platform support
 
 Split View is only available on iOS. On other platforms, the `SplitView` component automatically falls back to rendering as a standard `Slot` navigator, ensuring your app works across all platforms without conditional code.
+
+## iPhone support
+
+On iPhone, `SplitView` automatically collapses all columns into a single view. Only one column is visible at a time.
+
+### Choosing the initial column
+
+Use the `topColumnForCollapsing` prop to control which column is displayed when the split view is collapsed:
+
+```tsx
+<SplitView topColumnForCollapsing="primary">{/* ... */}</SplitView>
+```
+
+Accepted values are `primary`, `supplementary`, and `secondary`. When not set, the system uses its default behavior.
+
+### Navigating between columns
+
+Use a `ref` to programmatically show a specific column with the `show` method:
+
+```tsx
+import { useRef } from 'react';
+import { Pressable, Text } from 'react-native';
+import { SplitView } from 'expo-router/unstable-split-view';
+import type { SplitHostCommands } from 'react-native-screens/experimental';
+
+export default function Layout() {
+  const ref = useRef<SplitHostCommands>(null);
+
+  return (
+    <SplitView ref={ref} topColumnForCollapsing="primary">
+      <SplitView.Column>
+        <Pressable onPress={() => ref.current?.show('secondary')}>
+          <Text>Show main content</Text>
+        </Pressable>
+      </SplitView.Column>
+    </SplitView>
+  );
+}
+```
 
 ## Known limitations
 
@@ -45,6 +84,26 @@ There can only be one `SplitView` in the navigation hierarchy. Attempting to nes
 `SplitView` only accepts `SplitView.Column` and `SplitView.Inspector` as direct children. Other components will be ignored with a warning.
 
 </Collapsible>
+
+<Collapsible summary="Header cannot be customized yet">
+
+The header (navigation bar) within split view columns cannot be customized. Custom header configurations are not yet supported.
+
+</Collapsible>
+
+<Collapsible summary="Limited API">
+
+The current API surface is minimal and may not cover all use cases. Additional props and configuration options will be added in future releases.
+
+</Collapsible>
+
+<Collapsible summary="Going back to previous column on iPhone">
+
+To go back to a previous column, tap the system back button in the navigation bar. A future release will add more granular programmatic control over back navigation.
+
+</Collapsible>
+
+> **info** **Note:** We are actively developing `SplitView` and looking for feedback. You can share your thoughts on [Discord](https://chat.expo.dev), [open an issue on GitHub](https://github.com/expo/expo/issues), or use the **Feedback** button at the bottom of this page.
 
 ## Installation
 
@@ -81,7 +140,7 @@ export default function Layout() {
   return (
     <SplitView>
       <SplitView.Column>
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView edges={{ left: true, top: true }} style={{ flex: 1 }}>
           <Link href="/inbox">
             <Pressable style={{ padding: 16 }}>
               <Text>Inbox</Text>
