@@ -59,6 +59,11 @@ export default (program: Command) => {
       'Include expo-module-scripts in publishing (excluded by default).',
       false
     )
+    .option(
+      '--cascade-all',
+      'Include dependents of shared tooling packages (babel-preset-expo, jest-expo, etc.) that are normally excluded from cascading.',
+      false
+    )
 
     /* exclusive options */
     .option(
