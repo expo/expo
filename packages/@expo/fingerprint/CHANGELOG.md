@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Include expo-font plugin font files in fingerprint hash
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
