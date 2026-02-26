@@ -35,6 +35,12 @@ describe(resolvePackageModuleId, () => {
       uri: expect.stringMatching(/template\.tgz$/),
     });
   });
+  it(`resolves windows absolute path with drive letter`, () => {
+    expect(resolvePackageModuleId('D:\\a\\expo\\templates\\template.tgz')).toEqual({
+      type: 'file',
+      uri: expect.stringMatching(/template\.tgz$/),
+    });
+  });
   it(`resolves module ID`, () => {
     expect(resolvePackageModuleId('@expo/basic@34.0.0')).toEqual({
       type: 'npm',

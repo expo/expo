@@ -73,7 +73,8 @@ export function resolvePackageModuleId(moduleId: string) {
     !(
       moduleId.startsWith('@') || // Scoped package
       moduleId.startsWith('.') || // Relative path
-      moduleId.startsWith(path.sep) || // Absolute path
+      path.posix.isAbsolute(moduleId) ||
+      path.win32.isAbsolute(moduleId) || // Absolute path
       // Contains a protocol
       /^[a-z][-a-z0-9\\.\\+]*:/.test(moduleId)
     )
@@ -99,8 +100,9 @@ export function resolvePackageModuleId(moduleId: string) {
     moduleId?.startsWith('file:') ||
     // Supports `../path/to/template.tgz`
     moduleId?.startsWith('.') ||
-    // Supports `\\path\\to\\template.tgz`
-    moduleId?.startsWith(path.sep)
+    // Supports absolute paths like `/path/to/template.tgz`, `\\path\\to\\template.tgz`, or `C:\path\to\template.tgz`
+    path.posix.isAbsolute(moduleId) ||
+    path.win32.isAbsolute(moduleId)
   ) {
     if (moduleId?.startsWith('file:')) {
       moduleId = moduleId.substring(5);
