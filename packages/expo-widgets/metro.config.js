@@ -1,4 +1,5 @@
 const { getDefaultConfig } = require('expo/metro-config');
+const fs = require('fs');
 const path = require('path');
 
 const appRoot = process.cwd();
@@ -10,6 +11,13 @@ const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts
 
 const appNodeModules = path.resolve(appRoot, 'node_modules');
 
+let expoUiDir;
+try {
+  expoUiDir = fs.realpathSync(
+    path.dirname(require.resolve('@expo/ui/package.json', { paths: [appRoot, __dirname] }))
+  );
+} catch { }
+
 const buildConfig = {
   ...config,
   projectRoot: __dirname,
@@ -17,6 +25,7 @@ const buildConfig = {
     ...config.watchFolders,
     __dirname,
     appNodeModules,
+    ...(expoUiDir ? [expoUiDir] : []),
   ],
   resolver: {
     ...config.resolver,
