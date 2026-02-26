@@ -16,13 +16,8 @@ const buildIos = async (command: Command) => {
   printIosConfig(config);
 
   await buildFramework(config);
-  // await createXcframework(config);
-  // await copyHermesXcframework(config);
-  // await copyRNFrameworks(config);
 
-  // TODO(pmleczek): Replace with proper check once rebased
-  const truth = 'true';
-  if (truth === 'true') {
+  if (config.output !== 'frameworks') {
     // Ship frameworks as swift package
     shipSwiftPackage(config);
   } else {

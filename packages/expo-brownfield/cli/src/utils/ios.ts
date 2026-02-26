@@ -89,18 +89,18 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   }
 };
 
-export const createSwiftPackage = async (config: IosConfig) => {
+export const createSwiftPackage = async (config: IosConfig): Promise<string> => {
   if (config.dryRun && config.output !== 'frameworks') {
     console.log(
       `Creating Swift package with name: ${config.output.packageName} at path: ${config.artifacts}`
     );
-    return;
+    return '';
   }
 
-  return withSpinner({
+  return await withSpinner({
     operation: async () => {
       if (config.output === 'frameworks') {
-        return;
+        return '';
       }
 
       const packagePath = path.join(config.artifacts, config.output.packageName);
@@ -111,6 +111,8 @@ export const createSwiftPackage = async (config: IosConfig) => {
       await fs.promises.mkdir(xcframeworksDir, { recursive: true });
 
       await generatePackageMetadataFile(config, packagePath);
+
+      return packagePath;
     },
     loaderMessage: 'Creating Swift package...',
     successMessage: 'Creating Swift package succeeded',
@@ -282,15 +284,14 @@ export const shipFrameworks = async (config: IosConfig) => {
   await copyXCFrameworks(config, config.artifacts);
 };
 
-// TODO(pmleczek): Uncomment once rebased
 export const shipSwiftPackage = async (config: IosConfig) => {
   // Create artifacts directory and swift package
   await cleanUpArtifacts(config);
   makeArtifactsDirectory(config);
-  // const packagePath = await createSwiftPackage(config);
-  // const xcframeworksPath = path.join(packagePath, 'xcframeworks');
+  const packagePath = await createSwiftPackage(config);
+  const xcframeworksPath = path.join(packagePath, 'xcframeworks');
 
   // Copy/create XCFrameworks into the package
-  // await createXCframework(config, xcframeworksPath);
-  // await copyXCFrameworks(config, xcframeworksPath);
+  await createXCframework(config, xcframeworksPath);
+  await copyXCFrameworks(config, xcframeworksPath);
 };

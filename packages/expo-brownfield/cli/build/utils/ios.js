@@ -88,12 +88,12 @@ exports.copyXCFrameworks = copyXCFrameworks;
 const createSwiftPackage = async (config) => {
     if (config.dryRun && config.output !== 'frameworks') {
         console.log(`Creating Swift package with name: ${config.output.packageName} at path: ${config.artifacts}`);
-        return;
+        return '';
     }
-    return (0, spinner_1.withSpinner)({
+    return await (0, spinner_1.withSpinner)({
         operation: async () => {
             if (config.output === 'frameworks') {
-                return;
+                return '';
             }
             const packagePath = node_path_1.default.join(config.artifacts, config.output.packageName);
             await node_fs_1.default.promises.mkdir(packagePath, { recursive: true });
@@ -101,6 +101,7 @@ const createSwiftPackage = async (config) => {
             const xcframeworksDir = node_path_1.default.join(packagePath, 'xcframeworks');
             await node_fs_1.default.promises.mkdir(xcframeworksDir, { recursive: true });
             await (0, exports.generatePackageMetadataFile)(config, packagePath);
+            return packagePath;
         },
         loaderMessage: 'Creating Swift package...',
         successMessage: 'Creating Swift package succeeded',
@@ -254,15 +255,14 @@ const shipFrameworks = async (config) => {
     await (0, exports.copyXCFrameworks)(config, config.artifacts);
 };
 exports.shipFrameworks = shipFrameworks;
-// TODO(pmleczek): Uncomment once rebased
 const shipSwiftPackage = async (config) => {
     // Create artifacts directory and swift package
     await (0, exports.cleanUpArtifacts)(config);
     (0, exports.makeArtifactsDirectory)(config);
-    // const packagePath = await createSwiftPackage(config);
-    // const xcframeworksPath = path.join(packagePath, 'xcframeworks');
+    const packagePath = await (0, exports.createSwiftPackage)(config);
+    const xcframeworksPath = node_path_1.default.join(packagePath, 'xcframeworks');
     // Copy/create XCFrameworks into the package
-    // await createXCframework(config, xcframeworksPath);
-    // await copyXCFrameworks(config, xcframeworksPath);
+    await (0, exports.createXCframework)(config, xcframeworksPath);
+    await (0, exports.copyXCFrameworks)(config, xcframeworksPath);
 };
 exports.shipSwiftPackage = shipSwiftPackage;
