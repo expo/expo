@@ -24,12 +24,6 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'com.google.firebase.crashlytics'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useDefaultAndroidSdkVersions()
-
 apply plugin: 'com.facebook.react'
 
 react {
@@ -49,6 +43,11 @@ react {
 }
 
 android {
+  ndkVersion rootProject.ext.ndkVersion
+
+  buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdk rootProject.ext.compileSdkVersion
+
   namespace "host.exp.exponent"
 
   buildFeatures {
@@ -57,6 +56,8 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 229
     versionName '55.0.2'
 
