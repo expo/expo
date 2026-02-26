@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
 
     nativeIt('should remove WAL and SHM files when deleting a database', async () => {
       const dbName = 'test-wal-cleanup.db';
-      let db = await SQLite.openDatabaseAsync(dbName);
+      const db = await SQLite.openDatabaseAsync(dbName);
 
       // Enable WAL mode to create sidecar files
       await db.execAsync('PRAGMA journal_mode = WAL');
