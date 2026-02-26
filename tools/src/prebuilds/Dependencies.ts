@@ -8,76 +8,7 @@ import type { DownloadDependenciesOptions, DownloadedDependencies } from './Arti
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { transformReactXCFrameworkAsync, isVFSGenerated } from './TransformReactXCFramework';
-import { createAsyncSpinner, SpinnerError } from './Utils';
-
-/**
- * Checks if file content has changed between source and destination.
- * Uses fast checks first (existence, size, mtime), then falls back to content comparison.
- * Returns true if destination doesn't exist or content differs.
- */
-function hasFileContentChanged(sourcePath: string, destPath: string): boolean {
-  if (!fs.existsSync(destPath)) {
-    return true;
-  }
-
-  const sourceStat = fs.statSync(sourcePath);
-  const destStat = fs.statSync(destPath);
-
-  // Different size = different content (fast check)
-  if (sourceStat.size !== destStat.size) {
-    return true;
-  }
-
-  // Same mtime = same content (fast check for previously synced files)
-  if (sourceStat.mtimeMs === destStat.mtimeMs) {
-    return false;
-  }
-
-  // Same size but different mtime - need to compare content
-  // Use streaming comparison for large files, buffer comparison for small files
-  const SMALL_FILE_THRESHOLD = 64 * 1024; // 64KB
-
-  if (sourceStat.size <= SMALL_FILE_THRESHOLD) {
-    // Small file - read both into memory and compare
-    const srcBuf = fs.readFileSync(sourcePath);
-    const destBuf = fs.readFileSync(destPath);
-    return !srcBuf.equals(destBuf);
-  }
-
-  // Large file - compare in chunks to avoid memory issues
-  const CHUNK_SIZE = 64 * 1024;
-  const srcFd = fs.openSync(sourcePath, 'r');
-  const destFd = fs.openSync(destPath, 'r');
-
-  try {
-    const srcBuf = Buffer.alloc(CHUNK_SIZE);
-    const destBuf = Buffer.alloc(CHUNK_SIZE);
-    let position = 0;
-
-    while (position < sourceStat.size) {
-      const srcRead = fs.readSync(srcFd, srcBuf, 0, CHUNK_SIZE, position);
-      const destRead = fs.readSync(destFd, destBuf, 0, CHUNK_SIZE, position);
-
-      if (srcRead !== destRead) {
-        return true;
-      }
-
-      // Compare only the bytes that were read
-      for (let i = 0; i < srcRead; i++) {
-        if (srcBuf[i] !== destBuf[i]) {
-          return true;
-        }
-      }
-
-      position += srcRead;
-    }
-
-    return false;
-  } finally {
-    fs.closeSync(srcFd);
-    fs.closeSync(destFd);
-  }
-}
+import { createAsyncSpinner, hasFileContentChanged, SpinnerError } from './Utils';
 
 /**
  * Recursively syncs a source directory to a destination directory.

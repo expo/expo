@@ -26,7 +26,7 @@ import {
 import { Artifacts } from '../prebuilds/Artifacts';
 import { FrameworkVerifier } from '../prebuilds/Verifier';
 
-type ActionOptions = {
+type PrebuildCliOptions = {
   reactNativeVersion?: string;
   hermesVersion: string;
   clean: boolean;
@@ -48,7 +48,7 @@ type ActionOptions = {
   verbose: boolean;
 };
 
-type BuildStatus = {
+type ProductBuildStatus = {
   packageName: string;
   productName: string;
   generate: 'success' | 'failed' | 'skipped';
@@ -57,7 +57,7 @@ type BuildStatus = {
   verify: 'success' | 'failed' | 'skipped' | 'warning';
 };
 
-type BuildError = {
+type ProductBuildError = {
   packageName: string;
   productName: string;
   step: 'generate' | 'build' | 'compose' | 'verify';
@@ -279,7 +279,7 @@ function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPMPackage
  * Resolves a local tarball path, substituting `{flavor}` with the current build flavor.
  * If the path contains no `{flavor}` placeholder, it is used as-is.
  */
-function resolveLocalTarballPath(
+function resolveFlavorTemplatedPath(
   templatePath: string | undefined,
   flavor: BuildFlavor
 ): string | undefined {
@@ -289,9 +289,9 @@ function resolveLocalTarballPath(
   return templatePath.replace(/\{flavor\}/gi, flavor);
 }
 
-async function main(packageNames: string[], options: ActionOptions) {
-  const buildStatuses: BuildStatus[] = [];
-  const buildErrors: BuildError[] = [];
+async function runPrebuildPackagesAsync(packageNames: string[], options: PrebuildCliOptions) {
+  const buildStatuses: ProductBuildStatus[] = [];
+  const buildErrors: ProductBuildError[] = [];
   let rootPath = '';
   const startTime = Date.now();
 
@@ -419,12 +419,12 @@ async function main(packageNames: string[], options: ActionOptions) {
           artifactsPath,
           buildFlavor: currentBuildFlavor,
           localTarballs: {
-            reactNative: resolveLocalTarballPath(
+            reactNative: resolveFlavorTemplatedPath(
               options.localReactNativeTarball,
               currentBuildFlavor
             ),
-            hermes: resolveLocalTarballPath(options.localHermesTarball, currentBuildFlavor),
-            reactNativeDependencies: resolveLocalTarballPath(
+            hermes: resolveFlavorTemplatedPath(options.localHermesTarball, currentBuildFlavor),
+            reactNativeDependencies: resolveFlavorTemplatedPath(
               options.localReactNativeDepsTarball,
               currentBuildFlavor
             ),
@@ -439,7 +439,7 @@ async function main(packageNames: string[], options: ActionOptions) {
           }
 
           // Initialize build status for this package/product/flavor
-          const status: BuildStatus = {
+          const status: ProductBuildStatus = {
             packageName: pkg.packageName,
             productName: `${product.name} [${currentBuildFlavor}]`,
             generate: 'skipped',
@@ -471,7 +471,7 @@ async function main(packageNames: string[], options: ActionOptions) {
 
               // Generate Package.swift and vfs overlay for the package/product
               // Pass artifacts so Package.swift can reference the centralized cache
-              await SPMGenerator.genereateSwiftPackageAsync(
+              await SPMGenerator.generateSwiftPackageAsync(
                 pkg,
                 product,
                 currentBuildFlavor,
@@ -614,7 +614,7 @@ async function main(packageNames: string[], options: ActionOptions) {
     } // End of packages loop
 
     // Print build summary
-    printBuildSummary(buildStatuses, Date.now() - startTime);
+    printPrebuildSummary(buildStatuses, Date.now() - startTime);
 
     // Write errors to log file if there were any
     if (buildErrors.length > 0) {
@@ -624,7 +624,7 @@ async function main(packageNames: string[], options: ActionOptions) {
     }
   } catch (error) {
     // Print build summary even on error
-    printBuildSummary(buildStatuses, Date.now() - startTime);
+    printPrebuildSummary(buildStatuses, Date.now() - startTime);
 
     // Write errors to log file
     if (buildErrors.length > 0 && rootPath) {
@@ -639,7 +639,7 @@ async function main(packageNames: string[], options: ActionOptions) {
   }
 }
 
-function writeErrorLog(rootPath: string, errors: BuildError[]): string {
+function writeErrorLog(rootPath: string, errors: ProductBuildError[]): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const logFileName = `prebuild-errors-${timestamp}.log`;
   const logPath = path.join(rootPath, logFileName);
@@ -689,7 +689,7 @@ function formatDuration(ms: number): string {
   }
 }
 
-function printBuildSummary(statuses: BuildStatus[], elapsedMs: number) {
+function printPrebuildSummary(statuses: ProductBuildStatus[], elapsedMs: number) {
   if (statuses.length === 0) {
     return;
   }
@@ -807,5 +807,5 @@ export default (program: Command) => {
       'Disable secure timestamp when signing. By default, signing includes --timestamp for long-term signature validity.',
       false
     )
-    .asyncAction(main);
+    .asyncAction(runPrebuildPackagesAsync);
 };

@@ -994,7 +994,6 @@ function buildCSettings(
     // headers with #ifdef guards (e.g., SQLITE_ENABLE_SESSION) — without .define(),
     // Swift targets importing this C module won't see the conditionally-compiled symbols.
     const addDefinesAndFlags = (flags: string[], settings: string[]) => {
-      const defines: string[] = [];
       const otherFlags: string[] = [];
       for (const flag of flags) {
         const defineMatch = flag.match(/^-D(\w+)(?:=(.+))?$/);

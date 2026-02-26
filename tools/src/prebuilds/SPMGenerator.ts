@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { spawnSync } from 'child_process';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
@@ -9,32 +8,8 @@ import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct, SPMTarget } from './SPMConfig.types';
 import { SPMPackage } from './SPMPackage';
-import { createAsyncSpinner } from './Utils';
+import { createAsyncSpinner, hasFileContentChanged } from './Utils';
 import logger from '../Logger';
-
-/**
- * Checks if file content has changed between source and destination.
- * Uses size comparison first (fast), then native cmp command for byte comparison.
- * Returns true if destination doesn't exist or content differs.
- */
-function hasFileContentChanged(sourcePath: string, destPath: string): boolean {
-  if (!fs.existsSync(destPath)) {
-    return true;
-  }
-
-  const sourceStat = fs.statSync(sourcePath);
-  const destStat = fs.statSync(destPath);
-
-  // Different size = different content
-  if (sourceStat.size !== destStat.size) {
-    return true;
-  }
-
-  // Same size - use cmp for efficient byte comparison
-  // cmp -s returns 0 if identical, 1 if different, 2 if error
-  const result = spawnSync('cmp', ['-s', sourcePath, destPath]);
-  return result.status !== 0;
-}
 
 /**
  * Writes content to file only if it differs from existing content.
@@ -61,7 +36,7 @@ export const SPMGenerator = {
    * @param buildType Build type (e.g., Debug, Release)
    * @param artifacts Optional downloaded artifacts from centralized cache
    */
-  genereateSwiftPackageAsync: async (
+  generateSwiftPackageAsync: async (
     pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
