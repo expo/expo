@@ -3,6 +3,7 @@ import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIco
 import { PlaySolidIcon } from '@expo/styleguide-icons/solid/PlaySolidIcon';
 import { type ReactNode } from 'react';
 
+import { StructuredData } from '~/ui/components/StructuredData';
 import { CALLOUT, LABEL } from '~/ui/components/Text';
 
 type VideoBoxLinkProps = {
@@ -14,8 +15,20 @@ type VideoBoxLinkProps = {
 };
 
 export function VideoBoxLink({ title, description, videoId, time, className }: VideoBoxLinkProps) {
+  const videoStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: title,
+    description: title,
+    thumbnailUrl: `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
+    embedUrl: `https://www.youtube.com/embed/${videoId}`,
+    contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
+  };
+
   return (
-    <LinkBase
+    <>
+      <StructuredData data={videoStructuredData} id={`video-${videoId}`} />
+      <LinkBase
       openInNewTab
       href={`https://www.youtube.com/watch?v=${videoId}${time ? `&t=${time}` : ''}`}
       className={mergeClasses(
@@ -57,5 +70,6 @@ export function VideoBoxLink({ title, description, videoId, time, className }: V
         aria-hidden="true"
       />
     </LinkBase>
+    </>
   );
 }
