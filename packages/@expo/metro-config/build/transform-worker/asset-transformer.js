@@ -31,6 +31,10 @@ const buildStaticObjectRef = core_1.template.statement(
 const buildStaticObjectClientRef = core_1.template.statement(
 // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
 `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`);
+// Static asset objects with density-variant sources for web.
+// The browser picks the best variant via srcSet with density descriptors (1x, 2x, 3x).
+const buildStaticObjectWithSourcesRef = core_1.template.statement(`module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, sources: SOURCES };`);
+const buildStaticObjectWithSourcesClientRef = core_1.template.statement(`module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, sources: SOURCES, toString() { return this.uri } };`);
 async function transform({ filename, options, }, assetRegistryPath, assetDataPlugins) {
     options ??= options || {
         platform: '',
@@ -71,19 +75,51 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         : options.publicPath, isHosted);
     if (isServerEnv || options.platform === 'web') {
         const type = !data.type ? '' : `.${data.type}`;
-        let assetPath;
+        let assetBasePath;
         if (useMd5Filename) {
-            assetPath = data.hash + type;
+            assetBasePath = data.hash;
         }
         else if (!isExport) {
-            assetPath = data.httpServerLocation + '/' + data.name + type;
+            assetBasePath = data.httpServerLocation + '/' + data.name;
         }
         else {
-            assetPath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+            assetBasePath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name;
         }
+        const assetPath = assetBasePath + type;
+        // Does the asset have density variants (@2x, @3x)?
+        // Both server and client need the same `sources` array for hydration parity.
+        const hasDensityVariants = data.scales?.length > 1 &&
+            data.scales.some((s) => s !== 1) &&
+            !useMd5Filename;
         // If size data is known then it should be passed back to ensure the correct dimensions are used.
         if (data.width != null || data.height != null) {
-            const options = {
+            if (hasDensityVariants) {
+                const sourcesAst = core_1.types.arrayExpression(data.scales.map((scale) => {
+                    const suffix = scale === 1 ? '' : `@${scale}x`;
+                    return core_1.types.objectExpression([
+                        core_1.types.objectProperty(core_1.types.identifier('uri'), core_1.types.stringLiteral(assetBasePath + suffix + type)),
+                        core_1.types.objectProperty(core_1.types.identifier('scale'), core_1.types.numericLiteral(scale)),
+                    ]);
+                }));
+                const creatorFunction = isReactServer
+                    ? buildStaticObjectWithSourcesRef
+                    : buildStaticObjectWithSourcesClientRef;
+                const templateOptions = {
+                    FILE_PATH: JSON.stringify(assetBasePath + type),
+                    WIDTH: data.width != null ? core_1.types.numericLiteral(data.width) : core_1.types.buildUndefinedNode(),
+                    HEIGHT: data.height != null ? core_1.types.numericLiteral(data.height) : core_1.types.buildUndefinedNode(),
+                    SOURCES: sourcesAst,
+                };
+                return {
+                    ast: {
+                        comments: null,
+                        ...core_1.types.file(core_1.types.program([creatorFunction(templateOptions)])),
+                        errors: [],
+                    },
+                    reactClientReference: getClientReference(),
+                };
+            }
+            const templateOptions = {
                 FILE_PATH: JSON.stringify(assetPath),
                 WIDTH: data.width != null ? core_1.types.numericLiteral(data.width) : core_1.types.buildUndefinedNode(),
                 HEIGHT: data.height != null ? core_1.types.numericLiteral(data.height) : core_1.types.buildUndefinedNode(),
@@ -92,7 +128,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
             return {
                 ast: {
                     comments: null,
-                    ...core_1.types.file(core_1.types.program([creatorFunction(options)])),
+                    ...core_1.types.file(core_1.types.program([creatorFunction(templateOptions)])),
                     errors: [],
                 },
                 reactClientReference: getClientReference(),

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [web] Support `srcSet` with density descriptors for images with `@2x`/`@3x` variants from metro asset transformer ([#43467](https://github.com/expo/expo/pull/43467) by [@vonovak](https://github.com/vonovak))
+
 ## 55.0.5 — 2026-02-25
 
 ### 🐛 Bug fixes

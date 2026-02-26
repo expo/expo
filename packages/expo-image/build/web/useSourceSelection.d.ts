@@ -3,7 +3,7 @@ import React from 'react';
 import { ImageProps, ImageSource } from '../Image.types';
 export interface SrcSetSource extends ImageSource {
     srcset: string;
-    sizes: string;
+    sizes?: string;
     uri: string;
     type: 'srcset';
 }

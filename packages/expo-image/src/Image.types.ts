@@ -72,6 +72,14 @@ export type ImageSource = {
    * @platform ios
    */
   isAnimated?: boolean;
+  /**
+   * An array of density-variant sources for this image.
+   * When set, expo-image will generate an HTML `srcset` attribute with density descriptors
+   * (e.g. `1x`, `2x`, `3x`), letting the browser select the best variant.
+   * Typically populated by the metro asset transformer for images with @2x/@3x variants.
+   * @platform web
+   */
+  sources?: Array<{ uri: string; scale: number }>;
 };
 
 /**

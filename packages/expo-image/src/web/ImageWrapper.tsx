@@ -16,7 +16,7 @@ function getImgPropsFromSource(source: ImageSource | SrcSetSource | null | undef
   if (source && 'srcset' in source) {
     return {
       srcSet: source.srcset,
-      sizes: source.sizes,
+      ...(source.sizes ? { sizes: source.sizes } : {}),
     };
   }
   return {};

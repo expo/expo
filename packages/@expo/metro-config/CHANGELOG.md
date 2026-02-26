@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Emit static `sources` array for `@2x`/`@3x` image variants on web, enabling `srcSet`-based density selection instead of a runtime `devicePixelRatio` IIFE ([#43467](https://github.com/expo/expo/pull/43467) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25

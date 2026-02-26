@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates density-aware code for multi-scale images on web (dev) 1`] = `
+"module.exports = {
+  uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo.png",
+  width: 1024,
+  height: 1024,
+  sources: [{
+    uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo.png",
+    scale: 1
+  }, {
+    uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo@2x.png",
+    scale: 2
+  }, {
+    uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo@3x.png",
+    scale: 3
+  }],
+  toString() {
+    return this.uri;
+  }
+};"
+`;
+
+exports[`generates density-aware code for multi-scale images on web (export) 1`] = `
+"module.exports = {
+  uri: "/assets/assets/images/react-logo.482872097e07fcfd09bcd2c30d4f752f.png",
+  width: 1024,
+  height: 1024,
+  sources: [{
+    uri: "/assets/assets/images/react-logo.482872097e07fcfd09bcd2c30d4f752f.png",
+    scale: 1
+  }, {
+    uri: "/assets/assets/images/react-logo.482872097e07fcfd09bcd2c30d4f752f@2x.png",
+    scale: 2
+  }, {
+    uri: "/assets/assets/images/react-logo.482872097e07fcfd09bcd2c30d4f752f@3x.png",
+    scale: 3
+  }],
+  toString() {
+    return this.uri;
+  }
+};"
+`;
+
+exports[`includes sources for multi-scale images in react-server environment 1`] = `
+"module.exports = {
+  uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo.png",
+  width: 1024,
+  height: 1024,
+  sources: [{
+    uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo.png",
+    scale: 1
+  }, {
+    uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo@2x.png",
+    scale: 2
+  }, {
+    uri: "/assets/?unstable_path=.%2Fassets%2Fimages/react-logo@3x.png",
+    scale: 3
+  }]
+};"
+`;
