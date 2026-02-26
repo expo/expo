@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Pass on `tls` options from Metro config to Metro `runServer` fork ([#43186](https://github.com/expo/expo/pull/43186) by [@cortinico](https://github.com/cortinico))
+
 ## 55.0.11 — 2026-02-25
 
 ### 🐛 Bug fixes
