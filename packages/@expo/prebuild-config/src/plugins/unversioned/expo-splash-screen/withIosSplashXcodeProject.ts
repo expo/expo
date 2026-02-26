@@ -37,6 +37,7 @@ export async function setSplashStoryboardAsync({
       filepath: storyboardFilePath,
       groupName: projectName,
       project,
+      isBuildFile: true,
     });
   }
 
