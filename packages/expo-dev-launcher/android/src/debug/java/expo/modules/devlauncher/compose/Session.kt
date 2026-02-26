@@ -13,8 +13,8 @@ data class Session(
   val version: Int
     get() = JSONObject(sessionSecret).getInt("version")
 
-  val expiresAt: Long
-    get() = JSONObject(sessionSecret).getLong("expires_at")
+  val expiresAt: Long?
+    get() = JSONObject(sessionSecret).optLong("expires_at", -1).takeIf { it != -1L }
 
   companion object {
     fun loadFromPreferences(preferences: SharedPreferences): Session? {
