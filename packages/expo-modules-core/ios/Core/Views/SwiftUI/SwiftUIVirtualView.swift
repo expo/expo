@@ -93,7 +93,6 @@ extension ExpoSwiftUI {
      Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
      */
     @MainActor
-    @preconcurrency
     override func viewDidUpdateProps() {
       guard let viewDefinition else {
         return

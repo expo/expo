@@ -33,14 +33,26 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
 
   const buildConfiguration = resolveBuildConfiguration(options);
   const device = path.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
+  const scheme = resolveScheme(options);
   const simulator = path.join(
     buildProductsPath,
     `${buildConfiguration.toLowerCase()}-iphonesimulator`
   );
 
+  const hermesFrameworkPath =
+    'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
+  const packageName =
+    options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
+  const output = options.package
+    ? {
+        packageName,
+      }
+    : 'frameworks';
+
   return {
     ...resolveCommonConfig(options),
     artifacts,
+    output,
     buildConfiguration,
     derivedDataPath,
     device,
@@ -109,7 +121,7 @@ const resolveScheme = (options: OptionValues): string => {
 };
 
 const resolveWorkspace = (options: OptionValues): string => {
-  return options.xcworkspace || findWorkspace();
+  return options.xcworkspace || findWorkspace(options.dryRun);
 };
 
 // END SECTION: iOS Helpers

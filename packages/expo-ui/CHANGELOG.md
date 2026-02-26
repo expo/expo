@@ -6,11 +6,22 @@
 
 ### 🎉 New features
 
-- [iOS] Added `monospacedDigit` modifier. ([#43328](https://github.com/expo/expo/pull/43328) by [@axeelz](https://github.com/axeelz))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.1 — 2026-02-25
+
+### 🎉 New features
+
+- [iOS] Added `luminanceToAlpha` modifier. ([#43417](https://github.com/expo/expo/pull/43417) by [@jakex7](https://github.com/jakex7))
+
+## 55.0.0 — 2026-02-25
+
+### 🎉 New features
+
+- [iOS] Added `ConfirmationDialog` component. ([#43366](https://github.com/expo/expo/pull/43366) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `monospacedDigit` modifier. ([#43328](https://github.com/expo/expo/pull/43328) by [@axeelz](https://github.com/axeelz))
 
 ## 55.0.0-preview.7 — 2026-02-20
 

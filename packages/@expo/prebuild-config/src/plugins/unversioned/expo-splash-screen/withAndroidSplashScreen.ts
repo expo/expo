@@ -1,4 +1,4 @@
-import { ConfigPlugin, WarningAggregator, withPlugins } from '@expo/config-plugins';
+import { ConfigPlugin, withPlugins } from '@expo/config-plugins';
 
 import { AndroidSplashConfig, getAndroidSplashConfig } from './getAndroidSplashConfig';
 import { withAndroidSplashDrawables } from './withAndroidSplashDrawables';
@@ -12,23 +12,6 @@ export const withAndroidSplashScreen: ConfigPlugin<
 > = (config, props) => {
   const isLegacyConfig = props === undefined;
   const splashConfig = getAndroidSplashConfig(config, props ?? null);
-
-  // Update the android status bar to match the splash screen
-  // androidStatusBar applies info to the app activity style.
-  const backgroundColor = splashConfig?.backgroundColor || '#ffffff';
-  if (config.androidStatusBar?.backgroundColor) {
-    if (
-      backgroundColor.toLowerCase() !== config.androidStatusBar?.backgroundColor?.toLowerCase?.()
-    ) {
-      WarningAggregator.addWarningAndroid(
-        'androidStatusBar.backgroundColor',
-        'Color conflicts with the splash.backgroundColor'
-      );
-    }
-  } else {
-    if (!config.androidStatusBar) config.androidStatusBar = {};
-    config.androidStatusBar.backgroundColor = backgroundColor;
-  }
 
   return withPlugins(config, [
     [withAndroidSplashMainActivity, { isLegacyConfig }],

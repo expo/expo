@@ -4,8 +4,8 @@ import Foundation
 func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [WidgetsTimelineEntry] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(name)_layout") ?? ""
   let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") ?? []
-  
-  let entries: [WidgetsTimelineEntry?] = timeline.enumerated().map { (index, entry) in
+
+  let entries: [WidgetsTimelineEntry?] = timeline.enumerated().map { index, entry in
     if let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] {
       let node = evaluateLayout(layout: layout, props: props, timestamp: timestamp, family: family)
       return WidgetsTimelineEntry(
@@ -17,7 +17,7 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
     }
     return nil
   }
-  
+
   return entries.compactMap(\.self)
 }
 

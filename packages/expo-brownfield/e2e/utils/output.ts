@@ -62,6 +62,9 @@ export const BUILD_IOS = {
     `-framework ${projectRoot}/ios/build/Build/Products/${configuration.toLowerCase()}-iphonesimulator/testapp${workspace}brownfield.framework`,
     `-output ${projectRoot}/artifacts/testapp${workspace}brownfield.xcframework`,
   ],
+  PACKAGE_CONFIGURATION: (packageName: string) => `- Package name: ${packageName}`,
+  PACKAGE_CREATION: (packageName: string) =>
+    `Creating Swift package with name: ${packageName} at path:`,
 };
 
 /**

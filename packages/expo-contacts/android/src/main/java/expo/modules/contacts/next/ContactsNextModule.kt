@@ -328,8 +328,8 @@ class ContactsNextModule : Module() {
         self.urlAddresses.delete(urlAddressRecord)
       }
 
-      AsyncFunction("presentEditForm") Coroutine { self: Contact ->
-        self.presentEditForm()
+      AsyncFunction("editWithForm") Coroutine { self: Contact ->
+        self.editWithForm()
       }
 
       StaticAsyncFunction("create") Coroutine { createContactRecord: CreateContactRecord ->

@@ -195,7 +195,7 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
       Toggle,
       Text,
     } from '@expo/ui/swift-ui';
-    import { background, clipShape, frame } from '@expo/ui/swift-ui/modifiers';
+    import { background, buttonStyle, foregroundStyle, clipShape, frame } from '@expo/ui/swift-ui/modifiers';
     import { Link } from 'expo-router';
     import { useState } from 'react';
 
@@ -223,7 +223,8 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
               </HStack>
 
               <Link href="/wifi" asChild>
-                <Button>
+                {/* Use buttonStyle('plain') to prevent default blue button styling */}
+                <Button modifiers={[buttonStyle('plain')]}>
                   <HStack spacing={8}>
                     <Image
                       systemName="wifi"
@@ -235,7 +236,8 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
                         clipShape('roundedRectangle'),
                       ]}
                     />
-                    <Text color="primary">Wi-Fi</Text>
+                    {/* When Text is wrapped in a Link, the color needs to be specified explicitly */}
+                    <Text modifiers={[foregroundStyle({type: 'color', color: 'black'})]}>Wi-Fi</Text>
                     <Spacer />
                     <Image systemName="chevron.right" size={14} color="secondary" />
                   </HStack>
@@ -254,6 +256,204 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
     <ContentSpotlight
       alt="Form example to build iOS Settings app"
       src="/static/images/expo-ui/swift-ui-guide/form.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+</Tabs>
+
+### Secondary text styling
+
+Use `foregroundStyle` to apply a [hierarchical style](/versions/v55.0.0/sdk/ui/swift-ui/modifiers/#foregroundstylestyle), which will make text appear lighter and more subtle.
+
+<Tabs>
+  <Tab label="Code">
+    ```tsx Secondary text styling
+    import { Button, Form, Host, HStack, Image, List, Section, Spacer, Text } from '@expo/ui/swift-ui';
+    import { buttonStyle, font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+
+    export default function SecondaryTextExample() {
+      return (
+        <Host style={{ flex: 1 }}>
+          <Form>
+            <Section>
+              <List>
+                <Button onPress={() => console.log('Navigate')} modifiers={[buttonStyle('plain')]}>
+                  <HStack>
+                    <Text>Night Shift</Text>
+                    <Spacer />
+                    <Text
+                      modifiers={[
+                        foregroundStyle({type: 'hierarchical', style: 'secondary'}),
+                        padding({ trailing: 8 }),
+                      ]}>
+                      22:00 to 07:00
+                    </Text>
+                    <Image systemName="chevron.right" size={14} color="#C7C7CC" />
+                  </HStack>
+                </Button>
+              </List>
+              <List>
+                <Text modifiers={[foregroundStyle({type: 'hierarchical', style: 'secondary'}), font({ size: 14 })]}>
+                  Save up to 280.7 MB. This will permanently delete all photos and videos kept in the
+                  "Recently Deleted" album.
+                </Text>
+              </List>
+            </Section>
+          </Form>
+        </Host>
+      );
+    }
+    ```
+
+  </Tab>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Secondary text styling"
+      src="/static/images/expo-ui/swift-ui-guide/secondary-text.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+</Tabs>
+
+### Slider with icons
+
+A common pattern for brightness or volume controls is to flank a `Slider` with icons.
+
+<Tabs>
+  <Tab label="Code">
+    ```tsx Slider with icons
+    import { useState } from 'react';
+    import {
+      Form,
+      Host,
+      HStack,
+      Image,
+      List,
+      Section,
+      Slider,
+      Spacer,
+      Text,
+      Toggle,
+    } from '@expo/ui/swift-ui';
+    import { padding } from '@expo/ui/swift-ui/modifiers';
+
+    export default function SliderWithIconsExample() {
+      const [brightness, setBrightness] = useState(0.5);
+      const [trueToneEnabled, setTrueToneEnabled] = useState(true);
+
+      return (
+        <Host style={{ flex: 1 }}>
+          <Form>
+            <Section
+              header={<Text>Brightness</Text>}
+              footer={
+                <Text>
+                  Automatically adapt iPhone display based on ambient lighting
+                  conditions to make colors appear consistent in different
+                  environments.
+                </Text>
+              }
+            >
+              <List>
+                <HStack modifiers={[padding({ vertical: 6 })]}>
+                  <Image systemName="sun.min.fill" size={22} color="#8E8E93" />
+                  <Spacer />
+                  <Slider value={brightness} onValueChange={setBrightness} />
+                  <Spacer />
+                  <Image systemName="sun.max.fill" size={22} color="#8E8E93" />
+                </HStack>
+                <Toggle
+                  label="True Tone"
+                  isOn={trueToneEnabled}
+                  onIsOnChange={setTrueToneEnabled}
+                />
+              </List>
+            </Section>
+          </Form>
+        </Host>
+      );
+    }
+    ```
+
+  </Tab>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Slider with icons"
+      src="/static/images/expo-ui/swift-ui-guide/slider-with-icons.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+</Tabs>
+
+### Multi-line list items
+
+Use `VStack` with `alignment="leading"` for list items with title and subtitle.
+
+<Tabs>
+  <Tab label="Code">
+    ```tsx Multi-line list item
+    import {
+      Button,
+      Form,
+      Host,
+      HStack,
+      Image,
+      List,
+      Section,
+      Spacer,
+      Text,
+      VStack,
+    } from '@expo/ui/swift-ui';
+    import { buttonStyle, font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+
+    export default function MultiLineListItemExample() {
+      return (
+        <Host style={{ flex: 1 }}>
+          <Form>
+            <Section>
+              <List>
+                <HStack>
+                  <Image
+                    systemName="safari"
+                    size={22}
+                    modifiers={[padding({ trailing: 6 })]}
+                  />
+                  <Spacer />
+                  <Button
+                    onPress={() => console.log('Navigate')}
+                    modifiers={[buttonStyle('plain'), padding({ vertical: 6 })]}
+                  >
+                    <VStack spacing={4} alignment="leading">
+                      <Text>Chrome</Text>
+                      <Text modifiers={[foregroundStyle({type: 'hierarchical', style: 'secondary'}), font({ size: 14 })]}>
+                        Last used: Today
+                      </Text>
+                    </VStack>
+                    <Spacer />
+                    <Text
+                      modifiers={[
+                        foregroundStyle({type: 'hierarchical', style: 'secondary'}),
+                        font({ size: 16 }),
+                      ]}
+                    >
+                      1.57 GB
+                    </Text>
+                    <Image systemName="chevron.right" size={14} color="#C7C7CC" />
+                  </Button>
+                </HStack>
+              </List>
+            </Section>
+          </Form>
+        </Host>
+      );
+    }
+    ```
+
+  </Tab>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Multi-line list item"
+      src="/static/images/expo-ui/swift-ui-guide/multi-line-list-item.png"
       className="max-w-[480px]"
     />
   </Tab>

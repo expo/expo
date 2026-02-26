@@ -62,11 +62,18 @@ private fun getTypeFromFileUrl(url: String): String? {
 }
 
 /**
+ * Convert this [File] to [Uri] that might be accessed by 3rd party Activities but don't mask the exception
+ */
+internal fun File.getContentUri(context: Context): Uri {
+  return FileProvider.getUriForFile(context, context.packageName + ".ImagePickerFileProvider", this)
+}
+
+/**
  * Convert this [File] to [Uri] that might be accessed by 3rd party Activities, eg. by camera application
  */
 internal fun File.toContentUri(context: Context): Uri {
   return try {
-    FileProvider.getUriForFile(context, context.packageName + ".ImagePickerFileProvider", this)
+    this.getContentUri(context)
   } catch (e: Exception) {
     Uri.fromFile(this)
   }

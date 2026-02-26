@@ -40,7 +40,9 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
+          "enableBackgroundPlayback": true,
+          "enableBackgroundRecording": false
         }
       ]
     ]
@@ -69,8 +71,14 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
     {
       name: 'enableBackgroundRecording',
       description:
-        'A boolean that determines whether to enable background audio recording. On Android, this adds foreground service permissions and displays a persistent notification during recording. On iOS, this adds the `audio` background mode. **Note:** Background recording can significantly impact battery life.',
+        'A boolean that determines whether to enable background audio recording. On Android, this adds a recording foreground service and permissions and displays a persistent notification during recording. On iOS, this adds the `audio` background mode. **Note:** Background recording can significantly impact battery life.',
       default: 'false',
+    },
+    {
+      name: 'enableBackgroundPlayback',
+      description:
+        'A boolean that determines whether to enable background audio playback. On Android, this adds a media playback foreground service and allows you to display the lockscreen controls and is required for sustained background playback. On iOS, this adds the `audio` background mode.',
+      default: 'true',
     },
   ]}
 />
@@ -187,30 +195,135 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-### Playing audio in the background&ensp;<PlatformTags platforms={['ios']} />
+### Playing audio in the background
 
-On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration.
-On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file.
-In standalone apps this array is empty by default, so to use background features you will need to add appropriate keys to your **app.json** configuration.
+Background audio playback allows your app to continue playing audio when it moves to the background or when the device screen locks.
 
-See an example of **app.json** that enables audio playback in background:
+#### Configuration
 
-```json
+To enable background audio playback, use the config plugin in your [app config](/workflow/configuration/):
+
+```json app.json
 {
   "expo": {
-    ...
-    "ios": {
-      ...
-      "infoPlist": {
-        ...
-        "UIBackgroundModes": [
-          "audio"
-        ]
-      }
-    }
+    "plugins": [
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": true
+        }
+      ]
+    ]
   }
 }
 ```
+
+The above configuration automatically configures the required native settings:
+
+- <PlatformTags platforms={['android']} /> Adds `FOREGROUND_SERVICE` and
+  `FOREGROUND_SERVICE_MEDIA_PLAYBACK` permissions. Also declares a media playback foreground service
+  (`AudioControlsService`) in app's **AndroidManifest.xml**.
+- <PlatformTags platforms={['ios']} /> Adds the `audio` `UIBackgroundMode` capability
+
+#### Usage
+
+After configuring your app with the config plugin, you need to:
+
+1. **Configure the audio session** to allow background playback
+2. **Enable lock screen controls** (required on Android for sustained background playback)
+
+```jsx
+import { View, Button } from 'react-native';
+import { useAudioPlayer, setAudioModeAsync } from 'expo-audio';
+import { useEffect } from 'react';
+
+export default function AudioPlayerScreen() {
+  const audioSource = require('./assets/audio.mp3');
+  const player = useAudioPlayer(audioSource);
+
+  useEffect(() => {
+    // Configure audio session for background playback
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      interruptionMode: 'doNotMix',
+    });
+  }, []);
+
+  const handlePlay = () => {
+    // Enable lock screen controls with metadata
+    player.setActiveForLockScreen(true, {
+      title: 'My Audio Title',
+      artist: 'Artist Name',
+      albumTitle: 'Album Name',
+      artworkUrl: 'https://example.com/artwork.jpg', // optional
+    });
+
+    // Start playback - this will continue in the background
+    player.play();
+  };
+
+  const handleStop = () => {
+    player.pause();
+    // Optionally disable lock screen controls when done
+    player.setActiveForLockScreen(false);
+  };
+
+  return (
+    <View>
+      <Button title="Play" onPress={handlePlay} />
+      <Button title="Stop" onPress={handleStop} />
+    </View>
+  );
+}
+```
+
+<PlatformTags platforms={['android']} />
+
+> **Note**: On Android, you have to enable the lock screen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Ensure to appropriately [configure the config plugin](#configuration-in-app-config).
+
+- A media notification appears in the notification drawer with playback controls
+- Audio continues playing indefinitely in the background
+- Users can control playback from the lock screen and notification
+- The foreground service keeps the playback alive during playback
+
+<PlatformTags platforms={['ios']} />
+
+On iOS, audio playback continues seamlessly in the background once the audio session is configured with `shouldPlayInBackground: true`. Lock screen controls are optional but enhance the user experience by providing playback controls on the lock screen and Control Center.
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure the following for background playback:
+
+- For Android, add to **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml android/app/src/main/AndroidManifest.xml
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
+  <application>
+    <!-- Other application components -->
+    <service
+      android:name="expo.modules.audio.service.AudioControlsService"
+      android:exported="false"
+      android:foregroundServiceType="mediaPlayback">
+      <intent-filter>
+        <action android:name="androidx.media3.session.MediaSessionService" />
+      </intent-filter>
+    </service>
+  </application>
+  ```
+
+- For iOS, add to **ios/YourApp/Info.plist**:
+
+  ```xml ios/YourApp/Info.plist
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>audio</string>
+  </array>
+  ```
+
+</ConfigReactNative>
 
 ### Recording audio in the background
 
@@ -238,8 +351,9 @@ To enable background recording, use the config plugin in your [app config](/work
 
 The above configuration automatically configures the required native settings:
 
-- <PlatformTags platforms={['android']} /> Adds `FOREGROUND_SERVICE_MICROPHONE` and
-  `POST_NOTIFICATIONS` permissions
+- <PlatformTags platforms={['android']} /> Adds `FOREGROUND_SERVICE`,
+  `FOREGROUND_SERVICE_MICROPHONE`, and `POST_NOTIFICATIONS` permissions. Also declares an audio
+  recording foreground service in app's **AndroidManifest.xml**.
 - <PlatformTags platforms={['ios']} /> Adds the `audio` `UIBackgroundMode` capability
 
 <ConfigReactNative>

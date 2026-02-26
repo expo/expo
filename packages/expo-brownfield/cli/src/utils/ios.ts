@@ -20,10 +20,7 @@ export const cleanUpArtifacts = async (config: IosConfig) => {
         return;
       }
 
-      const xcframeworks = fs
-        .readdirSync(config.artifacts)
-        .filter((item) => item.endsWith('.xcframework'));
-      xcframeworks.forEach((item) => {
+      fs.readdirSync(config.artifacts).forEach((item) => {
         const itemPath = `${config.artifacts}/${item}`;
         fs.rmSync(itemPath, { recursive: true, force: true });
       });
@@ -92,6 +89,36 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   }
 };
 
+export const createSwiftPackage = async (config: IosConfig) => {
+  if (config.dryRun && config.output !== 'frameworks') {
+    console.log(
+      `Creating Swift package with name: ${config.output.packageName} at path: ${config.artifacts}`
+    );
+    return;
+  }
+
+  return withSpinner({
+    operation: async () => {
+      if (config.output === 'frameworks') {
+        return;
+      }
+
+      const packagePath = path.join(config.artifacts, config.output.packageName);
+      await fs.promises.mkdir(packagePath, { recursive: true });
+
+      // <package-name>/xcframeworks
+      const xcframeworksDir = path.join(packagePath, 'xcframeworks');
+      await fs.promises.mkdir(xcframeworksDir, { recursive: true });
+
+      await generatePackageMetadataFile(config, packagePath);
+    },
+    loaderMessage: 'Creating Swift package...',
+    successMessage: 'Creating Swift package succeeded',
+    errorMessage: 'Creating Swift package failed',
+    verbose: config.verbose,
+  });
+};
+
 export const createXCframework = async (config: IosConfig, at: string) => {
   const frameworkName = `${config.scheme}.xcframework`;
   const outputPath = path.join(at, frameworkName);
@@ -149,7 +176,13 @@ export const findScheme = (): string | undefined => {
   }
 };
 
-export const findWorkspace = (): string | undefined => {
+export const findWorkspace = (dryRun: boolean): string | undefined => {
+  // XCWorkspace cannot be inferred on Ubuntu runners
+  // as pods cannot be installed
+  if (dryRun) {
+    return path.join(process.cwd(), 'ios/testappbuildiospb.xcworkspace');
+  }
+
   try {
     const iosPath = path.join(process.cwd(), 'ios');
     if (!fs.existsSync(iosPath)) {
@@ -167,6 +200,49 @@ export const findWorkspace = (): string | undefined => {
     const errorMessage = error instanceof Error ? error.message : '';
     CLIError.handle('ios-workspace-unknown-error', errorMessage);
   }
+};
+
+// TODO(pmleczek): Add support for prebuilt RN frameworks in future PR
+export const generatePackageMetadataFile = async (config: IosConfig, packagePath: string) => {
+  if (config.output === 'frameworks') {
+    return;
+  }
+
+  const xcframeworks = [
+    { name: config.scheme, targets: [config.scheme] },
+    { name: 'hermesvm', targets: ['hermesvm'] },
+  ];
+
+  const contents = `// swift-tools-version:5.9
+import PackageDescription
+
+let package = Package(
+    name: "${config.output.packageName}",
+    platforms: [.iOS(.v15)],
+    products: [${xcframeworks
+      .map(
+        (xcf) => `
+        .library(
+          name: "${xcf.name}",
+          targets: ["${xcf.targets.join('", "')}"],
+        ),
+      `
+      )
+      .join('\n')}],
+    targets: [${xcframeworks
+      .map(
+        (xcf) => `
+        .binaryTarget(
+          name: "${xcf.name}",
+          path: "xcframeworks/${xcf.name}.xcframework",
+        ),
+      `
+      )
+      .join('\n')}]
+);
+`;
+
+  await fs.promises.writeFile(path.join(packagePath, 'Package.swift'), contents);
 };
 
 export const makeArtifactsDirectory = (config: IosConfig) => {
@@ -188,6 +264,11 @@ export const printIosConfig = (config: IosConfig) => {
   console.log(` - Dry run: ${chalk.blue(config.dryRun)}`);
   console.log(` - Verbose: ${chalk.blue(config.verbose)}`);
   console.log(` - Artifacts path: ${chalk.blue(config.artifacts)}`);
+
+  if (config.output !== 'frameworks') {
+    console.log(` - Package name: ${chalk.blue(config.output.packageName)}`);
+  }
+
   console.log();
 };
 

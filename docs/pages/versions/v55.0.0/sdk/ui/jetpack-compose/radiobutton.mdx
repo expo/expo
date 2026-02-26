@@ -1,0 +1,87 @@
+---
+title: RadioButton
+description: A Jetpack Compose RadioButton component for single-selection controls.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A radio button component for selecting a single option from a set. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/radio-button) for more information.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic radio button
+
+```tsx BasicRadioButton.tsx
+import { useState } from 'react';
+import { Host, RadioButton } from '@expo/ui/jetpack-compose';
+
+export default function BasicRadioButton() {
+  const [selected, setSelected] = useState(false);
+
+  return (
+    <Host matchContents>
+      <RadioButton selected={selected} onClick={() => setSelected(!selected)} />
+    </Host>
+  );
+}
+```
+
+### Radio button group
+
+Combine multiple `RadioButton` components to create a single-selection group.
+
+```tsx RadioButtonGroup.tsx
+import { useState } from 'react';
+import { Host, Column, RadioButton, ListItem } from '@expo/ui/jetpack-compose';
+
+export default function RadioButtonGroup() {
+  const [selectedOption, setSelectedOption] = useState('option1');
+
+  return (
+    <Host matchContents>
+      <Column>
+        <ListItem headline="Option 1" onPress={() => setSelectedOption('option1')}>
+          <ListItem.Trailing>
+            <RadioButton
+              selected={selectedOption === 'option1'}
+              onClick={() => setSelectedOption('option1')}
+            />
+          </ListItem.Trailing>
+        </ListItem>
+        <ListItem headline="Option 2" onPress={() => setSelectedOption('option2')}>
+          <ListItem.Trailing>
+            <RadioButton
+              selected={selectedOption === 'option2'}
+              onClick={() => setSelectedOption('option2')}
+            />
+          </ListItem.Trailing>
+        </ListItem>
+        <ListItem headline="Option 3" onPress={() => setSelectedOption('option3')}>
+          <ListItem.Trailing>
+            <RadioButton
+              selected={selectedOption === 'option3'}
+              onClick={() => setSelectedOption('option3')}
+            />
+          </ListItem.Trailing>
+        </ListItem>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { RadioButton } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/radiobutton" apiName="RadioButton" />

@@ -58,7 +58,7 @@ export function useWebCameraStream(
     autoFocus: 'continuous',
     flashMode: 'off',
     whiteBalance: 'continuous',
-    zoom: 1,
+    zoom: 0,
   });
   const [stream, setStream] = React.useState<MediaStream | null>(null);
 

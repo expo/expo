@@ -8,10 +8,8 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A chip component for displaying compact elements that represent inputs, attributes, or actions.
+Expo UI Chip matches the official Jetpack Compose [Chip API](https://developer.android.com/develop/ui/compose/components/chip) and supports assist, filter, input, and suggestion chip variants.
 
 ## Installation
 
@@ -19,56 +17,77 @@ A chip component for displaying compact elements that represent inputs, attribut
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Chip component on Android."
-      src="/static/images/expo-ui/chip/android.png"
-      className="max-w-[480px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Chip } from '@expo/ui/jetpack-compose';
+### Assist chip
 
-    // Assist chip with icon
-    <Chip
-      variant="assist"
-      label="Book"
-      leadingIcon="filled.Add"
-      onPress={() => console.log('Opening flight booking...')}
-    />
+```tsx AssistChipExample.tsx
+import { Host, Chip } from '@expo/ui/jetpack-compose';
 
-    // Filter chip with selection
-    <Chip
-      variant="filter"
-      label="Images"
-      leadingIcon="filled.Star"
-      selected={selectedFilters.includes('Images')}
-      onPress={() => handleFilterToggle('Images')}
-    />
+export default function AssistChipExample() {
+  return (
+    <Host matchContents>
+      <Chip
+        variant="assist"
+        label="Book Flight"
+        onPress={() => console.log('Opening flight booking...')}
+      />
+    </Host>
+  );
+}
+```
 
-    // Input chip with dismiss
-    <Chip
-      variant="input"
-      label="Work"
-      leadingIcon="filled.Create"
-      onDismiss={() => handleInputDismiss('Work')}
-    />
+### Filter chip
 
-    // Suggestion chip
-    <Chip
-      variant="suggestion"
-      label="Nearby"
-      leadingIcon="filled.LocationOn"
-      onPress={() => console.log('Searching nearby...')}
-    />
-    ```
+```tsx FilterChipExample.tsx
+import { useState } from 'react';
+import { Host, Chip } from '@expo/ui/jetpack-compose';
 
-  </Tab>
-</Tabs>
+export default function FilterChipExample() {
+  const [selected, setSelected] = useState(false);
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/chip) for more information.
+  return (
+    <Host matchContents>
+      <Chip
+        variant="filter"
+        label="Images"
+        selected={selected}
+        onPress={() => setSelected(!selected)}
+      />
+    </Host>
+  );
+}
+```
+
+### Input chip
+
+```tsx InputChipExample.tsx
+import { Host, Chip } from '@expo/ui/jetpack-compose';
+
+export default function InputChipExample() {
+  return (
+    <Host matchContents>
+      <Chip variant="input" label="Work" onDismiss={() => console.log('Dismissed Work chip')} />
+    </Host>
+  );
+}
+```
+
+### Suggestion chip
+
+```tsx SuggestionChipExample.tsx
+import { Host, Chip } from '@expo/ui/jetpack-compose';
+
+export default function SuggestionChipExample() {
+  return (
+    <Host matchContents>
+      <Chip
+        variant="suggestion"
+        label="Nearby"
+        onPress={() => console.log('Searching nearby...')}
+      />
+    </Host>
+  );
+}
+```
 
 ## API
 

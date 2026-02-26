@@ -292,14 +292,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v52.0.0': {
-    EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
-    NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
-    SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
-    SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
-    BufferOptions: '/versions/v52.0.0/sdk/video/#bufferoptions-1',
-    CameraPosition: '/versions/v52.0.0/sdk/maps/#cameraposition-2',
-  },
   'v53.0.0': {
     EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
@@ -349,6 +341,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/latest/sdk/router/#href-1',
     BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
+    ScrubbingModeOptions: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
     BaseNativeTabsTriggerIconProps:
       '/versions/latest/sdk/router-native-tabs/#basenativetabstriggericonprops',
     NativeTabsTriggerBadgeProps:

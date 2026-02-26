@@ -76,6 +76,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   // MARK: - ExpoFabricViewInterface
 
+  @MainActor
   public override func updateProps(_ props: [String: Any]) {
     guard let context = appContext, let propsDict = viewManagerPropDict else {
       return
@@ -115,6 +116,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */
+  @MainActor
   public override func viewDidUpdateProps() {
     guard let viewDefinition else {
       return

@@ -1,7 +1,7 @@
 {
   "name": "expo-insights",
   "title": "Expo Insights",
-  "version": "55.0.9",
+  "version": "55.0.10",
   "description": "Expo module that offers developers insight into the usage data of the app",
   "main": "build/index.js",
   "types": "build/index.d.ts",

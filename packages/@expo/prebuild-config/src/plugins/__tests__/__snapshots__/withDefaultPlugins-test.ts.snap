@@ -488,18 +488,6 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
-                  "name": "colorPrimaryDark",
-                },
-                "_": "#000FFF",
-              },
-              {
-                "$": {
-                  "name": "navigationBarColor",
-                },
-                "_": "#ff0000",
-              },
-              {
-                "$": {
                   "name": "activityBackground",
                 },
                 "_": "#ff0000",
@@ -1039,13 +1027,6 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
-                  "name": "expo_splash_screen_status_bar_translucent",
-                  "translatable": "false",
-                },
-                "_": "true",
-              },
-              {
-                "$": {
                   "name": "expo_runtime_version",
                 },
                 "_": "1.0",
@@ -1065,13 +1046,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "parent": "Theme.AppCompat.DayNight.NoActionBar",
                 },
                 "item": [
-                  {
-                    "$": {
-                      "name": "android:enforceNavigationBarContrast",
-                      "tools:targetApi": "29",
-                    },
-                    "_": "true",
-                  },
                   {
                     "$": {
                       "name": "android:editTextBackground",
@@ -1100,7 +1074,7 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "name": "android:navigationBarColor",
                     },
-                    "_": "@color/navigationBarColor",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {
@@ -1678,18 +1652,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
-                  "name": "colorPrimaryDark",
-                },
-                "_": "#000FFF",
-              },
-              {
-                "$": {
-                  "name": "navigationBarColor",
-                },
-                "_": "#ff0000",
-              },
-              {
-                "$": {
                   "name": "splashscreen_background",
                 },
                 "_": "#ff00ff",
@@ -1994,13 +1956,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
-                  "name": "expo_splash_screen_status_bar_translucent",
-                  "translatable": "false",
-                },
-                "_": "true",
-              },
-              {
-                "$": {
                   "name": "expo_runtime_version",
                 },
                 "_": "1.0",
@@ -2042,7 +1997,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                     "$": {
                       "name": "android:navigationBarColor",
                     },
-                    "_": "@color/navigationBarColor",
+                    "_": "@android:color/transparent",
                   },
                   {
                     "$": {

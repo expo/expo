@@ -6,13 +6,14 @@ import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMe
 import { InlineHelp } from 'ui/components/InlineHelp';
 import { PageHeader } from 'ui/components/PageHeader';
 import * as RoutesUtils from '~/common/routes';
-import { appendSectionToRoute, isRouteActive } from '~/common/routes';
+import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout, {
   DocumentationNestedScrollLayoutHandles,
 } from '~/components/DocumentationNestedScrollLayout';
+import { buildBreadcrumbListSchema } from '~/constants/structured-data';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
@@ -21,6 +22,7 @@ import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
+import { StructuredData } from '~/ui/components/StructuredData';
 import {
   TableOfContentsHandles,
   TableOfContentsWithManager,
@@ -61,6 +63,8 @@ export default function DocumentationPage({
   const pathname = router?.pathname ?? '/';
   const routes = RoutesUtils.getRoutes(pathname, version);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
+  const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
+  const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
   const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
@@ -310,6 +314,7 @@ export default function DocumentationPage({
         onSidebarToggle={handleSidebarToggle}
         isSidebarCollapsed={isNavigationCollapsed}
         isChatExpanded={isAskAIExpanded}>
+        {breadcrumbSchema && <StructuredData id="breadcrumb-list" data={breadcrumbSchema} />}
         <DocumentationHead
           title={title}
           description={description}

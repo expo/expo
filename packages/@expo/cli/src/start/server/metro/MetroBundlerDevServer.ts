@@ -37,6 +37,7 @@ import {
   type ImmutableRequest,
   resolveLoaderContextKey,
 } from 'expo-server/private';
+import https from 'https';
 import path from 'path';
 
 import {
@@ -61,6 +62,7 @@ import {
 } from './router';
 import { serializeHtmlWithAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { events } from '../../../events';
 import type {
   BundleAssetWithFileHashes,
   ExportAssetDescriptor,
@@ -152,6 +154,22 @@ const EXPO_GO_METRO_PORT = 8081;
 
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
+
+// prettier-ignore
+export const event = events('devserver', (t) => [
+  t.event<'start', {
+    mode: 'production' | 'development';
+    web: boolean;
+    baseUrl: string;
+    asyncRoutes: boolean;
+    routerRoot: string;
+    serverComponents: boolean;
+    serverActions: boolean;
+    serverRendering: boolean;
+    apiRoutes: boolean;
+    exporting: boolean;
+  }>(),
+]);
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
@@ -1215,8 +1233,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       resetCache: options.resetDevServer,
     };
 
-    // Required for symbolication:
-    process.env.EXPO_DEV_SERVER_ORIGIN = `http://localhost:${options.port}`;
+    event('start', {
+      mode,
+      web: this.isTargetingWeb(),
+      baseUrl,
+      asyncRoutes,
+      routerRoot: event.path(appDir),
+      serverComponents: this.isReactServerComponentsEnabled,
+      serverActions: isReactServerActionsOnlyEnabled,
+      serverRendering: useServerRendering,
+      apiRoutes: hasApiRoutes,
+      exporting: !!options.isExporting,
+    });
 
     const { metro, hmrServer, server, middleware, messageSocket } = await instantiateMetroAsync(
       this,
@@ -1226,6 +1254,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         exp,
       }
     );
+
+    const protocol = server instanceof https.Server ? 'https' : 'http';
+
+    // Required for symbolication:
+    process.env.EXPO_DEV_SERVER_ORIGIN = `${protocol}://localhost:${options.port}`;
 
     if (!options.isExporting) {
       const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
@@ -1464,9 +1497,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         port: options.port,
         // localhost isn't always correct.
         host: 'localhost',
-        // http is the only supported protocol on native.
-        url: `http://localhost:${options.port}`,
-        protocol: 'http',
+        url: `${protocol}://localhost:${options.port}`,
+        protocol,
       },
       middleware,
       messageSocket,

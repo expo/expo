@@ -4,22 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import expo.modules.camera.records.CameraType
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 object CameraViewHelper {
-  // Utilities
-  @JvmStatic
-  fun getCorrectCameraRotation(rotation: Int, facing: CameraType) =
-    if (facing == CameraType.FRONT) {
-      (rotation - 90 + 360) % 360
-    } else {
-      (-rotation + 90 + 360) % 360
-    }
-
   fun generateSimulatorPhoto(width: Int, height: Int): ByteArray {
     val fakePhotoBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(fakePhotoBitmap)

@@ -44,16 +44,29 @@ function renderEnabler({
   routeKey = 'route-1',
   descriptors,
   dismissalBoundsRect = null,
+  addEnabler = jest.fn(),
+  removeEnabler = jest.fn(),
+  hasEnabler = false,
 }: {
   routeKey?: string;
   descriptors?: NativeStackDescriptorMap;
   dismissalBoundsRect?: any;
+  addEnabler?: jest.Mock;
+  removeEnabler?: jest.Mock;
+  hasEnabler?: boolean;
 }) {
   const route = makeRoute(routeKey);
   return render(
     <DescriptorsContext value={descriptors ?? {}}>
       <ZoomTransitionTargetContext
-        value={{ identifier: null, dismissalBoundsRect, setDismissalBoundsRect: undefined }}>
+        value={{
+          identifier: null,
+          dismissalBoundsRect,
+          setDismissalBoundsRect: jest.fn(),
+          addEnabler,
+          removeEnabler,
+          hasEnabler,
+        }}>
         <ZoomTransitionEnabler route={route} />
       </ZoomTransitionTargetContext>
     </DescriptorsContext>
@@ -127,5 +140,27 @@ describe('ZoomTransitionEnabler', () => {
     expect(MockedLinkZoomTransitionEnabler).toHaveBeenCalledTimes(1);
     const props = MockedLinkZoomTransitionEnabler.mock.calls[0][0];
     expect(props.dismissalBoundsRect).toBeNull();
+  });
+
+  it('calls addEnabler on mount and removeEnabler on unmount', () => {
+    const addEnabler = jest.fn();
+    const removeEnabler = jest.fn();
+    const routeKey = 'route-1';
+
+    const { unmount } = renderEnabler({
+      routeKey,
+      descriptors: makeDescriptors(routeKey),
+      addEnabler,
+      removeEnabler,
+    });
+
+    expect(addEnabler).toHaveBeenCalledTimes(1);
+    expect(removeEnabler).not.toHaveBeenCalled();
+
+    jest.clearAllMocks();
+    unmount();
+
+    expect(removeEnabler).toHaveBeenCalledTimes(1);
+    expect(addEnabler).not.toHaveBeenCalled();
   });
 });

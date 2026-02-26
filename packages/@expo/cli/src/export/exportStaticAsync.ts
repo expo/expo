@@ -24,7 +24,7 @@ import {
 } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
-import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import { assetsRequiresSort, serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -351,22 +351,63 @@ export async function exportFromServerAsync(
         });
       }
 
+      const toAssetUrl = (filename: string) =>
+        baseUrl ? `${baseUrl}/${filename}` : `/${filename}`;
+
       const cssAssets = resources.artifacts
         .filter((asset) => asset.type === 'css')
-        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
-      const jsAssets = resources.artifacts
-        .filter((asset) => asset.type === 'js')
-        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
+        .map((asset) => toAssetUrl(asset.filename));
+
+      const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
+      const orderedJsAssets = assetsRequiresSort(jsArtifacts);
+      const syncJs = orderedJsAssets.filter((asset) => !asset.metadata.isAsync);
+      const asyncJs = orderedJsAssets.filter((asset) => asset.metadata.isAsync);
+
+      const syncJsAssets = syncJs.map((asset) => toAssetUrl(asset.filename));
+
+      const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
+
+      // Build per-route async chunk assignments
+      const routeAssets = new Map<string, string[]>();
+      for (const { route } of htmlRoutes) {
+        if (!route.entryPoints || !Array.isArray(route.entryPoints)) {
+          continue;
+        }
+
+        const matchedChunks: string[] = [];
+        for (const asyncChunk of asyncJs) {
+          if (!asyncChunk.metadata.modulePaths || !Array.isArray(asyncChunk.metadata.modulePaths)) {
+            continue;
+          }
+          const hasRouteEntryPoint = route.entryPoints.some((entryPoint) =>
+            (asyncChunk.metadata.modulePaths as string[]).includes(entryPoint)
+          );
+          if (hasRouteEntryPoint) {
+            matchedChunks.push(toAssetUrl(asyncChunk.filename));
+          }
+        }
+
+        if (matchedChunks.length > 0) {
+          routeAssets.set(route.contextKey, matchedChunks);
+        }
+      }
 
       // Add assets and rendering config to the routes manifest
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
-          manifest.assets = { css: cssAssets, js: jsAssets };
+          manifest.assets = { css: cssAssets, js: syncJsAssets };
           manifest.rendering = {
             mode: 'ssr',
             file: '_expo/server/render.js',
           };
+
+          for (const route of manifest.htmlRoutes) {
+            const asyncChunks = routeAssets.get(route.file);
+            if (asyncChunks) {
+              route.assets = { css: [], js: asyncChunks };
+            }
+          }
         },
       });
     }

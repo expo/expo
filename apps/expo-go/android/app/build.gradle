@@ -35,7 +35,6 @@ apply plugin: 'com.facebook.react'
 react {
   def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
-  entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
   reactNativeDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native")
   codegenDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native-codegen")
 
