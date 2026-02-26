@@ -21,7 +21,10 @@ export default class MediaDetailsScreen extends React.Component<Props> {
     title: 'MediaLibrary Asset',
   };
 
-  state = {
+  state: {
+    details: MediaLibrary.AssetInfo | null;
+    detailsWithoutDownloadingFromNetwork: MediaLibrary.AssetInfo | null;
+  } = {
     details: null,
     detailsWithoutDownloadingFromNetwork: null,
   };
@@ -155,8 +158,8 @@ export default class MediaDetailsScreen extends React.Component<Props> {
           <Button
             style={styles.button}
             buttonStyle={{ backgroundColor: 'green' }}
-            title={(details as any).isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            onPress={(details as any).isFavorite ? this.removeFromFavorites : this.addToFavorites}
+            title={details.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            onPress={details.isFavorite ? this.removeFromFavorites : this.addToFavorites}
           />
         )}
 
