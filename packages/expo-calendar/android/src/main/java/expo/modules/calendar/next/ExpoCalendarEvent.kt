@@ -39,7 +39,7 @@ class ExpoCalendarEvent(
   val reactContext: Context
     get() = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
 
-  suspend fun saveEvent(eventRecord: EventRecord, calendarId: String? = null, nullableFields: List<String>? = null): Int? {
+  suspend fun saveEvent(eventRecord: EventRecord, calendarId: String? = null, nullableFields: List<String>? = null): Long? {
     return withContext(Dispatchers.IO) {
       val eventBuilder = CalendarBuilderNext()
 
@@ -92,10 +92,10 @@ class ExpoCalendarEvent(
 
       if (this@ExpoCalendarEvent.eventRecord?.id != null) {
         // Update current event
-        val eventID = this@ExpoCalendarEvent.eventRecord?.id?.toIntOrNull()
+        val eventID = this@ExpoCalendarEvent.eventRecord?.id?.toLongOrNull()
           ?: throw EventNotFoundException("Event ID is required")
 
-        val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+        val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID)
         val contentResolver = reactContext.contentResolver
 
         contentResolver.update(updateUri, eventBuilder.build(), null, null)
@@ -127,7 +127,7 @@ class ExpoCalendarEvent(
 
   suspend fun createAttendee(attendeeRecord: AttendeeRecord): ExpoCalendarAttendee? {
     val attendee = ExpoCalendarAttendee(appContext ?: throw Exceptions.AppContextLost())
-    val eventId = eventRecord?.id?.toIntOrNull()
+    val eventId = eventRecord?.id?.toLongOrNull()
       ?: throw EventNotFoundException("Event ID is required")
 
     val newAttendeeId = attendee.saveAttendee(attendeeRecord, eventId)
@@ -169,7 +169,7 @@ class ExpoCalendarEvent(
         exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.timeInMillis)
         exceptionValues.put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED)
 
-        val exceptionUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_EXCEPTION_URI, eventID.toLong())
+        val exceptionUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_EXCEPTION_URI, eventID)
         contentResolver.insert(exceptionUri, exceptionValues)
       }
     }
@@ -177,11 +177,11 @@ class ExpoCalendarEvent(
 
   suspend fun reloadEvent(eventId: String? = null) {
     withContext(Dispatchers.IO) {
-      val eventID = (eventId ?: eventRecord?.id)?.toIntOrNull()
+      val eventID = (eventId ?: eventRecord?.id)?.toLongOrNull()
         ?: throw EventNotFoundException("Event ID is required")
 
       val contentResolver = reactContext.contentResolver
-      val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+      val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID)
       val projection = EventRepository.findEventByIdQueryParameters
       val cursor = contentResolver.query(uri, projection, null, null, null)
 
@@ -255,7 +255,7 @@ class ExpoCalendarEvent(
     }
   }
 
-  private fun createRemindersForEvent(eventID: Int, reminders: List<AlarmRecord>) {
+  private fun createRemindersForEvent(eventID: Long, reminders: List<AlarmRecord>) {
     val contentResolver = reactContext.contentResolver
     reminders
       .filter { it.relativeOffset != null }

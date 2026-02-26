@@ -52,9 +52,9 @@ class ExpoCalendar(
 
   suspend fun deleteCalendar(): Boolean {
     return withContext(Dispatchers.IO) {
-      val calendarID = calendarRecord?.id?.toIntOrNull()
+      val calendarID = calendarRecord?.id?.toLongOrNull()
         ?: throw EventNotFoundException("Calendar id is null")
-      val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
+      val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID)
       val contentResolver = reactContext.contentResolver
       val rows = contentResolver.delete(uri, null, null)
       calendarRecord = null
@@ -123,7 +123,7 @@ class ExpoCalendar(
   }
 
   companion object {
-    suspend fun updateCalendar(appContext: AppContext, calendarRecord: CalendarRecord, isNew: Boolean = false): Int {
+    suspend fun updateCalendar(appContext: AppContext, calendarRecord: CalendarRecord, isNew: Boolean = false): Long {
       return withContext(Dispatchers.IO) {
         if (isNew) {
           if (calendarRecord.title == null) {
