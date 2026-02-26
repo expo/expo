@@ -82,15 +82,18 @@ function createEnvironment(input) {
             // SSR path: Render at runtime if SSR module is available
             const renderer = await getServerRenderer();
             if (renderer) {
-                const renderOptions = { assets: route.assets };
+                let renderOptions = { assets: route.assets };
                 try {
                     if (route.loader) {
                         const params = (0, matchers_1.parseParams)(request, route);
                         const result = await executeLoader(request, route, params);
                         const data = (0, matchers_1.isResponse)(result) ? await result.json() : result;
-                        renderOptions.loader = {
-                            data: data ?? null,
-                            key: (0, matchers_1.resolveLoaderContextKey)(route.page, params),
+                        renderOptions = {
+                            assets: route.assets,
+                            loader: {
+                                data: data ?? null,
+                                key: (0, matchers_1.resolveLoaderContextKey)(route.page, params),
+                            },
                         };
                     }
                     return await renderer(request, renderOptions);

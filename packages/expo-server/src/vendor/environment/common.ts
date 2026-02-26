@@ -122,16 +122,19 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
       // SSR path: Render at runtime if SSR module is available
       const renderer = await getServerRenderer();
       if (renderer) {
-        const renderOptions: RenderOptions = { assets: route.assets };
+        let renderOptions: RenderOptions = { assets: route.assets };
 
         try {
           if (route.loader) {
             const params = parseParams(request, route);
             const result = await executeLoader(request, route, params);
             const data = isResponse(result) ? await result.json() : result;
-            renderOptions.loader = {
-              data: data ?? null,
-              key: resolveLoaderContextKey(route.page, params),
+            renderOptions = {
+              assets: route.assets,
+              loader: {
+                data: data ?? null,
+                key: resolveLoaderContextKey(route.page, params),
+              },
             };
           }
           return await renderer(request, renderOptions);
