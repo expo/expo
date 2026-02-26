@@ -1027,13 +1027,6 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
-                  "name": "expo_splash_screen_status_bar_translucent",
-                  "translatable": "false",
-                },
-                "_": "true",
-              },
-              {
-                "$": {
                   "name": "expo_runtime_version",
                 },
                 "_": "1.0",
@@ -1960,13 +1953,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   "translatable": "false",
                 },
                 "_": "contain",
-              },
-              {
-                "$": {
-                  "name": "expo_splash_screen_status_bar_translucent",
-                  "translatable": "false",
-                },
-                "_": "true",
               },
               {
                 "$": {

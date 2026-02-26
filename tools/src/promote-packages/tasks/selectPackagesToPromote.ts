@@ -38,8 +38,12 @@ export const selectPackagesToPromote = new Task<TaskArgs>(
  * Prompts the user to select packages to promote or demote.
  */
 async function promptForPackagesToPromoteAsync(parcels: Parcel[]): Promise<string[]> {
-  const maxLength = parcels.reduce((acc, { pkg }) => Math.max(acc, pkg.packageName.length), 0);
-  const choices = parcels.map(({ pkg, state }) => {
+  // Sort parcels alphabetically by package name.
+  const sorted = [...parcels].sort((a, b) => a.pkg.packageName.localeCompare(b.pkg.packageName));
+
+  const maxLength = sorted.reduce((acc, { pkg }) => Math.max(acc, pkg.packageName.length), 0);
+
+  const choices = sorted.map(({ pkg, state }) => {
     const action = state.isDemoting ? red.bold('demote') : green.bold('promote');
 
     return {
@@ -57,8 +61,7 @@ async function promptForPackagesToPromoteAsync(parcels: Parcel[]): Promise<strin
       name: 'selectedPackageNames',
       message: 'Which packages do you want to promote?\n  ● selected ○ unselected\n',
       choices: [
-        // Choices unchecked by default (these being demoted) should be on top.
-        // We could sort them, but JS sorting algorithm is unstable :/
+        // Choices unchecked by default (demoting or unselected half) should be on top.
         ...choices.filter((choice) => !choice.checked),
         ...choices.filter((choice) => choice.checked),
       ],

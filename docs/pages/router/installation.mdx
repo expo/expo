@@ -36,7 +36,7 @@ The above command will install versions of these libraries that are compatible w
 
 ### Setup entry point
 
-For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**app/\_layout.tsx**](/router/basics/layout/#root-layout).
+For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**src/app/\_layout.tsx**](/router/reference/src-directory/) (or [**app/\_layout.tsx**](/router/basics/layout/#root-layout) if not using the **src** directory).
 
 ```json package.json
 {
@@ -46,7 +46,7 @@ For the property `main`, use the `expo-router/entry` as its value in the **packa
 
 <Collapsible summary="Custom entry point to initialize and load side-effects">
 
-You can create a custom entry point in your Expo Router project to initialize and load side-effects before your app loads the root layout (**app/\_layout.tsx**). Below are some of the common cases for a custom entry point:
+You can create a custom entry point in your Expo Router project to initialize and load side-effects before your app loads the root layout (**src/app/\_layout.tsx**). Below are some of the common cases for a custom entry point:
 
 - Initializing global services like analytics, error reporting, and so on.
 - Setting up polyfills
@@ -54,7 +54,7 @@ You can create a custom entry point in your Expo Router project to initialize an
 
 1. Create a new file in the root of your project, such as **index.js**. After creating this file, the project structure should look like this:
 
-   <FileTree files={['app/_layout.tsx', 'index.js', 'package.json', 'Other project files']} />
+   <FileTree files={['src/app/_layout.tsx', 'index.js', 'package.json', 'Other project files']} />
 
 2. Import or add your custom configuration to the file. Then, import `expo-router/entry` to register the app entry. Remember to always import it last to ensure all configurations are properly set up before the app renders.
 
@@ -83,11 +83,14 @@ You can create a custom entry point in your Expo Router project to initialize an
 
 ### Modify project configuration
 
-Add a deep linking `scheme` in your [app config](/workflow/configuration/):
+Add a deep linking `scheme` and enable [typed routes](/router/reference/typed-routes/) in your [app config](/workflow/configuration/):
 
 ```json app.json
 {
-  "scheme": "your-app-scheme"
+  "scheme": "your-app-scheme",
+  "experiments": {
+    "typedRoutes": true
+  }
 }
 ```
 
@@ -111,7 +114,7 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ### Modify babel.config.js
 
-Ensure you use `babel-preset-expo` as the `preset`, in the **babel.config.js** file or delete the file:
+If your project has a **babel.config.js** file, ensure you use `babel-preset-expo` as the `preset`. If you don't need any custom Babel configuration, you can delete the file entirely:
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -126,15 +129,38 @@ module.exports = function (api) {
 
 <Step label="5">
 
+### Configure path aliases
+
+If you are using the [`src` directory](/router/reference/src-directory/), add path aliases to your **tsconfig.json** so you can use short import paths like `@/components/button` instead of relative paths:
+
+```json tsconfig.json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+}
+```
+
+The `@/*` alias maps to the **src** directory in the above example.
+
+</Step>
+
+<Step label="6">
+
 ### Clear bundler cache
 
-After updating the Babel config file, run the following command to clear the bundler cache:
+After updating the configuration, run the following command to clear the bundler cache:
 
 <Terminal cmd={['$ npx expo start --clear']} />
 
 </Step>
 
-<Step label="6">
+<Step label="7">
 
 ### Update resolutions
 

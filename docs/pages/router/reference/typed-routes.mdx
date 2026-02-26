@@ -81,12 +81,12 @@ You can leverage the `useSegments()` hooks from `expo-router` to create complex 
 
 <FileTree
   files={[
-    'app/(feed)/_layout.tsx',
-    'app/(feed)/feed.tsx',
-    'app/(feed)/search.tsx',
-    'app/(feed)/profile.tsx',
-    'app/(search)/profile.tsx',
-    'components/button.tsx',
+    'src/app/(feed)/_layout.tsx',
+    'src/app/(feed)/feed.tsx',
+    'src/app/(feed)/search.tsx',
+    'src/app/(feed)/profile.tsx',
+    'src/app/(search)/profile.tsx',
+    'src/components/button.tsx',
   ]}
 />
 
@@ -105,7 +105,7 @@ export function Button() {
 }
 ```
 
-Now, you can leverage `<Button />` from both **app/(feed)/feed.tsx** and **app/(search)/search.tsx** to push `./profile` while preserving the current tab.
+Now, you can leverage `<Button />` from both **src/app/(feed)/feed.tsx** and **src/app/(search)/search.tsx** to push `./profile` while preserving the current tab.
 
 If you require the segments for a specific use, you can pass the full route to `useSegments`:
 
@@ -147,7 +147,7 @@ function Page() {
 
 For strongly typed route parameters, you can pass a full href to the `useLocalSearchParams` and `useGlobalSearchParams` hooks. For example:
 
-```tsx app/search.tsx
+```tsx src/app/search.tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -172,7 +172,7 @@ export default function Page() {
 
 Most query parameters will not be represented in the file system and therefore cannot be typed automatically. You can type query parameters manually by passing a generic to the `useLocalSearchParams` and `useGlobalSearchParams` hooks. For example:
 
-```tsx app/search.tsx
+```tsx src/app/search.tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -187,7 +187,7 @@ export default function Page() {
 
 If you need a combination of route and query parameters, pass the route as the first generic and then the query parameters:
 
-```tsx app/search.tsx
+```tsx src/app/search.tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 

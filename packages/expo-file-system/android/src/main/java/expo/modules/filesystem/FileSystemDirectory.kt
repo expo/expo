@@ -1,7 +1,7 @@
 package expo.modules.filesystem
 
 import android.net.Uri
-import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.services.FilePermissionService
 
 class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun validatePath() {
@@ -15,7 +15,7 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   val exists: Boolean get() {
-    return if (checkPermission(Permission.READ)) {
+    return if (checkPermission(FilePermissionService.Permission.READ)) {
       file.isDirectory()
     } else {
       false
@@ -23,14 +23,14 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   val size: Long get() {
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     validateType()
     return file.walkTopDown().filter { it.isFile() }.map { it.length() }.sum()
   }
 
   fun info(): DirectoryInfo {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     if (!file.exists()) {
       val directoryInfo = DirectoryInfo(
         exists = false,
@@ -52,7 +52,7 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
 
   fun create(options: CreateOptions = CreateOptions()) {
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     if (!needsCreation(options)) {
       return
     }
@@ -75,22 +75,24 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
 
   fun createFile(mimeType: String?, fileName: String): FileSystemFile {
     validateType()
-    validatePermission(Permission.WRITE)
-    val newFile = file.createFile(mimeType ?: "text/plain", fileName) ?: throw UnableToCreateException("file could not be created")
+    validatePermission(FilePermissionService.Permission.WRITE)
+    val newFile = file.createFile(mimeType ?: "text/plain", fileName)
+      ?: throw UnableToCreateException("file could not be created")
     return FileSystemFile(newFile.uri)
   }
 
   fun createDirectory(fileName: String): FileSystemDirectory {
     validateType()
-    validatePermission(Permission.WRITE)
-    val newDirectory = file.createDirectory(fileName) ?: throw UnableToCreateException("directory could not be created")
+    validatePermission(FilePermissionService.Permission.WRITE)
+    val newDirectory = file.createDirectory(fileName)
+      ?: throw UnableToCreateException("directory could not be created")
     return FileSystemDirectory(newDirectory.uri)
   }
 
   // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
   fun listAsRecords(): List<Map<String, Any>> {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     return file.listFilesAsUnified().map {
       val uriString = it.uri.toString()
       val isDir = it.isDirectory()

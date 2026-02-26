@@ -13,9 +13,9 @@ import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Expo Router enables you to write secure server code for all platforms, right in your **app** directory.
+Expo Router enables you to write secure server code for all platforms, right in your **src/app** directory.
 
-```ts app/hello+api.ts
+```ts src/app/hello+api.ts
 export function GET(request: Request) {
   return Response.json({ hello: 'world' });
 }
@@ -34,7 +34,7 @@ API Routes are functions that are executed on a server when a route is matched. 
 
 In Expo, API Routes are defined by creating files in the **app** directory with the `+api.ts` extension. For example, the following API route is executed when the route `/hello` is matched.
 
-<FileTree files={['app/index.tsx', ['app/hello+api.ts', 'API Route']]} />
+<FileTree files={['src/app/index.tsx', ['src/app/hello+api.ts', 'API Route']]} />
 
 ## Create an API route
 
@@ -58,7 +58,7 @@ Ensure your project is using server output, this will configure the export and p
 
 An API route is created in the **app** directory. For example, add the following route handler. It is executed when the route `/hello` is matched.
 
-```ts app/hello+api.ts
+```ts src/app/hello+api.ts
 export function GET(request: Request) {
   return Response.json({ hello: 'world' });
 }
@@ -84,7 +84,7 @@ You can make a network request to the route to access the data. Run the followin
 
 You can also make a request from the client code:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Button } from 'react-native';
 
 async function fetchHello() {
@@ -131,7 +131,7 @@ Deploy the website and server to a [hosting provider](#deployment) to access the
 
 Requests use the global, standard [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) object.
 
-```ts app/blog/[post]+api.ts
+```ts src/app/blog/[post]+api.ts
 export async function GET(request: Request, { post }: Record<string, string>) {
   // const postId = new URL(request.url).searchParams.get('post')
   // fetch data for 'post'
@@ -143,7 +143,7 @@ export async function GET(request: Request, { post }: Record<string, string>) {
 
 Use the `request.json()` function to access the request body. It automatically parses the body and returns the result.
 
-```ts app/validate+api.ts
+```ts src/app/validate+api.ts
 export async function POST(request: Request) {
   const body = await request.json();
 
@@ -155,7 +155,7 @@ export async function POST(request: Request) {
 
 Query parameters can be accessed by parsing the request URL:
 
-```ts app/endpoint+api.ts
+```ts src/app/endpoint+api.ts
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const post = url.searchParams.get('post');
@@ -169,7 +169,7 @@ export async function GET(request: Request) {
 
 Responses use the global, standard [`Response`](https://fetch.spec.whatwg.org/#response) object.
 
-```ts app/demo+api.ts
+```ts src/app/demo+api.ts
 export function GET() {
   return Response.json({ hello: 'universe' });
 }
@@ -179,7 +179,7 @@ export function GET() {
 
 For error cases, you can create `Response`s with any status code and response body.
 
-```ts app/blog/[post]+api.ts
+```ts src/app/blog/[post]+api.ts
 export async function GET(request: Request, { post }: Record<string, string>) {
   if (!post) {
     return new Response('No post found', {
@@ -210,7 +210,7 @@ Using `expo-server` is not limited to API routes and it can be used in any other
 
 You can abort a request and instead return an error `Response` by throwing a [`StatusError`](/versions/latest/sdk/server/#statuserror). This is a special `Error` instance that will be replaced with an HTTP response replacing the error itself.
 
-```ts app/blog/[post]+api.ts
+```ts src/app/blog/[post]+api.ts
 import { StatusError } from 'expo-server';
 
 export async function GET(request: Request, { post }: Record<string, string>) {
@@ -227,7 +227,7 @@ When composing your own server utilities and helpers, the `StatusError` is a mor
 
 This can be restrictive, and isn't suitable for all cases. Sometimes it might be beneficial to instead `throw` a `Response` object, which interrupts your logic as well, but replaces the resolved `Response` from your API route directly, without a `StatusError` wrapper. For example, this can be used to create redirect responses.
 
-```ts app/blog/[post]+api.ts
+```ts src/app/blog/[post]+api.ts
 import { StatusError } from 'expo-server';
 
 export async function GET(request: Request, { post }: Record<string, string>) {
@@ -246,7 +246,7 @@ Helper functions from `expo-server` return values that are scoped to the current
 
 A common value that you may need to access is the request's origin URL. The origin URL, typically transmitted on a request's `Origin` header, represents the URL that a user used to access your API route. This may differ from any internal deployment URL that your server sees when the request is being proxied. You can use `expo-server`'s [`origin()`](/versions/latest/sdk/server/#origin) helper method to access this value.
 
-```ts app/help+api.ts
+```ts src/app/help+api.ts
 import { origin } from 'expo-server';
 
 export async function GET(request: Request) {
@@ -257,7 +257,7 @@ export async function GET(request: Request) {
 
 Most runtimes that you deploy your server code to have a concept of environments, to differentiate between production or staging deployments. You can use `expo-server`'s [`environment()`](/versions/latest/sdk/server/#environment) helper to get an environment name. This value will differ depending on how you're running your server code.
 
-```ts app/env+api.ts
+```ts src/app/env+api.ts
 import { environment } from 'expo-server';
 
 export async function GET(request: Request) {
@@ -276,7 +276,7 @@ export async function GET(request: Request) {
 
 In your request handlers, you may need to run asynchronous tasks in parallel to your server logic.
 
-```ts app/tasks+api.ts
+```ts src/app/tasks+api.ts
 export async function GET(request: Request) {
   // This will delay the response:
   await pingAnalytics(...);
@@ -290,7 +290,7 @@ In the above example, an `await`-ed function call delays the rest of the API rou
 
 Instead, you can use `expo-server`'s [`runTask()`](/versions/latest/sdk/server/#runtaskfn) helper function to run concurrent tasks. This is equivalent to the [`waitUntil()`](https://developer.mozilla.org/en-US/docs/Web/API/ExtendableEvent/waitUntil) method that you see in service worker code or other serverless runtimes.
 
-```ts app/tasks+api.ts
+```ts src/app/tasks+api.ts
 import { runTask } from 'expo-server';
 
 export async function GET(request: Request) {
@@ -310,7 +310,7 @@ However, sometimes you may want to delay a task until after the API route has re
 
 You can use `expo-server`'s [`deferTask()`](/versions/latest/sdk/server/#defertaskfn) helper function to schedule tasks to run after a `Response` has been resolved by your API route.
 
-```ts app/tasks+api.ts
+```ts src/app/tasks+api.ts
 import { deferTask } from 'expo-server';
 
 export async function GET(request: Request) {
@@ -330,7 +330,7 @@ When structuring and splitting server logic into separate helper functions and f
 
 For example, you may need to add metadata in [server middleware](/router/web/middleware/) to a `Response` before your API route code is running.
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 import { setResponseHeaders } from 'expo-server';
 
 export default function middleware(request: Request) {
@@ -341,7 +341,7 @@ export default function middleware(request: Request) {
 
 In the above example, a `Retry-After` header is added to a future `Response` that an API route may be creating. This can also be extended for authentication and cookies.
 
-```ts app/+middleware.ts
+```ts src/app/+middleware.ts
 import { setResponseHeaders } from 'expo-server';
 
 export default function middleware(request: Request) {
@@ -367,7 +367,7 @@ API Routes are bundled with Expo CLI and [Metro bundler](/guides/customizing-met
 
 Route handlers are executed in a sandboxed environment that is isolated from the client code. It means you can safely store sensitive data in the route handlers without exposing it to the client.
 
-- Client code that imports code with a secret is included in the client bundle. It applies to **all files** in the **app directory** even though they are not a route handler file (such as suffixed with **+api.ts**).
+- Client code that imports code with a secret is included in the client bundle. It applies to **all files** in the **src/app directory** even though they are not a route handler file (such as suffixed with **+api.ts**).
 - If the secret is in a **&lt;...&gt;+api.ts** file, it is not included in the client bundle. It applies to all files that are imported in the route handler.
 - The secret stripping takes place in `expo/metro-config` and requires it to be used in the **metro.config.js**.
 

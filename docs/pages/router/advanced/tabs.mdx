@@ -51,10 +51,10 @@ You can use file-based routing to create a tabs layout. Here's an example file s
 
 <FileTree
   files={[
-    'app/_layout.tsx',
-    'app/(tabs)/_layout.tsx',
-    'app/(tabs)/index.tsx',
-    'app/(tabs)/settings.tsx',
+    'src/app/_layout.tsx',
+    'src/app/(tabs)/_layout.tsx',
+    'src/app/(tabs)/index.tsx',
+    'src/app/(tabs)/settings.tsx',
   ]}
 />
 
@@ -66,9 +66,9 @@ This file structure produces a layout with a tab bar at the bottom of the screen
   className="max-w-[540px]"
 />
 
-You can use the **app/\_layout.tsx** file to define your app's root layout:
+You can use the **src/app/\_layout.tsx** file to define your app's root layout:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -84,7 +84,7 @@ The **(tabs)** directory is a special directory name that tells Expo Router to u
 
 From the file structure, the **(tabs)** directory has three files. The first is **(tabs)/\_layout.tsx**. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab button look and behave.
 
-```tsx app/(tabs)/_layout.tsx
+```tsx src/app/(tabs)/_layout.tsx
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 
@@ -110,9 +110,9 @@ export default function TabLayout() {
 }
 ```
 
-Finally, you have the two tab files that make up the content of the tabs: **app/(tabs)/index.tsx** and **app/(tabs)/settings.tsx**.
+Finally, you have the two tab files that make up the content of the tabs: **src/app/(tabs)/index.tsx** and **src/app/(tabs)/settings.tsx**.
 
-```tsx app/(tabs)/index.tsx & app/(tabs)/settings.tsx
+```tsx src/app/(tabs)/index.tsx & src/app/(tabs)/settings.tsx
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function Tab() {
@@ -138,7 +138,7 @@ The tab file named **index.tsx** is the default tab when the app loads. The seco
 
 The JavaScript tabs in Expo Router extend the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. The specific APIs available depend on your versions. For example, Expo Router v6 extends Bottom Tabs Navigator v7. Check your versions to ensure compatibility, then you can use the same configuration props to customize the bottom tab bar and individual tabs. For example:
 
-```tsx app/(tabs)/_layout.tsx
+```tsx src/app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
@@ -174,7 +174,7 @@ For additional details and navigator-specific examples, see [React Navigation's 
 
 Sometimes you want a route to exist but not show up in the tab bar. You can pass `href: null` to disable the button:
 
-```tsx app/(tabs)/_layout.tsx
+```tsx src/app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
@@ -197,7 +197,7 @@ export default function TabLayout() {
 
 You can use a dynamic route in a tab bar. For example, you have a `[user]` tab that shows a user's profile. You can use the `href` option to link to a specific user's profile.
 
-```tsx app/(tabs)/_layout.tsx
+```tsx src/app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {

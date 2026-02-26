@@ -4,11 +4,10 @@ import { setSplashStrings } from '../withAndroidSplashStrings';
 
 describe(setSplashStrings, () => {
   it('add expo_splash_screen_strings', () => {
-    const results = setSplashStrings({ resources: {} }, 'cover', false);
+    const results = setSplashStrings({ resources: {} }, 'cover');
     const expectXML = `\
 <resources>
   <string name="expo_splash_screen_resize_mode" translatable="false">cover</string>
-  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
 </resources>`;
     expect(XML.format(results)).toEqual(expectXML);
   });
@@ -16,13 +15,11 @@ describe(setSplashStrings, () => {
   it('override old expo_splash_screen_strings', () => {
     const results = setSplashStrings(
       { resources: { string: [{ $: { name: 'expo_splash_screen_resize_mode' }, _: 'contain' }] } },
-      'native',
-      false
+      'native'
     );
     const expectXML = `\
 <resources>
   <string name="expo_splash_screen_resize_mode" translatable="false">native</string>
-  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
 </resources>`;
     expect(XML.format(results)).toEqual(expectXML);
   });

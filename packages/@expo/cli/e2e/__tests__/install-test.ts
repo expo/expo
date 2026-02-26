@@ -214,29 +214,3 @@ it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --chec
     return executeExpoAsync(projectRoot, ['install', '--check'], { env, verbose: false });
   }).rejects.toThrow(/Found outdated dependencies/);
 });
-
-describe('expo-router integration', () => {
-  it('runs `npx expo install --fix`', async () => {
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      'install-expo-router-integration',
-      'with-router',
-      {
-        reuseExisting: false,
-        // TODO(@hassankhan): remove @expo/router-server & require-utils after publishing
-        linkExpoPackages: ['expo-router', '@expo/router-server', '@expo/require-utils'],
-      }
-    );
-
-    // Add a package that requires "fixing" when using canary
-    await executeExpoAsync(projectRoot, ['install', '@react-navigation/native@6.1.18']);
-
-    // Run `--fix` project dependencies with expo@52 and expo-router from source
-    await executeExpoAsync(projectRoot, ['install', '--fix'], { verbose: false });
-
-    // Ensure `@react-navigation/native` was updated
-    const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
-    expect(pkg.read().dependencies).not.toMatchObject({
-      '@react-navigation/native': '6.1.18',
-    });
-  }, 600_000);
-});

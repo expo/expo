@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
-import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImage
@@ -15,29 +14,25 @@ import expo.modules.imagepicker.CropShape
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.copyExifData
-import expo.modules.imagepicker.createOutputFile
-import expo.modules.imagepicker.toBitmapCompressFormat
-import expo.modules.imagepicker.toImageFileExtension
+import expo.modules.imagepicker.getContentUri
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.runBlocking
+import java.io.File
 import java.io.Serializable
 
 internal class CropImageContract(
   private val appContextProvider: AppContextProvider
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, expo.modules.imagepicker.ExpoCropImageActivity::class.java).apply {
-    val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri.toUri())
-    val compressFormat = mediaType?.toBitmapCompressFormat() ?: Bitmap.CompressFormat.JPEG
-    val cacheDirectory = appContextProvider.appContext.cacheDirectory
-    val outputUri = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension()).toUri()
+    val outputUri = input.outputFile.getContentUri(context)
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
       bundleOf(
         CropImage.CROP_IMAGE_EXTRA_SOURCE to input.sourceUri.toUri(),
         CropImage.CROP_IMAGE_EXTRA_OPTIONS to CropImageOptions().apply {
-          outputCompressFormat = compressFormat
+          outputCompressFormat = input.compressFormat
           outputCompressQuality = (input.options.quality * 100).toInt()
 
           this.customOutputUri = outputUri
@@ -70,12 +65,14 @@ internal class CropImageContract(
     }
     val targetUri = requireNotNull(result.uriContent)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
-    runBlocking { copyExifData(input.sourceUri.toUri(), targetUri.toFile(), contentResolver) }
+    runBlocking { copyExifData(input.sourceUri.toUri(), input.outputFile, contentResolver) }
     return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
   }
 }
 
 internal data class CropImageContractOptions(
   val sourceUri: String,
-  val options: ImagePickerOptions
+  val options: ImagePickerOptions,
+  val outputFile: File,
+  val compressFormat: Bitmap.CompressFormat
 ) : Serializable

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 55.0.11 — 2026-02-25
+
+### 💡 Others
+
+- [test] run brownfield e2e tests (cli + plugin) in sdk/check-packages workflow ([#43391](https://github.com/expo/expo/pull/43391) by [@pmleczek](https://github.com/pmleczek))
+
 ## 55.0.10 — 2026-02-25
 
 ### 🎉 New features
@@ -19,6 +25,7 @@
 ### 💡 Others
 
 - [test] setup maestro e2e tests for expo-brownfield on ios ([#43028](https://github.com/expo/expo/pull/43028) by [@pmleczek](https://github.com/pmleczek))
+- [state] add ios implementation & improvements ([#43236](https://github.com/expo/expo/pull/43236) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.9 — 2026-02-20
 

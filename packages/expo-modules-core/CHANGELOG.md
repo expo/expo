@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix memory leak due to retain cycle in SwiftUI views. ([#43468](https://github.com/expo/expo/pull/43468) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 - [iOS] Decoupled Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.12 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.11 — 2026-02-25
 
@@ -29,7 +35,6 @@
 
 - Fixed view updates for Jetpack Compose integration. ([#42732](https://github.com/expo/expo/pull/42732) by [@kudo](https://github.com/kudo))
 - [Android] Promoted `Either` type stable. ([#43267](https://github.com/expo/expo/pull/43267) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Remove legacy `ExpoModulesCorePlugin`. ([#43312](https://github.com/expo/expo/pull/43312) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.9 — 2026-02-16
 

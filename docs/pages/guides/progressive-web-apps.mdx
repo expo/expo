@@ -103,9 +103,9 @@ Then add the manifest to the `<head>` tag:
 
 <Tab label="static & server">
 
-If you're using static or server rendering, the HTML entry can be dynamically created in **app/+html.tsx**. Here we'll link the manifest by adding a `<link>` tag to the `<head>` component:
+If you're using static or server rendering, the HTML entry can be dynamically created in **src/app/+html.tsx**. Here we'll link the manifest by adding a `<link>` tag to the `<head>` component:
 
-```tsx app/+html.tsx
+```tsx src/app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 
@@ -205,7 +205,7 @@ Then create the service worker registration script in the `<head>` tag:
 
 Next, create a root HTML file for the app and add the service worker registration script:
 
-```tsx app/+html.tsx
+```tsx src/app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
 

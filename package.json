@@ -27,14 +27,6 @@
     "@types/babel__generator": "^7.27.0",
     "@types/babel__template": "^7.4.4",
     "@types/babel__traverse": "^7.20.7",
-    "@react-navigation/bottom-tabs": "7.10.1",
-    "@react-navigation/core": "7.14.0",
-    "@react-navigation/drawer": "7.7.2",
-    "@react-navigation/elements": "2.9.5",
-    "@react-navigation/native": "7.1.28",
-    "@react-navigation/native-stack": "7.10.1",
-    "@react-navigation/routers": "7.5.2",
-    "@react-navigation/stack": "7.6.7",
     "**/util": "~0.12.4"
   },
   "dependencies": {
