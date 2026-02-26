@@ -8,7 +8,7 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { InputConfigT, mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
+import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import { createStableModuleIdFactory, getDefaultConfig } from '@expo/metro-config';
 import chalk from 'chalk';
@@ -21,7 +21,7 @@ import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
-import { runServer } from './runServer-fork';
+import { runServer, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
@@ -75,13 +75,6 @@ type MessageSocket = {
 declare namespace globalThis {
   let __requireCycleIgnorePatterns: readonly RegExp[] | undefined;
 }
-
-type TLS = {
-  key: string | Buffer;
-  cert: string | Buffer;
-  ca: string | Buffer;
-  requestCert: boolean;
-};
 
 function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
@@ -367,8 +360,9 @@ export async function instantiateMetroAsync(
   });
 
   // Support HTTPS based on the metro's tls server config
-  // TODO: remove the casting once Metro is updated to a version that supports the tls config
-  const tls = (metroConfig.server as typeof metroConfig.server & { tls?: TLS })?.tls;
+  // TODO(@kitten): Remove cast once `@expo/metro` is updated to a Metro version that supports the tls config
+  const tls = (metroConfig.server as typeof metroConfig.server & { tls?: SecureServerOptions })
+    ?.tls;
   const secureServerOptions = tls
     ? {
         key: tls.key,
