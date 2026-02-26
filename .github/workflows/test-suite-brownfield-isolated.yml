@@ -148,6 +148,10 @@ jobs:
           script: |
             adb install -r apps/brownfield-tester/android-integrated/apk/app-release.apk
             cd packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
+      - name: 👷 Build Expo CLI
+        run: yarn workspace @expo/cli prepare
       - name: 🚇 Start Metro server
         run: yarn start --clear
         working-directory: apps/brownfield-tester/expo-app
