@@ -153,7 +153,9 @@ jobs:
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
       - name: 🚇 Start Metro server
-        run: yarn start --clear
+        run: |
+          yarn start --clear &
+          npx wait-on http://localhost:8081 --timeout 60000
         working-directory: apps/brownfield-tester/expo-app
       - name: 🧪 Run e2e tests (Debug)
         uses: ./.github/actions/use-android-emulator
