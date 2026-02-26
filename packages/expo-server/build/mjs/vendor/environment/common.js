@@ -50,10 +50,11 @@ export function createEnvironment(input) {
         if (!ssrModule) {
             throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
         }
-        const assets = manifest.assets;
+        const topLevelAssets = manifest.assets;
         ssrRenderer = async (request, options) => {
             const url = new URL(request.url);
             const location = new URL(url.pathname + url.search, url.origin);
+            const assets = mergeAssets(topLevelAssets, options?.assets);
             return ssrModule.getStaticContent(location, {
                 loader: options?.loader,
                 request,
@@ -78,17 +79,15 @@ export function createEnvironment(input) {
             // SSR path: Render at runtime if SSR module is available
             const renderer = await getServerRenderer();
             if (renderer) {
-                let renderOptions;
+                const renderOptions = { assets: route.assets };
                 try {
                     if (route.loader) {
                         const params = parseParams(request, route);
                         const result = await executeLoader(request, route, params);
                         const data = isResponse(result) ? await result.json() : result;
-                        renderOptions = {
-                            loader: {
-                                data: data ?? null,
-                                key: resolveLoaderContextKey(route.page, params),
-                            },
+                        renderOptions.loader = {
+                            data: data ?? null,
+                            key: resolveLoaderContextKey(route.page, params),
                         };
                     }
                     return await renderer(request, renderOptions);
@@ -152,6 +151,15 @@ export function createEnvironment(input) {
                 await Promise.all(requests.map((request) => input.loadModule(request)));
             }
         },
+    };
+}
+/**
+ * Merges top-level assets with per-route async chunk assets. Top-level assets come first
+ */
+function mergeAssets(topLevel, routeLevel) {
+    return {
+        css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
+        js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
     };
 }
 //# sourceMappingURL=common.js.map
