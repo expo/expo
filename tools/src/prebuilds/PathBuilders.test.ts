@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import path from 'path';
 
 import { Frameworks } from './Frameworks';
-import { SPMBuild, getBuildFolderPrefixForPlatform } from './SPMBuild';
+import { SPMBuild, getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct } from './SPMBuild';
 import { SPMGenerator } from './SPMGenerator';
 import { Artifacts } from './Artifacts';
 import { Dependencies } from './Dependencies';
@@ -294,5 +294,35 @@ describe('Dependencies path functions', () => {
       const result = Dependencies.getPackageDependenciesPath(pkg);
       assert.equal(result, path.join(pkg.path, '.dependencies'));
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getBuildPlatformsForProduct
+// ---------------------------------------------------------------------------
+
+describe('getBuildPlatformsForProduct', () => {
+  it('returns all platforms for iOS product', () => {
+    const product = stubProduct({ platforms: ['iOS(.v15)'] });
+    const result = getBuildPlatformsForProduct(product);
+    assert.deepEqual(result, ['iOS', 'iOS Simulator']);
+  });
+
+  it('returns filtered platform when platform argument is provided', () => {
+    const product = stubProduct({ platforms: ['iOS(.v15)'] });
+    const result = getBuildPlatformsForProduct(product, 'iOS');
+    assert.deepEqual(result, ['iOS']);
+  });
+
+  it('returns empty array when filtering to non-matching platform', () => {
+    const product = stubProduct({ platforms: ['iOS(.v15)'] });
+    const result = getBuildPlatformsForProduct(product, 'macOS');
+    assert.deepEqual(result, []);
+  });
+
+  it('returns multiple platform families when product has multiple platforms', () => {
+    const product = stubProduct({ platforms: ['iOS(.v15)', 'tvOS(.v15)'] });
+    const result = getBuildPlatformsForProduct(product);
+    assert.deepEqual(result, ['iOS', 'iOS Simulator', 'tvOS', 'tvOS Simulator']);
   });
 });

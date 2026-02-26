@@ -4,7 +4,7 @@ import { spawn } from 'child_process';
 import os from 'os';
 
 import logger from '../Logger';
-import { createAsyncSpinner } from './Utils';
+import { createAsyncSpinner, isNonInteractive } from './Utils';
 
 /**
  * Spawns xcodebuild with a spinner that shows the current build action.
@@ -15,7 +15,7 @@ export async function spawnXcodeBuildWithSpinner(
   cwd: string,
   spinnerText: string
 ): Promise<{ code: number | null; results: string; error: string }> {
-  const isCI = process.env.CI != null || process.stdout.isTTY === false;
+  const isCI = isNonInteractive();
   const formatter = ExpoRunFormatter.create(cwd, {
     isDebug: isCI,
   });

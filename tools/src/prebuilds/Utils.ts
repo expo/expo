@@ -6,6 +6,16 @@ import path from 'path';
 
 import logger from '../Logger';
 
+let _forceNonInteractive = false;
+
+export function isNonInteractive(): boolean {
+  return _forceNonInteractive || process.env.CI != null || process.stdout.isTTY === false;
+}
+
+export function setForceNonInteractive(value: boolean): void {
+  _forceNonInteractive = value;
+}
+
 /**
  * Checks if file content has changed between source and destination.
  * Uses fast checks first (existence, size, mtime), then falls back to content comparison.
@@ -475,7 +485,7 @@ export const createAsyncSpinner = (
   pkg?: SPMPackageSource,
   product?: SPMProduct
 ) => {
-  if (process.env.CI != null || process.stdout.isTTY === false) {
+  if (isNonInteractive()) {
     return {
       succeed: (text?: string) => {
         logger.log(

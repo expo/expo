@@ -22,6 +22,7 @@ import { isExternalPackage } from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
 import {
   getVersionsInfoAsync,
+  setForceNonInteractive,
   validateAllPodNamesAsync,
   verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
@@ -285,7 +286,7 @@ export const prepareInputsStep: Step<PrebuildContext> = {
 
     // Enable verbose output (full build logs instead of spinners)
     if (request.verbose) {
-      process.env.CI = '1';
+      setForceNonInteractive(true);
     }
 
     if (request.packageNames.length > 0) {

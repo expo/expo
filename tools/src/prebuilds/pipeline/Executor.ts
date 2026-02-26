@@ -7,17 +7,15 @@
  *   → report summary → return PrebuildRunResult
  */
 import chalk from 'chalk';
-import path from 'path';
 
 import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Dependencies } from '../Dependencies';
-import { Frameworks } from '../Frameworks';
 
 import type { PrebuildContext } from './Context';
 import { packageSteps } from './PackageSteps';
 import { productSteps } from './ProductSteps';
-import { printPrebuildSummary, writeErrorLog } from './Reporter';
+import { logPackageBanner, printPrebuildSummary, writeErrorLog } from './Reporter';
 import { runSteps, resolveFlavorTemplatedPath } from './RunSteps';
 import type { PrebuildRunResult, Step, UnitStatus, ProductStage } from './Types';
 
@@ -168,24 +166,7 @@ export async function runPrebuildPipeline(
       ctx.currentPackage = pkg;
 
       const spmConfig = pkg.getSwiftPMConfiguration();
-      const flavorInfo =
-        request.buildFlavors.length > 1
-          ? ` [${request.buildFlavors.join(' + ')}]`
-          : ` [${request.buildFlavors[0]}]`;
-
-      logger.info(
-        `\n📦 [${pi + 1}/${totalPackages}] ${chalk.green(pkg.packageName)}${flavorInfo}`
-      );
-      logger.info(`${'─'.repeat(60)}`);
-
-      // Log path summary for verification
-      const relPath = (p: string) => path.relative(process.cwd(), p);
-      logger.info(`   ・Package:      ${chalk.dim(relPath(pkg.path))}`);
-      logger.info(`   ・Build:        ${chalk.dim(relPath(pkg.buildPath))}`);
-      logger.info(`   ・Cache:        ${chalk.dim(relPath(ctx.artifactsPath))}`);
-      logger.info(
-        `   ・XCFrameworks: ${chalk.dim(relPath(Frameworks.getFrameworksOutputPath(pkg.buildPath, request.buildFlavors[0])).replace(`/${request.buildFlavors[0].toLowerCase()}`, '/<flavor>'))}`
-      );
+      logPackageBanner(pkg, pi, totalPackages, request.buildFlavors, ctx.artifactsPath);
 
       // --- Package-scope steps ---
       let skipPackage = false;

@@ -10,7 +10,36 @@ import path from 'path';
 
 import logger from '../../Logger';
 
+import type { SPMPackageSource } from '../ExternalPackage';
+import { Frameworks } from '../Frameworks';
+import type { BuildFlavor } from '../Prebuilder.types';
+
 import type { UnitError, UnitStatus, StageStatus } from './Types';
+
+// ---------------------------------------------------------------------------
+// Package banner
+// ---------------------------------------------------------------------------
+
+export function logPackageBanner(
+  pkg: SPMPackageSource,
+  index: number,
+  total: number,
+  flavors: BuildFlavor[],
+  artifactsPath: string,
+): void {
+  const flavorInfo = flavors.length > 1
+    ? ` [${flavors.join(' + ')}]`
+    : ` [${flavors[0]}]`;
+  logger.info(`\n📦 [${index + 1}/${total}] ${chalk.green(pkg.packageName)}${flavorInfo}`);
+  logger.info(`${'─'.repeat(60)}`);
+  const relPath = (p: string) => path.relative(process.cwd(), p);
+  logger.info(`   ・Package:      ${chalk.dim(relPath(pkg.path))}`);
+  logger.info(`   ・Build:        ${chalk.dim(relPath(pkg.buildPath))}`);
+  logger.info(`   ・Cache:        ${chalk.dim(relPath(artifactsPath))}`);
+  logger.info(
+    `   ・XCFrameworks: ${chalk.dim(relPath(Frameworks.getFrameworksOutputPath(pkg.buildPath, flavors[0])).replace(`/${flavors[0].toLowerCase()}`, '/<flavor>'))}`
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Duration formatting

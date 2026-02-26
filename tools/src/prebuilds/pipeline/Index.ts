@@ -20,7 +20,7 @@ export type {
   PrebuildRunResult,
 } from './Types';
 
-export { printPrebuildSummary, writeErrorLog, formatDuration } from './Reporter';
+export { logPackageBanner, printPrebuildSummary, writeErrorLog, formatDuration } from './Reporter';
 
 export {
   sortPackagesByDependencies,

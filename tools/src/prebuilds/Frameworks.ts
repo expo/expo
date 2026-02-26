@@ -8,7 +8,7 @@ import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import {
   getBuildFolderPrefixForPlatform,
-  getBuildPlatformsFromProductPlatform,
+  getBuildPlatformsForProduct,
   SPMBuild,
 } from './SPMBuild';
 import { BuiltFramework } from './SPMBuild.types';
@@ -201,7 +201,7 @@ const collectFrameworksForProduct = (
   platform?: BuildPlatform
 ): BuiltFramework[] => {
   // Expand product platforms to build platforms (e.g., iOS(.v15) -> [iOS, iOS Simulator])
-  const allBuildPlatforms = product.platforms.flatMap(getBuildPlatformsFromProductPlatform);
+  const allBuildPlatforms = getBuildPlatformsForProduct(product);
 
   // Filter and map to framework info
   return allBuildPlatforms
@@ -417,7 +417,7 @@ const copySPMDependencyXCFrameworksAsync = async (
     // slices with Versions/Current/ symlink structures that cause fs.copy to fail.
     // By extracting only the iOS frameworks from the build output, we avoid both the
     // symlink issues and shipping unnecessary platform slices.
-    const productBuildPlatforms = product.platforms.flatMap(getBuildPlatformsFromProductPlatform);
+    const productBuildPlatforms = getBuildPlatformsForProduct(product);
 
     // Collect the matching frameworks from the SPM build output
     const depFrameworks: { frameworkPath: string; debugSymbolsPath?: string }[] = [];

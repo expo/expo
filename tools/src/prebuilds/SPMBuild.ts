@@ -172,7 +172,7 @@ export const SPMBuild = {
  * @param platform Optional platform to filter to
  * @returns Array of build platforms
  */
-const getBuildPlatformsForProduct = (
+export const getBuildPlatformsForProduct = (
   product: SPMProduct,
   platform?: BuildPlatform
 ): BuildPlatform[] => {
