@@ -256,13 +256,15 @@ Native tabs (`expo-router/unstable-native-tabs`) provide native bottom tab navig
 
 ### E2E Testing (router-e2e)
 
-The `apps/router-e2e` app contains end-to-end tests and examples for Expo Router. Different apps are in `__e2e__/` subdirectory.
+The `apps/router-e2e` app contains end-to-end tests and examples for Expo Router. Different apps are in `__e2e__/` subdirectory. Use the `expo-router-e2e` skill to run the apps in router-e2e directory.
 
 **Running tests/apps:**
 
 - From `packages/@expo/cli`: `yarn test:e2e <PROJECT_NAME>` or `yarn test:playwright <PROJECT_NAME>`
 - Maestro tests (native navigation): `yarn test:e2e` from `apps/router-e2e`
 - Some of the apps are only for manual testing
+
+**Manual Android testing:** Use the `/android-e2e-testing` skill for step-by-step guidance on testing Expo Router screens on Android emulators using ADB. This covers launching E2E apps, navigating via UI dumps, interacting with the app, and verifying results.
 
 ## Verification
 
@@ -272,6 +274,10 @@ After developing a feature, run these commands in `packages/expo-router`:
 2. `yarn build` - Build and verify TypeScript correctness. If you moved or deleted files, run `yarn clean` first.
 3. `yarn test:types` - Verify type correctness in tests
 4. `yarn lint` - Run last to find linting issues
+
+Then manually test using one of the `apps/router-e2e/__e2e__/` projects. In case the functionality is missing from the E2E tests, add a new screen/feature to one of the projects.
+
+Lastly, span a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
 

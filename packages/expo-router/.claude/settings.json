@@ -1,0 +1,70 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(CI=1 yarn test:*)",
+      "Bash(yarn test:*)",
+      "Bash(yarn test:types)",
+      "Bash(yarn build:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn clean && yarn build)",
+      "Bash(yarn test:rsc:*)",
+      "Bash(yarn)",
+
+      "Bash(cd ../../apps/router-e2e && yarn android:*)",
+      "Bash(cd ../../apps/router-e2e && yarn android:*)",
+      "Bash(cd ../../apps/router-e2e && yarn ios:*)",
+      "Bash(cd ../../apps/router-e2e && yarn start:*)",
+      "Bash(cd ../../apps/router-e2e && yarn export:*)",
+      "Bash(cd ../../apps/router-e2e && cat * | grep -E * | head *)",
+
+      "Bash(et generate-docs-api-data:*)",
+      "Bash(et check-packages:*)",
+
+      "Bash(gh issue view:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh release view:*)",
+      "Bash(gh release list:*)",
+
+      "Bash(gt sync:*)",
+      "Bash(gt checkout:*)",
+      "Bash(gt parent:*)",
+
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+
+      "Bash(adb logcat:*)",
+      "Bash(adb pull:*)",
+      "Bash(adb shell:*)",
+      "Bash(adb devices:*)",
+      "Bash(adb reverse tcp:8081 tcp:8081)",
+
+      "mcp__playwright__*",
+      "mcp__ide__getDiagnostics",
+
+      "Skill(android-e2e-testing)",
+      "Skill(expo-router-e2e)",
+
+      "Search(**)"
+    ],
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(rm -rf *)",
+
+      "Bash(npm ci *)",
+      "Bash(npm exec *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npm start *)",
+      "Bash(npm test *)",
+      "Bash(npm build *)",
+
+      "Bash(npx tsc:*)",
+      "Bash(npx eslint:*)",
+
+      "Bash(cd /Users/* && *)",
+      "Bash(cd ~/* && *)"
+    ],
+    "additionalDirectories": ["../../apps/router-e2e", "../../packages/"]
+  }
+}
