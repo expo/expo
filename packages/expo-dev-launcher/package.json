@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "55.0.9",
+  "version": "55.0.10",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "@expo/schema-utils": "^55.0.2",
-    "expo-dev-menu": "55.0.8",
+    "expo-dev-menu": "55.0.9",
     "expo-manifests": "~55.0.9"
   },
   "peerDependencies": {

@@ -2,4 +2,4 @@ import { RawH3 } from '~/ui/components/Text';
 
 <RawH3>File-based routing</RawH3>
 
-The app has two screens: **app/(tabs)/index.tsx** and **app/(tabs)/explore.tsx**. The layout file in **app/(tabs)/\_layout.tsx** sets up the tab navigator.
+The app has two screens: **src/app/index.tsx** and **src/app/explore.tsx**. The layout file in **src/app/\_layout.tsx** sets up navigation using a platform-specific **AppTabs** component that uses native tabs on Android and iOS, and Expo Router UI tabs on web.

@@ -23,7 +23,7 @@ type Props = {
 };
 
 const isDev = process.env.NODE_ENV === 'development';
-const LLMS_SDK_VERSIONS = ['v53.0.0', 'v52.0.0'];
+const LLMS_SDK_VERSIONS = ['v53.0.0'];
 const LLMS_SDK_LATEST_VERSION = LLMS_SDK_VERSIONS[0];
 
 export const Footer = ({

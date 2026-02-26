@@ -92,6 +92,11 @@ export default (program: Command) => {
       'When retrying after a failed publish, auto-select all packages whose current version is not published yet and allow deselecting in a multi-select prompt.',
       false
     )
+    .option(
+      '--prompt-otp',
+      'Prompt for an npm OTP code before publishing. Re-prompts automatically when the code expires.',
+      false
+    )
     /* debug options */
     .option(
       '-S, --skip-repo-checks',

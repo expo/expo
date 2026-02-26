@@ -310,6 +310,7 @@ To run the docs site locally run `yarn dev` in the `docs/` directory of the mono
 - Always use latest React 19 hooks and patterns - `use` instead of `useContext`, `useId`, etc.
 - Make sure the code works with and without React Compiler enabled.
 - Don't use `any` types, unless strictly necessary. Use `unknown` instead and narrow types as much as possible.
+- Never import files with platform-specific extensions directly. Always import from the base path and let the bundler resolve the correct file. Correct `import { Component } from './Component'`, not `import { Component } from './Component.ios'`.
 
 ## Maintaining This Document
 

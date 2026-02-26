@@ -81,6 +81,7 @@ function babelPresetExpo(api, options = {}) {
         !isServerEnv &&
         // Give users the ability to opt-out of the feature, per-platform.
         platformOptions['react-compiler'] !== false) {
+        const reactCompilerOptions = platformOptions['react-compiler'];
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
@@ -90,7 +91,10 @@ function babelPresetExpo(api, options = {}) {
                     ...(platformOptions['react-compiler']?.environment ?? {}),
                 },
                 panicThreshold: isDev ? undefined : 'NONE',
-                ...platformOptions['react-compiler'],
+                ...reactCompilerOptions,
+                // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
+                // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
+                customOptOutDirectives: [...(reactCompilerOptions?.customOptOutDirectives ?? []), 'widget'],
             },
         ]);
     }

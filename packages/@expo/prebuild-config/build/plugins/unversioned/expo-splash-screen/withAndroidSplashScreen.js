@@ -56,18 +56,6 @@ function _withAndroidSplashStyles() {
 const withAndroidSplashScreen = (config, props) => {
   const isLegacyConfig = props === undefined;
   const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config, props ?? null);
-
-  // Update the android status bar to match the splash screen
-  // androidStatusBar applies info to the app activity style.
-  const backgroundColor = splashConfig?.backgroundColor || '#ffffff';
-  if (config.androidStatusBar?.backgroundColor) {
-    if (backgroundColor.toLowerCase() !== config.androidStatusBar?.backgroundColor?.toLowerCase?.()) {
-      _configPlugins().WarningAggregator.addWarningAndroid('androidStatusBar.backgroundColor', 'Color conflicts with the splash.backgroundColor');
-    }
-  } else {
-    if (!config.androidStatusBar) config.androidStatusBar = {};
-    config.androidStatusBar.backgroundColor = backgroundColor;
-  }
   return (0, _configPlugins().withPlugins)(config, [[_withAndroidSplashMainActivity().withAndroidSplashMainActivity, {
     isLegacyConfig
   }], [_withAndroidSplashImages().withAndroidSplashImages, splashConfig], [_withAndroidSplashDrawables().withAndroidSplashDrawables, splashConfig], [_withAndroidSplashStyles().withAndroidSplashStyles, {

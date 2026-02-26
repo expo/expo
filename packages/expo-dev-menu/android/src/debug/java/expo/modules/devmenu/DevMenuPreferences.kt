@@ -3,7 +3,6 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.helpers.preferences
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
@@ -90,5 +89,5 @@ class DevMenuDefaultPreferences(
     by preferences(sharedPreferences, false)
 
   override var showFab: Boolean
-    by preferences(sharedPreferences, VRUtilities.isQuest())
+    by preferences(sharedPreferences, true)
 }

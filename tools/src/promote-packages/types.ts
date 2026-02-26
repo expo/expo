@@ -12,6 +12,8 @@ export type CommandOptions = {
   demote: boolean;
   dry: boolean;
   list: boolean;
+  reverse?: boolean;
+  promptOtp?: boolean;
 };
 
 /**

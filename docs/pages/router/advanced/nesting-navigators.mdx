@@ -24,31 +24,31 @@ Consider the following file structure which is used as an example:
 
 <FileTree
   files={[
-    'app/_layout.tsx',
-    'app/index.tsx',
-    'app/home/_layout.tsx',
-    'app/home/feed.tsx',
-    'app/home/messages.tsx',
+    'src/app/_layout.tsx',
+    'src/app/index.tsx',
+    'src/app/home/_layout.tsx',
+    'src/app/home/feed.tsx',
+    'src/app/home/messages.tsx',
   ]}
 />
 
-In the above example, **app/home/feed.tsx** matches `/home/feed`, and **app/home/messages.tsx** matches `/home/messages`.
+In the above example, **src/app/home/feed.tsx** matches `/home/feed`, and **src/app/home/messages.tsx** matches `/home/messages`.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default Stack;
 ```
 
-Both **app/home/\_layout.tsx** and **app/index.tsx** below are nested in the **app/\_layout.tsx** layout so that it will be rendered as a stack.
+Both **src/app/home/\_layout.tsx** and **src/app/index.tsx** below are nested in the **src/app/\_layout.tsx** layout so that it will be rendered as a stack.
 
-```tsx app/home/_layout.tsx
+```tsx src/app/home/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default Tabs;
 ```
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Link } from 'expo-router';
 
 export default function Root() {
@@ -56,9 +56,9 @@ export default function Root() {
 }
 ```
 
-Both **app/home/feed.tsx** and **app/home/messages.tsx** below are nested in the **home/\_layout.tsx** layout, so it will be rendered as a tab.
+Both **src/app/home/feed.tsx** and **src/app/home/messages.tsx** below are nested in the **home/\_layout.tsx** layout, so it will be rendered as a tab.
 
-```tsx app/home/feed.tsx
+```tsx src/app/home/feed.tsx
 import { View, Text } from 'react-native';
 
 export default function Feed() {
@@ -70,7 +70,7 @@ export default function Feed() {
 }
 ```
 
-```tsx app/home/messages.tsx
+```tsx src/app/home/messages.tsx
 import { View, Text } from 'react-native';
 
 export default function Messages() {
@@ -81,6 +81,10 @@ export default function Messages() {
   );
 }
 ```
+
+## Stack inside native tabs
+
+When using native tabs, you can nest a `<Stack />` layout inside each tab to support headers and pushing screens. For a complete example, see [Use Stacks inside tabs](/router/advanced/native-tabs/#use-stacks-inside-tabs).
 
 ## Navigate to a screen in a nested navigator
 

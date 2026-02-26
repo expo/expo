@@ -20,9 +20,9 @@ To avoid confusing overrides during cloud jobs and leaking sensitive information
 
 ### Use the `--environment` flag with `eas update`
 
-When publishing updates, use the `--environment` flag with the `eas update` command to ensure that the same environment variables are used for your updates as your build jobs.
+When publishing updates, the `--environment` flag is required with the `eas update` command. This ensures the same environment variables are used for your updates as your build jobs.
 
-When the `--environment` flag is provided, `eas update` will use the environment variables on EAS servers for the update job and won't use the **.env** files present in your project often used for local development.
+When the `--environment` flag is provided, `eas update` will use the environment variables on EAS servers for the update job and ignore the **.env** files present in your project often used for local development.
 
 ### Sync the environment variables for local development using `eas env:pull`
 
@@ -65,9 +65,9 @@ One of the differences between using environment variables with the Expo framewo
 - Local app config resolution, done by EAS CLI when preparing the app config
 - Remote jobs happening on EAS servers, which often don't have access to your local **.env** files that are git ignored
 
-Using `eas update` is the one exception to this rule. By default, for backward compatibility reasons, it uses **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood).
+In **SDK 54 and earlier**, `eas update` was an exception to this rule. By default, it used **.env** files present in your project directory to set environment variables for the update job, the same way [Expo CLI](/guides/environment-variables) does (it executes the `npx expo export` command under the hood). In **SDK 55 or later**, the `--environment` flag is required, and `eas update` uses only the environment variables set on EAS servers.
 
-To ensure that you can use the same environment variables in your updates as your build jobs, you can use the `--environment` flag with the `eas update` command to force it to use **only** the environment variables set on the EAS servers instead of the **.env** files present in your project directory. It will ignore environment variables from **.env**.
+For projects on SDK 54 or earlier, you can use the `--environment` flag with the `eas update` command to opt into this behavior.
 
 ## Are there any limitations to using environment variables in EAS?
 

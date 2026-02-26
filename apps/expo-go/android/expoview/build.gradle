@@ -21,15 +21,11 @@ plugins {
   alias libs.plugins.download
   id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
   id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21" // Use your Kotlin version
-  id 'expo-module-gradle-plugin'
 }
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 apply plugin: 'com.apollographql.apollo'
 
-expoModule {
-  canBePublished false
-}
 
 def reactProperties = new Properties()
 file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -40,10 +36,17 @@ group = 'host.exp.exponent'
 version = '45.0.0'
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
+def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+apply from: expoModulesCorePlugin
+applyKotlinExpoModulesCorePlugin()
+useDefaultAndroidSdkVersions()
+useExpoPublishing()
+
 repositories {
   mavenCentral()
   maven { url "https://jitpack.io" }
 }
+
 
 apply plugin: 'com.facebook.react'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'

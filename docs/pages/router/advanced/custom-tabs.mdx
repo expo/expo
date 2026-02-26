@@ -44,7 +44,7 @@ There are four components offered by `expo-router/ui` to create custom tab layou
 
 A bare minimum structure of a custom tab layout would consist of a `TabList` (containing `TabTrigger` components for each tab) and a`TabSlot`, all within the `Tabs` component, as shown here:
 
-```tsx app/(tabs)/_layout.tsx|collapseHeight=440
+```tsx src/app/(tabs)/_layout.tsx|collapseHeight=440
 import { Tabs, TabList, TabTrigger, TabSlot } from 'expo-router/ui';
 import { Text } from 'react-native';
 
@@ -105,7 +105,7 @@ A `TabTrigger` can link to a deeply nested route. `<TabTrigger name="route" href
 
 The `TabSlot` component renders the current route. `TabSlot` can be nested inside other components within `Tabs` but cannot be within the `TabList`.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 <Tabs>
   <TabList>
     <TabTrigger name="home" href="/">
@@ -217,7 +217,7 @@ The `TabList` is both the configuration and default appearance of the `Tabs`, bu
 
 `TabTrigger` will forward an `isFocused` prop, so you can create a separate tab button component that reacts to focused status.
 
-```tsx TabButton.tsx
+```tsx tab-button.tsx
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { TabTriggerSlotProps } from 'expo-router/ui';
 import { ComponentProps, Ref } from 'react';

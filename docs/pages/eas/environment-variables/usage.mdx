@@ -76,17 +76,17 @@ The following environment variables are additional system environment variables 
 
 ## Using environment variables with EAS Update
 
-By default, EAS Update uses environment variables from the local **.env** files present in your project directory when you omit the `--environment` flag with the `eas update` command.
+In **SDK 55 or later**, the `--environment` flag is required when running `eas update`. The environment variables from the specified EAS environment will be used during the update process. For projects using SDK 54 or earlier, `eas update` falls back to local **.env** files when the `--environment` flag is omitted.
 
-The most convenient way to use EAS environment variables with EAS Update is to run the `eas update` command with the `--environment` flag specified:
+To use EAS environment variables with EAS Update, run the `eas update` command with the `--environment` flag:
 
 <Terminal cmd={['$ eas update --environment production']} />
 
-When the `--environment` flag is used, **only the environment variables from the specified EAS environment will be used during the update process** and won't use the **.env** files present in your project. This flag allows you to use the same environment variables while creating updates as with creating builds.
+When the `--environment` flag is used, **only the environment variables from the specified EAS environment will be used during the update process** and won't use the **.env** files present in your project. This ensures the same environment variables are used for both your updates and builds.
 
 Expo CLI will substitute prefixed variables in your code (for example, `process.env.EXPO_PUBLIC_VARNAME`) with the corresponding plain text and sensitive environment variable values set on EAS servers for the environment specified with the `--environment` flag. Any `EXPO_PUBLIC_` variables in your application code will be replaced inline with the corresponding values from your EAS environment whether that is your local machine or your CI/CD server.
 
-We recommend using the `--environment` flag to ensure the same environment variables are used both for your update and build jobs.
+The `--environment` flag ensures the same environment variables are used for both your update and build jobs.
 
 > **info** The secret variables will not be available during the update process as they are not readable outside of EAS servers.
 

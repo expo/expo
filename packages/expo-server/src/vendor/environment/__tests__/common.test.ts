@@ -328,6 +328,38 @@ describe('getHtml', () => {
     );
   });
 
+  it('merges top-level and per-route assets', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: ['/global.css'], js: ['/runtime.js', '/entry.js'] },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+        assets: { css: [], js: ['/layout-chunk.js', '/index-chunk.js'] },
+      })
+    );
+
+    expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        assets: {
+          css: ['/global.css'],
+          js: ['/runtime.js', '/entry.js', '/layout-chunk.js', '/index-chunk.js'],
+        },
+      })
+    );
+  });
+
   it('logs and re-throws SSR render errors', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     const renderError = new Error('Render failed');

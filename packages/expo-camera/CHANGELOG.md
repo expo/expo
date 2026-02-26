@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Web] Expands support for barcode types that can be scanned. ([#43403](https://github.com/expo/expo/pull/43403) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.9 — 2026-02-25
+
+### 🎉 New features
+
+- [Web] Expands support for barcode types that can be scanned. ([#43403](https://github.com/expo/expo/pull/43403) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.8 — 2026-02-25
 
