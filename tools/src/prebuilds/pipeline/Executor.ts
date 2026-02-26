@@ -67,10 +67,10 @@ function recordError(
 }
 
 // ---------------------------------------------------------------------------
-// Step runner
+// Step runner (exported for unit testing)
 // ---------------------------------------------------------------------------
 
-async function executeStep(
+export async function executeStep(
   step: Step<PrebuildContext>,
   ctx: PrebuildContext
 ): Promise<'ok' | 'stop-run' | 'skip-remaining'> {
@@ -123,15 +123,34 @@ async function executeStep(
 }
 
 // ---------------------------------------------------------------------------
+// Pipeline step configuration (injectable for testing)
+// ---------------------------------------------------------------------------
+
+export interface PipelineSteps {
+  run: Step<PrebuildContext>[];
+  package: Step<PrebuildContext>[];
+  product: Step<PrebuildContext>[];
+}
+
+const defaultSteps: PipelineSteps = {
+  run: runSteps,
+  package: packageSteps,
+  product: productSteps,
+};
+
+// ---------------------------------------------------------------------------
 // Main pipeline
 // ---------------------------------------------------------------------------
 
-export async function runPrebuildPipeline(ctx: PrebuildContext): Promise<PrebuildRunResult> {
+export async function runPrebuildPipeline(
+  ctx: PrebuildContext,
+  steps: PipelineSteps = defaultSteps
+): Promise<PrebuildRunResult> {
   const startTime = Date.now();
 
   try {
     // --- Run-scope steps ---
-    for (const step of runSteps) {
+    for (const step of steps.run) {
       const outcome = await executeStep(step, ctx);
       if (outcome === 'stop-run') {
         return finalize(ctx, startTime, 1);
@@ -170,7 +189,7 @@ export async function runPrebuildPipeline(ctx: PrebuildContext): Promise<Prebuil
 
       // --- Package-scope steps ---
       let skipPackage = false;
-      for (const step of packageSteps) {
+      for (const step of steps.package) {
         const outcome = await executeStep(step, ctx);
         if (outcome === 'stop-run') {
           return finalize(ctx, startTime, 1);
@@ -230,7 +249,7 @@ export async function runPrebuildPipeline(ctx: PrebuildContext): Promise<Prebuil
           let skipRemaining = false;
 
           // --- Product-scope steps ---
-          for (const step of productSteps) {
+          for (const step of steps.product) {
             if (skipRemaining) {
               // Leave stage as 'skipped'
               continue;

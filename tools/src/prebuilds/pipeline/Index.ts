@@ -6,7 +6,8 @@
 export { createRequest, createContext } from './Context';
 export type { PrebuildCliOptions, PrebuildRequest, PrebuildContext } from './Context';
 
-export { runPrebuildPipeline } from './Executor';
+export { runPrebuildPipeline, executeStep } from './Executor';
+export type { PipelineSteps } from './Executor';
 
 export type {
   StageStatus,
