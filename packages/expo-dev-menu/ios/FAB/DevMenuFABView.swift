@@ -135,6 +135,15 @@ struct DevMenuFABView: View {
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
 
+  // Get safe area from window since .ignoresSafeArea() may zero out geometry values
+  private var windowSafeArea: UIEdgeInsets {
+    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+          let window = windowScene.windows.first else {
+      return .zero
+    }
+    return window.safeAreaInsets
+  }
+
   private let dragSpring: Animation = .spring(
     response: 0.25,
     dampingFraction: 0.85,
@@ -147,7 +156,13 @@ struct DevMenuFABView: View {
 
   var body: some View {
     GeometryReader { geometry in
-      let safeArea = geometry.safeAreaInsets
+      // Use window safe area - geometry values may be incorrect initially or due to .ignoresSafeArea()
+      let safeArea = EdgeInsets(
+        top: windowSafeArea.top,
+        leading: windowSafeArea.left,
+        bottom: windowSafeArea.bottom,
+        trailing: windowSafeArea.right
+      )
 
       FabPill(isPressed: $isPressed, isDragging: $isDragging)
         .frame(width: fabSize.width, height: fabSize.height)
