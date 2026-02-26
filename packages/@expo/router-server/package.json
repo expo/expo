@@ -41,7 +41,7 @@
     "expo-constants": "^55.0.7",
     "expo-font": "^55.0.4",
     "expo-router": "*",
-    "expo-server": "^55.0.5",
+    "expo-server": "^55.0.6",
     "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
   },
   "peerDependenciesMeta": {

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.9 — 2026-02-26
+
+### 🐛 Bug fixes
+
+- Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
 
 ## 55.0.8 — 2026-02-25
 

@@ -6,12 +6,16 @@
 
 ### 🎉 New features
 
-- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
-- [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.12 — 2026-02-26
+
+### 🎉 New features
+
+- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
+- [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.11 — 2026-02-25
 

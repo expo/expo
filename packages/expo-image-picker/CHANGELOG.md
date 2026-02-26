@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.10 — 2026-02-26
+
+### 💡 Others
+
 - [android] bump Android-Image-Cropper dependency ([#43433](https://github.com/expo/expo/pull/43433) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.9 — 2026-02-25
