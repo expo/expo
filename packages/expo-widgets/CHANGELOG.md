@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing project root to `watchFolders` in `metro.config.js` ([#43449](https://github.com/expo/expo/pull/43449) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.1 — 2026-02-25

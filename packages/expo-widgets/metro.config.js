@@ -1,19 +1,26 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-const config = getDefaultConfig(process.cwd());
+const projectRoot = process.cwd();
+const config = getDefaultConfig(projectRoot);
 
 const expoStubPath = path.resolve(__dirname, './bundle/expo-module-stub.ts');
 const reactStubPath = path.resolve(__dirname, './bundle/react-stub.ts');
 const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts');
 
+// The `projectRoot` won't be included by default, since we alter it to be `__dirname`
+// to bundle from `expo-widgets` as the main module
+// NOTE: We check the `watchFolders` to start with `projectRoot`, since `expo/metro-config`
+// might add folders if we're in a monorepo
+const watchFolders = config.watchFolders;
+if (!watchFolders.some((entry) => !entry.startsWith(projectRoot))) {
+  watchFolders.push(projectRoot);
+}
+
 const buildConfig = {
   ...config,
-  projectRoot: __dirname,
-  watchFolders: [
-    ...config.watchFolders,
-    __dirname,
-  ],
+  projectRoot: __dirname, // Override root to be expo-widgets
+  watchFolders,
   resolver: {
     ...config.resolver,
     resolveRequest(context, moduleName, platform) {
