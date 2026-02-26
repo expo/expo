@@ -251,16 +251,16 @@ export async function test(t) {
           }
         );
 
-        t.it('setAssetFavoriteAsync should mark asset as favorite', async () => {
-          const favoriteTestAsset = testAssets[0];
-          if (Platform.OS === 'ios') {
+        if (Platform.OS === 'ios') {
+          t.it('setAssetFavoriteAsync should mark asset as favorite', async () => {
+            const favoriteTestAsset = testAssets[0];
             const infoBefore = await MediaLibrary.getAssetInfoAsync(favoriteTestAsset);
             t.expect(infoBefore.isFavorite).toBe(false);
             await MediaLibrary.setAssetFavoriteAsync(favoriteTestAsset, true);
             const infoAfter = await MediaLibrary.getAssetInfoAsync(favoriteTestAsset);
             t.expect(infoAfter.isFavorite).toBe(true);
-          }
-        });
+          });
+        }
 
         // On both platforms assets should perserve their id. On iOS it's native behaviour,
         // but on Android it should be implemented (but it isn't)
