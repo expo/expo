@@ -24,9 +24,7 @@ export const promotePackages = new Task<TaskArgs>(
     logger.info(`\n🚀 Promoting packages to ${yellow.bold(options.tag)} tag...`);
 
     // Sort alphabetically, optionally reversed.
-    const sorted = [...parcels].sort((a, b) =>
-      a.pkg.packageName.localeCompare(b.pkg.packageName)
-    );
+    const sorted = [...parcels].sort((a, b) => a.pkg.packageName.localeCompare(b.pkg.packageName));
     if (options.reverse) {
       sorted.reverse();
     }
@@ -51,9 +49,7 @@ export const promotePackages = new Task<TaskArgs>(
 
       // Tag the local version of the package.
       if (!options.dry) {
-        await withOtpRetry(() =>
-          Npm.addTagAsync(pkg.packageName, pkg.packageVersion, options.tag)
-        );
+        await withOtpRetry(() => Npm.addTagAsync(pkg.packageName, pkg.packageVersion, options.tag));
       }
     }
 

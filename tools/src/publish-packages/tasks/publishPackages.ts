@@ -73,9 +73,7 @@ export const publishPackages = new Task<TaskArgs>(
           logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
           if (!options.dry) {
             await sleepAsync(1000); // wait for npm to process the package
-            await withOtpRetry(() =>
-              Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag)
-            );
+            await withOtpRetry(() => Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag));
           }
         }
       } catch (error) {

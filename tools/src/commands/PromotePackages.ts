@@ -40,11 +40,7 @@ export default (program: Command) => {
       'Lists packages with unpublished changes since the previous version.',
       false
     )
-    .option(
-      '-r, --reverse',
-      'Promote packages in reverse alphabetical order (Z to A).',
-      false
-    )
+    .option('-r, --reverse', 'Promote packages in reverse alphabetical order (Z to A).', false)
     .option(
       '--prompt-otp',
       'Prompt for an npm OTP code before promoting. Re-prompts automatically when the code expires.',
