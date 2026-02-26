@@ -9,6 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { DEMI } from '~/ui/components/Text';
 
@@ -71,6 +72,8 @@ When building your project, you can choose a device or simulator by using the `-
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="Can I use Expo CLI without installing the Expo Modules API?">
 
 Expo Modules API is also installed when you install the `expo` package with `npx install-expo-modules`. If you want to try out Expo CLI for now without installing Expo Modules API, install the `expo` package with `npm install` and then configure the **react-native.config.js** to exclude the package from autolinking:
@@ -98,6 +101,8 @@ module.exports = {
 Yes! Refer to the [Customized Prebuild Example repository](https://github.com/byCedric/custom-prebuild-example) for more information.
 
 </Collapsible>
+
+</FAQ>
 
 ## Next steps
 
