@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Deduped Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Decoupled Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.11 — 2026-02-25
 
