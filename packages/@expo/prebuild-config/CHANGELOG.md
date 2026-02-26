@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `STATUS_BAR_PLUGIN` deprecation warning shown on prebuild for default `create-expo-app` template by no longer auto-populating `androidStatusBar.backgroundColor` from the splash background color. ([#43444](https://github.com/expo/expo/issues/43444))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-25
