@@ -210,7 +210,9 @@ jobs:
       #     npx expo-brownfield build:ios --release --verbose
       #   working-directory: apps/brownfield-tester/expo-app
       - name: 🍏 Build iOS artifacts (Debug)
-        run: npx expo-brownfield build:ios --debug --verbose
+        run: |
+          npx expo prebuild --clean --platform ios
+          npx expo-brownfield build:ios --debug --verbose
         working-directory: apps/brownfield-tester/expo-app
       # - name: 💾 Save ccache
       #   if: always()
