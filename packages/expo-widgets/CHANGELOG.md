@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove extraneous `@expo/config-plugins` dependency ([#43452](https://github.com/expo/expo/pull/43452) by [@kitten](https://github.com/kitten))
+
 ## 55.0.1 — 2026-02-25
 
 ### 🐛 Bug fixes
