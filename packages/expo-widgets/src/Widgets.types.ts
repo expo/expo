@@ -1,6 +1,8 @@
 import { SharedObject } from 'expo';
 import { ReactNode } from 'react';
 
+import { after } from './Widgets';
+
 /**
  * The widget family (size).
  * - `systemSmall` - Small square widget (2x2 grid).
@@ -145,8 +147,11 @@ export type PushToStartTokenEvent = {
 
 /**
  * Dismissal policy for ending a live activity.
+ * - `'default'` - The system’s default dismissal policy for the Live Activity.
+ * - `'immediate'` - The system immediately removes the Live Activity that ended.
+ * - `after(date)` - The system removes the Live Activity that ended at the specified time within a four-hour window.
  */
-export type LiveActivityDismissalPolicy = 'default' | 'immediate';
+export type LiveActivityDismissalPolicy = 'default' | 'immediate' | ReturnType<typeof after>;
 
 export type ExpoWidgetsEvents = {
   /**
@@ -184,6 +189,11 @@ export declare class NativeLiveActivityFactory extends SharedObject {
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   update(props: string): Promise<void>;
-  end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void>;
+  end(
+    dismissalPolicy?: string,
+    afterDate?: number,
+    state?: string,
+    contentDate?: number
+  ): Promise<void>;
   getPushToken(): Promise<string | null>;
 }

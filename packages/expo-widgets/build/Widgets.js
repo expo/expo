@@ -57,9 +57,18 @@ export class LiveActivity {
     /**
      * Ends the Live Activity.
      * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
+     * Can be `'default'`, `'immediate'`, or `after(date)`.
+     * @param props Final content properties to update after the activity ends.
+     * @param contentDate The time the data in the payload was generated. If this is older than a previous update or push payload, the system ignores this update.
      */
-    end(dismissalPolicy) {
-        return this.nativeLiveActivity.end(dismissalPolicy);
+    end(dismissalPolicy, props, contentDate) {
+        const serializedProps = props ? JSON.stringify(props) : undefined;
+        if (typeof dismissalPolicy === 'object' &&
+            dismissalPolicy !== null &&
+            'after' in dismissalPolicy) {
+            return this.nativeLiveActivity.end('after', dismissalPolicy.after?.getTime(), serializedProps, contentDate?.getTime());
+        }
+        return this.nativeLiveActivity.end(dismissalPolicy, undefined, serializedProps, contentDate?.getTime());
     }
     /**
      * Returns the push token for this Live Activity, used to send push notification updates via APNs.
@@ -104,6 +113,14 @@ export class LiveActivityFactory {
             .getInstances()
             .map((instance) => new LiveActivity(instance));
     }
+}
+/**
+ * Creates a dismissal policy that removes the Live Activity at the specified time within a four-hour window.
+ * @param date The date after which the Live Activity should be removed from the Lock Screen.
+ * @hidden
+ */
+export function after(date) {
+    return { after: date };
 }
 /**
  * Creates a Widget instance.

@@ -23,22 +23,25 @@ final class LiveActivity: SharedObject {
     await activity.update(ActivityContent(state: newState, staleDate: nil))
   }
 
-  func end(dismissalPolicy: String?) async throws {
+  func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {
     guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
 
-    let policy: ActivityUIDismissalPolicy
-    switch dismissalPolicy {
-    case "immediate":
-      policy = .immediate
-    default:
-      policy = .default
+    let content: ActivityContent<LiveActivityAttributes.ContentState>?
+    if let props {
+      content = ActivityContent(state: LiveActivityAttributes.ContentState(name: name, props: props), staleDate: nil)
+    } else {
+      content = nil
     }
 
-    await activity.end(dismissalPolicy: policy)
+    guard let contentDate, #available(iOS 17.2, *) else {
+      return await activity.end(content, dismissalPolicy: dismissalPolicy?.toDismissalPolicy(date: afterDate) ?? .default)
+    }
+
+    await activity.end(content, dismissalPolicy: dismissalPolicy?.toDismissalPolicy(date: afterDate) ?? .default, timestamp: contentDate)
   }
 
   func getPushToken() throws -> String? {
