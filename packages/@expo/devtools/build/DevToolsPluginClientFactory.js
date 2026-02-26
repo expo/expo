@@ -1,6 +1,6 @@
-import { DevToolsPluginClientImplApp } from './DevToolsPluginClientImplApp';
-import { DevToolsPluginClientImplBrowser } from './DevToolsPluginClientImplBrowser';
-import { getConnectionInfo } from './getConnectionInfo';
+import { DevToolsPluginClientImplApp } from './DevToolsPluginClientImplApp.js';
+import { DevToolsPluginClientImplBrowser } from './DevToolsPluginClientImplBrowser.js';
+import { getConnectionInfo } from './getConnectionInfo.js';
 const instanceMap = {};
 /**
  * Factory of DevToolsPluginClient based on sender types.

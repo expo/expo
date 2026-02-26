@@ -1,7 +1,7 @@
 /**
  * Get the dev server address.
  */
-import { PROTOCOL_VERSION } from './ProtocolVersion';
+import { PROTOCOL_VERSION } from './ProtocolVersion.js';
 export function getConnectionInfo() {
     const devServerQuery = new URLSearchParams(window.location.search).get('devServer');
     const host = window.location.origin.replace(/^https?:\/\//, '');

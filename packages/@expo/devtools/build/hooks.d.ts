@@ -1,5 +1,5 @@
-import { DevToolsPluginClient } from './DevToolsPluginClient';
-import type { DevToolsPluginClientOptions } from './devtools.types';
+import { DevToolsPluginClient } from './DevToolsPluginClient.js';
+import type { DevToolsPluginClientOptions } from './devtools.types.js';
 /**
  * A React hook to get the DevToolsPluginClient instance.
  */

@@ -1,5 +1,5 @@
-import type { DevToolsPluginClient } from './DevToolsPluginClient';
-import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
+import type { DevToolsPluginClient } from './DevToolsPluginClient.js';
+import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types.js';
 /**
  * Factory of DevToolsPluginClient based on sender types.
  * @hidden

@@ -1,4 +1,4 @@
-import { DevToolsPluginClient } from './DevToolsPluginClient';
+import { DevToolsPluginClient } from './DevToolsPluginClient.js';
 /**
  * The DevToolsPluginClient for the app -> browser communication.
  */

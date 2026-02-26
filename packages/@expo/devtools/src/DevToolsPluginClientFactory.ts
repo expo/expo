@@ -1,8 +1,8 @@
-import type { DevToolsPluginClient } from './DevToolsPluginClient';
-import { DevToolsPluginClientImplApp } from './DevToolsPluginClientImplApp';
-import { DevToolsPluginClientImplBrowser } from './DevToolsPluginClientImplBrowser';
-import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
-import { getConnectionInfo } from './getConnectionInfo';
+import type { DevToolsPluginClient } from './DevToolsPluginClient.js';
+import { DevToolsPluginClientImplApp } from './DevToolsPluginClientImplApp.js';
+import { DevToolsPluginClientImplBrowser } from './DevToolsPluginClientImplBrowser.js';
+import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types.js';
+import { getConnectionInfo } from './getConnectionInfo.js';
 
 const instanceMap: Record<string, DevToolsPluginClient | Promise<DevToolsPluginClient>> = {};
 
