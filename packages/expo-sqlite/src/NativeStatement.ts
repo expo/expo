@@ -48,7 +48,10 @@ export type SQLiteBindParams = Record<string, SQLiteBindValue> | SQLiteBindValue
 export type SQLiteVariadicBindParams = SQLiteBindValue[];
 export type SQLiteBindBlobValue = Uint8Array | ArrayBuffer;
 
-export type SQLiteBindPrimitiveParams = Record<string, Exclude<SQLiteBindValue, SQLiteBindBlobValue>>;
+export type SQLiteBindPrimitiveParams = Record<
+  string,
+  Exclude<SQLiteBindValue, SQLiteBindBlobValue>
+>;
 export type SQLiteBindBlobParams = Record<string, SQLiteBindBlobValue>;
 export type SQLiteColumnNames = string[];
 export type SQLiteColumnValues = any[];
