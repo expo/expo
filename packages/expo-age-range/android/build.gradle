@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
 	// when bumping, check if the ignored test is passing with the new version
-  implementation 'com.google.android.play:age-signals:0.0.2'
+  implementation 'com.google.android.play:age-signals:0.0.3'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.16'

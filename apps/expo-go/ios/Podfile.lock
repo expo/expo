@@ -4742,7 +4742,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 7e5f6bddec993b7930b41fd47646a27e4f8133e9
   ExpoWebBrowser: 19c5d250e0c101027677970a5f2fc635d9df2e73
   EXStructuredHeaders: aa49a5557fa24aa61dda4ac665f3987bf3e9e35d
-  EXUpdates: 5b1b025edd0e9596b8633a62e0792c17f0e8c932
+  EXUpdates: 427abdf3ad98db45733c1497cf60ce04c179dc8f
   EXUpdatesInterface: 26412751a0f7a7130614655929e316f684552aab
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: f1200e6ef6cf24885501668bdbb9eff4cf48843f
@@ -4759,7 +4759,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: ca6495d9d859ae100566305c4d0afe7a0c777a46
+  hermes-engine: a785894172be9ea26a2d808760e5954874576bd8
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
