@@ -293,6 +293,13 @@ class ExpoUIModule : Module() {
       RadioButtonContent(props) { onNativeClick(Unit) }
     }
 
+    ExpoUIView("NavigationRailView", events = {
+      Events("onItemSelected")
+    }) { props: NavigationRailProps ->
+      val onItemSelected by remember { EventDispatcher<NavigationRailSelectedEvent>() }
+      NavigationRailContent(props) { onItemSelected(it) }
+    }
+
     //endregion Expo UI views
   }
 }

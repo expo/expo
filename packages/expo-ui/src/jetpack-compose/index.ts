@@ -30,6 +30,7 @@ export * from './SearchBar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
 export * from './PullToRefreshBox';
+export * from './NavigationRail';
 export * from './RadioButton';
 export * from './Surface';
 export * from './Text';
