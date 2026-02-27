@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
@@ -20,6 +19,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
+import android.util.Log
 import expo.modules.kotlin.views.ExpoComposeView
 
 internal data class RNHostProps(
@@ -50,6 +50,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
         if (matchContents) {
           shadowNodeProxy.setStyleSize(widthDp, heightDp)
         } else {
+          Log.d("RNHostView", "setViewSize: $widthDp, $heightDp")
           shadowNodeProxy.setViewSize(widthDp, heightDp)
         }
       }
@@ -94,8 +95,12 @@ internal class RNHostView(context: Context, appContext: AppContext) :
         )
       }
     } else {
-      Box(modifier = Modifier.fillMaxSize().then(sizeModifier)) {
-        Children(this@Content)
+      // so the children with flex: 1 can expand.
+      childView?.let { view ->
+        AndroidView(
+          factory = { view },
+          modifier = Modifier.fillMaxSize().then(sizeModifier)
+        )
       }
     }
   }
