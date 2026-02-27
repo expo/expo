@@ -31,9 +31,7 @@ export const findPackagesToPromote = new Task<TaskArgs>(
           !!versionToReplace &&
           (semver.prerelease(versionToReplace)?.[0] as string)?.startsWith('canary');
         state.isDemoting =
-          !!versionToReplace &&
-          semver.lt(pkg.packageVersion, versionToReplace) &&
-          !replacingCanary;
+          !!versionToReplace && semver.lt(pkg.packageVersion, versionToReplace) && !replacingCanary;
 
         if (canPromote && (!state.isDemoting || options.list || options.demote)) {
           newParcels.push(parcel);
