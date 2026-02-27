@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Removed unused `withAndroidSplashLegacyMainActivity` file.
+
 ## 55.0.7 — 2026-02-25
 
 ### 🛠 Breaking changes
