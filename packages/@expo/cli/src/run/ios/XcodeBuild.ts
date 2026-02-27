@@ -172,6 +172,9 @@ export async function getXcodeBuildArgsAsync(
     props.scheme,
     '-destination',
     `id=${props.device.udid}`,
+    // Enable parallel code signing for CocoaPods frameworks to speed up device builds.
+    // https://github.com/CocoaPods/CocoaPods/pull/6088
+    'COCOAPODS_PARALLEL_CODE_SIGN=true',
   ];
 
   if (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot)) {
