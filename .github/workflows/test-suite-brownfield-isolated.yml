@@ -178,16 +178,10 @@ jobs:
           channel: '#expo-android'
           author_name: E2E Test Suite for Expo Brownfield
 
-  ios-e2e:
+  ios-build-and-e2e:
     runs-on: macos-15
     needs: detect-platform-for-e2e
     if: needs.detect-platform-for-e2e.outputs.should_run_ios == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        build-type: [release]
-        # TODO(pmleczek): Add dev menu tests for iOS and Android
-        # build-type: [debug, release]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
