@@ -7,7 +7,7 @@ import {
   Card,
   LazyColumn,
 } from '@expo/ui/jetpack-compose';
-import { padding, size } from '@expo/ui/jetpack-compose/modifiers';
+import { fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 import { Text as RNText, View, Pressable } from 'react-native';
 
@@ -18,7 +18,7 @@ export default function HostingRNViewsScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
-        <Card>
+        <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Mixing RN Components with Compose</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 24 }} verticalAlignment="center">
@@ -54,7 +54,7 @@ export default function HostingRNViewsScreen() {
             </Row>
           </Column>
         </Card>
-        <Card>
+        <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Dynamically increasing size</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 24 }}>
@@ -78,7 +78,7 @@ export default function HostingRNViewsScreen() {
             </Row>
           </Column>
         </Card>
-        <Card>
+        <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>RN components without explicit size</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 20 }}>
@@ -105,7 +105,7 @@ export default function HostingRNViewsScreen() {
             </Row>
           </Column>
         </Card>
-        <Card>
+        <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>RN components with flex: 1 children</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 20 }} modifiers={[size(100, 100)]}>
@@ -121,7 +121,7 @@ export default function HostingRNViewsScreen() {
             </Row>
           </Column>
         </Card>
-        <Card>
+        <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <RNHostView matchContents>
               <RNText style={{ textAlign: 'center' }}>RN Text inside SwiftUI</RNText>
