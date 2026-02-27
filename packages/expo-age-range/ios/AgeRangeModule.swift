@@ -46,5 +46,28 @@ public class AgeRangeModule: Module, @unchecked Sendable {
         throw AgeRangeNotAvailableException()
       }
     }
+
+    AsyncFunction("showSignificantUpdateAcknowledgementAsync") { (updateDescription: String) in
+      guard #available(iOS 26.4, *) else {
+        return
+      }
+
+      let windowScene: UIWindowScene? = await MainActor.run {
+        UIApplication.shared.connectedScenes
+          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+      }
+
+      guard let windowScene else {
+        throw AgeRangeNoViewControllerException()
+      }
+
+      do {
+        try await AgeRangeService.shared.showSignificantUpdateAcknowledgment(in: windowScene, updateDescription: updateDescription)
+      } catch AgeRangeService.Error.notAvailable {
+        throw AgeRangeNotAvailableException()
+      } catch AgeRangeService.Error.invalidRequest {
+        throw AgeRangeInvalidRequestException()
+      }
+    }
   }
 }

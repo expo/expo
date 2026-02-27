@@ -46,4 +46,12 @@ export declare function requestAgeRangeAsync(options: AgeRangeRequest): Promise<
  * @platform ios 26.2+
  */
 export declare function isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
+/**
+ * Displays a system-provided interface for people to acknowledge a significant app update.
+ * @param updateDescription A description of the significant update to show to the user.
+ * @return A promise that resolves when the user acknowledges the update, or rejects with an error.
+ *
+ * @platform ios 26.4+
+ */
+export declare function showSignificantUpdateAcknowledgementAsync(updateDescription: string): Promise<void>;
 //# sourceMappingURL=AgeRange.d.ts.map

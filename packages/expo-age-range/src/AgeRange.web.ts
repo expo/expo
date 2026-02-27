@@ -7,3 +7,9 @@ export async function requestAgeRangeAsync(_: AgeRangeRequest): Promise<AgeRange
 export async function isEligibleForAgeFeaturesAsync(): Promise<boolean | null> {
   return null;
 }
+
+export async function showSignificantUpdateAcknowledgementAsync(
+  _updateDescription: string
+): Promise<void> {
+  // no-op on web
+}
