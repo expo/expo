@@ -104,10 +104,6 @@ object ExperienceActivityUtils {
       ExponentManifest.MANIFEST_STATUS_BAR_HIDDEN,
       false
     )
-    val statusBarTranslucent = statusBarOptions == null || statusBarOptions.optBoolean(
-      ExponentManifest.MANIFEST_STATUS_BAR_TRANSLUCENT,
-      true
-    )
 
     activity.runOnUiThread {
       // clear android:windowTranslucentStatus flag from Window as RN achieves translucency using WindowInsets
@@ -115,7 +111,7 @@ object ExperienceActivityUtils {
 
       setHidden(statusBarHidden, activity)
 
-      setTranslucent(statusBarTranslucent, activity)
+      setTranslucent(activity)
 
       val appliedStatusBarStyle = setStyle(statusBarStyle, activity)
 
@@ -162,22 +158,18 @@ object ExperienceActivityUtils {
   }
 
   @UiThread
-  fun setTranslucent(translucent: Boolean, activity: Activity) {
-    // If the status bar is translucent hook into the window insets calculations
+  fun setTranslucent(activity: Activity) {
+    // As the status bar is translucent, hook into the window insets calculations
     // and consume all the top insets so no padding will be added under the status bar.
     val decorView = activity.window.decorView
-    if (translucent) {
-      decorView.setOnApplyWindowInsetsListener { v: View, insets: WindowInsets? ->
-        val defaultInsets = v.onApplyWindowInsets(insets)
-        defaultInsets.replaceSystemWindowInsets(
-          defaultInsets.systemWindowInsetLeft,
-          0,
-          defaultInsets.systemWindowInsetRight,
-          defaultInsets.systemWindowInsetBottom
-        )
-      }
-    } else {
-      decorView.setOnApplyWindowInsetsListener(null)
+    decorView.setOnApplyWindowInsetsListener { v: View, insets: WindowInsets? ->
+      val defaultInsets = v.onApplyWindowInsets(insets)
+      defaultInsets.replaceSystemWindowInsets(
+        defaultInsets.systemWindowInsetLeft,
+        0,
+        defaultInsets.systemWindowInsetRight,
+        defaultInsets.systemWindowInsetBottom
+      )
     }
     ViewCompat.requestApplyInsets(decorView)
   }
