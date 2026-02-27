@@ -439,7 +439,7 @@ class SQLiteModule : Module() {
     maybeThrowForFinalizedStatement(statement)
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return ArrayList(statement.getTransformedColumnValues())
+      return statement.getTransformedColumnValues()
     }
     if (ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
