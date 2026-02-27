@@ -45,4 +45,4 @@ private fun getResizeMode(context: Context): SplashScreenImageResizeMode =
     ?: SplashScreenImageResizeMode.CONTAIN
 
 private fun getStatusBarTranslucent(context: Context): Boolean =
-  context.getString(R.string.expo_splash_screen_status_bar_translucent).toBoolean()
+  true

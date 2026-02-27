@@ -696,22 +696,6 @@ If you have multiple `styles.xml` files located in different directories contain
 
 Read more about `android:statusBarColor` option in [official Android documentation](https://developer.android.com/reference/android/R.attr#statusBarColor).
 
-4. Customize `StatusBar translucent` flag
-
-When the StatusBar is translucent, the app will be able to draw under the StatusBar component area.
-
-To make the StatusBar translucent update your `res/values/strings.xml` file with the following content:
-
-```diff
---- a/android/app/src/main/res/values/strings.xml
-+++ b/android/app/src/main/res/values/strings.xml
- <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
- <resources>
-   <string name="app_name">sdk42</string>
-+  <string name="expo_splash_screen_status_bar_translucent">true</string>
-</resources>
-```
-
 ## 👏 Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
@@ -757,7 +741,7 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
    }
 ```
 
-3. Override default `resizeMode` and `statusBarTranslucent` in stings.xml
+3. Override default `resizeMode` in strings.xml
 
 ```diff
 --- a/android/app/src/main/res/values/strings.xml
@@ -766,7 +750,6 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
  <resources>
    <string name="app_name">sdk42</string>
 +  <string name="expo_splash_screen_resize_mode">contain</string>
-+  <string name="expo_splash_screen_status_bar_translucent">false</string>
 </resources>
 ```
 
