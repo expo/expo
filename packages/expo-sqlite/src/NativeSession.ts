@@ -2,7 +2,7 @@
  * A type that represents a changeset.
  */
 export type Changeset = Uint8Array;
-type NativeChangeset = ArrayBuffer;
+export type NativeChangeset = ArrayBuffer;
 
 export type SQLiteAnyDatabase = any;
 
@@ -17,11 +17,11 @@ export declare class NativeSession {
   public createInvertedChangesetAsync(database: SQLiteAnyDatabase): Promise<NativeChangeset>;
   public applyChangesetAsync(
     database: SQLiteAnyDatabase,
-    changeset: NativeChangeset
+    changeset: Changeset | NativeChangeset
   ): Promise<void>;
   public invertChangesetAsync(
     database: SQLiteAnyDatabase,
-    changeset: NativeChangeset
+    changeset: Changeset | NativeChangeset
   ): Promise<NativeChangeset>;
 
   //#endregion
@@ -34,10 +34,13 @@ export declare class NativeSession {
 
   public createChangesetSync(database: SQLiteAnyDatabase): NativeChangeset;
   public createInvertedChangesetSync(database: SQLiteAnyDatabase): NativeChangeset;
-  public applyChangesetSync(database: SQLiteAnyDatabase, changeset: NativeChangeset): void;
+  public applyChangesetSync(
+    database: SQLiteAnyDatabase,
+    changeset: Changeset | NativeChangeset
+  ): void;
   public invertChangesetSync(
     database: SQLiteAnyDatabase,
-    changeset: NativeChangeset
+    changeset: Changeset | NativeChangeset
   ): NativeChangeset;
 
   //#endregion

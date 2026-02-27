@@ -55,7 +55,7 @@ export class SQLiteSession {
      * @param changeset The changeset to apply.
      */
     applyChangesetAsync(changeset) {
-        return this.nativeSession.applyChangesetAsync(this.nativeDatabase, changeset.buffer);
+        return this.nativeSession.applyChangesetAsync(this.nativeDatabase, changeset);
     }
     /**
      * Invert a changeset asynchronously.
@@ -63,7 +63,7 @@ export class SQLiteSession {
      * @param changeset The changeset to invert.
      */
     async invertChangesetAsync(changeset) {
-        const changesetBuffer = await this.nativeSession.invertChangesetAsync(this.nativeDatabase, changeset.buffer);
+        const changesetBuffer = await this.nativeSession.invertChangesetAsync(this.nativeDatabase, changeset);
         return new Uint8Array(changesetBuffer);
     }
     //#endregion
@@ -130,7 +130,7 @@ export class SQLiteSession {
      * @see [`sqlite3changeset_apply`](https://www.sqlite.org/session/sqlite3changeset_apply.html)
      */
     applyChangesetSync(changeset) {
-        this.nativeSession.applyChangesetSync(this.nativeDatabase, changeset.buffer);
+        this.nativeSession.applyChangesetSync(this.nativeDatabase, changeset);
     }
     /**
      * Invert a changeset synchronously.
@@ -141,7 +141,7 @@ export class SQLiteSession {
      * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
      */
     invertChangesetSync(changeset) {
-        const changesetBuffer = this.nativeSession.invertChangesetSync(this.nativeDatabase, changeset.buffer);
+        const changesetBuffer = this.nativeSession.invertChangesetSync(this.nativeDatabase, changeset);
         return new Uint8Array(changesetBuffer);
     }
 }

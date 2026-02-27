@@ -4,7 +4,7 @@ import { registerWebModule, NativeModule } from 'expo';
 
 import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
-import { type NativeChangeset } from '../src/NativeSession';
+import { type Changeset, type NativeChangeset } from '../src/NativeSession';
 import {
   type SQLiteBindBlobParams,
   type SQLiteBindPrimitiveParams,
@@ -31,6 +31,11 @@ function getWorker(): Worker {
     });
   }
   return worker;
+}
+
+// web worker works on Uint8Array, but session methods accept ArrayBuffer too
+function convertChangesetInput(changeset: Changeset | NativeChangeset): Changeset {
+  return ArrayBuffer.isView(changeset) ? changeset : new Uint8Array(changeset);
 }
 
 class NativeDatabase {
@@ -361,34 +366,34 @@ export class NativeSession {
     return result.buffer as ArrayBuffer;
   }
 
-  async applyChangesetAsync(database: NativeDatabase, changeset: NativeChangeset): Promise<void> {
+  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<void> {
     await invokeWorkerAsync(getWorker(), 'sessionApplyChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset: new Uint8Array(changeset),
+      changeset: convertChangesetInput(changeset),
     });
   }
-  applyChangesetSync(database: NativeDatabase, changeset: NativeChangeset): void {
+  applyChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): void {
     invokeWorkerSync(getWorker(), 'sessionApplyChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset: new Uint8Array(changeset),
+      changeset: convertChangesetInput(changeset),
     });
   }
 
-  async invertChangesetAsync(database: NativeDatabase, changeset: NativeChangeset): Promise<NativeChangeset> {
+  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<NativeChangeset> {
     const result = await invokeWorkerAsync(getWorker(), 'sessionInvertChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset: new Uint8Array(changeset),
+      changeset: convertChangesetInput(changeset),
     });
     return result.buffer as ArrayBuffer;
   }
-  invertChangesetSync(database: NativeDatabase, changeset: NativeChangeset): NativeChangeset {
+  invertChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): NativeChangeset {
     const result = invokeWorkerSync(getWorker(), 'sessionInvertChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
-      changeset: new Uint8Array(changeset),
+      changeset: convertChangesetInput(changeset),
     });
     return result.buffer as ArrayBuffer;
   }

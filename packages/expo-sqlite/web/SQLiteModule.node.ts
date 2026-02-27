@@ -3,7 +3,7 @@
 import { registerWebModule, NativeModule } from 'expo';
 
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
-import { type NativeChangeset } from '../src/NativeSession';
+import { type Changeset, type NativeChangeset } from '../src/NativeSession';
 import {
   type SQLiteBindBlobParams,
   type SQLiteBindPrimitiveParams,
@@ -134,13 +134,13 @@ export class NativeSession {
     return new Uint8Array().buffer;
   }
 
-  async applyChangesetAsync(database: NativeDatabase, changeset: NativeChangeset): Promise<void> {}
-  applyChangesetSync(database: NativeDatabase, changeset: NativeChangeset): void {}
+  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<void> {}
+  applyChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): void {}
 
-  async invertChangesetAsync(database: NativeDatabase, changeset: NativeChangeset): Promise<NativeChangeset> {
+  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<NativeChangeset> {
     return new Uint8Array().buffer;
   }
-  invertChangesetSync(database: NativeDatabase, changeset: NativeChangeset): NativeChangeset {
+  invertChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): NativeChangeset {
     return new Uint8Array().buffer;
   }
 }
