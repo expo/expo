@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed non-deterministic `packageVersion` when merging duplicate dependency resolutions. ([#43517](https://github.com/expo/expo/pull/43517) by [@dawidvdh](https://github.com/dawidvdh))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25
