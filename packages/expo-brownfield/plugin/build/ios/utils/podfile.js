@@ -13,9 +13,7 @@ const getTargetNameLines = (targetName) => {
 const getPrebuiltSettingsLines = () => {
     return `    installer.pods_project.targets.each do |t|
       t.build_configurations.each do |config|
-        # Option A: disable the verify build phase
         config.build_settings['SWIFT_VERIFY_EMITTED_MODULE_INTERFACE'] = 'NO'
-        # Option B: also add the flag (sometimes useful if using manual swift flags)
         flags = config.build_settings['OTHER_SWIFT_FLAGS'] || '$(inherited)'
         config.build_settings['OTHER_SWIFT_FLAGS'] = "#{flags} -no-verify-emitted-module-interface"
       end
