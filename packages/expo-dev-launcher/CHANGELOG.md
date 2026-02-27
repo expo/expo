@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix issue when using `fullScreenModal` with `expo-router`.
+
 ### 💡 Others
 
 ## 55.0.10 — 2026-02-25

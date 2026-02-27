@@ -37,35 +37,18 @@ private class DevLauncherWrapperView: UIView {
     #if os(iOS)
     if window != nil {
       NotificationCenter.default.addObserver(self, selector: #selector(orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+      devLauncherViewController?.view.setNeedsLayout()
+      devLauncherViewController?.view.layoutIfNeeded()
+    } else {
+      NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     #endif
-
-    guard let devLauncherViewController,
-      let window,
-      let rootViewController = window.rootViewController else {
-      return
-    }
-
-    let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
-    // TODO(pmleczek): Revisit this for a more reliable solution
-    let isBrownfield = NSStringFromClass(type(of: rootViewController)).contains("UINavigationController")
-    if !isSwiftUIController && !isBrownfield && devLauncherViewController.parent != rootViewController {
-      rootViewController.addChild(devLauncherViewController)
-      devLauncherViewController.didMove(toParent: rootViewController)
-      devLauncherViewController.view.setNeedsLayout()
-      devLauncherViewController.view.layoutIfNeeded()
-    }
   }
 
-  override func willMove(toWindow newWindow: UIWindow?) {
-    super.willMove(toWindow: newWindow)
-    if newWindow == nil {
-      devLauncherViewController?.willMove(toParent: nil)
-      devLauncherViewController?.removeFromParent()
-      #if os(iOS)
-      NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-      #endif
-    }
+  override func safeAreaInsetsDidChange() {
+    super.safeAreaInsetsDidChange()
+    devLauncherViewController?.view.setNeedsLayout()
+    devLauncherViewController?.view.layoutIfNeeded()
   }
 #endif
 }
