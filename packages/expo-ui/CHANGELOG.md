@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Added `RNHostView` to improve RN component layout inside Compsoe views. ([#43495](https://github.com/expo/expo/pull/43495) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `RNHostView` to improve RN component layout inside Compose views. ([#43495](https://github.com/expo/expo/pull/43495) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
