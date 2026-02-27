@@ -206,7 +206,7 @@ jobs:
       - name: 🍏 Build iOS artifacts (apps/brownfield-tester/expo-app)
         run: |
           npx expo prebuild --clean -p ios
-          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose -a ../../../artifacts -p BrownfieldPacakge
+          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose -a ../../../artifacts -p BrownfieldPackage
         working-directory: apps/brownfield-tester/expo-app
       - name: 💾 Save ccache
         if: always()
