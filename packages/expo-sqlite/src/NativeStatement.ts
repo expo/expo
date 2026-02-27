@@ -43,12 +43,13 @@ export interface SQLiteRunResult {
  * const firstRow = await result.getFirstAsync();
  * ```
  */
-export type SQLiteBindValue = string | number | null | boolean | ArrayBuffer;
+export type SQLiteBindValue = string | number | null | boolean | SQLiteBindBlobValue;
 export type SQLiteBindParams = Record<string, SQLiteBindValue> | SQLiteBindValue[];
 export type SQLiteVariadicBindParams = SQLiteBindValue[];
+export type SQLiteBindBlobValue = Uint8Array | ArrayBuffer;
 
-export type SQLiteBindPrimitiveParams = Record<string, Exclude<SQLiteBindValue, ArrayBuffer>>;
-export type SQLiteBindBlobParams = Record<string, ArrayBuffer>;
+export type SQLiteBindPrimitiveParams = Record<string, Exclude<SQLiteBindValue, SQLiteBindBlobValue>>;
+export type SQLiteBindBlobParams = Record<string, SQLiteBindBlobValue>;
 export type SQLiteColumnNames = string[];
 export type SQLiteColumnValues = any[];
 export type SQLiteAnyDatabase = any;

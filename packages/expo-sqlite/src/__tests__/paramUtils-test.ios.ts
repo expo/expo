@@ -47,21 +47,21 @@ describe(normalizeParams, () => {
 
   it('should support blob params', () => {
     const blob = new Uint8Array([0x00]);
-    const blob2 = new Uint8Array([0x01]);
-    expect(normalizeParams(blob)).toStrictEqual([{}, { 0: blob.buffer }, true]);
+    const blob2 = new Uint8Array([0x01]).buffer;
+    expect(normalizeParams(blob)).toStrictEqual([{}, { 0: blob }, true]);
     expect(normalizeParams('hello', blob)).toStrictEqual([
       { 0: 'hello' },
-      { 1: blob.buffer },
+      { 1: blob },
       true,
     ]);
     expect(normalizeParams(['hello', blob, 'world', blob2])).toStrictEqual([
       { 0: 'hello', 2: 'world' },
-      { 1: blob.buffer, 3: blob2.buffer },
+      { 1: blob, 3: blob2 },
       true,
     ]);
     expect(normalizeParams({ foo: 'foo', bar: blob })).toStrictEqual([
       { foo: 'foo' },
-      { bar: blob.buffer },
+      { bar: blob },
       false,
     ]);
   });
@@ -225,7 +225,7 @@ describe(normalizeStorageIndex, () => {
   it('should return 0 for non-number values', () => {
     expect(normalizeStorageIndex('a')).toBe(0);
     expect(normalizeStorageIndex({})).toBe(0);
-    expect(normalizeStorageIndex(() => {})).toBe(0);
+    expect(normalizeStorageIndex(() => { })).toBe(0);
   });
 
   it('should support bigint with lossy conversion', () => {
