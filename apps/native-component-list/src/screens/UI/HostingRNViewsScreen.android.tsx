@@ -1,11 +1,4 @@
-import {
-  Host,
-  Text as ComposeText,
-  Column,
-  Row,
-  RNHostView,
-  Card,
-} from '@expo/ui/jetpack-compose';
+import { Host, Text as ComposeText, Column, Row, RNHostView, Card } from '@expo/ui/jetpack-compose';
 import { padding } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 import { Text as RNText, View, Pressable } from 'react-native';
