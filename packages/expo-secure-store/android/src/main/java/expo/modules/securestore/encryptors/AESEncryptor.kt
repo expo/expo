@@ -4,7 +4,6 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import androidx.annotation.RequiresApi
 import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
@@ -51,23 +50,32 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     return "${getKeyStoreAlias(options)}:$suffix"
   }
 
-  @RequiresApi(Build.VERSION_CODES.R)
   @Throws(GeneralSecurityException::class)
   override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.SecretKeyEntry {
     val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isUserPresenceRequired)
     val keyPurposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
 
-    val authType =
-      if (options.isUserPresenceRequired) KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
-      else KeyProperties.AUTH_BIOMETRIC_STRONG
-
-    val algorithmSpec: AlgorithmParameterSpec = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
+    val builder = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
       .setKeySize(AES_KEY_SIZE_BITS)
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
       .setUserAuthenticationRequired(options.isAuthenticationRequired)
-      .setUserAuthenticationParameters(0, authType)
-      .build()
+
+    if (options.isAuthenticationRequired) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val authType =
+          if (options.isUserPresenceRequired) KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
+          else KeyProperties.AUTH_BIOMETRIC_STRONG
+        builder.setUserAuthenticationParameters(0, authType)
+      } else {
+        if (options.isUserPresenceRequired) {
+          throw UnsupportedOperationException("requireAuthentication: 'userPresence' (device credential fallback) requires Android API 30 or higher")
+        }
+        builder.setUserAuthenticationValidityDurationSeconds(-1)
+      }
+    }
+
+    val algorithmSpec: AlgorithmParameterSpec = builder.build()
 
     val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, keyStore.provider)
     keyGenerator.init(algorithmSpec)

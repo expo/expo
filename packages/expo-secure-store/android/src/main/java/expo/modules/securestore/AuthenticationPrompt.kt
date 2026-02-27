@@ -16,20 +16,13 @@ import kotlin.coroutines.suspendCoroutine
 class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String, isUserPresenceRequired: Boolean) {
   private var authType: Int = if (isUserPresenceRequired) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
   private var executor: Executor = ContextCompat.getMainExecutor(context)
-  private var promptInfo = buildPromptInfo(context, title, isUserPresenceRequired)
-
-  private fun buildPromptInfo(context: Context, title: String, isUserPresenceRequired: Boolean): PromptInfo {
-    var prompt = PromptInfo.Builder()
-      .setTitle(title)
-      .setAllowedAuthenticators(authType)
-
+  private var promptInfo = PromptInfo.Builder().apply {
+    setTitle(title)
+    setAllowedAuthenticators(authType)
     if (!isUserPresenceRequired) {
-      prompt = prompt.
-        setNegativeButtonText(context.getString(android.R.string.cancel))
+      setNegativeButtonText(context.getString(android.R.string.cancel))
     }
-
-    return prompt.build()
-  }
+  }.build()
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
     suspendCoroutine { continuation ->
@@ -39,12 +32,8 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
         object : BiometricPrompt.AuthenticationCallback() {
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
-
-            if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-              continuation.resumeWithException(AuthenticationException("User canceled the authentication"))
-            } else {
-              continuation.resumeWithException(AuthenticationException("Could not authenticate the user"))
-            }
+            val message = convertErrorCode(errorCode)
+            continuation.resumeWithException(AuthenticationException(message))
           }
 
           override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {

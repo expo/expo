@@ -68,7 +68,9 @@ class AuthenticationHelper(
     val manager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
     val isSecure = manager.isDeviceSecure
     if (!isSecure) {
-      throw AuthenticationException("No authentication method available")
+      throw AuthenticationException(
+        "A secure lock screen (PIN, pattern, or password) is required for device credential authentication. The device currently has no secure lock screen set."
+      )
     }
   }
 
