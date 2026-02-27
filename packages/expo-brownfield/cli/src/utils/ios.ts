@@ -62,6 +62,8 @@ export const buildFramework = async (config: IosConfig) => {
 };
 
 export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
+  console.log('Copying XCFrameworks to:', dest);
+
   const xcframeworks = (Object.keys(XCFramework) as (keyof typeof XCFramework)[]).map(
     (framework) => ({
       name: path.basename(XCFramework[framework]),
@@ -72,7 +74,7 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   for (const xcframework of xcframeworks) {
     const sourcePath = path.join('ios', xcframework.path);
     if (fs.existsSync(sourcePath)) {
-      return withSpinner({
+      await withSpinner({
         operation: async () =>
           fs.promises.cp(sourcePath, path.join(dest, xcframework.name), {
             force: true,
@@ -85,6 +87,8 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
       });
     } else if (xcframework.name === 'hermesvm.xcframework') {
       CLIError.handle('ios-hermes-framework-not-found', sourcePath);
+    } else {
+      console.warn(`${xcframework.name} not found in source path: ${sourcePath}`);
     }
   }
 };
@@ -210,9 +214,23 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
     return;
   }
 
+  const prebuiltFrameworks = fs.existsSync(`ios/${XCFramework.React}`);
+
   const xcframeworks = [
     { name: config.scheme, targets: [config.scheme] },
     { name: 'hermesvm', targets: ['hermesvm'] },
+    ...(prebuiltFrameworks
+      ? [
+          {
+            name: path.basename(XCFramework.React).replace('.xcframework', ''),
+            targets: [path.basename(XCFramework.React).replace('.xcframework', '')],
+          },
+          {
+            name: path.basename(XCFramework.ReactDependencies).replace('.xcframework', ''),
+            targets: [path.basename(XCFramework.ReactDependencies).replace('.xcframework', '')],
+          },
+        ]
+      : []),
   ];
 
   const contents = `// swift-tools-version:5.9

@@ -61,6 +61,7 @@ const buildFramework = async (config) => {
 };
 exports.buildFramework = buildFramework;
 const copyXCFrameworks = async (config, dest) => {
+    console.log('Copying XCFrameworks to:', dest);
     const xcframeworks = Object.keys(constants_1.XCFramework).map((framework) => ({
         name: node_path_1.default.basename(constants_1.XCFramework[framework]),
         path: constants_1.XCFramework[framework],
@@ -68,7 +69,7 @@ const copyXCFrameworks = async (config, dest) => {
     for (const xcframework of xcframeworks) {
         const sourcePath = node_path_1.default.join('ios', xcframework.path);
         if (node_fs_1.default.existsSync(sourcePath)) {
-            return (0, spinner_1.withSpinner)({
+            await (0, spinner_1.withSpinner)({
                 operation: async () => node_fs_1.default.promises.cp(sourcePath, node_path_1.default.join(dest, xcframework.name), {
                     force: true,
                     recursive: true,
@@ -81,6 +82,9 @@ const copyXCFrameworks = async (config, dest) => {
         }
         else if (xcframework.name === 'hermesvm.xcframework') {
             error_1.default.handle('ios-hermes-framework-not-found', sourcePath);
+        }
+        else {
+            console.warn(`${xcframework.name} not found in source path: ${sourcePath}`);
         }
     }
 };
@@ -189,9 +193,22 @@ const generatePackageMetadataFile = async (config, packagePath) => {
     if (config.output === 'frameworks') {
         return;
     }
+    const prebuiltFrameworks = node_fs_1.default.existsSync(`ios/${constants_1.XCFramework.React}`);
     const xcframeworks = [
         { name: config.scheme, targets: [config.scheme] },
         { name: 'hermesvm', targets: ['hermesvm'] },
+        ...(prebuiltFrameworks
+            ? [
+                {
+                    name: node_path_1.default.basename(constants_1.XCFramework.React).replace('.xcframework', ''),
+                    targets: [node_path_1.default.basename(constants_1.XCFramework.React).replace('.xcframework', '')],
+                },
+                {
+                    name: node_path_1.default.basename(constants_1.XCFramework.ReactDependencies).replace('.xcframework', ''),
+                    targets: [node_path_1.default.basename(constants_1.XCFramework.ReactDependencies).replace('.xcframework', '')],
+                },
+            ]
+            : []),
     ];
     const contents = `// swift-tools-version:5.9
 import PackageDescription
@@ -208,8 +225,7 @@ let package = Package(
       `)
         .join('\n')}],
     targets: [${xcframeworks
-        .map((xcf) => `
-        .binaryTarget(
+        .map((xcf) => `        .binaryTarget(
           name: "${xcf.name}",
           path: "xcframeworks/${xcf.name}.xcframework",
         ),
