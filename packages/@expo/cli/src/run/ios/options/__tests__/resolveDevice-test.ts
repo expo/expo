@@ -61,6 +61,18 @@ jest.mock('../../../../start/platforms/ios/AppleDeviceManager', () => ({
 }));
 
 describe(resolveDeviceAsync, () => {
+  it(`returns null for "generic" device (build-only workflow)`, async () => {
+    const result = await resolveDeviceAsync('generic', {
+      osType: 'iOS',
+      configuration: 'Release',
+      scheme: 'my-app',
+      xcodeProject: { isWorkspace: true, name: 'my-app.xcworkspace' },
+    });
+
+    expect(result).toBeNull();
+    // Should not call any device resolution APIs
+    expect(AppleDeviceManager.assertSystemRequirementsAsync).not.toHaveBeenCalled();
+  });
   it(`resolves a default device`, async () => {
     expect(
       (

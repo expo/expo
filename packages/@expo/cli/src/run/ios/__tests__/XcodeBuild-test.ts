@@ -24,7 +24,8 @@ describe(getXcodeBuildArgsAsync, () => {
         configuration: 'Debug',
         isSimulator: false,
         scheme: 'project-with-build-configurations',
-        device: { udid: 'demo-udid', name: 'foobar' },
+        device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
+        osType: 'iOS',
         xcodeProject: {
           isWorkspace: true,
           name: 'demo-project',
@@ -39,6 +40,7 @@ describe(getXcodeBuildArgsAsync, () => {
       'project-with-build-configurations',
       '-destination',
       'id=demo-udid',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'DEVELOPMENT_TEAM=my-dev-team',
       '-allowProvisioningUpdates',
       '-allowProvisioningDeviceRegistration',
@@ -54,7 +56,8 @@ describe(getXcodeBuildArgsAsync, () => {
         configuration: 'Release',
         isSimulator: true,
         scheme: 'project-with-build-configurations',
-        device: { udid: 'demo-udid', name: 'foobar' },
+        device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
+        osType: 'iOS',
         xcodeProject: {
           isWorkspace: false,
           name: 'demo-project',
@@ -69,8 +72,64 @@ describe(getXcodeBuildArgsAsync, () => {
       'project-with-build-configurations',
       '-destination',
       'id=demo-udid',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
     ]);
     expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
+  });
+  it(`returns generic simulator destination when device is null`, async () => {
+    await expect(
+      getXcodeBuildArgsAsync({
+        projectRoot: '/path/to/project',
+        buildCache: true,
+        configuration: 'Release',
+        isSimulator: true,
+        scheme: 'my-app',
+        device: null,
+        osType: 'iOS',
+        xcodeProject: {
+          isWorkspace: true,
+          name: 'my-app.xcworkspace',
+        },
+      })
+    ).resolves.toEqual([
+      '-workspace',
+      'my-app.xcworkspace',
+      '-configuration',
+      'Release',
+      '-scheme',
+      'my-app',
+      '-destination',
+      'generic/platform=iOS Simulator',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
+    ]);
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
+  });
+  it(`returns generic tvOS simulator destination when osType is tvOS`, async () => {
+    await expect(
+      getXcodeBuildArgsAsync({
+        projectRoot: '/path/to/project',
+        buildCache: true,
+        configuration: 'Release',
+        isSimulator: true,
+        scheme: 'my-tv-app',
+        device: null,
+        osType: 'tvOS',
+        xcodeProject: {
+          isWorkspace: true,
+          name: 'my-tv-app.xcworkspace',
+        },
+      })
+    ).resolves.toEqual([
+      '-workspace',
+      'my-tv-app.xcworkspace',
+      '-configuration',
+      'Release',
+      '-scheme',
+      'my-tv-app',
+      '-destination',
+      'generic/platform=tvOS Simulator',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
+    ]);
   });
 });
 
