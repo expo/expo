@@ -36,13 +36,13 @@ Channels will indicate which environment the update targets (such as "production
 
 ### Channel configuration
 
-Run `eas update:configure` in your project if you haven't already.
+Run `eas update:configure --environment production` in your project if you haven't already.
 
 **If you use EAS Build**, the default configuration that will be applied by the configure command, which is almost what we want to use here: each profile will point to a channel of the same name, so our production release of our app will point to the "production" channel. We only need to add a "staging" profile that points to the "staging" channel.
 
 <Collapsible summary="Example eas.json configuration">
 
-The following configuration is approximately what `eas update:configure` will generate for you if you haven't already configured your project.
+The following configuration is approximately what `eas update:configure --environment production` will generate for you if you haven't already configured your project.
 
 ```json
 {

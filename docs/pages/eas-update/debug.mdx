@@ -205,7 +205,7 @@ The `expo-updates` library runs inside an end-user's app and makes requests to a
 
 #### Verifying app configuration
 
-When we set up EAS Update, we likely ran `eas update:configure` to configure expo-updates to work with EAS Update. This command makes changes to our app config (**app.json**/**app.config.js**). Here are the fields we'd expect to see:
+When we set up EAS Update, we likely ran `eas update:configure --environment production` to configure expo-updates to work with EAS Update. This command makes changes to our app config (**app.json**/**app.config.js**). Here are the fields we'd expect to see:
 
 - `runtimeVersion` should be set. By default, it is `{ "policy": "appVersion" }`. If our project has **android** and **ios** directories, we'll have to set the `runtimeVersion` manually.
 - `updates.url` should be a value like `https://u.expo.dev/your-project-id`, where `your-project-id` matches the ID of our project. We can see this ID on [our website](https://expo.dev/accounts/[account]/projects/[project]).

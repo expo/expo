@@ -38,7 +38,9 @@ To initialize our project with EAS Update, we need to follow these steps:
 
 - Since we are using dynamic **app.config.js** for our app's configuration, adding [`updates`](/versions/latest/config/app/#updates) and [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) properties are required to make our project compatible with EAS Update. Run the following command to obtain these properties and their values from EAS and manually copy them to **app.config.js**:
 
-<Terminal cmd={['$ eas update:configure']} />
+<Terminal cmd={['$ eas update:configure --environment development']} />
+
+The `--environment` flag specifies which [EAS environment variables](/eas/environment-variables/) to use during the command. Since we're working with a development build in this tutorial, we use `development`. For other build profiles, replace it with the appropriate environment (for example, `preview` or `production`).
 
 <Collapsible summary="What about non-dynamic (app.json) projects?">
 
@@ -46,7 +48,7 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 
 </Collapsible>
 
-- Re-run `eas update:configure` to continue with the setup process. A [`channel`](/eas/json/#channel) should be added to every build profile in **eas.json**:
+- Re-run `eas update:configure --environment development` to continue with the setup process. A [`channel`](/eas/json/#channel) should be added to every build profile in **eas.json**:
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -78,7 +80,7 @@ If a project doesn't use dynamic app config (uses **app.json** instead of **app.
 }
 ```
 
-> **info** Notice that the `eas update:configure` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
+> **info** Notice that the `eas update:configure --environment development` command adds the `channel` to every build profile in **eas.json**. However, our `ios-simulator` profile extends the `development` profile and having a separate `channel` doesn't make sense. We can safely remove `ios-simulator.channel` from the above configuration.
 
 <Collapsible summary="What is a channel?">
 

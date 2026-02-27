@@ -106,9 +106,11 @@ You can check whether you are logged in by running `eas whoami`.
 Navigate to your project directory in your terminal and run the following command:
 
 <Terminal
-  cmd={['# Initialize your project with EAS Update', '$ eas update:configure']}
-  cmdCopy="eas update:configure"
+  cmd={['# Initialize your project with EAS Update', '$ eas update:configure --environment production']}
+  cmdCopy="eas update:configure --environment production"
 />
+
+The `--environment` flag specifies which [EAS environment variables](/eas/environment-variables/) to use during the command. Replace `production` with the appropriate environment for your project (for example, `development` or `preview`).
 
 <Collapsible summary="What does this command do?">
 
@@ -155,7 +157,7 @@ The `EXUpdatesURL` value should contain your project's ID.
 
 The channel property on a build allows you to point updates at specific types of builds. For example, it allows you to publish updates to a preview build without impacting your production deployment.
 
-**If you are using EAS Build**, `eas update:configure` will set the update `channel` property on the `preview` and `production` profiles in **eas.json**. Set them manually if you use different profile names.
+**If you are using EAS Build**, `eas update:configure --environment production` will set the update `channel` property on the `preview` and `production` profiles in **eas.json**. Set them manually if you use different profile names.
 
 <Collapsible summary="Example channel configuration in eas.json">
 

@@ -37,11 +37,11 @@ Apply the changes from the diffs from the following sections to configure `expo-
 
 Run `eas update:configure` to set the `updates` URL and `projectId` in **app.json**.
 
-<Terminal cmd={['$ eas update:configure']} />
+<Terminal cmd={['$ eas update:configure --environment production']} />
 
 Modify the `expo` section of **app.json**. If you created your project using `npx @react-native-community/cli@latest init`, you will need to add the following changes including the [`updates` URL](/versions/latest/config/app/#url).
 
-> The example `updates` URL and `projectId` shown below are used with EAS Update. The EAS CLI sets this URL correctly for the EAS Update service when running `eas update:configure`.
+> The example `updates` URL and `projectId` shown below are used with EAS Update. The EAS CLI sets this URL correctly for the EAS Update service when running `eas update:configure --environment production`.
 
 <DiffBlock source="/static/diffs/expo-updates-app-json.diff" />
 

@@ -35,7 +35,7 @@ EAS Update supports request proxying, which allows you to proxy requests to the 
    ```
 
 1. Run the following command to apply the changes:
-   <Terminal cmd={['$ eas update:configure']} />
+   <Terminal cmd={['$ eas update:configure --environment production']} />
 1. Publish an update to test the proxying:
    <Terminal cmd={['$ eas update']} />
 1. Verify by navigating to the update group on the [EAS Update dashboard](https://expo.dev/accounts/[account]/projects/[project]/updates) and clicking "View Metadata" for one of the platforms.
