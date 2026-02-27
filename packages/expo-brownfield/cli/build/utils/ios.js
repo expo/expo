@@ -216,7 +216,7 @@ const getSupportedPlatforms = async (config) => {
     // Try to infer `IPHONEOS_DEPLOYMENT_TARGET` from the project
     const args = ['-workspace', config.workspace, '-scheme', config.scheme, '-showBuildSettings'];
     try {
-        const { stdout } = await (0, commands_1.runCommand)('xcodebuild', args, { verbose: config.verbose });
+        const { stdout } = await (0, commands_1.runCommand)('xcodebuild', args, { verbose: false });
         const regex = /^\s*IPHONEOS_DEPLOYMENT_TARGET = (.+)$/m;
         const value = regex.exec(stdout)?.[1].trim();
         if (value) {
