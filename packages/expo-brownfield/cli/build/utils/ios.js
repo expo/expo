@@ -62,6 +62,9 @@ const buildFramework = async (config) => {
 exports.buildFramework = buildFramework;
 const copyXCFrameworks = async (config, dest) => {
     console.log('Copying XCFrameworks to:', dest);
+    if (config.dryRun) {
+        return;
+    }
     const xcframeworks = Object.values(constants_1.XCFramework);
     for (const xcframework of xcframeworks) {
         if (node_fs_1.default.existsSync(xcframework.path)) {

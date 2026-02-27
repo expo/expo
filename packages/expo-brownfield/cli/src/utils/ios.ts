@@ -64,6 +64,10 @@ export const buildFramework = async (config: IosConfig) => {
 export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   console.log('Copying XCFrameworks to:', dest);
 
+  if (config.dryRun) {
+    return;
+  }
+
   const xcframeworks = Object.values(XCFramework);
   for (const xcframework of xcframeworks) {
     if (fs.existsSync(xcframework.path)) {
