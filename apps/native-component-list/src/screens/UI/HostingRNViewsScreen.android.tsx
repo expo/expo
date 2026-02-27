@@ -1,5 +1,13 @@
-import { Host, Text as ComposeText, Column, Row, RNHostView, Card } from '@expo/ui/jetpack-compose';
-import { padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  Text as ComposeText,
+  Column,
+  Row,
+  RNHostView,
+  Card,
+  LazyColumn,
+} from '@expo/ui/jetpack-compose';
+import { padding, size } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 import { Text as RNText, View, Pressable } from 'react-native';
 
@@ -9,7 +17,7 @@ export default function HostingRNViewsScreen() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+      <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
         <Card>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Mixing RN Components with Compose</ComposeText>
@@ -89,20 +97,38 @@ export default function HostingRNViewsScreen() {
                   style={{
                     padding: 20,
                     alignSelf: 'flex-start',
-                    backgroundColor: 'red',
+                    backgroundColor: '#9B59B6',
                     borderRadius: 10,
                   }}
                 />
               </RNHostView>
             </Row>
+          </Column>
+        </Card>
+        <Card>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>RN components with flex: 1 children</ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 20 }} modifiers={[size(100, 100)]}>
+              <RNHostView>
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#9B59B6',
+                    borderRadius: 10,
+                  }}
+                />
+              </RNHostView>
+            </Row>
+          </Column>
+        </Card>
+        <Card>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <RNHostView matchContents>
-              <RNText style={{ textAlign: 'center' }}>
-                RN component boxes separated by Compose Row
-              </RNText>
+              <RNText style={{ textAlign: 'center' }}>RN Text inside SwiftUI</RNText>
             </RNHostView>
           </Column>
         </Card>
-      </Column>
+      </LazyColumn>
     </Host>
   );
 }
