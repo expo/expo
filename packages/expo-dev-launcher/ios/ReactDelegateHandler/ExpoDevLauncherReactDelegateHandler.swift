@@ -6,48 +6,20 @@ import React
 
 private class DevLauncherWrapperView: UIView {
   weak var devLauncherViewController: UIViewController?
-  private var devLauncherConstraints: [NSLayoutConstraint] = []
 
-  #if os(iOS)
-  @objc
-  func orientationDidChange() {
-    if let controller = devLauncherViewController {
-      setDevLauncherViewControllerConstraints(controller)
-    }
-  }
-  #endif
-
-  func setDevLauncherViewControllerConstraints(_ viewController: UIViewController) {
-    viewController.view.translatesAutoresizingMaskIntoConstraints = false
-    if !devLauncherConstraints.isEmpty {
-      NSLayoutConstraint.deactivate(devLauncherConstraints)
-    }
-    devLauncherConstraints = [
-      viewController.view.topAnchor.constraint(equalTo: self.topAnchor),
-      viewController.view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-      viewController.view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-      viewController.view.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-    ]
-    NSLayoutConstraint.activate(devLauncherConstraints)
+  func setupDevLauncherView(_ viewController: UIViewController) {
+    viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    viewController.view.frame = bounds
   }
 
 #if !os(macOS)
-  override func didMoveToWindow() {
-    super.didMoveToWindow()
-    #if os(iOS)
-    if window != nil {
-      NotificationCenter.default.addObserver(self, selector: #selector(orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
-      devLauncherViewController?.view.setNeedsLayout()
-      devLauncherViewController?.view.layoutIfNeeded()
-    } else {
-      NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-    }
-    #endif
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    devLauncherViewController?.view.frame = bounds
   }
 
   override func safeAreaInsetsDidChange() {
     super.safeAreaInsetsDidChange()
-    devLauncherViewController?.view.setNeedsLayout()
     devLauncherViewController?.view.layoutIfNeeded()
   }
 #endif
@@ -93,7 +65,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     let wrapperView = DevLauncherWrapperView()
     wrapperView.devLauncherViewController = viewController
     wrapperView.addSubview(viewController.view)
-    wrapperView.setDevLauncherViewControllerConstraints(viewController)
+    wrapperView.setupDevLauncherView(viewController)
     return wrapperView
   }
 
