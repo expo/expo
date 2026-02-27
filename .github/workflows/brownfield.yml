@@ -39,8 +39,6 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       all_tests: ${{ steps.filter.outputs.all_tests }}
-      cli_e2e: ${{ steps.filter.outputs.cli_e2e }}
-      plugin_e2e: ${{ steps.filter.outputs.plugin_e2e }}
       compilation_test_android: ${{ steps.filter.outputs.compilation_test_android }}
       compilation_test_ios: ${{ steps.filter.outputs.compilation_test_ios }}
     steps:
@@ -55,18 +53,6 @@ jobs:
             all_tests: 
               - '.github/workflows/brownfield.yml'
               - 'yarn.lock'
-            cli_e2e:
-              - 'packages/expo-brownfield/bin/**'
-              - 'packages/expo-brownfield/cli/**'
-              - 'packages/expo-brownfield/e2e/cli/**'
-              - 'packages/expo-brownfield/e2e/utils/**'
-              - 'packages/expo-brownfield/package.json'
-            plugin_e2e:
-              - 'packages/expo-brownfield/plugin/**'
-              - 'packages/expo-brownfield/e2e/plugin/**'
-              - 'packages/expo-brownfield/e2e/utils/**'
-              - 'packages/expo-brownfield/app.plugin.js'
-              - 'packages/expo-brownfield/package.json'
             compilation_test_android:
               - 'packages/expo-brownfield/**'
               - 'packages/expo/android/src/main/jave/expo/modules/**'
@@ -80,6 +66,7 @@ jobs:
               - 'packages/expo/ios/AppDelegates/**'
               - 'packages/expo-dev-menu/ios/**'
               - 'packages/expo-manifests/ios/EXManifests/**'
+              - 'packages/expo-modules-core/ios/**'
 
   jest-ubuntu-cli:
     runs-on: ubuntu-24.04

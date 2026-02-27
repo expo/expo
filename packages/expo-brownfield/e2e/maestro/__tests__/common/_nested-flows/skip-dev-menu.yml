@@ -1,0 +1,25 @@
+appId: dev.expo.BrownfieldIntegratedTester
+name: Close dev menu if visible
+---
+- waitForAnimationToEnd:
+    timeout: 5000
+
+# iOS — uses the testID on the close button
+- runFlow:
+    when:
+      visible:
+        id: xmark
+    commands:
+      - tapOn:
+          id: xmark
+
+# Android — Expo dev menu has button with text "Continue"
+- runFlow:
+    when:
+      visible:
+        text: "Continue"
+    commands:
+      - tapOn:
+          text: "Continue"
+      - tapOn:
+          text: "Close"

@@ -4,9 +4,11 @@ name: Launch and verify the brownfield app
 - launchApp
 - assertVisible:
     id: openReactNativeButton
-
 - tapOn:
     id: openReactNativeButton
+
+- runFlow: ../../common/_nested-flows/skip-dev-menu.yml
+
 - assertVisible: Expo + Brownfield = 🖤
 - assertVisible:
     id: home-tab
