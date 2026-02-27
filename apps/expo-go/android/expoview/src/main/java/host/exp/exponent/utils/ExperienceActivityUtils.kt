@@ -275,7 +275,7 @@ object ExperienceActivityUtils {
     }
 
     // Set visibility of navigation bar
-    val navBarVisible = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)
+    val navBarVisible = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBILITY)
     if (navBarVisible != null) {
       // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
       // design your app to hide the status bar whenever you hide the navigation bar."
