@@ -131,10 +131,15 @@ jobs:
           # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
-      - name: 🌠 Download builds
+      - name: 🌠 Download build (Release)
         uses: actions/download-artifact@v4
         with:
           name: expo-brownfield-android-release
+          path: apps/brownfield-tester/android-integrated/apk
+      - name: 🌠 Download build (Debug)
+        uses: actions/download-artifact@v4
+        with:
+          name: expo-brownfield-android-debug
           path: apps/brownfield-tester/android-integrated/apk
       - name: 🍺 Install Maestro
         run: |
