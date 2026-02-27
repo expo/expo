@@ -274,9 +274,11 @@ After the build completes, the CLI outputs the path to the built **.app** bundle
 Binary: ~/Library/Developer/Xcode/DerivedData/.../Release-iphonesimulator/MyApp.app
 ```
 
-You can combine this with `--configuration Release` to create a production simulator build:
+You can combine this with `--configuration Release` to create a production simulator build, and use `--output` to copy the binary to a specific directory:
 
-<Terminal cmd={['$ npx expo run:ios --configuration Release --device generic']} />
+<Terminal cmd={['$ npx expo run:ios --configuration Release --device generic --output ./build']} />
+
+This will copy the built **.app** bundle to `./build/MyApp.app`.
 
 **iOS development signing**
 
