@@ -1,6 +1,6 @@
-import { Button, BottomSheet, Host } from '@expo/ui/jetpack-compose';
+import { Button, BottomSheet, Host, RNHostView } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 export default function BottomSheetScreen() {
   const [isOpened, setIsOpened] = React.useState<boolean>(false);
@@ -21,9 +21,18 @@ export default function BottomSheetScreen() {
       {isOpened && (
         <Host matchContents>
           <BottomSheet onDismissRequest={() => setIsOpened(false)}>
-            <View style={{ padding: 20 }}>
-              <Text>Hello world</Text>
-            </View>
+            <RNHostView matchContents>
+              <View style={{ width: 100, height: 100, backgroundColor: 'red' }}>
+                <Pressable
+                  style={{ width: 100, height: 100, backgroundColor: 'blue' }}
+                  onPress={() => {
+                    console.log('pressed');
+                    setIsOpened(false);
+                  }}>
+                  <Text>Close</Text>
+                </Pressable>
+              </View>
+            </RNHostView>
           </BottomSheet>
         </Host>
       )}

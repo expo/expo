@@ -2,8 +2,10 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
@@ -16,10 +18,16 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.uimanager.JSPointerDispatcher
+import com.facebook.react.uimanager.JSTouchDispatcher
+import com.facebook.react.uimanager.RootView
+import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.events.EventDispatcher
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import android.util.Log
 import expo.modules.kotlin.views.ExpoComposeView
 
 internal data class RNHostProps(
@@ -34,8 +42,13 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   private var childView: View? = null
 
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
+    if (child is androidx.compose.ui.platform.ComposeView) {
+      super.addView(child, index, params)
+      return
+    }
+    // Store reference only — the child will be parented by TouchRootWrapper
+    // inside Compose's AndroidView, not by this LinearLayout.
     childView = child
-    super.addView(child, index, params)
   }
 
   @Composable
@@ -50,7 +63,6 @@ internal class RNHostView(context: Context, appContext: AppContext) :
         if (matchContents) {
           shadowNodeProxy.setStyleSize(widthDp, heightDp)
         } else {
-          Log.d("RNHostView", "setViewSize: $widthDp, $heightDp")
           shadowNodeProxy.setViewSize(widthDp, heightDp)
         }
       }
@@ -90,7 +102,10 @@ internal class RNHostView(context: Context, appContext: AppContext) :
         }
 
         AndroidView(
-          factory = { view },
+          factory = { ctx ->
+            (view.parent as? ViewGroup)?.removeView(view)
+            TouchRootWrapper(ctx, appContext).also { it.addView(view) }
+          },
           modifier = yogaSizeModifier.then(sizeModifier)
         )
       }
@@ -98,10 +113,100 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       // so the children with flex: 1 can expand.
       childView?.let { view ->
         AndroidView(
-          factory = { view },
+          factory = { ctx ->
+            (view.parent as? ViewGroup)?.removeView(view)
+            TouchRootWrapper(ctx, appContext).also { it.addView(view) }
+          },
           modifier = Modifier.fillMaxSize().then(sizeModifier)
         )
       }
     }
+  }
+}
+
+/**
+ * A wrapper that implements [RootView] so that touch events from React Native
+ * children are dispatched to JS. This is essential in detached windows
+ * (e.g. ModalBottomSheet dialog) where ReactRootView's touch handlers can't reach.
+ * Follows the same pattern as React Native's DialogRootViewGroup used by Modal.
+ */
+@SuppressLint("ViewConstructor")
+private class TouchRootWrapper(
+  context: Context,
+  private val appContext: AppContext
+) : FrameLayout(context), RootView {
+
+  private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
+  private val jsPointerDispatcher: JSPointerDispatcher? =
+    if (ReactFeatureFlags.dispatchPointerEvents) JSPointerDispatcher(this) else null
+  private var eventDispatcher: EventDispatcher? = null
+
+  private val reactContext: ReactContext?
+    get() = appContext.reactContext as? ReactContext
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    val ctx = reactContext ?: return
+    val childView = getChildAt(0) ?: return
+    eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(ctx, childView.id)
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    eventDispatcher = null
+  }
+
+  override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+    eventDispatcher?.let { dispatcher ->
+      jsTouchDispatcher.handleTouchEvent(ev, dispatcher, reactContext)
+      jsPointerDispatcher?.handleMotionEvent(ev, dispatcher, true)
+    }
+    return super.onInterceptTouchEvent(ev)
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
+  override fun onTouchEvent(ev: MotionEvent): Boolean {
+    eventDispatcher?.let { dispatcher ->
+      jsTouchDispatcher.handleTouchEvent(ev, dispatcher, reactContext)
+      jsPointerDispatcher?.handleMotionEvent(ev, dispatcher, false)
+    }
+    super.onTouchEvent(ev)
+    return true
+  }
+
+  override fun onInterceptHoverEvent(ev: MotionEvent): Boolean {
+    eventDispatcher?.let { jsPointerDispatcher?.handleMotionEvent(ev, it, true) }
+    return super.onHoverEvent(ev)
+  }
+
+  override fun onHoverEvent(ev: MotionEvent): Boolean {
+    eventDispatcher?.let { jsPointerDispatcher?.handleMotionEvent(ev, it, false) }
+    return super.onHoverEvent(ev)
+  }
+
+  @OptIn(com.facebook.react.common.annotations.UnstableReactNativeAPI::class)
+  override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
+    eventDispatcher?.let { dispatcher ->
+      jsTouchDispatcher.onChildStartedNativeGesture(ev, dispatcher, reactContext)
+      jsPointerDispatcher?.onChildStartedNativeGesture(childView, ev, dispatcher)
+    }
+  }
+
+  @Suppress("DEPRECATION")
+  override fun onChildStartedNativeGesture(ev: MotionEvent) {
+    onChildStartedNativeGesture(null, ev)
+  }
+
+  override fun onChildEndedNativeGesture(childView: View, ev: MotionEvent) {
+    eventDispatcher?.let { jsTouchDispatcher.onChildEndedNativeGesture(ev, it) }
+    jsPointerDispatcher?.onChildEndedNativeGesture()
+  }
+
+  override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+    // No-op — must keep receiving events to dispatch to JS.
+  }
+
+  override fun handleException(t: Throwable) {
+    reactContext?.handleException(RuntimeException(t))
   }
 }
