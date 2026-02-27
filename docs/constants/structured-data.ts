@@ -20,6 +20,30 @@ export function buildBreadcrumbListSchema(items: BreadcrumbItem[]) {
   };
 }
 
+type TechArticleInput = {
+  title: string;
+  description?: string;
+  modificationDate?: string;
+  url: string;
+};
+
+export function buildTechArticleSchema({
+  title,
+  description,
+  modificationDate,
+  url,
+}: TechArticleInput) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: title,
+    ...(description ? { description } : {}),
+    ...(modificationDate ? { dateModified: modificationDate } : {}),
+    publisher: { '@type': 'Organization', name: 'Expo' },
+    url,
+  };
+}
+
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',

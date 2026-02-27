@@ -1,4 +1,56 @@
-import { buildBreadcrumbListSchema } from './structured-data';
+import { buildBreadcrumbListSchema, buildTechArticleSchema } from './structured-data';
+
+describe(buildTechArticleSchema, () => {
+  it('returns TechArticle with all fields', () => {
+    const result = buildTechArticleSchema({
+      title: 'Introduction to Expo Router',
+      description: 'Expo Router is a file-based routing library.',
+      modificationDate: '2026-01-15',
+      url: 'https://docs.expo.dev/router/introduction/',
+    });
+
+    expect(result).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'TechArticle',
+      headline: 'Introduction to Expo Router',
+      description: 'Expo Router is a file-based routing library.',
+      dateModified: '2026-01-15',
+      publisher: { '@type': 'Organization', name: 'Expo' },
+      url: 'https://docs.expo.dev/router/introduction/',
+    });
+  });
+
+  it('omits description when not provided', () => {
+    const result = buildTechArticleSchema({
+      title: 'Some page',
+      url: 'https://docs.expo.dev/some-page/',
+    });
+
+    expect(result).not.toHaveProperty('description');
+    expect(result.headline).toBe('Some page');
+    expect(result.url).toBe('https://docs.expo.dev/some-page/');
+  });
+
+  it('omits dateModified when modificationDate is not provided', () => {
+    const result = buildTechArticleSchema({
+      title: 'Some page',
+      description: 'A description.',
+      url: 'https://docs.expo.dev/some-page/',
+    });
+
+    expect(result).not.toHaveProperty('dateModified');
+    expect(result).toHaveProperty('description', 'A description.');
+  });
+
+  it('always includes publisher as Expo organization', () => {
+    const result = buildTechArticleSchema({
+      title: 'Any page',
+      url: 'https://docs.expo.dev/any/',
+    });
+
+    expect(result.publisher).toEqual({ '@type': 'Organization', name: 'Expo' });
+  });
+});
 
 describe(buildBreadcrumbListSchema, () => {
   it('returns null for empty array', () => {

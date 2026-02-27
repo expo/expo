@@ -13,7 +13,7 @@ import DocumentationHead from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout, {
   DocumentationNestedScrollLayoutHandles,
 } from '~/components/DocumentationNestedScrollLayout';
-import { buildBreadcrumbListSchema } from '~/constants/structured-data';
+import { buildBreadcrumbListSchema, buildTechArticleSchema } from '~/constants/structured-data';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
@@ -65,6 +65,14 @@ export default function DocumentationPage({
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
   const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
   const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);
+  const canonicalUrl =
+    version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
+      ? RoutesUtils.getCanonicalUrl(pathname)
+      : undefined;
+  const techArticleSchema =
+    title && canonicalUrl
+      ? buildTechArticleSchema({ title, description, modificationDate, url: canonicalUrl })
+      : null;
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
   const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
@@ -315,14 +323,8 @@ export default function DocumentationPage({
         isSidebarCollapsed={isNavigationCollapsed}
         isChatExpanded={isAskAIExpanded}>
         {breadcrumbSchema && <StructuredData id="breadcrumb-list" data={breadcrumbSchema} />}
-        <DocumentationHead
-          title={title}
-          description={description}
-          canonicalUrl={
-            version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
-              ? RoutesUtils.getCanonicalUrl(pathname)
-              : undefined
-          }>
+        {techArticleSchema && <StructuredData id="tech-article" data={techArticleSchema} />}
+        <DocumentationHead title={title} description={description} canonicalUrl={canonicalUrl}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
