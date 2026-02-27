@@ -69,6 +69,9 @@ export type SecureStoreOptions = {
   /**
    * Determines the authentication method for this entry. Specify `false` for no authentication, `'biometry'` for biometric authentication only,
    * or `'userPresence'` for biometric with fallback to device credentials (PIN, pattern, or password). Use `canUseDeviceCredentialsAuthentication()` to check if device credentials are available.
+   *
+   * For backward compatibility, passing `true` is equivalent to `'biometry'`.
+   *
    * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
    *   (requires API 23).
    * - iOS: Equivalent to [`biometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/2937192-biometrycurrentset) or [`userPresence`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags).
@@ -83,7 +86,7 @@ export type SecureStoreOptions = {
    *
    * @default false
    */
-  requireAuthentication?: false | 'biometry' | 'userPresence';
+  requireAuthentication?: boolean | 'biometry' | 'userPresence';
   /**
    * Custom message displayed to the user during authentication.
    */
@@ -236,7 +239,7 @@ export function canUseBiometricAuthentication(): boolean {
  * Use this to determine if the user can authenticate with `requireAuthentication: 'userPresence'`
  * (biometric with fallback to device credentials).
  *
- * - **Android:** Uses [KeyguardManager.isDeviceSecure()](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceSecure()) —
+ * - **Android:** Uses [KeyguardManager.isDeviceSecure()](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceSecure()) -
  *   returns true when the lock screen is set to PIN, pattern, or password.
  * - **iOS:** Uses [LAContext.canEvaluatePolicy](https://developer.apple.com/documentation/LocalAuthentication/LAContext/canEvaluatePolicy(_:error:))
  *   with device owner authentication - returns true when at least the passcode is set.
@@ -266,6 +269,14 @@ function isValidValue(value: string) {
 }
 
 function normalizeOptions(options: SecureStoreOptions): SecureStoreOptions {
+  // For backward compatibility, passing `true` is equivalent to `'biometry'`.
+  if (options.requireAuthentication === true) {
+    return {
+      ...options,
+      requireAuthentication: 'biometry',
+    };
+  }
+
   return {
     ...options,
     requireAuthentication: options.requireAuthentication || undefined,

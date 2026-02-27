@@ -152,7 +152,7 @@ export function canUseBiometricAuthentication() {
  * Use this to determine if the user can authenticate with `requireAuthentication: 'userPresence'`
  * (biometric with fallback to device credentials).
  *
- * - **Android:** Uses [KeyguardManager.isDeviceSecure()](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceSecure()) —
+ * - **Android:** Uses [KeyguardManager.isDeviceSecure()](https://developer.android.com/reference/android/app/KeyguardManager#isDeviceSecure()) -
  *   returns true when the lock screen is set to PIN, pattern, or password.
  * - **iOS:** Uses [LAContext.canEvaluatePolicy](https://developer.apple.com/documentation/LocalAuthentication/LAContext/canEvaluatePolicy(_:error:))
  *   with device owner authentication - returns true when at least the passcode is set.
@@ -176,6 +176,13 @@ function isValidValue(value) {
     return typeof value === 'string';
 }
 function normalizeOptions(options) {
+    // For backward compatibility, passing `true` is equivalent to `'biometry'`.
+    if (options.requireAuthentication === true) {
+        return {
+            ...options,
+            requireAuthentication: 'biometry',
+        };
+    }
     return {
         ...options,
         requireAuthentication: options.requireAuthentication || undefined,
