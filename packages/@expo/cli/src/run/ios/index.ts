@@ -17,6 +17,7 @@ export const expoRunIos: Command = async (argv) => {
     '--no-bundler': Boolean,
     '--configuration': String,
     '--binary': String,
+    '--output': String,
 
     '--port': Number,
 
@@ -25,6 +26,7 @@ export const expoRunIos: Command = async (argv) => {
     '--unstable-rebundle': Boolean,
     // Aliases
     '-p': '--port',
+    '-o': '--output',
 
     '-h': '--help',
   };
@@ -49,6 +51,7 @@ export const expoRunIos: Command = async (argv) => {
         `--binary <path>                  Path to existing .app or .ipa to install.`,
         chalk`--configuration <configuration>  Xcode configuration to use. Debug or Release. {dim Default: Debug}`,
         chalk`-d, --device [device]            Device name, UDID, or "generic" for build-only`,
+        `-o, --output <path>              Directory to output the built app binary`,
         chalk`-p, --port <port>                Port to start the Metro bundler on. {dim Default: 8081}`,
         `-h, --help                       Usage info`,
       ].join('\n'),
@@ -58,7 +61,7 @@ export const expoRunIos: Command = async (argv) => {
         chalk`    {dim $} npx expo run:ios --configuration Release`,
         '',
         chalk`  Build for simulator without installing (build-only):`,
-        chalk`    {dim $} npx expo run:ios --configuration Release --device generic`,
+        chalk`    {dim $} npx expo run:ios --configuration Release --device generic --output ./build`,
         '',
       ].join('\n')
     );
@@ -79,6 +82,7 @@ export const expoRunIos: Command = async (argv) => {
     bundler: !args['--no-bundler'],
     port: args['--port'],
     binary: args['--binary'],
+    output: args['--output'],
     rebundle: args['--unstable-rebundle'],
 
     // Custom parsed args

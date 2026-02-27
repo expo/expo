@@ -22,6 +22,8 @@ export type Options = {
   buildCache?: boolean;
   /** Path to an existing binary to install on the device. */
   binary?: string;
+  /** Directory to copy the built app binary to after build completes. */
+  output?: string;
 
   /** Re-bundle JS and assets, then embed in existing app, and install again. */
   rebundle?: boolean;
