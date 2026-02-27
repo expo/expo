@@ -240,7 +240,7 @@ export const getSupportedPlatforms = async (config: IosConfig): Promise<string[]
 
   try {
     const { stdout } = await runCommand('xcodebuild', args, { verbose: config.verbose });
-    const regex = /IPHONEOS_DEPLOYMENT_TARGET = (.+)/;
+    const regex = /^\s*IPHONEOS_DEPLOYMENT_TARGET = (.+)$/m;
     const value = regex.exec(stdout)?.[1].trim();
     if (value) {
       return [`.iOS("${value}")`];
