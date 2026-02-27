@@ -120,9 +120,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     
     RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
     if (devSettings == nil) {
-      RCTLogWarn(@"Couldn't find the devSettings module when setting packager port");
+      RCTLogWarn(@"Couldn't find the devSettings module when setting packager port; packager connection will not be updated.");
+    } else {
+      [[devSettings packagerConnection] reconnect:packagerServerHostPort];
     }
-    [[devSettings packagerConnection] reconnect:packagerServerHostPort];
     
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
 

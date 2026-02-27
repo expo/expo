@@ -62,7 +62,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
 {
 }
 
-- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor dismissButton:(BOOL)dismissButton {  
+- (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor dismissButton:(BOOL)dismissButton {
 }
 
 @end
