@@ -4,42 +4,61 @@
 // Use `yarn build:bundle` to run this script.
 
 import spawn from '@expo/spawn-async';
-import { rm } from 'node:fs/promises';
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'path';
-import { argv } from 'process';
-import { fileURLToPath } from 'url';
+import path from 'node:path';
+import { argv } from 'node:process';
+import { fileURLToPath } from 'node:url';
+
+// NOTE: Modified from expo-constants/expo-updates entrypoint. We cd into the right folder anyway
+const possibleProjectRoot = process.argv[2] ?? process.cwd();
+
+// TODO: Verify we can remove projectRoot validation, now that we no longer
+// support React Native <= 62
+let projectRoot;
+if (fs.existsSync(path.join(possibleProjectRoot, 'package.json'))) {
+  projectRoot = possibleProjectRoot;
+} else if (fs.existsSync(path.join(possibleProjectRoot, '..', 'package.json'))) {
+  projectRoot = path.resolve(possibleProjectRoot, '..');
+} else {
+  throw new Error(
+    `Unable to locate project (no package.json found) at path: ${possibleProjectRoot}`
+  );
+}
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
+const require = createRequire(__dirname);
 
 // NODE_BINARY is set for Xcode builds via the `with-node.sh` script.
 const nodePath = process.env.NODE_BINARY || 'node';
-const outputDir = join(__dirname, '../bundle/build');
-const appBundlePath = join(outputDir, 'ExpoWidgets.bundle');
+const outputDir = path.join(__dirname, '../bundle/build');
+const appBundlePath = path.join(outputDir, 'ExpoWidgets.bundle');
 
-await rm(outputDir, { recursive: true, force: true });
-
-const expoCliJs = createRequire(__dirname).resolve('expo/bin/cli');
+await fs.promises.rm(outputDir, { recursive: true, force: true });
 
 const result = await spawn(
   nodePath,
   [
-    expoCliJs,
+    require.resolve('expo/bin/cli'),
     'export:embed',
     '--platform',
     'ios',
     '--bundle-output',
     appBundlePath,
     '--entry-file',
-    join(__dirname, '../bundle/index.ts'),
+    path.join(__dirname, '../bundle/index.ts'),
     '--dev',
     false,
     ...argv.slice(2),
   ],
   {
     stdio: 'inherit',
-    cwd: join(__dirname, '..'),
+    cwd: projectRoot,
+    env: {
+      ...process.env,
+      EXPO_OVERRIDE_METRO_CONFIG: path.join(__dirname, '../metro.config.js'),
+    },
   }
 );
 

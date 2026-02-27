@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- [iOS] Added support to add or remove assets to Favorites smart album ([#43459](https://github.com/expo/expo/pull/43459) by [@awaisanjumx2](https://github.com/awaisanjumx2))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-20
 

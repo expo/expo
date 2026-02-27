@@ -1,48 +1,50 @@
 const { getDefaultConfig } = require('expo/metro-config');
-const resolve = require('metro-resolver').resolve;
 const path = require('path');
 
-const config = getDefaultConfig(__dirname);
-const emptyModulePath = require.resolve('metro-runtime/src/modules/empty-module');
+const projectRoot = process.cwd();
+const config = getDefaultConfig(projectRoot);
+
 const expoStubPath = path.resolve(__dirname, './bundle/expo-module-stub.ts');
 const reactStubPath = path.resolve(__dirname, './bundle/react-stub.ts');
 const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts');
 
+// The `projectRoot` won't be included by default, since we alter it to be `__dirname`
+// to bundle from `expo-widgets` as the main module
+// NOTE: We check the `watchFolders` to start with `projectRoot`, since `expo/metro-config`
+// might add folders if we're in a monorepo
+const watchFolders = config.watchFolders;
+if (!watchFolders.some((entry) => !entry.startsWith(projectRoot))) {
+  watchFolders.push(projectRoot);
+}
+
 const buildConfig = {
   ...config,
+  projectRoot: __dirname, // Override root to be expo-widgets
+  watchFolders,
   resolver: {
     ...config.resolver,
-    resolveRequest(context, moduleName) {
-      const resolvedPlatform = 'ios';
-      if (moduleName === 'expo') {
-        return { type: 'sourceFile', filePath: expoStubPath };
+    resolveRequest(context, moduleName, platform) {
+      const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
+      if (fileSpecifierRe.test(moduleName)) {
+        return context.resolveRequest(context, moduleName, platform);
       }
-      if (moduleName === 'react') {
-        return { type: 'sourceFile', filePath: reactStubPath };
+      switch (moduleName) {
+        case 'expo':
+          return { type: 'sourceFile', filePath: expoStubPath };
+        case 'react':
+          return { type: 'sourceFile', filePath: reactStubPath };
+        case 'react/jsx-runtime':
+        case 'react/jsx-dev-runtime':
+          return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
+        case 'react-native':
+          return { type: 'empty' };
+        default:
+          return context.resolveRequest(context, moduleName, platform);
       }
-      if (moduleName === 'react/jsx-runtime') {
-        return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
-      }
-      if (moduleName === 'react/jsx-dev-runtime') {
-        return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
-      }
-
-      if (
-        moduleName.startsWith('@expo/ui') ||
-        moduleName.startsWith('@babel/runtime') ||
-        moduleName.startsWith('./') ||
-        moduleName.startsWith('../') ||
-        path.isAbsolute(moduleName)
-      ) {
-        return resolve(context, moduleName, resolvedPlatform);
-      }
-
-      return { type: 'sourceFile', filePath: emptyModulePath };
     },
   },
   transformer: {
     ...config.transformer,
-    babelTransformerPath: require.resolve('@expo/metro-config/build/babel-transformer'),
     getTransformOptions: async () => ({
       transform: { experimentalImportSupport: false, inlineRequires: false },
     }),

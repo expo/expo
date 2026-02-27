@@ -5,6 +5,7 @@ description: Learn how to use the zoom transition to create fluid animations bet
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { CODE } from '~/ui/components/Text';
 
 > **important** Zoom transition is an alpha API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes.
 
@@ -23,7 +24,7 @@ To implement zoom transitions, you need to use the `Link.AppleZoom` component to
 
 To activate zoom transition for a link, wrap the source (`Image`) element with `Link.AppleZoom` in your screen:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Link } from 'expo-router';
 import { Image } from 'expo-image';
@@ -48,7 +49,7 @@ export default function HomeScreen() {
 
 In the destination screen, define the `Image` component:
 
-```tsx app/image.tsx
+```tsx src/app/image.tsx
 import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 
@@ -78,7 +79,7 @@ The `Link.AppleZoom` component wraps the element you want to zoom from. It is us
 
 You can specify the alignment of the zoomed element on the destination screen by using `Link.AppleZoomTarget` element.
 
-```tsx app/image.tsx
+```tsx src/app/image.tsx
 export default function ImageScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -102,9 +103,9 @@ If you need more control over the alignment rectangle, you can pass an `alignmen
 
 ## Complete example
 
-Here's a more complex example showing a gallery grid with zoom transitions to detail views. The source screen component (**app/index.tsx**) uses `Link.AppleZoom` to wrap an `Image` component:
+Here's a more complex example showing a gallery grid with zoom transitions to detail views. The source screen component (**src/app/index.tsx**) uses `Link.AppleZoom` to wrap an `Image` component:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import { useState } from 'react';
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
 
 In the destination screen, the `Link.AppleZoomTarget` is used to specify the alignment of the zoomed element:
 
-```tsx app/image/[id].tsx
+```tsx src/app/image/[id].tsx
 import { Image } from 'expo-image';
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useMemo } from 'react';
@@ -233,13 +234,13 @@ const styles = StyleSheet.create({
 
 ## Controlling dismissal gestures
 
-The [`usePreventZoomTransitionDismissal`](/versions/unversioned/sdk/router/#usepreventzoomtransitiondismissal_options) hook allows you to control the interactive swipe-to-dismiss gesture on screens using zoom transitions. This is useful when you want to prevent accidental dismissals or restrict dismissal to specific screen areas.
+The [`usePreventZoomTransitionDismissal`](/versions/latest/sdk/router/#usepreventzoomtransitiondismissal_options) hook allows you to control the interactive swipe-to-dismiss gesture on screens using zoom transitions. This is useful when you want to prevent accidental dismissals or restrict dismissal to specific screen areas.
 
 ### Disabling dismissal completely
 
 Call the hook without any options to completely disable the swipe-to-dismiss gesture:
 
-```tsx app/detail.tsx
+```tsx src/app/detail.tsx
 import { usePreventZoomTransitionDismissal } from 'expo-router';
 
 export default function DetailScreen() {
@@ -253,7 +254,7 @@ export default function DetailScreen() {
 
 Use the `unstable_dismissalBoundsRect` option to define a rectangle where dismissal gestures are allowed. This is useful for image viewers where you want dismissal only from the image area:
 
-```tsx app/image.tsx
+```tsx src/app/image.tsx
 import { usePreventZoomTransitionDismissal } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
@@ -306,6 +307,18 @@ The zoom transition components automatically detect platform support and gracefu
 <Collapsible summary="Using zoom transition with headers">
 
 We recommend avoiding the use of zoom transitions when navigating between screens that have a header (navigation bar). There are known issues with the native iOS zoom transition API that can lead to visual glitches or unexpected behavior when headers are involved.
+
+</Collapsible>
+
+<Collapsible summary="Using zoom transition with Link.Preview">
+
+When using `Link.Preview` in combination with zoom transitions, the target screen must use the modal presentation, for example, `presentation: 'fullScreenModal'`. This is the limitation of the underlying iOS zoom transition API. When navigating to a non-modal screen from a `Link.Preview`, the zoom transition will not work as expected and will fall back to a standard navigation transition.
+
+</Collapsible>
+
+<Collapsible summary={<><CODE>usePreventZoomTransitionDismissal</CODE> cannot be used in screens with modal presentation</>}>
+
+The `usePreventZoomTransitionDismissal` hook cannot be used in screens that have a modal presentation, for example, `presentation: 'fullScreenModal'`. When used in a modal screen, the hook will not have any effect and dismissal gestures will function as normal.
 
 </Collapsible>
 

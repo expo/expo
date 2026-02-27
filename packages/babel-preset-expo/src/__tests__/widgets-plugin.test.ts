@@ -31,12 +31,10 @@ const DEF_OPTIONS = {
   caller: getCaller({ ...ENABLED_CALLER }),
 };
 
-function transformTest(sourceCode: string) {
-  const options = { ...DEF_OPTIONS };
-
+function transformTest(sourceCode: string, opts?: Partial<typeof DEF_OPTIONS>) {
+  const options = { ...DEF_OPTIONS, ...opts };
   const results = babel.transform(sourceCode, options);
   if (!results) throw new Error('Failed to transform code');
-
   return {
     code: results.code,
   };
@@ -68,7 +66,6 @@ describe('widgets-plugin', () => {
 
   describe('transform', () => {
     it('stringifies widget function after JSX transform', () => {
-      const backtick = '`';
       const result = transformTest(`
         function MyComponent({ name }) {
           'widget';
@@ -81,7 +78,6 @@ describe('widgets-plugin', () => {
     });
 
     it('stringifies widget arrow function after JSX transform', () => {
-      const backtick = '`';
       const result = transformTest(`
         const MyComponent = ({ name }) => {
           'widget';
@@ -104,6 +100,32 @@ describe('widgets-plugin', () => {
 
       expect(result.code).toContain('var MyComponent = `function');
       expect(result.code).toContain('jsx(_Fragment');
+    });
+  });
+
+  describe('react-compiler', () => {
+    const COMPILER_OPTS = {
+      caller: getCaller({
+        ...ENABLED_CALLER,
+        supportsReactCompiler: true,
+      }),
+    };
+
+    it('stringifies widget function with react compiler enabled', () => {
+      const result = transformTest(
+        `
+        function MyComponent({ name }) {
+          'widget';
+          return <Text><Text>{name + \`sadaas\`}</Text></Text>;
+        }
+      `,
+        COMPILER_OPTS
+      );
+
+      // Shouldn't add the compiler, since we're opting out
+      expect(result.code).not.toContain('react/compiler-runtime');
+      expect(result.code).toContain('var MyComponent = `function');
+      expect(result.code).toContain('jsx(');
     });
   });
 });

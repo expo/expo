@@ -379,9 +379,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
-  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
-  '/versions/v50.0.0/sdk/dev-client': '/versions/latest/sdk/dev-client/',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
@@ -525,7 +523,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 
   // After changing brownfield docs
-  '/brownfield/installing-expo-modules/': '/brownfield/get-started/',
+  '/brownfield/installing-expo-modules/': '/brownfield/overview/',
+  '/brownfield/get-started/': '/brownfield/isolated-approach/',
 
   // After removing Navigation section from Home and adding a Navigation page
   '/develop/file-based-routing/': '/develop/app-navigation/',

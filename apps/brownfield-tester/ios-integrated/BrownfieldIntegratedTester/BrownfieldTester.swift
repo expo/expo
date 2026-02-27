@@ -11,20 +11,25 @@ class BrownfieldTester: ObservableObject {
     private var listenerId: String?
     private var messageTimer: Timer?
     private var messageCounter = 0
+    private var stateListeners: [AnyCancellable?] = []
     
     // MARK: - Lifecycle Methods
     
     func start() {
         setupListener()
         startTimer()
+        setupStateListeners()
     }
     
     func stop() {
         if let listenerId = listenerId {
             BrownfieldMessaging.removeListener(id: listenerId)
         }
+
         messageTimer?.invalidate()
         messageTimer = nil
+
+        stateListeners.forEach { $0?.cancel() }
     }
     
     // MARK: - Private Logic
@@ -48,7 +53,38 @@ class BrownfieldTester: ObservableObject {
     private func startTimer() {
         messageTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { [weak self] _ in
             self?.sendMessage()
+            self?.setTime()
         }
+    }
+    
+    private func setupStateListeners() {
+        stateListeners.append(contentsOf: [
+            BrownfieldState.subscribe("number") { number in
+                if let cast = number as? Double {
+                    print(cast)
+                }
+            },
+            BrownfieldState.subscribe("string") { string in
+                if let cast = string as? String {
+                    print(cast)
+                }
+            },
+            BrownfieldState.subscribe("boolean") { bool in
+                if let cast = bool as? Bool {
+                    print(cast)
+                }
+            },
+            BrownfieldState.subscribe("array") { array in
+                if let cast = array as? [Any?] {
+                    print(cast)
+                }
+            },
+            BrownfieldState.subscribe("object") { obj in
+                if let cast = obj as? [String: Any?] {
+                    print(cast)
+                }
+            },
+        ])
     }
     
     private func sendMessage() {
@@ -64,4 +100,12 @@ class BrownfieldTester: ObservableObject {
         BrownfieldMessaging.sendMessage(nativeMessage)
         print("Sent: \(nativeMessage)")
     }
+    
+    private func setTime() {
+       let formatter = DateFormatter()
+       formatter.locale = Locale(identifier: "en_US_POSIX")
+       formatter.dateFormat = "HH:mm:ss"
+       let timeString = formatter.string(from: Date())
+       BrownfieldState.set("time", timeString)
+   }
 }

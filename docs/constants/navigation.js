@@ -223,7 +223,8 @@ export const general = [
     ]),
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
-      makePage('brownfield/get-started.mdx'),
+      makePage('brownfield/isolated-approach.mdx'),
+      makePage('brownfield/integrated-approach.mdx'),
       makePage('brownfield/lifecycle-listeners.mdx'),
     ]),
     makeGroup(
@@ -294,6 +295,7 @@ export const general = [
       makePage('router/reference/src-directory.mdx'),
       makePage('router/reference/testing.mdx'),
       makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/reserved-paths.mdx'),
     ]),
     makeGroup('Migration', [
       makePage('router/migrate/from-react-navigation.mdx'),

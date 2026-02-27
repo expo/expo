@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 55.0.10 — 2026-02-25
+
+### 💡 Others
+
+- Bumped dev-plugin-webui to SDK 55. ([#43412](https://github.com/expo/expo/pull/43412) by [@kudo](https://github.com/kudo))
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.8 — 2026-02-20
 
 _This version does not introduce any user-facing changes._

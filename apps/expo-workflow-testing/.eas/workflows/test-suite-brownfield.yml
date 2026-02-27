@@ -1,0 +1,287 @@
+name: Test Suite Brownfield Integrated
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield.yml
+      - apps/brownfield-tester/**
+      - packages/expo/**
+      - packages/expo-modules-core/**
+      - packages/expo-dev-client/**
+      - packages/expo-updates/**
+      - '!**/*.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
+
+jobs:
+  detect_platform:
+    name: Detect platform changes
+    runs_on: linux-medium
+    image: latest
+    outputs:
+      should_run_ios: ${{ steps.detect.outputs.should_run_ios }}
+      should_run_android: ${{ steps.detect.outputs.should_run_android }}
+    steps:
+      - id: detect
+        outputs: [should_run_ios, should_run_android]
+        run: |
+          EVENT_NAME="${{ github.event_name }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          REPO="${{ github.event.repository.full_name }}"
+          echo "EVENT_NAME=$EVENT_NAME"
+          echo "PR_NUMBER=$PR_NUMBER"
+          echo "REPO=$REPO"
+          if [ "$EVENT_NAME" != "pull_request" ]; then
+            echo "Not a pull request — running both platforms"
+            set-output should_run_ios "true"
+            set-output should_run_android "true"
+            exit 0
+          fi
+
+          # Use GitHub API to get changed files — no git history needed
+          API_URL="https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/files?per_page=100"
+          echo "Fetching changed files: $API_URL"
+          PAGE=1
+          CHANGED_FILES=""
+          while true; do
+            RESPONSE=$(curl -sf "${API_URL}&page=$PAGE" || echo "")
+            if [ -z "$RESPONSE" ] || [ "$RESPONSE" = "[]" ]; then
+              break
+            fi
+            FILES=$(echo "$RESPONSE" | jq -r '.[].filename' 2>/dev/null || echo "")
+            if [ -z "$FILES" ]; then
+              break
+            fi
+            CHANGED_FILES="${CHANGED_FILES}${FILES}"$'\n'
+            PAGE=$((PAGE + 1))
+          done
+
+          echo "All changed files:"
+          echo "$CHANGED_FILES"
+
+          # Filter out ignored files (markdown, license, config, etc.)
+          FILTERED=$(echo "$CHANGED_FILES" \
+            | grep -v -E '\.(md)$' \
+            | grep -v -E '(LICENSE|CHANGELOG|\.gitignore|\.npmignore|\.eslintrc|\.prettierrc|\.gitattributes|\.watchmanconfig|\.fingerprintignore)' \
+            | grep -v -E '\.web\.' \
+            || true)
+
+          # Only keep files in relevant paths
+          RELEVANT=$(echo "$FILTERED" \
+            | grep -E '^(apps/brownfield-tester/|packages/(expo|expo-modules-core|expo-dev-client|expo-updates)/|apps/expo-workflow-testing/\.eas/workflows/test-suite-brownfield\.yml)' \
+            || true)
+
+          if [ -z "$RELEVANT" ]; then
+            echo "No relevant file changes detected"
+            set-output should_run_ios "false"
+            set-output should_run_android "false"
+            exit 0
+          fi
+
+          echo "Relevant changes:"
+          echo "$RELEVANT"
+
+          # Platform-specific: files under ios/ or android/ dirs
+          IOS_CHANGES=$(echo "$RELEVANT" | grep -E '/ios/' || true)
+          ANDROID_CHANGES=$(echo "$RELEVANT" | grep -E '/android/' || true)
+          # Common: relevant files NOT under ios/ or android/
+          COMMON_CHANGES=$(echo "$RELEVANT" | grep -v -E '/(ios|android)/' || true)
+
+          SHOULD_RUN_IOS="false"
+          SHOULD_RUN_ANDROID="false"
+          [ -n "$IOS_CHANGES" ] || [ -n "$COMMON_CHANGES" ] && SHOULD_RUN_IOS="true"
+          [ -n "$ANDROID_CHANGES" ] || [ -n "$COMMON_CHANGES" ] && SHOULD_RUN_ANDROID="true"
+
+          echo ""
+          echo "should_run_ios=$SHOULD_RUN_IOS"
+          echo "should_run_android=$SHOULD_RUN_ANDROID"
+          set-output should_run_ios "$SHOULD_RUN_IOS"
+          set-output should_run_android "$SHOULD_RUN_ANDROID"
+
+  ios:
+    name: iOS Build
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_ios == 'true' }}
+    runs_on: macos-large
+    image: latest
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Install CocoaPods
+        working_directory: ../brownfield-tester
+        run: pod install --project-directory=ios
+      - name: Build iOS (Debug)
+        working_directory: ../brownfield-tester
+        env:
+          NODE_ENV: production
+        run: |
+          xcodebuild -workspace ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration Debug -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
+      - name: Build iOS (Release)
+        working_directory: ../brownfield-tester
+        env:
+          NODE_ENV: production
+        run: |
+          xcodebuild -workspace ios/BrownfieldTester.xcworkspace -scheme BrownfieldTester -configuration Release -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
+
+  android:
+    name: Android Build
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_android == 'true' }}
+    runs_on: linux-large
+    image: latest
+    env:
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"'
+    steps:
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Build Android (Debug)
+        working_directory: ../brownfield-tester/android
+        env:
+          NODE_ENV: production
+        run: ./gradlew :app:assembleDebug
+      - name: Build Android (Release)
+        working_directory: ../brownfield-tester/android
+        env:
+          NODE_ENV: production
+        run: ./gradlew :app:assembleRelease
+
+  # Slack webhook URLs must be set as EAS environment variables (SLACK_WEBHOOK_IOS, SLACK_WEBHOOK_ANDROID)
+  # see https://github.com/expo/expo/pull/40224/commits/e5295e8518d07e9b16ad3ed23c46977232b6bb90
+  notify_ios_failure:
+    if: ${{ failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
+    name: Notify iOS failure on Slack
+    after: [ios]
+    steps:
+      - run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+
+          if [ -z "$COMMIT_MESSAGE" ] || [ "$COMMIT_MESSAGE" = "undefined" ]; then
+            COMMIT_DISPLAY="${COMMIT_SHA:0:7}"
+          else
+            COMMIT_DISPLAY=$(echo "$COMMIT_MESSAGE" | head -n1)
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Brownfield Test Suite (iOS) failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Brownfield Test Suite (iOS) failed*"
+                  }
+                },
+                {
+                  type: "section",
+                  fields: [
+                    {
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/expo-workflow-testing/workflows/" + $wf_id + "|" + $wf_id + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_IOS" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"
+
+  notify_android_failure:
+    if: ${{ failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
+    name: Notify Android failure on Slack
+    after: [android]
+    steps:
+      - run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+
+          if [ -z "$COMMIT_MESSAGE" ] || [ "$COMMIT_MESSAGE" = "undefined" ]; then
+            COMMIT_DISPLAY="${COMMIT_SHA:0:7}"
+          else
+            COMMIT_DISPLAY=$(echo "$COMMIT_MESSAGE" | head -n1)
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Brownfield Test Suite (Android) failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Brownfield Test Suite (Android) failed*"
+                  }
+                },
+                {
+                  type: "section",
+                  fields: [
+                    {
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/expo-workflow-testing/workflows/" + $wf_id + "|" + $wf_id + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_ANDROID" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"

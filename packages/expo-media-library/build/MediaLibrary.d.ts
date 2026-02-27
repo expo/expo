@@ -520,4 +520,12 @@ export declare function migrateAlbumIfNeededAsync(album: AlbumRef): Promise<void
  * @return Returns a promise which fulfils with `true` if the album should be migrated.
  */
 export declare function albumNeedsMigrationAsync(album: AlbumRef): Promise<boolean>;
+/**
+ * On iOS, this adds or removes the asset from the system "Favorites" smart album.
+ * @param asset An [Asset](#asset) or its ID.
+ * @param isFavorite Whether the asset should be marked as favorite.
+ * @platform ios
+ * @return Returns a promise which fulfils with `true` if the operation was successful.
+ */
+export declare function setAssetFavoriteAsync(asset: AssetRef, isFavorite: boolean): Promise<boolean>;
 //# sourceMappingURL=MediaLibrary.d.ts.map

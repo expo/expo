@@ -37,7 +37,7 @@ For most use cases, you can use the `Modal` component and customize it according
 
 ## Modal screen using Expo Router
 
-A modal screen is a file created inside the **app** directory and is used as a route within the existing stack. It is used for complex interactions that need to be part of the navigation system, such as multi-step forms where you can link to a specific screen after the process completes.
+A modal screen is a file created inside the **src/app** directory and is used as a route within the existing stack. It is used for complex interactions that need to be part of the navigation system, such as multi-step forms where you can link to a specific screen after the process completes.
 
 Below is an example of how a modal screen works on different platforms:
 
@@ -45,13 +45,13 @@ Below is an example of how a modal screen works on different platforms:
 
 ### Usage
 
-To implement a modal route, create a screen called **modal.tsx** inside the **app** directory. Here's an example file structure:
+To implement a modal route, create a screen called **modal.tsx** inside the **src/app** directory. Here's an example file structure:
 
-<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/modal.tsx']} />
+<FileTree files={['src/app/_layout.tsx', 'src/app/index.tsx', 'src/app/modal.tsx']} />
 
-The above file structure produces a layout where the `index` is the first route in the stack. Inside the root layout file (**app/\_layout.tsx**), you can add the `modal` route in the stack. To present it as a modal, set the `presentation` option to `modal` on the route.
+The above file structure produces a layout where the `index` is the first route in the stack. Inside the root layout file (**src/app/\_layout.tsx**), you can add the `modal` route in the stack. To present it as a modal, set the `presentation` option to `modal` on the route.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -74,7 +74,7 @@ export default function Layout() {
 You can use the `Link` component to navigate to the modal screen from the **index.tsx** file.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=350
+```tsx src/app/index.tsx|collapseHeight=350
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
 
 The **modal.tsx** presents the contents of the modal.
 
-```tsx app/modal.tsx|collapseHeight=250
+```tsx src/app/modal.tsx|collapseHeight=250
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function Modal() {
@@ -135,7 +135,7 @@ A modal loses its previous context when it is the current screen in the navigato
 - On web, the modal is presented as a separate route, and the dismiss behavior has to be provided manually using [`router.canGoBack()`](/router/navigating-pages/#imperative-navigation). Here's an example of how to dismiss the modal:
 
 {/* prettier-ignore */}
-```tsx app/modal.tsx
+```tsx src/app/modal.tsx
 import { Link, /* @info Import the <CODE>router</CODE> object which is used to navigate imperatively. */ router /* @end */} from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
 By default on iOS, the modal has a dark background which hides the status bar. To change the status bar appearance, you can use the `Platform` API to check if the current platform is iOS and then use the [`StatusBar`](/versions/latest/sdk/status-bar/) component to change the appearance inside the **modal.tsx** file.
 
 {/* prettier-ignore */}
-```tsx app/modal.tsx|collapseHeight=250
+```tsx src/app/modal.tsx|collapseHeight=250
 import { StyleSheet, Text, View, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
@@ -216,7 +216,7 @@ Form sheet presents a modal as a bottom sheet that app users can drag between di
 
 To use form sheet, set the `presentation` option to `formSheet` on your modal screen:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -246,7 +246,7 @@ Detents define the heights where the sheet can rest. Use `sheetAllowedDetents` t
 
 > **info** Android supports a maximum of 3 detents. iOS accepts any number of detents.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -279,7 +279,7 @@ export default function Layout() {
 | `sheetCornerRadius`               | `number`                     | Corner radius of the sheet in pixels.                      |
 | `sheetLargestUndimmedDetentIndex` | `number \| 'none' \| 'last'` | Largest detent index that keeps the background undimmed.   |
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function Layout() {
@@ -314,7 +314,7 @@ export default function Layout() {
 
 You can add a footer to the sheet that stays visible at all detent positions using a React component:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 import { View, Button } from 'react-native';
 
@@ -347,7 +347,7 @@ export default function Layout() {
 
 When using numeric detents, your modal content can use `flex: 1` to fill the available space within the sheet:
 
-```tsx app/modal.tsx
+```tsx src/app/modal.tsx
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function Modal() {

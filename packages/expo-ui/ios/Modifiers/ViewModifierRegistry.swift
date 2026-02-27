@@ -158,6 +158,12 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
+internal struct LuminanceToAlphaModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.luminanceToAlpha()
+  }
+}
+
 internal struct BoldModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
@@ -705,12 +711,12 @@ internal struct AnimationModifier: ViewModifier, Record {
       let bounce = config.bounce
       let mass = config.mass
       let stiffness = config.stiffness
-      let damping = config.stiffness
+      let damping = config.damping
       let initialVelocity = config.initialVelocity
 
       if duration != nil || bounce != nil {
         animation = .interpolatingSpring(duration: duration ?? 0.5, bounce: bounce ?? 0.0, initialVelocity: initialVelocity ?? 0.0)
-      } else if let stiffness = stiffness, let damping = damping {
+      } else if let stiffness, let damping {
         animation = .interpolatingSpring(mass: mass ?? 1.0, stiffness: stiffness, damping: damping, initialVelocity: initialVelocity ?? 0.0)
       } else {
         animation = .interpolatingSpring
@@ -774,22 +780,6 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
-internal enum ListRowSeparatorVisibility: String, Enumerable {
-  case automatic
-  case visible
-  case hidden
-
-  func toVisibility() -> Visibility {
-    switch self {
-    case .visible:
-      return .visible
-    case .hidden:
-      return .hidden
-    default:
-      return .automatic
-    }
-  }
-}
 
 internal enum VerticalEdgeOptions: String, Enumerable {
   case all
@@ -809,7 +799,7 @@ internal enum VerticalEdgeOptions: String, Enumerable {
 }
 
 internal struct ListRowSeparator: ViewModifier, Record {
-  @Field var visibility: ListRowSeparatorVisibility = .automatic
+  @Field var visibility: VisibilityOptions = .automatic
   @Field var edges: VerticalEdgeOptions?
 
   func body(content: Content) -> some View {
@@ -1520,6 +1510,10 @@ extension ViewModifierRegistry {
 
     register("foregroundStyle") { params, appContext, _ in
       return try ForegroundStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("luminanceToAlpha") { params, appContext, _ in
+      return try LuminanceToAlphaModifier(from: params, appContext: appContext)
     }
 
     register("bold") { params, appContext, _ in

@@ -18,11 +18,23 @@ internal struct DynamicArrayBufferType: AnyDynamicType {
    Converts JS array buffer to its native representation.
    */
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    if let jsTypedArray = jsValue.getTypedArray() {
+      switch innerType {
+        case is JavaScriptArrayBuffer.Type:
+          return JavaScriptArrayBuffer(jsTypedArray.getViewedBufferSlice())
+        case is NativeArrayBuffer.Type:
+          let typedArray = TypedArray(jsTypedArray)
+          return NativeArrayBuffer.copy(of: typedArray.rawPointer, count: typedArray.byteLength)
+        default:
+          throw ArrayBufferArgumentTypeException(innerType)
+      }
+    }
+
     guard let rawArrayBuffer = jsValue.getArrayBuffer() else {
       throw NotArrayBufferException(innerType)
     }
-    let jsArrayBuffer = JavaScriptArrayBuffer(rawArrayBuffer)
 
+    let jsArrayBuffer = JavaScriptArrayBuffer(rawArrayBuffer)
     return switch innerType {
       case is JavaScriptArrayBuffer.Type: jsArrayBuffer
       case is NativeArrayBuffer.Type: jsArrayBuffer.copy()

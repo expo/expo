@@ -281,7 +281,7 @@ describe('build:ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build:ios --dry-run -s/--scheme someworkspace.xcworkspace
+     * Command: npx expo-brownfield build:ios --dry-run -a/--artifacts ../artifacts
      * Expected behavior: The CLI should print the build configuration with the correct workspace
      */
     it('should properly handle --artifacts option', async () => {
@@ -295,6 +295,25 @@ describe('build:ios command', () => {
         directory: TEMP_DIR_PREBUILD,
         args: ['--dry-run', '--artifacts', '../artifacts'],
         stdout: [`- Artifacts path: ${expectedPath}`],
+      });
+    });
+
+    it('should properly handle --package option', async () => {
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-p', 'MyAppArtifacts'],
+        stdout: [
+          BUILD_IOS.PACKAGE_CREATION('MyAppArtifacts'),
+          BUILD_IOS.PACKAGE_CONFIGURATION('MyAppArtifacts'),
+        ],
+      });
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--package', 'MyAppArtifacts'],
+        stdout: [
+          BUILD_IOS.PACKAGE_CREATION('MyAppArtifacts'),
+          BUILD_IOS.PACKAGE_CONFIGURATION('MyAppArtifacts'),
+        ],
       });
     });
   });
