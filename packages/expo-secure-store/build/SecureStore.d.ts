@@ -48,7 +48,8 @@ export type SecureStoreOptions = {
      * Determines the authentication method for this entry. Specify `false` for no authentication, `'biometry'` for biometric authentication only,
      * or `'userPresence'` for biometric with fallback to device credentials (PIN, pattern, or password). Use `canUseDeviceCredentialsAuthentication()` to check if device credentials are available.
      *
-     * For backward compatibility, passing `true` is equivalent to `'biometry'`.
+     * For backward compatibility, passing `true` is still accepted and is treated as equivalent to `'biometry'`.
+     * New code should prefer the explicit `'biometry'` value instead of `true`.
      *
      * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
      *   (requires API 23).
