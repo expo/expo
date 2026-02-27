@@ -108,7 +108,9 @@ async function getPackagesTouchedByCommit(oid: string): Promise<Set<string>> {
   return packages;
 }
 
-type PublishInfo = { status: 'published'; commitHash: string } | { status: 'unpublished' | 'no-packages' };
+type PublishInfo =
+  | { status: 'published'; commitHash: string }
+  | { status: 'unpublished' | 'no-packages' };
 
 async function getPrPublishInfo(
   pr: GhPr,
@@ -183,10 +185,7 @@ function formatPrLine(pr: GhPr, publishInfo?: PublishInfo): string {
   }
   const titleText = pr.title.length > 60 ? pr.title.slice(0, 57) + '...' : pr.title;
   const title = link(titleText, pr.url);
-  const author = link(
-    chalk.dim(`@${pr.author.login}`),
-    `https://github.com/${pr.author.login}`
-  );
+  const author = link(chalk.dim(`@${pr.author.login}`), `https://github.com/${pr.author.login}`);
   // For merged PRs show merge age, for open PRs show time since last activity
   const timestamp = pr.mergedAt ?? pr.updatedAt;
   const age = timestamp ? chalk.dim(formatAge(timestamp)) : '';
@@ -243,9 +242,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
     ]);
   } catch (error: any) {
     if (error.message?.includes('ENOENT') || error.message?.includes('not found')) {
-      throw new Error(
-        `GitHub CLI (gh) is not installed. Install it from https://cli.github.com/`
-      );
+      throw new Error(`GitHub CLI (gh) is not installed. Install it from https://cli.github.com/`);
     }
     throw error;
   }
@@ -305,9 +302,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
   );
 
   // Sort by mergedAt descending (most recent first)
-  needsCherryPick.sort(
-    (a, b) => new Date(b.mergedAt!).getTime() - new Date(a.mergedAt!).getTime()
-  );
+  needsCherryPick.sort((a, b) => new Date(b.mergedAt!).getTime() - new Date(a.mergedAt!).getTime());
   alreadyCherryPicked.sort(
     (a, b) => new Date(b.mergedAt!).getTime() - new Date(a.mergedAt!).getTime()
   );
@@ -354,9 +349,7 @@ async function action(sdk: string | undefined, options: ActionOptions) {
     }
 
     logger.log('');
-    logger.log(
-      chalk.bold(`PRs that need cherry-picking to ${branch}:`)
-    );
+    logger.log(chalk.bold(`PRs that need cherry-picking to ${branch}:`));
     logger.log('');
     for (const pr of needsCherryPick) {
       logger.log(formatPrLine(pr, publishInfos.get(pr.number)));
