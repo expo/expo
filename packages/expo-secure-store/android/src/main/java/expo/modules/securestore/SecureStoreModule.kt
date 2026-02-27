@@ -372,8 +372,17 @@ open class SecureStoreModule : Module() {
     usesKeystoreSuffix: Boolean
   ): E? {
     return if (usesKeystoreSuffix) {
-      val requireAuthBool = !requireAuthentication.isNullOrEmpty()
-      val isUserPresenceRequired = requireAuthentication == "userPresence"
+      val (requireAuthBool, isUserPresenceRequired) = when (requireAuthentication) {
+        null, "" -> false to false
+        "biometry" -> true to false
+        "userPresence" -> true to true
+        else -> {
+          throw CodedException(
+            "Invalid value for requireAuthentication: \"$requireAuthentication\". " +
+              "Expected \"biometry\", \"userPresence\", or null."
+          )
+        }
+      }
       getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthBool, isUserPresenceRequired)
     } else {
       getLegacyKeyEntry(keyStoreEntryClass, encryptor, options)
