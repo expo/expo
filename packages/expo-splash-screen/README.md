@@ -668,34 +668,6 @@ Read more about `android:windowLightStatusBar` flag in [official Android documen
 
 To read more about Android multi-API-level support see [this official documentation](https://developer.android.com/guide/topics/resources/providing-resources).
 
-3. Customize `StatusBar color` option (a.k.a. `background color` of the StatusBar component)
-
-To achieve custom background color you need to create a new color resource and provide it to the SplashScreen `style` description.
-
-Create new color resource in your `res/values/colors.xml` (if your application supports dark mode, consider adding different color in `res/values-night/colors.xml` file):
-
-```diff
-  <resources>
-    <color name="splashscreen_background">#D0D0C0</color>
-+   <color name="splashscreen_statusbar_color">#(AA)RRGGBB</color> <!-- #AARRGGBB or #RRGGBB format -->
-  </resources>
-```
-
-Update your `res/values/styles.xml` file with the following entry:
-
-```diff
-  <!-- Main/SplashScreen activity theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:windowBackground">@drawable/splashscreen</item>
-+   <item name="android:statusBarColor">@color/splashscreen_statusbar_color</item>
-    <!-- Other style properties -->
-  </style>
-```
-
-If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night`, `res/values-night-v23`, etc.), be sure to update these files accordingly.
-
-Read more about `android:statusBarColor` option in [official Android documentation](https://developer.android.com/reference/android/R.attr#statusBarColor).
-
 ## 👏 Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
