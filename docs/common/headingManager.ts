@@ -137,7 +137,16 @@ export function createHeadingManager(slugger: GithubSlugger, meta: Metadata): He
       metadata: metaEntry,
     };
 
-    if (!hideInSidebar && level >= BASE_HEADING_LEVEL && level <= maxNestingLevel) {
+    // When a page opts into deeper TOC nesting (maxHeadingDepth >= 2), only show
+    // API reference headings (INLINE_CODE from APIBox/PaddedAPIBox) at the deepest level.
+    // This prevents markdown sub-headings like "#### Arguments" or "#### Properties"
+    // inside API entries from cluttering the TOC sidebar.
+    const isDeepestTextHeading =
+      maxHeadingDepth > DEFAULT_NESTING_LIMIT &&
+      level === maxNestingLevel &&
+      type === HeadingType.TEXT;
+
+    if (!hideInSidebar && level >= BASE_HEADING_LEVEL && level <= maxNestingLevel && !isDeepestTextHeading) {
       headings.push(heading);
     }
 
