@@ -140,6 +140,16 @@ export class Image extends React.PureComponent<ImageProps> {
   }
 
   /**
+   * Cancels all pending image downloads. Useful when navigating away from a screen
+   * to free up the download queue for the new screen's images.
+   * @platform android
+   * @platform ios
+   */
+  static async cancelPendingDownloads(): Promise<void> {
+    await ImageModule.cancelPendingDownloads();
+  }
+
+  /**
    * Asynchronously checks if an image exists in the disk cache and resolves to
    * the path of the cached image if it does.
    * @param cacheKey - The cache key for the requested image. Unless you have set
