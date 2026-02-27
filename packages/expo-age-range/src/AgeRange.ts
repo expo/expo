@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import ExpoAgeRange from './ExpoAgeRange';
 import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
 
@@ -13,4 +15,19 @@ import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
  */
 export async function requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse> {
   return ExpoAgeRange.requestAgeRangeAsync(options);
+}
+
+/**
+ * Displays a system-provided interface for people to acknowledge a significant app update.
+ * @param updateDescription A description of the significant update to show to the user.
+ * @return A promise that resolves when the user acknowledges the update, or rejects with an error.
+ *
+ * @platform ios 26.0+
+ */
+export async function showSignificantUpdateAcknowledgementAsync(
+  updateDescription: string
+): Promise<void> {
+  if (Platform.OS === 'ios') {
+    return ExpoAgeRange.showSignificantUpdateAcknowledgementAsync(updateDescription);
+  }
 }

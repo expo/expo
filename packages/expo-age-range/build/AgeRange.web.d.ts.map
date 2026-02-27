@@ -1,1 +1,1 @@
-{"version":3,"file":"AgeRange.web.d.ts","sourceRoot":"","sources":["../src/AgeRange.web.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,eAAe,EAAE,gBAAgB,EAAE,MAAM,sBAAsB,CAAC;AAE9E,wBAAsB,oBAAoB,CAAC,CAAC,EAAE,eAAe,GAAG,OAAO,CAAC,gBAAgB,CAAC,CAExF"}
+{"version":3,"file":"AgeRange.web.d.ts","sourceRoot":"","sources":["../src/AgeRange.web.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,eAAe,EAAE,gBAAgB,EAAE,MAAM,sBAAsB,CAAC;AAE9E,wBAAsB,oBAAoB,CAAC,CAAC,EAAE,eAAe,GAAG,OAAO,CAAC,gBAAgB,CAAC,CAExF;AAED,wBAAsB,yCAAyC,CAC7D,kBAAkB,EAAE,MAAM,GACzB,OAAO,CAAC,IAAI,CAAC,CAEf"}
