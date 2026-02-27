@@ -105,7 +105,7 @@ These are intentionally explicit so they can be relied upon by maintainers and t
 
 - Source of truth for outcomes is per-unit status records.
 - Summary totals are derived from statuses.
-- Phase 1 execution model is sequential.
+- Execution model is sequential.
 - Cancellation model is cooperative (stop scheduling new work, emit partial summary).
 - Artifact resolution scope is `run x flavor`.
 - `warning` status is currently only valid for verification stage.

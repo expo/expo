@@ -1,6 +1,6 @@
-# External Packages SPM Prebuild - Claude Instructions
+# External Packages SPM Prebuild
 
-You are helping with the Expo iOS precompiled modules system. This document explains how to add support for third-party React Native packages to be prebuilt as XCFrameworks using Swift Package Manager.
+This document explains how to add support for third-party React Native packages to be prebuilt as XCFrameworks using Swift Package Manager.
 
 ## Your Task Context
 
@@ -10,58 +10,32 @@ When a user asks you to add SPM prebuild support for an external package, you ne
 2. Potentially create a patch file if the package source needs modifications
 3. Ensure the codegen module is properly excluded from ReactCodegen
 
-## Directory Structure
+## Supported External Packages
 
-```
-packages/external/
-├── README.md                         # This file (instructions for you)
-├── react-native-svg/
-│   └── spm.config.json
-├── react-native-screens/
-│   └── spm.config.json
-├── react-native-gesture-handler/
-│   └── spm.config.json
-├── react-native-worklets/
-│   └── spm.config.json
-├── react-native-reanimated/
-│   └── spm.config.json
-└── lottie-react-native/
-    └── spm.config.json
-```
+Configs live in `packages/external/<package-name>/spm.config.json`:
 
-## Dependency Cache
-
-The prebuild system uses a centralized versioned cache at `packages/precompile/.cache/` for React Native dependencies (Hermes, ReactNativeDependencies, React). This replaces the old per-package `.dependencies` folder approach.
-
-### How It Works
-
-1. Dependencies are downloaded once to `packages/precompile/.cache/<artifact>/<version>-<flavor>/`
-2. Package.swift files reference the cache via relative paths
-3. Multiple versions can coexist (e.g., switching between Debug/Release)
-4. No copying to individual packages - saves disk space and build time
-
-### Cache Path Override
-
-You can override the cache location with `EXPO_PREBUILD_CACHE_PATH`:
-
-```bash
-EXPO_PREBUILD_CACHE_PATH=/custom/cache/path et prebuild ...
-```
-
-### Cache Management Options
-
-| Flag | Effect |
-|------|--------|
-| `--clean-cache` | Wipes entire dependency cache (forces re-download) |
-| `--clean` | Cleans package outputs only - does NOT touch cache |
+| Package | Product Name |
+|---------|-------------|
+| `@react-native-async-storage/async-storage` | `RNCAsyncStorage` |
+| `@shopify/react-native-skia` | `RNSkia` |
+| `lottie-react-native` | `LottieReactNative` |
+| `react-native-gesture-handler` | `RNGestureHandler` |
+| `react-native-keyboard-controller` | `KeyboardController` |
+| `react-native-reanimated` | `RNReanimated` |
+| `react-native-safe-area-context` | `RNCSafeAreaContext` |
+| `react-native-screens` | `RNScreens` |
+| `react-native-svg` | `RNSVG` |
+| `react-native-worklets` | `RNWorklets` |
 
 ## Key Concepts
+
+> For dependency cache details (location, env vars, clean flags), see [`packages/precompile/README.md` — Dependency Cache](../precompile/README.md#dependency-cache).
 
 ### Source Resolution
 
 - **Config location**: `packages/external/<package-name>/spm.config.json`
 - **Source location**: `node_modules/<package-name>/` (resolved at build time)
-- **Output location**: `node_modules/<package-name>/xcframeworks/<buildFlavor>/`
+- **Output location**: `packages/precompile/.build/<package-name>/output/<flavor>/xcframeworks/`
 
 ### The SPMPackageSource Interface
 
@@ -154,7 +128,7 @@ Every config uses the `products` format with a `$schema` reference:
 | `path` | Yes | Source directory path relative to the package root in node_modules |
 | `pattern` | Yes | Glob pattern for source files, e.g., `"**/*.cpp"`, `"**/*.{m,mm}"`, `"**/*.swift"` |
 | `headerPattern` | No | Glob pattern for header files, e.g., `"**/*.h"` |
-| `moduleName` | No | Marks this target as providing codegen for the named module (for ReactCodegen exclusion) |
+| `moduleName` | No | Module name for header organization (defaults to product name). Also used for ReactCodegen exclusion on codegen targets |
 | `exclude` | No | Array of glob patterns to exclude, e.g., `["**/*.macos.*", "Foo.xcodeproj/**"]` |
 | `dependencies` | No | Array of target names and external dependencies this target depends on |
 | `includeDirectories` | No | Additional header search paths relative to the target's `path` |
@@ -251,16 +225,6 @@ Many React Native packages mix Swift and Objective-C. SPM handles this different
    }
    ```
 3. **Patches may be needed** if Swift code imports the auto-generated `-Swift.h` header via a path that doesn't work in SPM.
-
-### Step 6: Handle Codegen Exclusion
-
-**CRITICAL**: When a package has codegen (Fabric components or TurboModules), codegen targets MUST have `moduleName` matching `codegenConfig.name` from package.json. This ensures the codegen sources are excluded from ReactCodegen when the xcframework is used.
-
-**How to find the codegenName:**
-
-```bash
-cat node_modules/<package-name>/package.json | jq '.codegenConfig.name'
-```
 
 ## Complete Examples
 
@@ -542,10 +506,10 @@ After creating the config:
 
 ```bash
 # Build the XCFramework
-yarn et ios-build-xc react-native-svg
+et prebuild --include-external react-native-svg
 
 # Verify output exists
-ls -la node_modules/react-native-svg/xcframeworks/
+ls -la packages/precompile/.build/react-native-svg/output/debug/xcframeworks/
 
 # Test in a project
 cd apps/bare-expo/ios
@@ -562,7 +526,7 @@ pod install
 ### Codegen sources still in ReactCodegen
 
 - Ensure all codegen-related targets have `moduleName` matching `codegenConfig.name`
-- This includes `_codegen_components`, `_codegen_modules`, `_common_cpp`, and the main target
+- This includes `_codegen_components`, `_codegen_modules`, and `_common_cpp` targets (not the main target unless it contains codegen sources)
 
 ### Metal shader errors
 
@@ -606,31 +570,6 @@ For implementation details, examine these files:
 - `tools/src/prebuilds/SPMPackage.ts` - SPM Package.swift generation
 - `tools/src/prebuilds/Codegen.ts` - Codegen handling
 - `packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb` - Ruby CocoaPods integration
-
-## Pod Name Configuration
-
-The `podName` field in `spm.config.json` is **required** at the product level. This tells the Ruby code which CocoaPods pod name maps to this package:
-
-```json
-{
-    "products": [
-        {
-            "name": "RNSVG",
-            "podName": "RNSVG",
-            "targets": [...]
-        }
-    ]
-}
-```
-
-**Why this is needed**: The `try_link_with_prebuilt_xcframework` function pre-scans all `spm.config.json` files to build a lookup map from pod name -> package directory. This allows it to find the xcframework at `node_modules/<package-name>/xcframeworks/<buildFlavor>/<PodName>.xcframework`.
-
-**How to find the podName:**
-
-```bash
-# Check the podspec file for the spec name
-grep "spec.name" node_modules/<package-name>/*.podspec
-```
 
 ## Cross-Package Dependencies
 
@@ -778,46 +717,7 @@ et prebuild --include-external react-native-worklets react-native-reanimated ...
 
 For packages that depend on third-party Swift libraries with official SPM support (like lottie-ios), you can use `spmPackages` to let Swift Package Manager fetch them directly instead of managing xcframeworks yourself.
 
-### When to Use SPM Packages
-
-Use `spmPackages` when:
-
-- The dependency provides official prebuilt xcframeworks via SPM (like [lottie-spm](https://github.com/airbnb/lottie-spm))
-- You want SPM to handle version resolution and caching
-- The package is pure Swift and doesn't need custom build configuration
-
-### Configuration
-
-Add `spmPackages` at the product level:
-
-```json
-{
-    "products": [
-        {
-            "name": "LottieReactNative",
-            "podName": "lottie-react-native",
-            "codegenName": "lottiereactnative",
-            "platforms": ["iOS(.v15)"],
-            "externalDependencies": ["ReactNativeDependencies", "React"],
-            "spmPackages": [
-                {
-                    "url": "https://github.com/airbnb/lottie-spm.git",
-                    "productName": "Lottie",
-                    "version": { "exact": "4.5.0" }
-                }
-            ],
-            "targets": [
-                {
-                    "type": "swift",
-                    "name": "MyTarget",
-                    "path": "ios",
-                    "dependencies": ["React", "ReactNativeDependencies", "Lottie"]
-                }
-            ]
-        }
-    ]
-}
-```
+Use `spmPackages` when the dependency provides official SPM support (like [lottie-spm](https://github.com/airbnb/lottie-spm)). See the [lottie-react-native example](#example-3-mixed-swift--objc--fabric-lottie-react-native) for a complete configuration.
 
 ### SPM Package Fields
 

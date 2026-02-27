@@ -1,6 +1,6 @@
-# iOS Precompiled Modules System - Claude Instructions
+# iOS Precompiled Modules System
 
-You are helping with the Expo iOS precompiled modules system. This document provides a complete understanding of how the system works, enabling you to add SPM prebuild support to Expo packages.
+This document provides a complete understanding of how the precompiled modules system works, enabling you to add SPM prebuild support to Expo packages.
 
 ## System Overview
 
@@ -79,6 +79,79 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 | `PackagesConfig.rb`          | Same directory                                   | Singleton delegate to PrecompiledModules         |
 | `replace-xcframework.js`     | Same directory                                   | Build-time debug/release xcframework switching   |
 | `resolve-dsym-sourcemaps.js` | Same directory                                   | Build-time dSYM source path remapping for lldb   |
+
+### Supported Expo Modules
+
+Each of these has an `spm.config.json` in its package root:
+
+| Package | Product Name |
+|---------|-------------|
+| `expo-age-range` | `ExpoAgeRange` |
+| `expo-app-integrity` | `ExpoAppIntegrity` |
+| `expo-apple-authentication` | `ExpoAppleAuthentication` |
+| `expo-application` | `EXApplication` |
+| `expo-asset` | `ExpoAsset` |
+| `expo-audio` | `ExpoAudio` |
+| `expo-background-fetch` | `ExpoBackgroundFetch` |
+| `expo-background-task` | `ExpoBackgroundTask` |
+| `expo-battery` | `ExpoBattery` |
+| `expo-blob` | `ExpoBlob` |
+| `expo-blur` | `ExpoBlur` |
+| `expo-brightness` | `ExpoBrightness` |
+| `expo-brownfield` | `ExpoBrownfield` |
+| `expo-calendar` | `ExpoCalendar` |
+| `expo-cellular` | `ExpoCellular` |
+| `expo-clipboard` | `ExpoClipboard` |
+| `expo-contacts` | `ExpoContacts` |
+| `expo-crypto` | `ExpoCrypto` |
+| `expo-device` | `ExpoDevice` |
+| `expo-document-picker` | `ExpoDocumentPicker` |
+| `expo-eas-client` | `EASClient` |
+| `expo-file-system` | `ExpoFileSystem` |
+| `expo-font` | `ExpoFont` |
+| `expo-glass-effect` | `ExpoGlassEffect` |
+| `expo-haptics` | `ExpoHaptics` |
+| `expo-image` | `ExpoImage` |
+| `expo-image-picker` | `ExpoImagePicker` |
+| `expo-json-utils` | `EXJSONUtils` |
+| `expo-keep-awake` | `ExpoKeepAwake` |
+| `expo-linear-gradient` | `ExpoLinearGradient` |
+| `expo-linking` | `ExpoLinking` |
+| `expo-live-photo` | `ExpoLivePhoto` |
+| `expo-local-authentication` | `ExpoLocalAuthentication` |
+| `expo-localization` | `ExpoLocalization` |
+| `expo-location` | `ExpoLocation` |
+| `expo-mail-composer` | `ExpoMailComposer` |
+| `expo-manifests` | `EXManifests` |
+| `expo-maps` | `ExpoMaps` |
+| `expo-media-library` | `ExpoMediaLibrary` |
+| `expo-mesh-gradient` | `ExpoMeshGradient` |
+| `expo-modules-core` | `ExpoModulesCore` |
+| `expo-network` | `ExpoNetwork` |
+| `expo-notifications` | `ExpoNotifications` |
+| `expo-print` | `ExpoPrint` |
+| `expo-screen-capture` | `ExpoScreenCapture` |
+| `expo-secure-store` | `ExpoSecureStore` |
+| `expo-sensors` | `ExpoSensors` |
+| `expo-sharing` | `ExpoSharing` |
+| `expo-sms` | `ExpoSMS` |
+| `expo-speech` | `ExpoSpeech` |
+| `expo-splash-screen` | `ExpoSplashScreen` |
+| `expo-sqlite` | `ExpoSQLite` |
+| `expo-store-review` | `ExpoStoreReview` |
+| `expo-structured-headers` | `EXStructuredHeaders` |
+| `expo-symbols` | `ExpoSymbols` |
+| `expo-system-ui` | `ExpoSystemUI` |
+| `expo-tracking-transparency` | `ExpoTrackingTransparency` |
+| `expo-ui` | `ExpoUI` |
+| `expo-updates-interface` | `EXUpdatesInterface` |
+| `expo-video` | `ExpoVideo` |
+| `expo-video-thumbnails` | `ExpoVideoThumbnails` |
+| `expo-web-browser` | `ExpoWebBrowser` |
+| `expo-widgets` | `ExpoWidgets` |
+| `unimodules-app-loader` | `UMAppLoader` |
+
+For supported external (third-party) packages, see [`packages/external/README.md`](../../packages/external/README.md#supported-external-packages).
 
 ## Adding SPM Prebuild Support to Expo Packages
 
@@ -264,16 +337,19 @@ The prebuild system uses a centralized versioned cache for React Native dependen
 ```
 packages/precompile/.cache/
 ├── hermes/
-│   └── 0.76.0-Debug/           # <version>-<flavor>
-│       └── Hermes.xcframework/
+│   └── 0.76.0/
+│       └── debug/              # <version>/<flavor>/
+│           └── Hermes.xcframework/
 ├── react-native-dependencies/
-│   └── 0.76.7-Debug/
-│       ├── ReactNativeDependencies.xcframework/
-│       └── ...
+│   └── 0.76.7/
+│       └── debug/
+│           ├── ReactNativeDependencies.xcframework/
+│           └── ...
 └── react/
-    └── 0.76.7-Debug/
-        ├── React.xcframework/
-        └── React-VFS.yaml
+    └── 0.76.7/
+        └── debug/
+            ├── React.xcframework/
+            └── React-VFS.yaml
 ```
 
 ### Environment Variable
@@ -311,53 +387,6 @@ et prebuild --local-react-native-tarball "/path/to/{flavor}/React.xcframework.ta
 
 ## spm.config.json Schema Reference
 
-### Target Types
-
-#### Swift Target
-
-```json
-{
-  "type": "swift",
-  "name": "TargetName",
-  "path": "ios",
-  "pattern": "*.swift",
-  "exclude": ["Tests/**"],
-  "dependencies": ["expo-modules-core/ExpoModulesCore"],
-  "linkedFrameworks": ["Foundation", "UIKit"]
-}
-```
-
-#### Objective-C Target
-
-```json
-{
-  "type": "objc",
-  "name": "PackageName_ios_objc",
-  "moduleName": "PackageName",
-  "path": "ios",
-  "pattern": "**/*.{m,mm}",
-  "headerPattern": "**/*.h",
-  "dependencies": ["Hermes", "React", "ReactNativeDependencies"],
-  "linkedFrameworks": ["Foundation"],
-  "includeDirectories": ["."]
-}
-```
-
-#### C++ Target
-
-```json
-{
-  "type": "cpp",
-  "name": "PackageName_common_cpp",
-  "moduleName": "PackageNameJSI",
-  "path": "common/cpp",
-  "pattern": "**/*.cpp",
-  "headerPattern": "**/*.h",
-  "dependencies": ["React", "ReactNativeDependencies"],
-  "includeDirectories": ["."]
-}
-```
-
 ### Target Options Reference
 
 | Option               | Type            | Description                                        |
@@ -372,32 +401,7 @@ et prebuild --local-react-native-tarball "/path/to/{flavor}/React.xcframework.ta
 | `dependencies`       | array           | Target dependencies                                |
 | `linkedFrameworks`   | array           | System frameworks to link                          |
 | `includeDirectories` | array           | Header search paths (objc/cpp only)                |
-| `compilerFlags`      | array or object | Compiler flags - see below for format options      |
-
-#### Compiler Flags Format
-
-The `compilerFlags` field supports multiple formats:
-
-```json
-// Simple array: applied to all builds, both C and C++
-"compilerFlags": ["-DFOO=1", "-include", "Foundation/Foundation.h"]
-
-// Structured object with build variants
-"compilerFlags": {
-  "common": [...],    // Applied to all builds
-  "debug": [...],     // Applied only to Debug builds
-  "release": [...]    // Applied only to Release builds
-}
-
-// Separate C and C++ flags (useful for -fno-cxx-modules)
-"compilerFlags": {
-  "common": {
-    "c": ["-DFOO=1"],
-    "cxx": ["-fno-cxx-modules", "-DFOO=1"]
-  },
-  "debug": ["-DHERMES_ENABLE_DEBUGGER=1"]
-}
-```
+| `compilerFlags`      | array or object | Compiler flags (array for all builds, or object with `common`/`debug`/`release` keys). See [`packages/external/README.md` — Compiler Flags](../../packages/external/README.md#compiler-flags) for details |
 
 ### Product Options Reference
 
@@ -418,7 +422,7 @@ For packages with mixed Swift, Objective-C, and C++ code:
 
 ### Key Rules
 
-1. **Swift cannot directly import C++ targets** - Use ObjC as a bridge
+1. **Swift targets don't directly import C++ targets in this SPM setup** - Use ObjC as a bridge
 2. **Dependency chain**: C++ → ObjC → Swift
 3. **Target naming**: Use suffixes like `_common_cpp`, `_ios_objc`
 
@@ -474,31 +478,6 @@ The Ruby code in `packages/expo-modules-autolinking/scripts/ios/` handles all Co
 - **Internal Expo pods**: `has_prebuilt_xcframework?` → `:podspec` (CocoaPods respects `spec.source`) or `:path` (compile from source)
 - **External 3rd-party pods**: Registered with `:podspec` in `use_expo_modules!` BEFORE RN CLI's `use_native_modules!` runs. RN CLI skips already-registered pods, so the `:podspec` registration takes precedence.
 - **Podspec inline call**: `try_link_with_prebuilt_xcframework(spec)` sets `spec.source = {:http => "file:///...tar.gz", :flatten => false}`. CocoaPods downloads and extracts the tarball into `Pods/<PodName>/`.
-
-### Key Methods
-
-```ruby
-# Check if precompiled modules are enabled
-PrecompiledModules.enabled?
-
-# Check if a specific pod has a prebuilt xcframework available
-PrecompiledModules.has_prebuilt_xcframework?(pod_name)
-
-# Link a pod with its prebuilt XCFramework (called inline from podspec)
-PackagesConfig.instance.try_link_with_prebuilt_xcframework(spec)
-
-# Get external pods that should use prebuilt xcframeworks
-PrecompiledModules.get_external_prebuilt_pods(project_directory)
-
-# Clear stale CocoaPods cache for precompiled pods
-PrecompiledModules.clear_cocoapods_cache
-
-# Configure header search paths for all prebuilt modules (post_install)
-PrecompiledModules.configure_header_search_paths(installer)
-
-# Exclude prebuilt codegen modules from ReactCodegen (post_install)
-PrecompiledModules.configure_codegen_for_prebuilt_modules(installer)
-```
 
 ### Environment Variables
 
@@ -603,80 +582,8 @@ SPM doesn't allow two files with the same name. Use `*.swift` (non-recursive) or
 
 ---
 
-## Code References
+## Known Limitations
 
-Examine these files for implementation details:
-
-- `tools/src/prebuilds/SPMPackage.ts` - Package.swift generation
-- `tools/src/prebuilds/Package.ts` - Expo package discovery
-- `tools/src/prebuilds/ExternalPackage.ts` - External package support
-- `tools/src/prebuilds/Codegen.ts` - Codegen handling
-- `packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb` - Pod install: source, vendored_frameworks, prepare_command, script phases
-- `packages/expo-modules-autolinking/scripts/ios/autolinking_manager.rb` - Pod registration: :podspec vs :path switching
-- `packages/expo-modules-autolinking/scripts/ios/packages_config.rb` - Singleton delegate to PrecompiledModules
-- `packages/expo-modules-autolinking/scripts/ios/replace-xcframework.js` - Build-time debug/release xcframework switching
-- `packages/expo-modules-autolinking/scripts/ios/resolve-dsym-sourcemaps.js` - Build-time dSYM source path remapping
-- `packages/expo-modules-core/spm.config.json` - Complex multi-target example
-- `packages/expo-font/spm.config.json` - Simple Swift-only example
-
----
-
-## Implementation Log
-
-### Phase 1 - January 30, 2026
-
-Attempted to add SPM prebuild support to multiple packages. Found significant limitations.
-
-#### ✅ Successfully Built
-
-| Package                  | Module Name          | Notes                                                                                          |
-| ------------------------ | -------------------- | ---------------------------------------------------------------------------------------------- |
-| `expo-updates-interface` | `EXUpdatesInterface` | Swift-only package. Works because it doesn't have ObjC code importing ExpoModulesCore headers. |
-
-#### ❌ Failed - ObjC Importing ExpoModulesCore
-
-These packages have ObjC code that imports `<ExpoModulesCore/...>` headers. When SPM tries to build the ObjC target as a module, it fails with "non-modular header" errors because ExpoModulesCore has complex header dependencies on React Native internals (jsi.h, RCTBridgeModule, etc.).
-
-| Package            | Error Type                                                  |
-| ------------------ | ----------------------------------------------------------- |
-| `expo-application` | Non-modular header issues when ObjC imports ExpoModulesCore |
-| `expo-audio`       | Same - ObjC AudioTapProcessor imports ExpoModulesCore       |
-| `expo-location`    | Same - ObjC requesters/consumers import ExpoModulesCore     |
-
-#### ❌ Failed - No Linkable Symbols (Category-Only ObjC)
-
-These packages are pure Objective-C but only contain categories (extensions on existing classes). They have no class definitions, so the linker can't find any symbols.
-
-| Package                   | Error                                                                                                                          |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `expo-json-utils`         | `symbol(s) not found for architecture arm64` - only has NSDictionary category                                                  |
-| `expo-structured-headers` | `symbol(s) not found for architecture arm64` - same issue despite having EXStructuredHeadersParser class (needs investigation) |
-
-#### Key Findings
-
-1. **Swift-only packages work**: Packages that are 100% Swift and use `expo-modules-core/ExpoModulesCore` as a dependency work fine because Swift modules handle the ExpoModulesCore dependency differently.
-
-2. **ObjC + ExpoModulesCore = Broken**: Any package with ObjC code that does `#import <ExpoModulesCore/...>` will fail because:
-
-   - SPM compiles ObjC as modules with strict modular header requirements
-   - ExpoModulesCore's headers include non-modular React Native headers (jsi.h, RCTBridgeModule.h, etc.)
-   - This causes cascading "include of non-modular header inside framework module" errors
-
-3. **Category-only ObjC packages fail**: Pure ObjC packages that only define categories (like `NSDictionary+EXJSONUtils`) have no linkable symbols for the dynamic framework.
-
-#### Recommendations for Future Work
-
-1. **Focus on Swift-only packages** for SPM prebuild support
-2. **For mixed packages**: Either convert ObjC to Swift, or find a way to isolate ObjC code that doesn't need ExpoModulesCore imports
-3. **For category-only packages**: Add a dummy class to provide a linkable symbol, OR keep them as source-only
-
-4. **Podspec pattern**: Always use `Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)` pattern. The method handles all the xcframework detection and linking. Source compilation settings go inside the `if (!...)` block.
-
-#### Packages Analyzed but Deferred
-
-During analysis, the following packages were identified for later phases:
-
-- **Phase 2**: `expo-file-system` (Legacy ObjC), `expo-ui` (ObjC++), `expo-widgets` (depends on expo-ui)
-- **Phase 3**: `expo-screen-orientation`, `expo-media-library`, `expo-router` (need React-Core linking)
-- **Phase 4**: `expo-constants` (script phase), `expo-task-manager` (UMAppLoader), `expo-insights` (EASClient)
-- **Ineligible**: `expo-camera` (ZXingObjC), `expo-image` (SDWebImage ecosystem), `expo-gl` (C++/JSI), `expo-updates` (complex), `expo-dev-*` (dev tooling)
+- **ObjC + ExpoModulesCore**: Packages with ObjC code that imports `<ExpoModulesCore/...>` headers may fail with "non-modular header" errors due to ExpoModulesCore's transitive React Native header dependencies.
+- **Category-only ObjC**: Pure ObjC packages that only define categories have no linkable symbols for dynamic frameworks.
+- **Podspec pattern**: Always use `Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)` pattern. Source compilation settings go inside the `if (!...)` block.
