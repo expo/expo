@@ -1203,6 +1203,17 @@ const verifySwiftInterfaceImports = async (
     'FBReactNativeSpec',
   ]);
 
+  // Pattern to detect internal SPM target names that should have been rewritten
+  // to product module names during post-processing.
+  // These suffixes indicate internal build-time target names, not real module names.
+  const internalTargetSuffixes = [
+    '_common_cpp',
+    '_ios_objc',
+    '_codegen_components',
+    '_codegen_modules',
+    '_cpp',
+  ];
+
   // Find all import statements
   const importPattern = /^(?:@_exported\s+)?import\s+(\w+)\s*$/gm;
   let match;
@@ -1210,6 +1221,20 @@ const verifySwiftInterfaceImports = async (
   while ((match = importPattern.exec(content)) !== null) {
     const importedModule = match[1];
     const importStatement = match[0].trim();
+
+    // Check for internal SPM target names that should have been rewritten
+    // during post-processing. Their presence indicates post-processing failed.
+    const hasInternalSuffix = internalTargetSuffixes.some((suffix) =>
+      importedModule.endsWith(suffix)
+    );
+    if (hasInternalSuffix) {
+      issues.push(
+        `${interfaceFileName}: import of internal SPM target '${importedModule}' - ` +
+          `this looks like an internal build target name that should have been rewritten ` +
+          `to a product module name during post-processing`
+      );
+      continue;
+    }
 
     // Check if the import is valid
     const isSystemModule = systemModules.has(importedModule);

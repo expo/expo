@@ -970,6 +970,7 @@ const getBuildFolderPrefixForSlice = (slice: string): string | undefined => {
  * @param pkg Package information
  * @param spmConfig SPM configuration
  * @param product SPM product information
+ * @param buildType Build flavor
  * @param slice The xcframework slice name (e.g., "ios-arm64")
  * @param slicePath Path to the framework inside the slice
  */
@@ -1013,7 +1014,7 @@ const copyGeneratedObjCSwiftHeaderAsync = async (
   const destObjCHeaderPath = path.join(slicePath, 'Headers', generatedObjCHeaderName);
   await fs.copy(generatedModuleMapsPath, destObjCHeaderPath);
 
-  // Post-process the header to remove internal SPM module imports
+  // Post-process the header to fix internal SPM module imports and remove React imports
   await fixObjCSwiftHeaderModuleReferencesAsync(destObjCHeaderPath, spmConfig);
 
   spinner.succeed(`Copied generated ObjC Swift header: ${generatedObjCHeaderName}`);
