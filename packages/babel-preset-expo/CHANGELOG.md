@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.10 — 2026-02-27
+
+### 🐛 Bug fixes
+
+- Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
 
 ## 55.0.9 — 2026-02-26
 

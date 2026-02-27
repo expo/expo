@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (55.0.9):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.3):
+  - Expo (55.0.4):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.3):
+  - Expo/Tests (55.0.4):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -144,7 +144,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoAgeRange (0.2.10):
+  - ExpoAgeRange (0.2.11):
     - ExpoModulesCore
   - ExpoAppleAuthentication (55.0.8):
     - ExpoModulesCore
@@ -4677,10 +4677,10 @@ SPEC CHECKSUMS:
   EXConstants: a16ad8db13865e97aaecf64bb92e8ad8e8ce1ae8
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 22ec6b0abf4e9b54ea22624aa955cf68d6c90590
-  Expo: 6739d9c02624ea031ec656c1ca922eee3cd6af33
+  Expo: 26895976b2c5f7c901a1ced3366f93b69500b6ab
   expo-dev-menu: 77565e11b83bef18dc0e2062b93d97415b305a93
   expo-dev-menu-interface: bf6f816d29b45bec038080790963c635e8d588c2
-  ExpoAgeRange: 5e8b40e46734155b4b974d4d331ea3a156d82d94
+  ExpoAgeRange: 8cfb7c54d33bbe9887b7c2df6377e2e54e727259
   ExpoAppleAuthentication: b1ca252ee1d79888720df7af6bbb559b3ca57a77
   ExpoAsset: 4fc5f72f8a74135c522fa61df0bfb869e5b3c3e6
   ExpoAudio: 3b83b5658eef8c233102a6b8b5b8fac8ffa37dfb
@@ -4759,7 +4759,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: ca6495d9d859ae100566305c4d0afe7a0c777a46
+  hermes-engine: d59202edb9173c808259b0945bb161d1e24963f0
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
