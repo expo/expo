@@ -1,5 +1,2 @@
-export declare const XCFramework: {
-    Hermes: string;
-    React: string;
-    ReactDependencies: string;
-};
+import type { XCFrameworkSpec } from './types';
+export declare const XCFramework: Record<string, XCFrameworkSpec>;

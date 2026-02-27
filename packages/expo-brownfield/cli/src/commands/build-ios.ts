@@ -11,7 +11,6 @@ import {
 
 const buildIos = async (command: Command) => {
   await validatePrebuild('ios');
-
   const config = resolveBuildConfigIos(command.opts());
   printIosConfig(config);
 

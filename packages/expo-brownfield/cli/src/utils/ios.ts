@@ -6,7 +6,7 @@ import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
 import { withSpinner } from './spinner';
-import { IosConfig } from './types';
+import { IosConfig, XCFrameworkSpec } from './types';
 
 export const cleanUpArtifacts = async (config: IosConfig) => {
   if (config.dryRun) {
@@ -64,19 +64,12 @@ export const buildFramework = async (config: IosConfig) => {
 export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   console.log('Copying XCFrameworks to:', dest);
 
-  const xcframeworks = (Object.keys(XCFramework) as (keyof typeof XCFramework)[]).map(
-    (framework) => ({
-      name: path.basename(XCFramework[framework]),
-      path: XCFramework[framework],
-    })
-  );
-
+  const xcframeworks = Object.values(XCFramework);
   for (const xcframework of xcframeworks) {
-    const sourcePath = path.join('ios', xcframework.path);
-    if (fs.existsSync(sourcePath)) {
+    if (fs.existsSync(xcframework.path)) {
       await withSpinner({
         operation: async () =>
-          fs.promises.cp(sourcePath, path.join(dest, xcframework.name), {
+          fs.promises.cp(xcframework.path, path.join(dest, `${xcframework.name}.xcframework`), {
             force: true,
             recursive: true,
           }),
@@ -85,10 +78,12 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
         errorMessage: `Copying ${xcframework.name} to the artifacts directory failed`,
         verbose: config.verbose,
       });
-    } else if (xcframework.name === 'hermesvm.xcframework') {
-      CLIError.handle('ios-hermes-framework-not-found', sourcePath);
+    } else if (xcframework.name === XCFramework.Hermes.name) {
+      CLIError.handle('ios-hermes-framework-not-found', xcframework.path);
     } else {
-      console.warn(`${xcframework.name} not found in source path: ${sourcePath}`);
+      console.warn(
+        `${xcframework.name} not found in source path: ${xcframework.path}. Assuming it's built from sources`
+      );
     }
   }
 };
@@ -214,23 +209,11 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
     return;
   }
 
-  const prebuiltFrameworks = fs.existsSync(`ios/${XCFramework.React}`);
-
+  const prebuiltFrameworks = fs.existsSync(XCFramework.React.path);
   const xcframeworks = [
     { name: config.scheme, targets: [config.scheme] },
     { name: 'hermesvm', targets: ['hermesvm'] },
-    ...(prebuiltFrameworks
-      ? [
-          {
-            name: path.basename(XCFramework.React).replace('.xcframework', ''),
-            targets: [path.basename(XCFramework.React).replace('.xcframework', '')],
-          },
-          {
-            name: path.basename(XCFramework.ReactDependencies).replace('.xcframework', ''),
-            targets: [path.basename(XCFramework.ReactDependencies).replace('.xcframework', '')],
-          },
-        ]
-      : []),
+    ...(prebuiltFrameworks ? [XCFramework.React, XCFramework.ReactDependencies] : []),
   ];
 
   const contents = `// swift-tools-version:5.9
@@ -238,31 +221,54 @@ import PackageDescription
 
 let package = Package(
     name: "${config.output.packageName}",
-    platforms: [.iOS(.v15)],
-    products: [${xcframeworks
-      .map(
-        (xcf) => `
-        .library(
-          name: "${xcf.name}",
-          targets: ["${xcf.targets.join('", "')}"],
-        ),
-      `
-      )
-      .join('\n')}],
-    targets: [${xcframeworks
-      .map(
-        (xcf) => `
-        .binaryTarget(
-          name: "${xcf.name}",
-          path: "xcframeworks/${xcf.name}.xcframework",
-        ),
-      `
-      )
-      .join('\n')}]
+    platforms: [${(await getSupportedPlatforms(config)).join(',')}],
+    products: [
+${xcframeworks.map(({ name, targets }) => libraryProduct(name, targets)).join('\n')}
+    ],
+    targets: [
+${xcframeworks.map(({ name }) => binaryTarget(name)).join('\n')}
+    ],
 );
 `;
 
   await fs.promises.writeFile(path.join(packagePath, 'Package.swift'), contents);
+};
+
+export const getSupportedPlatforms = async (config: IosConfig): Promise<string[]> => {
+  // Try to infer `IPHONEOS_DEPLOYMENT_TARGET` from the project
+  const args = ['-workspace', config.workspace, '-scheme', config.scheme, '-showBuildSettings'];
+
+  try {
+    const { stdout } = await runCommand('xcodebuild', args, { verbose: config.verbose });
+    const regex = /IPHONEOS_DEPLOYMENT_TARGET = (.+)/;
+    const value = regex.exec(stdout)?.[1].trim();
+    if (value) {
+      return [`.iOS("${value}")`];
+    } else {
+      throw new Error();
+    }
+  } catch (error) {
+    console.warn(
+      'Failed to infer `IPHONEOS_DEPLOYMENT_TARGET` from the project, defaulting to iOS v15'
+    );
+  }
+
+  // If failed to infer default to iOS v15
+  return ['.iOS(.v15)'];
+};
+
+export const libraryProduct = (name: string, targets: string[]) => {
+  return `      .library(
+        name: "${name}",
+        targets: ["${targets.join('", "')}"],
+      ),`;
+};
+
+export const binaryTarget = (name: string) => {
+  return `      .binaryTarget(
+        name: "${name}",
+        path: "xcframeworks/${name}.xcframework",
+      ),`;
 };
 
 export const makeArtifactsDirectory = (config: IosConfig) => {

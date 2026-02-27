@@ -52,3 +52,9 @@ export interface IosConfig extends CommonConfig {
 export interface TasksConfigAndroid extends CommonConfig {
   library: string;
 }
+
+export interface XCFrameworkSpec {
+  name: string;
+  path: string;
+  targets: string[];
+}
