@@ -57,6 +57,11 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     Log.warn(`The --unstable-rebundle flag is experimental and may not work as expected.`);
     // Get the existing binary path to re-bundle the app.
 
+    // Rebundling requires a specific device to get the container path from.
+    if (!props.device) {
+      throw new CommandError('Re-bundling requires a specific device. Cannot use --device generic.');
+    }
+
     let binaryPath: string;
     if (!options.binary) {
       if (!props.isSimulator) {
@@ -135,6 +140,23 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     shouldUpdateBuildCache = props.isSimulator;
   }
   debug('Binary path:', binaryPath);
+
+  // Generic build (--device generic) - skip install/launch, just output the binary path.
+  if (!props.device) {
+    Log.log(chalk`\n{green ✓} Build complete`);
+    Log.log(chalk`{bold Binary:} ${binaryPath}`);
+
+    if (shouldUpdateBuildCache && props.buildCacheProvider) {
+      await uploadBuildCache({
+        projectRoot,
+        platform: 'ios',
+        provider: props.buildCacheProvider,
+        buildPath: binaryPath,
+        runOptions: options,
+      });
+    }
+    return;
+  }
 
   // Ensure the port hasn't become busy during the build.
   if (props.shouldStartBundler && !(await ensurePortAvailabilityAsync(projectRoot, props))) {

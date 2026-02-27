@@ -9,10 +9,28 @@ import { BuildProps, ProjectInfo } from './XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
 import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 import * as Log from '../../log';
+import { OSType } from '../../start/platforms/ios/simctl';
 import { ensureDirectory } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { getUserTerminal } from '../../utils/terminal';
+
+/** Get the generic Xcode destination string for a given OS type.
+ * Used when building without targeting a specific device (build-only workflow).
+ */
+export function getGenericSimulatorDestination(osType: OSType): string {
+  switch (osType) {
+    case 'tvOS':
+      return 'generic/platform=tvOS Simulator';
+    case 'watchOS':
+      return 'generic/platform=watchOS Simulator';
+    case 'xrOS':
+      return 'generic/platform=visionOS Simulator';
+    case 'iOS':
+    default:
+      return 'generic/platform=iOS Simulator';
+  }
+}
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
 }
@@ -160,9 +178,16 @@ export async function getXcodeBuildArgsAsync(
     | 'configuration'
     | 'scheme'
     | 'device'
+    | 'osType'
     | 'isSimulator'
   >
 ): Promise<string[]> {
+  // Use specific device UDID when available, otherwise use generic simulator destination
+  // for build-only workflows (e.g., --device generic).
+  const destination = props.device
+    ? `id=${props.device.udid}`
+    : getGenericSimulatorDestination(props.osType);
+
   const args = [
     props.xcodeProject.isWorkspace ? '-workspace' : '-project',
     props.xcodeProject.name,
@@ -171,13 +196,14 @@ export async function getXcodeBuildArgsAsync(
     '-scheme',
     props.scheme,
     '-destination',
-    `id=${props.device.udid}`,
+    destination,
     // Enable parallel code signing for CocoaPods frameworks to speed up device builds.
     // https://github.com/CocoaPods/CocoaPods/pull/6088
     'COCOAPODS_PARALLEL_CODE_SIGN=true',
   ];
 
-  if (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot)) {
+  // Skip code signing setup for generic simulator builds (no device).
+  if (props.device && (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot))) {
     const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(props.projectRoot);
     if (developmentTeamId) {
       args.push(
@@ -197,6 +223,11 @@ export async function getXcodeBuildArgsAsync(
       'build'
     );
   }
+
+  if (env.EXPO_PROFILE) {
+    args.push('-showBuildTimingSummary');
+  }
+
   return args;
 }
 

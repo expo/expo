@@ -6,7 +6,7 @@ import { BundlerProps } from '../resolveBundlerProps';
 export type XcodeConfiguration = 'Debug' | 'Release';
 
 export type Options = {
-  /** iOS device to target. */
+  /** iOS device to target. Use "generic" for a build-only workflow without a specific device. */
   device?: string | boolean;
   /** Dev server port to use, ignored if `bundler` is `false`. */
   port?: number;
@@ -38,7 +38,10 @@ export type BuildProps = {
   /** Is the target a simulator. */
   isSimulator: boolean;
   xcodeProject: ProjectInfo;
-  device: { name: string; udid: string; osType: OSType };
+  /** Device to build for. When `null`, uses generic destination for build-only workflow. */
+  device: { name: string; udid: string; osType: OSType } | null;
+  /** OS type from scheme resolution, used for generic destination when device is null. */
+  osType: OSType;
   configuration: XcodeConfiguration;
   /** Disable the initial bundling from the native script. */
   shouldSkipInitialBundling: boolean;
