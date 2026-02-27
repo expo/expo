@@ -74,6 +74,7 @@ To add communication between your CLI extension and your Expo app, you can use t
 
 ```ts cli/index.ts
 import { runCliExtension, sendCliMessageAsync, queryAllInspectorAppsAsync } from '@expo/devtools';
+import chalk from 'chalk';
 
 const PLUGIN_NAME = 'expo-background-task';
 const GET_REGISTERED_TASKS = 'get-registered-tasks';
