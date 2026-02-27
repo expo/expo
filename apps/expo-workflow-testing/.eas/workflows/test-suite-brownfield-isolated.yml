@@ -1,0 +1,295 @@
+name: E2E Test Suite for Expo Brownfield Isolated
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield-isolated.yml
+      - apps/brownfield-tester/expo-app/**
+      - packages/expo-brownfield/**
+      - '!**/*.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+  pull_request:
+    paths:
+      - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield-isolated.yml
+      - apps/brownfield-tester/expo-app/**
+      - packages/expo-brownfield/**
+      - '!**/*.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+defaults:
+  tools:
+    node: 22.14.0
+    yarn: 1.22.22
+
+jobs:
+  detect_platform:
+    name: Detect platform changes
+    runs_on: linux-medium
+    image: latest
+    outputs:
+      should_run_ios: ${{ steps.detect.outputs.should_run_ios }}
+      should_run_android: ${{ steps.detect.outputs.should_run_android }}
+    steps:
+      - uses: eas/checkout
+      - id: detect
+        outputs: [should_run_ios, should_run_android]
+        run: |
+          bash scripts/detect-platform-change.sh \
+            "${{ github.event_name }}" \
+            "${{ github.event.repository.full_name }}" \
+            "${{ github.event.pull_request.number }}" \
+            '^(apps/brownfield-tester/expo-app/|packages/expo-brownfield/|apps/expo-workflow-testing/\.eas/workflows/test-suite-brownfield-isolated\.yml)'
+
+  android_e2e:
+    name: Android E2E Tests
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_android == 'true' }}
+    runs_on: linux-large-nested-virtualization
+    image: latest
+    env:
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"'
+    steps:
+      - uses: eas/install_maestro
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Build Expo CLI
+        working_directory: ../..
+        run: yarn workspace @expo/cli prepare
+      - name: Build and publish Android artifacts
+        working_directory: ../brownfield-tester/expo-app
+        run: |
+          npx expo prebuild --clean -p android
+          npx expo-brownfield build:android --repo MavenLocal --verbose
+      - name: Build APK
+        working_directory: ../brownfield-tester/android-integrated
+        run: |
+          ./gradlew clean
+          ./gradlew assembleRelease --refresh-dependencies
+      - uses: eas/start_android_emulator
+        with:
+          device_name: pixel_4
+      - name: Install APK and run E2E tests
+        run: |
+          adb install -r ../brownfield-tester/android-integrated/app/build/outputs/apk/release/app-release.apk
+          cd ../../packages/expo-brownfield/e2e && maestro test maestro/__tests__/android
+
+  ios_e2e:
+    name: iOS E2E Tests
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_ios == 'true' }}
+    runs_on: macos-large
+    image: latest
+    env:
+      CCACHE_DIR: /tmp/.ccache
+      CCACHE_COMPILERCHECK: content
+      CCACHE_SLOPPINESS: include_file_mtime,include_file_ctime,time_macros,modules,clang_index_store,system_headers,ivfsoverlay
+      CCACHE_DEPEND: 'true'
+      CCACHE_FILECLONE: 'true'
+    steps:
+      - uses: eas/install_maestro
+      - uses: eas/checkout
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Setup ccache
+        run: |
+          brew install ccache
+          CCACHE_BIN=$HOME/.ccache_bin
+          mkdir -p $CCACHE_BIN
+          ln -sf $(which ccache) $CCACHE_BIN/clang
+          ln -sf $(which ccache) $CCACHE_BIN/clang++
+          ln -sf $(which ccache) $CCACHE_BIN/cc
+          ln -sf $(which ccache) $CCACHE_BIN/c++
+      - uses: eas/restore_cache
+        with:
+          key: ccache-ios-brownfield-isolated-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+          restore_keys: |
+            ccache-ios-brownfield-isolated-${{ hashFiles('yarn.lock') }}-
+            ccache-ios-brownfield-isolated-
+          path: /tmp/.ccache
+      - name: Reset ccache statistics
+        run: ccache -z
+      - name: Install xcodeproj gem
+        run: gem install xcodeproj
+      - name: Build Expo CLI
+        working_directory: ../..
+        run: yarn workspace @expo/cli prepare
+      - name: Build iOS artifacts
+        working_directory: ../brownfield-tester/expo-app
+        run: |
+          export PATH="$HOME/.ccache_bin:$PATH"
+          export CC="$HOME/.ccache_bin/clang"
+          export CXX="$HOME/.ccache_bin/clang++"
+          export LD="$HOME/.ccache_bin/clang++"
+          export LDPLUSPLUS="$HOME/.ccache_bin/clang++"
+          npx expo prebuild --clean -p ios
+          npx expo-brownfield build:ios --release --verbose -a ../../../artifacts
+      - name: Add XCFrameworks to SwiftUI project
+        run: |
+          export GITHUB_WORKSPACE="$(cd ../.. && pwd)"
+          ruby ../../packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
+      - uses: eas/start_ios_simulator
+        with:
+          device_identifier: iPhone 17 Pro
+      - name: Build and install iOS integrated app
+        working_directory: ../brownfield-tester/ios-integrated
+        run: |
+          export PATH="$HOME/.ccache_bin:$PATH"
+          export CC="$HOME/.ccache_bin/clang"
+          export CXX="$HOME/.ccache_bin/clang++"
+          export LD="$HOME/.ccache_bin/clang++"
+          export LDPLUSPLUS="$HOME/.ccache_bin/clang++"
+          xcodebuild build \
+            -project BrownfieldIntegratedTester.xcodeproj \
+            -scheme BrownfieldIntegratedTester \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -arch arm64 \
+            -derivedDataPath build
+          xcrun simctl install booted build/Build/Products/Release-iphonesimulator/BrownfieldIntegratedTester.app
+          xcrun simctl launch booted dev.expo.BrownfieldIntegratedTester
+      - uses: eas/save_cache
+        with:
+          key: ccache-ios-brownfield-isolated-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+          path: /tmp/.ccache
+      - name: Show ccache stats
+        run: ccache -s -v
+      - name: Run Maestro E2E tests
+        working_directory: ../../packages/expo-brownfield/e2e
+        run: maestro test maestro/__tests__/ios
+
+  # Slack webhook URLs must be set as EAS environment variables (SLACK_WEBHOOK_IOS, SLACK_WEBHOOK_ANDROID)
+  notify_ios_failure:
+    if: ${{ failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
+    name: Notify iOS failure on Slack
+    after: [ios_e2e]
+    steps:
+      - run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+
+          if [ -z "$COMMIT_MESSAGE" ] || [ "$COMMIT_MESSAGE" = "undefined" ]; then
+            COMMIT_DISPLAY="${COMMIT_SHA:0:7}"
+          else
+            COMMIT_DISPLAY=$(echo "$COMMIT_MESSAGE" | head -n1)
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Brownfield Isolated E2E Tests (iOS) failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Brownfield Isolated E2E Tests (iOS) failed*"
+                  }
+                },
+                {
+                  type: "section",
+                  fields: [
+                    {
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/expo-workflow-testing/workflows/" + $wf_id + "|" + $wf_id + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_IOS" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"
+
+  notify_android_failure:
+    if: ${{ failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
+    name: Notify Android failure on Slack
+    after: [android_e2e]
+    steps:
+      - run: |
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_MESSAGE="${{ github.commit_message }}"
+          BRANCH="${{ github.ref_name }}"
+          WF_ID="${{ workflow.id }}"
+          ACTOR="${{ github.triggering_actor }}"
+
+          if [ -z "$COMMIT_MESSAGE" ] || [ "$COMMIT_MESSAGE" = "undefined" ]; then
+            COMMIT_DISPLAY="${COMMIT_SHA:0:7}"
+          else
+            COMMIT_DISPLAY=$(echo "$COMMIT_MESSAGE" | head -n1)
+          fi
+
+          PAYLOAD=$(jq -n \
+            --arg text "🚨 Brownfield Isolated E2E Tests (Android) failed" \
+            --arg wf_id "$WF_ID" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg commit_display "$COMMIT_DISPLAY" \
+            --arg actor "$ACTOR" \
+            '{
+              text: $text,
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: "*Brownfield Isolated E2E Tests (Android) failed*"
+                  }
+                },
+                {
+                  type: "section",
+                  fields: [
+                    {
+                      type: "mrkdwn",
+                      text: ("*Workflow:*\n<https://expo.dev/accounts/expo-ci/projects/expo-workflow-testing/workflows/" + $wf_id + "|" + $wf_id + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Branch:*\n<https://github.com/expo/expo/tree/" + $branch + "|" + $branch + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Commit:*\n<https://github.com/expo/expo/commit/" + $commit_sha + "|" + $commit_display + ">")
+                    },
+                    {
+                      type: "mrkdwn",
+                      text: ("*Triggered by:*\n" + $actor)
+                    }
+                  ]
+                }
+              ]
+            }')
+
+          curl -X POST "$SLACK_WEBHOOK_ANDROID" \
+            -H 'Content-Type: application/json' \
+            -d "$PAYLOAD"
