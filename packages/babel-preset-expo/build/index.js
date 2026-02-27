@@ -94,7 +94,7 @@ function babelPresetExpo(api, options = {}) {
                 ...reactCompilerOptions,
                 // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
                 // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
-                customOptOutDirectives: [...(reactCompilerOptions?.customOptOutDirectives ?? []), 'widget'],
+                customOptOutDirectives: [...(reactCompilerOptions?.customOptOutDirectives ?? []), 'widget', 'use no memo', 'use no forget'],
             },
         ]);
     }
