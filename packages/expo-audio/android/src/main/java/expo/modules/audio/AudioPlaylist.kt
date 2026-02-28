@@ -10,19 +10,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.datasource.DataSource
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.sharedobjects.SharedRef
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.launch
-import java.util.UUID
 
 private const val PLAYLIST_STATUS_UPDATE = "playlistStatusUpdate"
 private const val TRACK_CHANGED = "trackChanged"
@@ -32,43 +19,29 @@ class AudioPlaylist(
   context: Context,
   appContext: AppContext,
   initialSources: List<AudioSource>,
-  private val updateInterval: Double,
+  updateInterval: Double,
   dataSourceFactory: DataSource.Factory
-) : SharedRef<ExoPlayer>(
-  ExoPlayer.Builder(context)
+) : BaseAudioPlayer(
+  player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
     .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory))
     .build(),
-  appContext
-),
-  Playable {
-  override val id: String = UUID.randomUUID().toString()
-
+  appContext = appContext,
+  updateInterval = updateInterval,
+  statusEventName = PLAYLIST_STATUS_UPDATE
+) {
   private var sources: MutableList<AudioSource> = initialSources.toMutableList()
-
-  override var isPaused = false
-  override var isMuted = false
-  override var previousVolume = 1f
-  override var onPlaybackStateChange: ((Boolean) -> Unit)? = null
-
-  private var playerScope = CoroutineScope(Dispatchers.Main)
-  private var playerListener: Player.Listener? = null
-  private var playing = false
-  private var updateJob: Job? = null
-  private var previousPlaybackState = Player.STATE_IDLE
-  private var intendedPlayingState = false
   private var currentRate = 1f
   private var previousMediaItemIndex = 0
 
   val currentTrackIndex get() = ref.currentMediaItemIndex
-  override val player get() = ref
   val trackCount get() = ref.mediaItemCount
 
   private var createMediaItemForSource: ((AudioSource) -> MediaItem?)? = null
 
   init {
-    addPlayerListeners()
+    installPlayerListeners()
     startUpdating()
   }
 
@@ -100,98 +73,35 @@ class AudioPlaylist(
         LoopMode.ALL -> Player.REPEAT_MODE_ALL
         LoopMode.NONE -> Player.REPEAT_MODE_OFF
       }
-      playerScope.launch {
-        sendStatusUpdate(mapOf("loop" to value.value))
-      }
+      sendStatusUpdate(mapOf("loop" to value.value))
     }
 
   fun getSources(): List<AudioSource> {
     return sources.toList()
   }
 
-  private fun addPlayerListeners() {
-    val listener = object : Player.Listener {
-      override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playing = isPlaying
-        onPlaybackStateChange?.invoke(isPlaying)
+  override fun onLoadingChanged(isLoading: Boolean) {
+    sendStatusUpdate(mapOf("isLoaded" to (ref.playbackState == Player.STATE_READY)))
+  }
 
-        val isTransient = !isPlaying &&
-          (ref.playbackState == Player.STATE_ENDED || ref.playbackState == Player.STATE_BUFFERING)
-        if (!isTransient) {
-          intendedPlayingState = isPlaying
-        }
-
-        if (isTransient) {
-          return
-        }
-        playerScope.launch {
-          sendStatusUpdate(mapOf("playing" to isPlaying))
-        }
-      }
-
-      override fun onIsLoadingChanged(isLoading: Boolean) {
-        playerScope.launch {
-          sendStatusUpdate(mapOf("isLoaded" to (ref.playbackState == Player.STATE_READY)))
-        }
-      }
-
-      override fun onPlaybackStateChanged(playbackState: Int) {
-        val justFinished = playbackState == Player.STATE_ENDED &&
-          previousPlaybackState != Player.STATE_ENDED
-        previousPlaybackState = playbackState
-
-        if (justFinished) {
-          intendedPlayingState = false
-        }
-
-        playerScope.launch {
-          val updateMap = mutableMapOf<String, Any?>()
-          if (justFinished) {
-            updateMap["didJustFinish"] = true
-            updateMap["playing"] = false
-          }
-          sendStatusUpdate(updateMap)
-        }
-      }
-
-      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        val currentIndex = ref.currentMediaItemIndex
-        if (currentIndex != previousMediaItemIndex) {
-          emitTrackChanged(previousMediaItemIndex, currentIndex)
-          previousMediaItemIndex = currentIndex
-        }
-        playerScope.launch {
-          sendStatusUpdate()
-        }
-      }
-
-      override fun onPositionDiscontinuity(
-        oldPosition: Player.PositionInfo,
-        newPosition: Player.PositionInfo,
-        reason: Int
-      ) {
-        if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-          playerScope.launch {
-            sendStatusUpdate(mapOf("currentTime" to (newPosition.positionMs / 1000.0)))
-          }
-        }
-      }
-
-      override fun onPlayerError(error: PlaybackException) {
-        playerScope.launch {
-          sendStatusUpdate(
-            mapOf(
-              "error" to mapOf(
-                "message" to error.message,
-                "code" to error.errorCode
-              )
-            )
-          )
-        }
-      }
+  override fun onMediaItemChanged(mediaItem: MediaItem?, reason: Int) {
+    val currentIndex = ref.currentMediaItemIndex
+    if (currentIndex != previousMediaItemIndex) {
+      emitTrackChanged(previousMediaItemIndex, currentIndex)
+      previousMediaItemIndex = currentIndex
     }
-    playerListener = listener
-    ref.addListener(listener)
+    sendStatusUpdate()
+  }
+
+  override fun onPlayerError(error: PlaybackException) {
+    sendStatusUpdate(
+      mapOf(
+        "error" to mapOf(
+          "message" to error.message,
+          "code" to error.errorCode
+        )
+      )
+    )
   }
 
   fun next() {
@@ -219,10 +129,7 @@ class AudioPlaylist(
     val mediaItem = createMediaItemForSource?.invoke(source) ?: return
     sources.add(source)
     ref.addMediaItem(mediaItem)
-    val count = trackCount
-    playerScope.launch {
-      sendStatusUpdate(mapOf("trackCount" to count))
-    }
+    sendStatusUpdate(mapOf("trackCount" to trackCount))
   }
 
   fun insert(source: AudioSource, index: Int) {
@@ -230,10 +137,7 @@ class AudioPlaylist(
     val mediaItem = createMediaItemForSource?.invoke(source) ?: return
     sources.add(index, source)
     ref.addMediaItem(index, mediaItem)
-    val count = trackCount
-    playerScope.launch {
-      sendStatusUpdate(mapOf("trackCount" to count))
-    }
+    sendStatusUpdate(mapOf("trackCount" to trackCount))
   }
 
   fun remove(index: Int) {
@@ -242,10 +146,7 @@ class AudioPlaylist(
     sources.removeAt(index)
     ref.removeMediaItem(index)
 
-    val count = trackCount
-    playerScope.launch {
-      sendStatusUpdate(mapOf("trackCount" to count))
-    }
+    sendStatusUpdate(mapOf("trackCount" to trackCount))
   }
 
   fun clear() {
@@ -253,15 +154,13 @@ class AudioPlaylist(
     ref.clearMediaItems()
     sources.clear()
 
-    playerScope.launch {
-      sendStatusUpdate(
-        mapOf(
-          "trackCount" to 0,
-          "currentIndex" to 0,
-          "playing" to false
-        )
+    sendStatusUpdate(
+      mapOf(
+        "trackCount" to 0,
+        "currentIndex" to 0,
+        "playing" to false
       )
-    }
+    )
   }
 
   override fun setPlaybackRate(rate: Float) {
@@ -293,31 +192,6 @@ class AudioPlaylist(
     )
   }
 
-  private fun startUpdating() {
-    updateJob?.cancel()
-    updateJob = flow {
-      while (true) {
-        emit(Unit)
-        delay(updateInterval.toLong())
-      }
-    }
-      .onStart {
-        sendStatusUpdate()
-      }
-      .onEach {
-        if (playing) {
-          sendStatusUpdate()
-        }
-      }
-      .launchIn(playerScope)
-  }
-
-  private fun sendStatusUpdate(map: Map<String, Any?>? = null) {
-    val data = currentStatus()
-    val body = map?.let { data + it } ?: data
-    emit(PLAYLIST_STATUS_UPDATE, body)
-  }
-
   private fun emitTrackChanged(previousIndex: Int, currentIndex: Int) {
     emit(
       TRACK_CHANGED,
@@ -326,22 +200,6 @@ class AudioPlaylist(
         "currentIndex" to currentIndex
       )
     )
-    playerScope.launch {
-      sendStatusUpdate()
-    }
-  }
-
-  private fun release() {
-    playerListener?.let { ref.removeListener(it) }
-    playerScope.cancel()
-    ref.release()
-  }
-
-  override fun sharedObjectDidRelease() {
-    super.sharedObjectDidRelease()
-    // Run on GlobalScope (not appContext.mainQueue) so that reloading doesn't cancel the release process
-    GlobalScope.launch(Dispatchers.Main) {
-      release()
-    }
+    sendStatusUpdate()
   }
 }

@@ -4159,7 +4159,7 @@
     lodash "^4.17.21"
     redent "^3.0.0"
 
-"@testing-library/react-native@^13.2.0", "@testing-library/react-native@^13.3.0":
+"@testing-library/react-native@^13.3.0":
   version "13.3.3"
   resolved "https://registry.yarnpkg.com/@testing-library/react-native/-/react-native-13.3.3.tgz#4bf02911c4e18075df40b5de0e029c209fb45bda"
   integrity sha512-k6Mjsd9dbZgvY4Bl7P1NIpePQNi+dfYtlJ5voi9KQlynxSyQkfOgJmYGCYmw/aSgH/rUcFvG8u5gd4npzgRDyg==
