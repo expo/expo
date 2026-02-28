@@ -47,7 +47,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
   }
 
   var isBuffering: Bool {
-    playerIsBuffering()
+    ref.isBuffering(isPlaying: isPlaying)
   }
 
   var trackCount: Int {
@@ -345,21 +345,6 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
       }
       self.updateStatus(with: ["currentTime": time.seconds])
     }
-  }
-
-  private func playerIsBuffering() -> Bool {
-    if isPlaying {
-      return false
-    }
-
-    if ref.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-      return true
-    }
-
-    if let currentItem = ref.currentItem {
-      return !currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
-    }
-    return true
   }
 
   public override func sharedObjectWillRelease() {
