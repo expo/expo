@@ -90,6 +90,11 @@ const moveDirectories = async (userInput) => {
         console.log(`🗑️  Deleted /assets/images/${image}`);
       }
     }
+    const tabIconsDir = path.join(root, 'assets', 'images', 'tabIcons');
+    if (fs.existsSync(tabIconsDir)) {
+      await fs.promises.rm(tabIconsDir, { recursive: true, force: true });
+      console.log(`🗑️  Deleted /assets/images/tabIcons/`);
+    }
 
     // Create new /src/app directory
     const newAppDirPath = path.join(root, newAppDir);
