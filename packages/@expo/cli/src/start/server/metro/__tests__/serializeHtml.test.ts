@@ -1,6 +1,10 @@
 import { SerialAsset } from '@expo/metro-config/src/serializer/serializerAssets';
 
-import { serializeHtmlWithAssets, assetsRequiresSort } from '../serializeHtml';
+import {
+  serializeHtmlWithAssets,
+  assetsRequiresSort,
+  sortMatchedAssetsByEntryPoints,
+} from '../serializeHtml';
 
 it('serializes development static html', () => {
   const res = serializeHtmlWithAssets({
@@ -111,6 +115,45 @@ it('serializes development export static html with correct baseUrl and script sr
   );
 });
 
+it('serializes HTML with async chunks in correct order for dynamic routes', () => {
+  const res = serializeHtmlWithAssets({
+    resources: [
+      {
+        filename: 'dist/entry.js',
+        originFilename: 'entry.js',
+        type: 'js',
+        metadata: { isAsync: false, requires: [], modulePaths: [] },
+        source: '',
+      },
+      {
+        filename: 'dist/chunk-page.js',
+        originFilename: 'chunk-page.js',
+        type: 'js',
+        metadata: { isAsync: true, requires: [], modulePaths: ['/app/[slug].tsx'] },
+        source: '',
+      },
+      {
+        filename: 'dist/chunk-layout.js',
+        originFilename: 'chunk-layout.js',
+        type: 'js',
+        metadata: { isAsync: true, requires: [], modulePaths: ['/app/_layout.tsx'] },
+        source: '',
+      },
+    ],
+    baseUrl: '',
+    isExporting: true,
+    template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
+    route: {
+      contextKey: './[slug].tsx',
+      entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
+    } as any,
+  });
+
+  expect(res).toContain(
+    '<script src="/dist/chunk-layout.js" defer></script><script src="/dist/chunk-page.js" defer></script>'
+  );
+});
+
 it('sorts assets based on requires tree', () => {
   const assets: SerialAsset[] = [
     {
@@ -190,4 +233,86 @@ it('sorts assets based on requires tree', () => {
       },
     ]
   `);
+});
+
+describe(sortMatchedAssetsByEntryPoints, () => {
+  it('corrects incorrectly ordered chunks', () => {
+    const assets: SerialAsset[] = [
+      {
+        filename: 'chunk-page.js',
+        originFilename: 'chunk-page.js',
+        type: 'js',
+        metadata: { isAsync: true, modulePaths: ['/app/[slug].tsx'] },
+        source: '',
+      },
+      {
+        filename: 'chunk-layout.js',
+        originFilename: 'chunk-layout.js',
+        type: 'js',
+        metadata: { isAsync: true, modulePaths: ['/app/_layout.tsx'] },
+        source: '',
+      },
+    ];
+
+    const sorted = sortMatchedAssetsByEntryPoints(assets, ['/app/_layout.tsx', '/app/[slug].tsx']);
+    expect(sorted.map((a) => a.filename)).toEqual(['chunk-layout.js', 'chunk-page.js']);
+  });
+
+  it('preserves already correct order', () => {
+    const assets: SerialAsset[] = [
+      {
+        filename: 'chunk-layout.js',
+        originFilename: 'chunk-layout.js',
+        type: 'js',
+        metadata: { isAsync: true, modulePaths: ['/app/_layout.tsx'] },
+        source: '',
+      },
+      {
+        filename: 'chunk-page.js',
+        originFilename: 'chunk-page.js',
+        type: 'js',
+        metadata: { isAsync: true, modulePaths: ['/app/index.tsx'] },
+        source: '',
+      },
+    ];
+    const sorted = sortMatchedAssetsByEntryPoints(assets, ['/app/_layout.tsx', '/app/index.tsx']);
+    expect(sorted.map((a) => a.filename)).toEqual(['chunk-layout.js', 'chunk-page.js']);
+  });
+
+  it('handles nested layouts', () => {
+    const assets: SerialAsset[] = [
+      {
+        filename: 'chunk-root.js',
+        originFilename: 'chunk-root.js',
+        type: 'js',
+        metadata: { isAsync: true, modulePaths: ['/app/_layout.tsx'] },
+        source: '',
+      },
+      {
+        filename: 'chunk-nested.js',
+        originFilename: 'chunk-nested.js',
+        type: 'js',
+        metadata: { isAsync: true, modulePaths: ['/app/settings/_layout.tsx'] },
+        source: '',
+      },
+      {
+        filename: 'chunk-page.js',
+        originFilename: 'chunk-page.js',
+        type: 'js',
+        metadata: { isAsync: true, modulePaths: ['/app/settings/profile.tsx'] },
+        source: '',
+      },
+    ];
+
+    const sorted = sortMatchedAssetsByEntryPoints(assets, [
+      '/app/_layout.tsx',
+      '/app/settings/_layout.tsx',
+      '/app/settings/profile.tsx',
+    ]);
+    expect(sorted.map((a) => a.filename)).toEqual([
+      'chunk-root.js',
+      'chunk-nested.js',
+      'chunk-page.js',
+    ]);
+  });
 });

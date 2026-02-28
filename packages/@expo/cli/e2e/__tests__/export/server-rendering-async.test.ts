@@ -85,9 +85,7 @@ describe('server rendering with async routes', () => {
         });
 
         const routeName = route.page.replace('/', '');
-        expect(jsFilenames).toEqual(
-          expect.arrayContaining(['_layout-<HASH>.js', `${routeName}-<HASH>.js`])
-        );
+        expect(jsFilenames).toEqual(['_layout-<HASH>.js', `${routeName}-<HASH>.js`]);
       }
     });
   });

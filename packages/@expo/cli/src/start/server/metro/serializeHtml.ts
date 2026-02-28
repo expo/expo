@@ -88,7 +88,16 @@ function htmlFromSerialAssets(
     })
     .join('');
 
-  const orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
+  let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
+
+  if (route?.entryPoints && Array.isArray(route.entryPoints)) {
+    const syncAssets = orderedJsAssets.filter((a) => !a.metadata.isAsync);
+    const sortedAsync = sortMatchedAssetsByEntryPoints(
+      orderedJsAssets.filter((a) => a.metadata.isAsync),
+      route.entryPoints
+    );
+    orderedJsAssets = [...syncAssets, ...sortedAsync];
+  }
 
   const scripts = bundleUrl
     ? `<script src="${bundleUrl}" defer></script>`
@@ -131,6 +140,23 @@ function htmlFromSerialAssets(
   return template
     .replace('</head>', `${styleString}</head>`)
     .replace('</body>', `${scripts}\n</body>`);
+}
+
+/**
+ * Sorts matched async assets by their matching `entryPoint` in the route's `entryPoints` array.
+ * This ensures layout chunks come before page chunks.
+ */
+export function sortMatchedAssetsByEntryPoints(
+  matchedAssets: SerialAsset[],
+  entryPoints: string[]
+): SerialAsset[] {
+  const getEntryPointIndex = (modulePaths?: string[]) =>
+    modulePaths ? entryPoints.findIndex((ep) => modulePaths.includes(ep)) : -1;
+
+  return matchedAssets.sort(
+    (a, b) =>
+      getEntryPointIndex(a.metadata.modulePaths) - getEntryPointIndex(b.metadata.modulePaths)
+  );
 }
 
 /**
