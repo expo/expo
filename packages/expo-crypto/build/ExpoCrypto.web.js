@@ -1,6 +1,16 @@
 import { CodedError } from 'expo-modules-core';
 import { CryptoEncoding } from './Crypto.types';
-const getCrypto = () => globalThis.crypto ?? window.crypto ?? window.msCrypto;
+const getCrypto = () => {
+    if (typeof globalThis.crypto !== 'undefined') {
+        return globalThis.crypto;
+    }
+    else if (typeof window !== 'undefined') {
+        return window.crypto ?? window.msCrypto;
+    }
+    else {
+        return crypto;
+    }
+};
 export default {
     async digestStringAsync(algorithm, data, options) {
         const crypto = getCrypto();
