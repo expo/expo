@@ -158,5 +158,5 @@ export function fileNameFromContents({ filepath, src }: { filepath: string; src:
 }
 
 export function getFileName(module: string) {
-  return path.basename(module).replace(/\.[^.]+$/, '');
+  return path.basename(module).replace(/\.\w+$/, '');
 }
