@@ -59,7 +59,9 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
     // Rebundling requires a specific device to get the container path from.
     if (!props.device) {
-      throw new CommandError('Re-bundling requires a specific device. Cannot use --device generic.');
+      throw new CommandError(
+        'Re-bundling requires a specific device. Cannot use --device generic.'
+      );
     }
 
     let binaryPath: string;

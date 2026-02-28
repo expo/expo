@@ -223,7 +223,10 @@ export async function getXcodeBuildArgsAsync(
   }
 
   // Skip code signing setup for generic simulator builds (no device).
-  if (props.device && (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot))) {
+  if (
+    props.device &&
+    (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot))
+  ) {
     const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(props.projectRoot);
     if (developmentTeamId) {
       args.push(
@@ -376,7 +379,12 @@ export async function buildAsync(props: BuildProps): Promise<string> {
   // can become locked. We retry with exponential backoff to handle this.
   const maxRetries = 3;
   let retryDelaySeconds = 1;
-  let lastResults: { code: number | null; results: string; error: string; formatter: ExpoRunFormatter } | null = null;
+  let lastResults: {
+    code: number | null;
+    results: string;
+    error: string;
+    formatter: ExpoRunFormatter;
+  } | null = null;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const { code, results, formatter, error } = await spawnXcodeBuildWithFormat(
