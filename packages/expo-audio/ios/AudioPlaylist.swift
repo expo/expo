@@ -7,7 +7,7 @@ private enum PlaylistConstants {
   static let trackChanged = "trackChanged"
 }
 
-public class AudioPlaylist: SharedRef<AVQueuePlayer> {
+public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
   let id = UUID().uuidString
   private let interval: Double
   private(set) var currentRate: Float = 1.0
@@ -345,6 +345,15 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
       }
       self.updateStatus(with: ["currentTime": time.seconds])
     }
+  }
+
+  var volume: Float {
+    get { ref.volume }
+    set { ref.volume = newValue }
+  }
+
+  func resumePlayback() {
+    play(at: currentRate)
   }
 
   public override func sharedObjectWillRelease() {
