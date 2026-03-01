@@ -39,6 +39,14 @@ extension ExpoSwiftUI {
       self.viewDefinition = viewDefinition
       self.appContext = appContext
       super.init()
+
+      props.shadowNodeProxy.setViewSize = { [weak self] size in
+        self?.setViewSize(size)
+      }
+      props.shadowNodeProxy.setStyleSize = { [weak self] width, height in
+        self?.setStyleSize(width, height: height)
+      }
+
       installEventDispatchers()
     }
 

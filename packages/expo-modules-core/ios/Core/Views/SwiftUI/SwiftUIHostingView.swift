@@ -89,6 +89,8 @@ extension ExpoSwiftUI {
         self?.setStyleSize(width, height: height)
       }
 
+      props.shadowNodeProxy = shadowNodeProxy
+
       shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
