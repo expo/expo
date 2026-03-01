@@ -64,20 +64,16 @@ class BrownfieldTester: ObservableObject {
                     print(cast)
                 }
             },
-            BrownfieldState.subscribe("string") { string in
-                if let cast = string as? String {
-                    print(cast)
-                }
+            BrownfieldState.subscribe("string", as: String.self) { string in
+                print(string)
             },
             BrownfieldState.subscribe("boolean") { bool in
                 if let cast = bool as? Bool {
                     print(cast)
                 }
             },
-            BrownfieldState.subscribe("array") { array in
-                if let cast = array as? [Any?] {
-                    print(cast)
-                }
+            BrownfieldState.subscribe("array", as: [Any].self) { array in
+                print(array)
             },
             BrownfieldState.subscribe("object") { obj in
                 if let cast = obj as? [String: Any?] {
