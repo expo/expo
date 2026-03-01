@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support for podspec-free local modules that are included in the project's target using `PBXFileSystemSynchronizedRootGroup`.
+- Support for podspec-free local modules that are included in the project's target using `PBXFileSystemSynchronizedRootGroup`. ([#43544](https://github.com/expo/expo/pull/43544) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
