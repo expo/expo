@@ -1,0 +1,106 @@
+[package]
+name = "maurimesh_core"
+version = "5.2.0"
+edition = "2021"
+publish = false
+description = "Culturally sovereign mesh networking core"
+license = "Apache-2.0"
+authors = ["MauriMesh Team <team@maurimesh.io>"]
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+name = "maurimesh_core"
+
+[features]
+default = ["simulation"]
+simulation = ["net/mock"]
+production = ["transport/ble", "transport/le_audio", "cloud_sync", "jumpcode-secret"]
+transport/mock = []
+transport/ble = ["btleplug", "tokio-stream"]
+transport/le_audio = ["lc3-codec", "ringbuf"]
+cloud_sync = ["reqwest", "hex"]
+jumpcode-secret = ["argon2"]
+metrics = ["metrics", "metrics-exporter-prometheus"]
+logging = ["tracing", "tracing-subscriber"]
+
+[dependencies]
+uniffi = { version = "0.28", features = ["macros"] }
+tokio = { version = "1.38", features = ["rt", "rt-multi-thread", "sync", "time", "macros", "channels"], default-features = false }
+tokio-stream = { version = "0.1", optional = true }
+async-trait = "0.1"
+anyhow = "1.0"
+thiserror = "1.0"
+once_cell = "1.19"
+log = "0.4"
+cfg-if = "1.0"
+parking_lot = "0.12"
+chacha20poly1305 = "0.10"
+aes-gcm = "0.10"
+rand = "0.8"
+rand_core = "0.6"
+sha2 = "0.10"
+sha3 = "0.10"
+blake3 = "1.5"
+hex = { version = "0.4", optional = true }
+argon2 = { version = "0.5", optional = true }
+ed25519-dalek = "2.1"
+x25519-dalek = "2.0"
+hkdf = "0.12"
+pbkdf2 = "0.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false, optional = true }
+btleplug = { version = "0.11", optional = true }
+lc3-codec = { version = "0.1", optional = true }
+ringbuf = { version = "0.3", optional = true }
+metrics = { version = "0.22", optional = true }
+metrics-exporter-prometheus = { version = "0.13", optional = true }
+tracing = { version = "0.1", optional = true }
+tracing-subscriber = { version = "0.3", optional = true }
+chrono = { version = "0.4", features = ["serde"] }
+time = "0.3"
+flate2 = "1.0"
+lz4_flex = "0.11"
+
+[build-dependencies]
+uniffi = { version = "0.28", features = ["build"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+mockall = "0.12"
+criterion = { version = "0.5", features = ["html_reports"] }
+proptest = "1.4"
+tempfile = "3.10"
+pretty_assertions = "1.4"
+
+[[bench]]
+name = "jumpcode_decisions"
+harness = false
+
+[[bench]]
+name = "ble_throughput"
+harness = false
+
+[[bench]]
+name = "crypto_operations"
+harness = false
+
+[[bench]]
+name = "mana_validation"
+harness = false
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
+
+[profile.test]
+opt-level = 2
+debug = true

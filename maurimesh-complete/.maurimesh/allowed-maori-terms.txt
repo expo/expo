@@ -1,0 +1,22 @@
+# Allowed Māori Terms (Internal Core Only)
+# These terms MAY appear in Rust core
+# These terms MUST NOT appear in UI/Network layers
+
+Whakatā
+Mahi
+Tūhonohono
+Kohikohi
+Whakakaha
+AraTika
+Ea
+Hapa
+TikangaMauri
+MātāpunaShard
+Mana
+Tapu
+Noa
+Whakapapa
+Whenua
+Kōrero
+Tangata
+Ao
