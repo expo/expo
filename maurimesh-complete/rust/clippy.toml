@@ -1,0 +1,4 @@
+avoid-breaking-exported-api = false
+disallowed-methods = [
+    { path = "std::panic::panic", reason = "Use anyhow::Result instead" },
+]
