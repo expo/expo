@@ -60,7 +60,10 @@ export default function GalleryScreen(
 }
 
 function LoadedGalleryScreen(
-  props: TouchableOpacityProps & { photos: string[]; onPhotosDeleted: (deleted: Set<string>) => void }
+  props: TouchableOpacityProps & {
+    photos: string[];
+    onPhotosDeleted: (deleted: Set<string>) => void;
+  }
 ) {
   const [selectedPhotos, setSelectedPhotos] = React.useState<string[]>([]);
 
