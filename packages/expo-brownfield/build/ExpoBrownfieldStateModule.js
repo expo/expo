@@ -1,9 +1,5 @@
 import { requireNativeModule } from 'expo';
-<<<<<<< HEAD
-import { useEffect, useState } from 'react';
-=======
 import { useCallback, useEffect, useState } from 'react';
->>>>>>> main
 const ExpoBrownfieldStateModule = requireNativeModule('ExpoBrownfieldStateModule');
 const sharedObjectCache = new Map();
 // SECTION: Shared State API
@@ -80,17 +76,6 @@ export function useSharedState(key, initialValue) {
         return currentValue;
     });
     useEffect(() => {
-<<<<<<< HEAD
-        const subscription = state.addListener('change', (event) => {
-            setValue(event?.['value']);
-        });
-        return () => subscription.remove();
-    }, [state]);
-    const setSharedValue = (newValue) => {
-        const valueToSet = typeof newValue === 'function' ? newValue(value) : newValue;
-        state.set(valueToSet);
-    };
-=======
         let subscription = state.addListener('change', (event) => {
             setValue(event?.['value']);
         });
@@ -114,7 +99,6 @@ export function useSharedState(key, initialValue) {
         const valueToSet = typeof newValue === 'function' ? newValue(value) : newValue;
         getSharedObject(key).set(valueToSet);
     }, [key, value]);
->>>>>>> main
     return [value, setSharedValue];
 }
 // END SECTION: Shared State API
