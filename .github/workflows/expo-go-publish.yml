@@ -1,0 +1,83 @@
+name: Expo Go (Publish Client Build)
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/expo-go-publish.yml
+      - apps/eas-expo-go/**
+      - apps/expo-go/android/**
+      - apps/expo-go/ios/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_android:
+    name: Build Android (publish-client)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📦 Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: 🏗️ Build Android with EAS
+        uses: ./.github/actions/eas-build
+        with:
+          platform: android
+          profile: publish-client
+          projectRoot: apps/eas-expo-go
+          expoToken: ${{ secrets.EXPO_TOKEN }}
+
+  build_ios:
+    name: Build iOS (publish-client)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📦 Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: 🏗️ Build iOS with EAS
+        uses: ./.github/actions/eas-build
+        with:
+          platform: ios
+          profile: publish-client
+          projectRoot: apps/eas-expo-go
+          expoToken: ${{ secrets.EXPO_TOKEN }}
+
+  notify_failure:
+    name: 🔔 Notify on Slack
+    needs: [build_android, build_ios]
+    if: failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-'))
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔔 Notify Slack
+        uses: ./.github/actions/slack-notify
+        with:
+          webhook: ${{ secrets.slack_webhook_api }}
+          author_name: Expo Go (Publish Client Build)
