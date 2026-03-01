@@ -47,32 +47,9 @@ export async function resolveModuleAsync(
   const podspecFiles = await findPodspecFiles(revision);
   const isLocal = extraOutput.isLocal ?? false;
 
-  if (!podspecFiles.length) {
+  if (!podspecFiles.length && !isLocal) {
     // Local modules without a podspec are integrated directly in the app project.
-    if (!isLocal) {
-      return null;
-    }
-    const coreFeatures = revision.config?.coreFeatures() ?? [];
-
-    return {
-      packageName,
-      pods: [],
-      // No Swift module names — no framework import needed, classes are in the app target.
-      swiftModuleNames: [],
-      flags: extraOutput.flags,
-      modules:
-        revision.config
-          ?.appleModules()
-          .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ??
-        [],
-      appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
-      reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
-      debugOnly: revision.config?.appleDebugOnly() ?? false,
-      type: 'local',
-      // Path to the module directory, used by the Ruby side to add source files to the app project.
-      path: revision.path,
-      ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
-    };
+    return null;
   }
 
   const pods = podspecFiles.map((podspecFile) => ({
@@ -97,6 +74,7 @@ export async function resolveModuleAsync(
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
     type: isLocal ? 'local' : 'external',
+    path: revision.path,
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
   };
 }

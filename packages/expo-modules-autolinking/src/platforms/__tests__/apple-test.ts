@@ -134,6 +134,7 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
       type: 'external',
+      path: pkgDir,
     });
   });
 
@@ -169,6 +170,7 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
       type: 'external',
+      path: pkgDir,
       coreFeatures: ['swiftui'],
     });
   });
@@ -216,6 +218,7 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
       type: 'external',
+      path: pkgDir,
     });
   });
 
@@ -306,6 +309,7 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
       type: 'local',
+      path: pkgDir,
     });
   });
 });
