@@ -257,7 +257,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
                 ...config.serializer,
                 // In static serializer mode, rely on runtime-provided pre-main modules
                 // from Metro's bundling options to avoid stale closure-captured config.
-                getModulesRunBeforeMainModule: () => options.runBeforeMainModule ?? [],
+                getModulesRunBeforeMainModule: () => [...(options.runBeforeMainModule ?? [])],
             },
         };
         const assets = await (0, serializeChunks_1.graphToSerialAssetsAsync)(staticConfig, {
