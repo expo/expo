@@ -1,4 +1,16 @@
----
+---  <!-- Add custom banner image to display as Android TV launcher icon -->
+ <application
+  ...
+  android:banner="@drawable/tv_banner"
+  >
+    ...
+    <intent-filter>
+      ...
+      <!-- Needed to properly create a launch intent when running on Android TV -->
+      <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
+    </intent-filter>
+    ...
+  </application>
 title: EAS Build Limitations
 sidebar_title: Limitations
 description: Learn about the current limitations of EAS Build.
