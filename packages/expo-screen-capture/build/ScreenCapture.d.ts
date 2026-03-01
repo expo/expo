@@ -83,20 +83,7 @@ export declare function disableAppSwitcherProtectionAsync(): Promise<void>;
 export declare function addScreenshotListener(listener: () => void): EventSubscription;
 /**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
- * You can also call `remove()` on that `Subscription` object.
- *
- * @param subscription Subscription returned by `addScreenshotListener`.
- *
- * @example
- * ```ts
- * let mySubscription = addScreenshotListener(() => {
- *   console.log("You took a screenshot!");
- * });
- * ...
- * mySubscription.remove();
- * // OR
- * removeScreenshotListener(mySubscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export declare function removeScreenshotListener(subscription: EventSubscription): void;
 /**

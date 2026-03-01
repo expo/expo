@@ -59,17 +59,14 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧐 Check all packages
-        if:
-          github.event_name == 'schedule' ||
+        if: github.event_name == 'schedule' ||
           github.event.inputs.checkAll == 'check-all' ||
           steps.filter.outputs.module-scripts == 'true'
         run: node bin/expotools check-packages --all
       - name: 🧐 Check changed packages
-        if:
-          github.event_name != 'schedule' &&
+        if: github.event_name != 'schedule' &&
           github.event.inputs.checkAll != 'check-all' &&
           steps.filter.outputs.module-scripts != 'true'
         env:
@@ -104,7 +101,6 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧐 Check all packages
         run: node bin/expotools check-packages --all

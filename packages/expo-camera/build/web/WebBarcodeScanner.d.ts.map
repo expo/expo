@@ -1,0 +1,1 @@
+{"version":3,"file":"WebBarcodeScanner.d.ts","sourceRoot":"","sources":["../../src/web/WebBarcodeScanner.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,WAAW,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AA0B1E,eAAO,MAAM,iBAAiB,EAAsC,WAAW,EAAE,CAAC;AAgDlF,wBAAsB,MAAM,CAC1B,MAAM,EAAE,iBAAiB,EACzB,YAAY,EAAE,WAAW,EAAE,GAC1B,OAAO,CAAC,qBAAqB,EAAE,CAAC,CAgBlC"}

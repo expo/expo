@@ -8,7 +8,6 @@
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
 #import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXDefines.h>
-#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
@@ -37,10 +36,8 @@
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/EXSharedObjectUtils.h>
-#import <ExpoModulesCore/EXBridgeModule.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXSingletonModule.h>
-#import <ExpoModulesCore/EXUnimodulesCompat.h>
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>
@@ -50,18 +47,12 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
-#import <ExpoModulesCore/EXEventEmitter.h>
-#import <ExpoModulesCore/EXEventEmitterService.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
-#import <ExpoModulesCore/EXLogHandler.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <ExpoModulesCore/EXUIManager.h>
 #import <ExpoModulesCore/EXUtilitiesInterface.h>
-#import <ExpoModulesCore/EXLogManager.h>
-#import <ExpoModulesCore/EXReactLogHandler.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
-#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXPermissionsService.h>
 #import <ExpoModulesCore/EXReactNativeUserNotificationCenterProxy.h>
 #import <ExpoModulesCore/Platform.h>

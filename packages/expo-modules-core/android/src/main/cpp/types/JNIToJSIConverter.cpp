@@ -90,6 +90,67 @@ jsi::Value convert(
   return jsi::Value::undefined();
 }
 
+jsi::Value convert(
+  JNIEnv *env,
+  jsi::Runtime &rt,
+  ReturnType returnType,
+  const jni::local_ref<jobject> &value
+) {
+#define CAST_AND_RETURN(type) \
+    return convertToJS(env, rt, *((jni::local_ref<type>*)((void*)&value)));
+#define COMMA ,
+
+  switch (returnType) {
+    case ReturnType::UNKNOWN:
+      return convert(env, rt, value);
+    case ReturnType::DOUBLE:
+      CAST_AND_RETURN(jni::JDouble)
+    case ReturnType::INT:
+      CAST_AND_RETURN(jni::JInteger)
+    case ReturnType::LONG:
+      CAST_AND_RETURN(jni::JLong)
+    case ReturnType::STRING:
+      CAST_AND_RETURN(jni::JString)
+    case ReturnType::BOOLEAN:
+      CAST_AND_RETURN(jni::JBoolean)
+    case ReturnType::FLOAT:
+      CAST_AND_RETURN(jni::JFloat)
+    case ReturnType::WRITEABLE_ARRAY:
+      CAST_AND_RETURN(react::WritableNativeArray::javaobject)
+    case ReturnType::WRITEABLE_MAP:
+      CAST_AND_RETURN(react::WritableNativeMap::javaobject)
+    case ReturnType::JS_MODULE:
+      CAST_AND_RETURN(JavaScriptModuleObject::javaobject)
+    case ReturnType::SHARED_OBJECT:
+      CAST_AND_RETURN(JSharedObject::javaobject)
+    case ReturnType::JS_TYPED_ARRAY:
+      CAST_AND_RETURN(JavaScriptTypedArray::javaobject)
+    case ReturnType::JS_ARRAY_BUFFER:
+      CAST_AND_RETURN(JavaScriptArrayBuffer::javaobject)
+    case ReturnType::NATIVE_ARRAY_BUFFER:
+      CAST_AND_RETURN(NativeArrayBuffer::javaobject)
+    case ReturnType::MAP:
+      CAST_AND_RETURN(jni::JMap<jstring COMMA jobject>)
+    case ReturnType::COLLECTION:
+      CAST_AND_RETURN(jni::JCollection<jobject>)
+    case ReturnType::DOUBLE_ARRAY:
+      CAST_AND_RETURN(jni::JArrayDouble)
+    case ReturnType::INT_ARRAY:
+      CAST_AND_RETURN(jni::JArrayInt)
+    case ReturnType::LONG_ARRAY:
+      CAST_AND_RETURN(jni::JArrayLong)
+    case ReturnType::FLOAT_ARRAY:
+      CAST_AND_RETURN(jni::JArrayFloat)
+    case ReturnType::BOOLEAN_ARRAY:
+      CAST_AND_RETURN(jni::JArrayBoolean )
+  }
+
+#undef COMMA
+#undef CAST_AND_RETURN
+
+  assert("Unhandled ReturnType in JNIToJSIConverter::convert" && false);
+}
+
 std::optional<jsi::Value> decorateValueForDynamicExtension(jsi::Runtime &rt, const jsi::Value &value) {
   if (value.isString()) {
     std::string string = value.getString(rt).utf8(rt);

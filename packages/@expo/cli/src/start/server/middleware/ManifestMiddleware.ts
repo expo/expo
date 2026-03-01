@@ -6,6 +6,8 @@ import {
   ProjectConfig,
 } from '@expo/config';
 import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import path from 'path';
 import { resolve } from 'url';
 
@@ -19,7 +21,7 @@ import {
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
-import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
@@ -259,11 +261,7 @@ export abstract class ManifestMiddleware<
   }
 
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
-  public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<{
-    body: string;
-    version: string;
-    headers: ServerHeaders;
-  }>;
+  public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<Response>;
 
   private getExpoGoConfig({
     mainModuleName,
@@ -389,10 +387,20 @@ export abstract class ManifestMiddleware<
 
     // Read from headers
     const options = this.getParsedHeaders(req);
-    const { body, headers } = await this._getManifestResponseAsync(options);
-    for (const [headerName, headerValue] of headers) {
-      res.setHeader(headerName, headerValue);
+
+    const response = await this._getManifestResponseAsync(options);
+    // Convert `Response` to node:http response
+    if (typeof res.setHeaders === 'function') {
+      res.setHeaders(response.headers);
+    } else {
+      for (const [key, value] of response.headers.entries()) {
+        res.appendHeader(key, value);
+      }
     }
-    res.end(body);
+    if (response.body) {
+      await pipeline(Readable.fromWeb(response.body as any), res);
+    } else {
+      res.end();
+    }
   }
 }

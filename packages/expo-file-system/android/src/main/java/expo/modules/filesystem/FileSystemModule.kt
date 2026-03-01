@@ -6,14 +6,13 @@ import android.os.Build
 import android.util.Base64
 import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
@@ -27,7 +26,6 @@ class FileSystemModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
   @RequiresApi(Build.VERSION_CODES.O)
-  @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
 
@@ -52,7 +50,7 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions? ->
-      to.validatePermission(Permission.WRITE)
+      to.validatePermission(FilePermissionService.Permission.WRITE)
       val requestBuilder = Request.Builder().url(url.toURL())
 
       options?.headers?.forEach { (key, value) ->
@@ -126,7 +124,7 @@ class FileSystemModule : Module() {
           appContext.reactContext ?: throw Exceptions.ReactContextLost(),
           file.path
         )
-      if (permissions.contains(Permission.READ) && file.exists()) {
+      if (permissions.contains(FilePermissionService.Permission.READ) && file.exists()) {
         PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
       } else {
         PathInfo(exists = false, isDirectory = null)
@@ -150,18 +148,19 @@ class FileSystemModule : Module() {
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+        val append = options?.append ?: false
         if (content.`is`(String::class)) {
           content.get(String::class).let {
             if (options?.encoding == EncodingType.BASE64) {
-              file.write(Base64.decode(it, Base64.DEFAULT))
+              file.write(Base64.decode(it, Base64.DEFAULT), append)
             } else {
-              file.write(it)
+              file.write(it, append)
             }
           }
         }
         if (content.`is`(TypedArray::class)) {
           content.get(TypedArray::class).let {
-            file.write(it)
+            file.write(it, append)
           }
         }
       }
@@ -255,7 +254,7 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile ->
         FileSystemFileHandle(file)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
       Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->

@@ -1,5 +1,3 @@
-import { Response } from 'undici';
-
 import { FetchLike } from './client.types';
 import * as Log from '../../log';
 

@@ -1,7 +1,8 @@
+import type { LoaderFunction } from 'expo-server';
 import path from 'path';
 
 import requireContext from './require-context-ponyfill';
-import { LoaderFunction, NativeIntent } from '../types';
+import { NativeIntent } from '../types';
 
 export type ReactComponent = () => React.ReactElement<any, any> | null;
 export type NativeIntentStub = NativeIntent;

@@ -10,6 +10,11 @@ protocol AnyConstantDefinition {
    Creates the JavaScript object representing the constant property descriptor.
    */
   func buildDescriptor(appContext: AppContext) throws -> JavaScriptObject
+
+  /**
+   Returns the raw value of the constant for encoding purposes.
+   */
+  func getRawValue() -> Any?
 }
 
 public final class ConstantDefinition<ReturnType>: AnyDefinition, AnyConstantDefinition {
@@ -57,6 +62,10 @@ public final class ConstantDefinition<ReturnType>: AnyDefinition, AnyConstantDef
 
   internal func getValue(appContext: AppContext) throws -> ReturnType? {
     return try getter?()
+  }
+
+  internal func getRawValue() -> Any? {
+    return try? getter?()
   }
 
   /**

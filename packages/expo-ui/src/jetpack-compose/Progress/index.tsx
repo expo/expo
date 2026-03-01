@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type ProgressElementColors = {
   /**
@@ -63,54 +64,39 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
   'ProgressView'
 );
 
+function transformProps(props: CircularProgressProps | LinearProgressProps): NativeProgressProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
 /**
  * Renders a `CircularProgress` component.
  */
 export function CircularProgress(props: CircularProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="circular"
-    />
-  );
+  return <NativeProgressView {...transformProps(props)} variant="circular" />;
 }
 
 /**
  * Renders a `LinearProgress` component.
  */
 export function LinearProgress(props: LinearProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="linear"
-    />
-  );
+  return <NativeProgressView {...transformProps(props)} variant="linear" />;
 }
 
 /**
  * Renders a `CircularWavyProgress` component with wavy animation.
  */
 export function CircularWavyProgress(props: CircularProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="circularWavy"
-    />
-  );
+  return <NativeProgressView {...transformProps(props)} variant="circularWavy" />;
 }
 
 /**
  * Renders a `LinearWavyProgress` component with wavy animation.
  */
 export function LinearWavyProgress(props: LinearProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="linearWavy"
-    />
-  );
+  return <NativeProgressView {...transformProps(props)} variant="linearWavy" />;
 }

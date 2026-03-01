@@ -8,6 +8,7 @@ import { FileStatus } from './FileStatus';
 export type SnippetHeaderProps = PropsWithChildren<{
   title: string | ReactNode;
   Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
+  titleSlot?: ReactNode;
   alwaysDark?: boolean;
   float?: boolean;
   operationType?: 'delete' | 'add' | 'modify' | undefined;
@@ -18,12 +19,14 @@ export const SnippetHeader = ({
   title,
   children,
   Icon,
+  titleSlot,
   float,
   alwaysDark = false,
   operationType,
   showOperation = false,
 }: SnippetHeaderProps) => (
   <div
+    data-md="snippet-header"
     className={mergeClasses(
       'flex min-h-[40px] justify-between overflow-hidden border border-default bg-default pl-4',
       !float && 'rounded-t-md border-b-0',
@@ -39,6 +42,7 @@ export const SnippetHeader = ({
       {Icon && <Icon className="icon-sm shrink-0" />}
       <span className="break-words w-max max-w-[60dvw] truncate">{title}</span>
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
+      {titleSlot}
     </LABEL>
     {!!children && <div className="flex items-center justify-end">{children}</div>}
   </div>

@@ -12,6 +12,11 @@ import { resolveSource } from './utils/resolveSources';
  *
  * It loads a new image every time the `uri` of the provided source changes.
  * To trigger reloads in some other scenarios, you can provide an additional dependency list.
+ *
+ * > **warning** Avoid using this hook for large images without specifying size constraints,
+ * > as it may cause crashes due to excessive memory usage. It is recommended to use either
+ * > `maxWidth` or `maxHeight` option to scale down the image appropriately for your use case.
+ *
  * @platform android
  * @platform ios
  * @platform web

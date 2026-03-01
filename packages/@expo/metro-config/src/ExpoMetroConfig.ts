@@ -32,14 +32,6 @@ import { setOnReadonly } from './utils/setOnReadonly';
 
 const debug = require('debug')('expo:metro:config') as typeof console.log;
 
-export interface LoadOptions {
-  config?: string;
-  maxWorkers?: number;
-  port?: number;
-  reporter?: Reporter;
-  resetCache?: boolean;
-}
-
 export interface DefaultConfigOptions {
   /** @deprecated */
   mode?: 'exotic';

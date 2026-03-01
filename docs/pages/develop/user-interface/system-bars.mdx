@@ -47,7 +47,7 @@ System bars can be customized to match your app's design and provide better visi
 
 The status bar appears at the top of the screen on both Android and iOS. You can customize it using [`expo-status-bar`](/versions/latest/sdk/status-bar). It provides a `StatusBar` component that you can use to control the appearance of the status bar while your app is running using the [`style`](/versions/latest/sdk/status-bar/#style) property or the [`setStatusBarStyle`](/versions/latest/sdk/status-bar/#statusbarsetstatusbarstylestyle-animated) method:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { StatusBar } from 'expo-status-bar';
 
 export default function RootLayout() {
@@ -68,7 +68,7 @@ To control the `StatusBar` visibility, you can set the [`hidden`](/versions/late
 
 On Android devices, the Navigation Bar appears at the bottom of the screen. You can customize it using the [`expo-navigation-bar`](/versions/latest/sdk/navigation-bar) library. It provides a `NavigationBar` component that you can use to set the style of the navigation bar using the [`setStyle`](/versions/latest/sdk/navigation-bar/#navigationbarsetstylestyle) method:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Platform } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { useEffect } from 'react';

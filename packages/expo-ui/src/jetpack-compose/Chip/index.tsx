@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import React from 'react';
 
 import { ExpoModifier } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * Available text style variants for chip labels.
@@ -71,18 +72,19 @@ export interface ChipProps {
   onDismiss?: () => void;
 }
 
+type NativeChipProps = ChipProps;
 // Native component declaration using the same pattern as Button
-const ChipNativeView: React.ComponentType<ChipProps> = requireNativeView('ExpoUI', 'ChipView');
+const ChipNativeView: React.ComponentType<NativeChipProps> = requireNativeView(
+  'ExpoUI',
+  'ChipView'
+);
 
-/**
- * @hidden
- */
-export function transformChipProps(props: ChipProps): ChipProps {
+function transformChipProps(props: ChipProps): NativeChipProps {
   const { modifiers, ...restProps } = props;
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

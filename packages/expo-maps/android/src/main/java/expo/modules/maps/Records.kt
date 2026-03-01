@@ -1,5 +1,3 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.maps
 
 import android.graphics.Bitmap
@@ -12,7 +10,6 @@ import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedRef

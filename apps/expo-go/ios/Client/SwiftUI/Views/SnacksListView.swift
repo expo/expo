@@ -15,6 +15,12 @@ struct SnacksListView: View {
   var body: some View {
     ScrollView {
       LazyVStack(spacing: 6) {
+        if viewModel.isLoading && viewModel.snacks.isEmpty {
+          ForEach(0..<3, id: \.self) { _ in
+            SnackSkeletonRow()
+          }
+        }
+
         ForEach(viewModel.snacks) { snack in
           SnackRowWithAction(snack: snack)
         }
@@ -31,7 +37,7 @@ struct SnacksListView: View {
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
 
-        if viewModel.isLoading {
+        if viewModel.isLoading && !viewModel.snacks.isEmpty {
           ProgressView()
             .padding()
         }

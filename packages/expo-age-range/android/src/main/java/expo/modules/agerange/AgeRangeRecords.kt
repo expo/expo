@@ -1,6 +1,7 @@
 package expo.modules.agerange
 
 import com.google.android.play.agesignals.AgeSignalsResult
+import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.DECLARED
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.SUPERVISED
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING
@@ -37,6 +38,7 @@ data class AgeRangeResult(
         SUPERVISED_APPROVAL_PENDING -> "SUPERVISED_APPROVAL_PENDING"
         UNKNOWN -> "UNKNOWN"
         SUPERVISED_APPROVAL_DENIED -> "SUPERVISED_APPROVAL_DENIED"
+        DECLARED -> "DECLARED"
         else -> status.toString()
       }
     }

@@ -11,6 +11,7 @@ namespace jsi = facebook::jsi;
 @class EXJavaScriptRuntime;
 @class EXRawJavaScriptFunction;
 @class EXJavaScriptTypedArray;
+@class EXJavaScriptArrayBuffer;
 
 /**
  Represents any JavaScript value. Its purpose is to exposes `facebook::jsi::Value` API back to Swift.
@@ -38,7 +39,9 @@ NS_SWIFT_NAME(JavaScriptValue)
 - (BOOL)isSymbol;
 - (BOOL)isObject;
 - (BOOL)isFunction;
+- (BOOL)isArray;
 - (BOOL)isTypedArray;
+- (BOOL)isArrayBuffer;
 
 #pragma mark - Type casting
 
@@ -52,6 +55,7 @@ NS_SWIFT_NAME(JavaScriptValue)
 - (nonnull EXJavaScriptObject *)getObject;
 - (nonnull EXRawJavaScriptFunction *)getFunction;
 - (nullable EXJavaScriptTypedArray *)getTypedArray;
+- (nullable EXJavaScriptArrayBuffer *)getArrayBuffer;
 
 #pragma mark - Helpers
 

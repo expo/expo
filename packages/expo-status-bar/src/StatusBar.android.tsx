@@ -4,9 +4,6 @@ import {
   StatusBar as OriginalStatusBar,
   setStatusBarStyle as originalSetStatusBarStyle,
   setStatusBarHidden as originalSetStatusBarHidden,
-  setStatusBarBackgroundColor as originalSetStatusBarBackgroundColor,
-  setStatusBarNetworkActivityIndicatorVisible as originalSetStatusBarNetworkActivityIndicatorVisible,
-  setStatusBarTranslucent as originalSetStatusBarTranslucent,
 } from './NativeStatusBarWrapper';
 import { StatusBarAnimation, StatusBarProps, StatusBarStyle } from './types';
 
@@ -39,10 +36,7 @@ export function setStatusBarHidden(hidden: boolean, animation?: StatusBarAnimati
 export function setStatusBarBackgroundColor(backgroundColor: string, animated?: boolean) {
   if (isEdgeToEdge()) {
     console.warn('`setStatusBarBackgroundColor` is not supported with edge-to-edge enabled.');
-    return;
   }
-
-  return originalSetStatusBarBackgroundColor(backgroundColor, animated);
 }
 
 export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
@@ -50,10 +44,7 @@ export function setStatusBarNetworkActivityIndicatorVisible(visible: boolean) {
     console.warn(
       '`setStatusBarNetworkActivityIndicatorVisible` is not supported with edge-to-edge enabled.'
     );
-    return;
   }
-
-  return originalSetStatusBarNetworkActivityIndicatorVisible(visible);
 }
 
 export function setStatusBarTranslucent(translucent: boolean) {
@@ -61,8 +52,5 @@ export function setStatusBarTranslucent(translucent: boolean) {
     console.warn(
       '`setStatusBarTranslucent` is not supported with edge-to-edge enabled. In this case the status bar is always translucent.'
     );
-    return;
   }
-
-  return originalSetStatusBarTranslucent(translucent);
 }

@@ -68,8 +68,8 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
     }
   }
 
-  override fun outputStream(): OutputStream {
-    return FileOutputStream(this)
+  override fun outputStream(append: Boolean): OutputStream {
+    return FileOutputStream(this, append)
   }
 
   override fun inputStream(): InputStream {

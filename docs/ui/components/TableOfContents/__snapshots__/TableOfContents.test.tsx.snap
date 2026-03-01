@@ -31,7 +31,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
       </svg>
        On this page
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium items-center whitespace-nowrap gap-1.5 h-8 text-3xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 ml-auto mr-2 px-2 transition-opacity duration-300 pointer-events-none opacity-0"
+        class="cursor-pointer inline-flex border border-solid rounded-full font-medium items-center whitespace-nowrap gap-1.5 h-8 text-3xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 ml-auto mr-2 px-2 transition-opacity duration-300 pointer-events-none opacity-0"
         type="button"
       >
         <span

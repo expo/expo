@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withIosInfoPlist = exports.withIosDeploymentTarget = exports.withIosBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
+const pluginConfig_1 = require("./pluginConfig");
 const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.BuildProperties;
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     {
@@ -33,16 +34,11 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     },
     {
         propName: 'ios.buildReactNativeFromSource',
-        propValueGetter: (config) => config.ios?.buildReactNativeFromSource?.toString(),
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'ios', 'buildReactNativeFromSource')?.toString(),
     },
     {
         propName: 'expo.useHermesV1',
-        propValueGetter: (config) => {
-            if (config.ios?.useHermesV1 && config.ios?.buildReactNativeFromSource !== true) {
-                config_plugins_1.WarningAggregator.addWarningIOS('withIosBuildProperties', 'Hermes V1 requires building React Native from source. Set `buildReactNativeFromSource` to `true` to enable it.');
-            }
-            return config.ios?.useHermesV1?.toString();
-        },
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'ios', 'useHermesV1')?.toString(),
     },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
@@ -58,7 +54,7 @@ const withIosDeploymentTarget = (config, props) => {
 };
 exports.withIosDeploymentTarget = withIosDeploymentTarget;
 const withIosInfoPlist = (config, props) => {
-    const reactNativeReleaseLevel = props.ios?.reactNativeReleaseLevel;
+    const reactNativeReleaseLevel = (0, pluginConfig_1.resolveConfigValue)(props, 'ios', 'reactNativeReleaseLevel');
     if (reactNativeReleaseLevel) {
         config = withIosReactNativeReleaseLevel(config, { reactNativeReleaseLevel });
     }

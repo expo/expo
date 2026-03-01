@@ -9,6 +9,7 @@ import ts from 'typescript';
 import {
   Closure,
   ClosureTypes,
+  Constant,
   OutputModuleDefinition,
   OutputNestedClassDefinition,
 } from './types';
@@ -263,6 +264,26 @@ function getMockedFunctions(functions: Closure[], { async = false, classMethod =
   });
 }
 
+/*
+We iterate over a list of constants and create TS AST for each of them.
+Constants are exported as `export const NAME = value;`
+*/
+function getMockedConstants(constants: Constant[]) {
+  return constants.map((constant) => {
+    const name = ts.factory.createIdentifier(constant.name);
+    const returnType = mapSwiftTypeToTsType(constant.types?.returnType ?? 'unknown');
+    const initializer = getMockLiterals(returnType) ?? ts.factory.createNumericLiteral('0');
+
+    return ts.factory.createVariableStatement(
+      [ts.factory.createToken(ts.SyntaxKind.ExportKeyword)],
+      ts.factory.createVariableDeclarationList(
+        [ts.factory.createVariableDeclaration(name, undefined, undefined, initializer)],
+        ts.NodeFlags.Const
+      )
+    );
+  });
+}
+
 /**
  * Collect all type references used in any of the AST types to generate type aliases
  * e.g. type `[URL: string]?` will generate `type URL = any;`
@@ -412,7 +433,13 @@ function omitFromSet(set: Set<string>, toOmit: (string | undefined)[]) {
 
 function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean) {
   return (
-    [] as (ts.TypeAliasDeclaration | ts.FunctionDeclaration | ts.JSDoc | ts.ClassDeclaration)[]
+    [] as (
+      | ts.TypeAliasDeclaration
+      | ts.FunctionDeclaration
+      | ts.JSDoc
+      | ts.ClassDeclaration
+      | ts.VariableStatement
+    )[]
   )
     .concat(
       getPrefix(),
@@ -434,6 +461,8 @@ function getMockForModule(module: OutputModuleDefinition, includeTypes: boolean)
             )
           )
         : [],
+      newlineIdentifier,
+      getMockedConstants(module.constants),
       newlineIdentifier,
       getMockedFunctions(module.functions) as ts.FunctionDeclaration[],
       getMockedFunctions(module.asyncFunctions, { async: true }) as ts.FunctionDeclaration[],

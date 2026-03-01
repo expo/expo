@@ -10,6 +10,50 @@
 
 ### 💡 Others
 
+## 55.0.8 — 2026-02-25
+
+### 🛠 Breaking changes
+
+- Remove the `legacyVisible` plugin option. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+### 🎉 New features
+
+- Add the `enforceContrast` plugin option. Falls back to `androidNavigationBar.enforceContrast` if set. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+- Deprecated and turned into no-ops the `setBackgroundColorAsync`, `getBackgroundColorAsync`, `setBorderColorAsync`, `getBorderColorAsync`, `setBehaviorAsync`, `getBehaviorAsync`, `setPositionAsync`, `unstable_getPositionAsync`, and `getButtonStyleAsync` functions, as well as the `borderColor`, `backgroundColor`, `behavior`, and `position` plugin options. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))

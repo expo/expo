@@ -1,22 +1,17 @@
 package expo.modules.ui
 
-import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 
 open class ValueChangeEvent(
@@ -56,18 +51,25 @@ class SwitchColors : Record {
 }
 
 data class SwitchProps(
-  val value: MutableState<Boolean> = mutableStateOf(false),
-  val variant: MutableState<String> = mutableStateOf("switch"),
-  val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors()),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val value: Boolean = false,
+  val variant: String = "switch",
+  val elementColors: SwitchColors = SwitchColors(),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun SwitchComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier = Modifier) {
+fun SwitchComposable(
+  checked: Boolean,
+  onCheckedChange: ((Boolean) -> Unit)?,
+  colors: SwitchColors,
+  modifier: Modifier = Modifier,
+  thumbContent: (@Composable () -> Unit)? = null
+) {
   Switch(
     checked = checked,
     onCheckedChange = onCheckedChange,
     modifier = modifier,
+    thumbContent = thumbContent,
     colors = SwitchDefaults.colors(
       // For some reason the default way of passing colors using `compose` results in a transparent view
       checkedThumbColor = colors.checkedThumbColor.composeOrNull
@@ -105,30 +107,36 @@ fun ThemedHybridSwitch(
   checked: Boolean,
   onCheckedChange: ((Boolean) -> Unit)?,
   colors: SwitchColors,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  thumbContent: (@Composable () -> Unit)? = null
 ) {
   when (variant) {
-    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier)
+    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier, thumbContent)
     else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
   }
 }
 
-class SwitchView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SwitchProps>(context, appContext) {
-  override val props = SwitchProps()
-  private val onValueChange by EventDispatcher<ValueChangeEvent>()
+@Composable
+fun FunctionalComposableScope.SwitchContent(
+  props: SwitchProps,
+  onValueChange: (ValueChangeEvent) -> Unit
+) {
+  val thumbContentSlotView = findChildSlotView(view, "thumbContent")
 
-  @Composable
-  override fun ComposableScope.Content() {
-    val (checked) = props.value
-    val (variant) = props.variant
-    val (colors) = props.elementColors
-    val onCheckedChange = { checked: Boolean ->
-      onValueChange(ValueChangeEvent(checked))
+  ThemedHybridSwitch(
+    props.variant,
+    props.value,
+    { newChecked -> onValueChange(ValueChangeEvent(newChecked)) },
+    props.elementColors,
+    ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    thumbContent = thumbContentSlotView?.let {
+      {
+        with(ComposableScope()) {
+          with(it) {
+            Content()
+          }
+        }
+      }
     }
-
-    ThemedHybridSwitch(variant, checked, onCheckedChange, colors,
-      Modifier.fromExpoModifiers(props.modifiers.value,
-        this@Content))
-  }
+  )
 }

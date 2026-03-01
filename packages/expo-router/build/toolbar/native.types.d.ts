@@ -1,3 +1,4 @@
+import type { ImageRef } from 'expo-image';
 import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type { BasicTextStyle } from '../utils/font';
@@ -9,7 +10,10 @@ export interface RouterToolbarItemProps {
     identifier: string;
     title?: string;
     systemImageName?: SFSymbol;
-    type?: 'normal' | 'fixedSpacer' | 'fluidSpacer';
+    xcassetName?: string;
+    image?: ImageRef | null;
+    imageRenderingMode?: 'template' | 'original';
+    type?: 'normal' | 'fixedSpacer' | 'fluidSpacer' | 'searchBar';
     tintColor?: ColorValue;
     hidesSharedBackground?: boolean;
     sharesBackground?: boolean;

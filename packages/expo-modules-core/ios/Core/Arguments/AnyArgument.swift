@@ -14,7 +14,11 @@ extension AnyArgument {
 }
 
 // Extend the primitive types — these may come from React Native bridge.
-extension Bool: AnyArgument {}
+extension Bool: AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicBoolType.shared
+  }
+}
 
 extension Int: AnyArgument {
   public static func getDynamicType() -> any AnyDynamicType {

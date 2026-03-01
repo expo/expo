@@ -57,8 +57,10 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   // For assets during development using manifest2, we use the development server's URL origin
   const manifest2 = getManifest2();
 
+  // Use the scheme from manifestBaseUrl (derived from experienceUrl) to support HTTPS dev servers
+  const scheme = manifestBaseUrl?.startsWith('https://') ? 'https://' : 'http://';
   const devServerUrl = manifest2?.extra?.expoGo?.developer
-    ? 'http://' + manifest2.extra.expoGo.debuggerHost
+    ? scheme + manifest2.extra.expoGo.debuggerHost
     : null;
   if (devServerUrl) {
     const baseUrl = new URL(meta.httpServerLocation + suffix, devServerUrl);

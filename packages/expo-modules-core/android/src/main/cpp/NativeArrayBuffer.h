@@ -7,6 +7,8 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
+#include "TypedArray.h"
+
 #include <memory>
 
 namespace expo {
@@ -49,10 +51,23 @@ public:
     jni::alias_ref<jni::JByteBuffer> byteBuffer
   );
 
+  /**
+   * Allocates a new NativeArrayBuffer by copying the contents of the given ArrayBuffer.
+   */
   static jni::local_ref<NativeArrayBuffer::javaobject> newInstance(
     JSIContext *jsiContext,
     jsi::Runtime& runtime,
     jsi::ArrayBuffer& arrayBuffer
+  );
+
+  /**
+   * Allocates a new NativeArrayBuffer by copying only the bytes within the typed array's
+   * view range — not the entire backing buffer.
+   */
+  static jni::local_ref<NativeArrayBuffer::javaobject> newInstance(
+    JSIContext *jsiContext,
+    jsi::Runtime& runtime,
+    expo::TypedArray& typedArray
   );
 
   explicit NativeArrayBuffer(const jni::alias_ref<jni::JByteBuffer>& byteBuffer);

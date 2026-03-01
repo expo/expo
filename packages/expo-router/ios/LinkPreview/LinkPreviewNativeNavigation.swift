@@ -11,9 +11,9 @@ internal class LinkPreviewNativeNavigation {
   private weak var preloadedScreenView: RNSScreenView?
   private weak var preloadedStackView: RNSScreenStackView?
   private var tabChangeCommands: [TabChangeCommand] = []
-  private let logger: Logger?
+  private let logger: ExpoModulesCore.Logger?
 
-  init(logger: Logger?) {
+  init(logger: ExpoModulesCore.Logger?) {
     self.logger = logger
   }
 

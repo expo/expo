@@ -147,6 +147,6 @@ extension SharedObject: ClassAssociatedObject {}
  - Redefining prototype's `constructor` is a bad idea so a function with this name
    needs to be filtered out when decorating the prototype.
  */
-fileprivate func isConstructor(_ item: AnyDefinition) -> Bool {
+private func isConstructor(_ item: AnyDefinition) -> Bool {
   return (item as? AnySyncFunctionDefinition)?.name == "constructor"
 }

@@ -2,11 +2,9 @@
 
 #import "EXAbstractLoader.h"
 #import "EXErrorView.h"
-#import "EXEnvironment.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
 #import "EXManifestResource.h"
-#import "EXUtil.h"
 #import "Expo_Go-Swift.h"
 
 @import EXManifests;

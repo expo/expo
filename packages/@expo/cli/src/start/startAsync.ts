@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { shouldReduceLogs } from '../events';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
@@ -16,6 +17,7 @@ import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { maybeCreateMCPServerAsync } from './server/MCP';
+import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -66,7 +68,9 @@ export async function startAsync(
   options: Options,
   settings: { webOnly?: boolean }
 ) {
-  Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+  if (!shouldReduceLogs()) {
+    Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+  }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
@@ -136,7 +140,11 @@ export async function startAsync(
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
   }
-  mcpServer?.start();
+
+  if (mcpServer) {
+    addMcpCapabilities(mcpServer, devServerManager);
+    mcpServer.start();
+  }
 
   // Final note about closing the server.
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';

@@ -17,6 +17,7 @@ import {
   background,
   cornerRadius,
   frame,
+  foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import { useId, useState } from 'react';
 import { View } from 'react-native';
@@ -158,7 +159,9 @@ export default function GlassEffect() {
                   },
                 }),
               ]}>
-              <Text color="#fff">{isGlassExpanded ? 'Hide Tools' : 'Show More Tools'}</Text>
+              <Text modifiers={[foregroundStyle('#fff')]}>
+                {isGlassExpanded ? 'Hide Tools' : 'Show More Tools'}
+              </Text>
             </Button>
           </VStack>
         </VStack>

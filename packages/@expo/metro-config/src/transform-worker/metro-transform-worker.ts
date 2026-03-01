@@ -73,6 +73,7 @@ interface JSFile extends BaseFile {
   readonly reactServerReference?: string;
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
+  readonly loaderReference?: string;
   readonly hasCjsExports?: boolean;
   readonly performConstantFolding?: boolean;
 }
@@ -170,19 +171,6 @@ export const minifyCode = async (
     throw error;
   }
 };
-
-function renameTopLevelModuleVariables() {
-  // A babel plugin which renames variables in the top-level scope that are named "module".
-  return {
-    visitor: {
-      Program(path: any) {
-        ['global', 'require', 'module', 'exports'].forEach((name) => {
-          path.scope.rename(name, path.scope.generateUidIdentifier(name).name);
-        });
-      },
-    },
-  };
-}
 
 function applyUseStrictDirective(ast: t.File | ParseResult) {
   // Add "use strict" if the file was parsed as a module, and the directive did
@@ -546,6 +534,8 @@ async function transformJS(
   let lineCount;
   ({ lineCount, map } = countLinesAndTerminateMap(code, map));
 
+  // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
+  // that React Compiler and other Babel plugins may add.
   const output: ExpoJsOutput[] = [
     {
       data: {
@@ -557,6 +547,7 @@ async function transformJS(
         reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
+        loaderReference: file.loaderReference,
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -569,6 +560,22 @@ async function transformJS(
       type: file.type,
     },
   ];
+
+  if (possibleReconcile) {
+    const reactCompilerFlag = options.customTransformOptions?.reactCompiler;
+    if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
+      try {
+        return {
+          dependencies,
+          // React compiler adds symbols to the AST which break threading. This will ensure the
+          // AST and other properties are fully serialized before being sent to the worker.
+          output: JSON.parse(JSON.stringify(output)),
+        };
+      } catch (error: any) {
+        throw new Error(`Failed to serialize output for file ${file.filename}: ${error}`);
+      }
+    }
+  }
 
   return {
     dependencies,
@@ -648,6 +655,7 @@ async function transformJSWithBabel(
     reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+    loaderReference: transformResult.metadata?.loaderReference,
     performConstantFolding: transformResult.metadata?.performConstantFolding,
   };
 

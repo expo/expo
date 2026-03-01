@@ -3,32 +3,13 @@ import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import React from 'react';
 
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import { isModalPresentation } from '../../utils/stackPresentation';
 
 /**
  * A minimal subset of `ExtendedStackNavigationOptions` needed for the helper
  * @internal
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
-
-/**
- * Helper to determine if a given screen should be treated as a modal-type presentation
- *
- * @param options - The navigation options.
- * @returns Whether the screen should be treated as a modal-type presentation.
- *
- * @internal
- */
-export function isModalPresentation(options?: PresentationOptions | null) {
-  const presentation = options?.presentation;
-  return (
-    presentation === 'modal' ||
-    presentation === 'formSheet' ||
-    presentation === 'fullScreenModal' ||
-    presentation === 'containedModal' ||
-    presentation === 'transparentModal' ||
-    presentation === 'containedTransparentModal'
-  );
-}
 
 /**
  * Helper to determine if a given screen should be treated as a transparent modal-type presentation

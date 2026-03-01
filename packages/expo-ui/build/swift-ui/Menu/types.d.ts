@@ -22,7 +22,7 @@ export type MenuProps = {
     onPrimaryAction?: () => void;
     /**
      * The menu's content items, which are shown when the menu is opened.
-     * Can contain `Button`, `Switch`, `Picker`, `Section`, `Divider`, or nested `Menu` components.
+     * Can contain `Button`, `Toggle`, `Picker`, `Section`, `Divider` or nested `Menu` components.
      */
     children: ReactNode;
 } & CommonViewModifierProps;

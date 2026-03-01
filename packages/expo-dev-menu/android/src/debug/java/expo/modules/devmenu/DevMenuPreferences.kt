@@ -88,7 +88,6 @@ class DevMenuDefaultPreferences(
   override var isOnboardingFinished: Boolean
     by preferences(sharedPreferences, false)
 
-  // TODO: @behenate, on VR this value should be true by default
   override var showFab: Boolean
-    by preferences(sharedPreferences, false)
+    by preferences(sharedPreferences, true)
 }

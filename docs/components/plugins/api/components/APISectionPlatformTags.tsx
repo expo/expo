@@ -5,6 +5,7 @@ import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 import { StatusTag } from '~/ui/components/Tag/StatusTag';
+import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
 
 import { CommentData, CommentTagData } from '../APIDataTypes';
 import { getAllTagData, getCommentContent } from '../APISectionUtils';
@@ -29,16 +30,21 @@ export const APISectionPlatformTags = ({
   const { platforms: defaultPlatforms } = usePageMetadata();
   const { version } = usePageApiVersion();
 
-  const isCompatibleVersion = ['unversioned', 'latest', 'v52.0.0'].includes(version);
+  const isCompatibleVersion = ['unversioned', 'latest', 'v55.0.0', 'v54.0.0', 'v53.0.0'].includes(
+    version
+  );
   const platformsData = platforms ?? getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 
+  const filteredDefaultPlatforms = defaultPlatforms?.filter(
+    platform => !isClientPlatformTag(platform)
+  );
   const platformNames =
     userProvidedPlatforms ??
     (platformsData.length > 0
       ? platformsData?.map(platformData => getCommentContent(platformData.content))
       : isCompatibleVersion && !disableFallback
-        ? defaultPlatforms?.map(platform => platform.replace('*', ''))
+        ? filteredDefaultPlatforms?.map(platform => platform.replace('*', ''))
         : []);
 
   if (experimentalData.length === 0 && !platformNames?.length) {
@@ -46,11 +52,15 @@ export const APISectionPlatformTags = ({
   }
 
   return (
-    <div className={mergeClasses('mb-3 flex flex-row items-start [table_&]:mb-2.5', className)}>
+    <div
+      data-md="api-platforms"
+      className={mergeClasses('mb-3 flex flex-row items-start [table_&]:mb-2.5', className)}>
       {experimentalData.length > 0 && (
         <div className="inline-flex flex-row">
           <StatusTag status="experimental" className="!mr-0" />
-          <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+          {!!platformNames?.length && (
+            <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+          )}
         </div>
       )}
       <PlatformTags

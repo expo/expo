@@ -63,7 +63,19 @@ class IntentLauncherModule : Module() {
 
       params.extra?.let {
         val valuesList = it.mapValues { (_, value) ->
-          if (value is Double) value.toInt() else value
+          when {
+            value is Double -> {
+              // JavaScript sends all numbers as doubles. We need to convert them appropriately:
+              // - Large values (like calendar timestamps) need to be Long
+              // - Smaller values should remain Int for backward compatibility
+              if (value > Int.MAX_VALUE || value < Int.MIN_VALUE) {
+                value.toLong()
+              } else {
+                value.toInt()
+              }
+            }
+            else -> value
+          }
         }
         intent.putExtras(valuesList.toBundle())
       }

@@ -194,7 +194,7 @@ jsi::Value MethodMetadata::callSync(
   jni::JniLocalScope scope(env, (int) count);
 
   auto result = this->callJNISync(env, rt, thisValue, args, count);
-  return convert(env, rt, result);
+  return convert(env, rt, this->info.returnType, result);
 }
 
 jsi::Function MethodMetadata::toAsyncFunction(

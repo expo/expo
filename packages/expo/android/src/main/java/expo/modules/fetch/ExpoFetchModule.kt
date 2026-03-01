@@ -11,6 +11,7 @@ import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineName
@@ -97,14 +98,14 @@ class ExpoFetchModule : Module() {
 
       AsyncFunction("arrayBuffer") { response: NativeResponse, promise: Promise ->
         response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
-          val data = response.sink.finalize()
-          promise.resolve(data)
+          val data = response.sink.finalize(directBuffer = true)
+          promise.resolve(NativeArrayBuffer(data))
         }
       }
 
       AsyncFunction("text") { response: NativeResponse, promise: Promise ->
         response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
-          val data = response.sink.finalize()
+          val data = response.sink.finalize(directBuffer = false).array()
           val text = data.toString(Charsets.UTF_8)
           promise.resolve(text)
         }

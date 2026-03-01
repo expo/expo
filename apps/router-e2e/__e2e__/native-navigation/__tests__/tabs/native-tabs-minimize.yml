@@ -34,7 +34,6 @@ name: Native tabs minimize behavior
     id: "forward-button"
 - assertVisible: "applewatch.side.right"
 - assertNotVisible: "lock.applewatch"
-- assertNotVisible: "faces"
 - assertNotVisible: "figure.disc.sports"
 - assertNotVisible: "Dynamic"
 # Scroll up to maximize
@@ -57,9 +56,4 @@ name: Native tabs minimize behavior
     id: "pause-button"
 - assertVisible:
     id: "forward-button"
-- assertVisible: "applewatch.side.right"
-- assertVisible: "Index tab"
-- assertVisible: "lock.applewatch"
-- assertVisible: "faces"
-- assertVisible: "figure.disc.sports"
-- assertVisible: "Dynamic"
+- runFlow: ../assert-all-tabs-visible.yml

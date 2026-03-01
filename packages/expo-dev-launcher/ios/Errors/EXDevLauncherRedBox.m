@@ -141,11 +141,6 @@
     return;
   }
 
-  // hide method was removed from the RCTLogBox interface in RN 0.64
-  if ([self.logBox respondsToSelector:@selector(hide)]) {
-    [self.logBox performSelector:@selector(hide)];
-  }
-
   dispatch_async(dispatch_get_main_queue(), ^{
     EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:[self stripAnsi:message] stack:stack];
     [[EXDevLauncherController sharedInstance].errorManager showError:appError];

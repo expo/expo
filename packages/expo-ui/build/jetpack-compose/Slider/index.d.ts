@@ -1,14 +1,15 @@
-import { ExpoModifier, ViewEvent } from '../../types';
+import { type ColorValue } from 'react-native';
+import { ExpoModifier } from '../../types';
 /**
  * Colors for slider's core elements.
  * @platform android
  */
 export type SliderElementColors = {
-    thumbColor?: string;
-    activeTrackColor?: string;
-    inactiveTrackColor?: string;
-    activeTickColor?: string;
-    inactiveTickColor?: string;
+    thumbColor?: ColorValue;
+    activeTrackColor?: ColorValue;
+    inactiveTrackColor?: ColorValue;
+    activeTickColor?: ColorValue;
+    inactiveTickColor?: ColorValue;
 };
 export type SliderProps = {
     /**
@@ -39,7 +40,7 @@ export type SliderProps = {
     /**
      * Slider color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Callback triggered on dragging along the slider.
      */
@@ -49,13 +50,5 @@ export type SliderProps = {
      */
     modifiers?: ExpoModifier[];
 };
-type NativeSliderProps = Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', {
-    value: number;
-}>;
-/**
- * @hidden
- */
-export declare function transformSliderProps(props: SliderProps): NativeSliderProps;
 export declare function Slider(props: SliderProps): import("react").JSX.Element;
-export {};
 //# sourceMappingURL=index.d.ts.map

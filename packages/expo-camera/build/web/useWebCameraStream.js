@@ -37,7 +37,7 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
         autoFocus: 'continuous',
         flashMode: 'off',
         whiteBalance: 'continuous',
-        zoom: 1,
+        zoom: 0,
     });
     const [stream, setStream] = React.useState(null);
     const mediaTrackSettings = React.useMemo(() => {

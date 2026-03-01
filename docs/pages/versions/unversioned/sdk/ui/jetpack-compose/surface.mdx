@@ -1,0 +1,90 @@
+---
+title: Surface
+description: A Jetpack Compose Surface component for styled content containers.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Surface matches the official Jetpack Compose [Surface](https://developer.android.com/develop/ui/compose/components/surfaces) API and provides a container that applies Material Design surface styling including color, elevation, and content color.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic surface
+
+```tsx BasicSurfaceExample.tsx
+import { Host, Surface, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicSurfaceExample() {
+  return (
+    <Host matchContents>
+      <Surface modifiers={[paddingAll(16)]}>
+        <Text>Content on a surface</Text>
+      </Surface>
+    </Host>
+  );
+}
+```
+
+### Surface with elevation
+
+Use `tonalElevation` and `shadowElevation` to control the visual depth of the surface.
+
+```tsx SurfaceElevationExample.tsx
+import { Host, Surface, Column, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function SurfaceElevationExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <Surface tonalElevation={1} shadowElevation={2} modifiers={[paddingAll(16)]}>
+          <Text>Low elevation</Text>
+        </Surface>
+        <Surface tonalElevation={4} shadowElevation={8} modifiers={[paddingAll(16)]}>
+          <Text>High elevation</Text>
+        </Surface>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Surface with custom colors
+
+Use the `color` and `contentColor` props to override the default Material theme colors.
+
+```tsx SurfaceCustomColorsExample.tsx
+import { Host, Surface, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function SurfaceCustomColorsExample() {
+  return (
+    <Host matchContents>
+      <Surface
+        color="#1E3A5F"
+        contentColor="#FFFFFF"
+        tonalElevation={2}
+        modifiers={[paddingAll(16)]}>
+        <Text color="#FFFFFF">Custom colored surface</Text>
+      </Surface>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Surface } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/surface" apiName="Surface" />

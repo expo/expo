@@ -27,4 +27,4 @@ appId: dev.expo.Payments
 
 - assertTrue:
     condition: ${output.comparisonResult.success}
-    label: Screenshot comparison check. Is the image comparison server running (./image-comparison/server.ts)? See its terminal logs for details.)
+    label: Screenshot comparison check. Is the image comparison server running (./image-comparison/src/server.ts)? See its terminal logs for details.)

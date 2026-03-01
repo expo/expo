@@ -1,0 +1,26 @@
+appId: com.expo.routere2e
+name: Toolbar search bar
+jsEngine: graaljs
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://toolbar?searchBar=true
+- runFlow: ../close-warning.yml
+- assertVisible: "Toolbar E2E Test Screen"
+- tapOn: Search
+- assertVisible: 'Search Text: ""'
+- assertVisible: "Search Focused: Yes"
+- assertVisible: This is toolbar searchbar
+- tapOn: This is toolbar searchbar
+- inputText: Hello World
+- scrollUntilVisible:
+    element: "Search Focused: Yes"
+- assertVisible: 'Search Text: "Hello World"'
+- tapOn: close
+- assertVisible: 'Search Text: ""'
+- assertVisible: "Search Focused: No"
+- tapOn:
+    id: toggle-search-bar
+- assertNotVisible: Search
+- tapOn:
+    id: toggle-search-bar
+- assertVisible: Search

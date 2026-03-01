@@ -138,7 +138,7 @@ export function VideoExample() {
 
   return (
     <View style={[styles.exampleContainer, styles.videoExample]}>
-      <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+      <VideoView style={styles.video} player={player} allowsPictureInPicture />
       <View style={styles.buttons}>
         <Button title={status.isPlaying ? 'Pause' : 'Play'} onPress={togglePlaying} />
       </View>

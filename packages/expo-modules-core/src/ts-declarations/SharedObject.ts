@@ -1,7 +1,7 @@
 import type { EventEmitter, EventsMap } from './EventEmitter';
 
 /**
- * Base class for all shared objects that extends the {@link EventEmitter} class.
+ * Base class for all shared objects that extends the [`EventEmitter`](#eventemittertype) class.
  * The implementation is written in C++, installed through JSI and common for mobile platforms.
  */
 export declare class SharedObject<TEventsMap extends EventsMap = Record<never, never>>

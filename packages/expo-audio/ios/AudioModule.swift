@@ -13,6 +13,7 @@ public class AudioModule: Module {
   private var allowsRecording = false
   private var allowsBackgroundRecording = false
   private var sessionOptions: AVAudioSession.CategoryOptions = []
+  private var lastConfiguredMode: AudioMode?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -59,7 +60,37 @@ public class AudioModule: Module {
       #endif
     }
 
+    AsyncFunction("preload") { (source: AudioSource, preferredForwardBufferDuration: Double) in
+      guard let uri = source.uri else {
+        return
+      }
+      let key = uri.absoluteString
+      if self.registry.hasPreloadedPlayer(forKey: key) {
+        return
+      }
+      let player = AudioUtils.createAVPlayer(from: source)
+      player.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
+      self.registry.addPreloadedPlayer(player, forKey: key)
+    }
+
+    AsyncFunction("clearPreloadedSource") { (source: AudioSource) in
+      guard let uri = source.uri else {
+        return
+      }
+      let key = uri.absoluteString
+      _ = self.registry.removePreloadedPlayer(forKey: key)
+    }
+
+    AsyncFunction("clearAllPreloadedSources") {
+      self.registry.removeAllPreloadedPlayers()
+    }
+
+    AsyncFunction("getPreloadedSources") {
+      self.registry.preloadedPlayerKeys()
+    }
+
     OnDestroy {
+      registry.removeAllPreloadedPlayers()
       registry.removeAll()
       NotificationCenter.default.removeObserver(self)
     }
@@ -88,9 +119,17 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool) -> AudioPlayer in
-        let avPlayer = AudioUtils.createAVPlayer(from: source)
-        let player = AudioPlayer(avPlayer, interval: updateInterval)
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double) -> AudioPlayer in
+        let avPlayer: AVPlayer
+        if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
+          avPlayer = cachedPlayer
+        } else {
+          avPlayer = AudioUtils.createAVPlayer(from: source)
+          if preferredForwardBufferDuration > 0 {
+            avPlayer.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
+          }
+        }
+        let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
         player.onPlaybackComplete = { [weak self] in
@@ -193,7 +232,13 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource) in
-        player.replaceCurrentSource(source: source)
+        if let uri = source.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
+          let cachedItem = cachedPlayer.currentItem
+          cachedPlayer.replaceCurrentItem(with: nil)
+          player.replaceWithPreloadedItem(cachedItem)
+        } else {
+          player.replaceCurrentSource(source: source)
+        }
       }
 
       Function("pause") { player in
@@ -241,13 +286,133 @@ public class AudioModule: Module {
       }
     }
 
+    Class(AudioPlaylist.self) {
+      Constructor { (sources: [AudioSource], updateInterval: Double, loopMode: LoopMode) -> AudioPlaylist in
+        let items = sources.compactMap { AudioUtils.createAVPlayerItem(from: $0) }
+        let avQueuePlayer = AVQueuePlayer(items: items)
+        let playlist = AudioPlaylist(avQueuePlayer, sources: sources, interval: updateInterval, loopMode: loopMode)
+        playlist.owningRegistry = self.registry
+        self.registry.add(playlist)
+        return playlist
+      }
+
+      Property("id") { playlist in
+        playlist.id
+      }
+
+      Property("currentIndex") { playlist in
+        playlist.currentTrackIndex
+      }
+
+      Property("trackCount") { playlist in
+        playlist.trackCount
+      }
+
+      Property("sources") { playlist in
+        playlist.getSourceInfo()
+      }
+
+      Property("playing") { playlist in
+        playlist.isPlaying
+      }
+
+      Property("isLoaded") { playlist in
+        playlist.isLoaded
+      }
+
+      Property("isBuffering") { playlist in
+        playlist.isBuffering
+      }
+
+      Property("currentTime") { playlist in
+        playlist.currentTime
+      }
+
+      Property("duration") { playlist in
+        playlist.duration
+      }
+
+      Property("muted") { playlist in
+        playlist.ref.isMuted
+      }.set { (playlist, isMuted: Bool) in
+        playlist.ref.isMuted = isMuted
+      }
+
+      Property("volume") { playlist in
+        playlist.ref.volume
+      }.set { (playlist, volume: Double) in
+        playlist.ref.volume = Float(volume)
+      }
+
+      Property("playbackRate") { playlist in
+        playlist.isPlaying ? playlist.ref.rate : playlist.currentRate
+      }.set { (playlist, rate: Double) in
+        playlist.setPlaybackRate(Float(rate))
+      }
+
+      Property("loop") { playlist in
+        playlist.loopMode.rawValue
+      }.set { (playlist, mode: LoopMode) in
+        playlist.setLoopMode(mode)
+      }
+
+      Property("currentStatus") { playlist in
+        playlist.currentStatus()
+      }
+
+      Function("play") { playlist in
+        try activateSession()
+        playlist.play(at: playlist.currentRate)
+      }
+
+      Function("pause") { playlist in
+        playlist.pause()
+      }
+
+      Function("next") { playlist in
+        playlist.next()
+      }
+
+      Function("previous") { playlist in
+        playlist.previous()
+      }
+
+      Function("skipTo") { (playlist, index: Int) in
+        playlist.skipTo(index: index)
+      }
+
+      AsyncFunction("seekTo") { (playlist: AudioPlaylist, seconds: Double) in
+        await playlist.seekTo(seconds: seconds)
+      }
+
+      Function("add") { (playlist, source: AudioSource) in
+        playlist.add(source: source)
+      }
+
+      Function("insert") { (playlist, source: AudioSource, index: Int) in
+        playlist.insert(source: source, at: index)
+      }
+
+      Function("remove") { (playlist, index: Int) in
+        playlist.remove(at: index)
+      }
+
+      Function("clear") { playlist in
+        playlist.clear()
+      }
+
+      Function("destroy") { playlist in
+        self.registry.remove(playlist)
+      }
+    }
+
     #if os(iOS)
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
       Constructor { (options: RecordingOptions) -> AudioRecorder in
         let recordingDir = try recordingDirectory()
         let avRecorder = AudioUtils.createRecorder(directory: recordingDir, with: options)
-        let recorder = AudioRecorder(avRecorder)
+        let recorder = AudioRecorder(avRecorder, options: options)
         recorder.owningRegistry = self.registry
         recorder.allowsRecording = allowsRecording
         self.registry.add(recorder)
@@ -354,6 +519,15 @@ public class AudioModule: Module {
       name: AVAudioSession.routeChangeNotification,
       object: session
     )
+
+    #if os(iOS)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleMediaServicesReset(_:)),
+      name: AVAudioSession.mediaServicesWereResetNotification,
+      object: session
+    )
+    #endif
   }
 
   @objc private func handleAudioSessionInterruption(_ notification: Notification) {
@@ -397,6 +571,19 @@ public class AudioModule: Module {
       }
     }
 
+    registry.allPlaylists.values.forEach { playlist in
+      if playlist.isPlaying {
+        interruptedPlayers.insert(playlist.id)
+        switch interruptionMode {
+        case .duckOthers:
+          playerVolumes[playlist.id] = playlist.ref.volume
+          playlist.ref.volume *= 0.5
+        case .doNotMix, .mixWithOthers:
+          playlist.pause()
+        }
+      }
+    }
+
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
       if recorder.isRecording {
@@ -432,6 +619,34 @@ public class AudioModule: Module {
     }
   }
 
+  #if os(iOS)
+  @objc private func handleMediaServicesReset(_ notification: Notification) {
+    reconfigureAudioSession()
+
+    registry.allRecorders.values.forEach { recorder in
+      recorder.handleMediaServicesReset()
+    }
+
+    registry.allPlayers.values.forEach { player in
+      if player.isPlaying {
+        player.wasPlaying = true
+      }
+      player.handleMediaServicesReset()
+    }
+  }
+
+  private func reconfigureAudioSession() {
+    do {
+      if let mode = lastConfiguredMode {
+        try setAudioMode(mode: mode)
+      }
+      try AVAudioSession.sharedInstance().setActive(true)
+    } catch {
+      print("Failed to reconfigure audio session after media services reset: \(error)")
+    }
+  }
+  #endif
+
   private func resumeInterruptedPlayers() {
     registry.allPlayers.values.forEach { player in
       if interruptedPlayers.contains(player.id) {
@@ -442,6 +657,19 @@ public class AudioModule: Module {
           }
         case .doNotMix, .mixWithOthers:
           player.ref.play()
+        }
+      }
+    }
+
+    registry.allPlaylists.values.forEach { playlist in
+      if interruptedPlayers.contains(playlist.id) {
+        switch interruptionMode {
+        case .duckOthers:
+          if let originalVolume = playerVolumes[playlist.id] {
+            playlist.ref.volume = originalVolume
+          }
+        case .doNotMix, .mixWithOthers:
+          playlist.play(at: playlist.currentRate)
         }
       }
     }
@@ -465,6 +693,13 @@ public class AudioModule: Module {
         player.ref.pause()
       }
     }
+
+    registry.allPlaylists.values.forEach { playlist in
+      if playlist.isPlaying {
+        playlist.wasPlaying = true
+        playlist.pause()
+      }
+    }
   }
 
   private func resumeAllPlayers() {
@@ -472,6 +707,13 @@ public class AudioModule: Module {
       if player.wasPlaying {
         player.ref.play()
         player.wasPlaying = false
+      }
+    }
+
+    registry.allPlaylists.values.forEach { playlist in
+      if playlist.wasPlaying {
+        playlist.play(at: playlist.currentRate)
+        playlist.wasPlaying = false
       }
     }
   }
@@ -521,6 +763,8 @@ public class AudioModule: Module {
     let session = AVAudioSession.sharedInstance()
     var category: AVAudioSession.Category = session.category
 
+    self.lastConfiguredMode = mode
+
     self.shouldPlayInBackground = mode.shouldPlayInBackground
     self.interruptionMode = mode.interruptionMode
     self.allowsRecording = mode.allowsRecording
@@ -563,6 +807,9 @@ public class AudioModule: Module {
 
 #if !os(tvOS)
       if category == .playAndRecord {
+        if !mode.shouldRouteThroughEarpiece {
+          categoryOptions.insert(.defaultToSpeaker)
+        }
 #if compiler(>=6.2) // Xcode 26
         categoryOptions.insert(.allowBluetoothHFP)
 #else
@@ -592,7 +839,8 @@ public class AudioModule: Module {
         return
       }
       let hasActivePlayers = self.registry.allPlayers.values.contains { $0.isPlaying }
-      if !hasActivePlayers {
+      let hasActivePlaylists = self.registry.allPlaylists.values.contains { $0.isPlaying }
+      if !hasActivePlayers && !hasActivePlaylists {
         do {
           try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
         } catch {

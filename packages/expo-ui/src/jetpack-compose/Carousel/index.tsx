@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { ExpoModifier } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type PaddingValuesRecord = {
   start?: number;
@@ -45,11 +46,12 @@ const CarouselNativeView: React.ComponentType<NativeCarouselProps> = requireNati
 );
 
 export function transformCarouselProps(props: CarouselProps): NativeCarouselProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
-  } as NativeCarouselProps;
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
 }
 
 export function Carousel(props: CarouselProps) {

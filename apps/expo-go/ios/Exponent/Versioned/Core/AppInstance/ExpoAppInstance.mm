@@ -50,4 +50,8 @@
 - (void)host:(nonnull RCTHost *)host didReceiveJSErrorStack:(nonnull NSArray<NSDictionary<NSString *,id> *> *)stack message:(nonnull NSString *)message exceptionId:(NSUInteger)exceptionId isFatal:(BOOL)isFatal {
 }
 
+- (EXAppContext *)createExpoGoAppContext {
+  return [_manager createExpoGoAppContext];
+}
+
 @end

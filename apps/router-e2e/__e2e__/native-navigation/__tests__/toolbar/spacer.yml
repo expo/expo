@@ -20,7 +20,7 @@ jsEngine: graaljs
     id: input-fixed-spacer-width
 - tapOn: "Select All"
 - inputText: "100"
-- tapOn: Fixed Spacer Width (pt)
+- tapOn: Toolbar E2E Test Screen
 - tapOn:
     point: 17%, 92%
 - assertVisible: "Searching for: empty"

@@ -6,6 +6,14 @@ import SwiftUI
 @objc public class HomeViewController: UIViewController {
   private var hostingController: UIHostingController<HomeRootView>?
   var viewModel = HomeViewModel()
+  @objc public var initialURL: URL? {
+    didSet {
+      if isViewLoaded, view.window != nil {
+        handleInitialURLIfNeeded()
+      }
+    }
+  }
+  private var hasHandledInitialURL = false
 
   @objc public override init(nibName: String?, bundle: Bundle?) {
     super.init(nibName: nibName, bundle: bundle)
@@ -62,5 +70,39 @@ import SwiftUI
   public override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
     viewModel.onViewDidDisappear()
+  }
+
+  public override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    handleInitialURLIfNeeded()
+  }
+
+  private func handleInitialURLIfNeeded() {
+    guard !hasHandledInitialURL, let initialURL else {
+      return
+    }
+
+    hasHandledInitialURL = true
+    self.initialURL = nil
+
+    guard shouldOpenInitialURL(initialURL) else {
+      return
+    }
+
+    let expURL = toExpURLString(initialURL)
+    viewModel.openApp(url: expURL)
+  }
+
+  private func shouldOpenInitialURL(_ url: URL) -> Bool {
+    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+          let host = components.host else {
+      return true
+    }
+
+    if (host == "expo.io" || host == "expo.dev") && components.path == "/expo-go" {
+      return false
+    }
+
+    return true
   }
 }

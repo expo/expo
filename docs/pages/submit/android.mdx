@@ -175,7 +175,7 @@ You can use [EAS Workflows](/eas-workflows/get-started/) to build and submit you
        needs: [build_android]
        type: submit
        params:
-         platform: android
+         profile: production
          build_id: ${{ needs.build_android.outputs.build_id }}
      # @end #
    ```
