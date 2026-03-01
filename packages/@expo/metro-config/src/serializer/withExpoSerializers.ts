@@ -363,8 +363,18 @@ function getDefaultSerializer(
       ...serializerOptions,
     };
 
+    const staticConfig: Partial<MetroConfig> = {
+      ...config,
+      serializer: {
+        ...config.serializer,
+        // In static serializer mode, rely on runtime-provided pre-main modules
+        // from Metro's bundling options to avoid stale closure-captured config.
+        getModulesRunBeforeMainModule: () => options.runBeforeMainModule ?? [],
+      },
+    };
+
     const assets = await graphToSerialAssetsAsync(
-      config,
+      staticConfig,
       {
         includeSourceMaps: !!serializerOptions.includeSourceMaps,
         splitChunks: !!serializerOptions.splitChunks,
