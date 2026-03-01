@@ -1,0 +1,90 @@
+name: 🔄 CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  NODE_VERSION: '18'
+  RUST_VERSION: '1.75'
+
+permissions:
+  contents: read
+
+jobs:
+  rust-build:
+    name: 🦀 Rust Core
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          components: rustfmt, clippy
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rust/Cargo.lock') }}
+      - name: Check Format
+        run: cd rust && cargo fmt --all -- --check
+      - name: Run Clippy
+        run: cd rust && cargo clippy --all-targets -- -D warnings
+      - name: Build
+        run: cd rust && cargo build --release
+      - name: Test
+        run: cd rust && cargo test --release
+
+  typescript-build:
+    name: 📱 TypeScript
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run ESLint
+        run: npm run lint
+      - name: Type Check
+        run: npx tsc --noEmit
+      - name: Test
+        run: npm test
+
+  cultural-audit:
+    name: 🛡️ Cultural Boundary
+    runs-on: ubuntu-latest
+    needs: [rust-build, typescript-build]
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PowerShell
+        uses: microsoft/setup-powershell@v2
+      - name: Run Cultural Audit
+        run: powershell -File scripts/audit-isolation.ps1
+
+  quality-gate:
+    name: ✅ Quality Gate
+    runs-on: ubuntu-latest
+    needs: [rust-build, typescript-build, cultural-audit]
+    if: always()
+    permissions: {}
+    steps:
+      - name: Check All Jobs
+        run: |
+          if [ "${{ needs.rust-build.result }}" != "success" ]; then exit 1; fi
+          if [ "${{ needs.typescript-build.result }}" != "success" ]; then exit 1; fi
+          if [ "${{ needs.cultural-audit.result }}" != "success" ]; then exit 1; fi
+          echo "✅ All quality gates passed"
