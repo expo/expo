@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support for podspec-free local modules that are included in the project's target using `PBXFileSystemSynchronizedRootGroup`.
+
 ### 🐛 Bug fixes
 
 - Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))

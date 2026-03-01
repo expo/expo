@@ -3,6 +3,7 @@ export declare function getSwiftModuleNames(pods: ModuleIosPodspecInfo[], swiftM
 /** Resolves module search result with additional details required for iOS platform. */
 export declare function resolveModuleAsync(packageName: string, revision: PackageRevision, extraOutput: {
     flags?: Record<string, any>;
+    isLocal?: boolean;
 }): Promise<ModuleDescriptorIos | null>;
 export declare function resolveExtraBuildDependenciesAsync(projectNativeRoot: string): Promise<ExtraDependencies | null>;
 /**

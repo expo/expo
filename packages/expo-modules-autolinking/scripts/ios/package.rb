@@ -29,7 +29,7 @@ module Expo
   end # class PackagePod
 
   class Package
-    
+
     # Name of the npm package
     attr_reader :name
 
@@ -54,6 +54,12 @@ module Expo
     # Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
     attr_reader :reactDelegateHandlers
 
+    # Module integration type: 'local' or 'external'
+    attr_reader :type
+
+    # Absolute path to the module directory (set for local modules)
+    attr_reader :path
+
     def initialize(json)
       @name = json['packageName']
       @version = json['packageVersion']
@@ -63,11 +69,18 @@ module Expo
       @debugOnly = json['debugOnly']
       @appDelegateSubscribers = json.fetch('appDelegateSubscribers', [])
       @reactDelegateHandlers = json.fetch('reactDelegateHandlers', [])
+      @type = json.fetch('type', 'external')
+      @path = json['path']
     end
 
     # Returns a boolean value whether the package has any module, app delegate subscriber or react delegate handler to link.
     def has_something_to_link?
       return !@modules.empty? || !@appDelegateSubscribers.empty? || !@reactDelegateHandlers.empty?
+    end
+
+    # Whether this is a local module integrated directly in the app project (no podspec).
+    def in_project?
+      @type == 'local' && @pods.empty?
     end
 
   end # class Package
