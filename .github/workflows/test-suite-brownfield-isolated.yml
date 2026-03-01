@@ -260,25 +260,30 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: 👷 Build Expo CLI
         run: yarn workspace @expo/cli prepare
-      - name: 🍏 Build iOS artifacts (apps/brownfield-tester/expo-app)
+      - name: 🍏 Build iOS artifacts (Release)
         run: |
           npx expo prebuild --clean -p ios
-          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose -a ../../../artifacts
+          npx expo-brownfield build:ios -r --verbose -a ../../../artifacts
         working-directory: apps/brownfield-tester/expo-app
-      - name: 💾 Save ccache
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ runner.temp }}/.ccache
-          key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
       - name: 🔨 Add XCFrameworks to SwiftUI project
         run: ruby packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-      - name: 🧪 Run e2e tests (isolated brownfield)
+      - name: 🧪 Run e2e tests (Release)
         run: ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
+      - name: 🍏 Build iOS artifacts (Release)
+        run: |
+          npx expo-brownfield build:ios -d --verbose -a ../../../artifacts
+      - name: 🧪 Run e2e tests (Debug)
+        run: CONFIGURATION=Debug ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
+      - name: 💾 Save ccache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/.ccache
+          key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
       - name: Show ccache stats
         run: ccache -s -v
       - name: 🔔 Notify on Slack
