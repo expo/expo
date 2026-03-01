@@ -19,17 +19,17 @@ import androidx.compose.ui.viewinterop.AndroidView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import android.util.Log
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.RNHostViewInterface
 
-internal data class RNHostProps(
+internal data class RNHostViewProps(
   val matchContents: MutableState<Boolean?> = mutableStateOf(null)
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
 internal class RNHostView(context: Context, appContext: AppContext) :
-  ExpoComposeView<RNHostProps>(context, appContext) {
-  override val props = RNHostProps()
+  ExpoComposeView<RNHostViewProps>(context, appContext) {
+  override val props = RNHostViewProps()
 
   private var childView: View? = null
 
@@ -41,59 +41,65 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     val matchContents = props.matchContents.value ?: false
-    val density = LocalDensity.current
 
-    val reportSizeToYogaModifier = Modifier.onSizeChanged { size ->
-      with(density) {
-        val widthDp = size.width.toDp().value.toDouble()
-        val heightDp = size.height.toDp().value.toDouble()
-        shadowNodeProxy.setViewSize(widthDp, heightDp)
-      }
-    }
-
-    if (matchContents) {
-      childView?.let { view ->
-        // Seed with the child's current Yoga-set dimensions so requiredSize
-        // is applied from the very first composition
-        val childSize = remember {
-          mutableStateOf(
-            if (view.width > 0 && view.height > 0) IntSize(view.width, view.height)
-            else IntSize.Zero
-          )
-        }
-
-        DisposableEffect(view) {
-          // Observe the child's Yoga-set dimensions reactively.
-          // When Yoga re-layouts the child, the listener fires, updating Compose state,
-          // which triggers recomposition with the correct requiredSize.
-          val listener = View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
-            childSize.value = IntSize(r - l, b - t)
-          }
-          view.addOnLayoutChangeListener(listener)
-          onDispose { view.removeOnLayoutChangeListener(listener) }
-        }
-
-        val setViewSizeToYogaSizeModifier = with(density) {
-          if (childSize.value.width > 0 && childSize.value.height > 0) {
-            Modifier.requiredSize(
-              childSize.value.width.toDp(),
-              childSize.value.height.toDp()
-            )
-          } else {
-            Modifier
-          }
-        }
-
+    childView?.let { view ->
+      if (matchContents) {
         AndroidView(
           factory = { view },
-          modifier = setViewSizeToYogaSizeModifier
+          modifier = applySizeFromYogaNodeModifier(view)
+        )
+      } else {
+        AndroidView(
+          factory = { view },
+          modifier = Modifier
+            .fillMaxSize()
+            .then(reportSizeToYogaNodeModifier())
         )
       }
-    } else {
-      childView?.let { view ->
-        AndroidView(
-          factory = { view },
-          modifier = Modifier.fillMaxSize().then(reportSizeToYogaModifier)
+    }
+  }
+
+  // Sets Compose view size from Yoga node size
+  @Composable
+  private fun applySizeFromYogaNodeModifier(childView: View): Modifier {
+    val density = LocalDensity.current
+
+    val childSize = remember {
+      mutableStateOf(
+        if (childView.width > 0 && childView.height > 0) IntSize(childView.width, childView.height)
+        else IntSize.Zero
+      )
+    }
+
+    DisposableEffect(childView) {
+      val listener = View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
+        childSize.value = IntSize(r - l, b - t)
+      }
+      childView.addOnLayoutChangeListener(listener)
+      onDispose { childView.removeOnLayoutChangeListener(listener) }
+    }
+
+    return with(density) {
+      if (childSize.value.width > 0 && childSize.value.height > 0) {
+        Modifier.requiredSize(
+          childSize.value.width.toDp(),
+          childSize.value.height.toDp()
+        )
+      } else {
+        Modifier
+      }
+    }
+  }
+
+  // Sets Yoga node size from Compose view size
+  @Composable
+  private fun reportSizeToYogaNodeModifier(): Modifier {
+    val density = LocalDensity.current
+    return Modifier.onSizeChanged { size ->
+      with(density) {
+        shadowNodeProxy.setViewSize(
+          size.width.toDp().value.toDouble(),
+          size.height.toDp().value.toDouble()
         )
       }
     }
