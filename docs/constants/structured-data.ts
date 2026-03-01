@@ -39,8 +39,26 @@ export function buildTechArticleSchema({
     headline: title,
     ...(description ? { description } : {}),
     ...(modificationDate ? { dateModified: modificationDate } : {}),
-    publisher: { '@type': 'Organization', name: 'Expo' },
+    publisher: websiteSchema.publisher,
     url,
+  };
+}
+
+type FAQItem = { question: string; answer: string };
+
+export function buildFAQPageSchema(items: FAQItem[]) {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map(item => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
   };
 }
 

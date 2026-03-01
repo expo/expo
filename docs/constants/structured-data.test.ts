@@ -1,4 +1,9 @@
-import { buildBreadcrumbListSchema, buildTechArticleSchema } from './structured-data';
+import {
+  buildBreadcrumbListSchema,
+  buildFAQPageSchema,
+  buildTechArticleSchema,
+  websiteSchema,
+} from './structured-data';
 
 describe(buildTechArticleSchema, () => {
   it('returns TechArticle with all fields', () => {
@@ -15,7 +20,7 @@ describe(buildTechArticleSchema, () => {
       headline: 'Introduction to Expo Router',
       description: 'Expo Router is a file-based routing library.',
       dateModified: '2026-01-15',
-      publisher: { '@type': 'Organization', name: 'Expo' },
+      publisher: websiteSchema.publisher,
       url: 'https://docs.expo.dev/router/introduction/',
     });
   });
@@ -42,13 +47,13 @@ describe(buildTechArticleSchema, () => {
     expect(result).toHaveProperty('description', 'A description.');
   });
 
-  it('always includes publisher as Expo organization', () => {
+  it('uses websiteSchema publisher', () => {
     const result = buildTechArticleSchema({
       title: 'Any page',
       url: 'https://docs.expo.dev/any/',
     });
 
-    expect(result.publisher).toEqual({ '@type': 'Organization', name: 'Expo' });
+    expect(result.publisher).toBe(websiteSchema.publisher);
   });
 });
 
@@ -116,5 +121,51 @@ describe(buildBreadcrumbListSchema, () => {
 
     const positions = result?.itemListElement.map((el: { position: number }) => el.position);
     expect(positions).toEqual([1, 2, 3]);
+  });
+});
+
+describe(buildFAQPageSchema, () => {
+  it('returns null for empty array', () => {
+    expect(buildFAQPageSchema([])).toBeNull();
+  });
+
+  it('returns valid FAQPage for a single item', () => {
+    const result = buildFAQPageSchema([
+      { question: 'What is Expo?', answer: 'A framework for React Native.' },
+    ]);
+
+    expect(result).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is Expo?',
+          acceptedAnswer: { '@type': 'Answer', text: 'A framework for React Native.' },
+        },
+      ],
+    });
+  });
+
+  it('returns valid FAQPage for multiple items', () => {
+    const result = buildFAQPageSchema([
+      { question: 'Q1?', answer: 'A1' },
+      { question: 'Q2?', answer: 'A2' },
+      { question: 'Q3?', answer: 'A3' },
+    ]);
+
+    expect(result?.mainEntity).toHaveLength(3);
+    expect(result?.mainEntity[1]).toEqual({
+      '@type': 'Question',
+      name: 'Q2?',
+      acceptedAnswer: { '@type': 'Answer', text: 'A2' },
+    });
+  });
+
+  it('preserves answer text as-is', () => {
+    const answer = 'Use `npx expo install` to add packages.\nSee https://docs.expo.dev for more.';
+    const result = buildFAQPageSchema([{ question: 'How?', answer }]);
+
+    expect(result?.mainEntity[0].acceptedAnswer.text).toBe(answer);
   });
 });

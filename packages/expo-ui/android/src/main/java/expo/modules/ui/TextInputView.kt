@@ -1,5 +1,6 @@
 package expo.modules.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
@@ -52,6 +53,7 @@ private fun String.autoCapitalize(): KeyboardCapitalization {
   }
 }
 
+@SuppressLint("ViewConstructor")
 class TextInputView(context: Context, appContext: AppContext) :
   ExpoComposeView<TextInputProps>(context, appContext) {
   override val props = TextInputProps()
@@ -69,7 +71,7 @@ class TextInputView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     TextField(
-      value = requireNotNull(textState.value),
+      value = textState.value ?: props.defaultValue.value,
       onValueChange = {
         textState.value = it
         onValueChanged(mapOf("value" to it))

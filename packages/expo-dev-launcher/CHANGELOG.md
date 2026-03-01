@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Enforce transparent status bar and navigation bar on Android, remove unused `backgroundColor` / `translucent` options handling. ([#43518](https://github.com/expo/expo/pull/43518) by [@zoontek](https://github.com/zoontek))
+
 ## 55.0.10 — 2026-02-25
 
 _This version does not introduce any user-facing changes._
