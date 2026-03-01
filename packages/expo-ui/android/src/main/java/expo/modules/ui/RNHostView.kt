@@ -43,16 +43,11 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     val matchContents = props.matchContents.value ?: false
     val density = LocalDensity.current
 
-    val sizeModifier = Modifier.onSizeChanged { size ->
+    val reportSizeToYogaModifier = Modifier.onSizeChanged { size ->
       with(density) {
         val widthDp = size.width.toDp().value.toDouble()
         val heightDp = size.height.toDp().value.toDouble()
-        if (matchContents) {
-          shadowNodeProxy.setStyleSize(widthDp, heightDp)
-        } else {
-          Log.d("RNHostView", "setViewSize: $widthDp, $heightDp")
-          shadowNodeProxy.setViewSize(widthDp, heightDp)
-        }
+        shadowNodeProxy.setViewSize(widthDp, heightDp)
       }
     }
 
@@ -78,7 +73,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           onDispose { view.removeOnLayoutChangeListener(listener) }
         }
 
-        val yogaSizeModifier = with(density) {
+        val setViewSizeToYogaSizeModifier = with(density) {
           if (childSize.value.width > 0 && childSize.value.height > 0) {
             Modifier.requiredSize(
               childSize.value.width.toDp(),
@@ -91,15 +86,14 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
         AndroidView(
           factory = { view },
-          modifier = yogaSizeModifier.then(sizeModifier)
+          modifier = setViewSizeToYogaSizeModifier
         )
       }
     } else {
-      // so the children with flex: 1 can expand.
       childView?.let { view ->
         AndroidView(
           factory = { view },
-          modifier = Modifier.fillMaxSize().then(sizeModifier)
+          modifier = Modifier.fillMaxSize().then(reportSizeToYogaModifier)
         )
       }
     }
