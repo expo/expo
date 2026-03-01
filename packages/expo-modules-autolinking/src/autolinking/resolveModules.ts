@@ -14,12 +14,16 @@ export async function resolveModulesAsync(
   autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform }
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
-  // Additional output property for Cocoapods flags
-  const extraOutput = { flags: autolinkingOptions.flags };
 
   const moduleDescriptorList = await taskAll(
     Object.entries(searchResults),
     async ([packageName, revision]) => {
+      const isLocal =
+        autolinkingOptions.nativeModulesDir != null &&
+        revision.path.startsWith(autolinkingOptions.nativeModulesDir);
+
+      const extraOutput = { flags: autolinkingOptions.flags, isLocal };
+
       const resolvedModule = await platformLinking.resolveModuleAsync(
         packageName,
         revision,
