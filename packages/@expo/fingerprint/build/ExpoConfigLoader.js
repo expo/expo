@@ -9,11 +9,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getExpoConfigLoaderPath = getExpoConfigLoaderPath;
 const promises_1 = __importDefault(require("fs/promises"));
 const module_1 = __importDefault(require("module"));
-const node_assert_1 = __importDefault(require("node:assert"));
 const node_process_1 = __importDefault(require("node:process"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
-const ExpoResolver_1 = require("./ExpoResolver");
 const Options_1 = require("./Options");
 const Path_1 = require("./utils/Path");
 async function runAsync(programName, args = []) {
@@ -23,15 +21,11 @@ async function runAsync(programName, args = []) {
     }
     const projectRoot = path_1.default.resolve(args[0]);
     const ignoredFile = args[1] ? path_1.default.resolve(args[1]) : null;
-    // @ts-expect-error: module internal _cache
-    const loadedModulesBefore = new Set(Object.keys(module_1.default._cache));
-    const expoEnvPath = (0, ExpoResolver_1.resolveExpoEnvPath)(projectRoot);
-    (0, node_assert_1.default)(expoEnvPath, `Could not find '@expo/env' package for the project from ${projectRoot}.`);
-    require(expoEnvPath).load(projectRoot);
     setNodeEnv('development');
+    require('@expo/env').load(projectRoot);
+    const loadedModulesBefore = new Set(Object.keys(module_1.default._cache));
     const { getConfig } = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), 'expo/config'));
     const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
-    // @ts-expect-error: module internal _cache
     const loadedModules = Object.keys(module_1.default._cache)
         .filter((modulePath) => !loadedModulesBefore.has(modulePath))
         .map((modulePath) => path_1.default.relative(projectRoot, modulePath));

@@ -1,13 +1,11 @@
 package expo.modules.medialibrary.next.objects.query
 
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.types.Either
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.records.AssetField
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-@OptIn(EitherType::class)
 class MediaStoreQueryFormatter {
   companion object {
     fun parse(field: AssetField, value: Either<MediaType, Long>): String {

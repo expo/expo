@@ -13,6 +13,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
 **EAS Update** is a cloud service from EAS (Expo Application Services) that serves updates for projects using the [`expo-updates`](/versions/latest/sdk/updates/) library.
@@ -21,9 +22,14 @@ EAS Update makes fixing small bugs and pushing quick fixes a snap in between app
 
 ## Quick start
 
+> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+
 Install the `expo-updates` library and configure EAS Update:
 
-<Terminal cmd={['$ npx expo install expo-updates', '', '$ eas update:configure']} />
+<Terminal
+  cmd={['$ npx expo install expo-updates', '', '$ eas update:configure']}
+  cmdCopy="npx expo install expo-updates && eas update:configure"
+/>
 
 You need to create a new build for Android or iOS to include the `expo-updates` library in your build. After that, you can push an update to the production channel:
 
@@ -84,6 +90,8 @@ If an update isn't performing as expected, you can [republish](/eas-update/eas-c
 For scenarios marked with <NoIcon />, use [EAS Build](/build/introduction/) to create and submit a new app binary.
 
 ## Frequently asked questions (FAQ)
+
+<FAQ>
 
 <Collapsible summary="What guidelines must I follow when publishing updates?" open>
 
@@ -162,6 +170,8 @@ The Classic Updates service was available before December 2021 and is now deprec
 We recommend transitioning to EAS Update or using a [self-hosted update service](/versions/latest/sdk/updates/).
 
 </Collapsible>
+
+</FAQ>
 
 ## Get started
 

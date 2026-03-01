@@ -12,6 +12,28 @@
 		87F2AEBF2F4894F90099B7BE /* hermes.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F2AEBE2F4894F90099B7BE /* hermes.xcframework */; };
 		87F2AEC02F4894F90099B7BE /* hermes.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 87F2AEBE2F4894F90099B7BE /* hermes.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+/* Begin PBXCopyFilesBuildPhase section */
+		87CFC9392F45EAA300AE56E3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		87F31DDB2F47363100B37DF8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		87CFC9392F45EAA300AE56E3 /* Embed Frameworks */ = {
@@ -92,6 +114,7 @@
 				C0AD19EE2F180368005A1DBD /* Frameworks */,
 				C0AD19EF2F180368005A1DBD /* Resources */,
 				87CFC9392F45EAA300AE56E3 /* Embed Frameworks */,
+				87F31DDB2F47363100B37DF8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

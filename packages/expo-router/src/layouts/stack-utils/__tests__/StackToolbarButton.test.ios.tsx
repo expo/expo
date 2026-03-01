@@ -96,8 +96,9 @@ describe(convertStackToolbarButtonPropsToRNHeaderItem, () => {
       children: <StackToolbarIcon xcasset="custom-icon" />,
     });
     expect(result?.icon).toEqual({
-      type: 'xcasset',
-      name: 'custom-icon',
+      type: 'image',
+      source: { uri: 'custom-icon' },
+      tinted: false,
     });
   });
 

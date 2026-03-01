@@ -30,14 +30,14 @@ export default function Home() {
 
 Expo Router apps default to stack navigation, where navigating to a new route pushes a screen onto a stack, and backing out of that route pops it off the stack. Usually, you would want to use the `router.navigate` function. This will either push a new page onto the stack or unwind to an existing route on the stack. However, you can also call `router.push` to explicitly push a new page onto the stack, `router.back` to go back to the previous page, or `router.replace` to replace the current page on the stack.
 
-With Expo Router, you refer to pages by their URL, or their position relative to the **app** directory. Check out the following file structure and how you would navigate to each page:
+With Expo Router, you refer to pages by their URL, or their position relative to the **src/app** directory. Check out the following file structure and how you would navigate to each page:
 
 <FileTree
   files={[
-    ['app/index.tsx', 'router.navigate("/")'],
-    ['app/about.tsx', 'router.navigate("/about")'],
-    ['app/profile/index.tsx', 'router.navigate("/profile")'],
-    ['app/profile/friends.tsx', 'router.navigate("/profile/friends")'],
+    ['src/app/index.tsx', 'router.navigate("/")'],
+    ['src/app/about.tsx', 'router.navigate("/about")'],
+    ['src/app/profile/index.tsx', 'router.navigate("/profile")'],
+    ['src/app/profile/friends.tsx', 'router.navigate("/profile/friends")'],
   ]}
 />
 
@@ -53,7 +53,7 @@ With Expo Router, you refer to pages by their URL, or their position relative to
 The typical way to link to a page in Expo Router is to use links like web apps. Expo Router has a `Link` component for navigating between pages, where the `href` is the same route you would use in `router.navigate`:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { View } from 'react-native';
 /* @info Import the <CODE>Link</CODE> React component from <CODE>expo-router</CODE>. */
 import { Link } from 'expo-router';
@@ -132,12 +132,12 @@ Dynamic routes can be linked to with their full URL, or by passing a `params` ob
 
 Consider the following file structure:
 
-<FileTree files={[['app/user/[id].tsx']]} />
+<FileTree files={[['src/app/user/[id].tsx']]} />
 
 Each of these links will navigate to the same page:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 /* @info Import the <CODE>Link</CODE> React component and <CODE>router</CODE> to navigate imperatively from <CODE>expo-router</CODE>. */
 import { Link, router } from 'expo-router';
 /* @end */
@@ -311,9 +311,9 @@ Assuming your `scheme` is `myapp`, here are some examples of how you would link 
 
 <FileTree
   files={[
-    ['app/about.tsx', 'myapp://about'],
-    ['app/profile/index.tsx', 'myapp://profile'],
-    ['app/users/[username].tsx', 'myapp://users/evanbacon'],
+    ['src/app/about.tsx', 'myapp://about'],
+    ['src/app/profile/index.tsx', 'myapp://profile'],
+    ['src/app/users/[username].tsx', 'myapp://users/evanbacon'],
   ]}
 />
 
@@ -327,16 +327,16 @@ Consider the following file structure:
 
 <FileTree
   files={[
-    ['app/index.tsx'],
-    ['app/stack/index.tsx'],
-    ['app/stack/second.tsx'],
-    ['app/stack/_layout.tsx'],
+    ['src/app/index.tsx'],
+    ['src/app/stack/index.tsx'],
+    ['src/app/stack/second.tsx'],
+    ['src/app/stack/\_layout.tsx'],
   ]}
 />
 
 `stack` is a stack navigator, and `/stack/index` is always the first route in the stack.
 
-To ensure that `/stack/index` is always loaded first, even if the user deep links to `/stack/second`, you can set the `initialRouteName` in **app/stack/\_layout.tsx**:
+To ensure that `/stack/index` is always loaded first, even if the user deep links to `/stack/second`, you can set the `initialRouteName` in **src/app/stack/\_layout.tsx**:
 
 ```tsx
 export const unstable_settings = {
@@ -347,7 +347,7 @@ export const unstable_settings = {
 
 By default, the `initialRouteName` is only considered when deep linking and not during navigation within your app. However, you can use the `withAnchor` prop on `Link` to force the initial route to be loaded when navigating directly into another stack inside your app.
 
-So, if **app/index.tsx** contained a link to `/stack/second`, add the `withAnchor` prop to ensure that `/stack/index` is loaded first, which will cause the user to go back to `/stack/index` when they press the back button from `/stack/second`:
+So, if **src/app/index.tsx** contained a link to `/stack/second`, add the `withAnchor` prop to ensure that `/stack/index` is loaded first, which will cause the user to go back to `/stack/index` when they press the back button from `/stack/second`:
 
 ```tsx
 <Link href="/stack/second" withAnchor>

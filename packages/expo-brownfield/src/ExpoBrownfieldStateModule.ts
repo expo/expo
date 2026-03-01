@@ -1,8 +1,11 @@
 import { requireNativeModule } from 'expo';
 import type { EventSubscription } from 'expo-modules-core';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import type { ExpoBrownfieldStateModuleSpec } from './ExpoBrownfieldStateModule.types';
+import type {
+  ExpoBrownfieldStateModuleSpec,
+  KeyRecreatedEvent,
+} from './ExpoBrownfieldStateModule.types';
 
 const ExpoBrownfieldStateModule = requireNativeModule<ExpoBrownfieldStateModuleSpec>(
   'ExpoBrownfieldStateModule'
@@ -63,7 +66,6 @@ export function addSharedStateListener<T = any>(
   callback: (value: T | undefined) => void
 ): EventSubscription {
   const state = getSharedObject(key);
-
   const subscription = state.addListener('change', (event: T | undefined) => {
     callback(event);
   });
@@ -102,21 +104,47 @@ export function useSharedState<T = any>(
   });
 
   useEffect(() => {
-    const subscription = state.addListener(
+    let subscription = state.addListener(
       'change',
       (event: Record<string, T | undefined> | undefined) => {
         setValue(event?.['value']);
       }
     );
 
-    return () => subscription.remove();
+    const keyRecreatedSubscription = ExpoBrownfieldStateModule.addListener(
+      'onKeyRecreated',
+      (event: KeyRecreatedEvent) => {
+        if (event.key === key) {
+          const newState = ExpoBrownfieldStateModule.getSharedState(key);
+          sharedObjectCache.set(key, newState);
+
+          subscription.remove();
+          subscription = newState.addListener(
+            'change',
+            (event: Record<string, T | undefined> | undefined) => {
+              setValue(event?.['value']);
+            }
+          );
+
+          setValue(getSharedStateValue(key));
+        }
+      }
+    );
+
+    return () => {
+      subscription.remove();
+      keyRecreatedSubscription.remove();
+    };
   }, [state]);
 
-  const setSharedValue = (newValue: T | ((prev: T | undefined) => T)) => {
-    const valueToSet =
-      typeof newValue === 'function' ? (newValue as (prev: T | undefined) => T)(value) : newValue;
-    state.set(valueToSet);
-  };
+  const setSharedValue = useCallback(
+    (newValue: T | ((prev: T | undefined) => T)) => {
+      const valueToSet =
+        typeof newValue === 'function' ? (newValue as (prev: T | undefined) => T)(value) : newValue;
+      getSharedObject(key).set(valueToSet);
+    },
+    [key, value]
+  );
 
   return [value, setSharedValue];
 }

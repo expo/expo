@@ -158,6 +158,29 @@ export default function HeaderItemsScreen() {
               <Stack.Toolbar.Icon sf="2.circle" />
             </Stack.Toolbar.MenuAction>
           </Stack.Toolbar.Menu>
+
+          <Stack.Toolbar.Menu
+            icon={require('../../../assets/expo-logo.png')}
+            title="Actions"
+            tintColor={Color.ios.systemBrown}>
+            {/* Simple actions */}
+            <Stack.Toolbar.MenuAction
+              icon={require('../../../assets/expo-transparent.png')}
+              iconRenderingMode="template"
+              destructive
+              onPress={() => Alert.alert('Send', 'Email sent!')}>
+              Send email
+            </Stack.Toolbar.MenuAction>
+
+            {/* Nested menu */}
+            <Stack.Toolbar.Menu title="Preferences" icon={require('../../../assets/expo-logo.png')}>
+              <Stack.Toolbar.MenuAction
+                icon="bell"
+                onPress={() => Alert.alert('Notifications', 'Toggling notifications...')}>
+                Enable notifications
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+          </Stack.Toolbar.Menu>
         </Stack.Toolbar>
 
         {/* Right header items */}
@@ -321,7 +344,6 @@ export default function HeaderItemsScreen() {
           {/* Xcasset icon buttons */}
           <Stack.Toolbar.Button
             hidden={!showXcassetButton1}
-            tintColor={Color.ios.systemTeal}
             onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
             <Stack.Toolbar.Icon xcasset="expo-logo" />
           </Stack.Toolbar.Button>
@@ -333,10 +355,7 @@ export default function HeaderItemsScreen() {
           </Stack.Toolbar.Button>
 
           {/* Xcasset icon menus */}
-          <Stack.Toolbar.Menu
-            hidden={!showXcassetMenu1}
-            title="Xcasset Menu 1"
-            tintColor={Color.ios.systemTeal}>
+          <Stack.Toolbar.Menu hidden={!showXcassetMenu1} title="Xcasset Menu 1">
             <Stack.Toolbar.Icon xcasset="expo-logo" />
             <Stack.Toolbar.Label>Expo Logo</Stack.Toolbar.Label>
             <Stack.Toolbar.MenuAction

@@ -1,5 +1,5 @@
-import { ConfigPlugin, WarningAggregator, withInfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, WarningAggregator, withInfoPlist } from 'expo/config-plugins';
 
 type WithIosWarningProps = { property: string; warning: string };
 

@@ -42,7 +42,7 @@ Running the above command will run the `lint` script from **package.json**.
   cmd={[
     '# Example output for npx expo lint command',
     '',
-    '/app/components/HelloWave.tsx',
+    '/src/components/hello-wave.tsx',
     '  22:6 warning React Hook useEffect has a missing dependency: "rotateAnimation".',
     '       Either include it or remove the dependency array react-hooks/exhaustive-deps',
     '',
@@ -52,7 +52,7 @@ Running the above command will run the `lint` script from **package.json**.
 
 ### Environment configuration
 
-ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app that runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **app/index.js** can be run in Hermes, Node.js, or the web browser.
+ESLint is generally configured for a single environment. However, the source code is written in JavaScript in an Expo app that runs in multiple different environments. For example, the **app.config.js**, **metro.config.js**, **babel.config.js**, and **src/app/+html.tsx** files are run in a Node.js environment. It means they have access to the global `__dirname` variable and can use Node.js modules such as `path`. Standard Expo project files like **src/app/index.js** can be run in Hermes, Node.js, or the web browser.
 
 The approach to configure environment-specific globals differs between Flat config and legacy config:
 

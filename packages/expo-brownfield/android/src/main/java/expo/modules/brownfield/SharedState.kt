@@ -17,5 +17,6 @@ class SharedState(val key: String) : SharedObject() {
     }
     emit("change", mapOf("value" to newValue))
     BrownfieldState.notifySubscribers(key, newValue)
+    BrownfieldState.maybeNotifyKeyRecreated(key)
   }
 }

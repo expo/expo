@@ -2,8 +2,6 @@
 
 #import <ExpoModulesCore/Platform.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #ifdef __cplusplus
 
 #import <React/RCTViewComponentView.h> // Allows non-umbrella since it's coming from React-RCTFabric
@@ -13,19 +11,13 @@
 
 #else
 
-// Interface visible in Swift
-@interface ExpoFabricViewObjC
-@end
-
-#endif // __cplusplus
-#else  // Paper
-
 #import <React/RCTView.h>
 
+// Interface visible in Swift
 @interface ExpoFabricViewObjC : RCTView
 @end
 
-#endif // !RCT_NEW_ARCH_ENABLED
+#endif // __cplusplus
 
 @class EXAppContext;
 @class EXViewModuleWrapper;
@@ -37,7 +29,7 @@
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
 
-- (void)viewDidUpdateProps;
+- (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
 - (void)setShadowNodeSize:(float)width height:(float)height;
 

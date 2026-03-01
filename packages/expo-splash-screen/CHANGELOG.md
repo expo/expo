@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+- Removed the `expo_splash_screen_status_bar_translucent` Android leftover attribute. ([#43514](https://github.com/expo/expo/pull/43514) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.5 — 2026-02-08
 
 _This version does not introduce any user-facing changes._

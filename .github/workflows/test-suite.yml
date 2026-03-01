@@ -5,39 +5,54 @@ on:
   push:
     branches: [main, 'sdk-*']
     paths:
+      - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
       - yarn.lock
-      # When adding new paths, also update the paths of the "Get the base commit" step below
+      - '!packages/@expo/cli/**'
+      - '!packages/create-expo/**'
+      - '!packages/create-expo-nightly/**'
+      - '!packages/create-expo-module/**'
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
   pull_request:
     paths:
+      - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
       - yarn.lock
-      # Ignore Expo CLI for now...
       - '!packages/@expo/cli/**'
+      - '!packages/create-expo/**'
+      - '!packages/create-expo-nightly/**'
+      - '!packages/create-expo-module/**'
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  detect-platform-for-e2e:
+  detect-platform-changes:
     runs-on: ubuntu-24.04
     outputs:
-      should_run_ios: ${{ steps.changes.outputs.should_run_ios }}
-      should_run_android: ${{ steps.changes.outputs.should_run_android }}
+      should_build_ios: ${{ steps.build.outputs.should_run_ios }}
+      should_build_android: ${{ steps.build.outputs.should_run_android }}
+      should_test_ios: ${{ steps.e2e.outputs.should_run_ios }}
+      should_test_android: ${{ steps.e2e.outputs.should_run_android }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-      - name: 🧐 Detect platform change
-        id: changes
+      - name: 🧐 Detect build-relevant platform changes
+        id: build
         uses: ./.github/actions/detect-platform-change
         with:
           android-paths: >-
@@ -54,13 +69,73 @@ jobs:
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/**",
+            "!packages/@expo/cli/**",
+            "!packages/{create-expo,create-expo-nightly,create-expo-module}/**",
+            yarn.lock,
+            "!packages/**/{ios,android}/**",
+            "!apps/bare-expo/**/{ios,android}/**"
+
+      - name: 🧐 Detect e2e-test relevant platform changes
+        id: e2e
+        uses: ./.github/actions/detect-platform-change
+        with:
+          android-paths: >-
+            "packages/expo-modules-core/**/android/**",
+            "packages/expo-modules-autolinking/**/android/**",
+            "packages/expo/**/android/**",
+            "packages/expo-constants/**/android/**",
+            "packages/expo-crypto/**/android/**",
+            "packages/expo-file-system/**/android/**",
+            "packages/expo-haptics/**/android/**",
+            "packages/expo-image/**/android/**",
+            "packages/expo-keep-awake/**/android/**",
+            "packages/expo-linear-gradient/**/android/**",
+            "packages/expo-localization/**/android/**",
+            "packages/expo-sqlite/**/android/**",
+            "packages/expo-video/**/android/**",
+            "apps/bare-expo/**/android/**"
+
+          ios-paths: >-
+            "packages/expo-modules-core/**/ios/**",
+            "packages/expo-modules-autolinking/**/ios/**",
+            "packages/expo/**/ios/**",
+            "packages/expo-constants/**/ios/**",
+            "packages/expo-crypto/**/ios/**",
+            "packages/expo-file-system/**/ios/**",
+            "packages/expo-haptics/**/ios/**",
+            "packages/expo-image/**/ios/**",
+            "packages/expo-keep-awake/**/ios/**",
+            "packages/expo-linear-gradient/**/ios/**",
+            "packages/expo-localization/**/ios/**",
+            "packages/expo-sqlite/**/ios/**",
+            "packages/expo-video/**/ios/**",
+            "apps/bare-expo/**/ios/**"
+
+          common-paths: >-
+            .github/workflows/test-suite.yml,
+            .github/actions/use-android-emulator/action.yml,
+            "apps/bare-expo/**",
+            "apps/test-suite/**",
+            "packages/expo-modules-core/**",
+            "packages/expo-modules-autolinking/**",
+            "packages/expo/**",
+            "packages/expo-constants/**",
+            "packages/expo-crypto/**",
+            "packages/expo-file-system/**",
+            "packages/expo-haptics/**",
+            "packages/expo-image/**",
+            "packages/expo-keep-awake/**",
+            "packages/expo-linear-gradient/**",
+            "packages/expo-localization/**",
+            "packages/expo-sqlite/**",
+            "packages/expo-video/**",
             yarn.lock,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
   ios-build:
     runs-on: macos-15
-    needs: detect-platform-for-e2e
-    if: needs.detect-platform-for-e2e.outputs.should_run_ios == 'true'
+    needs: detect-platform-changes
+    if: needs.detect-platform-changes.outputs.should_build_ios == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -85,13 +160,18 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+      - name: Setup ccache
+        uses: ./.github/actions/setup-ccache
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          ccache: 'true'
           yarn-workspace: 'true'
           yarn-tools: 'true'
           bare-expo-pods: 'true'
+      - name: Reset ccache stats
+        run: ccache -z
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
       - name: 🕵️ Debug CocoaPods lockfiles
@@ -138,6 +218,8 @@ jobs:
             ./scripts/start-ios-e2e-test.ts --build
           build-output: apps/bare-expo/ios/build/BareExpo.app
           artifact-name: bare-expo-ios-builds
+      - name: Show ccache stats
+        run: ccache -s -v
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -147,7 +229,8 @@ jobs:
           author_name: Test Suite e2e (iOS)
 
   ios-test-e2e:
-    needs: ios-build
+    needs: [ios-build, detect-platform-changes]
+    if: needs.detect-platform-changes.outputs.should_test_ios == 'true'
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
@@ -198,6 +281,12 @@ jobs:
           mkdir -p ~/.maestro/tests
           ./image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
           echo $! > /tmp/image-server.pid
+          sleep 2
+          if ! kill -0 $(cat /tmp/image-server.pid) 2>/dev/null; then
+            echo "Image comparison server failed to start. Logs:"
+            cat ~/.maestro/tests/screenshot-server-logs
+            exit 1
+          fi
         working-directory: apps/bare-expo/e2e
       - name: 🧪 Run e2e tests (bare-expo)
         run: ./scripts/start-ios-e2e-test.ts --test
@@ -242,8 +331,8 @@ jobs:
 
   android-build:
     runs-on: ubuntu-24.04
-    needs: detect-platform-for-e2e
-    if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
+    needs: detect-platform-changes
+    if: needs.detect-platform-changes.outputs.should_build_android == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -266,16 +355,21 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: Setup ccache
+        uses: ./.github/actions/setup-ccache
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          ccache: 'true'
           gradle: 'true'
           yarn-workspace: 'true'
           yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
+      - name: Reset ccache stats
+        run: ccache -z
       - name: 🧶 Install workspace node modules
         run: yarn install --frozen-lockfile
       - name: 🧶 Install image comparison server node modules
@@ -318,6 +412,8 @@ jobs:
             ./scripts/start-android-e2e-test.ts --build
           build-output: apps/bare-expo/android/app/build/outputs/apk/release
           artifact-name: bare-expo-android-builds
+      - name: Show ccache stats
+        run: ccache -s -v
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -327,7 +423,8 @@ jobs:
           author_name: Test Suite e2e (Android)
 
   android-test-e2e:
-    needs: android-build
+    needs: [android-build, detect-platform-changes]
+    if: needs.detect-platform-changes.outputs.should_test_android == 'true'
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -369,9 +466,10 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           script: |
             # Start image comparison server (needs adb from use-android-emulator)
+            # Kill any leftover server from a previous retry
+            fuser -k 7123/tcp 2>/dev/null || true
             mkdir -p ~/.maestro/tests
-            ./e2e/image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
-            echo $! > /tmp/image-server.pid
+            LOG=~/.maestro/tests/screenshot-server-logs-$(date +%s); ./e2e/image-comparison/src/server.ts > "$LOG" 2>&1 & echo $! > /tmp/image-server.pid; sleep 2; kill -0 $(cat /tmp/image-server.pid) 2>/dev/null || { echo "Image comparison server failed to start. Logs:"; cat "$LOG"; exit 1; }
             # Run the actual tests
             ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo

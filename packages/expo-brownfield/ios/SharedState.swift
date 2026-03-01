@@ -1,4 +1,3 @@
-import Combine
 import ExpoModulesCore
 
 public final class SharedState: SharedObject {
@@ -6,7 +5,7 @@ public final class SharedState: SharedObject {
   private let key: String
   private var value: Any?
 
-  public init(key: String) {
+  public init(_ key: String) {
     self.key = key
     super.init()
   }
@@ -23,6 +22,7 @@ public final class SharedState: SharedObject {
     lock.unlock()
 
     emit(event: "change", arguments: ["value": newValue])
-    BrownfieldStateInternal.notifySubscribers(key, newValue)
+    BrownfieldStateInternal.shared.notifySubscribers(key, newValue)
+    BrownfieldStateInternal.shared.maybeNotifyKeyRecreated(key)
   }
 }

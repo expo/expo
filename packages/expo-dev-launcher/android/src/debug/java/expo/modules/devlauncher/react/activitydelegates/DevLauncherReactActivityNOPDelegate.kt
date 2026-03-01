@@ -16,6 +16,7 @@ open class DevLauncherReactActivityNOPDelegate(activity: ReactActivity) :
   override fun onNewIntent(intent: Intent?): Boolean = true
   override fun onBackPressed(): Boolean = true
   override fun onWindowFocusChanged(hasFocus: Boolean) {}
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {}
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {}
   override fun onConfigurationChanged(newConfig: Configuration) {}
 }

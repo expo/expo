@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 55.0.9 — 2026-02-25
+
+### 🎉 New features
+
+- Add support for auth universal links callback ([#42695](https://github.com/expo/expo/pull/42695) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.5 — 2026-02-08
 
 ### 💡 Others

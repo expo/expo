@@ -17,7 +17,7 @@ import { ensureEnvironmentSupportsTLSAsync } from './tls';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { setNodeEnv } from '../../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../../utils/nodeEnv';
 import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
@@ -259,8 +259,10 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       mode: options.mode,
       https: options.https,
     };
+
     setNodeEnv(env.mode ?? 'development');
-    require('@expo/env').load(env.projectRoot);
+    loadEnvFiles(env.projectRoot);
+
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
     let config: WebpackConfiguration;

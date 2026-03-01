@@ -75,6 +75,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ConfirmationDialog component',
+    route: 'ui/confirmation-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ConfirmationDialogScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
@@ -192,6 +200,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
+  {
+    name: 'ScrollView component',
+    route: 'ui/scrollview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewScreen'));
     },
   },
   {

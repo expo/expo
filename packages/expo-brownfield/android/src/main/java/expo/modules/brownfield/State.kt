@@ -1,13 +1,11 @@
 package expo.modules.brownfield
 
-fun interface Removable {
-  fun remove()
-}
-
 object BrownfieldState {
+  private var expoModule: ExpoBrownfieldStateModule? = null
+
   private val registry = mutableMapOf<String, SharedState>()
   private val subscriptions = mutableMapOf<String, MutableList<(Any?) -> Unit>>()
-  private val notifyingKeys = mutableSetOf<String>()
+  private val deletedKeys = mutableSetOf<String>()
 
   fun getOrCreate(key: String): SharedState {
     synchronized(this) {
@@ -16,11 +14,9 @@ object BrownfieldState {
   }
 
   fun get(key: String): Any? {
-    val state: SharedState?
     synchronized(this) {
-      state = registry[key]
+      return registry[key]?.get()
     }
-    return state?.get()
   }
 
   fun set(key: String, value: Any?) {
@@ -43,28 +39,32 @@ object BrownfieldState {
   }
 
   fun delete(key: String): Any? {
-    val state: SharedState?
     synchronized(this) {
-      state = registry.remove(key)
+      deletedKeys.add(key)
+      return registry.remove(key)?.get()
     }
-    return state?.get()
+  }
+
+  fun maybeNotifyKeyRecreated(key: String) {
+    synchronized(this) {
+      if (!deletedKeys.contains(key)) {
+        return
+      }
+
+      deletedKeys.remove(key)
+    }
+    expoModule?.notifyKeyRecreated(key)
+  }
+
+  internal fun setExpoModule(expoModule: ExpoBrownfieldStateModule?) {
+    this.expoModule = expoModule
   }
 
   fun notifySubscribers(key: String, value: Any?) {
+    val snapshot: List<(Any?) -> Unit>
     synchronized(this) {
-      if (!notifyingKeys.add(key)) return
+      snapshot = subscriptions[key]?.toList() ?: emptyList()
     }
-
-    try {
-      val snapshot: List<(Any?) -> Unit>
-      synchronized(this) {
-        snapshot = subscriptions[key]?.toList() ?: emptyList()
-      }
-      snapshot.forEach { it(value) }
-    } finally {
-      synchronized(this) {
-        notifyingKeys.remove(key)
-      }
-    }
+    snapshot.forEach { it(value) }
   }
 }

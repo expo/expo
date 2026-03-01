@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@expo/styleguide';
+import { CookieConsentProvider } from '@expo/styleguide-cookie-consent';
 import { KapaProvider } from '@kapaai/react-sdk';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
@@ -9,12 +10,15 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
 import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
-import { AnalyticsProvider } from '~/providers/Analytics';
+import { websiteSchema } from '~/constants/structured-data';
+import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
 import { markdownComponents } from '~/ui/components/Markdown';
+import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
 
+import '~/common/suppress-trailing-slash-warning';
 import '~/styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
@@ -60,8 +64,10 @@ export { reportWebVitals } from '~/providers/Analytics';
 
 export default function App({ Component, pageProps }: AppProps) {
   useNProgress();
+  useAnalyticsPageTracking();
   return (
     <>
+      <StructuredData id="website" data={websiteSchema} />
       {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
         html,
@@ -81,8 +87,8 @@ export default function App({ Component, pageProps }: AppProps) {
         }
       `}</style>
       <MotionConfig reducedMotion="user">
-        <AnalyticsProvider>
-          <ThemeProvider>
+        <ThemeProvider>
+          <CookieConsentProvider ga4Id="G-YKNPYCMLWY">
             <TutorialChapterCompletionProvider>
               <CodeBlockSettingsProvider>
                 <MDXProvider components={rootMarkdownComponents}>
@@ -94,8 +100,8 @@ export default function App({ Component, pageProps }: AppProps) {
                 </MDXProvider>
               </CodeBlockSettingsProvider>
             </TutorialChapterCompletionProvider>
-          </ThemeProvider>
-        </AnalyticsProvider>
+          </CookieConsentProvider>
+        </ThemeProvider>
       </MotionConfig>
     </>
   );

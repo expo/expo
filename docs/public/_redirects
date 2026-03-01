@@ -292,7 +292,8 @@
 /regulatory-compliance/privacy-shield /regulatory-compliance/data-and-privacy-protection 301
 
 # After changing brownfield docs
-/brownfield/installing-expo-modules /brownfield/get-started 301
+/brownfield/installing-expo-modules /brownfield/overview 301
+/brownfield/get-started /brownfield/isolated-approach 301
 
 # After removing Navigation section from Home and adding a Navigation page
 /develop/file-based-routing /develop/app-navigation 301

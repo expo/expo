@@ -10,6 +10,29 @@
 
 ### 💡 Others
 
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-20
+
+### 💡 Others
+
+- Reduce memory retained after autolinking runs ([#42947](https://github.com/expo/expo/pull/42947) by [@kitten](https://github.com/kitten))
+- Add concurrency limits to IO-bound autolinking tasks ([#42968](https://github.com/expo/expo/pull/42968) by [@kitten](https://github.com/kitten))
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-16
+
+### 💡 Others
+
 - Replace `require-from-string` with `@expo/require-utils` ([#42884](https://github.com/expo/expo/pull/42884) by [@kitten](https://github.com/kitten))
 
 ## 55.0.3 — 2026-02-03

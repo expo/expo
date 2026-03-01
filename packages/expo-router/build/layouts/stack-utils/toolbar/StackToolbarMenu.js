@@ -67,7 +67,7 @@ const StackToolbarMenu = (props) => {
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
     const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
-    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
     const computedLabel = sharedProps?.label;
     const computedMenuTitle = sharedProps?.menu?.title;
     const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
@@ -89,14 +89,14 @@ const StackToolbarMenu = (props) => {
     return (<NativeToolbarMenu {...props} icon={icon} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
-function convertStackToolbarMenuPropsToRNHeaderItem(props) {
+function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
     if (props.hidden) {
         return undefined;
     }
     const { title, ...rest } = props;
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
     const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(props.children, title);
-    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest);
+    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest, isBottomPlacement);
     const item = {
         ...sharedProps,
         label: computedLabel,
@@ -117,6 +117,15 @@ function convertStackToolbarMenuPropsToRNHeaderItem(props) {
         item.menu.title = computedMenuTitle;
     }
     return item;
+}
+// Custom menu action icons are not supported in react-navigation yet
+// But they are supported in react-native-screens
+// TODO(@ubax): Remove this workaround once react-navigation supports custom icons for menu actions.
+// https://linear.app/expo/issue/ENG-19853/remove-custom-conversion-logic-for-icon-from-packagesexpo
+function convertImageIconToPlatformIcon(icon) {
+    return icon.tinted
+        ? { type: 'templateSource', templateSource: icon.source }
+        : { type: 'imageSource', imageSource: icon.source };
 }
 function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     if (props.hidden) {
@@ -148,13 +157,11 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     }
     // TODO: Add elementSize to react-native-screens
     if (sharedProps.icon) {
-        // Only SF Symbols are supported in submenu icons
-        // TODO(@ubax): Add support for other images in react-native-screens
         if (sharedProps.icon.type === 'sfSymbol') {
             item.icon = sharedProps.icon;
         }
         else {
-            console.warn('When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.');
+            item.icon = convertImageIconToPlatformIcon(sharedProps.icon);
         }
     }
     return item;
@@ -209,13 +216,11 @@ function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
         item.keepsMenuPresented = unstable_keepPresented;
     }
     if (sharedProps.icon) {
-        // Only SF Symbols are supported in submenu icons
-        // TODO(@ubax): Add support for other images in react-native-screens
         if (sharedProps.icon.type === 'sfSymbol') {
             item.icon = sharedProps.icon;
         }
         else {
-            console.warn('When Icon is used inside Stack.Toolbar.MenuAction, only sfSymbol icons are supported. This is a limitation of React Native Screens.');
+            item.icon = convertImageIconToPlatformIcon(sharedProps.icon);
         }
     }
     return item;

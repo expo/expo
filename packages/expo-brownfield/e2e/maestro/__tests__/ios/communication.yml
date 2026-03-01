@@ -1,0 +1,21 @@
+appId: dev.expo.BrownfieldIntegratedTester
+---
+- runFlow: ./_nested-flows/launch-brownfield.yml
+
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-communication
+- assertVisible:
+    id: communication-send-message
+
+- tapOn:
+    id: communication-send-message
+- assertVisible: React Native(brownfield-tester/expo-app)
+- tapOn: OK
+
+- assertNotVisible:
+    id: communication-received-message
+    text: "{}"
+
+- assertVisible: "Received message (multiple: true)"

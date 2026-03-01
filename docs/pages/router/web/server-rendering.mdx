@@ -5,6 +5,7 @@ isAlpha: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -85,7 +86,7 @@ The above command starts a local server that renders pages on each request, simu
 
 With server rendering, dynamic routes are rendered on the fly, and the [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) export is not needed and should be removed. If your route file exports `generateStaticParams`, those routes will be handled dynamically instead. The route is rendered at request time with the actual parameters from the URL.
 
-```tsx app/blog/[id].tsx
+```tsx src/app/blog/[id].tsx
 import { Text } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -102,9 +103,9 @@ In the above example, when the app user visits `/blog/my-post`, the page is rend
 
 ## Root HTML
 
-You can customize the root HTML document by creating an **app/+html.tsx** file. This component wraps all routes and runs only on the server.
+You can customize the root HTML document by creating a **src/app/+html.tsx** file. This component wraps all routes and runs only on the server.
 
-```tsx app/+html.tsx
+```tsx src/app/+html.tsx
 import { ScrollViewStyleReset } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
@@ -147,7 +148,7 @@ All `+html.tsx` components are expected to render the `children` prop they recei
 
 Add meta tags to your pages using the `<Head />` component from `expo-router`:
 
-```tsx app/about.tsx
+```tsx src/app/about.tsx
 import Head from 'expo-router/head';
 import { Text } from 'react-native';
 
@@ -204,6 +205,8 @@ EAS Hosting supports server rendering out of the box. Export your app and deploy
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="Can I use data loaders with server rendering?">
 
 Yes. Server rendering works with [data loaders](/router/web/data-loaders) to fetch data on the server before rendering.
@@ -227,3 +230,5 @@ Caching is handled at the server or CDN level. Configure your deployment platfor
 Yes. [API routes](/router/web/api-routes/) work independently of the rendering mode. They are always executed on the server.
 
 </Collapsible>
+
+</FAQ>

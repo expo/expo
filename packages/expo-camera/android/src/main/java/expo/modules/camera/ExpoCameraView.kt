@@ -542,7 +542,7 @@ class ExpoCameraView(
           try {
             analyzer.setAnalyzer(
               ContextCompat.getMainExecutor(context),
-              BarcodeAnalyzer(lensFacing, barcodeFormats) {
+              BarcodeAnalyzer(barcodeFormats) {
                 onBarcodeScanned(it)
               }
             )
@@ -696,6 +696,8 @@ class ExpoCameraView(
 
     val scaleX: Float
     val scaleY: Float
+    var offsetX = 0f
+    var offsetY = 0f
 
     when (previewView.scaleType) {
       PreviewView.ScaleType.FIT_CENTER -> {
@@ -705,10 +707,11 @@ class ExpoCameraView(
         if (previewAspectRatio > imageAspectRatio) {
           scaleY = previewHeight / imageHeight
           scaleX = scaleY
+          offsetX = (previewWidth - imageWidth * scaleX) / 2f
         } else {
-          // Preview is taller - letterbox on top/bottom
           scaleX = previewWidth / imageWidth
           scaleY = scaleX
+          offsetY = (previewHeight - imageHeight * scaleY) / 2f
         }
       }
       PreviewView.ScaleType.FILL_CENTER -> {
@@ -716,13 +719,13 @@ class ExpoCameraView(
         val imageAspectRatio = imageWidth / imageHeight
 
         if (previewAspectRatio > imageAspectRatio) {
-          // Preview is wider - scale to fill width, crop top/bottom
           scaleX = previewWidth / imageWidth
           scaleY = scaleX
+          offsetY = (previewHeight - imageHeight * scaleY) / 2f
         } else {
-          // Preview is taller - scale to fill height, crop left/right
           scaleY = previewHeight / imageHeight
           scaleX = scaleY
+          offsetX = (previewWidth - imageWidth * scaleX) / 2f
         }
       }
       else -> {
@@ -733,12 +736,12 @@ class ExpoCameraView(
 
     cornerPoints.mapX { index ->
       val originalX = cornerPoints[index]
-      (originalX * scaleX).roundToInt()
+      (originalX * scaleX + offsetX).roundToInt()
     }
 
     cornerPoints.mapY { index ->
       val originalY = cornerPoints[index]
-      (originalY * scaleY).roundToInt()
+      (originalY * scaleY + offsetY).roundToInt()
     }
 
     barcode.cornerPoints = cornerPoints
@@ -753,8 +756,8 @@ class ExpoCameraView(
     val density = previewView.resources.displayMetrics.density
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {
-      val y = cornerPoints[i].toFloat() / density
-      val x = cornerPoints[i + 1].toFloat() / density
+      val x = cornerPoints[i].toFloat() / density
+      val y = cornerPoints[i + 1].toFloat() / density
       convertedCornerPoints.add(
         Bundle().apply {
           putFloat("x", x)
@@ -784,10 +787,12 @@ class ExpoCameraView(
   private fun onBarcodeScanned(barcode: BarCodeScannerResult) {
     if (shouldScanBarcodes) {
       transformBarcodeScannerResultToViewCoordinates(barcode)
+
       val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(
         barcode.cornerPoints,
         barcode.boundingBox
       )
+
       onBarcodeScanned(
         BarcodeScannedEvent(
           target = id,

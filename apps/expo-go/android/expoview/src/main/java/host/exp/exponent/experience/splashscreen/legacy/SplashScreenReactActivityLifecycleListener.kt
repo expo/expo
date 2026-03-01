@@ -15,8 +15,7 @@ class SplashScreenReactActivityLifecycleListener : ReactActivityLifecycleListene
     SplashScreen.ensureShown(
       activity,
       getResizeMode(activity),
-      ReactRootView::class.java,
-      getStatusBarTranslucent(activity)
+      ReactRootView::class.java
     )
   }
 }
@@ -30,8 +29,7 @@ class SplashScreenReactActivityHandler : ReactActivityHandler {
       SplashScreen.ensureShown(
         it,
         getResizeMode(it),
-        ReactRootView::class.java,
-        getStatusBarTranslucent(it)
+        ReactRootView::class.java
       )
     }
     return null
@@ -43,6 +41,3 @@ private fun getResizeMode(context: Context): SplashScreenImageResizeMode =
     context.getString(R.string.expo_splash_screen_resize_mode).lowercase()
   )
     ?: SplashScreenImageResizeMode.CONTAIN
-
-private fun getStatusBarTranslucent(context: Context): Boolean =
-  context.getString(R.string.expo_splash_screen_status_bar_translucent).toBoolean()

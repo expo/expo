@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveExpoVersion = resolveExpoVersion;
-exports.resolveExpoEnvPath = resolveExpoEnvPath;
 exports.resolveExpoAutolinkingPackageRoot = resolveExpoAutolinkingPackageRoot;
 exports.resolveExpoAutolinkingCliPath = resolveExpoAutolinkingCliPath;
 exports.resolveExpoAutolinkingVersion = resolveExpoAutolinkingVersion;
@@ -22,17 +21,6 @@ function resolveExpoVersion(projectRoot) {
     if (expoPackageJsonPath) {
         const expoPackageJson = require(expoPackageJsonPath);
         return expoPackageJson.version;
-    }
-    return null;
-}
-/**
- * Resolve the path to the `@expo/env` package in the project.
- */
-function resolveExpoEnvPath(projectRoot) {
-    const expoPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo/package.json');
-    const expoEnvPackageJsonPath = resolve_from_1.default.silent(expoPackageRoot ?? projectRoot, '@expo/env/package.json');
-    if (expoEnvPackageJsonPath) {
-        return path_1.default.dirname(expoEnvPackageJsonPath);
     }
     return null;
 }

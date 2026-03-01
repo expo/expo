@@ -36,7 +36,6 @@ If you need to make native code changes to your Expo project, such as adding cus
 - Run `yarn setup:native` in the root directory.
 - Run `yarn build` in the `packages/expo` directory.
 
-
 ## Building Expo Go
 
 1. Set up React Native
@@ -45,20 +44,16 @@ Go to the `react-native-lab/react-native` directory and run `yarn install` to in
 
 You can build the React Native Android dep using `./gradlew :packages:react-native:ReactAndroid:buildCMakeDebug` in `react-native-lab/react-native` directory. This is optional because React Native will be built anyway when you build Expo Go, but can help to narrow down a potential issue surface area.
 
-2. Run `yarn start` in `apps/expo-go` directory to start Metro
-
-Metro needs to run prior running the build. Verify it runs on port 80. This is because `et android-generate-dynamic-macros` / `et ios-generate-dynamic-macros` is run during the build and needs Metro on port 80 to be running.
-
-3. Build Expo Go
+2. Build Expo Go
 
 For Android, run `./gradlew app:assembleDebug` in the `apps/expo-go/android` directory.
 
 For iOS:
+
 - run `pod install` in the `apps/expo-go/ios` directory
-- set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist`
 - open and run `ios/Exponent.xcworkspace` in Xcode.
 
-4. Run Metro for Native Component List
+3. Run Metro for Native Component List
 
 - `cd apps/native-component-list`
 - `EXPO_SDK_VERSION=UNVERSIONED npx expo start --clear`
@@ -67,17 +62,6 @@ Use the Expo Go app that you built in the previous step to scan the QR code and 
 
 ## Troubleshooting
 
-- If you see
-```
-error: ReferenceError: SHA-1 for file /Users/vojta/_dev/expo/react-native-lab/react-native/packages/polyfills/console.js (/Users/vojta/_dev/expo/react-native-lab/react-native/packages/polyfills/console.js) is not computed.
-         Potential causes:
-           1) You have symlinks in your project - watchman does not follow symlinks.
-           2) Check `blockList` in your metro.config.js and make sure it isn't excluding the file path.
-```
-
-run `rm -rf ./react-native-lab/react-native/node_modules`
-
 - If you're seeing C++ related errors, run `find . -name ".cxx" -type d -prune -exec rm -rf '{}' +` which clears `.cxx` build artifacts. Alternatively, use the "nuke" approach below.
-- If you get `A valid Firebase Project ID is required to communicate with Firebase server APIs.`, make sure you Metro is running in the `apps/expo-go` directory and run `et android-generate-dynamic-macros`.
 - You might need clean the project before building it. Run `./gradlew clean` in the `apps/expo-go/android` directory.
-- the "nuke" option is `git submodule foreach --recursive git clean -xfd` and / or `git clean -xfd` which removes all untracked files so you need to run the setup script `./scripts/download-dependencies.sh` again and building then takes a bit longer - but this approach appears to be effective.
+- The "nuke" option is `git submodule foreach --recursive git clean -xfd` and / or `git clean -xfd` which removes all untracked files so you need to run the setup script `./scripts/download-dependencies.sh` again and building then takes a bit longer - but this approach appears to be effective.

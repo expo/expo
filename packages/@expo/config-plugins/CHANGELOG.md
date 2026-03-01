@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 55.0.6 — 2026-02-25
+
+### 💡 Others
+
+- Deprecated and turned into no-ops the `androidStatusBar.backgroundColor` and `androidStatusBar.translucent` app config properties. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.4 — 2026-02-03
 
 _This version does not introduce any user-facing changes._

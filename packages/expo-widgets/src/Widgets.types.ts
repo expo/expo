@@ -1,4 +1,7 @@
+import { SharedObject } from 'expo';
 import { ReactNode } from 'react';
+
+import { after } from './Widgets';
 
 /**
  * The widget family (size).
@@ -33,15 +36,26 @@ export type WidgetBase<T extends object = object> = {
   family: WidgetFamily;
 } & T;
 
+export type WidgetTimelineEntry<T extends object = object> = {
+  /**
+   * Date when widget should update.
+   */
+  date: Date;
+  /**
+   * Props to be passed to the widget.
+   */
+  props: T;
+};
+
 export type ExpoTimelineEntry = {
   timestamp: number;
-  content: ReactNode;
+  props: Record<string, any>;
 };
 
 /**
  * Defines the layout sections for an iOS Live Activity.
  */
-export type ExpoLiveActivityEntry = {
+export type LiveActivityLayout = {
   /**
    * The main banner content displayed in Notifications Center.
    */
@@ -83,7 +97,7 @@ export type ExpoLiveActivityEntry = {
 /**
  * A function that returns the layout for a Live Activity.
  */
-export type LiveActivityComponent = () => ExpoLiveActivityEntry;
+export type LiveActivityComponent<T extends object = object> = (props?: T) => LiveActivityLayout;
 
 /**
  * Event emitted when a user interacts with a widget.
@@ -132,27 +146,12 @@ export type PushToStartTokenEvent = {
 };
 
 /**
- * Information about a running live activity.
- */
-export type LiveActivityInfo = {
-  /**
-   * The unique identifier of the live activity.
-   */
-  id: string;
-  /**
-   * The name of the live activity.
-   */
-  name: string;
-  /**
-   * The push token for the live activity, if available.
-   */
-  pushToken?: string;
-};
-
-/**
  * Dismissal policy for ending a live activity.
+ * - `'default'` - The system’s default dismissal policy for the Live Activity.
+ * - `'immediate'` - The system immediately removes the Live Activity that ended.
+ * - `after(date)` - The system removes the Live Activity that ended at the specified time within a four-hour window.
  */
-export type LiveActivityDismissalPolicy = 'default' | 'immediate';
+export type LiveActivityDismissalPolicy = 'default' | 'immediate' | ReturnType<typeof after>;
 
 export type ExpoWidgetsEvents = {
   /**
@@ -165,9 +164,36 @@ export type ExpoWidgetsEvents = {
    * @param event Token event details.
    */
   onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
+};
+
+export type LiveActivityEvents = {
   /**
    * Function that is invoked when a push token is received for a live activity.
    * @param event Token event details.
    */
   onExpoWidgetsTokenReceived: (event: PushTokenEvent) => void;
 };
+
+export declare class NativeWidgetObject extends SharedObject {
+  constructor(name: string, layout: string);
+  reload(): void;
+  updateTimeline(entries: ExpoTimelineEntry[]): void;
+  getTimeline(): Promise<ExpoTimelineEntry[]>;
+}
+
+export declare class NativeLiveActivityFactory extends SharedObject {
+  constructor(name: string, layout: string);
+  start(props: string, url?: string): NativeLiveActivity;
+  getInstances(): NativeLiveActivity[];
+}
+
+export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
+  update(props: string): Promise<void>;
+  end(
+    dismissalPolicy?: string,
+    afterDate?: number,
+    state?: string,
+    contentDate?: number
+  ): Promise<void>;
+  getPushToken(): Promise<string | null>;
+}

@@ -1,6 +1,6 @@
 package expo.modules.filesystem
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.services.FilePermissionService
 
 internal class CopyOrMoveDirectoryToFileException :
   CodedException("Unable to copy or move a folder to a file")
@@ -29,7 +29,7 @@ internal class UnableToCreateException(reason: String) :
     "Unable to create file or directory: $reason"
   )
 
-internal class InvalidPermissionException(permission: Permission) :
+internal class InvalidPermissionException(permission: FilePermissionService.Permission) :
   CodedException(
     "Missing '${permission.name}' permission for accessing the file."
   )

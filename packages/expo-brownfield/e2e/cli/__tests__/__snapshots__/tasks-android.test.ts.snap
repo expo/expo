@@ -1,19 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`tasks:android command without prebuild should display help message for --help/-h option 1`] = `
-"Usage: expo-brownfield tasks:android [<options>]
+exports[`tasks:android command without prebuild should display help message for --help/-h/help <command> option 1`] = `
+"Usage: expo-brownfield tasks:android [options]
+
+List available publishing tasks and repositories for Android
 
 Options:
-  --help, -h                    display help for 'tasks:android'
-  --verbose                     output all subcommands output to the terminal
-  --library, -l                 name of the brownfield library"
+  --verbose                forward all output to the terminal
+  -l, --library <library>  name of the brownfield library
+  --dry-run                only print the commands without executing them
+  -h, --help               display help for command"
 `;
 
-exports[`tasks:android command without prebuild should display help message for --help/-h option 2`] = `
-"Usage: expo-brownfield tasks:android [<options>]
+exports[`tasks:android command without prebuild should display help message for --help/-h/help <command> option 2`] = `
+"Usage: expo-brownfield tasks:android [options]
+
+List available publishing tasks and repositories for Android
 
 Options:
-  --help, -h                    display help for 'tasks:android'
-  --verbose                     output all subcommands output to the terminal
-  --library, -l                 name of the brownfield library"
+  --verbose                forward all output to the terminal
+  -l, --library <library>  name of the brownfield library
+  --dry-run                only print the commands without executing them
+  -h, --help               display help for command"
+`;
+
+exports[`tasks:android command without prebuild should display help message for --help/-h/help <command> option 3`] = `
+"Usage: expo-brownfield tasks:android [options]
+
+List available publishing tasks and repositories for Android
+
+Options:
+  --verbose                forward all output to the terminal
+  -l, --library <library>  name of the brownfield library
+  --dry-run                only print the commands without executing them
+  -h, --help               display help for command"
 `;

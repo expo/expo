@@ -32,7 +32,7 @@ Don't have a project yet? No problem. It's quick and easy to create a "Hello wor
 
 Run the following command to create a new project:
 
-<Terminal cmd={['$ npx create-expo-app my-app']} />
+<Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55']} />
 
 EAS Update also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
@@ -261,7 +261,7 @@ Publishing an update allows:
 - Fixing bugs and quickly updating non-native parts of a project instead of creating a new build
 - [Sharing a preview version of an app](/review/overview/) using internal distribution
 
-To publish an update with changes from your project, use the `eas update` command, and specify a name for the channel, a `message` to describe the update and if using [EAS environment variables](/eas/environment-variables/), the environment pull variables from (leave unspecified to use the **.env** files present in your project directory):
+To publish an update with changes from your project, use the `eas update` command, and specify a name for the channel, a `message` to describe the update, and the `--environment` flag to specify which [EAS environment variables](/eas/environment-variables/) to use (required in SDK 55 and later):
 
 <Terminal
   cmd={[

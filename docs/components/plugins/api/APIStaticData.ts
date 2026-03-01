@@ -14,7 +14,6 @@ export const nonLinkableTypes = [
   'B',
   'BackButtonDisplayMode',
   'BackgroundNotificationResult',
-  'BaseNativeTabsTriggerIconProps',
   'BasicTextStyle',
   'BlurEffectTypes',
   'BlurViewState',
@@ -82,9 +81,6 @@ export const nonLinkableTypes = [
   'NativeBoundaryEventCallback',
   'NativeSyntheticEvent',
   'NativeTabNavigationEventMap',
-  'NativeTabsTriggerBadgeProps',
-  'NativeTabsTriggerIconProps',
-  'NativeTabsTriggerLabelProps',
   'NavigationContainerRefWithCurrent',
   'NavigationAction',
   'NavigationProp',
@@ -139,7 +135,6 @@ export const nonLinkableTypes = [
   'SQLiteTaggedQueryResult',
   'StyleProp',
   'T',
-  'TabsProps',
   'TabsScreenProps',
   'TaskOptions',
   'TEventListener',
@@ -151,7 +146,6 @@ export const nonLinkableTypes = [
   'TOptions',
   'TParams',
   'Transaction',
-  'TriggerProps',
   'TRoute',
   'TSegments',
   'TState',
@@ -160,7 +154,6 @@ export const nonLinkableTypes = [
   'UnknownOutputParams',
   'UploadProgressData',
   'UseFontHook',
-  'VectorIconProps',
   'WritingOptions',
 ];
 
@@ -299,14 +292,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
-  'v52.0.0': {
-    EventEmitter: '/versions/v52.0.0/sdk/expo/#eventemitter',
-    NativeModule: '/versions/v52.0.0/sdk/expo/#nativemodule',
-    SharedObject: '/versions/v52.0.0/sdk/expo/#sharedobject',
-    SharedRef: '/versions/v52.0.0/sdk/expo/#sharedref',
-    BufferOptions: '/versions/v52.0.0/sdk/video/#bufferoptions-1',
-    CameraPosition: '/versions/v52.0.0/sdk/maps/#cameraposition-2',
-  },
   'v53.0.0': {
     EventEmitter: '/versions/v53.0.0/sdk/expo/#eventemitter',
     NativeModule: '/versions/v53.0.0/sdk/expo/#nativemodule',
@@ -322,6 +307,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/v54.0.0/sdk/router/#href-1',
     BufferOptions: '/versions/v54.0.0/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/v54.0.0/sdk/maps/#cameraposition-2',
+    VectorIconProps: '/versions/v54.0.0/sdk/router/#vectoriconprops',
   },
   'v55.0.0': {
     EventEmitter: '/versions/v55.0.0/sdk/expo/#eventemittertype',
@@ -334,6 +320,17 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     CameraPosition: '/versions/v55.0.0/sdk/maps/#cameraposition-2',
     ScrubbingModeOptions: '/versions/v55.0.0/sdk/video/#scrubbingmodeoptions-1',
     SeekTolerance: '/versions/v55.0.0/sdk/video/#scrubbingmodeoptions-1',
+    BaseNativeTabsTriggerIconProps:
+      '/versions/v55.0.0/sdk/router-native-tabs/#basenativetabstriggericonprops',
+    NativeTabsTriggerBadgeProps:
+      '/versions/v55.0.0/sdk/router-native-tabs/#nativetabstriggerbadgeprops',
+    NativeTabsTriggerIconProps:
+      '/versions/v55.0.0/sdk/router-native-tabs/#nativetabstriggericonprops',
+    NativeTabsTriggerLabelProps:
+      '/versions/v55.0.0/sdk/router-native-tabs/#nativetabstriggerlabelprops',
+    TabsProps: '/versions/v55.0.0/sdk/router-ui/#tabsprops',
+    TriggerProps: '/versions/v55.0.0/sdk/router-ui/#triggerprops',
+    VectorIconProps: '/versions/v55.0.0/sdk/router/#vectoriconprops',
   },
   latest: {
     EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
@@ -344,6 +341,19 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/latest/sdk/router/#href-1',
     BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
+    ScrubbingModeOptions: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/latest/sdk/video/#scrubbingmodeoptions-1',
+    BaseNativeTabsTriggerIconProps:
+      '/versions/latest/sdk/router-native-tabs/#basenativetabstriggericonprops',
+    NativeTabsTriggerBadgeProps:
+      '/versions/latest/sdk/router-native-tabs/#nativetabstriggerbadgeprops',
+    NativeTabsTriggerIconProps:
+      '/versions/latest/sdk/router-native-tabs/#nativetabstriggericonprops',
+    NativeTabsTriggerLabelProps:
+      '/versions/latest/sdk/router-native-tabs/#nativetabstriggerlabelprops',
+    TabsProps: '/versions/latest/sdk/router-ui/#tabsprops',
+    TriggerProps: '/versions/latest/sdk/router-ui/#triggerprops',
+    VectorIconProps: '/versions/latest/sdk/router/#vectoriconprops',
   },
   unversioned: {
     EventEmitter: '/versions/unversioned/sdk/expo/#eventemittertype',
@@ -356,6 +366,17 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
     ScrubbingModeOptions: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
     SeekTolerance: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
+    BaseNativeTabsTriggerIconProps:
+      '/versions/unversioned/sdk/router-native-tabs/#basenativetabstriggericonprops',
+    NativeTabsTriggerBadgeProps:
+      '/versions/unversioned/sdk/router-native-tabs/#nativetabstriggerbadgeprops',
+    NativeTabsTriggerIconProps:
+      '/versions/unversioned/sdk/router-native-tabs/#nativetabstriggericonprops',
+    NativeTabsTriggerLabelProps:
+      '/versions/unversioned/sdk/router-native-tabs/#nativetabstriggerlabelprops',
+    TabsProps: '/versions/unversioned/sdk/router-ui/#tabsprops',
+    TriggerProps: '/versions/unversioned/sdk/router-ui/#triggerprops',
+    VectorIconProps: '/versions/unversioned/sdk/router/#vectoriconprops',
   },
 };
 

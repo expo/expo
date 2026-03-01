@@ -1,8 +1,8 @@
 import * as ExpoBrownfield from 'expo-brownfield';
+import { useEffect, useRef } from 'react';
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Header } from '@/components';
-import { useEffect, useRef } from 'react';
 
 const State = () => {
   return (
@@ -32,31 +32,34 @@ const DataTypesDemo = () => {
       <Text style={styles.sectionTitle}>Data types</Text>
       <View>
         <DataTypesDemoItem
+          stateKey="number"
           label="Number"
           text={String(number)}
           onPress={() => setNumber((p) => (p ?? 0) + 1)}
         />
         <DataTypesDemoItem
+          stateKey="string"
           label="String"
           text={string ?? '""'}
           onPress={() => setString((p) => (p ?? '') + 'ex')}
         />
         <DataTypesDemoItem
+          stateKey="boolean"
           label="Boolean"
           text={String(boolean)}
           onPress={() => setBoolean((p) => !p)}
         />
         <DataTypesDemoItem
+          stateKey="array"
           label="Array"
           text={JSON.stringify(array)}
-          onPress={() =>
-            setArray((p) => [...(p ?? []), 'ex', 1, 2.34, false, null, undefined, { a: 'b' }])
-          }
+          onPress={() => setArray((p) => [...(p ?? []), 'ex', 1, 2.34, false, { a: 'b' }])}
         />
         <DataTypesDemoItem
+          stateKey="object"
           label="Object"
           text={JSON.stringify(object)}
-          onPress={() => setObject((p) => ({ ...p, a: 'b', c: { d: 'e', f: ['g', { h: 'i' }] } }))}
+          onPress={() => setObject({ a: 'b', c: { d: 'e', f: ['g', { h: 'i' }] } })}
         />
       </View>
     </View>
@@ -64,10 +67,12 @@ const DataTypesDemo = () => {
 };
 
 const DataTypesDemoItem = ({
+  stateKey,
   label,
   text,
   onPress,
 }: {
+  stateKey: string;
   label: string;
   text: string;
   onPress: () => void;
@@ -77,6 +82,7 @@ const DataTypesDemoItem = ({
       <View style={styles.row}>
         <Text style={styles.label}>{label}</Text>
         <Button title="Set" onPress={onPress} />
+        <Button title="Delete" onPress={() => ExpoBrownfield.deleteSharedState(stateKey)} />
       </View>
       <Text style={styles.value}>{text}</Text>
     </View>

@@ -123,12 +123,14 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
     return;
   }
 
-  const getValidExternalImportKind = createExternalImportValidator(pkg);
+  const validator = createExternalImportValidator(pkg);
   let invalidImports: {
     file: SourceFile;
     importRef: SourceFileImportRef;
     kind: DependencyKind | undefined;
   }[] = [];
+
+  const invalidDependencyRanges: string[] = [];
 
   for (const source of sources) {
     for (const importRef of source.importRefs) {
@@ -139,7 +141,10 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       } else if (isIgnoredPackage) {
         continue;
       }
-      const kind = getValidExternalImportKind(importRef);
+      if (validator.isPinnedDependencyRange(importRef)) {
+        invalidDependencyRanges.push(importRef.packageName);
+      }
+      const kind = validator.getValidExternalImportKind(importRef);
       if (!kind || kind === DependencyKind.Dev) {
         invalidImports.push({ file: source.file, importRef, kind });
       }
@@ -194,6 +199,11 @@ export async function checkDependenciesAsync(pkg: Package, type: PackageCheckTyp
       throw new Error(`${pkg.packageName} has invalid dependency chains.`);
     }
   }
+
+  if (invalidDependencyRanges.length) {
+    Logger.warn(`📦 Risky versions: ${invalidDependencyRanges.join(', ')} are pinned!`);
+    throw new Error(`${pkg.packageName} has invalid pinned versions.`);
+  }
 }
 
 function isNCCBuilt(pkg: Package): boolean {
@@ -221,7 +231,51 @@ function createExternalImportValidator(pkg: Package) {
     DependencyKind.Peer,
   ]);
   dependencies.forEach((dependency) => dependencyMap.set(dependency.name, dependency));
-  return (ref: SourceFileImportRef) => dependencyMap.get(ref.packageName)?.kind;
+  const seenDependencyName = new Set<string>();
+  return {
+    getValidExternalImportKind(ref: SourceFileImportRef) {
+      return dependencyMap.get(ref.packageName)?.kind;
+    },
+    isPinnedDependencyRange(ref: SourceFileImportRef) {
+      // List of exceptions:
+      if (pkg.packageName === 'patch-project' || pkg.packageName.startsWith('@expo/')) {
+        // Ignore this project
+        return null;
+      } else if (ref.packageName.startsWith('@expo/')) {
+        // Internal packages are ignored
+        return null;
+      } else if (ref.packageName.startsWith('@react-native/')) {
+        // Sub-deps on react-native, fine to pin
+        return null;
+      } else if (ref.packageName === 'xml2js') {
+        // TODO: Unpin
+        return null;
+      } else if (pkg.packageName === 'expo' && ref.packageName === 'expo-modules-core') {
+        // TODO: Exception, but there's potentially no need for this
+        return null;
+      } else if (
+        pkg.packageName === 'expo-dev-client' &&
+        (ref.packageName === 'expo-dev-launcher' || ref.packageName === 'expo-dev-menu')
+      ) {
+        // TODO: Unpin
+        return null;
+      }
+
+      if (seenDependencyName.has(ref.packageName)) {
+        return null;
+      }
+      seenDependencyName.add(ref.packageName);
+      const dependency = dependencyMap.get(ref.packageName);
+      if (dependency && dependency.kind !== DependencyKind.Dev) {
+        // NOTE: Loose check to see if a dependency is pinned
+        const isLoose =
+          /[~|^><=](\s*\d+\.)/.test(dependency.versionRange) || dependency.versionRange === '*';
+        const isPinned = /^\d+\.\d+\.\d+$/.test(dependency.versionRange);
+        return !isLoose || isPinned;
+      }
+      return null;
+    },
+  };
 }
 
 /** Get a list of all source files to validate for dependency chains */

@@ -60,7 +60,7 @@ describe('useBottomAccessoryFunctionFromBottomAccessories', () => {
     const accessory = <NativeTabsBottomAccessory>{firstContent}</NativeTabsBottomAccessory>;
 
     const { result, rerender } = renderHook(
-      ({ acc }) => useBottomAccessoryFunctionFromBottomAccessories(acc),
+      ({ acc }: { acc: typeof accessory }) => useBottomAccessoryFunctionFromBottomAccessories(acc),
       { initialProps: { acc: accessory } }
     );
 

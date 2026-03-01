@@ -10,6 +10,43 @@
 
 ### 💡 Others
 
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Web] Fix potential `nan` duration. ([#43268](https://github.com/expo/expo/pull/43268) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [android] Make in-memory preload cache. ([#43293](https://github.com/expo/expo/pull/43293) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.6 — 2026-02-16
+
+### 🎉 New features
+
+- [iOS] Add support for `shouldRouteThroughEarpiece`. ([#43089](https://github.com/expo/expo/pull/43089) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Make it possible to add/remove the foreground service and foreground service permissions with a config plugin. ([#43014](https://github.com/expo/expo/pull/43014) by [@behenate](https://github.com/behenate))
+- [Web] Add support for audio sampling. ([#43149](https://github.com/expo/expo/pull/43149) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for media controls. ([#43150](https://github.com/expo/expo/pull/43150) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for selecting recording inputs. ([#43151](https://github.com/expo/expo/pull/43151) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Add support for recording metering. ([#43152](https://github.com/expo/expo/pull/43152) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Enable `setIsAudioActiveAsync`. ([#43142](https://github.com/expo/expo/pull/43142) by [@alanjhughes](https://github.com/alanjhughes))
+- Add support for preloading audio sources. ([#43063](https://github.com/expo/expo/pull/43063) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [Android] Fix memory leaks when refreshing the app. ([#42785](https://github.com/expo/expo/pull/42785) by [@behenate](https://github.com/behenate))
+- [iOS] Fixes `mediaServicesDidReset` not being correctly implemented. ([#42898](https://github.com/expo/expo/pull/42898) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Improve event handling. ([#43121](https://github.com/expo/expo/pull/43121) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Rework native audio service handling. ([#43015](https://github.com/expo/expo/pull/43015) by [@behenate](https://github.com/behenate))
+
 ## 55.0.5 — 2026-02-08
 
 _This version does not introduce any user-facing changes._

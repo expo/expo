@@ -12,6 +12,4 @@ export declare function createRequestHandler(params: {
     build: string;
     environment?: string | null;
 }, setup?: RequestHandlerParams): RequestHandler;
-export declare function convertHeaders(requestHeaders: express.Request['headers']): Headers;
-export declare function convertRequest(req: express.Request, res: express.Response): Request;
-export declare function respond(res: express.Response, expoRes: Response): Promise<void>;
+export { convertRequest, respond } from './http';

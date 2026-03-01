@@ -93,7 +93,6 @@ extension ExpoSwiftUI {
       // In the ideal scenario it would be marked as `@MainActor`, but then `ViewModuleWrapper`
       // would be incompatible with `RCTViewManager` as it doesn't specify the actor.
       return MainActor.assumeIsolated {
-#if RCT_NEW_ARCH_ENABLED
         let props = Props()
         props.appContext = appContext
 
@@ -101,18 +100,15 @@ extension ExpoSwiftUI {
           let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)
           // Set up events to call view's `dispatchEvent` method.
           // This is supported only on the new architecture, `dispatchEvent` exists only there.
-          props.setUpEvents(view.dispatchEvent(_:payload:))
+          props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
           return AppleView.from(view)
         }
 
         let view = SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
         // Set up events to call view's `dispatchEvent` method.
         // This is supported only on the new architecture, `dispatchEvent` exists only there.
-        props.setUpEvents(view.dispatchEvent(_:payload:))
+        props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
         return AppleView.from(view)
-#else
-        return AppleView.from(UnimplementedExpoView(appContext: appContext, text: "Rendering SwiftUI views is possible only with the New Architecture enabled"))
-#endif
       }
     }
 
