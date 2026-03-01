@@ -19,14 +19,13 @@ struct RNHostView: ExpoSwiftUI.View {
       ChildBoundsFrame(childUIView: childUIView) {
         Children()
       }
-      .onAppear { [weak childUIView] in
-        guard let childUIView else { return }
+      .onAppear {
         ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: childUIView)
       }
     } else {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .modifier(RNHostSizeModifier(matchContents: false, shadowNodeProxy: props.shadowNodeProxy))
+        .modifier(NotifyViewSizeToYogaModififer(matchContents: false, shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
           if let view = firstChildUIView {
             ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: view)
@@ -44,7 +43,7 @@ struct RNHostView: ExpoSwiftUI.View {
 
 /// Observes a child UIKit view's bounds (set by Yoga) via KVO and applies
 /// them as a `.frame()` modifier. The bounds are read eagerly in `init`
-/// so the frame is correct from the very first render — no `onAppear` delay.
+/// so the frame is correct from the very first render
 private struct ChildBoundsFrame<Content: SwiftUI.View>: SwiftUI.View {
   @StateObject private var observer: Observer
   let content: Content
@@ -81,14 +80,12 @@ private struct ChildBoundsFrame<Content: SwiftUI.View>: SwiftUI.View {
 
 // MARK: - Size tracking
 
-private struct RNHostSizeModifier: ViewModifier {
+private struct NotifyViewSizeToYogaModififer: ViewModifier {
   let matchContents: Bool
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
 
   private func handleSizeChange(_ size: CGSize) {
-    if !matchContents {
-      shadowNodeProxy.setViewSize?(size)
-    }
+    shadowNodeProxy.setViewSize?(size)
   }
 
   func body(content: Content) -> some View {
