@@ -7,6 +7,9 @@ process.env.ABC;
 console.log("production");
 console.log("development");
 "bar";
+"bar";
+"bar";
+"bar";
 
 env.EXPO_PUBLIC_URL;
 
@@ -19,6 +22,9 @@ var foo = process.env.JEST_WORKER_ID;
 process.env.ABC;
 console.log(process.env.NODE_ENV);
 console.log(_env2.env.EXPO_PUBLIC_NODE_ENV);
+_env2.env.EXPO_PUBLIC_FOO;
+_env2.env.EXPO_PUBLIC_FOO;
+_env2.env.EXPO_PUBLIC_FOO;
 _env2.env.EXPO_PUBLIC_FOO;
 
 env.EXPO_PUBLIC_URL;

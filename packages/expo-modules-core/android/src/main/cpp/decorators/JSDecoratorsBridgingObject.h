@@ -51,6 +51,7 @@ public:
     jboolean takesOwner,
     jboolean enumerable,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jint cppReturnType,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 

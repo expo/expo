@@ -1,4 +1,5 @@
-import { ExpoModifier, ViewEvent } from '../../types';
+import { type ColorValue } from 'react-native';
+import { ExpoModifier } from '../../types';
 export type AndroidVariant = 'picker' | 'input';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 export type DateTimePickerProps = {
@@ -31,7 +32,7 @@ export type DateTimePickerProps = {
     /**
      * The tint color to use on the picker elements.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Determines what format the clock should be displayed in on Android.
      * @default true
@@ -42,19 +43,8 @@ export type DateTimePickerProps = {
      */
     modifiers?: ExpoModifier[];
 };
-type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected' | 'initialDate'> & {
-    variant?: AndroidVariant;
-    initialDate?: number | null;
-} & ViewEvent<'onDateSelected', {
-    date: Date;
-}>;
-/**
- * @hidden
- */
-export declare function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps;
 /**
  * Renders a `DateTimePicker` component.
  */
 export declare function DateTimePicker(props: DateTimePickerProps): import("react").JSX.Element;
-export {};
 //# sourceMappingURL=index.d.ts.map

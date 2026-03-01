@@ -135,7 +135,7 @@ function endsInNull(path: string) {
   return path.endsWith('/null');
 }
 
-// Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
+// Simple remapping of renamed pages, similar to public/_redirects but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating Home pages and route
@@ -379,9 +379,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects as per Algolia 404 report
   '/workflow/build/building-on-ci': '/build/building-on-ci/',
   'versions/latest/sdk/filesystem.md': '/versions/latest/sdk/filesystem/',
-  '/versions/v52.0.0/sdk/taskmanager': '/versions/v52.0.0/sdk/task-manager/',
   '/task-manager/': '/versions/latest/sdk/task-manager',
-  '/versions/v50.0.0/sdk/dev-client': '/versions/latest/sdk/dev-client/',
 
   // Deprecated Webpack support
   '/guides/customizing-webpack': '/archive/customizing-webpack',
@@ -525,7 +523,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/regulatory-compliance/privacy-shield/': '/regulatory-compliance/data-and-privacy-protection/',
 
   // After changing brownfield docs
-  '/brownfield/installing-expo-modules/': '/brownfield/get-started/',
+  '/brownfield/installing-expo-modules/': '/brownfield/overview/',
+  '/brownfield/get-started/': '/brownfield/isolated-approach/',
 
   // After removing Navigation section from Home and adding a Navigation page
   '/develop/file-based-routing/': '/develop/app-navigation/',
@@ -537,4 +536,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/middleware/': '/router/web/middleware/',
   '/router/reference/static-rendering/': '/router/web/static-rendering/',
   '/router/reference/async-routes/': '/router/web/async-routes/',
+
+  // After moving FAQ to EAS Update page
+  '/eas-update/faq/': '/eas-update/introduction/',
+
+  // After moving MetadataFAQ to EAS Metadata page
+  '/eas/metadata/faq/': '/eas/metadata/',
+
+  // After creating EAS environment variables section
+  '/eas/hosting/environment-variables/':
+    '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
 };

@@ -386,6 +386,16 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'AI mobile app development with Replit and Expo',
+    event: 'Expo Tutorials',
+    videoId: 'Zm4z-8i7PgA',
+  },
+  {
+    title: 'How to add Android widgets to Expo apps | Native, Resizable, Configurable widgets',
+    event: 'Expo Tutorials',
+    videoId: 'rCVWq4WkoDA',
+  },
+  {
     title: 'How to add native iOS Widgets to your Expo app',
     event: 'Expo Tutorials',
     videoId: 'UH4ejdz3fko',

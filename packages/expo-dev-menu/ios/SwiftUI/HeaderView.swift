@@ -1,12 +1,29 @@
 import SwiftUI
 import ExpoModulesCore
 
+#if os(macOS)
+import AppKit
+typealias PlatformImage = NSImage
+#else
+import UIKit
+typealias PlatformImage = UIImage
+#endif
+
 struct HeaderView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
-  @State private var appIcon: UIImage? = nil
+  @State private var appIcon: PlatformImage?
 
   var body: some View {
     HStack(spacing: 12) {
+#if os(macOS)
+      if let icon = appIcon {
+        Image(nsImage: icon)
+          .resizable()
+          .scaledToFit()
+          .frame(width: 38, height: 38)
+          .clipShape(RoundedRectangle(cornerRadius: 16))
+      }
+#else
       if let icon = appIcon {
         Image(uiImage: icon)
           .resizable()
@@ -14,8 +31,9 @@ struct HeaderView: View {
           .frame(width: 38, height: 38)
           .clipShape(RoundedRectangle(cornerRadius: 16))
       }
+#endif
 
-      versionInfo
+      VersionInfo(appInfo: viewModel.appInfo)
 
       Spacer()
 
@@ -55,33 +73,47 @@ struct HeaderView: View {
     }
 
     if url.isFileURL {
+#if os(macOS)
+      appIcon = NSImage(contentsOfFile: url.path)
+#else
       appIcon = UIImage(contentsOfFile: url.path)
+#endif
     } else {
       do {
         let (data, _) = try await URLSession.shared.data(from: url)
+#if os(macOS)
+        if let loadedImage = NSImage(data: data) {
+          appIcon = loadedImage
+        }
+#else
         if let loadedImage = UIImage(data: data) {
           appIcon = loadedImage
         }
+#endif
       } catch {
         appIcon = nil
       }
     }
   }
+}
 
-  private var versionInfo: some View {
+private struct VersionInfo: View {
+  let appInfo: AppInfo?
+  
+  var body: some View {
     VStack(alignment: .leading, spacing: 2) {
-      Text(viewModel.appInfo?.appName ?? "")
+      Text(appInfo?.appName ?? "")
         .font(.headline)
         .fontWeight(.bold)
         .lineLimit(1)
 
-      if let runtimeVersion = viewModel.appInfo?.runtimeVersion {
+      if let runtimeVersion = appInfo?.runtimeVersion {
         Text("Runtime version: \(runtimeVersion)")
           .font(.caption)
           .foregroundColor(.secondary)
       }
 
-      if let sdkVersion = viewModel.appInfo?.sdkVersion {
+      if let sdkVersion = appInfo?.sdkVersion {
         Text("SDK version: \(sdkVersion)")
           .font(.caption)
           .foregroundColor(.secondary)

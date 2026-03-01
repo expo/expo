@@ -8,10 +8,58 @@
 
 ### 🐛 Bug fixes
 
-- Fix withEdgeToEdge types ([#41510](https://github.com/expo/expo/pull/41510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Scope `.icon` build setting to app target. ([#41536](https://github.com/expo/expo/pull/41536) by [@patrickmichalik](https://github.com/patrickmichalik))
+- Fixed `STATUS_BAR_PLUGIN` deprecation warning shown on prebuild for default `create-expo-app` template by no longer auto-populating `androidStatusBar.backgroundColor` from the splash background color. ([#43444](https://github.com/expo/expo/issues/43444)) ([#43453](https://github.com/expo/expo/pull/43453) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
+
+- Removed unused `withAndroidSplashLegacyMainActivity` file. ([#43516](https://github.com/expo/expo/pull/43516) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.7 — 2026-02-25
+
+### 🛠 Breaking changes
+
+- Remove the `androidNavigationBar.enforceContrast` and `androidNavigationBar.visible` properties handling (moved to the `expo-navigation-bar` plugin config). ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+- Deprecated and turned into no-op the `androidNavigationBar.backgroundColor` app config property. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.6 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+### 💡 Others
+
+- remove deprecated `edgeToEdgeEnabled` field ([#42518](https://github.com/expo/expo/pull/42518) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- remove expo-notifications from auto plugins; the `notification` entry in app.json is no longer valid ([#40787](https://github.com/expo/expo/pull/40787) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- Fix withEdgeToEdge types ([#41510](https://github.com/expo/expo/pull/41510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Scope `.icon` build setting to app target. ([#41536](https://github.com/expo/expo/pull/41536) by [@patrickmichalik](https://github.com/patrickmichalik))
 
 ### ⚠️ Notices
 

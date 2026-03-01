@@ -198,6 +198,15 @@ function collectDependencies<TAst extends t.File>(
             const urlArgPath = (path.get('arguments')[0].get('arguments') as NodePath[])[0];
 
             processResolveWorkerCallWithName(moduleName, urlArgPath, state);
+
+            // Replace `new Worker` invocation with `asyncRequire.unstable_createWorker` helper call,
+            // creating an Object URL with a shim script that remaps `importScripts` and `fetch`, while calling the entrypoint with `importScripts`.
+            // This works around COEP/CORP issues, since worker entrypoint scripts aren't necessarily expected to match these headers
+            path.get('callee').replaceWith(
+              makeCreateWorkerTemplate({
+                ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+              })
+            );
           }
         }
       },
@@ -844,6 +853,10 @@ const makeAsyncImportMaybeSyncTemplate = template.expression(`
 
 const makeResolveTemplate = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_resolve(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+
+const makeCreateWorkerTemplate = template.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_createWorker
 `);
 
 const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`

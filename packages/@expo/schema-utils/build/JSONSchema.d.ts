@@ -30,7 +30,7 @@ export type SimpleTypes = 'array' | 'boolean' | 'integer' | 'null' | 'number' | 
 /**
  * Core schema meta-schema
  */
-export interface JSONSchema {
+export interface JSONSchema<_SchemaType = unknown> {
     id?: string;
     $schema?: string;
     title?: string;

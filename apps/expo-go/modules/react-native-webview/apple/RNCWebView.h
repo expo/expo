@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 namespace facebook {
 namespace react {
-    bool operator==(const RNCWebViewMenuItemsStruct& a, const RNCWebViewMenuItemsStruct& b)
+    inline bool operator==(const RNCWebViewMenuItemsStruct& a, const RNCWebViewMenuItemsStruct& b)
     {
         return b.key == a.key && b.label == a.label;
     }

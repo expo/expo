@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type AndroidVariant = 'picker' | 'input';
 
@@ -36,7 +38,7 @@ export type DateTimePickerProps = {
   /**
    * The tint color to use on the picker elements.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * Determines what format the clock should be displayed in on Android.
    * @default true
@@ -56,24 +58,21 @@ type NativeDatePickerProps = Omit<
   initialDate?: number | null;
 } & ViewEvent<'onDateSelected', { date: Date }>;
 
-/**
- * @hidden
- */
-export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
-  const { variant, initialDate, ...rest } = props;
+function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
+  const { modifiers, variant, initialDate, ...rest } = props;
 
   // Convert ISO string to timestamp for Android
   const initialDateTimestamp = initialDate ? new Date(initialDate).getTime() : null;
 
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...rest,
     initialDate: initialDateTimestamp,
     onDateSelected: ({ nativeEvent: { date } }) => {
       props?.onDateSelected?.(new Date(date));
     },
     variant,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

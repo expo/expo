@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 55.0.6 — 2026-02-25
+
+### 💡 Others
+
+- Deprecated and turned into no-ops the `androidStatusBar.backgroundColor` and `androidStatusBar.translucent` app config properties. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-26
+
+### 💡 Others
+
+- Drop `slash` dependency ([#42484](https://github.com/expo/expo/pull/42484) by [@kitten](https://github.com/kitten))
+
+## 55.0.2 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Add `android:maxSdkVersion="32"` to storage permissions in templates. ([#42401](https://github.com/expo/expo/pull/42401) by [@brentvatne](https://github.com/brentvatne))
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS] Add `locales` support for `Localizable.strings`. ([#39022](https://github.com/expo/expo/pull/39022) by [@desii101](https://github.com/desii101))
+
+### 💡 Others
+
 - Remove `newArchEnabled` option. ([#41684](https://github.com/expo/expo/pull/41684) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Updated maps config-plugin to support `@main` as the anchor. ([#41868](https://github.com/expo/expo/pull/41868) by [@kudo](https://github.com/kudo))
 

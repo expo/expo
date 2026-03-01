@@ -27,7 +27,7 @@ class ExpoCalendarAttendee(
   val reactContext: Context
     get() = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
 
-  suspend fun saveAttendee(attendeeRecord: AttendeeRecord, eventId: Int? = null, nullableFields: List<String>? = null): String {
+  suspend fun saveAttendee(attendeeRecord: AttendeeRecord, eventId: Long? = null, nullableFields: List<String>? = null): String {
     return withContext(Dispatchers.IO) {
       val attendeeValues = buildAttendeeContentValues(attendeeRecord, eventId)
       val contentResolver = reactContext.contentResolver
@@ -55,12 +55,12 @@ class ExpoCalendarAttendee(
 
   suspend fun deleteAttendee() {
     return withContext(Dispatchers.IO) {
-      val attendeeID = attendeeRecord?.id?.toIntOrNull()
+      val attendeeID = attendeeRecord?.id?.toLongOrNull()
         ?: throw AttendeeCouldNotBeDeletedException("Attendee ID not found")
 
       val contentResolver = reactContext.contentResolver
 
-      val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
+      val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID)
       val rows = contentResolver.delete(uri, null, null)
       attendeeRecord = null
       check(rows > 0) { throw AttendeeCouldNotBeDeletedException("An error occurred while deleting attendee") }
@@ -69,11 +69,11 @@ class ExpoCalendarAttendee(
 
   suspend fun reloadAttendee(attendeeID: String? = null) {
     withContext(Dispatchers.IO) {
-      val attendeeID = (attendeeID ?: attendeeRecord?.id)?.toIntOrNull()
+      val attendeeID = (attendeeID ?: attendeeRecord?.id)?.toLongOrNull()
         ?: throw AttendeeNotFoundException("Attendee ID not found")
 
       val contentResolver = reactContext.contentResolver
-      val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
+      val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID)
       val projection = AttendeeRepository.findAttendeesByEventIdQueryParameters
       val cursor = contentResolver.query(uri, projection, null, null, null)
       requireNotNull(cursor) { "Cursor shouldn't be null" }
@@ -104,7 +104,7 @@ class ExpoCalendarAttendee(
     }
   }
 
-  private fun buildAttendeeContentValues(attendeeRecord: AttendeeRecord, eventId: Int?): ContentValues {
+  private fun buildAttendeeContentValues(attendeeRecord: AttendeeRecord, eventId: Long?): ContentValues {
     val values = ContentValues()
 
     eventId?.let { values.put(CalendarContract.Attendees.EVENT_ID, it) }

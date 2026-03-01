@@ -86,20 +86,7 @@ struct AudioUtils {
   #endif
 
   static func createAVPlayer(from source: AudioSource?) -> AVPlayer {
-    if let source, let url = source.uri {
-      let finalUrl = if url.isBase64Audio {
-        handleBase64Asset(base64String: url.absoluteString) ?? url
-      } else {
-        url
-      }
-
-      var options: [String: Any]?
-      if let headers = source.headers {
-        options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
-      }
-
-      let asset = AVURLAsset(url: finalUrl, options: options)
-      let item = AVPlayerItem(asset: asset)
+    if let item = createAVPlayerItem(from: source) {
       return AVPlayer(playerItem: item)
     }
     return AVPlayer()
@@ -121,7 +108,7 @@ struct AudioUtils {
     }
 
     let asset = AVURLAsset(url: finalUrl, options: options)
-    return AVPlayerItem(asset: asset)
+    return AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: [.tracks, .duration])
   }
 
   static func createRecordingOptions(_ options: RecordingOptions) -> [String: Any] {

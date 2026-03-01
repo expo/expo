@@ -213,6 +213,94 @@ export async function test({ describe, expect, it, ...t }) {
       }
     });
 
+    if (Platform.OS === 'android') {
+      describe('Android bundle directory listing', () => {
+        it('returns correct names for files in bundle directory', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          // All items should have non-empty names
+          for (const item of items) {
+            expect(item.name).not.toBe('');
+            expect(item.name).not.toBeNull();
+            expect(item.name).not.toBeUndefined();
+          }
+        });
+
+        it('returns non-null sizes for files in bundle directory', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          // Find actual files (not directories)
+          const files = items.filter((item) => item instanceof File);
+
+          // Files should have non-null sizes
+          for (const file of files) {
+            expect((file as File).size).not.toBeNull();
+            expect((file as File).size).toBeGreaterThan(0);
+          }
+        });
+
+        it('can list subdirectories without permission errors', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          // Find directories
+          const directories = items.filter((item) => item instanceof Directory);
+
+          // Should be able to list each subdirectory without throwing
+          for (const subdir of directories) {
+            expect(() => {
+              (subdir as Directory).list();
+            }).not.toThrow();
+          }
+        });
+
+        it('can recursively list nested bundle directories', () => {
+          const dir = new Directory(Paths.bundle);
+
+          // Recursive function to test listing
+          const testRecursiveList = (directory: Directory, depth: number) => {
+            if (depth > 3) return; // Limit depth to avoid infinite loops
+
+            const items = directory.list();
+            for (const item of items) {
+              // Every item should have a valid name
+              expect(item.name).toBeTruthy();
+
+              if (item instanceof Directory) {
+                // Subdirectories should be listable
+                expect(() => testRecursiveList(item, depth + 1)).not.toThrow();
+              } else if (item instanceof File) {
+                // Files should have size accessible (may be 0 for empty files, but not null)
+                expect(item.size).not.toBeNull();
+              }
+            }
+          };
+
+          expect(() => testRecursiveList(dir, 0)).not.toThrow();
+        });
+
+        it('maintains correct asset:// URIs for nested items', () => {
+          const dir = new Directory(Paths.bundle);
+          const items = dir.list();
+
+          for (const item of items) {
+            // All items in bundle should have asset:// URIs
+            expect(item.uri.startsWith('asset://')).toBe(true);
+
+            if (item instanceof Directory) {
+              const subItems = item.list();
+              for (const subItem of subItems) {
+                // Nested items should also have asset:// URIs
+                expect(subItem.uri.startsWith('asset://')).toBe(true);
+              }
+            }
+          }
+        });
+      });
+    }
+
     describe('Works with %, # and space characters in names', () => {
       it('Works with spaces as filename', () => {
         const outputFile = new File(testDirectory, 'my new file.txt');
@@ -287,6 +375,22 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
     });
 
+    it('overwrites files by default when using write()', () => {
+      const file = new File(testDirectory, 'overwrite-test.txt');
+      file.write('First');
+      expect(file.textSync()).toBe('First');
+      file.write('Second');
+      expect(file.textSync()).toBe('Second');
+    });
+
+    it('overwrites a longer file with a shorter string', () => {
+      const file = new File(testDirectory, 'overwrite-shorter.txt');
+      file.write('This is a long string');
+      expect(file.textSync()).toBe('This is a long string');
+      file.write('Short');
+      expect(file.textSync()).toBe('Short');
+    });
+
     it('Writes a base64 encoded string to a file reference', () => {
       const outputFile = new File(testDirectory, 'file.txt');
       expect(outputFile.exists).toBe(false);
@@ -313,6 +417,56 @@ export async function test({ describe, expect, it, ...t }) {
       expect(content).toBe('Hello world');
       const contentSync = outputFile.textSync();
       expect(contentSync).toBe('Hello world');
+    });
+
+    describe('Append option', () => {
+      it('appends a string using legacy writeAsStringAsync', async () => {
+        const fileUri = testDirectory + 'legacy-append.txt';
+        await FS.writeAsStringAsync(fileUri, 'Hello');
+        await FS.writeAsStringAsync(fileUri, ' world', { append: true });
+        const content = await FS.readAsStringAsync(fileUri);
+        expect(content).toBe('Hello world');
+      });
+
+      it('overwrites files by default when using writeAsStringAsync', async () => {
+        const fileUri = testDirectory + 'overwrite-legacy.txt';
+        await FS.writeAsStringAsync(fileUri, 'First');
+        expect(await FS.readAsStringAsync(fileUri)).toBe('First');
+        await FS.writeAsStringAsync(fileUri, 'Second');
+        expect(await FS.readAsStringAsync(fileUri)).toBe('Second');
+      });
+
+      it('appends a base64 string using legacy writeAsStringAsync', async () => {
+        const fileUri = testDirectory + 'legacy-append-base64.txt';
+        await FS.writeAsStringAsync(fileUri, 'Hello');
+        // ' world' in base64 is 'IHdvcmxk'
+        await FS.writeAsStringAsync(fileUri, 'IHdvcmxk', {
+          encoding: 'base64',
+          append: true,
+        });
+        const content = await FS.readAsStringAsync(fileUri);
+        expect(content).toBe('Hello world');
+      });
+
+      it('appends a string using File.write', async () => {
+        const file = new File(testDirectory, 'next-append.txt');
+        file.write('Hello');
+        file.write(' world', { append: true });
+        expect(file.textSync()).toBe('Hello world');
+      });
+
+      it('appends bytes using File.write', async () => {
+        const file = new File(testDirectory, 'next-append-bytes.txt');
+        file.write('Hello');
+        file.write(new Uint8Array([32, 119, 111, 114, 108, 100]), { append: true }); // ' world'
+        expect(file.textSync()).toBe('Hello world');
+      });
+
+      it('creates a new file if append is true but file does not exist', async () => {
+        const file = new File(testDirectory, 'new-file-append.txt');
+        file.write('Hello', { append: true });
+        expect(file.textSync()).toBe('Hello');
+      });
     });
 
     it('Deletes a file reference', () => {

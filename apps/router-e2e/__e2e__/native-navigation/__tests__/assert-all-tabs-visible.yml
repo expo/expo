@@ -3,6 +3,5 @@ appId: com.expo.routere2e
 - assertVisible: "applewatch.side.right"
 - assertVisible: "Index tab"
 - assertVisible: "lock.applewatch"
-- assertVisible: "faces"
 - assertVisible: "figure.disc.sports"
 - assertVisible: "Dynamic"

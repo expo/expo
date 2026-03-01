@@ -1,5 +1,4 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
-import execAsync, { ExecAsyncOptions } from 'exec-async';
 import path from 'path';
 import util from 'util';
 
@@ -17,19 +16,6 @@ function osascriptArgs(script: string | string[]): string[] {
   return args;
 }
 
-async function osascriptExecAsync(
-  script: string | string[],
-  opts?: ExecAsyncOptions
-): Promise<string> {
-  const result = await execAsync(
-    'osascript',
-    osascriptArgs(script),
-    Object.assign({ stdio: 'inherit' }, opts)
-  );
-
-  return result?.toString() || '';
-}
-
 async function osascriptSpawnAsync(
   script: string | string[],
   opts?: SpawnOptions
@@ -38,17 +24,16 @@ async function osascriptSpawnAsync(
 }
 
 async function isAppRunningAsync(appName: string): Promise<boolean> {
-  const zeroMeansNo = (
-    await osascriptExecAsync(
-      'tell app "System Events" to count processes whose name is ' + JSON.stringify(appName)
-    )
-  ).trim();
-  return zeroMeansNo !== '0';
+  const { stdout } = await osascriptSpawnAsync(
+    `tell app "System Events" to count processes whose name is ${JSON.stringify(appName)}`
+  );
+  return stdout.trim() !== '0';
 }
 
 async function safeIdOfAppAsync(appName: string): Promise<string | null> {
   try {
-    return (await osascriptExecAsync('id of app ' + JSON.stringify(appName))).trim();
+    const { stdout } = await osascriptSpawnAsync(`id of app ${JSON.stringify(appName)}`);
+    return stdout.trim();
   } catch {
     return null;
   }
@@ -198,6 +183,11 @@ async function openFolderInTerminalAppAsync(dir: string, inTab = false): Promise
     default:
       return await openTerminalToSpecificFolderAsync(dir, inTab);
   }
+}
+
+/** @deprecated */
+async function osascriptExecAsync(script: string | string[], opts?: SpawnOptions): Promise<string> {
+  return (await osascriptSpawnAsync(script, opts)).stdout.trim();
 }
 
 export {

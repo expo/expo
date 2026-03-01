@@ -2,6 +2,7 @@
 
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
+#import <React/RCTLog.h>
 
 @interface EXUtilities ()
 
@@ -165,7 +166,7 @@ EX_REGISTER_MODULE();
     CGFloat b = (argb & 0xFF) / 255.0;
     return [UIColor colorWithRed:r green:g blue:b alpha:a];
   } else {
-    EXLogInfo(@"%@ cannot be converted to a UIColor", json);
+    RCTLogInfo(@"%@ cannot be converted to a UIColor", json);
     return nil;
   }
 }
@@ -186,12 +187,12 @@ EX_REGISTER_MODULE();
     });
     NSDate *date = [formatter dateFromString:json];
     if (!date) {
-      EXLogError(@"JSON String '%@' could not be interpreted as a date. "
+      RCTLogError(@"JSON String '%@' could not be interpreted as a date. "
                   "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
     }
     return date;
   } else if (json) {
-    EXLogError(json, @"a date");
+    RCTLogError(json, @"a date");
   }
   return nil;
 }
@@ -228,17 +229,3 @@ EX_REGISTER_MODULE();
 }
 
 @end
-
-UIApplication * EXSharedApplication(void)
-{
-  if ([[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"]) {
-    return nil;
-  }
-  return [[UIApplication class] performSelector:@selector(sharedApplication)];
-}
-
-NSError *EXErrorWithMessage(NSString *message)
-{
-  NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
-  return [[NSError alloc] initWithDomain:@"EXModulesErrorDomain" code:0 userInfo:errorInfo];
-}

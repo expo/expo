@@ -22,7 +22,7 @@ export const APITypeOrSignatureType = ({
 }: Props) => {
   if (signatures?.length) {
     return (
-      <CODE key={`signature-type-${signatures[0].name}`}>
+      <CODE key={`signature-type-${signatures[0].name}`} data-md="type-sig">
         <span className="text-quaternary">(</span>
         {signatures?.map(({ parameters }) =>
           parameters?.map((param, index) => (
@@ -43,7 +43,11 @@ export const APITypeOrSignatureType = ({
       return <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />;
     }
 
-    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type, sdkVersion)}</CODE>;
+    return (
+      <CODE key={`signature-type-${type.name}`} data-md="type-sig">
+        {resolveTypeName(type, sdkVersion)}
+      </CODE>
+    );
   }
   return undefined;
 };

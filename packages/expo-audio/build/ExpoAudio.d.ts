@@ -1,7 +1,7 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioSource, AudioStatus, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
+import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
+import { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.
  *
@@ -173,6 +173,77 @@ export declare function useAudioRecorder(options: RecordingOptions, statusListen
  */
 export declare function useAudioRecorderState(recorder: AudioRecorder, interval?: number): RecorderState;
 /**
+ * Creates an `AudioPlaylist` instance that automatically releases when the component unmounts.
+ *
+ * This hook manages the playlist's lifecycle and ensures it's properly disposed when no longer needed.
+ * An audio playlist allows you to manage a collection of audio sources with gapless playback support.
+ *
+ * @param options Audio playlist configuration options including initial sources and loop mode.
+ * @returns An `AudioPlaylist` instance that's automatically managed by the component lifecycle.
+ *
+ * @example
+ * ```tsx
+ * import { useAudioPlaylist } from 'expo-audio';
+ *
+ * function PlaylistPlayer() {
+ *   const playlist = useAudioPlaylist({
+ *     sources: [
+ *       require('./track1.mp3'),
+ *       require('./track2.mp3'),
+ *       'https://example.com/track3.mp3',
+ *     ],
+ *     loop: 'all',
+ *   });
+ *
+ *   return (
+ *     <View>
+ *       <Text>Track {playlist.currentIndex + 1} of {playlist.trackCount}</Text>
+ *       <Button title="Previous" onPress={() => playlist.previous()} />
+ *       <Button title={playlist.playing ? 'Pause' : 'Play'} onPress={() => playlist.playing ? playlist.pause() : playlist.play()} />
+ *       <Button title="Next" onPress={() => playlist.next()} />
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
+export declare function useAudioPlaylist(options?: AudioPlaylistOptions): AudioPlaylist;
+/**
+ * Hook that provides real-time status updates for an `AudioPlaylist`.
+ *
+ * This hook automatically subscribes to playlist status changes and returns the current status.
+ * The status includes information about the current track, playback state, and playlist position.
+ *
+ * @param playlist The `AudioPlaylist` instance to monitor.
+ * @returns The current `AudioPlaylistStatus` object containing playlist and playback information.
+ *
+ * @example
+ * ```tsx
+ * import { useAudioPlaylist, useAudioPlaylistStatus } from 'expo-audio';
+ *
+ * function PlaylistStatusDisplay() {
+ *   const playlist = useAudioPlaylist({ sources: [require('./track1.mp3')] });
+ *   const status = useAudioPlaylistStatus(playlist);
+ *
+ *   return (
+ *     <View>
+ *       <Text>Track: {status.currentIndex + 1} / {status.trackCount}</Text>
+ *       <Text>Time: {status.currentTime}s / {status.duration}s</Text>
+ *       <Text>Playing: {status.playing ? 'Yes' : 'No'}</Text>
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
+export declare function useAudioPlaylistStatus(playlist: AudioPlaylist): AudioPlaylistStatus;
+/**
+ * Creates an instance of an `AudioPlaylist` that doesn't release automatically.
+ *
+ * > **info** For most use cases you should use the [`useAudioPlaylist`](#useaudioplaylistoptions) hook instead.
+ *
+ * @param options Audio playlist configuration options.
+ */
+export declare function createAudioPlaylist(options?: AudioPlaylistOptions): AudioPlaylist;
+/**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
  * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-options) hook instead.
@@ -259,6 +330,31 @@ export declare function setAudioModeAsync(mode: Partial<AudioMode>): Promise<voi
  */
 export declare function requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
 /**
+ * Requests permission to record audio from the microphone.
+ *
+ * This function prompts the user for microphone access permission, which is required
+ * for audio recording functionality. On iOS, this will show the system permission dialog.
+ * On Android, this requests the `RECORD_AUDIO` permission.
+ *
+ * @returns A Promise that resolves to a `PermissionResponse` object containing the permission status.
+ *
+ * @example
+ * ```tsx
+ * import { requestRecordingPermissionsAsync } from 'expo-audio';
+ *
+ * const checkPermissions = async () => {
+ *   const { status, granted } = await requestRecordingPermissionsAsync();
+ *
+ *   if (granted) {
+ *     console.log('Recording permission granted');
+ *   } else {
+ *     console.log('Recording permission denied:', status);
+ *   }
+ * };
+ * ```
+ */
+export declare function requestNotificationPermissionsAsync(): Promise<PermissionResponse>;
+/**
  * Checks the current status of recording permissions without requesting them.
  *
  * This function returns the current permission status for microphone access
@@ -285,5 +381,53 @@ export declare function requestRecordingPermissionsAsync(): Promise<PermissionRe
  * ```
  */
 export declare function getRecordingPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Preloads an audio source for near-instant playback later.
+ *
+ * This should be called in module scope, before any React components render.
+ * When the source is later used with `useAudioPlayer()`, `createAudioPlayer()`, or `player.replace()`,
+ * playback begins with minimal delay.
+ *
+ * @param source The audio source to preload. Can be a URL string, a local asset via `require()`, or an audio source object.
+ * @param options Optional configuration for preloading behavior.
+ *
+ * @example
+ * ```tsx
+ * import { preload, useAudioPlayer } from 'expo-audio';
+ *
+ * const track1 = 'https://example.com/track1.mp3';
+ * const track2 = 'https://example.com/track2.mp3';
+ *
+ * // Preload at module scope — starts buffering immediately
+ * preload(track1);
+ * preload(track2, { preferredForwardBufferDuration: 20 });
+ *
+ * export default function App() {
+ *   const player = useAudioPlayer(track1);
+ *   // Playback starts near-instantly because the source was preloaded
+ *   return <Button title="Play" onPress={() => player.play()} />;
+ * }
+ * ```
+ */
+export declare function preload(source: AudioSource, options?: PreloadOptions): Promise<void>;
+/**
+ * Releases a specific preloaded audio source to free memory.
+ *
+ * @param source The audio source to release. Must match the source previously passed to `preload()`.
+ */
+export declare function clearPreloadedSource(source: AudioSource): Promise<void>;
+/**
+ * Releases all preloaded audio sources to free memory.
+ */
+export declare function clearAllPreloadedSources(): Promise<void>;
+/**
+ * Returns the URIs of all currently preloaded audio sources.
+ *
+ * On iOS, sources are removed from this list when consumed by `useAudioPlayer()`, `createAudioPlayer()`, or `player.replace()`.
+ * On Android and web, sources remain until explicitly cleared with `clearPreloadedSource()` / `clearAllPreloadedSources()`.
+ *
+ * @returns An array of URI strings for sources currently in the preload cache.
+ */
+export declare function getPreloadedSources(): Promise<string[]>;
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.d.ts.map

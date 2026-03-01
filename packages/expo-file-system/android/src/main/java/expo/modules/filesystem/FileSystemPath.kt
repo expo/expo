@@ -7,8 +7,8 @@ import expo.modules.filesystem.unifiedfile.AssetFile
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
 import java.util.EnumSet
@@ -107,13 +107,13 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     return destination.javaFile
   }
 
-  fun validatePermission(permission: Permission) {
+  fun validatePermission(permission: FilePermissionService.Permission) {
     if (!checkPermission(permission)) {
       throw InvalidPermissionException(permission)
     }
   }
 
-  fun checkPermission(permission: Permission): Boolean {
+  fun checkPermission(permission: FilePermissionService.Permission): Boolean {
     if (uri.isContentUri) {
       // TODO: Consider adding a check for content URIs (not in legacy FS)
       return true
@@ -125,7 +125,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
 
     val permissions = appContext?.filePermission?.getPathPermissions(
       appContext?.reactContext ?: throw Exceptions.ReactContextLost(), javaFile.path
-    ) ?: EnumSet.noneOf(Permission::class.java)
+    ) ?: EnumSet.noneOf(FilePermissionService.Permission::class.java)
     return permissions.contains(permission)
   }
 
@@ -138,8 +138,8 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   fun copy(to: FileSystemPath) {
     validateType()
     to.validateType()
-    validatePermission(Permission.READ)
-    to.validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.READ)
+    to.validatePermission(FilePermissionService.Permission.WRITE)
 
     javaFile.copyRecursively(getMoveOrCopyPath(to))
   }
@@ -147,8 +147,8 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
   fun move(to: FileSystemPath) {
     validateType()
     to.validateType()
-    validatePermission(Permission.WRITE)
-    to.validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
+    to.validatePermission(FilePermissionService.Permission.WRITE)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val destination = getMoveOrCopyPath(to)
@@ -163,7 +163,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
 
   fun rename(newName: String) {
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     val newFile = File(javaFile.parent, newName)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       javaFile.toPath().moveTo(newFile.toPath())

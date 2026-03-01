@@ -2,12 +2,19 @@ import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import crypto from 'crypto';
+import {
+  iterableToStream,
+  streamMultipart,
+  multipartContentType,
+  FormEntry,
+  MultipartPart,
+} from 'multitars';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
-import { ServerHeaders, ServerRequest } from './server.types';
+import { ServerRequest } from './server.types';
 import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import {
@@ -16,14 +23,17 @@ import {
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
-import {
-  encodeMultipartMixed,
-  FormDataField,
-  EncodedFormData,
-} from '../../../utils/multipartMixed';
 import { stripPort } from '../../../utils/url';
 
+const MULTIPART_TYPE = 'multipart/form-data';
+
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
+
+let multipartMixedContentType = multipartContentType;
+if (multipartMixedContentType.startsWith(MULTIPART_TYPE)) {
+  multipartMixedContentType =
+    'multipart/mixed' + multipartMixedContentType.slice(MULTIPART_TYPE.length);
+}
 
 export enum ResponseContentType {
   TEXT_PLAIN,
@@ -90,20 +100,18 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     };
   }
 
-  private getDefaultResponseHeaders(): ServerHeaders {
-    const headers = new Map<string, number | string | readonly string[]>();
+  private getDefaultResponseHeaders(): Headers {
+    const headers = new Headers();
     // set required headers for Expo Updates manifest specification
-    headers.set('expo-protocol-version', 0);
-    headers.set('expo-sfv-version', 0);
+    headers.set('expo-protocol-version', '0');
+    headers.set('expo-sfv-version', '0');
     headers.set('cache-control', 'private, max-age=0');
     return headers;
   }
 
-  public async _getManifestResponseAsync(requestOptions: ExpoGoManifestRequestInfo): Promise<{
-    body: string;
-    version: string;
-    headers: ServerHeaders;
-  }> {
+  public async _getManifestResponseAsync(
+    requestOptions: ExpoGoManifestRequestInfo
+  ): Promise<Response> {
     const { exp, hostUri, expoGoConfig, bundleUrl } =
       await this._resolveProjectSettingsAsync(requestOptions);
 
@@ -165,7 +173,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     const stringifiedManifest = JSON.stringify(expoUpdatesManifest);
 
-    let manifestPartHeaders: { 'expo-signature': string } | null = null;
+    let manifestPartHeaders: { 'expo-signature': string } | undefined;
     let certificateChainBody: string | null = null;
     if (codeSigningInfo) {
       const signature = signManifestString(stringifiedManifest, codeSigningInfo);
@@ -181,42 +189,28 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       certificateChainBody = codeSigningInfo.certificateChainForResponse.join('\n');
     }
 
-    const headers = this.getDefaultResponseHeaders();
-
     switch (requestOptions.responseContentType) {
       case ResponseContentType.MULTIPART_MIXED: {
-        const encoded = await this.encodeFormDataAsync({
+        return this.encodeFormDataAsync({
           stringifiedManifest,
           manifestPartHeaders,
           certificateChainBody,
         });
-        headers.set('content-type', `multipart/mixed; boundary=${encoded.boundary}`);
-        return {
-          body: encoded.body,
-          version: runtimeVersion,
-          headers,
-        };
       }
       case ResponseContentType.APPLICATION_EXPO_JSON:
       case ResponseContentType.APPLICATION_JSON:
       case ResponseContentType.TEXT_PLAIN: {
+        const headers = this.getDefaultResponseHeaders();
         headers.set(
           'content-type',
           ExpoGoManifestHandlerMiddleware.getContentTypeForResponseContentType(
             requestOptions.responseContentType
           )
         );
-        if (manifestPartHeaders) {
-          Object.entries(manifestPartHeaders).forEach(([key, value]) => {
-            headers.set(key, value);
-          });
+        if (manifestPartHeaders?.['expo-signature']) {
+          headers.set('expo-signature', manifestPartHeaders['expo-signature']);
         }
-
-        return {
-          body: stringifiedManifest,
-          version: runtimeVersion,
-          headers,
-        };
+        return new Response(stringifiedManifest, { status: 200, headers });
       }
     }
   }
@@ -242,25 +236,29 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     certificateChainBody,
   }: {
     stringifiedManifest: string;
-    manifestPartHeaders: { 'expo-signature': string } | null;
+    manifestPartHeaders: { 'expo-signature': string } | undefined;
     certificateChainBody: string | null;
-  }): Promise<EncodedFormData> {
-    const fields: FormDataField[] = [
-      {
-        name: 'manifest',
-        value: stringifiedManifest,
-        contentType: 'application/json',
-        partHeaders: manifestPartHeaders,
-      },
+  }): Response {
+    const parts: FormEntry[] = [
+      [
+        'manifest',
+        new MultipartPart([stringifiedManifest], 'manifest', {
+          type: 'application/json',
+          headers: manifestPartHeaders,
+        }),
+      ],
     ];
     if (certificateChainBody && certificateChainBody.length > 0) {
-      fields.push({
-        name: 'certificate_chain',
-        value: certificateChainBody,
-        contentType: 'application/x-pem-file',
-      });
+      parts.push([
+        'certificate_chain',
+        new MultipartPart([certificateChainBody], 'certificate_chain', {
+          type: 'application/x-pem-file',
+        }),
+      ]);
     }
-    return encodeMultipartMixed(fields);
+    const headers = this.getDefaultResponseHeaders();
+    headers.set('Content-Type', multipartMixedContentType);
+    return new Response(iterableToStream(streamMultipart(parts)), { status: 200, headers });
   }
 
   private static async getScopeKeyAsync({

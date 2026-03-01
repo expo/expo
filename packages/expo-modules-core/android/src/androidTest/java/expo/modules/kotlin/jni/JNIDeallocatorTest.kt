@@ -17,6 +17,6 @@ class JNIDeallocatorTest {
 
     val deallocator = runtimeHolder.get()!!.deallocator
 
-    Truth.assertThat(deallocator.inspectMemory()).contains(moduleObject)
+    Truth.assertThat(deallocator.inspectMemory()).contains(moduleObject.getHybridDataForJNIDeallocator())
   }
 }

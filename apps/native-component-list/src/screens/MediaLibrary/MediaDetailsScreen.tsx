@@ -2,7 +2,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
-import { ScrollView, StyleSheet, View, Alert } from 'react-native';
+import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
 
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
@@ -21,12 +21,19 @@ export default class MediaDetailsScreen extends React.Component<Props> {
     title: 'MediaLibrary Asset',
   };
 
-  state = {
+  state: {
+    details: MediaLibrary.AssetInfo | null;
+    detailsWithoutDownloadingFromNetwork: MediaLibrary.AssetInfo | null;
+  } = {
     details: null,
     detailsWithoutDownloadingFromNetwork: null,
   };
 
   componentDidMount() {
+    this.getAssetDetails();
+  }
+
+  getAssetDetails = () => {
     const { asset } = this.props.route.params;
     MediaLibrary.getAssetInfoAsync(asset, { shouldDownloadFromNetwork: false }).then((details) => {
       this.setState({ detailsWithoutDownloadingFromNetwork: details });
@@ -34,7 +41,7 @@ export default class MediaDetailsScreen extends React.Component<Props> {
     MediaLibrary.getAssetInfoAsync(asset).then((details) => {
       this.setState({ details });
     });
-  }
+  };
 
   goBack() {
     const { navigation, route } = this.props;
@@ -78,6 +85,26 @@ export default class MediaDetailsScreen extends React.Component<Props> {
     if (album) {
       await MediaLibrary.removeAssetsFromAlbumAsync(asset.id, album.id);
       this.goBack();
+    }
+  };
+
+  addToFavorites = async () => {
+    const { asset } = this.props.route.params!;
+
+    const success = await MediaLibrary.setAssetFavoriteAsync(asset, true);
+    if (success) {
+      alert('Asset marked as favorite!');
+      this.getAssetDetails();
+    }
+  };
+
+  removeFromFavorites = async () => {
+    const { asset } = this.props.route.params!;
+
+    const success = await MediaLibrary.setAssetFavoriteAsync(asset, false);
+    if (success) {
+      alert('Asset removed from favorites!');
+      this.getAssetDetails();
     }
   };
 
@@ -125,6 +152,15 @@ export default class MediaDetailsScreen extends React.Component<Props> {
           <View style={styles.buttons}>
             <Button style={styles.button} title="Add to Expo album" onPress={this.addToAlbum} />
           </View>
+        )}
+
+        {!album && details && Platform.OS === 'ios' && (
+          <Button
+            style={styles.button}
+            buttonStyle={{ backgroundColor: 'green' }}
+            title={details.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            onPress={details.isFavorite ? this.removeFromFavorites : this.addToFavorites}
+          />
         )}
 
         <View style={styles.imageContainer}>{this.renderAsset(asset)}</View>

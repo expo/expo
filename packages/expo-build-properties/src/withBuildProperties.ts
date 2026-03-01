@@ -18,7 +18,8 @@ import { PluginConfigType, validateConfig } from './pluginConfig';
  * @param props Configuration for the build properties plugin.
  */
 export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, props) => {
-  const pluginConfig = validateConfig(props || {});
+  const projectRoot = config._internal?.projectRoot;
+  const pluginConfig = validateConfig(props || {}, projectRoot);
 
   config = withAndroidBuildProperties(config, pluginConfig);
 

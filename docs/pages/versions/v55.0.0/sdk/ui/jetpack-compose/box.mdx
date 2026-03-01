@@ -1,0 +1,43 @@
+---
+title: Box
+description: A Jetpack Compose Box component for stacking child elements.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Box matches the official Jetpack Compose [Box](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Box) API and stacks children on top of each other with configurable content alignment.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+`Box` stacks children on top of each other. Use `contentAlignment` to position them within the box.
+
+```tsx BoxExample.tsx
+import { Host, Box, Text } from '@expo/ui/jetpack-compose';
+import { size, background } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BoxExample() {
+  return (
+    <Host matchContents>
+      <Box contentAlignment="center" modifiers={[size(200, 200), background('#E0E0E0')]}>
+        <Text>Centered in Box</Text>
+      </Box>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Box } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/box" apiName="Box" />

@@ -168,13 +168,8 @@ private:
 };
 
 /**
- * We are binding the JSIContext to the runtime using a thread-local map.
- * This is a simplification of how we're accessing the JSIContext from different places.
- */
-extern std::unordered_map<uintptr_t, JSIContext *> jsiContexts;
-
-/**
  * Binds the JSIContext to the runtime.
+ * Thread-safe: uses exclusive lock.
  * @param runtime
  * @param jsiContext
  */
@@ -182,22 +177,18 @@ void bindJSIContext(const jsi::Runtime &runtime, JSIContext *jsiContext);
 
 /**
  * Unbinds the JSIContext from the runtime.
+ * Thread-safe: uses exclusive lock.
  * @param runtime
  */
 void unbindJSIContext(const jsi::Runtime &runtime);
 
 /**
  * Gets the JSIContext for the given runtime.
+ * Thread-safe: uses exclusive lock.
  * @param runtime
  * @return JSIContext * - it should never be stored when received from this function.
- * It might throw an exception if the JSIContext for the given runtime doesn't exist.
+ * @throws std::invalid_argument if the JSIContext for the given runtime doesn't exist.
  */
-inline JSIContext *getJSIContext(const jsi::Runtime &runtime) {
-  const auto iterator = jsiContexts.find(reinterpret_cast<uintptr_t>(&runtime));
-  if (iterator == jsiContexts.end()) {
-    throw std::invalid_argument("JSIContext for the given runtime doesn't exist");
-  }
-  return iterator->second;
-}
+JSIContext *getJSIContext(const jsi::Runtime &runtime);
 
 } // namespace expo

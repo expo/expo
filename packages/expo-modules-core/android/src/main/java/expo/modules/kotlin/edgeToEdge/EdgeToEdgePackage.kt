@@ -1,6 +1,5 @@
 package expo.modules.kotlin.edgeToEdge
 
-import android.R
 import android.app.Activity
 import android.content.Context
 import android.content.res.TypedArray
@@ -14,7 +13,7 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import kotlin.Unit
 
 class EdgeToEdgePackage : BasePackage() {
-  override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener?>? {
+  override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener?> {
     return listOf(object : ReactActivityLifecycleListener {
       override fun onCreate(activity: Activity?, savedInstanceState: Bundle?) {
         val edgeToEdgeEnabled = invokeWindowUtilKtMethod<Boolean>("isEdgeToEdgeFeatureFlagOn") ?: true
@@ -33,7 +32,7 @@ class EdgeToEdgePackage : BasePackage() {
 
 @RequiresApi(Build.VERSION_CODES.Q)
 private fun Activity.getEnforceContrastFromTheme(): Boolean {
-  val attrs = intArrayOf(R.attr.enforceNavigationBarContrast)
+  val attrs = intArrayOf(android.R.attr.enforceNavigationBarContrast)
   val typedArray: TypedArray = theme.obtainStyledAttributes(attrs)
 
   return try {

@@ -59,6 +59,8 @@ struct DevMenuToggleButton: View {
 
       Text(title)
         .foregroundColor(disabled ? .secondary : .primary)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
 
       Spacer()
 

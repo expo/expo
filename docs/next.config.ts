@@ -22,8 +22,11 @@ import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
 
-const betaVersion = 'betaVersion' in packageJson ? (packageJson.betaVersion as string) : undefined;
-const latestVersion = 'version' in packageJson ? packageJson.version : undefined;
+const packageJsonObject: Record<string, unknown> = packageJson;
+const betaVersion =
+  typeof packageJsonObject.betaVersion === 'string' ? packageJsonObject.betaVersion : undefined;
+const latestVersion =
+  typeof packageJsonObject.version === 'string' ? packageJsonObject.version : undefined;
 const newestVersion = betaVersion ?? latestVersion;
 
 if (!newestVersion) {
@@ -68,10 +71,22 @@ const nextConfig: NextConfig = {
   },
   output: 'export',
   poweredByHeader: false,
-  webpack: (config, { defaultLoaders }) => {
+  webpack: (config, { defaultLoaders, isServer }) => {
+    // Remove unnecessary built-in polyfills that Next.js injects unconditionally.
+    // All polyfilled APIs (Array.prototype.at, Object.hasOwn, etc.) are natively
+    // supported by our browserslist targets (Chrome 93+, Firefox 92+, Safari 15.4+).
+    if (!isServer) {
+      config.plugins.push(
+        new (require('webpack').NormalModuleReplacementPlugin)(
+          /[/\\]polyfill-module\.js$/,
+          join(__dirname, 'empty-polyfill.js')
+        )
+      );
+    }
+
     // Add support for MDX with our custom loader
     config.module.rules.push({
-      test: /.mdx?$/,
+      test: /\.mdx?$/,
       use: [
         defaultLoaders.babel,
         {
@@ -132,7 +147,7 @@ const nextConfig: NextConfig = {
           }
         }
 
-        return { [page.page]: page };
+        return { [pathname]: page };
       })
     );
 
@@ -151,7 +166,7 @@ const nextConfig: NextConfig = {
         ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
-      pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories],
+      pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories, 'internal'],
     });
     event(`Generated sitemap with ${sitemapEntries.length} entries`);
 
@@ -163,6 +178,7 @@ const nextConfigWithSentry = withSentryConfig(nextConfig, {
   org: 'expoio',
   project: 'docs',
   authToken: process.env.SENTRY_AUTH_TOKEN,
+  telemetry: false,
   debug: false, // Set to `true` to enable debug logging if having issues with missing source maps
   widenClientFileUpload: true, // Upload a larger set of source maps for prettier stack traces (increases build time)
   sourcemaps: {

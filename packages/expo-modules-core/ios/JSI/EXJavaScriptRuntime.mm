@@ -9,7 +9,6 @@
 #import <jsi/jsi.h>
 #import <hermes/hermes.h>
 #import <ReactCommon/SchedulerPriority.h>
-#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
@@ -55,6 +54,15 @@
     _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), &runtime);
     _runtimeScheduler = expo::runtimeSchedulerFromRuntime(runtime);
     _jsCallInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(_runtimeScheduler);
+  }
+  return self;
+}
+
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime callInvoker:(std::shared_ptr<react::RuntimeSchedulerCallInvoker>)callInvoker {
+  if (self = [super init]) {
+    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), &runtime);
+    _runtimeScheduler = nullptr;
+    _jsCallInvoker = callInvoker;
   }
   return self;
 }

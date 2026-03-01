@@ -1,5 +1,5 @@
 import { Route } from '../../manifest';
-import { getRedirectRewriteLocation } from '../matchers';
+import { getRedirectRewriteLocation, resolveLoaderContextKey } from '../matchers';
 
 describe('static routes', () => {
   it('should handle static route with no parameters', () => {
@@ -233,6 +233,71 @@ describe('edge cases', () => {
     const result = getRedirectRewriteLocation(url, request, route);
 
     expect(result.toString()).toBe('https://example.com/files/my%20file.txt');
+  });
+});
+
+// NOTE: These test cases are adapted from expo-router/src/__tests__/getId.test.ios.tsx
+describe(resolveLoaderContextKey, () => {
+  it(`returns the context string when the route is not dynamic and there are no search params`, () => {
+    expect(resolveLoaderContextKey('foo', {})).toBe('/foo');
+  });
+
+  it(`ignores search params`, () => {
+    expect(resolveLoaderContextKey('foo', { foo: 'bar' })).toBe('/foo');
+  });
+
+  it(`picks dynamic params`, () => {
+    expect(resolveLoaderContextKey('[foo]', { foo: 'bar' })).toBe('/bar');
+  });
+
+  it(`picks catch-all dynamic name`, () => {
+    expect(resolveLoaderContextKey('[...bacon]', {})).toBe('/[...bacon]');
+
+    // Matching param (ideal case)
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: ['bacon', 'other'] })).toBe(
+      '/bacon/other'
+    );
+
+    // With search parameters
+    expect(resolveLoaderContextKey('[...bacon]', { bar: 'foo' })).toBe('/[...bacon]');
+
+    // Deep dynamic route
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: ['foo', 'bar'] })).toBe('/foo/bar');
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: ['foo'] })).toBe('/foo');
+
+    // Should never happen, but just in case.
+    expect(resolveLoaderContextKey('[...bacon]', { bacon: [] })).toBe('/');
+  });
+
+  it(`returns a function that picks the dynamic name from params`, () => {
+    expect(resolveLoaderContextKey('[user]', {})).toBe('/[user]');
+
+    // Matching param (ideal case)
+    expect(resolveLoaderContextKey('[user]', { user: 'bacon' })).toBe('/bacon');
+    // With search parameters
+    expect(resolveLoaderContextKey('[user]', { bar: 'foo' })).toBe('/[user]');
+    // No params
+    expect(resolveLoaderContextKey('[user]', {})).toBe('/[user]');
+
+    // Should never happen, but just in case.
+    expect(resolveLoaderContextKey('[user]', { user: '' })).toBe('/');
+  });
+
+  it(`picks multiple dynamic names from params`, () => {
+    expect(resolveLoaderContextKey('[user]/[bar]', {})).toBe('/[user]/[bar]');
+
+    expect(resolveLoaderContextKey('[user]/[bar]', { user: 'bacon', bar: 'hey' })).toBe(
+      '/bacon/hey'
+    );
+    // Fills partial params
+    expect(resolveLoaderContextKey('[user]/[bar]', { user: 'bacon' })).toBe('/bacon/[bar]');
+    // With search parameters
+    expect(resolveLoaderContextKey('[user]/[bar]', { baz: 'foo' })).toBe('/[user]/[bar]');
+    // No params
+    expect(resolveLoaderContextKey('[user]/[bar]', {})).toBe('/[user]/[bar]');
+
+    // Should never happen, but just in case.
+    expect(resolveLoaderContextKey('[user]/[bar]', { user: '' })).toBe('//[bar]');
   });
 });
 

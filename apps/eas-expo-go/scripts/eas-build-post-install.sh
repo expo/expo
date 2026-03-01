@@ -19,7 +19,7 @@ if [ -n "${VERIFY_VERSIONS_ENDPOINT+x}" ] && [ "${VERIFY_VERSIONS_ENDPOINT}" = "
 fi
 
 if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
-  et ios-generate-dynamic-macros
+  "$ROOT_DIR/apps/expo-go/ios/Build-Phases/generate-dynamic-macros.sh"
 fi
 
 

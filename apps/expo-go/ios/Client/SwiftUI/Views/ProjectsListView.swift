@@ -15,6 +15,12 @@ struct ProjectsListView: View {
   var body: some View {
     ScrollView {
       LazyVStack(spacing: 6) {
+        if viewModel.isLoading && viewModel.projects.isEmpty {
+          ForEach(0..<3, id: \.self) { _ in
+            ProjectSkeletonRow()
+          }
+        }
+
         ForEach(viewModel.projects) { project in
           ProjectRowWithNavigation(project: project, shouldNavigateToDetails: true)
         }
@@ -31,7 +37,7 @@ struct ProjectsListView: View {
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
 
-        if viewModel.isLoading {
+        if viewModel.isLoading && !viewModel.projects.isEmpty {
           ProgressView()
             .padding()
         }

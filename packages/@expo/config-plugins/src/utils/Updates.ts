@@ -152,7 +152,7 @@ export function getUpdatesBsdiffPatchSupportEnabled(
   if (config.updates?.enableBsdiffPatchSupport !== undefined) {
     return config.updates.enableBsdiffPatchSupport;
   }
-  return true;
+  return false;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {

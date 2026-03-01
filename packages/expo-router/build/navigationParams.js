@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = void 0;
+exports.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = void 0;
 exports.appendInternalExpoRouterParams = appendInternalExpoRouterParams;
 exports.getInternalExpoRouterParams = getInternalExpoRouterParams;
 exports.hasParam = hasParam;
@@ -10,6 +10,15 @@ exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_n
 exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = '__internal__expo_router_is_preview_navigation';
 exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_source_id';
 exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_screen_id';
+/**
+ * Internal navigation option name used to control gesture-based dismissal independently
+ * from the user-facing `gestureEnabled` option.
+ *
+ * This allows Expo Router to override React Navigation's gesture behavior for specific
+ * features (like zoom transitions) without affecting the user's `gestureEnabled` setting.
+ * The internal value takes precedence and is mapped to `gestureEnabled` in the navigator.
+ */
+exports.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = 'internal_gestureEnabled';
 const internalExpoRouterParamNames = [
     exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
     exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,

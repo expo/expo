@@ -199,8 +199,8 @@ export async function setUpdatesConfigAsync(
   }
 
   const bsPatchSupport = getUpdatesBsdiffPatchSupportEnabled(config);
-  if (!bsPatchSupport) {
-    addMetaDataItemToMainApplication(mainApplication, Config.BSDIFF_PATCH_SUPPORT, 'false');
+  if (bsPatchSupport) {
+    addMetaDataItemToMainApplication(mainApplication, Config.BSDIFF_PATCH_SUPPORT, 'true');
   } else {
     removeMetaDataItemFromMainApplication(mainApplication, Config.BSDIFF_PATCH_SUPPORT);
   }

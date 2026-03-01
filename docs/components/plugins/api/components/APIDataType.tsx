@@ -20,7 +20,7 @@ export const APIDataType = ({ typeDefinition, sdkVersion, inline = true }: APIDa
   const isIntersectionWithObject =
     type === 'intersection' && types?.filter(typeDefinitionContainsObject).length;
   const isUnionWithObject =
-    (type === 'union' || (elementType && elementType.type === 'union')) &&
+    (type === 'union' || elementType?.type === 'union') &&
     (types?.filter(typeDefinitionContainsObject)?.length ?? 0) > 0;
   const isObjectWrapped =
     type === 'reference' &&

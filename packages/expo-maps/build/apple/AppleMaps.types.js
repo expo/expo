@@ -65,6 +65,25 @@ export var AppleMapsMapStyleEmphasis;
     AppleMapsMapStyleEmphasis["MUTED"] = "MUTED";
 })(AppleMapsMapStyleEmphasis || (AppleMapsMapStyleEmphasis = {}));
 /**
+ * Controls the color scheme (appearance) of the map.
+ * @platform ios
+ */
+export var AppleMapsColorScheme;
+(function (AppleMapsColorScheme) {
+    /**
+     * The map follows the app's color scheme (light/dark mode).
+     */
+    AppleMapsColorScheme["AUTOMATIC"] = "AUTOMATIC";
+    /**
+     * The map is always displayed in light mode.
+     */
+    AppleMapsColorScheme["LIGHT"] = "LIGHT";
+    /**
+     * The map is always displayed in dark mode.
+     */
+    AppleMapsColorScheme["DARK"] = "DARK";
+})(AppleMapsColorScheme || (AppleMapsColorScheme = {}));
+/**
  * @platform ios
  * @see https://developer.apple.com/documentation/mapkit/AppleMapPointOfInterestCategory
  */

@@ -1,0 +1,19 @@
+{
+  "name": "test-expo-ui",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A test module demonstrating expo-ui extension with custom SwiftUI components and modifiers",
+  "main": "index.ts",
+  "types": "index.ts",
+  "homepage": "https://expo.dev",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*",
+    "@expo/ui": "*"
+  }
+}

@@ -1,0 +1,131 @@
+---
+title: ToggleButton
+description: A Jetpack Compose ToggleButton component for togglable buttons.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI ToggleButton matches the official Jetpack Compose [Toggle Button](https://developer.android.com/develop/ui/compose/components/button#toggle) API and provides a button that switches between checked and unchecked states with multiple visual variants.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic toggle button
+
+```tsx BasicToggleButtonExample.tsx
+import { useState } from 'react';
+import { Host, ToggleButton } from '@expo/ui/jetpack-compose';
+
+export default function BasicToggleButtonExample() {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <Host matchContents>
+      <ToggleButton
+        checked={checked}
+        text="Favorite"
+        onCheckedChange={value => setChecked(value)}
+      />
+    </Host>
+  );
+}
+```
+
+### Toggle button variants
+
+Use the `variant` prop to switch between `'default'`, `'icon'`, `'filledIcon'`, and `'outlinedIcon'` styles.
+
+```tsx ToggleButtonVariantsExample.tsx
+import { useState } from 'react';
+import { Host, ToggleButton, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ToggleButtonVariantsExample() {
+  const [checked1, setChecked1] = useState(false);
+  const [checked2, setChecked2] = useState(true);
+  const [checked3, setChecked3] = useState(false);
+  const [checked4, setChecked4] = useState(true);
+
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <ToggleButton
+          checked={checked1}
+          text="Default"
+          variant="default"
+          onCheckedChange={value => setChecked1(value)}
+        />
+        <ToggleButton
+          checked={checked2}
+          text="Icon"
+          variant="icon"
+          onCheckedChange={value => setChecked2(value)}
+        />
+        <ToggleButton
+          checked={checked3}
+          text="Filled Icon"
+          variant="filledIcon"
+          onCheckedChange={value => setChecked3(value)}
+        />
+        <ToggleButton
+          checked={checked4}
+          text="Outlined Icon"
+          variant="outlinedIcon"
+          onCheckedChange={value => setChecked4(value)}
+        />
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Toggle button with custom color
+
+```tsx CustomColorToggleButtonExample.tsx
+import { useState } from 'react';
+import { Host, ToggleButton } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorToggleButtonExample() {
+  const [checked, setChecked] = useState(true);
+
+  return (
+    <Host matchContents>
+      <ToggleButton
+        checked={checked}
+        text="Custom color"
+        color="#E91E63"
+        onCheckedChange={value => setChecked(value)}
+      />
+    </Host>
+  );
+}
+```
+
+### Disabled toggle button
+
+```tsx DisabledToggleButtonExample.tsx
+import { Host, ToggleButton } from '@expo/ui/jetpack-compose';
+
+export default function DisabledToggleButtonExample() {
+  return (
+    <Host matchContents>
+      <ToggleButton checked={false} text="Disabled" disabled />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { ToggleButton } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/togglebutton" apiName="ToggleButton" />

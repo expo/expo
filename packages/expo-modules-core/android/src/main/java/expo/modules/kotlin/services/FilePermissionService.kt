@@ -1,13 +1,17 @@
 package expo.modules.kotlin.services
 
 import android.content.Context
-import expo.modules.interfaces.filesystem.Permission
 import java.io.File
 import java.io.IOException
 import java.util.EnumSet
 
 // The class needs to be 'open', because it's inherited in expoview
 open class FilePermissionService : Service {
+  enum class Permission {
+    READ,
+    WRITE
+  }
+
   open fun getPathPermissions(context: Context, path: String): EnumSet<Permission> =
     getInternalPathPermissions(path, context) ?: getExternalPathPermissions(path)
 

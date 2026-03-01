@@ -14,13 +14,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MenuAction = exports.Menu = exports.Group = exports.Screen = void 0;
+exports.Group = exports.Screen = void 0;
 var navigation_1 = require("./navigation");
 Object.defineProperty(exports, "Screen", { enumerable: true, get: function () { return navigation_1.Screen; } });
 Object.defineProperty(exports, "Group", { enumerable: true, get: function () { return navigation_1.Group; } });
 __exportStar(require("./types"), exports);
 __exportStar(require("./elements"), exports);
-var menu_1 = require("./menu");
-Object.defineProperty(exports, "Menu", { enumerable: true, get: function () { return menu_1.Menu; } });
-Object.defineProperty(exports, "MenuAction", { enumerable: true, get: function () { return menu_1.MenuAction; } });
 //# sourceMappingURL=index.js.map

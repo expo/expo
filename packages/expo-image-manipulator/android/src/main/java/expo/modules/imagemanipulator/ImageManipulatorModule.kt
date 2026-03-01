@@ -1,5 +1,3 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.imagemanipulator
 
 import android.content.Context
@@ -12,8 +10,8 @@ import expo.modules.imagemanipulator.transformers.CropTransformer
 import expo.modules.imagemanipulator.transformers.FlipTransformer
 import expo.modules.imagemanipulator.transformers.ResizeTransformer
 import expo.modules.imagemanipulator.transformers.RotateTransformer
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.functions.Coroutine
@@ -36,7 +34,7 @@ class ImageManipulatorModule : Module() {
 
   private fun createManipulatorContext(url: Uri): ImageManipulatorContext {
     val loader = suspend {
-      val imageLoader = appContext.imageLoader
+      val imageLoader = appContext.service<ImageLoaderInterface>()
         ?: throw ImageLoaderNotFoundException()
 
       suspendCancellableCoroutine { continuation ->

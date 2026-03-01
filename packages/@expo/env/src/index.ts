@@ -1,10 +1,10 @@
 import chalk from 'chalk';
-import * as dotenv from 'dotenv';
-import { expand as dotenvExpand } from 'dotenv-expand';
 import { boolish } from 'getenv';
 import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
+
+import { parse, expand, type EnvOutput } from './parse';
 
 const debug = require('debug')('expo:env') as typeof console.log;
 
@@ -77,7 +77,7 @@ export function parseEnvFiles(
     systemEnv = process.env,
   }: {
     /** The system environment to use when expanding environment variables, defaults to `process.env` */
-    systemEnv?: NodeJS.ProcessEnv;
+    systemEnv?: EnvOutput;
   } = {}
 ) {
   if (!isEnabled()) {
@@ -91,7 +91,7 @@ export function parseEnvFiles(
   // Variable expansion is supported in .env files, and executed as final step.
   // https://github.com/motdotla/dotenv
   // https://github.com/motdotla/dotenv-expand
-  const loadedEnvVars: dotenv.DotenvParseOutput = {};
+  const loadedEnvVars: EnvOutput = {};
   const loadedEnvFiles: string[] = [];
 
   // Iterate over each dotenv file in lowest prio to highest prio order.
@@ -99,12 +99,7 @@ export function parseEnvFiles(
   [...envFiles].reverse().forEach((envFile) => {
     try {
       const envFileContent = fs.readFileSync(envFile, 'utf8');
-      const envFileParsed = dotenv.parse(envFileContent);
-
-      // If there are parsing issues, mark the file as not-parsed
-      if (!envFileParsed) {
-        return debug(`Failed to load environment variables from: ${envFile}%s`);
-      }
+      const envFileParsed = parse(envFileContent);
 
       loadedEnvFiles.push(envFile);
       debug(`Loaded environment variables from: ${envFile}`);
@@ -132,7 +127,7 @@ export function parseEnvFiles(
   });
 
   return {
-    env: expandEnvFromSystem(loadedEnvVars, systemEnv),
+    env: expand(loadedEnvVars, systemEnv),
     files: loadedEnvFiles.reverse(),
   };
 }
@@ -176,40 +171,6 @@ export function loadEnvFiles(
   systemEnv[LOADED_ENV_NAME] = JSON.stringify(loadedEnvKeys);
 
   return { result: 'loaded' as const, ...parsed, loaded: loadedEnvKeys };
-}
-
-/**
- * Expand the parsed environment variables using the existing system environment variables.
- * This does not mutate the existing system environment variables, and only returns the expanded variables.
- */
-function expandEnvFromSystem(
-  parsedEnv: Record<string, string>,
-  systemEnv: NodeJS.ProcessEnv = process.env
-) {
-  const expandedEnv: Record<string, string> = {};
-
-  // Pass a clone of the system environment variables to avoid mutating the original environment.
-  // When the expansion is done, we only store the environment variables that were initially parsed from `parsedEnv`.
-  const allExpandedEnv = dotenvExpand({
-    parsed: parsedEnv,
-    processEnv: { ...systemEnv } as Record<string, string>,
-  });
-
-  if (allExpandedEnv.error) {
-    console.error(
-      `Failed to expand environment variables, using non-expanded environment variables: ${allExpandedEnv.error}`
-    );
-    return parsedEnv;
-  }
-
-  // Only store the values that were initially parsed, from `parsedEnv`.
-  for (const key of Object.keys(parsedEnv)) {
-    if (allExpandedEnv.parsed?.[key]) {
-      expandedEnv[key] = allExpandedEnv.parsed[key];
-    }
-  }
-
-  return expandedEnv;
 }
 
 /**
@@ -343,4 +304,16 @@ export function getFiles(mode: string | undefined, { silent = false }: { silent?
   }
 
   return getEnvFiles({ mode, silent });
+}
+
+/**
+ * Parses the contents of a single `.env` file, optionally expanding it immediately.
+ */
+export function parseEnv(contents: string, sourceEnv?: EnvOutput): EnvOutput {
+  try {
+    const env = parse(contents);
+    return expand(env, sourceEnv || {});
+  } catch {
+    return {};
+  }
 }

@@ -144,11 +144,11 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
 
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
+    mHybridData.resetNative()
   }
 
-  override fun deallocate() {
-    mHybridData.resetNative()
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 }
 

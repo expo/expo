@@ -16,6 +16,11 @@ export type FontResource = {
      */
     display?: FontDisplay;
     default?: string;
+    /**
+     * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver).
+     * @platform web
+     */
+    testString?: string;
 };
 /**
  * Sets the [font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display)
@@ -63,4 +68,5 @@ export declare enum FontDisplay {
  * @hidden
  */
 export type UnloadFontOptions = Pick<FontResource, 'display'>;
+export type UseFontHook = (map: string | Record<string, FontSource>) => [boolean, Error | null];
 //# sourceMappingURL=Font.types.d.ts.map

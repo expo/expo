@@ -16,6 +16,7 @@ export default function CameraScreenPauseRecording() {
   const recordAsync = async () => {
     if (recording) {
       camera.current?.stopRecording();
+      return;
     }
     setRecording(true);
     const result = await camera.current?.recordAsync();
@@ -32,25 +33,33 @@ export default function CameraScreenPauseRecording() {
   return (
     <View style={styles.screen}>
       {!uri ? (
-        <CameraView
-          ref={camera}
-          style={StyleSheet.absoluteFillObject}
-          facing="back"
-          active
-          mode="video"
-          videoQuality="2160p"
-          pictureSize="1920x1080"
-        />
+        <>
+          <CameraView
+            ref={camera}
+            style={StyleSheet.absoluteFillObject}
+            facing="back"
+            active
+            mode="video"
+            videoQuality="2160p"
+            pictureSize="1920x1080"
+          />
+          <View style={styles.controls}>
+            <Button title={`${recording ? 'Stop' : 'Start'} Recording`} onPress={recordAsync} />
+            {uri && <Button title="Clear Recording" onPress={() => setUri('')} />}
+            {recording && (
+              <Button
+                title={`${paused ? 'Resume' : 'Pause'} Recording`}
+                onPress={toggleRecording}
+              />
+            )}
+          </View>
+        </>
       ) : (
-        <VideoView player={player} style={{ width, aspectRatio: 1 }} />
+        <>
+          <VideoView player={player} style={{ width, aspectRatio: 1 }} />
+          <Button title="Go back to camera" onPress={() => setUri('')} />
+        </>
       )}
-      <View style={styles.controls}>
-        <Button title={`${recording ? 'Stop' : 'Start'} Recording`} onPress={recordAsync} />
-        {uri && <Button title="Clear Recording" onPress={() => setUri('')} />}
-        {recording && (
-          <Button title={`${paused ? 'Resume' : 'Pause'} Recording`} onPress={toggleRecording} />
-        )}
-      </View>
     </View>
   );
 }
