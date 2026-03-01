@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Honor runtime `runBeforeMainModule` in static serializer output so merged pre-main modules are preserved. ([#43546](https://github.com/expo/expo/pull/43546) by [@hannojg](https://github.com/hannojg))
+
 ### 💡 Others
 
 ## 55.0.9 — 2026-02-25
