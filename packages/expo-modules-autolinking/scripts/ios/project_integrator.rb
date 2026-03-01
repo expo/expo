@@ -119,7 +119,7 @@ module Expo
           .find { |dir| Dir.exist?(dir) }
 
         unless source_dir
-          Pod::UI.warn "[Expo] Local module #{package.name} has no ios/ or apple/ directory, skipping"
+          Pod::UI.warn "[Expo] Local module #{package.name} has no `ios` or `apple` directory, skipping"
           next
         end
 
