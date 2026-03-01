@@ -133,6 +133,7 @@ describe(resolveModuleAsync, () => {
       appDelegateSubscribers: [],
       reactDelegateHandlers: [],
       debugOnly: false,
+      type: 'external',
     });
   });
 
@@ -167,6 +168,7 @@ describe(resolveModuleAsync, () => {
       appDelegateSubscribers: [],
       reactDelegateHandlers: [],
       debugOnly: false,
+      type: 'external',
       coreFeatures: ['swiftui'],
     });
   });
@@ -213,6 +215,97 @@ describe(resolveModuleAsync, () => {
       appDelegateSubscribers: [],
       reactDelegateHandlers: [],
       debugOnly: false,
+      type: 'external',
+    });
+  });
+
+  it('should return null for external module without podspec', async () => {
+    const name = 'react-native-third-party';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ 'src/index.ts': '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['ios'] }),
+      },
+      { isLocal: false }
+    );
+
+    expect(result).toBeNull();
+  });
+
+  it('should resolve local module without podspec as in-project', async () => {
+    const name = 'hello-world';
+    const pkgDir = path.join('modules', name);
+
+    vol.fromJSON({ 'ios/HelloWorldModule.swift': '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '',
+        config: new ExpoModuleConfig({
+          platforms: ['apple'],
+          apple: { modules: ['HelloWorldModule'] },
+        }),
+      },
+      { isLocal: true }
+    );
+
+    expect(result).toEqual({
+      packageName: 'hello-world',
+      pods: [],
+      swiftModuleNames: [],
+      flags: undefined,
+      modules: [{ name: null, class: 'HelloWorldModule' }],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+      debugOnly: false,
+      type: 'local',
+      path: pkgDir,
+    });
+  });
+
+  it('should resolve local module with podspec as local pod', async () => {
+    const name = 'my-local-module';
+    const podName = 'MyLocalModule';
+    const pkgDir = path.join('modules', name);
+
+    vol.fromJSON({ [`ios/${podName}.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '1.0.0',
+        config: new ExpoModuleConfig({ platforms: ['ios'] }),
+      },
+      { isLocal: true }
+    );
+
+    expect(result).toEqual({
+      packageName: 'my-local-module',
+      pods: [
+        {
+          podName: 'MyLocalModule',
+          podspecDir: 'modules/my-local-module/ios',
+        },
+      ],
+      swiftModuleNames: ['MyLocalModule'],
+      flags: undefined,
+      modules: [],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+      debugOnly: false,
+      type: 'local',
     });
   });
 });

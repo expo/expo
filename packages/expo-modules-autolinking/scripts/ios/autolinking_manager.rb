@@ -52,7 +52,7 @@ module Expo
           # Local modules without a podspec are integrated directly in the app project.
           # Skip pod registration — their sources will be added to the app target.
           if package.in_project?
-            UI.message "— #{package.name.green} (local, integrated in app project)"
+            UI.message "— #{package.name.green} (integrated)"
             next
           end
 
