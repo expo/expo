@@ -10,6 +10,8 @@ type VideoBoxLinkProps = {
   title: string;
   description: ReactNode;
   videoId: string;
+  /** ISO 8601 date string (YYYY-MM-DD) when the video was uploaded */
+  uploadDate?: string;
   time?: number;
   className?: string;
 };
@@ -19,7 +21,6 @@ export function VideoBoxLink({ title, description, videoId, time, className }: V
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
     name: title,
-    description: title,
     thumbnailUrl: `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
     embedUrl: `https://www.youtube.com/embed/${videoId}`,
     contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
