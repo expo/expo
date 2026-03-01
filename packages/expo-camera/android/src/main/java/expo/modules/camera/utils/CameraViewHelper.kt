@@ -14,9 +14,6 @@ import java.util.Locale
 import kotlin.math.roundToLong
 
 object CameraViewHelper {
-  // Utilities
-
-  @JvmStatic
   fun getExifData(exifInterface: ExifInterface): Bundle {
     val exifMap = Bundle()
     for ((type, name) in exifTags) {
@@ -36,7 +33,6 @@ object CameraViewHelper {
     return exifMap
   }
 
-  @JvmStatic
   @Throws(IllegalArgumentException::class)
   fun setExifData(baseExif: ExifInterface, exifMap: Map<String, Any>) {
     for ((type, name) in exifTags) {
@@ -65,7 +61,6 @@ object CameraViewHelper {
     }
   }
 
-  @JvmStatic
   @Throws(IOException::class)
   fun addExifData(baseExif: ExifInterface, additionalExif: ExifInterface) {
     for (tagInfo in exifTags) {
@@ -103,7 +98,6 @@ object CameraViewHelper {
 
     val stream = ByteArrayOutputStream()
     fakePhotoBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
-    val fakePhotoByteArray = stream.toByteArray()
-    return fakePhotoByteArray
+    return stream.toByteArray()
   }
 }

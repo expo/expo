@@ -22,6 +22,7 @@ import expo.modules.camera.records.VideoStabilizationMode
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.tasks.writeStreamToFile
 import expo.modules.camera.utils.CameraUtils
+import expo.modules.camera.utils.CameraViewHelper
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.core.utilities.VRUtilities
