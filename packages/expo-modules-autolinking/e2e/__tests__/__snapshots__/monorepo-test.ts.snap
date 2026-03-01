@@ -353,6 +353,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -371,6 +372,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -389,6 +391,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXApplication",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -407,6 +410,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXConstants",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -425,6 +429,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -443,6 +448,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFileSystem",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -461,6 +467,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFont",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -479,6 +486,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXImageLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -497,6 +505,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -515,6 +524,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -533,6 +543,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXPermissions",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -551,6 +562,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -569,6 +581,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -587,6 +600,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdates",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -605,6 +619,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -623,6 +638,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMAppLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -641,6 +657,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
+    "type": "external",
   },
 ]
 `;
@@ -893,6 +910,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -911,6 +929,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -929,6 +948,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXApplication",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -947,6 +967,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXConstants",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -965,6 +986,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -983,6 +1005,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFileSystem",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1001,6 +1024,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFont",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1019,6 +1043,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXImageLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1037,6 +1062,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1055,6 +1081,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1073,6 +1100,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXPermissions",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1091,6 +1119,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1109,6 +1138,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1127,6 +1157,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdates",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1145,6 +1176,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1163,6 +1195,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMAppLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1181,6 +1214,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
+    "type": "external",
   },
 ]
 `;
@@ -1447,6 +1481,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1465,6 +1500,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1483,6 +1519,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXApplication",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1501,6 +1538,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXConstants",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1519,6 +1557,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXDevice",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1537,6 +1576,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1555,6 +1595,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFileSystem",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1573,6 +1614,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFont",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1591,6 +1633,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXImageLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1609,6 +1652,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1627,6 +1671,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1645,6 +1690,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXPermissions",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1663,6 +1709,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1681,6 +1728,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1699,6 +1747,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdates",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1717,6 +1766,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1735,6 +1785,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMAppLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1753,6 +1804,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
+    "type": "external",
   },
 ]
 `;
