@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ARCH="arm64"
 BUNDLE_ID="dev.expo.BrownfieldIntegratedTester"
-CONFIGURATION=${1:-Release}
+CONFIGURATION=${CONFIGURATION:-Release}
 DERIVED_DATA_PATH="build"
 DEVICE_ID=$1
 PROJECT="BrownfieldIntegratedTester.xcodeproj"
