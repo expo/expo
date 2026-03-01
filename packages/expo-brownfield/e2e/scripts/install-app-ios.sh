@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ARCH="arm64"
 BUNDLE_ID="dev.expo.BrownfieldIntegratedTester"
-CONFIGURATION="Release"
+CONFIGURATION=${1:-Release}
 DERIVED_DATA_PATH="build"
 DEVICE_ID=$1
 PROJECT="BrownfieldIntegratedTester.xcodeproj"
@@ -20,7 +20,7 @@ xcodebuild build \
   -arch $ARCH \
   -derivedDataPath $DERIVED_DATA_PATH
 
-APP_BINARY_PATH=build/Build/Products/Release-iphonesimulator/BrownfieldIntegratedTester.app
+APP_BINARY_PATH=build/Build/Products/${CONFIGURATION}-iphonesimulator/BrownfieldIntegratedTester.app
 echo " 🔌 Installing UIKit App - deviceId[${DEVICE_ID}] appBinaryPath[${APP_BINARY_PATH}]"
 xcrun simctl install $DEVICE_ID $APP_BINARY_PATH
 xcrun simctl launch $DEVICE_ID $BUNDLE_ID
