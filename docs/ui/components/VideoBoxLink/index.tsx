@@ -3,6 +3,7 @@ import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIco
 import { PlaySolidIcon } from '@expo/styleguide-icons/solid/PlaySolidIcon';
 import { type ReactNode } from 'react';
 
+import { getVideoUploadDate } from '~/public/static/talks';
 import { StructuredData } from '~/ui/components/StructuredData';
 import { CALLOUT, LABEL } from '~/ui/components/Text';
 
@@ -10,13 +11,12 @@ type VideoBoxLinkProps = {
   title: string;
   description: ReactNode;
   videoId: string;
-  /** ISO 8601 date string (YYYY-MM-DD) when the video was uploaded */
-  uploadDate?: string;
   time?: number;
   className?: string;
 };
 
 export function VideoBoxLink({ title, description, videoId, time, className }: VideoBoxLinkProps) {
+  const uploadDate = getVideoUploadDate(videoId);
   const videoStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
@@ -24,6 +24,7 @@ export function VideoBoxLink({ title, description, videoId, time, className }: V
     thumbnailUrl: `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
     embedUrl: `https://www.youtube.com/embed/${videoId}`,
     contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
+    ...(uploadDate && { uploadDate }),
   };
 
   return (
