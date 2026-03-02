@@ -36,7 +36,6 @@ extension ExpoSwiftUI {
 
     /**
      Proxy for controlling the shadow node (Yoga layout) of the view.
-     Wired by ``SwiftUIVirtualView`` and ``HostingView`` at creation time.
      */
     public internal(set) var shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
 
