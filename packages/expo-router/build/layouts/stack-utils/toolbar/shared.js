@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.extractXcassetName = extractXcassetName;
 exports.extractIconRenderingMode = extractIconRenderingMode;
+exports.extractImageSource = extractImageSource;
 exports.convertStackHeaderSharedPropsToRNSharedHeaderItem = convertStackHeaderSharedPropsToRNSharedHeaderItem;
 const react_1 = require("react");
 const toolbar_primitives_1 = require("./toolbar-primitives");
@@ -24,6 +25,24 @@ function extractIconRenderingMode(props) {
     const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
     if (iconComponentProps && 'renderingMode' in iconComponentProps) {
         return iconComponentProps.renderingMode;
+    }
+    return undefined;
+}
+/**
+ * Extracts the raw `ImageSourcePropType` from either:
+ * - A `<Stack.Toolbar.Icon src={...} />` child component
+ * - The `icon` prop when it's not an SF Symbol string
+ *
+ * Used by Android toolbar to get the raw image source for `@expo/ui` Icon.
+ * @internal
+ */
+function extractImageSource(props) {
+    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+    if (iconComponentProps && 'src' in iconComponentProps) {
+        return iconComponentProps.src;
+    }
+    if (props.icon && typeof props.icon !== 'string') {
+        return props.icon;
     }
     return undefined;
 }

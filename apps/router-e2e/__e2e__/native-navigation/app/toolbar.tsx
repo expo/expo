@@ -3,6 +3,7 @@ import { Color, Stack, useLocalSearchParams } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState, useRef } from 'react';
 import {
+  Platform,
   View,
   Text,
   Switch,
@@ -516,6 +517,24 @@ export default function ToolbarScreen() {
 
         {/* Flexible spacer at the end */}
         <Stack.Toolbar.Spacer />
+
+        {/* Android-specific toolbar buttons using ImageSourcePropType icons */}
+        {Platform.OS === 'android' && (
+          <>
+            <Stack.Toolbar.Button
+              icon={require('../../../assets/expo-transparent.png')}
+              onPress={() => Alert.alert('Android', 'Expo transparent icon pressed')}
+            />
+            <Stack.Toolbar.Button
+              icon={require('../../../assets/expo-logo.png')}
+              tintColor="#4630EB"
+              onPress={() => Alert.alert('Android', 'Expo logo pressed')}
+            />
+            <Stack.Toolbar.Button onPress={() => Alert.alert('Android', 'Explore icon pressed')}>
+              <Stack.Toolbar.Icon src={require('../../../assets/explore_gray.png')} />
+            </Stack.Toolbar.Button>
+          </>
+        )}
       </Stack.Toolbar>
     </>
   );

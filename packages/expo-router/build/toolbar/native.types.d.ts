@@ -1,5 +1,5 @@
 import type { ImageRef } from 'expo-image';
-import type { ColorValue } from 'react-native';
+import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type { BasicTextStyle } from '../utils/font';
 export interface RouterToolbarHostProps {
@@ -31,5 +31,10 @@ export interface RouterToolbarItemProps {
     accessibilityHint?: string;
     disabled?: boolean;
     onSelected?: () => void;
+    /**
+     * Raw image source for Android toolbar rendering.
+     * On iOS this prop is ignored — icons are resolved via `systemImageName`, `xcassetName`, or `image`.
+     */
+    source?: ImageSourcePropType;
 }
 //# sourceMappingURL=native.types.d.ts.map

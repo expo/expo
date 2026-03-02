@@ -2,13 +2,20 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
 import { Children, useId, useMemo, type ReactNode } from 'react';
-import { StyleSheet, type ColorValue, type StyleProp, type TextStyle } from 'react-native';
+import {
+  StyleSheet,
+  type ColorValue,
+  type ImageSourcePropType,
+  type StyleProp,
+  type TextStyle,
+} from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { useToolbarPlacement } from './context';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
+  extractImageSource,
   extractXcassetName,
   type StackHeaderItemSharedProps,
 } from './shared';
@@ -172,7 +179,7 @@ export interface StackToolbarButtonProps {
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => {
   const placement = useToolbarPlacement();
@@ -212,6 +219,7 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
   const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
   const xcassetName = extractXcassetName(props);
   const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
+  const source = extractImageSource(props);
   return (
     <NativeToolbarButton
       {...sharedProps}
@@ -219,6 +227,7 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
       xcassetName={xcassetName}
       image={props.image}
       imageRenderingMode={imageRenderingMode}
+      source={source}
     />
   );
 };
@@ -256,6 +265,11 @@ interface NativeToolbarButtonProps {
   possibleTitles?: string[];
   selected?: boolean;
   separateBackground?: boolean;
+  /**
+   * Raw image source for Android toolbar rendering.
+   * On iOS this is ignored.
+   */
+  source?: ImageSourcePropType;
   style?: StyleProp<BasicTextStyle>;
   tintColor?: ColorValue;
   variant?: 'plain' | 'done' | 'prominent';
@@ -285,6 +299,7 @@ const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) => {
       possibleTitles={props.possibleTitles}
       selected={props.selected}
       sharesBackground={!props.separateBackground}
+      source={props.source}
       systemImageName={props.icon}
       xcassetName={props.xcassetName}
       title={props.label}

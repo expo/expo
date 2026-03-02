@@ -60,6 +60,12 @@ function computeMenuLabelAndTitle(children, title) {
  */
 const StackToolbarMenu = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
+    if (react_native_1.Platform.OS === 'android' && placement === 'bottom') {
+        if (process.env.NODE_ENV !== 'production') {
+            console.warn('Stack.Toolbar.Menu is not supported on Android. The menu will not render. Use Stack.Toolbar.Button with ImageSourcePropType icons instead.');
+        }
+        return null;
+    }
     if (placement !== 'bottom') {
         // For placement other than bottom, this component will not render, and should be
         // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.

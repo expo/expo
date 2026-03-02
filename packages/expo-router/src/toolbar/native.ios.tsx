@@ -52,5 +52,7 @@ export function RouterToolbarItem(props: RouterToolbarItemProps) {
         }
       | undefined
   )?.__expo_shared_object_id__;
-  return <RouterToolbarItemView {...props} image={imageObjectId} />;
+  // Destructure `source` to avoid passing Android-only prop to the iOS native view
+  const { source, ...nativeProps } = props;
+  return <RouterToolbarItemView {...nativeProps} image={imageObjectId} />;
 }
