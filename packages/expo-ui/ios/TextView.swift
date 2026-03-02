@@ -61,7 +61,7 @@ public struct TextView: ExpoSwiftUI.View {
           countsDown: props.countsDown ?? true
         )
       } else {
-        text = Text(lower, style: .timer)
+        text = Text((props.countsDown ?? true) ? upper : lower, style: .timer)
       }
     } else if let date = props.date {
       text = Text(date, style: props.dateStyle?.toSwiftUI() ?? .date)
