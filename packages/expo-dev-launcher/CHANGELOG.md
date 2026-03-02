@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix issue when using `fullScreenModal` with `expo-router`. ([#43520](https://github.com/expo/expo/pull/43520) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- Enforce transparent status bar and navigation bar on Android, remove unused `backgroundColor` / `translucent` options handling. ([#43518](https://github.com/expo/expo/pull/43518) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.10 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.9 — 2026-02-25
 

@@ -8,7 +8,7 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { InputConfigT, mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
+import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import { createStableModuleIdFactory, getDefaultConfig } from '@expo/metro-config';
 import chalk from 'chalk';
@@ -21,7 +21,7 @@ import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
-import { runServer } from './runServer-fork';
+import { runServer, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
@@ -359,6 +359,19 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
+  // Support HTTPS based on the metro's tls server config
+  // TODO(@kitten): Remove cast once `@expo/metro` is updated to a Metro version that supports the tls config
+  const tls = (metroConfig.server as typeof metroConfig.server & { tls?: SecureServerOptions })
+    ?.tls;
+  const secureServerOptions = tls
+    ? {
+        key: tls.key,
+        cert: tls.cert,
+        ca: tls.ca,
+        requestCert: tls.requestCert,
+      }
+    : undefined;
+
   const { address, server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
@@ -366,6 +379,7 @@ export async function instantiateMetroAsync(
       host: options.host,
       websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
+      secureServerOptions,
     },
     {
       mockServer: isExporting,

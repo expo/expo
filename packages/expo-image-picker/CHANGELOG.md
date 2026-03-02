@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [android] bump Android-Image-Cropper dependency ([#43433](https://github.com/expo/expo/pull/43433) by [@vonovak](https://github.com/vonovak))
+
 ## 55.0.9 — 2026-02-25
 
 _This version does not introduce any user-facing changes._
@@ -63,7 +65,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+- [Android] Add `android:maxSdkVersion` annotation to `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
 
 ## 17.0.9 - 2025-12-05
 

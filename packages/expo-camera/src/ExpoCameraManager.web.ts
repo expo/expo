@@ -1,12 +1,15 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
 import {
+  BarcodeType,
+  BarcodeScanningResult,
   CameraCapturedPicture,
   CameraPictureOptions,
   PermissionResponse,
   PermissionStatus,
 } from './Camera.types';
 import { ExponentCameraRef } from './ExpoCamera.web';
+import * as WebBarcodeScanner from './web/WebBarcodeScanner';
 import {
   canGetUserMedia,
   isBackCameraAvailableAsync,
@@ -14,32 +17,7 @@ import {
 } from './web/WebUserMediaManager';
 
 function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    return navigator.mediaDevices.getUserMedia(constraints);
-  }
-
-  // Some browsers partially implement mediaDevices. We can't just assign an object
-  // with getUserMedia as it would overwrite existing properties.
-  // Here, we will just add the getUserMedia property if it's missing.
-
-  // First get ahold of the legacy getUserMedia, if present
-  const getUserMedia =
-    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    navigator.getUserMedia ||
-    navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia ||
-    function () {
-      const error: any = new Error('Permission unimplemented');
-      error.code = 0;
-      error.name = 'NotAllowedError';
-      throw error;
-    };
-  return new Promise((resolve, reject) => {
-    // TODO(@kitten): The types indicates that this is incorrect.
-    // Please check whether this is correct!
-    // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
-    getUserMedia.call(navigator, constraints, resolve, reject);
-  });
+  return navigator.mediaDevices.getUserMedia(constraints);
 }
 
 function handleGetUserMediaError({ message }: { message: string }): PermissionResponse {
@@ -134,6 +112,11 @@ async function handlePermissionsQueryAsync(
 }
 
 export default {
+  isModernBarcodeScannerAvailable: false,
+  toggleRecordingAsyncAvailable: false,
+  addListener(_eventName: string, _listener: (...args: any[]) => any) {
+    return { remove: () => {} };
+  },
   get Type() {
     return {
       back: 'back',
@@ -239,5 +222,18 @@ export default {
     } catch (error: any) {
       return handleGetUserMediaError(error.message);
     }
+  },
+  async scanFromURLAsync(
+    url: string,
+    barcodeTypes?: BarcodeType[]
+  ): Promise<BarcodeScanningResult[]> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const bitmap = await createImageBitmap(blob);
+    const types: BarcodeType[] =
+      barcodeTypes && barcodeTypes.length > 0 ? barcodeTypes : WebBarcodeScanner.ALL_BARCODE_TYPES;
+    const results = await WebBarcodeScanner.detect(bitmap, types);
+    bitmap.close();
+    return results;
   },
 };

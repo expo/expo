@@ -17,9 +17,11 @@ struct LocalNetworkPermissionView: View {
   }
 
   var body: some View {
-    VStack(spacing: 0) {
-      Spacer()
-
+    ZStack {
+      Color
+        .expoSystemBackground
+        .ignoresSafeArea(.all)
+      
       VStack(spacing: 24) {
         Image("radar-icon", bundle: getDevLauncherBundle())
           .resizable()
@@ -46,18 +48,8 @@ struct LocalNetworkPermissionView: View {
           }
         }
       }
-
-      Spacer()
-      
-      HStack(alignment: .firstTextBaseline) {
-        Image(systemName: "info.circle")
-        Text("Dev servers advertise themselves on your local network using Bonjour. This permission allows the development client to discover them automatically.")
-          .fontWeight(.semibold)
-      }
-      .foregroundColor(.secondary)
+      .padding()
     }
-    .padding()
-    .background(Color.expoSystemBackground)
     .alert("Permission Not Granted", isPresented: $showTryAgainFailedAlert) {
       Button("Open Settings") {
         #if os(iOS)

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove pin on `arg` dependency ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
+
 ## 55.0.11 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

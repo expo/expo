@@ -337,7 +337,7 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     browser?.browseResultsChangedHandler = { [weak self] results, _ in
-      guard let self = self else { return }
+      guard let self else { return }
       Task { @MainActor [weak self, results] in
         guard let self else { return }
         self.markNetworkPermissionGranted()

@@ -71,12 +71,17 @@ const createIndexSwift = (widgets, targetPath) => {
 import SwiftUI
 internal import ExpoWidgets
 `;
-    for (let i = 0; i < numberOfBundles; i++) {
-        const start = i * 4;
-        const end = Math.min(start + 4, numberOfWidgets);
-        const widgetChunk = widgets.slice(start, end);
-        const isLastChunk = i === numberOfBundles - 1;
-        output += addIndexSwiftChunk(widgetChunk, i, isLastChunk);
+    if (numberOfWidgets > 0) {
+        for (let i = 0; i < numberOfBundles; i++) {
+            const start = i * 4;
+            const end = Math.min(start + 4, numberOfWidgets);
+            const widgetChunk = widgets.slice(start, end);
+            const isLastChunk = i === numberOfBundles - 1;
+            output += addIndexSwiftChunk(widgetChunk, i, isLastChunk);
+        }
+    }
+    else {
+        output += addIndexSwiftChunk([], 0, true);
     }
     fs.writeFileSync(indexFilePath, output);
     return indexFilePath;
@@ -95,7 +100,7 @@ const addIndexSwiftChunk = (widgets, index, isLastChunk) => `
 ${index === 0 ? '@main' : ''}
 struct ExportWidgets${index}: WidgetBundle {
   var body: some Widget {
-    ${widgets.map((widget) => `${widget.name}()`).join('\n\t\t')}
+    ${widgets.map((widget) => `${widget.name}()`).join('\n\t')}
     ${!isLastChunk ? `ExportWidgets${index + 1}().body` : `WidgetLiveActivity()`}
   }
 }`;

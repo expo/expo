@@ -20,6 +20,25 @@ import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
 import type { ConnectAppType } from '../middleware/server.types';
 
+export interface SecureServerOptions {
+  readonly key: string | Buffer;
+  readonly cert: string | Buffer;
+  readonly ca: string | Buffer;
+  readonly requestCert: boolean;
+}
+
+interface RunServerOptionsFork {
+  hasReducedPerformance?: boolean;
+  host?: string;
+  onError?($$PARAM_0$$: Error & { code?: string }): void;
+  onReady?(server: http.Server | https.Server): void;
+  onClose?(): void;
+  websocketEndpoints?: RunServerOptions['websocketEndpoints'];
+  secureServerOptions?: SecureServerOptions;
+  waitForBundler?: boolean;
+  watch?: boolean;
+}
+
 export const runServer = async (
   _metroBundler: MetroBundlerDevServer,
   config: ConfigT,
@@ -32,7 +51,7 @@ export const runServer = async (
     waitForBundler = false,
     websocketEndpoints = {},
     watch,
-  }: RunServerOptions,
+  }: RunServerOptionsFork,
   {
     mockServer,
   }: {

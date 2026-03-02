@@ -5,6 +5,7 @@ description: Learn how to integrate EAS Update into your existing native Android
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -496,6 +497,8 @@ public class CustomViewController: UIViewController, AppControllerDelegate {
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="How long will this take to add to my app?">
 
 Assuming you are using the latest version of React Native supported by the Expo SDK, and you are comfortable with the React Native integration in your native projects, then you can likely integrate EAS Update in a similar amount of time as it would take you to integrate with a tool like CodePush or Sentry.
@@ -509,3 +512,5 @@ The most important factor is the React Native version that your app uses. If you
 To learn more, see [Migrating from CodePush](/eas-update/codepush/) guide.
 
 </Collapsible>
+
+</FAQ>

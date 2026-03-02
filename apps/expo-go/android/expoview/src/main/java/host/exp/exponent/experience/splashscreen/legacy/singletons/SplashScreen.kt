@@ -27,7 +27,6 @@ object SplashScreen : SingletonModule {
    * @param activity Target Activity for SplashScreen to be mounted in.
    * @param splashScreenViewProvider Provider that created properly configured SplashScreenView
    * @param rootViewClass Class that is looked for in view hierarchy while autohiding is enabled.
-   * @param statusBarTranslucent Flag determining StatusBar translucency in a way ReactNative see it.
    * @param successCallback Callback to be called once SplashScreen is mounted in view hierarchy.
    * @param failureCallback Callback to be called once SplashScreen cannot be mounted.
    * @throws [expo.modules.splashscreen.exceptions.NoContentViewException] when [SplashScreen.show] is called before [Activity.setContentView] (when no ContentView is present for given activity).
@@ -38,15 +37,14 @@ object SplashScreen : SingletonModule {
     activity: Activity,
     splashScreenViewProvider: SplashScreenViewProvider,
     rootViewClass: Class<out ViewGroup>,
-    statusBarTranslucent: Boolean,
     successCallback: () -> Unit = {},
     failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
-    SplashScreenStatusBar.configureTranslucent(activity, statusBarTranslucent)
+    SplashScreenStatusBar.setTranslucent(activity)
 
     val splashView = splashScreenViewProvider.createSplashScreenView(activity)
     val controller = SplashScreenViewController(activity, rootViewClass, splashView)
-    show(activity, controller, statusBarTranslucent, successCallback, failureCallback)
+    show(activity, controller, successCallback, failureCallback)
   }
 
   /**
@@ -57,7 +55,6 @@ object SplashScreen : SingletonModule {
    * @param activity Target Activity for SplashScreen to be mounted in.
    * @param resizeMode SplashScreen imageView resizeMode.
    * @param rootViewClass Class that is looked for in view hierarchy while autohiding is enabled.
-   * @param statusBarTranslucent Flag determining StatusBar translucency in a way ReactNative see it.
    * @param splashScreenViewProvider
    * @param successCallback Callback to be called once SplashScreen is mounted in view hierarchy.
    * @param failureCallback Callback to be called once SplashScreen cannot be mounted.
@@ -69,12 +66,11 @@ object SplashScreen : SingletonModule {
     activity: Activity,
     resizeMode: SplashScreenImageResizeMode,
     rootViewClass: Class<out ViewGroup>,
-    statusBarTranslucent: Boolean,
     splashScreenViewProvider: SplashScreenViewProvider = NativeResourcesBasedSplashScreenViewProvider(resizeMode),
     successCallback: () -> Unit = {},
     failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
-    show(activity, splashScreenViewProvider, rootViewClass, statusBarTranslucent, successCallback, failureCallback)
+    show(activity, splashScreenViewProvider, rootViewClass, successCallback, failureCallback)
   }
 
   /**
@@ -84,7 +80,6 @@ object SplashScreen : SingletonModule {
    *
    * @param activity Target Activity for SplashScreen to be mounted in.
    * @param SplashScreenViewController SplashScreenViewController to manage the rootView and splashView
-   * @param statusBarTranslucent Flag determining StatusBar translucency in a way ReactNative see it.
    * @param successCallback Callback to be called once SplashScreen is mounted in view hierarchy.
    * @param failureCallback Callback to be called once SplashScreen cannot be mounted.
    * @throws [expo.modules.splashscreen.exceptions.NoContentViewException] when [SplashScreen.show] is called before [Activity.setContentView] (when no ContentView is present for given activity).
@@ -94,7 +89,6 @@ object SplashScreen : SingletonModule {
   fun show(
     activity: Activity,
     splashScreenViewController: SplashScreenViewController,
-    statusBarTranslucent: Boolean,
     successCallback: () -> Unit = {},
     failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
@@ -103,7 +97,7 @@ object SplashScreen : SingletonModule {
       return failureCallback("'SplashScreen.show' has already been called for this activity.")
     }
 
-    SplashScreenStatusBar.configureTranslucent(activity, statusBarTranslucent)
+    SplashScreenStatusBar.setTranslucent(activity)
 
     controllers[activity] = splashScreenViewController
     splashScreenViewController.showSplashScreen(successCallback)
@@ -159,12 +153,11 @@ object SplashScreen : SingletonModule {
   internal fun ensureShown(
     activity: Activity,
     resizeMode: SplashScreenImageResizeMode,
-    rootViewClass: Class<out ViewGroup>,
-    statusBarTranslucent: Boolean
+    rootViewClass: Class<out ViewGroup>
   ) {
     val controller = controllers[activity]
     if (controller == null) {
-      show(activity, resizeMode, rootViewClass, statusBarTranslucent)
+      show(activity, resizeMode, rootViewClass)
     } else {
       controller.showSplashScreen { }
     }

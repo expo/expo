@@ -25,6 +25,9 @@ export interface AndroidConfig extends CommonConfig {
     tasks: string[];
     variant: BuildVariant;
 }
+export interface PackageConfiguration {
+    packageName: string;
+}
 export type BuildConfiguration = 'Debug' | 'Release';
 export interface IosConfig extends CommonConfig {
     artifacts: string;
@@ -32,6 +35,7 @@ export interface IosConfig extends CommonConfig {
     derivedDataPath: string;
     device: string;
     hermesFrameworkPath: string;
+    output: 'frameworks' | PackageConfiguration;
     scheme: string;
     simulator: string;
     workspace: string;

@@ -1,31 +1,9 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { PermissionStatus, } from './Camera.types';
+import * as WebBarcodeScanner from './web/WebBarcodeScanner';
 import { canGetUserMedia, isBackCameraAvailableAsync, isFrontCameraAvailableAsync, } from './web/WebUserMediaManager';
 function getUserMedia(constraints) {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        return navigator.mediaDevices.getUserMedia(constraints);
-    }
-    // Some browsers partially implement mediaDevices. We can't just assign an object
-    // with getUserMedia as it would overwrite existing properties.
-    // Here, we will just add the getUserMedia property if it's missing.
-    // First get ahold of the legacy getUserMedia, if present
-    const getUserMedia = 
-    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia ||
-        function () {
-            const error = new Error('Permission unimplemented');
-            error.code = 0;
-            error.name = 'NotAllowedError';
-            throw error;
-        };
-    return new Promise((resolve, reject) => {
-        // TODO(@kitten): The types indicates that this is incorrect.
-        // Please check whether this is correct!
-        // @ts-expect-error: The `successCallback` doesn't match a `resolve` function
-        getUserMedia.call(navigator, constraints, resolve, reject);
-    });
+    return navigator.mediaDevices.getUserMedia(constraints);
 }
 function handleGetUserMediaError({ message }) {
     // name: NotAllowedError
@@ -116,6 +94,11 @@ async function handlePermissionsQueryAsync(query) {
     }
 }
 export default {
+    isModernBarcodeScannerAvailable: false,
+    toggleRecordingAsyncAvailable: false,
+    addListener(_eventName, _listener) {
+        return { remove: () => { } };
+    },
     get Type() {
         return {
             back: 'back',
@@ -217,6 +200,15 @@ export default {
         catch (error) {
             return handleGetUserMediaError(error.message);
         }
+    },
+    async scanFromURLAsync(url, barcodeTypes) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        const types = barcodeTypes && barcodeTypes.length > 0 ? barcodeTypes : WebBarcodeScanner.ALL_BARCODE_TYPES;
+        const results = await WebBarcodeScanner.detect(bitmap, types);
+        bitmap.close();
+        return results;
     },
 };
 //# sourceMappingURL=ExpoCameraManager.web.js.map

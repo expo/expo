@@ -1,6 +1,6 @@
 import Head from 'next/head';
 
-export type StructuredDataProps = {
+type StructuredDataProps = {
   data: Record<string, any>;
   id: string;
 };

@@ -4,7 +4,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import tempDir from 'temp-dir';
 
-import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
+import {
+  executeCommandAsync,
+  executeCreateExpoCLIAsync,
+  executeExpoCLIAsync,
+  sleep,
+} from './process';
 import type { PluginProps, TemplateEntry } from './types';
 
 const PROJECT_NAME = 'testapp';
@@ -110,9 +115,13 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     throw new Error(`Template directory not found at: ${templatePath}`);
   }
 
-  const tarballs = await glob('*.tgz', { cwd: templatePath });
+  let tarballs = await glob('*.tgz', { cwd: templatePath });
   if (tarballs.length === 0) {
-    throw new Error(`No tarballs found in template directory: ${templatePath}`);
+    await executeCommandAsync(templatePath, 'npm', ['pack', '--json']);
+    tarballs = await glob('*.tgz', { cwd: templatePath });
+    if (tarballs.length === 0) {
+      throw new Error(`No tarballs found in template directory: ${templatePath}`);
+    }
   }
 
   await executeCreateExpoCLIAsync(at, [
@@ -127,11 +136,13 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
  */
 const installPackage = async (projectRoot: string) => {
   const packageRoot = path.join(__dirname, '../../');
-  const tarballs = await glob('*.tgz', { cwd: packageRoot });
-  if (tarballs.length !== 1) {
-    throw new Error(
-      `Expected a single tarball to be created for 'expo-brownfield', received: ${tarballs.length}`
-    );
+  let tarballs = await glob('*.tgz', { cwd: packageRoot });
+  if (tarballs.length === 0) {
+    await executeCommandAsync(packageRoot, 'npm', ['pack', '--json']);
+    tarballs = await glob('*.tgz', { cwd: packageRoot });
+    if (tarballs.length === 0) {
+      throw new Error(`No tarballs found in package directory: ${packageRoot}`);
+    }
   }
 
   const packageTarball = tarballs[0];

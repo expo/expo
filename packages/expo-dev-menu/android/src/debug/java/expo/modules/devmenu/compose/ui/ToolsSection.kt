@@ -126,7 +126,7 @@ fun ToolsSection(
           },
           content = {
             NewText(
-              text = "Show dev menu button"
+              text = "Tools button"
             )
           },
           rightComponent = {

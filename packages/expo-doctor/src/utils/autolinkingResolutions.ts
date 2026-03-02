@@ -49,6 +49,11 @@ export interface AutolinkingResolutionsCache extends VersionedNativeModuleNamesC
   resolutions?: Promise<Map<string, DependencyResolution>>;
 }
 
+// NOTE(@kitten): These are added modules that we know shouldn't be duplicated
+// If you suspect that an npm package (that isn't a native module) should never be duplicated due to singleton state
+// (e.g. `createContext`) add it here
+const EXTRA_BUNDLED_MODULES = ['@react-navigation/core', '@react-navigation/native'];
+
 const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
 
 export const scanNativeModuleResolutions = (
@@ -59,7 +64,10 @@ export const scanNativeModuleResolutions = (
   }
 ): Promise<Map<string, DependencyResolution>> => {
   const _task = async () => {
-    const bundledNativeModules = await getVersionedNativeModuleNamesAsync(cache, params);
+    const bundledNativeModules = [
+      ...((await getVersionedNativeModuleNamesAsync(cache, params)) ?? []),
+      ...EXTRA_BUNDLED_MODULES,
+    ];
 
     const autolinking = importAutolinkingExportsFromProject(params.projectRoot);
     const linker = autolinking.makeCachedDependenciesLinker({ projectRoot: params.projectRoot });
@@ -68,7 +76,7 @@ export const scanNativeModuleResolutions = (
         return autolinking.scanDependencyResolutionsForPlatform(
           linker,
           platform,
-          bundledNativeModules ?? undefined
+          bundledNativeModules
         );
       })
     );

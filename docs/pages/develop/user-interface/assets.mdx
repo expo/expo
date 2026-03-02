@@ -16,7 +16,7 @@ When an asset is stored in your project's file system, it can be embedded in you
 
 For example, to render an image called **example.png** in **App.js**, you can use `require` to import the image from the project's **assets/images** directory and pass it to the `<Image>` component:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 <Image source={require('./assets/images/example.png')} />
 ```
 
@@ -71,7 +71,7 @@ After embedding the asset with the config plugin, [create a new development buil
 
 For example, the **example.png** is linked by the above config plugin. You can directly import it into your component and use its resource name as the URI. Note that when rendering assets without using `require`, you need to explicitly provide a width / height.
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Image } from 'expo-image';
 /* @hide ... */ /* @end */
 
@@ -100,7 +100,7 @@ Install the `expo-asset` library.
 
 Import the [`useAssets`](/versions/latest/sdk/asset/#useassetsmoduleids) hook from the `expo-asset` library in your screen component:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { useAssets } from 'expo-asset';
 
 export default function HomeScreen() {

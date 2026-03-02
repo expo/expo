@@ -26,17 +26,25 @@ const resolveBuildConfigIos = (options) => {
     const buildProductsPath = node_path_1.default.join(derivedDataPath, 'Build/Products');
     const buildConfiguration = resolveBuildConfiguration(options);
     const device = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
+    const scheme = resolveScheme(options);
     const simulator = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphonesimulator`);
     const hermesFrameworkPath = 'Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework';
+    const packageName = options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
+    const output = options.package
+        ? {
+            packageName,
+        }
+        : 'frameworks';
     return {
         ...resolveCommonConfig(options),
         artifacts,
+        output,
         buildConfiguration,
         derivedDataPath,
         device,
         simulator,
         hermesFrameworkPath,
-        scheme: resolveScheme(options),
+        scheme,
         workspace: resolveWorkspace(options),
     };
 };
@@ -86,6 +94,6 @@ const resolveScheme = (options) => {
     return options.scheme || (0, ios_1.findScheme)();
 };
 const resolveWorkspace = (options) => {
-    return options.xcworkspace || (0, ios_1.findWorkspace)();
+    return options.xcworkspace || (0, ios_1.findWorkspace)(options.dryRun);
 };
 // END SECTION: iOS Helpers

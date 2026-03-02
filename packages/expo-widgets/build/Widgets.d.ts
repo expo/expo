@@ -41,8 +41,11 @@ export declare class LiveActivity<T extends object = object> {
     /**
      * Ends the Live Activity.
      * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
+     * Can be `'default'`, `'immediate'`, or `after(date)`.
+     * @param props Final content properties to update after the activity ends.
+     * @param contentDate The time the data in the payload was generated. If this is older than a previous update or push payload, the system ignores this update.
      */
-    end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void>;
+    end(dismissalPolicy?: LiveActivityDismissalPolicy, props?: T, contentDate?: Date): Promise<void>;
     /**
      * Returns the push token for this Live Activity, used to send push notification updates via APNs.
      * Returns `null` if push notifications are not enabled or the token is not yet available.
@@ -75,6 +78,14 @@ export declare class LiveActivityFactory<T extends object = object> {
      */
     getInstances(): LiveActivity<T>[];
 }
+/**
+ * Creates a dismissal policy that removes the Live Activity at the specified time within a four-hour window.
+ * @param date The date after which the Live Activity should be removed from the Lock Screen.
+ * @hidden
+ */
+export declare function after(date: Date): {
+    after: Date;
+};
 /**
  * Creates a Widget instance.
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.

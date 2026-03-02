@@ -6,13 +6,13 @@ import android.os.Build
 import android.util.Base64
 import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
@@ -50,7 +50,7 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions? ->
-      to.validatePermission(Permission.WRITE)
+      to.validatePermission(FilePermissionService.Permission.WRITE)
       val requestBuilder = Request.Builder().url(url.toURL())
 
       options?.headers?.forEach { (key, value) ->
@@ -124,7 +124,7 @@ class FileSystemModule : Module() {
           appContext.reactContext ?: throw Exceptions.ReactContextLost(),
           file.path
         )
-      if (permissions.contains(Permission.READ) && file.exists()) {
+      if (permissions.contains(FilePermissionService.Permission.READ) && file.exists()) {
         PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
       } else {
         PathInfo(exists = false, isDirectory = null)
