@@ -50,7 +50,7 @@
     "jest": "~29.7.0",
     "jest-expo": "~55.0.9",
     "prettier": "^3.6.2",
-    "react-test-renderer": "19.2.0",
+    "react-test-renderer": "19.2.3",
     "typescript": "~5.9.2"
   },
   "prettier": {
