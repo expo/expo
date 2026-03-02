@@ -143,10 +143,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     } ?? CMTime.positiveInfinity
 
-    await ref.currentItem?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter	)
-    updateStatus(with: [
-      "currentTime": currentTime
-    ])
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      ref.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { [weak self] _ in
+        if let self {
+          self.updateStatus(with: [
+            "currentTime": self.currentTime
+          ])
+        }
+        continuation.resume()
+      }
+    }
   }
 
   private func setupPublisher() {
@@ -402,6 +408,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   public override func sharedObjectWillRelease() {
+    ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
 
     if isActiveForLockScreen {
