@@ -44,6 +44,15 @@ export declare function extractXcassetName(props: StackHeaderItemSharedProps): s
  * @internal
  */
 export declare function extractIconRenderingMode(props: StackHeaderItemSharedProps): 'template' | 'original' | undefined;
+/**
+ * Extracts the raw `ImageSourcePropType` from either:
+ * - A `<Stack.Toolbar.Icon src={...} />` child component
+ * - The `icon` prop when it's not an SF Symbol string
+ *
+ * Used by Android toolbar to get the raw image source for `@expo/ui` Icon.
+ * @internal
+ */
+export declare function extractImageSource(props: StackHeaderItemSharedProps): ImageSourcePropType | undefined;
 export declare function convertStackHeaderSharedPropsToRNSharedHeaderItem(props: StackHeaderItemSharedProps, isBottomPlacement?: boolean): RNSharedHeaderItem;
 export {};
 //# sourceMappingURL=shared.d.ts.map

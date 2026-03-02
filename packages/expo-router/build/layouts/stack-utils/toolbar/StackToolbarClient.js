@@ -108,7 +108,7 @@ const children_1 = require("../../../utils/children");
  * ```
  *
  * @experimental
- * @platform ios
+ * @platform ios, android
  */
 const StackToolbar = (props) => {
     const parentPlacement = (0, context_1.useToolbarPlacement)();
