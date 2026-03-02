@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-worklets/compatibility.json b/node_modules/react-native-worklets/compatibility.json
+index 965bb91..3452554 100644
+--- a/node_modules/react-native-worklets/compatibility.json
++++ b/node_modules/react-native-worklets/compatibility.json
+@@ -3,7 +3,7 @@
+     "react-native": ["0.79", "0.80", "0.81", "0.82"]
+   },
+   "0.7.x": {
+-    "react-native": ["0.79", "0.80", "0.81", "0.82", "0.83"]
++    "react-native": ["0.79", "0.80", "0.81", "0.82", "0.83", "0.84"]
+   },
+   "0.6.x": {
+     "react-native": ["0.78", "0.79", "0.80", "0.81", "0.82"]
