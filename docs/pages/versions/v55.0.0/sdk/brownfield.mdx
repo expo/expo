@@ -184,6 +184,12 @@ The `expo-brownfield` package provides a [config plugin](/config-plugins/introdu
       default: '"<ios.bundleIdentifier base>.<targetName>" or "com.example.<targetName>"',
     },
     {
+      name: 'ios.buildReactNativeFromSource',
+      platform: 'ios',
+      description: 'Build React Native from source instead of using prebuilt frameworks. Turning this on significantly increases the build times.',
+      default: 'true'
+    },
+    {
       name: 'android.group',
       platform: 'android',
       description:
@@ -256,6 +262,7 @@ Builds the brownfield XCFramework and copies the Hermes XCFramework to the artif
 | `-a, --artifacts`   | Path to the artifacts directory (default: `./artifacts`) |
 | `-s, --scheme`      | Xcode scheme to build                                    |
 | `-x, --xcworkspace` | Xcode workspace path                                     |
+| `-p, --package`     | Ship artifacts as Swift Package (accepts optional name)  |
 | `--verbose`         | Include all logs from subprocesses                       |
 
 #### `tasks:android`
