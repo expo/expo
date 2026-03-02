@@ -1,7 +1,9 @@
 appId: ${APP_ID}
 ---
+# Launch the app
 - runFlow: ../common/_nested-flows/launch-brownfield.yml
 
+# Navigate to the dev menu screen
 - tapOn:
     id: apis-tab
 - tapOn:
@@ -28,7 +30,7 @@ appId: ${APP_ID}
 
 - scrollUntilVisible:
     element:
-      text: "Open React Native dev menu"
+      text: "Copy system info"
 
 - assertVisible: "Version"
 - assertVisible: "1.0.0"
@@ -41,23 +43,34 @@ appId: ${APP_ID}
       platform: iOS
     commands:
       - assertVisible: http://localhost:8081
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible: http://10.0.2.2:8081
 
 # Assert that dev menu actions work
 - scrollUntilVisible:
     element:
       text: "Reload"
     direction: UP
-    
-- tapOn: "Toggle Performance Monitor"
-- assertVisible: 'RAM .* MB'
-- assertVisible: 'JSC .* MB'
-- tapOn:
-    id: dev-menu-open
-- tapOn: "Toggle Performance Monitor"
-- assertNotVisible: 'RAM .* MB'
-- assertNotVisible: 'JSC .* MB'
 
-- tapOn:
-    id: dev-menu-open
+# Android Performance Monitor is not detectable
+# by Maestro
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "Toggle Performance Monitor"
+      - assertVisible: 'RAM .* MB'
+      - assertVisible: 'JSC .* MB'
+      - tapOn:
+          id: dev-menu-open
+      - tapOn: "Toggle Performance Monitor"
+      - assertNotVisible: 'RAM .* MB'
+      - assertNotVisible: 'JSC .* MB'
+      - tapOn:
+          id: dev-menu-open
+
 - tapOn: "Reload"
 - assertVisible: "Expo + Brownfield = 🖤"
