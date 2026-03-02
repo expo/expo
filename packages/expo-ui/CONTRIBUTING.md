@@ -27,5 +27,4 @@
 ## General guidelines
 
 - **Match the native APIs** — prop names, types, and behavior should mirror their SwiftUI / Jetpack Compose counterparts as closely as possible.
-- **Follow existing patterns** — look at a similar component in the codebase and match its naming, file structure, and prop conventions.
 - **Reuse existing types** — before creating a new Record or TypeScript type, check if one already exists.
