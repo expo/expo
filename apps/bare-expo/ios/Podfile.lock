@@ -2878,7 +2878,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNReanimated (4.2.1):
+  - RNReanimated (4.2.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2891,6 +2891,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
+    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2900,10 +2901,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated (= 4.2.1)
+    - RNReanimated/reanimated (= 4.2.2)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated (4.2.1):
+  - RNReanimated/reanimated (4.2.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2916,6 +2917,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
+    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2925,10 +2927,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNReanimated/reanimated/apple (= 4.2.1)
+    - RNReanimated/reanimated/apple (= 4.2.2)
     - RNWorklets
     - Yoga
-  - RNReanimated/reanimated/apple (4.2.1):
+  - RNReanimated/reanimated/apple (4.2.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2941,6 +2943,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
+    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3044,7 +3047,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.7.2):
+  - RNWorklets (0.7.4):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3057,6 +3060,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
+    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3066,9 +3070,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets (= 0.7.2)
+    - RNWorklets/worklets (= 0.7.4)
     - Yoga
-  - RNWorklets/worklets (0.7.2):
+  - RNWorklets/worklets (0.7.4):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3081,6 +3085,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
+    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3090,9 +3095,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets/apple (= 0.7.2)
+    - RNWorklets/worklets/apple (= 0.7.4)
     - Yoga
-  - RNWorklets/worklets/apple (0.7.2):
+  - RNWorklets/worklets/apple (0.7.4):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3105,6 +3110,7 @@ PODS:
     - React-hermes
     - React-ImageManager
     - React-jsi
+    - React-jsitooling
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -3984,10 +3990,10 @@ SPEC CHECKSUMS:
   RNCPicker: e0149590451d5eae242cf686014a6f6d808f93c7
   RNDateTimePicker: 5e0666de98f1edfac67ee7dde6be8a5415e487a0
   RNGestureHandler: 6d378fd1aa991c7ab62a4215ee6cc417895a6954
-  RNReanimated: d05354dee19a56a1d9da3079da212e27aa89da3e
+  RNReanimated: 752b27ede7d3f8970d5adba71f10258cb7848150
   RNScreens: fb11b7412bcbdc0ffafcaf9174938d998d4e2bc4
   RNSVG: 13970bfde0ea9c9e10e01ab0d7b4a6cde11fca1b
-  RNWorklets: 5e398f6236a85732cd34b23b84cde0a61a524b41
+  RNWorklets: 460112a8b250bcecd1b6b68d39a82fcdb6f8eb24
   SDWebImage: e9c98383c7572d713c1a0d7dd2783b10599b9838
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
@@ -3998,6 +4004,6 @@ SPEC CHECKSUMS:
   Yoga: 772166513f9cd2d61a6251d0dacbbfaa5b537479
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 959ff3ceba069d66085a5fedbacd3eaad747ac5b
+PODFILE CHECKSUM: f4254d30b3ed97b1dae30893bb660d699a1f7485
 
 COCOAPODS: 1.16.2
