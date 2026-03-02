@@ -3,20 +3,17 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class RNHostViewProps: UIBaseViewProps {
+internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
 }
 
 struct RNHostView: ExpoSwiftUI.View {
-  init(props: RNHostViewProps) {
-    self.props = props;
-  }
   
   @ObservedObject var props: RNHostViewProps
 
   var body: some View {
     if props.matchContents, let childUIView = firstChildUIView {
-      ChildBoundsFrame(childUIView: childUIView) {
+      ApplySizeFromYogaNode(childUIView: childUIView) {
         Children()
       }
       .onAppear {
@@ -25,7 +22,7 @@ struct RNHostView: ExpoSwiftUI.View {
     } else {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .modifier(NotifyViewSizeToYogaModififer(matchContents: false, shadowNodeProxy: props.shadowNodeProxy))
+        .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
           if let view = firstChildUIView {
             ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: view)
@@ -39,12 +36,9 @@ struct RNHostView: ExpoSwiftUI.View {
   }
 }
 
-// MARK: - Child bounds frame
-
-/// Observes a child UIKit view's bounds (set by Yoga) via KVO and applies
-/// them as a `.frame()` modifier. The bounds are read eagerly in `init`
-/// so the frame is correct from the very first render
-private struct ChildBoundsFrame<Content: SwiftUI.View>: SwiftUI.View {
+// Sets SwiftUI view size from Yoga node size
+// Listens to Yoga node size changes and updates the SwiftUI view size
+private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
   @StateObject private var observer: Observer
   let content: Content
 
@@ -78,10 +72,9 @@ private struct ChildBoundsFrame<Content: SwiftUI.View>: SwiftUI.View {
   }
 }
 
-// MARK: - Size tracking
-
-private struct NotifyViewSizeToYogaModififer: ViewModifier {
-  let matchContents: Bool
+// Sets Yoga node size from SwiftUI view size
+// Listens to SwiftUI view size changes and updates the Yoga node size
+private struct ReportSizeToYogaNodeModifier: ViewModifier {
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
 
   private func handleSizeChange(_ size: CGSize) {

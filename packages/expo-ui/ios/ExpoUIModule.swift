@@ -6,7 +6,7 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
-    ExpoUIView(RNHostView.self)
+    View(RNHostView.self)
 
     OnDestroy {
       Task { @MainActor in
