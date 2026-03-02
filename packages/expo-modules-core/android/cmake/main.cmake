@@ -1,10 +1,3 @@
-file(
-  GLOB
-  common_sources
-  "${COMMON_DIR}/*.cpp"
-  "${COMMON_DIR}/fabric/*.cpp"
-)
-
 set(main_dir ${ANDROID_SRC_DIR}/main/cpp)
 file(
   GLOB
@@ -22,7 +15,6 @@ file(GLOB fabric_andorid_sources "${ANDROID_SRC_DIR}/fabric/*.cpp")
 add_library(
   expo-modules-core
   SHARED
-  ${common_sources}
   ${sources_android}
   ${fabric_andorid_sources}
 )
@@ -37,8 +29,6 @@ target_include_directories(
   # header only imports from turbomodule, e.g. CallInvokerHolder.h
   "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
   "${ANDROID_SRC_DIR}/fabric"
-  "${COMMON_DIR}"
-  "${COMMON_DIR}/fabric"
 )
 
 target_compile_options(
@@ -65,7 +55,9 @@ target_link_libraries(
   android
   ${JSEXECUTOR_LIB}
   ${NEW_ARCHITECTURE_DEPENDENCIES}
+  expo-modules-common
   expo-modules-jsi
+  expo-modules-cpp-api
 )
 
 if (REACT_NATIVE_WORKLETS_DIR)
