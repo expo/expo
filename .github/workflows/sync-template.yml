@@ -3,7 +3,7 @@ name: Sync App Template Repository
 on:
   workflow_dispatch: {}
   push:
-    branches: [sdk-54]
+    branches: [sdk-55]
     paths:
       - .github/workflows/sync-template.yml
       - templates/expo-template-default/**
