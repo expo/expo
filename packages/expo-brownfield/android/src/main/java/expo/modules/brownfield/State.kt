@@ -38,6 +38,18 @@ object BrownfieldState {
     }
   }
 
+  @JvmName("subscribeTyped")
+  inline fun <reified T> subscribe(
+    key: String,
+    noinline callback: (T) -> Unit
+  ): Removable {
+    return subscribe(key) { value ->
+      if (value is T) {
+        callback(value)
+      }
+    }
+  }
+
   fun delete(key: String): Any? {
     synchronized(this) {
       deletedKeys.add(key)

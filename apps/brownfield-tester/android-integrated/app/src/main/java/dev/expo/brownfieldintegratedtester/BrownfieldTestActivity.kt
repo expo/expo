@@ -59,11 +59,8 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
   private fun setupStateListeners() {
     stateListeners +=
         mutableListOf<Removable?>(
-            BrownfieldState.subscribe("number") { number ->
-              val cast = number as? Double
-              if (cast != null) {
-                Log.i("BrownfieldState", cast.toString())
-              }
+            BrownfieldState.subscribe("number") { number: Double ->
+              Log.i("BrownfieldState", number.toString())
             },
             BrownfieldState.subscribe("string") { string ->
               val cast = string as? String
@@ -71,11 +68,8 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
                 Log.i("BrownfieldState", cast)
               }
             },
-            BrownfieldState.subscribe("boolean") { bool ->
-              val cast = bool as? Boolean
-              if (cast != null) {
-                Log.i("BrownfieldState", cast.toString())
-              }
+            BrownfieldState.subscribe("boolean") { bool: Boolean ->
+              Log.i("BrownfieldState", bool.toString())
             },
             BrownfieldState.subscribe("array") { array ->
               val cast = array as? MutableList<*>
@@ -83,11 +77,8 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
                 Log.i("BrownfieldState", cast.toString())
               }
             },
-            BrownfieldState.subscribe("object") { obj ->
-              val cast = obj as? MutableMap<*, *>
-              if (cast != null) {
-                Log.i("BrownfieldState", cast.toString())
-              }
+            BrownfieldState.subscribe("object") { obj: MutableMap<*, *> ->
+              Log.i("BrownfieldState", obj.toString())
             },
         )
   }
