@@ -6,7 +6,7 @@
 
 - [ ] Added an example to the relevant screen in `apps/native-component-list/src/screens/UI/`
 - [ ] Rebuilt JS output: `yarn build` (from `packages/expo-ui/`) and committed the `build/` output.
-- [ ] Regenerated API docs (from repo root): `et gdad -p "expo-ui/swift-ui/<component>"` and/or `et gdad -p "expo-ui/jetpack-compose/<component>"`
+- [ ] Regenerated API docs or added a doc (from repo root): `et gdad -p "expo-ui/swift-ui/<component>"` and/or `et gdad -p "expo-ui/jetpack-compose/<component>"`
 
 ## Project structure
 
