@@ -4,7 +4,7 @@ import { KeyPressHandler } from './KeyPressHandler';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
-import { resolveLaunchPropsAsync as androidResolveOptions } from '../../run/android/resolveLaunchProps';
+import { resolveLaunchPropsAsync } from '../../run/android/resolveLaunchProps';
 import { openInEditorAsync } from '../../utils/editor';
 import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
@@ -50,6 +50,8 @@ export async function startInterfaceAsync(
   };
 
   actions.printDevServerInfo(usageOptions);
+
+  let cachedAndroidLaunchProps: Awaited<ReturnType<typeof resolveLaunchPropsAsync>> | null = null;
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -128,7 +130,7 @@ export async function startInterfaceAsync(
       } else {
         try {
           if (platform === 'android' && options.platformsOptions?.appId) {
-            const androidProps = await androidResolveOptions(
+            cachedAndroidLaunchProps ??= await resolveLaunchPropsAsync(
               devServerManager.projectRoot,
               options.platformsOptions
             );
@@ -136,9 +138,9 @@ export async function startInterfaceAsync(
             await server.openCustomRuntimeAsync(
               settings.launchTarget,
               {
-                applicationId: androidProps.packageName,
-                customAppId: androidProps.customAppId,
-                launchActivity: androidProps.launchActivity,
+                applicationId: cachedAndroidLaunchProps.packageName,
+                customAppId: cachedAndroidLaunchProps.customAppId,
+                launchActivity: cachedAndroidLaunchProps.launchActivity,
               },
               { shouldPrompt }
             );
