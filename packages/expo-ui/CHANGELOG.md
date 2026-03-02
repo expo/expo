@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `date`, `dateStyle`, `timerInterval`, `countsDown`, and `pauseTime` props to `Text` component for displaying auto-updating dates, timers, and countdowns using SwiftUI's `Text.DateStyle`. ([#43552](https://github.com/expo/expo/pull/43552) by [@LouisRaverdy](https://github.com/LouisRaverdy))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
