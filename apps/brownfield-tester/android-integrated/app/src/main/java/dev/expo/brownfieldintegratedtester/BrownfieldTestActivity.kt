@@ -61,24 +61,41 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
         mutableListOf<Removable?>(
             BrownfieldState.subscribe("number") { number: Double ->
               Log.i("BrownfieldState", number.toString())
+              if (number == 1.0) {
+                BrownfieldState.set("number", 2.0)
+              }
             },
             BrownfieldState.subscribe("string") { string ->
               val cast = string as? String
               if (cast != null) {
                 Log.i("BrownfieldState", cast)
+                if (cast == "exex") {
+                  BrownfieldState.set("string", cast + "po")
+                }
               }
             },
             BrownfieldState.subscribe("boolean") { bool: Boolean ->
               Log.i("BrownfieldState", bool.toString())
             },
             BrownfieldState.subscribe("array") { array ->
-              val cast = array as? MutableList<*>
+              val cast = array as? MutableList<Any?>
               if (cast != null) {
                 Log.i("BrownfieldState", cast.toString())
+                if (cast.size == 3) {
+                  cast.addAll(listOf<Any?>(
+                    mapOf("a" to "b"),
+                    2.34,
+                  ))
+                  BrownfieldState.set("array", cast)
+                }
               }
             },
-            BrownfieldState.subscribe("object") { obj: MutableMap<*, *> ->
+            BrownfieldState.subscribe("object") { obj: MutableMap<String, Any?> ->
               Log.i("BrownfieldState", obj.toString())
+              if (!obj.containsKey("d") && obj.containsKey("a")) {
+                obj["d"] = listOf(mapOf("e" to "f"))
+                BrownfieldState.set("object", obj)
+              }
             },
         )
   }
