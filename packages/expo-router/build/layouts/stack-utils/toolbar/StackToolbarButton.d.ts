@@ -156,7 +156,7 @@ export interface StackToolbarButtonProps {
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 export declare const StackToolbarButton: React.FC<StackToolbarButtonProps>;
 export declare function convertStackToolbarButtonPropsToRNHeaderItem(props: StackToolbarButtonProps): NativeStackHeaderItemButton | undefined;

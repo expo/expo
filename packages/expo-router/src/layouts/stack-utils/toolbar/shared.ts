@@ -82,6 +82,27 @@ export function extractIconRenderingMode(
   return undefined;
 }
 
+/**
+ * Extracts the raw `ImageSourcePropType` from either:
+ * - A `<Stack.Toolbar.Icon src={...} />` child component
+ * - The `icon` prop when it's not an SF Symbol string
+ *
+ * Used by Android toolbar to get the raw image source for `@expo/ui` Icon.
+ * @internal
+ */
+export function extractImageSource(
+  props: StackHeaderItemSharedProps
+): ImageSourcePropType | undefined {
+  const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
+  if (iconComponentProps && 'src' in iconComponentProps) {
+    return iconComponentProps.src;
+  }
+  if (props.icon && typeof props.icon !== 'string') {
+    return props.icon;
+  }
+  return undefined;
+}
+
 export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
   props: StackHeaderItemSharedProps,
   isBottomPlacement: boolean = false

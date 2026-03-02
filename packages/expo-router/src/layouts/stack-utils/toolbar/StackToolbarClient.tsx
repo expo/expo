@@ -36,7 +36,10 @@ export interface StackToolbarProps {
    *
    * - `'left'`: Renders items in the left area of the header.
    * - `'right'`: Renders items in the right area of the header.
-   * - `'bottom'`: Renders items in the bottom toolbar (iOS only).
+   * - `'bottom'`: Renders items in the bottom toolbar (iOS and Android).
+   *   On Android, uses Material 3 `HorizontalFloatingToolbar` from `@expo/ui`.
+   *   Only `Stack.Toolbar.Button` with `ImageSourcePropType` icons is supported on Android.
+   *   SF Symbols, xcasset icons, Spacer, Menu, View, and SearchBarSlot are iOS-only.
    *
    * @default 'bottom'
    */
@@ -112,7 +115,7 @@ export interface StackToolbarProps {
  * ```
  *
  * @experimental
- * @platform ios
+ * @platform ios, android
  */
 export const StackToolbar = (props: StackToolbarProps) => {
   const parentPlacement = useToolbarPlacement();

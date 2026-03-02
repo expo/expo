@@ -67,6 +67,12 @@ const StackToolbarMenu = (props) => {
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
     const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
+    if (react_native_1.Platform.OS === 'android') {
+        if (process.env.NODE_ENV !== 'production') {
+            console.warn('Stack.Toolbar.Menu is not supported on Android. The menu will not render. Use Stack.Toolbar.Button with ImageSourcePropType icons instead.');
+        }
+        return null;
+    }
     const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
     const computedLabel = sharedProps?.label;
     const computedMenuTitle = sharedProps?.menu?.title;
