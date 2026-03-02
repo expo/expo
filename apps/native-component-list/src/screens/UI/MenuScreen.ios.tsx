@@ -1,4 +1,15 @@
-import { Button, Host, Menu, Text, List, Section, Divider, Picker } from '@expo/ui/swift-ui';
+import {
+  Button,
+  ControlGroup,
+  Host,
+  Image,
+  Menu,
+  Text,
+  List,
+  Section,
+  Divider,
+  Picker,
+} from '@expo/ui/swift-ui';
 import {
   buttonStyle,
   foregroundStyle,
@@ -103,6 +114,61 @@ export default function MenuScreen() {
             <Button onPress={() => console.log('Menu Item 1')} label="Menu Item 1" />
             <Button onPress={() => console.log('Menu Item 2')} label="Menu Item 2" />
             <Button onPress={() => console.log('Menu Item 3')} label="Menu Item 3" />
+          </Menu>
+        </Section>
+
+        <Section title="Apple Music-style Menu">
+          <Menu label="Song Options" systemImage="ellipsis.circle">
+            <ControlGroup>
+              <Button systemImage="plus" label="Add" onPress={() => console.log('Add')} />
+              <Button systemImage="star" label="Favorite" onPress={() => console.log('Favorite')} />
+              <Button
+                systemImage="square.and.arrow.up"
+                label="Share"
+                onPress={() => console.log('Share')}
+              />
+            </ControlGroup>
+            <Section>
+              <Button
+                systemImage="text.badge.plus"
+                label="Add to a Playlist"
+                onPress={() => console.log('Add to Playlist')}
+              />
+              <Button
+                systemImage="antenna.radiowaves.left.and.right"
+                label="Create Station"
+                onPress={() => console.log('Create Station')}
+              />
+            </Section>
+            <Section>
+              <Button onPress={() => console.log('Go to Album')}>
+                <Image systemName="square.stack" />
+                <Text>Go to Album</Text>
+                <Text>Atado a Tu Amor</Text>
+              </Button>
+              <Button onPress={() => console.log('Go to Artist')}>
+                <Image systemName="mic" />
+                <Text>Go to Artist</Text>
+                <Text>Chayanne</Text>
+              </Button>
+            </Section>
+            <Section>
+              <Button
+                systemImage="info.circle"
+                label="View Credits"
+                onPress={() => console.log('View Credits')}
+              />
+              <Button
+                systemImage="quote.bubble"
+                label="Share Lyrics"
+                onPress={() => console.log('Share Lyrics')}
+              />
+            </Section>
+            <Button
+              systemImage="hand.thumbsdown"
+              label="Suggest Less"
+              onPress={() => console.log('Suggest Less')}
+            />
           </Menu>
         </Section>
       </List>
