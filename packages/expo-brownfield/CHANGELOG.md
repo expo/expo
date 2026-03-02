@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [state] shared state implementation improvements ([#43279](https://github.com/expo/expo/pull/43279) by [@pmleczek](https://github.com/pmleczek))
+
 ## 55.0.11 — 2026-02-25
 
 ### 💡 Others
