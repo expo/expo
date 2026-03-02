@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Include expo-font plugin font files in fingerprint hash
+- Include expo-font plugin font files in fingerprint hash calculation ([#43575](https://github.com/expo/expo/pull/43575) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
