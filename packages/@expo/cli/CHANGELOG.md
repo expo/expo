@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Use `RCT_METRO_PORT` environment variable in `expo run` when Metro is already running ([#43446](https://github.com/expo/expo/pull/43446) by [@robingullo](https://github.com/robingullo))
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
 
 ### 💡 Others
