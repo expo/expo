@@ -4,10 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionButton } from '@/components';
 
+type Screen = 'communication' | 'dev-menu' | 'navigation' | 'state';
+
 const Index = () => {
   const router = useRouter();
 
-  const navigateToScreen = (screen: 'communication' | 'navigation' | 'state') => {
+  const navigateToScreen = (screen: Screen) => {
     router.navigate(`/apis/${screen}`);
   };
 
@@ -36,6 +38,14 @@ const Index = () => {
         description="State API"
         onPress={() => navigateToScreen('state')}
         testID="apis-state"
+      />
+      <ActionButton
+        type="link"
+        icon="code"
+        title="Dev Menu"
+        description="Dev Menu API"
+        onPress={() => navigateToScreen('dev-menu')}
+        testID="apis-dev-menu"
       />
     </SafeAreaView>
   );

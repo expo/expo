@@ -1,0 +1,63 @@
+appId: ${APP_ID}
+---
+- runFlow: ../common/_nested-flows/launch-brownfield.yml
+
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-dev-menu
+- assertVisible:
+    id: dev-menu-header
+
+# Open the dev menu
+- tapOn:
+    id: dev-menu-open
+
+# Assert that buttons are rendered correctly
+- assertVisible: "Reload"
+- assertVisible: "Toggle performance monitor"
+- assertVisible:
+    text: "Toggle element inspector"
+    enabled: true
+- assertVisible: "Open DevTools"
+
+# Assert that information about the app
+# is correctly loaded
+- assertVisible: "expo-app"
+- assertVisible: "Runtime version: exposdk:55.0.0"
+
+- scrollUntilVisible:
+    element:
+      text: "Open React Native dev menu"
+
+- assertVisible: "Version"
+- assertVisible: "1.0.0"
+
+- assertVisible: "Runtime version"
+- assertVisible: "exposdk:55.0.0"
+
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - assertVisible: http://localhost:8081
+
+# Assert that dev menu actions work
+- scrollUntilVisible:
+    element:
+      text: "Reload"
+    direction: UP
+    
+- tapOn: "Toggle Performance Monitor"
+- assertVisible: 'RAM .* MB'
+- assertVisible: 'JSC .* MB'
+- tapOn:
+    id: dev-menu-open
+- tapOn: "Toggle Performance Monitor"
+- assertNotVisible: 'RAM .* MB'
+- assertNotVisible: 'JSC .* MB'
+
+- tapOn:
+    id: dev-menu-open
+- tapOn: "Reload"
+- assertVisible: "Expo + Brownfield = 🖤"
