@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fixed `requestPermissionsAsync` returning raw permission result without several documented fields
+
 ### 💡 Others
 
 ## 55.0.10 — 2026-02-25
