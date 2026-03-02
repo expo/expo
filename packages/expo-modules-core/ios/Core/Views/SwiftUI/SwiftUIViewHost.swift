@@ -6,32 +6,32 @@ extension ExpoSwiftUI {
   /**
    SwiftUI view that embeds an UIKit-based view.
    */
-  public struct UIViewHost: UIViewRepresentable, AnyChild {
-    public let view: UIView
+  struct UIViewHost: UIViewRepresentable, AnyChild {
+    let view: UIView
 
     // MARK: - UIViewRepresentable implementations
 
     #if os(macOS)
-    public func makeNSView(context: Context) -> NSView {
+    func makeNSView(context: Context) -> NSView {
       context.coordinator.originalAutoresizingMask = view.autoresizingMask
       return view
     }
 
-    public func updateNSView(_ nsView: NSView, context: Context) {
+    func updateNSView(_ nsView: NSView, context: Context) {
         // Nothing to do here
     }
     #endif
 
-    public func makeUIView(context: Context) -> UIView {
+    func makeUIView(context: Context) -> UIView {
       context.coordinator.originalAutoresizingMask = view.autoresizingMask
       return view
     }
 
-    public func updateUIView(_ uiView: UIView, context: Context) {
+    func updateUIView(_ uiView: UIView, context: Context) {
       // Nothing to do here
     }
 
-    public static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
+    static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
       // https://github.com/expo/expo/issues/40604
       // UIViewRepresentable attaches autoresizingMask w+h to the hosted UIView
       // This causes issues for RN views when they are recycled.
@@ -39,23 +39,27 @@ extension ExpoSwiftUI {
       uiView.autoresizingMask = coordinator.originalAutoresizingMask
     }
 
-    public func makeCoordinator() -> Coordinator {
+    func makeCoordinator() -> Coordinator {
       Coordinator()
     }
 
-    public class Coordinator {
-      public var originalAutoresizingMask: UIView.AutoresizingMask = []
-      public init() {}
+    class Coordinator {
+      var originalAutoresizingMask: UIView.AutoresizingMask = []
+      init() {}
     }
 
     // MARK: - AnyChild implementations
 
-    public var childView: some SwiftUI.View {
+    var childView: some SwiftUI.View {
       self
     }
 
-    public var id: ObjectIdentifier {
+    var id: ObjectIdentifier {
       ObjectIdentifier(view)
+    }
+
+    var uiView: UIView? {
+      view
     }
   }
 
