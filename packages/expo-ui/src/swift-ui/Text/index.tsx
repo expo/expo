@@ -2,11 +2,10 @@ import { requireNativeView } from 'expo';
 import * as React from 'react';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 
 /**
  * The style used to format a date in a SwiftUI `Text` view.
- * @platform ios 14.0+
  */
 export type TextDateStyle = 'timer' | 'relative' | 'offset' | 'date' | 'time';
 
@@ -23,33 +22,34 @@ export interface TextProps extends CommonViewModifierProps {
 
   /**
    * A date to display using the specified `dateStyle`. The text auto-updates as time passes.
-   * @platform ios 14.0+
    */
   date?: Date;
 
   /**
    * The style used to format the `date` prop.
    * @default 'date'
-   * @platform ios 14.0+
    */
   dateStyle?: TextDateStyle;
 
   /**
    * A time interval to display as a live-updating timer.
    * @platform ios 16.0+
+   * @platform tvos 16.0+
    */
-  timerInterval?: { lower: Date; upper: Date };
+  timerInterval?: ClosedRangeDate;
 
   /**
    * Whether the timer counts down (`true`) or up (`false`).
    * @default true
    * @platform ios 16.0+
+   * @platform tvos 16.0+
    */
   countsDown?: boolean;
 
   /**
    * A date at which the timer should appear paused.
    * @platform ios 16.0+
+   * @platform tvos 16.0+
    */
   pauseTime?: Date;
 }

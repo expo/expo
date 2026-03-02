@@ -17,17 +17,12 @@ public enum TextDateStyle: String, Enumerable {
   }
 }
 
-final class TextTimerInterval: Record {
-  @Field var lower: Date?
-  @Field var upper: Date?
-}
-
 public final class TextViewProps: UIBaseViewProps {
   @Field public var text: String = ""
   @Field public var markdownEnabled: Bool = false
   @Field public var date: Date?
   @Field public var dateStyle: TextDateStyle?
-  @Field public var timerInterval: TextTimerInterval?
+  @Field var timerInterval: ClosedRangeDate?
   @Field public var countsDown: Bool?
   @Field public var pauseTime: Date?
 
