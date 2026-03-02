@@ -57,8 +57,7 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     derivedDataPath,
     device,
     simulator,
-    hermesFrameworkPath,
-    scheme,
+    scheme: resolveScheme(options),
     workspace: resolveWorkspace(options),
   };
 };

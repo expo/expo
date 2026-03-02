@@ -37,7 +37,14 @@
           }
         }
       ],
-      "expo-brownfield"
+      [
+        "expo-brownfield", 
+        {
+          "ios": {
+            "usePrebuiltReactNative": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

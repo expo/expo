@@ -1,9 +1,11 @@
 import type { ConfigPlugin } from 'expo/config-plugins';
 import withBuildProperties from 'expo-build-properties';
 
-const withBuildPropertiesPlugin: ConfigPlugin = (config) => {
+import type { PluginConfig } from '../types';
+
+const withBuildPropertiesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withBuildProperties(config, {
-    ios: { buildReactNativeFromSource: true },
+    ios: { buildReactNativeFromSource: !pluginConfig.usePrebuiltReactNative },
   });
 };
 

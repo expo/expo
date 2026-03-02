@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

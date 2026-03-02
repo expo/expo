@@ -1,7 +1,7 @@
 import { type ConfigPlugin, withPodfile } from 'expo/config-plugins';
 
 import type { PluginConfig } from '../types';
-import { addNewPodsTarget } from '../utils';
+import { addNewPodsTarget, addPrebuiltSettings } from '../utils';
 
 const withPodfilePlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withPodfile(config, (config) => {
@@ -9,6 +9,9 @@ const withPodfilePlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => 
       config.modResults.contents,
       pluginConfig.targetName
     );
+    if (pluginConfig.usePrebuiltReactNative) {
+      config.modResults.contents = addPrebuiltSettings(config.modResults.contents);
+    }
     return config;
   });
 };

@@ -156,7 +156,7 @@ describe('build:ios command', () => {
           BUILD_IOS.ARTIFACT_CLEANUP,
           ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
           ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
-          BUILD_IOS.HERMES_COPYING,
+          BUILD_IOS.HERMES_COPYING(TEMP_DIR_PREBUILD),
         ],
       });
     });
