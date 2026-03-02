@@ -46,7 +46,6 @@ jobs:
         uses: actions/checkout@v5
       - uses: dorny/paths-filter@v3
         id: filter
-        # TODO(pmleczek): Update paths once we wrap up Maestro tests (remove expo-brownfield/**)
         # TODO(pmleczek): Add "- 'packages/expo-updates/**'" to the compilation test filters
         with:
           filters: |
@@ -54,7 +53,6 @@ jobs:
               - '.github/workflows/brownfield.yml'
               - 'yarn.lock'
             compilation_test_android:
-              - 'packages/expo-brownfield/**'
               - 'packages/expo/android/src/main/jave/expo/modules/**'
               - 'packages/expo/android/build.gradle'
               - 'packages/expo-dev-menu/android/src/debug/java/expo/modules/devmenu/**'
@@ -62,7 +60,6 @@ jobs:
               - 'packages/expo-manifests/android/src/main/java/expo/modules/manifests/**'
               - 'packages/expo-manifests/android/build.gradle'
             compilation_test_ios:
-              - 'packages/expo-brownfield/**'
               - 'packages/expo/ios/AppDelegates/**'
               - 'packages/expo-dev-menu/ios/**'
               - 'packages/expo-manifests/ios/EXManifests/**'
