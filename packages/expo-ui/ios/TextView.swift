@@ -45,19 +45,16 @@ public struct TextView: ExpoSwiftUI.View {
   internal func buildText(applyModifiers: Bool = true) -> Text {
     let text: Text
 
-    if let timerInterval = props.timerInterval,
+    if #available(iOS 16.0, tvOS 16.0, *),
+       let timerInterval = props.timerInterval,
        let lower = timerInterval.lower,
        let upper = timerInterval.upper,
        lower <= upper {
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        text = Text(
-          timerInterval: ClosedRange(uncheckedBounds: (lower: lower, upper: upper)),
-          pauseTime: props.pauseTime,
-          countsDown: props.countsDown ?? true
-        )
-      } else {
-        text = Text((props.countsDown ?? true) ? upper : lower, style: .timer)
-      }
+      text = Text(
+        timerInterval: ClosedRange(uncheckedBounds: (lower: lower, upper: upper)),
+        pauseTime: props.pauseTime,
+        countsDown: props.countsDown ?? true
+      )
     } else if let date = props.date {
       text = Text(date, style: props.dateStyle?.toSwiftUI() ?? .date)
     } else {
