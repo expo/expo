@@ -82,6 +82,11 @@ private struct ReportSizeToYogaNodeModifier: ViewModifier {
   }
 
   func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+      content.onGeometryChange(for: CGSize.self, of: { proxy in proxy.size }) { size in
+        handleSizeChange(size)
+      }
+    } else {
       content.overlay {
         GeometryReader { geometry in
           Color.clear
@@ -92,5 +97,6 @@ private struct ReportSizeToYogaNodeModifier: ViewModifier {
             .onChange(of: geometry.size) { handleSizeChange($0) }
         }
       }
+    }
   }
 }
