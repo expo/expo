@@ -8,6 +8,7 @@
 
 - [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
 - [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
+- [ios] enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
 
 ### 🐛 Bug fixes
 
