@@ -98,7 +98,7 @@ describeSkipWin('server', () => {
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
-      // TODO(@hassankhan, @krystofwoldrich, @kitten, @HubertBer): remove all linked after publishing
+      // TODO(@hassankhan, @krystofwoldrich, @kitten): remove all linked after publishing
       linkExpoPackages: [
         '@expo/router-server',
         '@expo/log-box',

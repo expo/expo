@@ -756,11 +756,6 @@ exports[`built-in plugins introspects mods 1`] = `
             "type": "empty",
           },
           {
-            "key": "expo.inlineModules.enabled",
-            "type": "property",
-            "value": "false",
-          },
-          {
             "key": "expo.inlineModules.watchedDirectories",
             "type": "property",
             "value": "[]",

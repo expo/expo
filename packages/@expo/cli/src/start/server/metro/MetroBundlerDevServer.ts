@@ -6,10 +6,6 @@
  */
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
-import {
-  startInlineModulesMetroWatcherAsync,
-  generateMirrorDirectories,
-} from '@expo/inline-modules';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
