@@ -46,7 +46,7 @@ For example, you might see something like this on your Android builds:
   ]}
 />
 
-While you may or may not be interested in following up on that warning, it is not the cause of your failed build. So how do you know which logs are truly responsible? If you are building a bare project, you will already be good at this. If you are building a [managed project](/archive/managed-vs-bare/), it may be tricky because you don't directly interact with the native code, only write JavaScript.
+While you may or may not be interested in following up on that warning, it is not the cause of your failed build. So how do you know which logs are truly responsible? If you are building a bare project, you will already be good at this. If you are building a [managed project](/workflow/overview/), it may be tricky because you don't directly interact with the native code, only write JavaScript.
 
 A good path forward is to **determine if the build failed due to a native or JavaScript error**. When your build fails due to a JavaScript build error, you will usually see something like this:
 
