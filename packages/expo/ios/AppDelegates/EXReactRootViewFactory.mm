@@ -35,24 +35,37 @@
 - (UIView *)viewWithModuleName:(NSString *)moduleName
              initialProperties:(nullable NSDictionary *)initialProperties
                  launchOptions:(nullable NSDictionary *)launchOptions
+           bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
           devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self.reactDelegate != nil) {
     return [self.reactDelegate createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
   }
-  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions devMenuConfiguration:devMenuConfiguration];
+  return [super viewWithModuleName:moduleName
+                 initialProperties:initialProperties
+                     launchOptions:launchOptions
+               bundleConfiguration:bundleConfiguration
+              devMenuConfiguration:devMenuConfiguration];
 }
 
 - (UIView *)superViewWithModuleName:(NSString *)moduleName
                   initialProperties:(nullable NSDictionary *)initialProperties
                       launchOptions:(nullable NSDictionary *)launchOptions
-               devMenuConfiguration:(nullable RCTDevMenuConfiguration *)devMenuConfiguration
+                bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+               devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
+  if (bundleConfiguration == nil) {
+    bundleConfiguration = [RCTBundleConfiguration defaultConfiguration];
+  }
   if (devMenuConfiguration == nil) {
     devMenuConfiguration = [RCTDevMenuConfiguration defaultConfiguration];
   }
 
-  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions devMenuConfiguration:devMenuConfiguration];
+  return [super viewWithModuleName:moduleName
+                 initialProperties:initialProperties
+                     launchOptions:launchOptions
+               bundleConfiguration:bundleConfiguration
+              devMenuConfiguration:devMenuConfiguration];
 }
 #else
 - (UIView *)viewWithModuleName:(NSString *)moduleName

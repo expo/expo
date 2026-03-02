@@ -101,7 +101,7 @@ If your project imports a file listed in **.gitignore**, the build will fail wit
 
 - Encode the file with `base64`, save that string as secrets, and create the file in an EAS Build hook. See [How can I upload files to EAS Build if they are gitignored?](https://expo.fyi/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored) for more information.
 
-- Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/build-reference/variables/#using-secrets-in-environment-variables) for more information.
+- Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/eas/environment-variables/#visibility-settings-for-environment-variables) for more information.
 
 </Collapsible>
 
@@ -149,7 +149,7 @@ You can build the production bundle locally by running `npx expo export` to bypa
 If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. If your project builds and runs locally in release mode then it will also build on EAS Build, provided that the following are all true:
 
 - Relevant [Build tool versions](/build/eas-json#configuring-your-build-tools) (for example, Xcode, Node.js, npm, Yarn) are the same in both environments.
-- Relevant [environment variables](/build-reference/variables) are the same in both environments.
+- Relevant [environment variables](/eas/environment-variables) are the same in both environments.
 - The [archive](https://expo.fyi/eas-build-archive) that is uploaded to EAS Build includes the same relevant source files.
 
 You can verify that your project builds on your local machine with the `npx expo run:android` and `npx expo run:ios` commands, with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).

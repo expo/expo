@@ -1,1 +1,1 @@
-{"version":3,"file":"SymbolView.ios.d.ts","sourceRoot":"","sources":["../src/SymbolView.ios.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAyB,eAAe,EAAE,MAAM,sBAAsB,CAAC;AAK9E,wBAAgB,UAAU,CAAC,KAAK,EAAE,eAAe,+BAWhD"}
+{"version":3,"file":"SymbolView.ios.d.ts","sourceRoot":"","sources":["../src/SymbolView.ios.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,GAAG,EAAE,MAAM,OAAO,CAAC;AAGjC,OAAO,EAAyB,eAAe,EAAE,MAAM,sBAAsB,CAAC;AAK9E,wBAAgB,UAAU,CAAC,KAAK,EAAE,eAAe,GAAG,GAAG,CAAC,OAAO,CAW9D"}

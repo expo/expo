@@ -10,6 +10,7 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { CODE } from '~/ui/components/Text';
 
 ## Installation
@@ -129,6 +130,8 @@ console.log(new URL('http://🥓').toString());
 
 Some common questions about using the `expo` package in your project.
 
+<FAQ>
+
 <Collapsible summary={<><CODE>rootRegisterComponent</CODE> setup for existing React Native projects</>}>
 
 If you are managing your React Native project's native directories (**android** and **ios**) manually, you need to follow the instructions below to set up the `registerRootComponent` function. This is necessary for the Expo modules to work correctly.
@@ -178,3 +181,5 @@ registerRootComponent(App);
 **For projects that use [Expo Router](/router/introduction/)**, you can create a custom entry point by following these steps from [Expo Router's installation guide](/router/installation/#custom-entry-point-to-initialize-and-load). To use the top-level **src** directory in your Expo Router project, see [src directory reference](/router/reference/src-directory/) for more information.
 
 </Collapsible>
+
+</FAQ>

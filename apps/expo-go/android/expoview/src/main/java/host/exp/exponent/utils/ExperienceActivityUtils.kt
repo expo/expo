@@ -98,7 +98,6 @@ object ExperienceActivityUtils {
   fun configureStatusBar(manifest: Manifest, activity: Activity) {
     val statusBarOptions = manifest.getAndroidStatusBarOptions()
     val statusBarStyle = statusBarOptions?.getNullable<String>(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE)
-    val statusBarBackgroundColor = statusBarOptions?.getNullable<String>(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR)
 
     val statusBarHidden = statusBarOptions != null && statusBarOptions.optBoolean(
       ExponentManifest.MANIFEST_STATUS_BAR_HIDDEN,
@@ -113,38 +112,9 @@ object ExperienceActivityUtils {
 
       setTranslucent(activity)
 
-      val appliedStatusBarStyle = setStyle(statusBarStyle, activity)
+      setStyle(statusBarStyle, activity)
 
-      // Color passed from manifest is in format '#RRGGBB(AA)' and Android uses '#AARRGGBB'
-      val normalizedStatusBarBackgroundColor = RGBAtoARGB(statusBarBackgroundColor)
-
-      if (normalizedStatusBarBackgroundColor == null || !ColorParser.isValid(normalizedStatusBarBackgroundColor)) {
-        // backgroundColor is invalid or not set
-        if (appliedStatusBarStyle == STATUS_BAR_STYLE_LIGHT_CONTENT) {
-          // appliedStatusBarStyle is "light-content" so background color should be semi transparent black
-          setColor(Color.parseColor("#88000000"), activity)
-        } else {
-          // otherwise it has to be transparent
-          setColor(Color.TRANSPARENT, activity)
-        }
-      } else {
-        setColor(Color.parseColor(normalizedStatusBarBackgroundColor), activity)
-      }
-    }
-  }
-
-  /**
-   * If the string conforms to the "#RRGGBBAA" format then it's converted into the "#AARRGGBB" format.
-   * Otherwise noop.
-   */
-  private fun RGBAtoARGB(rgba: String?): String? {
-    if (rgba == null) {
-      return null
-    }
-    return if (rgba.startsWith("#") && rgba.length == 9) {
-      "#" + rgba.substring(7, 9) + rgba.substring(1, 7)
-    } else {
-      rgba
+      setColor(Color.TRANSPARENT, activity)
     }
   }
 
@@ -178,28 +148,16 @@ object ExperienceActivityUtils {
    * @return Effective style that is actually applied to the status bar.
    */
   @UiThread
-  private fun setStyle(style: String?, activity: Activity): String {
-    var appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT
+  private fun setStyle(style: String?, activity: Activity) {
     val decorView = activity.window.decorView
-    var systemUiVisibilityFlags = decorView.systemUiVisibility
-    when (style) {
-      STATUS_BAR_STYLE_LIGHT_CONTENT -> {
-        systemUiVisibilityFlags =
-          systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-        appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT
-      }
-      STATUS_BAR_STYLE_DARK_CONTENT -> {
-        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT
-      }
-      else -> {
-        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        appliedStatusBarStyle = STATUS_BAR_STYLE_DARK_CONTENT
-      }
+    decorView.systemUiVisibility = when (style) {
+      STATUS_BAR_STYLE_LIGHT_CONTENT ->
+        decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+      STATUS_BAR_STYLE_DARK_CONTENT ->
+        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+      else ->
+        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
-    decorView.systemUiVisibility = systemUiVisibilityFlags
-
-    return appliedStatusBarStyle
   }
 
   @UiThread
@@ -246,17 +204,6 @@ object ExperienceActivityUtils {
   fun setNavigationBar(manifest: Manifest, activity: Activity) {
     val navBarOptions = manifest.getAndroidNavigationBarOptions() ?: return
 
-    // Set background color of navigation bar
-    val navBarColor = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR)
-    if (navBarColor != null && ColorParser.isValid(navBarColor)) {
-      try {
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        activity.window.navigationBarColor = Color.parseColor(navBarColor)
-      } catch (e: Throwable) {
-        EXL.e(TAG, e)
-      }
-    }
-
     // Set icon color of navigation bar
     val navBarAppearance = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE)
     if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -275,7 +222,7 @@ object ExperienceActivityUtils {
     }
 
     // Set visibility of navigation bar
-    val navBarVisible = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)
+    val navBarVisible = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBILITY)
     if (navBarVisible != null) {
       // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
       // design your app to hide the status bar whenever you hide the navigation bar."
