@@ -438,6 +438,12 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: "What's new in Expo SDK 55",
+    event: 'Expo Tutorials',
+    videoId: 'q72aeXsbF9c',
+    uploadDate: '2026-02-26',
+  },
+  {
     title: 'AI mobile app development with Replit and Expo',
     event: 'Expo Tutorials',
     videoId: 'Zm4z-8i7PgA',
