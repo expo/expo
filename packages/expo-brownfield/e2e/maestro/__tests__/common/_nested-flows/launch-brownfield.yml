@@ -1,14 +1,20 @@
-appId: dev.expo.brownfieldintegratedtester
+appId: ${APP_ID}
 name: Launch and verify the brownfield app
 ---
+# Launch the app
 - launchApp
+
+# Verify that native part has launched
+# And launch the React Native part
 - assertVisible:
     id: openReactNativeButton
 - tapOn:
     id: openReactNativeButton
 
-- runFlow: ../../common/_nested-flows/skip-dev-menu.yml
+# Close the dev menu if shown
+- runFlow: ./skip-dev-menu.yml
 
+# Verify that the RN part has launched
 - assertVisible: Expo + Brownfield = 🖤
 - assertVisible:
     id: home-tab
