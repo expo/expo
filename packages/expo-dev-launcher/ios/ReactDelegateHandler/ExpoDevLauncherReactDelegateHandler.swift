@@ -8,7 +8,11 @@ private class DevLauncherWrapperView: UIView {
   weak var devLauncherViewController: UIViewController?
 
   func setupDevLauncherView(_ viewController: UIViewController) {
+#if os(macOS)
+    viewController.view.autoresizingMask = [.width, .height]
+#else
     viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+#endif
     viewController.view.frame = bounds
   }
 
