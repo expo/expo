@@ -1,6 +1,6 @@
 appId: dev.expo.BrownfieldIntegratedTester
 ---
-- runFlow: ./_nested-flows/launch-brownfield.yml
+- runFlow: ../common/_nested-flows/launch-brownfield.yml
 
 - tapOn:
     id: apis-tab
@@ -23,7 +23,7 @@ appId: dev.expo.BrownfieldIntegratedTester
 
 - tapOn:
     id: openReactNativeButton
-- runFlow: ./_nested-flows/maybe-close-dev-menu.yml
+
 - tapOn:
     id: apis-tab
 - tapOn:
@@ -46,7 +46,7 @@ appId: dev.expo.BrownfieldIntegratedTester
 
 - tapOn:
     id: openReactNativeButton
-- runFlow: ./_nested-flows/maybe-close-dev-menu.yml
+
 - tapOn:
     id: apis-tab
 - tapOn:

@@ -1,6 +1,6 @@
 appId: dev.expo.BrownfieldIntegratedTester
 ---
-- runFlow: ./_nested-flows/launch-brownfield.yml
+- runFlow: ../common/_nested-flows/launch-brownfield.yml
 
 - tapOn:
     id: apis-tab
@@ -28,7 +28,7 @@ appId: dev.expo.BrownfieldIntegratedTester
 
 - tapOn:
     id: openReactNativeButton
-- runFlow: ./_nested-flows/maybe-close-dev-menu.yml
+
 - assertVisible: Expo + Brownfield = 🖤
 - tapOn:
     id: apis-tab
