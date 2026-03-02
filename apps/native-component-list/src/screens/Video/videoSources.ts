@@ -21,6 +21,7 @@ export const seekOptimizedSource: VideoSource = {
   },
 };
 
+// Fallback: https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
 const bigBuckBunnySource: VideoSource = {
   uri: 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4',
   metadata: {
@@ -30,6 +31,7 @@ const bigBuckBunnySource: VideoSource = {
   },
 };
 
+// Fallback: https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4
 const elephantsDreamSource: VideoSource = {
   uri: 'https://expo-test-media.com/elephants_dream/ed_720p.mp4',
   metadata: {
@@ -39,6 +41,7 @@ const elephantsDreamSource: VideoSource = {
   },
 };
 
+// Fallback https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/hls/TearsOfSteel.m3u8
 export const hlsSource: VideoSource = {
   uri: 'https://expo-test-media.com/tos_hls/master.m3u8',
   metadata: {
@@ -48,12 +51,13 @@ export const hlsSource: VideoSource = {
   },
 };
 
+// Fallback: https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/dash/TearsOfSteel.mpd
 export const dashSource: VideoSource = {
-  uri: 'https://expo-video-videos-private.uk/tos_dash/manifest.mpd',
+  uri: 'https://expo-test-media.com/tos_dash/manifest.mpd',
   metadata: {
     title: 'Tears Of Steel',
     artist: 'Blender Foundation',
-    artwork: 'https://expo-video-videos-private.uk/tos_dash/artwork.jpg',
+    artwork: 'https://expo-test-media.com/tos_dash/artwork.jpg',
   },
 };
 
