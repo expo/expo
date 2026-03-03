@@ -71,15 +71,15 @@ function convertRouteNodeToScreen(node, metaOnly) {
 function getReactNavigationScreensConfig(nodes, metaOnly) {
     return Object.fromEntries(nodes.map((node) => [node.route, convertRouteNodeToScreen(node, metaOnly)]));
 }
-function getReactNavigationConfig(routes, metaOnly) {
+function getReactNavigationConfig(routeTree, metaOnly) {
     const config = {
         initialRouteName: undefined,
-        screens: getReactNavigationScreensConfig(routes.children, metaOnly),
+        screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
     };
-    if (routes.initialRouteName) {
+    if (routeTree?.initialRouteName) {
         // We're using LinkingOptions the generic type is `object` instead of a proper ParamList.
         // So we need to cast the initialRouteName to `any` to avoid type errors.
-        config.initialRouteName = routes.initialRouteName;
+        config.initialRouteName = routeTree.initialRouteName;
     }
     return config;
 }
