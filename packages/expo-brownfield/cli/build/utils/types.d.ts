@@ -34,7 +34,6 @@ export interface IosConfig extends CommonConfig {
     buildConfiguration: BuildConfiguration;
     derivedDataPath: string;
     device: string;
-    hermesFrameworkPath: string;
     output: 'frameworks' | PackageConfiguration;
     scheme: string;
     simulator: string;
@@ -42,4 +41,9 @@ export interface IosConfig extends CommonConfig {
 }
 export interface TasksConfigAndroid extends CommonConfig {
     library: string;
+}
+export interface XCFrameworkSpec {
+    name: string;
+    path: string;
+    targets: string[];
 }

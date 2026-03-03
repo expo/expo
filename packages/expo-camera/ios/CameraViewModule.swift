@@ -30,18 +30,12 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       )
     }
 
-    Property("isModernBarcodeScannerAvailable") { () -> Bool in
-      if #available(iOS 16.0, *) {
-        return true
-      }
-      return false
+    Property("isModernBarcodeScannerAvailable") {
+      if #available(iOS 16.0, *) { true } else { false }
     }
 
-    Property("toggleRecordingAsyncAvailable") { () -> Bool in
-      if #available(iOS 18.0, *) {
-        return true
-      }
-      return false
+    Property("toggleRecordingAsyncAvailable") {
+      if #available(iOS 18.0, *) { true } else { false }
     }
 
     AsyncFunction("scanFromURLAsync") { (url: URL, _: [BarcodeType], promise: Promise) in
@@ -256,9 +250,7 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       }
 
       AsyncFunction("getAvailablePictureSizes") {
-        return PictureSize.allCases.map {
-          $0.rawValue
-        }
+        return PictureSize.allCases.map { $0.rawValue }
       }
 
       AsyncFunction("getAvailableLenses") { view in

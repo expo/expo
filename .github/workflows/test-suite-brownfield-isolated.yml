@@ -206,7 +206,7 @@ jobs:
       - name: 🍏 Build iOS artifacts (apps/brownfield-tester/expo-app)
         run: |
           npx expo prebuild --clean -p ios
-          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose -a ../../../artifacts
+          npx expo-brownfield build:ios --${{ matrix.build-type }} --verbose -a ../../../artifacts -p BrownfieldPackage
         working-directory: apps/brownfield-tester/expo-app
       - name: 💾 Save ccache
         if: always()
@@ -214,7 +214,7 @@ jobs:
         with:
           path: ${{ runner.temp }}/.ccache
           key: ${{ steps.ccache-restore.outputs.cache-primary-key }}
-      - name: 🔨 Add XCFrameworks to SwiftUI project
+      - name: 🔨 Add brownfield Swift Package to the app
         run: ruby packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
       - name: 🍺 Install Maestro
         run: |

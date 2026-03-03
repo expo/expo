@@ -165,7 +165,7 @@ jobs:
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
         # NOTE(@kitten): --ignore-engines is needed due to Node 18 being required (see above)
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000 --ignore-engines
+        run: yarn install --prefer-offline --network-timeout 1000000 --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fixed `requestPermissionsAsync` returning raw permission result without several documented fields ([#43555](https://github.com/expo/expo/pull/43555) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.10 — 2026-02-25
