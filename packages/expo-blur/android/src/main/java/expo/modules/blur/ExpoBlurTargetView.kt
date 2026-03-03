@@ -28,11 +28,49 @@ class ExpoBlurTargetView(context: Context, appContext: AppContext) : ExpoView(co
     blurTargetView.addView(child, index)
   }
 
+  override fun addView(child: View?, params: ViewGroup.LayoutParams?) {
+    blurTargetView.addView(child, params)
+  }
+
+  override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
+    blurTargetView.addView(child, index, params)
+  }
+
   override fun addView(child: View?, width: Int, height: Int) {
     blurTargetView.addView(child, width, height)
+  }
+
+  override fun updateViewLayout(view: View?, params: ViewGroup.LayoutParams?) {
+    blurTargetView.updateViewLayout(view, params)
   }
 
   override fun removeView(view: View?) {
     blurTargetView.removeView(view)
   }
+
+  override fun removeViewAt(index: Int) {
+    blurTargetView.removeViewAt(index)
+  }
+
+  override fun removeViews(start: Int, count: Int) {
+    blurTargetView.removeViews(start, count)
+  }
+
+  override fun removeViewsInLayout(start: Int, count: Int) {
+    blurTargetView.removeViewsInLayout(start, count)
+  }
+
+  override fun removeAllViews() {
+    blurTargetView.removeAllViews()
+  }
+
+  override fun removeAllViewsInLayout() {
+    blurTargetView.removeAllViewsInLayout()
+  }
+
+  override fun getChildCount(): Int = blurTargetView.childCount
+
+  override fun getChildAt(index: Int): View? = blurTargetView.getChildAt(index)
+
+  override fun indexOfChild(child: View?): Int = blurTargetView.indexOfChild(child)
 }
