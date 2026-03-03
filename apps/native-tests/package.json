@@ -12,6 +12,7 @@
     "expo": "~55.0.2",
     "expo-clipboard": "55.0.8",
     "expo-dev-client": "~55.0.9",
+    "expo-router": "~55.0.2",
     "expo-image": "~55.0.5",
     "expo-media-library": "55.0.9",
     "expo-notifications": "~55.0.10",
