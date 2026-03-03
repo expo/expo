@@ -332,7 +332,15 @@ async function installAppWithDeviceCtlInternalAsync(
 }
 
 export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string) {
-  await devicectlAsync(['device', 'process', 'launch', '--device', deviceId, bundleId]);
+  await devicectlAsync([
+    'device',
+    'process',
+    'launch',
+    '--terminate-existing',
+    '--device',
+    deviceId,
+    bundleId,
+  ]);
 }
 
 /** Find all error codes from the output log */
