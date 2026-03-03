@@ -72,7 +72,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
-- [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS/Android] Add support for background recording. Apps that need to record audio in the background must now explicitly set `allowsBackgroundRecording: true` via `setAudioModeAsync()` in addition to the `enableBackgroundRecording` config plugin option. See the [background recording docs](https://docs.expo.dev/versions/latest/sdk/audio/#recording-audio-in-the-background) for details. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Support `mixWithOthers` interruption mode. ([#41670](https://github.com/expo/expo/pull/41670) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
