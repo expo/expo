@@ -407,7 +407,7 @@ export function AskPageAIChat({
   );
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-default">
+    <div className="bg-default flex h-full flex-col overflow-hidden">
       <AskPageAIChatHeader
         displayContextLabel={displayContextLabel}
         contextScope={contextScope}

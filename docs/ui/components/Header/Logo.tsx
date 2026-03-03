@@ -10,26 +10,26 @@ type Props = {
 export const Logo = ({ subgroup }: Props) => (
   <div className="flex items-center gap-4">
     <LinkBase
-      className="flex select-none flex-row items-center gap-2 decoration-0 outline-offset-1"
+      className="flex flex-row items-center gap-2 decoration-0 outline-offset-1 select-none"
       href="https://expo.dev">
       <WordMarkLogo
-        className={mergeClasses('mt-px h-5 w-[72px] text-default', 'max-md-gutters:hidden')}
+        className={mergeClasses('text-default mt-px h-5 w-[72px]', 'max-md-gutters:hidden')}
         title="Expo"
       />
       <LogoIcon
-        className={mergeClasses('icon-lg mr-1.5 hidden text-default', 'max-md-gutters:flex')}
+        className={mergeClasses('icon-lg text-default mr-1.5 hidden', 'max-md-gutters:flex')}
         title="Expo"
       />
     </LinkBase>
     <LinkBase
-      className="flex select-none flex-row items-center gap-2 decoration-0 outline-offset-1"
+      className="flex flex-row items-center gap-2 decoration-0 outline-offset-1 select-none"
       href="/">
-      <div className="flex size-6 items-center justify-center rounded-sm bg-palette-blue4">
+      <div className="bg-palette-blue4 flex size-6 items-center justify-center rounded-sm">
         <DocumentationIcon className="icon-sm" />
       </div>
       <span
         className={mergeClasses(
-          'select-none text-lg font-medium text-default',
+          'text-default text-lg font-medium select-none',
           subgroup && 'max-md-gutters:hidden'
         )}>
         Docs
@@ -38,9 +38,9 @@ export const Logo = ({ subgroup }: Props) => (
     {subgroup && (
       <>
         <ChevronRightIcon
-          className={mergeClasses('-mx-2 text-icon-secondary', 'max-md-gutters:hidden')}
+          className={mergeClasses('text-icon-secondary -mx-2', 'max-md-gutters:hidden')}
         />
-        <span className="select-none text-lg font-medium text-default">{subgroup}</span>
+        <span className="text-default text-lg font-medium select-none">{subgroup}</span>
       </>
     )}
   </div>

@@ -84,9 +84,9 @@ function AppConfigProperty({
   return (
     <APIBox
       className={mergeClasses(
-        '!mb-0 !rounded-none !border-b-0 !shadow-none',
-        '[&]:first-of-type:!rounded-t-md',
-        '[&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default',
+        'mb-0! rounded-none! border-b-0! shadow-none!',
+        '[&]:first-of-type:rounded-t-md!',
+        '[&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b!',
         'px-4 py-3'
       )}>
       <PropertyName name={name} nestingLevel={nestingLevel} />
@@ -106,7 +106,7 @@ function AppConfigProperty({
                       {typeData.pattern ? (
                         <>
                           <CODE>string</CODE> matching the following pattern:{' '}
-                          <code className="text-sm text-default">{typeData.pattern}</code>
+                          <code className="text-default text-sm">{typeData.pattern}</code>
                         </>
                       ) : (
                         <CODE>string</CODE>
@@ -147,7 +147,7 @@ function AppConfigProperty({
                 } else {
                   return (
                     <CodeBlock
-                      className="text-balance text-secondary"
+                      className="text-secondary text-balance"
                       inline
                       key={`${name}-${index}`}>
                       {oneOfType}
@@ -165,7 +165,7 @@ function AppConfigProperty({
         {!canHaveMultipleValues && nestingLevel > 0 && (
           <CALLOUT theme="secondary" tag="span">
             &emsp;&bull;&emsp;Path:{' '}
-            <code className="break-words px-1 text-secondary">
+            <code className="text-secondary px-1 break-words">
               {parent}.{name}
             </code>
           </CALLOUT>
