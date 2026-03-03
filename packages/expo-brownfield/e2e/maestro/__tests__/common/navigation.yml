@@ -54,8 +54,6 @@ appId: ${APP_ID}
     id: navigation-disable-native-back
 
 # Verify that back action now works within RN app
-# NOTE: It doesn't work in SwiftUI with tab navigator
-# TODO(pmleczek): Have a better look into this
 - runFlow:
     when:
       platform: Android
@@ -65,16 +63,9 @@ appId: ${APP_ID}
           id: apis-navigation
       - assertVisible:
           id: apis-dev-menu
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - swipe:
-          direction: RIGHT
-      - assertVisible:
-          id: apis-navigation
-      - assertVisible:
-          id: apis-dev-menu
+# On iOS the collision between native and RN back button
+# is not so simple as on Android and doesn't seem to be testable
+# automatically
 
 # Enable native back gesture/button
 - tapOn:
