@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
 
+import { generateCrossLinksSection } from './shared.js';
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
@@ -53,7 +54,10 @@ function generateFullMarkdown({ title, description, sections }) {
   });
 
   return (
-    `# ${title}\n\n${description}\n\n` + filteredSections.map(generateSectionMarkdown).join('')
+    `# ${title}\n\n${description}\n\n` +
+    filteredSections.map(generateSectionMarkdown).join('') +
+    '\n' +
+    generateCrossLinksSection(OUTPUT_FILENAME_LLMS_TXT)
   );
 }
 

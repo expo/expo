@@ -23,7 +23,12 @@ function generateFullMarkdown({ title, description }) {
   const markdownPaths = allHrefs.map(href => getMarkdownPathFromHref(buildDir, href));
   const contentChunks = readUniqueMarkdownContent(markdownPaths, { warnOnMissing: true });
 
-  return composeMarkdownDocument({ title, description, contentChunks });
+  return composeMarkdownDocument({
+    title,
+    description,
+    contentChunks,
+    currentFilename: OUTPUT_FILENAME_EXPO_DOCS,
+  });
 }
 
 export async function generateLlmsFullTxt() {

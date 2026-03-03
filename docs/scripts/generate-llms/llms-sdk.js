@@ -31,7 +31,12 @@ function generateFullMarkdown() {
     });
   const contentChunks = readUniqueMarkdownContent(matchingFiles);
 
-  return composeMarkdownDocument({ title: TITLE, description: DESCRIPTION, contentChunks });
+  return composeMarkdownDocument({
+    title: TITLE,
+    description: DESCRIPTION,
+    contentChunks,
+    currentFilename: OUTPUT_FILENAME,
+  });
 }
 
 export async function generateLlmsSdkTxt() {
