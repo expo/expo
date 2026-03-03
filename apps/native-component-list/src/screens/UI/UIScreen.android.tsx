@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'AnimatedVisibility component',
+    route: 'ui/animated-visibility',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AnimatedVisibilityScreen'));
+    },
+  },
+  {
     name: 'AlertDialog component',
     route: 'ui/alert-dialog',
     options: {},
