@@ -146,7 +146,12 @@ export function createHeadingManager(slugger: GithubSlugger, meta: Metadata): He
       level === maxNestingLevel &&
       type === HeadingType.TEXT;
 
-    if (!hideInSidebar && level >= BASE_HEADING_LEVEL && level <= maxNestingLevel && !isDeepestTextHeading) {
+    if (
+      !hideInSidebar &&
+      level >= BASE_HEADING_LEVEL &&
+      level <= maxNestingLevel &&
+      !isDeepestTextHeading
+    ) {
       headings.push(heading);
     }
 
