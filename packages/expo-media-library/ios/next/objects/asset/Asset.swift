@@ -76,6 +76,11 @@ class Asset: SharedObject {
     return date.millisecondsSince1970
   }
 
+  func getIsFavorite() async throws -> Bool {
+    let phAsset = try await requirePHAsset()
+    return phAsset.isFavorite
+  }
+
   func getMediaType() async throws -> MediaTypeNext {
     let phAsset = try await requirePHAsset()
     return MediaTypeNext.from(phAsset.mediaType)
@@ -108,13 +113,23 @@ class Asset: SharedObject {
       height: try getHeight(),
       width: try getWidth(),
       mediaType: try getMediaType(),
-      modificationTime: try getModificationTime()
+      modificationTime: try getModificationTime(),
+      isFavorite: try getIsFavorite()
     )
   }
 
   func delete() async throws {
     let assetToDelete = try await requirePHAsset()
     try await AssetRepository.shared.delete(by: [assetToDelete])
+  }
+
+  func setFavorite(_ isFavorite: Bool) async throws {
+    let phAsset = try await requirePHAsset()
+    try await PHPhotoLibrary.shared().performChanges {
+      let request = PHAssetChangeRequest(for: phAsset)
+      request.isFavorite = isFavorite
+    }
+    self.phAsset = nil
   }
 
   private func requirePHAsset() async throws -> PHAsset {

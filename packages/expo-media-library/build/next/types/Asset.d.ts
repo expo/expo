@@ -114,6 +114,18 @@ export declare class Asset {
      * ```
      */
     delete(): Promise<void>;
+    /**
+     * Marks or unmarks the asset as a favorite. On iOS, this adds or removes the asset from the system "Favorites" smart album.
+     * @param isFavorite Whether the asset should be marked as favorite.
+     * @returns A promise that resolves once the operation has completed.
+     * @platform ios
+     *
+     * @example
+     * ```ts
+     * await asset.setFavorite(true);
+     * ```
+     */
+    setFavorite(isFavorite: boolean): Promise<void>;
     static create(filePath: string, album?: Album): Promise<Asset>;
 }
 //# sourceMappingURL=Asset.d.ts.map

@@ -18,6 +18,14 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
   static delete(assets: Asset[]): Promise<void> {
     return ExpoMediaLibraryNext.deleteAssets(assets);
   }
+
+  // @hidden
+  setFavorite(isFavorite: boolean): Promise<void> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'setFavorite is only available on iOS');
+    }
+    return super.setFavorite(isFavorite);
+  }
 }
 
 export class Album extends ExpoMediaLibraryNext.Album {

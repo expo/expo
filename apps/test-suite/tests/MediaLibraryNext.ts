@@ -679,6 +679,33 @@ export async function test(t) {
     });
   });
 
+  if (Platform.OS === 'ios') {
+    t.describe('Favorites Smart Album', () => {
+      t.it('marks an asset as favorite', async () => {
+        // given
+        const asset = await Asset.create(jpgFile.localUri);
+        assetsContainer.push(asset);
+        // when
+        await asset.setFavorite(true);
+        // then
+        const info = await asset.getInfo();
+        t.expect(info.isFavorite).toBe(true);
+      });
+
+      t.it('unmarks an asset as favorite', async () => {
+        // given
+        const asset = await Asset.create(jpgFile.localUri);
+        assetsContainer.push(asset);
+        await asset.setFavorite(true);
+        // when
+        await asset.setFavorite(false);
+        // then
+        const info = await asset.getInfo();
+        t.expect(info.isFavorite).toBe(false);
+      });
+    });
+  }
+
   function createAlbumName(name: string) {
     return name.replaceAll(' ', '_');
   }

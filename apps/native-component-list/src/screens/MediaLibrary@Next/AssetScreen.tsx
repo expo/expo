@@ -3,7 +3,15 @@ import { Image } from 'expo-image';
 import { Asset, MediaType, AssetInfo, requestPermissionsAsync } from 'expo-media-library/next';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  Platform,
+} from 'react-native';
 
 enum TestState {
   START = 'start',
@@ -68,6 +76,22 @@ const AssetScreen = () => {
       } catch (e) {
         console.error('Error deleting asset:', e);
         setTestState(TestState.ERROR);
+      }
+    }
+  };
+
+  const toggleFavorite = async () => {
+    if (asset) {
+      try {
+        await asset.setFavorite(!assetInfo?.isFavorite);
+        const updatedInfo = await asset.getInfo();
+        setAssetInfo(updatedInfo);
+        Alert.alert(
+          updatedInfo?.isFavorite ? 'Asset marked as favorite!' : 'Asset removed from favorites!'
+        );
+      } catch (e) {
+        console.error('Error toggling favorite status:', e);
+        Alert.alert('Error', 'Unable to change favorite status of the asset.');
       }
     }
   };
@@ -139,11 +163,11 @@ const AssetScreen = () => {
     <View style={styles.container}>
       {testState === TestState.START && (
         <View style={styles.buttonGroup}>
-          <Pressable style={styles.addButton} onPress={() => handleAddAsset('image')}>
-            <Text style={styles.addButtonText}>Add Image</Text>
+          <Pressable style={styles.primaryButton} onPress={() => handleAddAsset('image')}>
+            <Text style={styles.primaryButtonText}>Add Image</Text>
           </Pressable>
-          <Pressable style={styles.addButton} onPress={() => handleAddAsset('video')}>
-            <Text style={styles.addButtonText}>Add Video</Text>
+          <Pressable style={styles.primaryButton} onPress={() => handleAddAsset('video')}>
+            <Text style={styles.primaryButtonText}>Add Video</Text>
           </Pressable>
         </View>
       )}
@@ -160,6 +184,13 @@ const AssetScreen = () => {
             <Pressable style={styles.deleteButton} onPress={handleDeleteAsset}>
               <Text style={styles.deleteButtonText}>Delete Asset</Text>
             </Pressable>
+            {Platform.OS === 'ios' && (
+              <Pressable style={styles.primaryButton} onPress={toggleFavorite}>
+                <Text style={styles.primaryButtonText}>
+                  {assetInfo?.isFavorite ? 'Unmark Favorite' : 'Mark Favorite'}
+                </Text>
+              </Pressable>
+            )}
           </View>
           {renderAssetInfo()}
         </>
@@ -185,7 +216,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginVertical: 20,
-    width: '60%',
+    gap: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
   statusText: {
     fontSize: 18,
@@ -225,7 +258,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
   },
-  addButton: {
+  primaryButton: {
     backgroundColor: '#007AFF',
     paddingVertical: 12,
     paddingHorizontal: 25,
@@ -241,7 +274,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  addButtonText: {
+  primaryButtonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',

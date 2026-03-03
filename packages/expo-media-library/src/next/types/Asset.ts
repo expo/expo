@@ -128,6 +128,19 @@ export declare class Asset {
    */
   delete(): Promise<void>;
 
+  /**
+   * Marks or unmarks the asset as a favorite. On iOS, this adds or removes the asset from the system "Favorites" smart album.
+   * @param isFavorite Whether the asset should be marked as favorite.
+   * @returns A promise that resolves once the operation has completed.
+   * @platform ios
+   *
+   * @example
+   * ```ts
+   * await asset.setFavorite(true);
+   * ```
+   */
+  setFavorite(isFavorite: boolean): Promise<void>;
+
   /*
    * A static function. Creates a new asset from a given file path.
    * Optionally associates the asset with an album. On Android, if not specified, the asset will be placed in the default "Pictures" directory.
