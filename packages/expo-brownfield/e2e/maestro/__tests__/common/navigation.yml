@@ -1,0 +1,111 @@
+appId: ${APP_ID}
+---
+# Launch the app
+- runFlow: ../common/_nested-flows/launch-brownfield.yml
+
+# Validate that brownfield app 
+# can be opened multiple times
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - repeat:
+          times: 2
+          commands:
+            - back
+            - assertVisible:
+                id: openReactNativeButton
+            - tapOn:
+                id: openReactNativeButton
+            - assertVisible: Expo + Brownfield = 🖤
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - repeat:
+          times: 2
+          commands:
+            - swipe:
+                direction: RIGHT
+            - assertVisible:
+                id: openReactNativeButton
+            - tapOn:
+                id: openReactNativeButton
+            - assertVisible: Expo + Brownfield = 🖤
+
+# Verify popToNative() method
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
+- tapOn:
+    id: navigation-pop-to-native
+- assertVisible:
+    id: openReactNativeButton
+- tapOn:
+    id: openReactNativeButton
+
+# Disable native back gesture/button
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
+- tapOn:
+    id: navigation-disable-native-back
+
+# Verify that back action now works within RN app
+# NOTE: It doesn't work in SwiftUI with tab navigator
+# TODO(pmleczek): Have a better look into this
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+      - assertVisible:
+          id: apis-navigation
+      - assertVisible:
+          id: apis-dev-menu
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          direction: RIGHT
+      - assertVisible:
+          id: apis-navigation
+      - assertVisible:
+          id: apis-dev-menu
+
+# Enable native back gesture/button
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
+- tapOn:
+    id: navigation-enable-native-back
+
+# Verify that back action now works within 
+# the host app
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+      - assertVisible:
+          id: openReactNativeButton
+      - tapOn:
+          id: openReactNativeButton
+# TODO(pmleczek): iOS flow?
+
+# Verify that popToNative works regardless
+# of native back button/gesture state
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-navigation
+- tapOn:
+    id: navigation-disable-native-back
+- tapOn:
+    id: navigation-pop-to-native
+- assertVisible:
+    id: openReactNativeButton
