@@ -1,5 +1,6 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
+import type { AndroidSymbol } from 'expo-symbols';
 import { type ReactNode } from 'react';
 import { type StyleProp, type TextStyle } from 'react-native';
 import { type StackHeaderItemSharedProps } from './shared';
@@ -67,8 +68,19 @@ export interface StackToolbarButtonProps {
      * Can be a string representing an SFSymbol or an image source.
      *
      * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
+     *
      */
     icon?: StackHeaderItemSharedProps['icon'];
+    /**
+     * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+     *
+     * The icon is resolved asynchronously — the button is invisible until the icon loads.
+     *
+     * Can also be specified via `<Stack.Toolbar.Icon md="..." />` child component.
+     *
+     * @platform android
+     */
+    md?: AndroidSymbol;
     /**
      * Image to display in the button.
      *

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.extractMdIconName = extractMdIconName;
 exports.extractXcassetName = extractXcassetName;
 exports.extractIconRenderingMode = extractIconRenderingMode;
 exports.extractImageSource = extractImageSource;
@@ -8,6 +9,14 @@ const react_1 = require("react");
 const toolbar_primitives_1 = require("./toolbar-primitives");
 const children_1 = require("../../../utils/children");
 const font_1 = require("../../../utils/font");
+/** @internal */
+function extractMdIconName(props) {
+    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+    if (iconComponentProps && 'md' in iconComponentProps) {
+        return iconComponentProps.md;
+    }
+    return undefined;
+}
 /** @internal */
 function extractXcassetName(props) {
     const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
@@ -83,10 +92,13 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacem
                 tinted: effectiveRenderingMode === 'template',
             };
         }
-        return {
-            type: 'sfSymbol',
-            name: iconComponentProps.sf,
-        };
+        if ('sf' in iconComponentProps) {
+            return {
+                type: 'sfSymbol',
+                name: iconComponentProps.sf,
+            };
+        }
+        return undefined;
     })();
     const item = {
         ...rest,

@@ -1,4 +1,5 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
+import type { AndroidSymbol } from 'expo-symbols';
 import { type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -36,6 +37,8 @@ export interface StackHeaderItemSharedProps {
     variant?: 'plain' | 'done' | 'prominent';
 }
 type RNSharedHeaderItem = Pick<NativeStackHeaderItemButton, 'label' | 'labelStyle' | 'icon' | 'variant' | 'tintColor' | 'disabled' | 'width' | 'hidesSharedBackground' | 'sharesBackground' | 'identifier' | 'badge' | 'accessibilityLabel' | 'accessibilityHint'>;
+/** @internal */
+export declare function extractMdIconName(props: StackHeaderItemSharedProps): AndroidSymbol | undefined;
 /** @internal */
 export declare function extractXcassetName(props: StackHeaderItemSharedProps): string | undefined;
 /**

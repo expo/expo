@@ -36,5 +36,9 @@ export interface RouterToolbarItemProps {
      * On iOS this prop is ignored — icons are resolved via `systemImageName`, `xcassetName`, or `image`.
      */
     source?: ImageSourcePropType;
+    /**
+     * Material Design icon name being loaded asynchronously on Android.
+     */
+    mdIconName?: string;
 }
 //# sourceMappingURL=native.types.d.ts.map

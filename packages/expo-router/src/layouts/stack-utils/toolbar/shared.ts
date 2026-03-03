@@ -1,4 +1,5 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
+import type { AndroidSymbol } from 'expo-symbols';
 import { Children, type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -57,6 +58,15 @@ type RNSharedHeaderItem = Pick<
   | 'accessibilityLabel'
   | 'accessibilityHint'
 >;
+
+/** @internal */
+export function extractMdIconName(props: StackHeaderItemSharedProps): AndroidSymbol | undefined {
+  const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
+  if (iconComponentProps && 'md' in iconComponentProps) {
+    return iconComponentProps.md;
+  }
+  return undefined;
+}
 
 /** @internal */
 export function extractXcassetName(props: StackHeaderItemSharedProps): string | undefined {
@@ -147,10 +157,13 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
         tinted: effectiveRenderingMode === 'template',
       };
     }
-    return {
-      type: 'sfSymbol',
-      name: iconComponentProps.sf,
-    };
+    if ('sf' in iconComponentProps) {
+      return {
+        type: 'sfSymbol',
+        name: iconComponentProps.sf,
+      };
+    }
+    return undefined;
   })();
   const item: RNSharedHeaderItem = {
     ...rest,

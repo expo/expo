@@ -4,6 +4,10 @@ import { View } from 'react-native';
 import { renderRouter } from '../../../testing-library';
 import Stack from '../../StackClient';
 
+jest.mock('../../../utils/materialIcon', () => ({
+  useMaterialIconSource: jest.fn(() => undefined),
+}));
+
 jest.mock('../../../toolbar/native', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   return {
@@ -94,6 +98,48 @@ describe('Stack.Toolbar integration tests (Android)', () => {
       });
 
       expect(screen.getByTestId('RouterToolbarHost')).toBeVisible();
+    });
+
+    it('passes mdIconName through full component tree for md icon button', () => {
+      renderRouter({
+        index: () => (
+          <>
+            <Stack.Toolbar placement="bottom">
+              <Stack.Toolbar.Button md="search" />
+            </Stack.Toolbar>
+            <View testID="index" />
+          </>
+        ),
+      });
+
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mdIconName: 'search',
+        }),
+        undefined
+      );
+    });
+
+    it('passes mdIconName from Icon child through full component tree', () => {
+      renderRouter({
+        index: () => (
+          <>
+            <Stack.Toolbar placement="bottom">
+              <Stack.Toolbar.Button>
+                <Stack.Toolbar.Icon md="star" />
+              </Stack.Toolbar.Button>
+            </Stack.Toolbar>
+            <View testID="index" />
+          </>
+        ),
+      });
+
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mdIconName: 'star',
+        }),
+        undefined
+      );
     });
   });
 

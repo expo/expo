@@ -13,48 +13,58 @@ function RouterToolbarHost(props) {
     const { bottom } = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
     return (<react_native_1.View style={[styles.hostContainer, { bottom }]} pointerEvents="box-none">
       <jetpack_compose_1.Host matchContents>
-        <jetpack_compose_1.HorizontalFloatingToolbar>{props.children}</jetpack_compose_1.HorizontalFloatingToolbar>
+        <jetpack_compose_1.Box modifiers={[(0, modifiers_1.fillMaxWidth)()]} contentAlignment="center">
+          <jetpack_compose_1.HorizontalFloatingToolbar modifiers={[(0, modifiers_1.height)(64)]}>
+            {props.children}
+          </jetpack_compose_1.HorizontalFloatingToolbar>
+        </jetpack_compose_1.Box>
       </jetpack_compose_1.Host>
     </react_native_1.View>);
 }
 function RouterToolbarItem(props) {
-    if (props.hidden) {
-        return null;
-    }
     if (props.type === 'fluidSpacer') {
         // Silently ignore fluid spacer on android
         return null;
     }
     if (props.type === 'fixedSpacer') {
         if (props.width) {
-            return <jetpack_compose_1.Box modifiers={[(0, modifiers_1.size)(props.width)]}/>;
+            return (<AnimatedWrapper visible={!props.hidden}>
+          <jetpack_compose_1.Box modifiers={[(0, modifiers_1.width)(props.width)]}/>
+        </AnimatedWrapper>);
         }
         return null;
     }
     if (props.type === 'searchBar') {
         if (process.env.NODE_ENV !== 'production') {
-            // prettier-ignore
             console.warn('Stack.Toolbar.SearchBarSlot is not supported on Android. The search bar will not render.');
         }
         return null;
     }
     if (hasChildren(props.children)) {
         if (process.env.NODE_ENV !== 'production') {
-            // prettier-ignore
             console.warn('Stack.Toolbar.View is not supported on Android. Custom views inside the toolbar will not render.');
         }
         return null;
     }
     if (!props.source) {
-        if (process.env.NODE_ENV !== 'production') {
-            // prettier-ignore
+        if (process.env.NODE_ENV !== 'production' && !props.mdIconName) {
             console.warn('Stack.Toolbar.Button on Android requires an ImageSourcePropType icon. SF Symbols and xcasset icons are not supported. Use the `icon` prop with a require() or { uri } source, or use <Stack.Toolbar.Icon src={...} />.');
         }
         return null;
     }
-    return (<jetpack_compose_1.IconButton onPress={props.onSelected} disabled={props.disabled}>
-      <jetpack_compose_1.Icon source={props.source} tintColor={props.tintColor} size={24}/>
-    </jetpack_compose_1.IconButton>);
+    return (<AnimatedWrapper visible={!props.hidden}>
+      <jetpack_compose_1.IconButton onPress={props.onSelected} disabled={props.disabled}>
+        <jetpack_compose_1.Icon source={props.source} tintColor={props.tintColor} size={24}/>
+      </jetpack_compose_1.IconButton>
+    </AnimatedWrapper>);
+}
+function AnimatedWrapper({ visible, children }) {
+    return (<jetpack_compose_1.AnimatedVisibility 
+    // As mentioned in the docs, `scaleIn` does not animate layout, so we need to combine it with `expandIn` to get the layout animation as well. The same applies to `scaleOut` and `shrinkOut`.
+    // https://developer.android.com/reference/kotlin/androidx/compose/animation/package-summary#scaleOut(androidx.compose.animation.core.FiniteAnimationSpec,kotlin.Float,androidx.compose.ui.graphics.TransformOrigin)
+    enterTransition={jetpack_compose_1.EnterTransition.scaleIn().plus(jetpack_compose_1.EnterTransition.expandIn())} exitTransition={jetpack_compose_1.ExitTransition.scaleOut().plus(jetpack_compose_1.ExitTransition.shrinkOut())} visible={visible}>
+      {children}
+    </jetpack_compose_1.AnimatedVisibility>);
 }
 function hasChildren(children) {
     if (children == null)
