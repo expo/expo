@@ -86,9 +86,6 @@ const AssetScreen = () => {
         await asset.setFavorite(!assetInfo?.isFavorite);
         const updatedInfo = await asset.getInfo();
         setAssetInfo(updatedInfo);
-        Alert.alert(
-          updatedInfo?.isFavorite ? 'Asset marked as favorite!' : 'Asset removed from favorites!'
-        );
       } catch (e) {
         console.error('Error toggling favorite status:', e);
         Alert.alert('Error', 'Unable to change favorite status of the asset.');
