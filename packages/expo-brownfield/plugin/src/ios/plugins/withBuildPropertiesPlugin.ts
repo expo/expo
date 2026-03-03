@@ -5,7 +5,7 @@ import type { PluginConfig } from '../types';
 
 const withBuildPropertiesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withBuildProperties(config, {
-    ios: { buildReactNativeFromSource: !pluginConfig.usePrebuiltReactNative },
+    ios: { buildReactNativeFromSource: pluginConfig.buildReactNativeFromSource },
   });
 };
 
