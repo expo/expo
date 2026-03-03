@@ -89,16 +89,17 @@ export function getReactNavigationScreensConfig(
   );
 }
 
-export function getReactNavigationConfig(routes: RouteNode, metaOnly: boolean) {
+export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
   const config = {
     initialRouteName: undefined,
-    screens: getReactNavigationScreensConfig(routes.children, metaOnly),
+    screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
   };
 
-  if (routes.initialRouteName) {
+  if (routeTree?.initialRouteName) {
     // We're using LinkingOptions the generic type is `object` instead of a proper ParamList.
     // So we need to cast the initialRouteName to `any` to avoid type errors.
-    config.initialRouteName = routes.initialRouteName as any;
+    config.initialRouteName = routeTree.initialRouteName as any;
   }
+
   return config;
 }
