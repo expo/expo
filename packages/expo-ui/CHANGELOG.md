@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ## 55.0.1 — 2026-02-25
 
 ### 🎉 New features

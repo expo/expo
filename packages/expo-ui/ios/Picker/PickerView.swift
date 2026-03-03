@@ -24,13 +24,9 @@ internal struct PickerView: ExpoSwiftUI.View {
 
   @ViewBuilder
   private func makePicker() -> some View {
-    let content = (props.children?
-      .compactMap { $0.childView as? PickerContentView }
-      .first)
+    let content = props.children?.slot("content")
 
-    let labelContent = props.children?
-      .compactMap { $0.childView as? PickerLabelView }
-      .first
+    let labelContent = props.children?.slot("label")
 
     if let systemImage = props.systemImage, let label = props.label {
       Picker(label, systemImage: systemImage, selection: $selection) { content }

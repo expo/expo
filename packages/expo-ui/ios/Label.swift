@@ -8,19 +8,6 @@ public final class LabelViewProps: UIBaseViewProps {
   @Field var systemImage: String?
 }
 
-public final class LabelIconProps: ExpoSwiftUI.ViewProps {}
-public struct LabelIcon: ExpoSwiftUI.View {
-  @ObservedObject public var props: LabelIconProps
-
-  public init(props: LabelIconProps) {
-    self.props = props
-  }
-
-  public var body: some View {
-    Children()
-  }
-}
-
 public struct LabelView: ExpoSwiftUI.View {
   @ObservedObject public var props: LabelViewProps
 
@@ -44,9 +31,7 @@ public struct LabelView: ExpoSwiftUI.View {
     }
   }
 
-  private var customIcon: LabelIcon? {
-    props.children?
-      .compactMap({ $0.childView as? LabelIcon })
-      .first
+  private var customIcon: SlotView? {
+    props.children?.slot("icon")
   }
 }
