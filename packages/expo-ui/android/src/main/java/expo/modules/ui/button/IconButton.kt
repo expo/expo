@@ -2,6 +2,7 @@ package expo.modules.ui.button
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedIconButton
@@ -16,6 +17,7 @@ import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
+import expo.modules.ui.getImageVector
 import expo.modules.ui.shapeFromShapeRecord
 
 enum class IconButtonVariant(val value: String) : Enumerable {
@@ -27,6 +29,7 @@ enum class IconButtonVariant(val value: String) : Enumerable {
 data class IconButtonProps(
   val variant: IconButtonVariant? = IconButtonVariant.DEFAULT,
   val elementColors: ButtonColors = ButtonColors(),
+  val systemImage: String? = null,
   val disabled: Boolean? = false,
   val shape: ShapeRecord? = null,
   val modifiers: ModifierList = emptyList()
@@ -103,6 +106,13 @@ fun FunctionalComposableScope.IconButtonContent(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     shape = shapeFromShapeRecord(props.shape)
   ) {
-    Children(ComposableScope())
+    val systemImage = props.systemImage
+    if (systemImage != null) {
+      getImageVector(systemImage)?.let {
+        Icon(imageVector = it, contentDescription = systemImage)
+      }
+    } else {
+      Children(ComposableScope())
+    }
   }
 }

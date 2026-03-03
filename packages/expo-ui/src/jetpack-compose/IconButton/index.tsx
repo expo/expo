@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { MaterialIcon } from '../Button/types';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { ButtonElementColors } from '../Button';
 import { parseJSXShape, ShapeJSXElement, ShapeRecordProps } from '../Shape';
@@ -19,11 +20,16 @@ export type IconButtonProps = {
    */
   onPress?: () => void;
   /**
+   * A string describing the system image to display in the icon button.
+   * Uses Material Icons on Android.
+   */
+  systemImage?: MaterialIcon;
+  /**
    * The button variant.
    */
   variant?: IconButtonVariant;
   /**
-   * The text to display inside the button.
+   * The content to display inside the button.
    */
   children?: React.JSX.Element;
   /**
@@ -50,7 +56,8 @@ export type IconButtonProps = {
 /**
  * @hidden
  */
-export type NativeIconButtonProps = Omit<IconButtonProps, 'role' | 'onPress' | 'shape'> & {
+export type NativeIconButtonProps = Omit<IconButtonProps, 'role' | 'onPress' | 'systemImage' | 'shape'> & {
+  systemImage?: string;
   shape?: ShapeRecordProps;
 } & ViewEvent<'onButtonPressed', void>;
 
@@ -61,13 +68,14 @@ const IconButtonNativeView: React.ComponentType<NativeIconButtonProps> = require
 );
 
 function transformIconButtonProps(props: IconButtonProps): NativeIconButtonProps {
-  const { children, onPress, shape, modifiers, ...restProps } = props;
+  const { children, onPress, systemImage, shape, modifiers, ...restProps } = props;
 
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     children,
+    systemImage,
     shape: parseJSXShape(shape),
     onButtonPressed: onPress,
     elementColors: props.elementColors

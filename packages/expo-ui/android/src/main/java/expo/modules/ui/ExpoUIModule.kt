@@ -212,6 +212,23 @@ class ExpoUIModule : Module() {
       CarouselContent(props)
     }
 
+    View(ScaffoldView::class) {}
+
+    View(AppBarWithSearchView::class) {
+      Events("onValueChanged", "onSearchSubmitted", "onExpandedChange")
+      Prop("defaultValue", "") { view: AppBarWithSearchView, text: String ->
+        if (view.query == null) {
+          view.query = text
+        }
+      }
+      AsyncFunction("setText") { view: AppBarWithSearchView, text: String ->
+        view.query = text
+      }
+      AsyncFunction("collapse") { view: AppBarWithSearchView ->
+        view.collapse()
+      }
+    }
+
     ExpoUIView("AlertDialogView", events = {
       Events(
         "onDismissPressed",

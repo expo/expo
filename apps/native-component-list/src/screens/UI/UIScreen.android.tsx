@@ -1,5 +1,6 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
+import { SearchBarScreens } from './SearchBarListScreen';
 
 export const UIScreens = [
   {
@@ -130,6 +131,15 @@ export const UIScreens = [
       return optionalRequire(() => require('./CarouselScreen'));
     },
   },
+  {
+    name: 'SearchBar component',
+    route: 'ui/searchbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SearchBarListScreen'));
+    },
+  },
+  ...SearchBarScreens,
   {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',

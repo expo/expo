@@ -22,6 +22,8 @@ export * from './Switch';
 export * from './TextButton';
 export * from './TextInput';
 export * from './ToggleButton';
+export * from './AppBarWithSearch';
+export * from './Scaffold';
 export * from './Shape';
 export * from './ModalBottomSheet';
 export * from './Carousel';
