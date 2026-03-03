@@ -14,7 +14,16 @@ export function withMetroServer(projectRoot = '/project'): {
     connect: (url: string) => WebSocket;
   };
 } {
-  const metro = createMetroMiddleware({ projectRoot });
+  const metro = createMetroMiddleware(
+    { projectRoot },
+    {
+      getMetroBundler: () =>
+        ({
+          ready: () => Promise.resolve(),
+        }) as any,
+    }
+  );
+
   const server = createServer(metro.middleware);
 
   const closeServer = promisify(server.close.bind(server));
