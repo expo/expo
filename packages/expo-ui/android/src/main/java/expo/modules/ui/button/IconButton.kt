@@ -16,6 +16,7 @@ import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
+import expo.modules.ui.menu.LocalContextMenuExpanded
 import expo.modules.ui.shapeFromShapeRecord
 
 enum class IconButtonVariant(val value: String) : Enumerable {
@@ -95,11 +96,16 @@ fun FunctionalComposableScope.IconButtonContent(
   val colors = props.elementColors
   val disabled = props.disabled
 
+  val contextMenuExpanded = LocalContextMenuExpanded.current
+
   StyledIconButton(
     variant ?: IconButtonVariant.DEFAULT,
     colors,
     disabled ?: false,
-    onPress = { onButtonPressed(ButtonPressedEvent()) },
+    onPress = {
+      contextMenuExpanded?.let { it.value = true }
+      onButtonPressed(ButtonPressedEvent())
+    },
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     shape = shapeFromShapeRecord(props.shape)
   ) {
