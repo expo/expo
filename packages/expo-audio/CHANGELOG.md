@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Improve looping support.
 
 ### 💡 Others
 
