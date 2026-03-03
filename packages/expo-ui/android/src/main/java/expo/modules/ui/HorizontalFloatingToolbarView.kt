@@ -51,13 +51,26 @@ fun FunctionalComposableScope.HorizontalFloatingToolbarContent(props: Horizontal
   }
 
   val scrollBehavior = composableScope.nestedScrollConnection as? FloatingToolbarScrollBehavior
-  HorizontalFloatingToolbar(
-    expanded = true,
-    colors = colors,
-    scrollBehavior = scrollBehavior,
-    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
-    floatingActionButton = floatingActionButton
-  ) {
-    Children(ComposableScope(), filter = { !isSlotView(it) })
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  if (fabSlotView != null) {
+    HorizontalFloatingToolbar(
+      expanded = true,
+      floatingActionButton = floatingActionButton,
+      colors = colors,
+      scrollBehavior = scrollBehavior,
+      modifier = modifier,
+    ) {
+      Children(ComposableScope(), filter = { !isSlotView(it) })
+    }
+  } else {
+    HorizontalFloatingToolbar(
+      expanded = true,
+      colors = colors,
+      scrollBehavior = scrollBehavior,
+      modifier = modifier,
+    ) {
+      Children(ComposableScope(), filter = { !isSlotView(it) })
+    }
   }
 }
