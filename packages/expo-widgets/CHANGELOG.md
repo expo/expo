@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Skip server bundling in `export:embed` call for `expo-widgets` bundle ([#43602](https://github.com/expo/expo/pull/43602) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-02-26
