@@ -1,4 +1,5 @@
-import { Host, HorizontalFloatingToolbar, Icon, IconButton } from '@expo/ui/jetpack-compose';
+import { Host, HorizontalFloatingToolbar, Icon, IconButton, Box } from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
 import { Children, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,10 +24,13 @@ export function RouterToolbarItem(props: RouterToolbarItemProps) {
     return null;
   }
 
-  if (props.type === 'fixedSpacer' || props.type === 'fluidSpacer') {
-    if (process.env.NODE_ENV !== 'production') {
-      // prettier-ignore
-      console.warn('Stack.Toolbar.Spacer is not supported on Android. The spacer will not render.');
+  if (props.type === 'fluidSpacer') {
+    // Silently ignore fluid spacer on android
+    return null;
+  }
+  if (props.type === 'fixedSpacer') {
+    if (props.width) {
+      return <Box modifiers={[size(props.width)]} />;
     }
     return null;
   }
