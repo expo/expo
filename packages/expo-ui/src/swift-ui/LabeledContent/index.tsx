@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type LabeledContentProps = {
@@ -16,7 +16,6 @@ const LabeledContentNativeView: React.ComponentType<LabeledContentProps> = requi
   'ExpoUI',
   'LabeledContentView'
 );
-
 
 /**
  * LabeledContent component uses the native [LabeledContent](https://developer.apple.com/documentation/swiftui/labeledcontent) component.

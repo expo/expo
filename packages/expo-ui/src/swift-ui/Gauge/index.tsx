@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type GaugeProps = {
@@ -48,7 +48,6 @@ const GaugeNativeView: React.ComponentType<NativeGaugeProps> = requireNativeView
   'ExpoUI',
   'GaugeView'
 );
-
 
 /**
  * Renders a SwiftUI `Gauge` component.

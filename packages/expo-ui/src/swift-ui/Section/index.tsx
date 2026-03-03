@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type SectionProps = {

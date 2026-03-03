@@ -2,8 +2,8 @@ import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 type SelectionValueType = string | number | null;
@@ -42,7 +42,6 @@ const PickerNativeView: React.ComponentType<NativePickerProps> = requireNativeVi
   'ExpoUI',
   'PickerView'
 );
-
 
 function transformPickerProps<T extends SelectionValueType>(
   props: PickerProps<T>

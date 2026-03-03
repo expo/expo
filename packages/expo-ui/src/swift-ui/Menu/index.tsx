@@ -14,7 +14,6 @@ type NativeMenuProps = Omit<MenuProps, 'label' | 'onPrimaryAction'> & {
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'MenuView');
 
-
 /**
  * Displays a dropdown menu when tapped.
  */

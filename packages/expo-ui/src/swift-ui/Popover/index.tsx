@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent } from 'react-native';
 
-import { createViewModifierEventListener } from '../modifiers/utils';
 import { Slot } from '../SlotView';
+import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type PopoverViewProps = {

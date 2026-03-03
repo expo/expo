@@ -57,7 +57,6 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'SliderView'
 );
 
-
 function transformSliderProps(props: SliderProps): NativeSliderProps {
   const {
     label,
