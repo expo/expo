@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
+import { Slot } from '../SlotView';
 import { type CommonViewModifierProps } from '../types';
 
 /**
@@ -39,34 +40,25 @@ type NativeConfirmationDialogProps = Omit<ConfirmationDialogProps, 'onIsPresente
 const ConfirmationDialogNativeView: React.ComponentType<NativeConfirmationDialogProps> =
   requireNativeView('ExpoUI', 'ConfirmationDialogView');
 
-const ConfirmationDialogNativeTrigger: React.ComponentType<{ children: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'ConfirmationDialogTrigger');
-
-const ConfirmationDialogNativeActions: React.ComponentType<{ children: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'ConfirmationDialogActions');
-
-const ConfirmationDialogNativeMessage: React.ComponentType<{ children: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'ConfirmationDialogMessage');
-
 /**
  * The component visible all the time that triggers the confirmation dialog presentation.
  */
 function Trigger(props: { children: React.ReactNode }) {
-  return <ConfirmationDialogNativeTrigger {...props} />;
+  return <Slot name="trigger">{props.children}</Slot>;
 }
 
 /**
  * The action buttons displayed in the confirmation dialog. Use `Button` components from `@expo/ui/swift-ui` as children.
  */
 function Actions(props: { children: React.ReactNode }) {
-  return <ConfirmationDialogNativeActions {...props} />;
+  return <Slot name="actions">{props.children}</Slot>;
 }
 
 /**
  * An optional message displayed below the title in the confirmation dialog.
  */
 function Message(props: { children: React.ReactNode }) {
-  return <ConfirmationDialogNativeMessage {...props} />;
+  return <Slot name="message">{props.children}</Slot>;
 }
 
 /**

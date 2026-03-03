@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 
+import { Slot } from '../SlotView';
 import { type CommonViewModifierProps } from '../types';
 
 export type SliderProps = {
@@ -56,10 +57,6 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'SliderView'
 );
 
-const SliderValueLabelNativeView: React.ComponentType<{
-  kind: 'label' | 'minimum' | 'maximum';
-  children?: React.ReactNode;
-}> = requireNativeView('ExpoUI', 'SliderLabelView');
 
 function transformSliderProps(props: SliderProps): NativeSliderProps {
   const {
@@ -90,13 +87,9 @@ export function Slider(props: SliderProps) {
 
   return (
     <SliderNativeView {...transformSliderProps(props)}>
-      {label && <SliderValueLabelNativeView kind="label">{label}</SliderValueLabelNativeView>}
-      {minimumValueLabel && (
-        <SliderValueLabelNativeView kind="minimum">{minimumValueLabel}</SliderValueLabelNativeView>
-      )}
-      {maximumValueLabel && (
-        <SliderValueLabelNativeView kind="maximum">{maximumValueLabel}</SliderValueLabelNativeView>
-      )}
+      {label && <Slot name="label">{label}</Slot>}
+      {minimumValueLabel && <Slot name="minimum">{minimumValueLabel}</Slot>}
+      {maximumValueLabel && <Slot name="maximum">{maximumValueLabel}</Slot>}
     </SliderNativeView>
   );
 }

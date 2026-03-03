@@ -3,6 +3,7 @@ import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
+import { Slot } from '../SlotView';
 import { type CommonViewModifierProps } from '../types';
 
 export type LabelProps = {
@@ -31,10 +32,6 @@ export type LabelProps = {
 
 const LabelNativeView: React.ComponentType<LabelProps & { children?: React.ReactNode }> =
   requireNativeView('ExpoUI', 'LabelView');
-const LabelIconNativeView: React.ComponentType<{ children?: React.ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'LabelIcon'
-);
 
 /**
  * Renders a native label view, which could be used in a list or section.
@@ -49,7 +46,7 @@ export function Label(props: LabelProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {icon && <LabelIconNativeView>{icon}</LabelIconNativeView>}
+      {icon && <Slot name="icon">{icon}</Slot>}
     </LabelNativeView>
   );
 }
