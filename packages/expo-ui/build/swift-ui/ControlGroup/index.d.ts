@@ -4,7 +4,7 @@ import { type CommonViewModifierProps } from '../types';
 export interface ControlGroupProps extends CommonViewModifierProps {
     /**
      * The label for the control group. Can be a string for simple text labels,
-     * or a Label component for custom label content. When omitted, the control group
+     * or a `Label` component for custom label content. When omitted, the control group
      * has no label.
      * @platform iOS
      * @platform tvOS 17.0+
