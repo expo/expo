@@ -4,6 +4,7 @@ export const TALKS = [
     event: 'App.js Conf 2025',
     description: 'Charlie Cheever, Jon Samp',
     videoId: 'lnxanzsP1rM',
+    uploadDate: '2025-06-04',
     home: true,
   },
   {
@@ -11,6 +12,7 @@ export const TALKS = [
     event: 'App.js Conf 2025',
     description: 'Evan Bacon',
     videoId: 'GKQ_0VfYweg',
+    uploadDate: '2025-06-05',
     home: true,
   },
   {
@@ -18,6 +20,7 @@ export const TALKS = [
     event: 'App.js Conf 2025',
     description: 'Keith Kurak',
     videoId: 'TLoHua8bzPg',
+    uploadDate: '2025-06-19',
     home: true,
   },
   {
@@ -25,24 +28,28 @@ export const TALKS = [
     event: 'App.js Conf 2024',
     description: 'Charlie Cheever, James Ide',
     videoId: 'StTYy9Duk3E',
+    uploadDate: '2024-06-04',
   },
   {
     title: 'Getting the most out of Expo Development Builds',
     event: 'App.js Conf 2024',
     description: 'Kadi Kraman',
     videoId: '7J8LRpja9_o',
+    uploadDate: '2024-06-07',
   },
   {
     title: 'Fetch Once, Render Everywhere',
     event: 'App.js Conf 2024',
     description: 'Evan Bacon',
     videoId: 'BK2xbPW2uUU',
+    uploadDate: '2024-06-10',
   },
   {
     title: 'Launching Desktop Apps to Orbit with React Native',
     event: 'App.js Conf 2024',
     description: 'Gabriel Donadel',
     videoId: 'K7yC3JKfWYU',
+    uploadDate: '2024-06-11',
     home: true,
   },
   {
@@ -50,60 +57,70 @@ export const TALKS = [
     event: 'App.js Conf 2023',
     description: 'Charlie Cheever, James Ide',
     videoId: 'xHMu4oT6-SQ',
+    uploadDate: '2023-05-17',
   },
   {
     title: 'EAS: Iterate with confidence',
     event: 'App.js Conf 2023',
     description: 'Jon Samp',
     videoId: 'LTui_5dqXyM',
+    uploadDate: '2023-05-23',
   },
   {
     title: 'Expo Router: Write Once, Route Everywhere',
     event: 'App.js Conf 2023',
     description: 'Evan Bacon',
     videoId: '608r8etX_cg',
+    uploadDate: '2023-05-22',
   },
   {
     title: 'Debugging should be easier',
     event: 'App.js Conf 2023',
     description: 'Cedric van Putten',
     videoId: 'sRLunWEzwHI',
+    uploadDate: '2023-05-19',
   },
   {
     title: 'React Native on Linux with the New Architecture',
     event: 'App.js Conf 2023',
     description: 'Kudo Chien',
     videoId: 'Ca4SNa6kL_M',
+    uploadDate: '2023-05-30',
   },
   {
     title: "Not your grandparents' Expo",
     event: 'Chain React 2023',
     description: 'Keith Kurak',
     videoId: 'YufZFVL-BJc',
+    uploadDate: '2023-06-01',
   },
   {
     title: 'Expo keynote',
     event: 'App.js Conf 2022',
     description: 'Charlie Cheever, Evan Bacon, Tomasz Sapeta',
     videoId: 'ObeaMae0hug',
+    uploadDate: '2022-06-15',
   },
   {
     title: 'The Hidden Features from V8 to Boost React Native',
     event: 'App.js Conf 2022',
     description: 'Kudo Chien',
     videoId: '6e0b2O6NRz4',
+    uploadDate: '2022-07-01',
   },
   {
     title: 'Publish Updates with Expo and React Native',
     event: 'App.js Conf 2022',
     description: 'Quinlan Jung',
     videoId: 'd0wzwVp8dug',
+    uploadDate: '2022-06-20',
   },
   {
     title: 'Limitless App Development',
     event: 'React Advanced 2021',
     description: 'Evan Bacon',
     videoId: 'YjJ0NG9MFkg',
+    uploadDate: '2021-10-28',
   },
 ] as Talk[];
 
@@ -113,6 +130,7 @@ export const PODCASTS = [
     event: 'Rocket Ship #081',
     description: 'Alberto Moedano',
     videoId: '1_J4xJk6XSc',
+    uploadDate: '2025-09-22',
     link: 'https://podcast.galaxies.dev/episodes/081-expo-sdk-54-expo-router-v6-expo-ui-beta-for-ios-with-beto-moedano',
   },
   {
@@ -134,6 +152,7 @@ export const PODCASTS = [
     event: 'Rocket Ship #059',
     description: 'Evan Bacon',
     videoId: 'y8qaHct3TWE',
+    uploadDate: '2025-01-27',
     link: 'https://podcast.galaxies.dev/episodes/059-expo-router-rsc-dom-components-with-evan-bacon',
   },
   {
@@ -141,6 +160,7 @@ export const PODCASTS = [
     event: 'React Universe On Air #45',
     description: 'Evan Bacon',
     videoId: 'rA7E3rGKSZw',
+    uploadDate: '2025-01-02',
     link: 'https://www.callstack.com/podcasts/universal-react-native-apps-with-dom-react-server-components',
   },
   {
@@ -176,6 +196,7 @@ export const PODCASTS = [
     event: 'React Universe On Air #43',
     description: 'Quinlan Jung',
     videoId: 'X7EMrgI3A9g',
+    uploadDate: '2024-10-29',
     link: 'https://www.callstack.com/podcasts/how-to-handle-app-center-retirement',
   },
   {
@@ -190,6 +211,7 @@ export const PODCASTS = [
     event: 'Rocket Ship #038',
     description: 'Jon Samp',
     videoId: 'JKU9JC4nX1k',
+    uploadDate: '2024-04-15',
     link: 'https://podcast.galaxies.dev/episodes/038-expo-eas-and-100-snakes-with-jon-samp',
   },
   {
@@ -197,6 +219,7 @@ export const PODCASTS = [
     event: 'React Universe On Air #36',
     description: 'Kadi Kraman',
     videoId: 'eutgpu2dgF4',
+    uploadDate: '2024-03-28',
     link: 'https://www.callstack.com/podcasts/react-native-performance-in-2024-challenges-solutions-forecasts',
   },
   {
@@ -204,6 +227,7 @@ export const PODCASTS = [
     event: 'Rocket Ship #028',
     description: 'Evan Bacon',
     videoId: 'qsRI8T5V99g',
+    uploadDate: '2024-02-05',
     link: 'https://podcast.galaxies.dev/episodes/028-expo-router-universal-react-native-apps-with-evan-bacon',
   },
   {
@@ -211,12 +235,14 @@ export const PODCASTS = [
     event: 'devtools.fm #84',
     description: 'Evan Bacon',
     videoId: 'Hnh5ew0jfKQ',
+    uploadDate: '2024-02-04',
   },
   {
     title: 'EAS, Expo Prebuild & SDK 50',
     event: 'Rocket Ship #025',
     description: 'Kadi Kraman',
     videoId: 'pPQNDHCOoAE',
+    uploadDate: '2024-01-15',
     link: 'https://podcast.galaxies.dev/episodes/025-eas-expo-prebuild-sdk-50-with-kadi-kraman',
   },
   {
@@ -224,6 +250,7 @@ export const PODCASTS = [
     event: 'The React Native Show #28',
     description: 'Jon Samp, Cedric van Putten',
     videoId: '4PPDAvgfLHk',
+    uploadDate: '2023-10-11',
     thumbnail: '4PPDAvgfLHk.webp',
   },
   {
@@ -245,6 +272,7 @@ export const PODCASTS = [
     event: 'Rocket Ship #007',
     description: 'Cedric van Putten',
     videoId: 'yK0UDiLjxNY',
+    uploadDate: '2023-09-11',
     link: 'https://podcast.galaxies.dev/episodes/007-expo-router-debugging-with-cedric-van-putten',
   },
 ] as Talk[];
@@ -254,26 +282,31 @@ export const LIVE_STREAMS = [
     title: 'Announcing the 2025 Expo App Award winners!',
     event: 'Expo Live Stream',
     videoId: 'KnZ3LWkXzSk',
+    uploadDate: '2025-11-21',
   },
   {
     title: "What's new in Expo SDK 54?",
     event: 'Expo Live Stream',
     videoId: 'KBlbkjqxNbM',
+    uploadDate: '2025-09-17',
   },
   {
     title: 'Shipping with Expo: How to get your Bolt app to the app stores',
     event: 'Expo Live Stream',
     videoId: 'ViU7207_W54',
+    uploadDate: '2025-06-11',
   },
   {
     title: 'How to use Protected Routes in Expo Router V5 for smooth auth',
     event: 'Expo Live Stream',
     videoId: 'XCTaMu0qnFY',
+    uploadDate: '2025-05-07',
   },
   {
     title: 'Best practices for using Unistyles 3.0 to style cross platform applications',
     event: 'Expo Live Stream',
     videoId: 'K3wZg-Pxt3k',
+    uploadDate: '2025-03-25',
   },
   {
     title: 'How to build mobile apps without writing a line of code with Bolt and Expo',
@@ -284,63 +317,75 @@ export const LIVE_STREAMS = [
     title: 'What is Legend List?',
     event: 'Expo Live Stream',
     videoId: 'XpZMveUCke8',
+    uploadDate: '2025-02-19',
   },
   {
     title: 'How to add Apple home screen widgets to React apps',
     thumbnail: 'widgets.jpg',
     event: 'Expo Live Stream',
     videoId: 'hgmAMrVRzRM',
+    uploadDate: '2025-01-28',
   },
   {
     title: 'Your 2025 React Native Tech Stack',
     event: 'Expo Live Stream',
     thumbnail: 'rn-techstack.jpg',
     videoId: 'kqdrn-jEaXY',
+    uploadDate: '2025-01-21',
   },
   {
     title: 'Radon IDE: the VS Code extension for React Native',
     event: 'Expo Live Stream',
     videoId: 'UeYmRKWhwFI',
+    uploadDate: '2024-12-10',
   },
   {
     title: 'Building 4 apps in 4 weeks with Expo',
     event: 'Expo Live Stream',
     videoId: 'YOfLHtK8B04',
+    uploadDate: '2024-12-03',
   },
   {
     title: 'Launch Week 2024 AMA',
     event: 'Expo Live Stream',
     videoId: 'NHpS9JaL7jA',
+    uploadDate: '2024-11-23',
   },
   {
     title: 'Expo DOM component live demo',
     event: 'Expo Live Stream',
     videoId: 'jU4_1vpjahw',
+    uploadDate: '2024-11-19',
   },
   {
     title: 'RNL Conf Fireside Interview: Charlie Cheever & Mo Javad',
     event: 'Expo Live Stream',
     videoId: 'ZBEkeRy3wjk',
+    uploadDate: '2024-11-15',
   },
   {
     title: 'How to migrate a React website to native with Expo DOM components',
     event: 'Expo Live Stream',
     videoId: 'lLlu4fPMXes',
+    uploadDate: '2024-10-30',
   },
   {
     title: 'New Architecture adoption strategies',
     event: 'Expo Live Stream',
     videoId: 'VqFwrEoni40',
+    uploadDate: '2024-10-29',
   },
   {
     title: 'Hidden gems of the Expo Modules API',
     event: 'Expo Live Stream',
     videoId: 'nWY4GbIN0vY',
+    uploadDate: '2024-10-09',
   },
   {
     title: 'Debugging with Sentry',
     event: 'Expo Live Stream',
     videoId: 'HO_KT0LbPs0',
+    uploadDate: '2024-09-10',
   },
   {
     title: 'How to do React Native styling with Tamagui',
@@ -351,428 +396,525 @@ export const LIVE_STREAMS = [
     title: 'How to do React Native styling with NativeWind',
     event: 'Expo Live Stream',
     videoId: 'TtmWw0NfsQk',
+    uploadDate: '2024-08-29',
   },
   {
     title: 'An introduction to built-in styling in React Native',
     event: 'Expo Live Stream',
     videoId: 'M1ma6Y5Ih_c',
+    uploadDate: '2024-08-14',
   },
   {
     title: 'What React devs need to know about React Native',
     event: 'Expo Live Stream',
     videoId: 'iB7sc-fzpWw',
+    uploadDate: '2024-07-30',
   },
   {
     title: 'Expo SDK 51: New Architecture, Router 3.5, expo.new and more',
     event: 'Expo Live Stream',
     videoId: 'k1ISWPgP4S4',
+    uploadDate: '2024-06-12',
   },
   {
     title: 'What is Expo Orbit? Live demo of speeding up dev workflow',
     event: 'Expo Live Stream',
     videoId: 'vUoIoYq8WNM',
+    uploadDate: '2024-03-12',
   },
   {
     title: 'How to build TV apps from scratch, and with Ignite stack',
     event: 'Expo Live Stream',
     videoId: 'PUMBWeLVuiw',
+    uploadDate: '2024-02-27',
   },
   {
     title: 'Expo SDK 50: API Routes, Fingerprint, Dev Tools and SQLite',
     event: 'Expo Live Stream',
     videoId: 'cKFSVUo3AnI',
+    uploadDate: '2024-01-31',
   },
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: "What's new in Expo SDK 55",
+    event: 'Expo Tutorials',
+    videoId: 'q72aeXsbF9c',
+    uploadDate: '2026-02-26',
+  },
+  {
     title: 'AI mobile app development with Replit and Expo',
     event: 'Expo Tutorials',
     videoId: 'Zm4z-8i7PgA',
+    uploadDate: '2026-01-15',
   },
   {
     title: 'How to add Android widgets to Expo apps | Native, Resizable, Configurable widgets',
     event: 'Expo Tutorials',
     videoId: 'rCVWq4WkoDA',
+    uploadDate: '2025-12-18',
   },
   {
     title: 'How to add native iOS Widgets to your Expo app',
     event: 'Expo Tutorials',
     videoId: 'UH4ejdz3fko',
+    uploadDate: '2025-12-10',
   },
   {
     title: 'How to send emails with Resend from your Expo app',
     event: 'Expo Tutorials',
     videoId: '8sPD8SNcUFA',
+    uploadDate: '2025-12-01',
   },
   {
     title: 'The fastest mobile QA workflow: Expo pull request previews in GitHub Actions',
     event: 'EAS Tutorials',
     videoId: '7UVIrqrrrso',
+    uploadDate: '2025-11-26',
   },
   {
     title: 'Getting started with Meta Horizon Development using Expo',
     event: 'Expo Tutorials',
     videoId: '24G2tui0Ts8',
+    uploadDate: '2025-11-05',
   },
   {
     title: 'How to make Expo apps faster | Expo app development best practices',
     event: 'Expo Tutorials',
     videoId: 'vFbim_U1Lmc',
+    uploadDate: '2025-10-29',
   },
   {
     title: 'Learn how to use the new Icon Composer with Expo',
     event: 'Expo Tutorials',
     videoId: 'RZ_QMym3adw',
+    uploadDate: '2025-10-25',
   },
   {
     title: 'Introducing Expo MCP Server',
     event: 'Expo Tutorials',
     videoId: 'dp9dpIgDxZQ',
+    uploadDate: '2025-10-21',
   },
   {
     title: 'How to adopt Liquid Glass in an Expo app',
     event: 'Expo Tutorials',
     videoId: 'NMCQOBIwW2M',
+    uploadDate: '2025-10-13',
   },
   {
     title: 'Liquid Glass Tabs with Expo Router v6 | Native Tabs',
     event: 'Expo Tutorials',
     videoId: 'QqNZXdGFl44',
+    uploadDate: '2025-09-17',
   },
   {
     title: 'Expo UI iOS Liquid Glass Tutorial',
     event: 'Expo Tutorials',
     videoId: '2wXYLWz3YEQ',
+    uploadDate: '2025-09-12',
   },
   {
     title: 'Expo SDK 54: Liquid Glass, Expo UI, Expo Router v6, React 19, Link Previews',
     event: 'Expo Tutorials',
     videoId: 'iYh-7WfJTR0',
+    uploadDate: '2025-09-10',
   },
   {
     title: 'How to upgrade from Expo SDK 53 to SDK 54 in 5 minutes',
     event: 'Expo Tutorials',
     videoId: 'QuN63BRRhAM',
+    uploadDate: '2025-09-10',
   },
   {
     title: 'When to use over the air updates | Three important OTA use cases',
     event: 'EAS Tutorials',
     videoId: 'PMRekmaeb1o',
+    uploadDate: '2025-08-12',
   },
   {
     title: "Top 5 Expo SDK Features You're Not Using",
     event: 'Expo Tutorials',
     videoId: 'HQ_xzbq_BnQ',
+    uploadDate: '2025-07-31',
   },
   {
     title: 'Repack Workflow Demo | Speed up CI builds by ~80%',
     event: 'EAS Tutorials',
     videoId: 'peZ36U87k-M',
+    uploadDate: '2025-07-21',
   },
   {
     title: 'How to Add In-App Subscriptions with RevenueCat + Expo',
     event: 'Expo Tutorials',
     videoId: 'R3fLKC-2Qh0',
+    uploadDate: '2025-07-17',
   },
   {
     title: 'How to build a Custom Expo Module',
     event: 'Expo Tutorials',
     videoId: 'zReFsPgUdMs',
+    uploadDate: '2025-07-09',
   },
   {
     title: 'Speed up your Expo Builds with Remote Build Cache',
     event: 'Expo Tutorials',
     videoId: '5SmaC-JQS_k',
+    uploadDate: '2025-07-02',
   },
   {
     title: 'Build a Local-First Sketch App with Expo, Instant & Reanimated',
     event: 'Expo Tutorials',
     videoId: 'DEJIcaGN3vY',
+    uploadDate: '2025-06-25',
   },
   {
     title: 'How to use Expo Background Tasks',
     event: 'Expo Tutorials',
     videoId: '4lFus7TvayI',
+    uploadDate: '2025-06-18',
   },
   {
     title: 'Building auth and onboarding flows with protected routes',
     event: 'Expo Tutorials',
     videoId: 'zHZjJDTTHJg',
+    uploadDate: '2025-06-17',
   },
   {
     title: 'Golden Workflow: Automate the creation of development builds',
     event: 'EAS Tutorials',
     videoId: 'u8MAJ0F18s0',
+    uploadDate: '2025-05-28',
   },
   {
     title: 'Golden Workflow: Share preview updates with your team',
     event: 'EAS Tutorials',
     videoId: 'v_rzRcVSQYQ',
+    uploadDate: '2025-05-28',
   },
   {
     title: 'Golden Workflow: Deploy your app to production with an automated workflow',
     event: 'EAS Tutorials',
     videoId: 'o-peODF6E2o',
+    uploadDate: '2025-05-28',
   },
   {
     title: 'How to publish your AI app to the app store | No code needed',
     event: 'Expo Tutorials',
     videoId: 'T1akm3DPNus',
+    uploadDate: '2025-05-23',
   },
   {
     title: 'Learn how to build with the new expo-maps library',
     event: 'Expo Tutorials',
     videoId: 'jDCuaIQ9vd0',
+    uploadDate: '2025-05-01',
   },
   {
     title: 'Building an Auth Flow with Expo Router',
     event: 'Expo Tutorials',
     videoId: 'yNaOaR2kIa0',
+    uploadDate: '2025-04-17',
   },
   {
     title: 'Using Modals with Expo Router',
     event: 'Expo Tutorials',
     videoId: 'gNzuJVRmyDk',
+    uploadDate: '2025-04-17',
   },
   {
     title: 'Using a Tab Navigator with Expo Router',
     event: 'Expo Tutorials',
     videoId: 'BElPB4Ai3j0',
+    uploadDate: '2025-04-16',
   },
   {
     title: 'Using a Stack Navigator with Expo Router',
     event: 'Expo Tutorials',
     videoId: 'izZv6a99Roo',
+    uploadDate: '2025-04-15',
   },
   {
     title: 'Introduction to Expo Router Layout Files',
     event: 'Expo Tutorials',
     videoId: 'Yh6Qlg2CYwQ',
+    uploadDate: '2025-04-14',
   },
   {
     title: 'Sign in with Apple and Expo Router Tutorial',
     event: 'Expo Tutorials',
     videoId: 'tqxTijhYhp8',
+    uploadDate: '2025-04-10',
   },
   {
     title: 'How to integrate Google Sign-In with Expo using Expo Router API Routes',
     event: 'Expo Tutorials',
     videoId: 'V2YdhR1hVNw',
+    uploadDate: '2025-03-26',
   },
   {
     title: 'Master Expo Router API Routes | Handle Requests & Stream Data',
     event: 'Expo Tutorials',
     videoId: '2_UzR1wdimI',
+    uploadDate: '2025-02-25',
   },
   {
     title: 'EAS Workflows: React Native CI/CD for app developers',
     event: 'EAS Tutorials',
     videoId: 'OJ2u9tQCpr4',
+    uploadDate: '2025-02-14',
   },
   {
     title: 'How to set up iOS Universal Links and Android App Links with Expo Router',
     event: 'Expo Tutorials',
     videoId: 'kNbEEYlFIPs',
+    uploadDate: '2025-02-04',
   },
   {
     title: 'App icon and splash screen',
     event: 'Expo Tutorials',
     videoId: '3Bsw8a1BJoQ',
+    uploadDate: '2025-02-05',
   },
   {
     title: 'How to manage Multiple App Environments with Expo',
     event: 'EAS Tutorials',
     videoId: 'uKGx3gRrhx0',
+    uploadDate: '2025-01-30',
   },
   {
     title: 'How to create a production build for Android',
     event: 'EAS Tutorials',
     videoId: 'nxlt8uwqhpE',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to create a production build for iOS',
     event: 'EAS Tutorials',
     videoId: 'VZL_e0cEwo8',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to configure multiple app variants',
     event: 'EAS Tutorials',
     videoId: 'UtJJCAfrjIg',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and share internal distribution builds',
     event: 'EAS Tutorials',
     videoId: '1fQuGLHxWks',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to use over the air updates to share previews with your team',
     event: 'EAS Tutorials',
     videoId: 'vPKh-tNm-yI',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to configure a development build',
     event: 'EAS Tutorials',
     videoId: 'uQCE9zl3dXU',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to trigger builds from a GitHub repository',
     event: 'EAS Tutorials',
     videoId: 'fBLFEFC0ip0',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and run a cloud build for iOS Simulator',
     event: 'EAS Tutorials',
     videoId: 'SgL97PFZctg',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and run a cloud build for iOS devices',
     event: 'EAS Tutorials',
     videoId: 'HbfWU7_o4cU',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to create and run a cloud build for Android',
     event: 'EAS Tutorials',
     videoId: 'D612BUtvvl8',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to automate App Version code',
     event: 'EAS Tutorials',
     videoId: 'C8x4N9UmzS8',
+    uploadDate: '2025-01-27',
   },
   {
     title: 'How to deploy an app with EAS Hosting from Expo',
     event: 'EAS Tutorials',
     videoId: 'NaKsfWciJLo',
+    uploadDate: '2025-01-14',
   },
   {
     title: 'Universal Full-Stack Expo Stripe Payment Integration',
     event: 'Expo Tutorials',
     videoId: 'J0tyxUV_omY',
+    uploadDate: '2024-12-12',
   },
   {
     title: 'How to implement a Rich Text Editor using DOM Components',
     event: 'Expo Tutorials',
     videoId: 'CxORa1tXMjw',
+    uploadDate: '2024-12-02',
   },
   {
     title: 'How to build local-first native apps with LiveStore and Expo',
     event: 'Expo Tutorials',
     videoId: 'zQIhJqYU1Qw',
+    uploadDate: '2024-11-21',
   },
   {
     title: 'EAS Workflows: React Native CI/CD for Android, iOS, & web apps',
     event: 'Expo Tutorials',
     videoId: '4VvI0ZVp0cw',
+    uploadDate: '2024-11-20',
   },
   {
     title: 'Expo SDK 52',
     event: 'Expo Tutorials',
     videoId: 'quZv3uKSEfY',
+    uploadDate: '2024-11-18',
   },
   {
     title: 'How to run end to end tests on EAS Build',
     event: 'Expo Tutorials',
     videoId: '-o-bfIRrg9U',
+    uploadDate: '2024-11-01',
   },
   {
     title: 'How to configure status bar, splash screen & app icon',
     event: 'Universal Expo App',
     videoId: 'OgGCYdElcZo',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to handle platform differences',
     event: 'Universal Expo App',
     videoId: 'mEKQvF4irBM',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to take and save screenshots',
     event: 'Universal Expo App',
     videoId: 'Jft3_Yfr-p4',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to add gestures to an Expo App',
     event: 'Universal Expo App',
     videoId: '0q48LLvTGDU',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to create a modal in React Native',
     event: 'Universal Expo App',
     videoId: 'HRAMzrBwVeo',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to use an image picker',
     event: 'Universal Expo App',
     videoId: 'iEQZU58naS8',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to build a screen in an Expo app',
     event: 'Universal Expo App',
     videoId: '3rcOP8xDwTQ',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to add navigation to your app with Expo Router',
     event: 'Universal Expo App',
     videoId: '8336fcFV_T4',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'How to create your first Expo app',
     event: 'Universal Expo App',
     videoId: 'm1-bc53EGh8',
+    uploadDate: '2024-10-10',
   },
   {
     title: 'Expo Go & Development Builds: Which should you use?',
     event: 'Expo Tutorials',
     videoId: 'FdjczjkwQKE',
+    uploadDate: '2024-09-12',
   },
   {
     title: 'How to create a native module with the Expo modules API',
     event: 'Expo Tutorials',
     videoId: 'CdaQSlyGik8',
+    uploadDate: '2024-09-06',
   },
   {
     title: 'How to wrap native libraries',
     event: 'Expo Tutorials',
     videoId: 'M8eNfH1o0eE',
+    uploadDate: '2024-08-28',
   },
   {
     title: 'Keyboard Handling tutorial for React Native apps',
     event: 'Expo Tutorials',
     videoId: 'Y51mDfAhd4E',
+    uploadDate: '2024-08-22',
   },
   {
     title: 'EAS Update + Github = Automatic OTA updates',
     event: 'Expo Tutorials',
     videoId: 's2iIfXK-o0I',
+    uploadDate: '2024-07-16',
   },
   {
     title: 'How to start your first Expo project in 2 minutes',
     event: 'Expo Tutorials',
     videoId: 'yOUAEfDuI44',
+    uploadDate: '2024-05-30',
   },
   {
     title: 'How to debug EAS Update',
     event: 'Expo Tutorials',
     videoId: 'm9PLTr3t3S4',
+    uploadDate: '2023-11-21',
   },
   {
     title: 'Network Debugging | Three ways to use the built in network inspector',
     event: 'Expo Tutorials',
     videoId: 'eTq_4NwCO-A',
+    uploadDate: '2023-10-16',
   },
   {
     title: 'How to use Logcat & macOS Console to debug',
     event: 'Expo Tutorials',
     videoId: 'LvCci4Bwmpc',
+    uploadDate: '2023-09-27',
   },
-];
+] as Talk[];
 
 export type Talk = {
   title: string;
   event: string;
   videoId: string;
   description?: string;
+  uploadDate?: string;
   home?: boolean;
   thumbnail?: string;
   link?: string;
 };
+
+const ALL_VIDEOS = [...TALKS, ...PODCASTS, ...LIVE_STREAMS, ...YOUTUBE_VIDEOS];
+
+export function getVideoUploadDate(videoId: string): string | undefined {
+  const video = ALL_VIDEOS.find(v => v.videoId === videoId);
+  return video?.uploadDate;
+}

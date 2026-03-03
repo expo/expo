@@ -6,7 +6,7 @@ import path from 'path';
 import requireString from 'require-from-string';
 
 import { getExpoConfigAsync } from '../../ExpoConfig';
-import { HashSourceContents } from '../../Fingerprint.types';
+import { HashSource, HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
 import { SourceSkips } from '../../sourcer/SourceSkips';
 import { spawnWithIpcAsync } from '../../utils/SpawnIPC';
@@ -314,6 +314,124 @@ describe(getExpoConfigSourcesAsync, () => {
         filePath: 'assets/ExpoGo.icon',
       })
     );
+  });
+
+  describe('fingerprint sources from expo-font plugin font files', () => {
+    async function getFontSources(
+      fontFiles: Record<string, string>,
+      pluginProps: Record<string, unknown>,
+      platform?: 'ios' | 'android'
+    ) {
+      vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
+      vol.mkdirSync('/app/assets/fonts', { recursive: true });
+      for (const [filePath, content] of Object.entries(fontFiles)) {
+        vol.writeFileSync(`/app/${filePath}`, content);
+      }
+
+      const appJson = JSON.parse(vol.readFileSync('/app/app.json', 'utf8').toString());
+      appJson.expo.plugins = [['expo-font', pluginProps]];
+
+      const configResult = JSON.stringify({
+        config: { exp: appJson.expo },
+        loadedModules: [],
+      });
+      (spawnWithIpcAsync as jest.MockedFunction<typeof spawnWithIpcAsync>).mockResolvedValueOnce({
+        output: [],
+        stdout: configResult,
+        message: configResult,
+        stderr: '',
+        signal: null,
+        status: 0,
+      });
+      const options = await normalizeOptionsAsync(
+        '/app',
+        platform ? { platforms: [platform] } : undefined
+      );
+      const { config, loadedModules } = await getExpoConfigAsync('/app', options);
+      return getExpoConfigSourcesAsync('/app', config, loadedModules, options);
+    }
+
+    function expectFontSource(sources: HashSource[], filePath: string, type: string = 'file') {
+      expect(sources).toContainEqual(
+        expect.objectContaining({
+          type,
+          filePath,
+          overrideHashKey: 'expoConfigExternalFile:contentsOnly',
+        })
+      );
+    }
+
+    function expectNoFontSource(sources: HashSource[], filePath: string) {
+      expect(sources).not.toContainEqual(expect.objectContaining({ filePath }));
+    }
+
+    it('includes platform-specific fonts and excludes cross-platform fonts', async () => {
+      const files = {
+        'assets/fonts/SpaceMono-Regular.ttf': 'font data v1',
+        'assets/fonts/SF-Pro.ttf': 'sf pro data',
+        'assets/fonts/Roboto-Regular.ttf': 'roboto regular data',
+        'assets/fonts/Roboto-Bold.ttf': 'roboto bold data',
+      };
+      const pluginProps = {
+        fonts: ['./assets/fonts/SpaceMono-Regular.ttf'],
+        ios: { fonts: ['./assets/fonts/SF-Pro.ttf'] },
+        android: {
+          fonts: [
+            {
+              fontFamily: 'Roboto',
+              fontDefinitions: [
+                { path: './assets/fonts/Roboto-Regular.ttf', weight: 400 },
+                { path: './assets/fonts/Roboto-Bold.ttf', weight: 700 },
+              ],
+            },
+          ],
+        },
+      };
+
+      const iosSources = await getFontSources(files, pluginProps, 'ios');
+      expectFontSource(iosSources, 'assets/fonts/SpaceMono-Regular.ttf');
+      expectFontSource(iosSources, 'assets/fonts/SF-Pro.ttf');
+      expectNoFontSource(iosSources, 'assets/fonts/Roboto-Regular.ttf');
+      expectNoFontSource(iosSources, 'assets/fonts/Roboto-Bold.ttf');
+
+      const androidSources = await getFontSources(files, pluginProps, 'android');
+      expectFontSource(androidSources, 'assets/fonts/SpaceMono-Regular.ttf');
+      expectFontSource(androidSources, 'assets/fonts/Roboto-Regular.ttf');
+      expectFontSource(androidSources, 'assets/fonts/Roboto-Bold.ttf');
+      expectNoFontSource(androidSources, 'assets/fonts/SF-Pro.ttf');
+    });
+
+    it('includes android string font paths', async () => {
+      const sources = await getFontSources(
+        {
+          'assets/fonts/SpaceMono-Regular.ttf': 'font data v1',
+          'assets/fonts/Noto-Sans.ttf': 'noto sans data',
+        },
+        {
+          fonts: ['./assets/fonts/SpaceMono-Regular.ttf'],
+          android: { fonts: ['./assets/fonts/Noto-Sans.ttf'] },
+        },
+        'android'
+      );
+
+      expectFontSource(sources, 'assets/fonts/Noto-Sans.ttf');
+      expectFontSource(sources, 'assets/fonts/SpaceMono-Regular.ttf');
+    });
+
+    // When a directory path is passed to `fonts`, the config plugin resolves individual
+    // font files from it (filtering by extension). The fingerprint, hashes the
+    // entire directory — this over-hashes slightly but is safe
+    it('hashes entire font directory when a directory path is specified', async () => {
+      const sources = await getFontSources(
+        {
+          'assets/fonts/Inter.ttf': 'inter font data',
+          'assets/fonts/Roboto.otf': 'roboto font data',
+        },
+        { fonts: ['./assets/fonts'] }
+      );
+
+      expectFontSource(sources, 'assets/fonts', 'dir');
+    });
   });
 
   it('should contain external google service files with override hash key', async () => {

@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.printIosConfig = exports.makeArtifactsDirectory = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXcframework = exports.createSwiftPackage = exports.copyHermesXcframework = exports.buildFramework = exports.cleanUpArtifacts = void 0;
+exports.shipSwiftPackage = exports.shipFrameworks = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const commands_1 = require("./commands");
+const constants_1 = require("./constants");
 const error_1 = __importDefault(require("./error"));
 const spinner_1 = require("./spinner");
 const cleanUpArtifacts = async (config) => {
@@ -59,39 +60,43 @@ const buildFramework = async (config) => {
     });
 };
 exports.buildFramework = buildFramework;
-const copyHermesXcframework = async (config) => {
-    const destinationPath = config.output === 'frameworks'
-        ? `${config.artifacts}/hermesvm.xcframework`
-        : `${config.artifacts}/${config.output.packageName}/xcframeworks/hermesvm.xcframework`;
+const copyXCFrameworks = async (config, dest) => {
+    console.log('Copying XCFrameworks to:', dest);
     if (config.dryRun) {
-        console.log(`Copying hermes XCFramework from ${config.hermesFrameworkPath} to ${destinationPath}`);
         return;
     }
-    const sourcePath = `./ios/${config.hermesFrameworkPath}`;
-    if (!node_fs_1.default.existsSync(sourcePath)) {
-        error_1.default.handle('ios-hermes-framework-not-found', sourcePath);
+    const xcframeworks = Object.values(constants_1.XCFramework);
+    for (const xcframework of xcframeworks) {
+        if (node_fs_1.default.existsSync(xcframework.path)) {
+            await (0, spinner_1.withSpinner)({
+                operation: async () => node_fs_1.default.promises.cp(xcframework.path, node_path_1.default.join(dest, `${xcframework.name}.xcframework`), {
+                    force: true,
+                    recursive: true,
+                }),
+                loaderMessage: `Copying ${xcframework.name} to the artifacts directory...`,
+                successMessage: `Copying ${xcframework.name} to the artifacts directory succeeded`,
+                errorMessage: `Copying ${xcframework.name} to the artifacts directory failed`,
+                verbose: config.verbose,
+            });
+        }
+        else if (xcframework.name === constants_1.XCFramework.Hermes.name) {
+            error_1.default.handle('ios-hermes-framework-not-found', xcframework.path);
+        }
+        else {
+            console.warn(`${xcframework.name} not found in source path: ${xcframework.path}. Assuming it's built from sources`);
+        }
     }
-    return (0, spinner_1.withSpinner)({
-        operation: async () => node_fs_1.default.promises.cp(sourcePath, destinationPath, {
-            force: true,
-            recursive: true,
-        }),
-        loaderMessage: 'Copying hermesvm.xcframework to the artifacts directory...',
-        successMessage: 'Copying hermesvm.xcframework to the artifacts directory succeeded',
-        errorMessage: 'Copying hermesvm.xcframework to the artifacts directory failed',
-        verbose: config.verbose,
-    });
 };
-exports.copyHermesXcframework = copyHermesXcframework;
+exports.copyXCFrameworks = copyXCFrameworks;
 const createSwiftPackage = async (config) => {
     if (config.dryRun && config.output !== 'frameworks') {
         console.log(`Creating Swift package with name: ${config.output.packageName} at path: ${config.artifacts}`);
-        return;
+        return '';
     }
-    return (0, spinner_1.withSpinner)({
+    return await (0, spinner_1.withSpinner)({
         operation: async () => {
             if (config.output === 'frameworks') {
-                return;
+                return '';
             }
             const packagePath = node_path_1.default.join(config.artifacts, config.output.packageName);
             await node_fs_1.default.promises.mkdir(packagePath, { recursive: true });
@@ -99,6 +104,7 @@ const createSwiftPackage = async (config) => {
             const xcframeworksDir = node_path_1.default.join(packagePath, 'xcframeworks');
             await node_fs_1.default.promises.mkdir(xcframeworksDir, { recursive: true });
             await (0, exports.generatePackageMetadataFile)(config, packagePath);
+            return packagePath;
         },
         loaderMessage: 'Creating Swift package...',
         successMessage: 'Creating Swift package succeeded',
@@ -107,10 +113,9 @@ const createSwiftPackage = async (config) => {
     });
 };
 exports.createSwiftPackage = createSwiftPackage;
-const createXcframework = async (config) => {
-    const output = config.output === 'frameworks'
-        ? `${config.artifacts}/${config.scheme}.xcframework`
-        : `${config.artifacts}/${config.output.packageName}/xcframeworks/${config.scheme}.xcframework`;
+const createXCframework = async (config, at) => {
+    const frameworkName = `${config.scheme}.xcframework`;
+    const outputPath = node_path_1.default.join(at, frameworkName);
     const args = [
         '-create-xcframework',
         '-framework',
@@ -118,7 +123,7 @@ const createXcframework = async (config) => {
         '-framework',
         `${config.simulator}/${config.scheme}.framework`,
         '-output',
-        output,
+        outputPath,
     ];
     if (config.dryRun) {
         console.log(`xcodebuild ${args.join(' ')}`);
@@ -132,7 +137,7 @@ const createXcframework = async (config) => {
         verbose: config.verbose,
     });
 };
-exports.createXcframework = createXcframework;
+exports.createXCframework = createXCframework;
 const findScheme = () => {
     try {
         const iosPath = node_path_1.default.join(process.cwd(), 'ios');
@@ -187,37 +192,64 @@ const generatePackageMetadataFile = async (config, packagePath) => {
     if (config.output === 'frameworks') {
         return;
     }
+    const prebuiltFrameworks = node_fs_1.default.existsSync(constants_1.XCFramework.React.path);
     const xcframeworks = [
         { name: config.scheme, targets: [config.scheme] },
         { name: 'hermesvm', targets: ['hermesvm'] },
+        ...(prebuiltFrameworks ? [constants_1.XCFramework.React, constants_1.XCFramework.ReactDependencies] : []),
     ];
     const contents = `// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
     name: "${config.output.packageName}",
-    platforms: [.iOS(.v15)],
-    products: [${xcframeworks
-        .map((xcf) => `
-        .library(
-          name: "${xcf.name}",
-          targets: ["${xcf.targets.join('", "')}"],
-        ),
-      `)
-        .join('\n')}],
-    targets: [${xcframeworks
-        .map((xcf) => `
-        .binaryTarget(
-          name: "${xcf.name}",
-          path: "xcframeworks/${xcf.name}.xcframework",
-        ),
-      `)
-        .join('\n')}]
+    platforms: [${(await (0, exports.getSupportedPlatforms)(config)).join(',')}],
+    products: [
+${xcframeworks.map(({ name, targets }) => (0, exports.libraryProduct)(name, targets)).join('\n')}
+    ],
+    targets: [
+${xcframeworks.map(({ name }) => (0, exports.binaryTarget)(name)).join('\n')}
+    ],
 );
 `;
     await node_fs_1.default.promises.writeFile(node_path_1.default.join(packagePath, 'Package.swift'), contents);
 };
 exports.generatePackageMetadataFile = generatePackageMetadataFile;
+const getSupportedPlatforms = async (config) => {
+    // Try to infer `IPHONEOS_DEPLOYMENT_TARGET` from the project
+    const args = ['-workspace', config.workspace, '-scheme', config.scheme, '-showBuildSettings'];
+    try {
+        const { stdout } = await (0, commands_1.runCommand)('xcodebuild', args, { verbose: false });
+        const regex = /^\s*IPHONEOS_DEPLOYMENT_TARGET = (.+)$/m;
+        const value = regex.exec(stdout)?.[1].trim();
+        if (value) {
+            return [`.iOS("${value}")`];
+        }
+        else {
+            throw new Error();
+        }
+    }
+    catch (error) {
+        console.warn('Failed to infer `IPHONEOS_DEPLOYMENT_TARGET` from the project, defaulting to iOS v15');
+    }
+    // If failed to infer default to iOS v15
+    return ['.iOS(.v15)'];
+};
+exports.getSupportedPlatforms = getSupportedPlatforms;
+const libraryProduct = (name, targets) => {
+    return `      .library(
+        name: "${name}",
+        targets: ["${targets.join('", "')}"],
+      ),`;
+};
+exports.libraryProduct = libraryProduct;
+const binaryTarget = (name) => {
+    return `      .binaryTarget(
+        name: "${name}",
+        path: "xcframeworks/${name}.xcframework",
+      ),`;
+};
+exports.binaryTarget = binaryTarget;
 const makeArtifactsDirectory = (config) => {
     try {
         if (!node_fs_1.default.existsSync(config.artifacts)) {
@@ -244,3 +276,23 @@ const printIosConfig = (config) => {
     console.log();
 };
 exports.printIosConfig = printIosConfig;
+const shipFrameworks = async (config) => {
+    // Create artifacts directory
+    await (0, exports.cleanUpArtifacts)(config);
+    (0, exports.makeArtifactsDirectory)(config);
+    // Copy/create XCFrameworks into the package
+    await (0, exports.createXCframework)(config, config.artifacts);
+    await (0, exports.copyXCFrameworks)(config, config.artifacts);
+};
+exports.shipFrameworks = shipFrameworks;
+const shipSwiftPackage = async (config) => {
+    // Create artifacts directory and swift package
+    await (0, exports.cleanUpArtifacts)(config);
+    (0, exports.makeArtifactsDirectory)(config);
+    const packagePath = await (0, exports.createSwiftPackage)(config);
+    const xcframeworksPath = node_path_1.default.join(packagePath, 'xcframeworks');
+    // Copy/create XCFrameworks into the package
+    await (0, exports.createXCframework)(config, xcframeworksPath);
+    await (0, exports.copyXCFrameworks)(config, xcframeworksPath);
+};
+exports.shipSwiftPackage = shipSwiftPackage;
