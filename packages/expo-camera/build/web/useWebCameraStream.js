@@ -60,9 +60,7 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
             if (__DEV__) {
                 console.warn(`Error requesting UserMedia for type "${preferredType}":`, nativeEvent);
             }
-            if (onMountError) {
-                onMountError({ nativeEvent });
-            }
+            onMountError?.({ nativeEvent });
             return null;
         }
     }, [preferredType, onMountError]);
@@ -79,11 +77,8 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
         if (!activeStreams.current.some((value) => value.id === nextStream?.id)) {
             activeStreams.current.push(nextStream);
         }
-        // Set the new stream -> update the video, settings, and actual camera type.
         setStream(nextStream);
-        if (onCameraReady) {
-            onCameraReady();
-        }
+        onCameraReady?.();
         return false;
     }, [getStreamDeviceAsync, setStream, onCameraReady, stream, activeStreams.current]);
     React.useEffect(() => {
@@ -112,13 +107,11 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
                 }
             }
         }
-        // Only update the native camera if changes were found
-        const hasChanges = !!Object.keys(changes).length;
-        const nextWebCameraSettings = { ...capabilities.current, ...changes };
+        const hasChanges = Object.keys(changes).length > 0;
         if (hasChanges) {
             Utils.syncTrackCapabilities(preferredType, stream, changes);
         }
-        capabilities.current = nextWebCameraSettings;
+        capabilities.current = { ...capabilities.current, ...changes };
     }, [
         settings.autoFocus,
         settings.flashMode,
