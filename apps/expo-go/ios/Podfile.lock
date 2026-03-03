@@ -336,7 +336,7 @@ PODS:
   - ExpoRouter (55.0.3):
     - ExpoModulesCore
     - RNScreens
-  - ExpoRouter/Tests (55.0.2):
+  - ExpoRouter/Tests (55.0.3):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (55.0.8):
@@ -4728,7 +4728,7 @@ SPEC CHECKSUMS:
   ExpoNetwork: 018e4e16afdaff30c5002fadf64daab55bc20de0
   ExpoNotifications: 0293112699b35aa26f6e9e1fcecee0323f3187dc
   ExpoPrint: 744a2ca8033698b749389290d96f4ec836027aed
-  ExpoRouter: d770a57784f2cf06d0d5496913857ab79727dc99
+  ExpoRouter: 667c8c2946a263fb46babb7af243223adc01ae91
   ExpoScreenCapture: a4b2159b48fd2514a99f426778da31d1f0a9736f
   ExpoScreenOrientation: ba181744c7ac781952da30c3c2b8d7661df21446
   ExpoSecureStore: 7837b892a89ad8d28b64d9302b657e8b6ebae250

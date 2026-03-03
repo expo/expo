@@ -6,12 +6,12 @@ PODS:
     - ExpoModulesTestCore
   - EXJSONUtils (55.0.0)
   - EXJSONUtils/Tests (55.0.0)
-  - EXManifests (55.0.5):
+  - EXManifests (55.0.9):
     - ExpoModulesCore
-  - EXManifests/Tests (55.0.5):
+  - EXManifests/Tests (55.0.9):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.0-preview.10):
+  - Expo (55.0.4):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -36,9 +36,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher (55.0.6):
+  - expo-dev-launcher (55.0.11):
     - EXManifests
-    - expo-dev-launcher/Main (= 55.0.6)
+    - expo-dev-launcher/Main (= 55.0.11)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -67,7 +67,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (55.0.6):
+  - expo-dev-launcher/Main (55.0.11):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -98,7 +98,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (55.0.6):
+  - expo-dev-launcher/Tests (55.0.11):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -133,7 +133,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (55.0.6):
+  - expo-dev-launcher/Unsafe (55.0.11):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -163,8 +163,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu (55.0.5):
-    - expo-dev-menu/Main (= 55.0.5)
+  - expo-dev-menu (55.0.10):
+    - expo-dev-menu/Main (= 55.0.10)
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -187,7 +187,7 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - expo-dev-menu-interface (55.0.1)
-  - expo-dev-menu/Main (55.0.5):
+  - expo-dev-menu/Main (55.0.10):
     - EXManifests
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -213,7 +213,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/Tests (55.0.5):
+  - expo-dev-menu/Tests (55.0.10):
     - ExpoModulesTestCore
     - hermes-engine
     - Nimble
@@ -239,7 +239,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (55.0.5):
+  - expo-dev-menu/UITests (55.0.10):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -264,7 +264,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.0-preview.10):
+  - Expo/Tests (55.0.4):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -289,19 +289,19 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoClipboard (55.0.5):
+  - ExpoClipboard (55.0.8):
     - ExpoModulesCore
-  - ExpoClipboard/Tests (55.0.5):
+  - ExpoClipboard/Tests (55.0.8):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoImage (55.0.3):
+  - ExpoImage (55.0.5):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (55.0.3):
+  - ExpoImage/Tests (55.0.5):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -309,14 +309,14 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoMediaLibrary (55.0.5):
+  - ExpoMediaLibrary (55.0.9):
     - ExpoModulesCore
     - React-Core
-  - ExpoMediaLibrary/Tests (55.0.5):
+  - ExpoMediaLibrary/Tests (55.0.9):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoModulesCore (55.0.8):
+  - ExpoModulesCore (55.0.13):
     - ExpoModulesJSI
     - hermes-engine
     - RCTRequired
@@ -340,7 +340,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesCore/Tests (55.0.8):
+  - ExpoModulesCore/Tests (55.0.13):
     - ExpoModulesJSI
     - ExpoModulesTestCore
     - hermes-engine
@@ -365,12 +365,12 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoModulesJSI (55.0.8):
+  - ExpoModulesJSI (55.0.13):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.8):
+  - ExpoModulesJSI/Tests (55.0.13):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
@@ -380,20 +380,20 @@ PODS:
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoNotifications (55.0.6):
+  - ExpoNotifications (55.0.10):
     - ExpoModulesCore
-  - ExpoNotifications/Tests (55.0.6):
+  - ExpoNotifications/Tests (55.0.10):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoRouter (55.0.2):
+  - ExpoRouter (55.0.3):
     - ExpoModulesCore
     - RNScreens
-  - ExpoRouter/Tests (55.0.2):
+  - ExpoRouter/Tests (55.0.3):
     - ExpoModulesCore
     - RNScreens
   - EXStructuredHeaders (55.0.0)
   - EXStructuredHeaders/Tests (55.0.0)
-  - EXUpdates (55.0.7):
+  - EXUpdates (55.0.12):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -421,7 +421,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdates/Tests (55.0.7):
+  - EXUpdates/Tests (55.0.12):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -450,7 +450,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdatesInterface (55.1.1):
+  - EXUpdatesInterface (55.1.3):
     - ExpoModulesCore
   - FBLazyVector (0.83.2)
   - hermes-engine (0.14.1):
@@ -1882,6 +1882,75 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
+  - react-native-safe-area-context (5.6.2):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-safe-area-context/common (= 5.6.2)
+    - react-native-safe-area-context/fabric (= 5.6.2)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - react-native-safe-area-context/common (5.6.2):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - react-native-safe-area-context/fabric (5.6.2):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-safe-area-context/common
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - React-NativeModulesApple (0.83.2):
     - hermes-engine
     - React-callinvoker
@@ -2266,6 +2335,53 @@ PODS:
     - React-utils (= 0.83.2)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.83.2)
+  - RNScreens (4.23.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-RCTImage
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - RNScreens/common (= 4.23.0)
+    - Yoga
+  - RNScreens/common (4.23.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-RCTImage
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - SDWebImage (5.21.0):
     - SDWebImage/Core (= 5.21.0)
   - SDWebImage/Core (5.21.0)
@@ -2353,6 +2469,7 @@ DEPENDENCIES:
   - React-logger (from `../../../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../../../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-networking (from `../../../node_modules/react-native/ReactCommon/react/networking`)
   - React-oscompat (from `../../../node_modules/react-native/ReactCommon/oscompat`)
@@ -2533,6 +2650,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../../../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-safe-area-context:
+    :path: "../../../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -2609,23 +2728,24 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   EASClient: a4b8ae18e8de52019ec94d14795faac4800905f0
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
-  EXManifests: f030f5063de017f10ef92558af59a705ef2dc914
-  Expo: b254aa78c8bca087045efed197909a21f8895405
-  expo-dev-launcher: 95542eb1e3a2edeb72f8c6b5754f1f5cac3a16d3
-  expo-dev-menu: 44bb11fac06a2633a0a1589bfe69d86643d80c06
+  EXManifests: 22ec6b0abf4e9b54ea22624aa955cf68d6c90590
+  Expo: c71804d329301c4b0840cfa6432707e63898c538
+  expo-dev-launcher: c5f55d3a3bbc4faf1434b75cc56e060f1c3002c9
+  expo-dev-menu: f3f9c3ad0c84cb0f15f96bd5b95c0d3192ea4358
   expo-dev-menu-interface: bf6f816d29b45bec038080790963c635e8d588c2
-  ExpoClipboard: ec8d68b74b5b70dbb4d4a6ad85bb2cdff85ac7e5
-  ExpoImage: eb2443489a4e380def23857653e170054ecec49c
-  ExpoMediaLibrary: 8c413e8228199c8cc30525bd775e2526c59dd920
-  ExpoModulesCore: 563bdbba15773febbc2fdc0c9248a46f03b7ee5f
-  ExpoModulesJSI: 1416a6a3f0511a7a354f9e47cc45e353b50d5fda
+  ExpoClipboard: ea1c19f29543c3f84abcbc500c6f1a62d954fd5c
+  ExpoImage: 37c1d7411df45995ffcd8fb6a9e20f5e1d5aab8e
+  ExpoMediaLibrary: 68ca21908d9063c823a89b05ec8354b819e6302c
+  ExpoModulesCore: c2cbdb8ac214d455e2e8753e480e425bf79dc9fa
+  ExpoModulesJSI: fdb82be16565ad49cdff2b68af8442b40ba9c259
   ExpoModulesTestCore: 382d7b11f61dd661215fbe33d8ce6c95d6c09e99
-  ExpoRouter: d770a57784f2cf06d0d5496913857ab79727dc99
+  ExpoNotifications: 0293112699b35aa26f6e9e1fcecee0323f3187dc
+  ExpoRouter: 667c8c2946a263fb46babb7af243223adc01ae91
   EXStructuredHeaders: aa49a5557fa24aa61dda4ac665f3987bf3e9e35d
-  EXUpdates: e1fd76387b4ab5a13d7e0206bcb0c2b88a6edafd
-  EXUpdatesInterface: 48272cb8995e613f0843fe531347e2f783e1df5f
+  EXUpdates: 5f8438c9e3b68201409689e327fb3a3bf499b21d
+  EXUpdatesInterface: 26412751a0f7a7130614655929e316f684552aab
   FBLazyVector: 32e9ed0301d0fcbc1b2b341dd7fcbf291f51eb83
-  hermes-engine: e8575e624b55b129d38704ac588af5105ca680ec
+  hermes-engine: e6d591fe8795b2135330f59429d8a97816d21494
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -2641,7 +2761,7 @@ SPEC CHECKSUMS:
   React: f4edc7518ccb0b54a6f580d89dd91471844b4990
   React-callinvoker: 79ef4e3f1c021571f6d2dafbe45ca432b2f3a146
   React-Core: 469995a2b6ef0ffff38ed123ccd202287703939e
-  React-Core-prebuilt: 6e03e45f81e169e7f7b2feeca1d32827936fb53a
+  React-Core-prebuilt: d3934b6f7356a14095844f10e28e269a1fdbab40
   React-CoreModules: db3b65cb984dfc7e0b00db517712cff8d938fc3f
   React-cxxreact: 8551bebcc6bc624ce774dccae20c383844aa9d06
   React-debug: 4f6739c820d7da9c20f48caa985573b6a847e5f5
@@ -2669,6 +2789,7 @@ SPEC CHECKSUMS:
   React-logger: 492d6067ffeb8f5dab6493de30035f22cffe3323
   React-Mapbuffer: 8c4d41ddf7b9bfb06e944e3805f1d7eace7f4aff
   React-microtasksnativemodule: 3b0be17d494b6d101a3efbbc7b18c7d42ef9fe76
+  react-native-safe-area-context: 53f796cb6c814661bbe99fbdfd0585d07b996cdd
   React-NativeModulesApple: 2a7118e5e104229a901412173db166cb51983797
   React-networking: dc151abf285c4a8e72a5a38e5212ece0a1051776
   React-oscompat: 856e980339052dc5a35980a498e24dd8480acf29
@@ -2702,7 +2823,8 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 1976cdf5076a7e34718a56ead2f2069c7f54ebe9
   ReactCodegen: be47d6aabb5472331f076814175c3e586df32968
   ReactCommon: 696163beb1630cf1f7590dbc8bfc542e40bdbe76
-  ReactNativeDependencies: 97d247b2b46aba7c937239726bd348cbe0e0d41b
+  ReactNativeDependencies: 0f667e622817c34dc6bdbae590a86980b587def8
+  RNScreens: fb11b7412bcbdc0ffafcaf9174938d998d4e2bc4
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
