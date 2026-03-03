@@ -12,7 +12,11 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
   var isActiveForLockScreen = false
   var metadata: Metadata?
-  var currentRate: Float = 0.0
+  var currentRate: Float = 1.0 {
+    didSet {
+      currentRate = max(0, currentRate)
+    }
+  }
   let interval: Double
   var wasPlaying = false
   var isPaused: Bool {
