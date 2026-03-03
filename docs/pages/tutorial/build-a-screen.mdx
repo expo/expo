@@ -64,6 +64,8 @@ We'll use `expo-image` library to display the image in the app. It provides a cr
 
 The Image component takes the source of an image as its value. The source can be either a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source required from **assets/images** directory is static. It can also come from [Network](https://reactnative.dev/docs/images#network-images) as a `uri` property.
 
+> **Note:** When using a remote `uri` (for example, `https://...`) as the image source, ensure the device running the app has an active internet connection. This is especially important when testing on a physical device or emulator that relies on your local network. If the device is offline or cannot access the network, the image request will fail.
+
 <ContentSpotlight
   alt="Background image that we are going to use as a placeholder for the tutorial."
   src="/static/images/tutorial/background-image.png"
