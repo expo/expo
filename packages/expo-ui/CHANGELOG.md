@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43613](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
