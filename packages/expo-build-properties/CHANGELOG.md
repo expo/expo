@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update useHermesV1 to support React Native 0.84 ([#43625](https://github.com/expo/expo/pull/43625) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 55.0.9 — 2026-02-25
 
 _This version does not introduce any user-facing changes._
