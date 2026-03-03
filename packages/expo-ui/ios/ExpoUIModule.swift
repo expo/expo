@@ -89,6 +89,10 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ExpoUI.ContentUnavailableView.self)
     ExpoUIView(ConfirmationDialogView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)
+
+    // ControlGroup component
+    ExpoUIView(ControlGroupView.self)
+    View(ControlGroupLabel.self)
     
     // Menu component
     ExpoUIView(MenuView.self)

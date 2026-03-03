@@ -179,7 +179,7 @@ class ExponentManifest @Inject constructor(
 
     // NavigationBar
     const val MANIFEST_NAVIGATION_BAR_KEY = "androidNavigationBar"
-    const val MANIFEST_NAVIGATION_BAR_VISIBLILITY = "visible"
+    const val MANIFEST_NAVIGATION_BAR_VISIBILITY = "visible"
     const val MANIFEST_NAVIGATION_BAR_APPEARANCE = "barStyle"
     const val MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR = "backgroundColor"
 

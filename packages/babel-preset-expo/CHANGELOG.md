@@ -9,8 +9,13 @@
 ### 🐛 Bug fixes
 
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
+- Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.8 — 2026-02-25
 

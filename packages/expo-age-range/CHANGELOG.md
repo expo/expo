@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- bump android dependency, expose new `DECLARED` user status ([#43345](https://github.com/expo/expo/pull/43345) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

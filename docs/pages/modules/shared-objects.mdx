@@ -6,6 +6,8 @@ description: Learn how to use a shared object from the Expo Modules API.
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { BoxLink } from '~/ui/components/BoxLink';
 
 Shared objects let you expose long-lived native instances from Android and iOS to your app's JavaScript/TypeScript without giving control of their lifecycle. They can be used to keep heavy state objects, such as a decoded bitmap, alive across React components, rather than spinning up a new native instance every time a component mounts.
@@ -281,6 +283,135 @@ Using shared objects provides several performance improvements, such as:
 - **Lower memory pressure:** One decode instance in memory instead of multiple copies
 - **Faster operations:** In-memory transformations are significantly faster than disk-based ones
 - **Avoid frame drops:** Less I/O blocking means smoother UI interactions
+
+## Class definition DSL
+
+When you expose a shared object using `Class()`, the class definition block accepts several DSL components beyond `Function` and `AsyncFunction`. These components let you define constructors, static methods, and properties directly on the class.
+
+<PaddedAPIBox header="Constructor">
+
+Defines a constructor that JavaScript code can use to create new instances of the shared object with `new ClassName(args)`. Without a `Constructor`, instances can only be created by native functions that return the shared object.
+
+The constructor receives arguments from JavaScript and must return an instance of the shared object class.
+
+<CodeBlocksTable>
+
+```swift
+Class(MySharedObject.self) {
+  Constructor { (date: Date) in
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+```kotlin
+Class(MySharedObject::class) {
+  Constructor { date: Date ->
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+</CodeBlocksTable>
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="StaticFunction">
+
+Defines a synchronous function on the class prototype, callable from JavaScript as `ClassName.functionName()`. Unlike `Function`, a `StaticFunction` does not receive the instance as an argument.
+
+<CodeBlocksTable>
+
+```swift
+StaticFunction("myStaticFunction") { in
+  /* @hide ... */ /* @end */
+}
+```
+
+```kotlin
+StaticFunction("myStaticFunction") { ->
+  /* @hide ... */ /* @end */
+}
+```
+
+</CodeBlocksTable>
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="StaticAsyncFunction">
+
+Defines an asynchronous function on the class itself, callable from JavaScript as `await ClassName.functionName()`. Returns a `Promise`. On Kotlin, you can use the `Coroutine` modifier for suspendable bodies.
+
+<CodeBlocksTable>
+
+```swift
+StaticAsyncFunction("myStaticAsyncFunction") { in
+  /* @hide ... */ /* @end */
+}
+```
+
+```kotlin
+StaticAsyncFunction("myStaticAsyncFunction") { ->
+  /* @hide ... */ /* @end */
+}
+```
+
+</CodeBlocksTable>
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="Property">
+
+Inside a `Class()` block, `Property` receives the class instance as a parameter, similar to how `Function` does. This lets you expose computed properties on shared object instances.
+
+<CodeBlocksTable>
+
+```swift
+Class(VideoPlayer.self) {
+  Property("isPlaying") { (player: VideoPlayer) -> Bool in
+    return player.isPlaying
+  }
+
+  Property("volume")
+    .get { (player: VideoPlayer) -> Float in
+      return player.volume
+    }
+    .set { (player: VideoPlayer, volume: Float) in
+      player.volume = volume
+    }
+}
+```
+
+```kotlin
+Class(VideoPlayer::class) {
+  Property("isPlaying") { player: VideoPlayer ->
+    return@Property player.isPlaying
+  }
+
+  Property("volume")
+    .get { player: VideoPlayer ->
+      return@get player.volume
+    }
+    .set { player: VideoPlayer, volume: Float ->
+      player.volume = volume
+    }
+}
+```
+
+</CodeBlocksTable>
+
+```js JavaScript
+const player = new VideoPlayer(source);
+
+// Read-only property
+console.log(player.isPlaying); // false
+
+// Read-write property
+player.volume = 0.5;
+console.log(player.volume); // 0.5
+```
+
+</PaddedAPIBox>
 
 ## Additional resources
 

@@ -167,3 +167,30 @@ it(`skips memoizing in node modules`, () => {
   })!;
   expect(code).not.toContain('react.memo_cache_sentinel');
 });
+
+it.each(['widget', 'use no memo', 'use no forget'])(
+  `skips memoizing with opt-out directive "%s"`,
+  (directive) => {
+    const { code } = babel.transformSync(
+      `
+    export default function App() {
+      ${JSON.stringify(directive)};
+      return <div />;
+    }
+   `,
+      {
+        ...options,
+        filename: '/samples/Test.jsx',
+        caller: getCaller({
+          name: 'metro',
+          supportsReactCompiler: true,
+          engine: 'hermes',
+          platform: 'ios',
+          isDev: false,
+        }),
+      }
+    )!;
+    expect(code).not.toContain('import {');
+    expect(code).not.toContain('react.memo_cache_sentinel');
+  }
+);

@@ -475,7 +475,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 #if RCT_DEV
     // Connect to the websocket, ignore downloaded update bundles
     if (![bundleUrl.scheme isEqualToString:@"file"]) {
-      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      //[[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      RCTLogWarn(@"bundle scheme is file - unable to connect to sharedPackageConnection from EXDevLauncherController.");
     }
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif

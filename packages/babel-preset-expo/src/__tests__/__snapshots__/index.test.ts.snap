@@ -6,7 +6,7 @@ var Boo=_interopRequireWildcard(require("Boo"));
 var _expoAppLoading=_interopRequireDefault(require("expo-app-loading"));
 var _expoAsset=require("expo-asset");
 var _fooView=_interopRequireDefault(require("foo-view"));
-function _inlineComp(){var data=_interopRequireDefault(require("inline-comp"));_inlineComp=function _inlineComp(){return data;};return data;}
+function _inlineComp(){var data=_interopRequireDefault(require("inline-comp"));_inlineComp=function(){return data;};return data;}
 var _react=_interopRequireDefault(require("react"));
 var _reactNative=require("react-native");
 var _reactRedux=require("react-redux");
@@ -14,8 +14,8 @@ require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
-function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function _inlineFunc(){return data;};return data;}
-function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));_inlineFuncWithSideEffectsFx=function _inlineFuncWithSideEffectsFx(){return data;};return data;}var _jsxRuntime=require("react/jsx-runtime");var
+function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function(){return data;};return data;}
+function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));_inlineFuncWithSideEffectsFx=function(){return data;};return data;}var _jsxRuntime=require("react/jsx-runtime");var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return(0,_callSuper2.default)(this,Lazy,arguments);}(0,_inherits2.default)(Lazy,_React$Component);return(0,_createClass2.default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
@@ -50,21 +50,21 @@ function unusedFunction(){
 `;
 
 exports[`"lazyImports" option accepts [Function anonymous] 1`] = `
-"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function _createClass2(){return data;};return data;}function _callSuper2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));_callSuper2=function _callSuper2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function _inherits2(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function _vectorIcons(){return data;};return data;}
-function Boo(){var data=_interopRequireWildcard(require("Boo"));Boo=function Boo(){return data;};return data;}
-function _expoAppLoading(){var data=_interopRequireDefault(require("expo-app-loading"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
-function _expoAsset(){var data=require("expo-asset");_expoAsset=function _expoAsset(){return data;};return data;}
-function _fooView(){var data=_interopRequireDefault(require("foo-view"));_fooView=function _fooView(){return data;};return data;}
-function _inlineComp(){var data=_interopRequireDefault(require("inline-comp"));_inlineComp=function _inlineComp(){return data;};return data;}
-function _react(){var data=_interopRequireDefault(require("react"));_react=function _react(){return data;};return data;}
-function _reactNative(){var data=require("react-native");_reactNative=function _reactNative(){return data;};return data;}
-function _reactRedux(){var data=require("react-redux");_reactRedux=function _reactRedux(){return data;};return data;}
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function(){return data;};return data;}function _callSuper2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));_callSuper2=function(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function(){return data;};return data;}
+function Boo(){var data=_interopRequireWildcard(require("Boo"));Boo=function(){return data;};return data;}
+function _expoAppLoading(){var data=_interopRequireDefault(require("expo-app-loading"));_expoAppLoading=function(){return data;};return data;}
+function _expoAsset(){var data=require("expo-asset");_expoAsset=function(){return data;};return data;}
+function _fooView(){var data=_interopRequireDefault(require("foo-view"));_fooView=function(){return data;};return data;}
+function _inlineComp(){var data=_interopRequireDefault(require("inline-comp"));_inlineComp=function(){return data;};return data;}
+function _react(){var data=_interopRequireDefault(require("react"));_react=function(){return data;};return data;}
+function _reactNative(){var data=require("react-native");_reactNative=function(){return data;};return data;}
+function _reactRedux(){var data=require("react-redux");_reactRedux=function(){return data;};return data;}
 require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
-function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function _inlineFunc(){return data;};return data;}
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function _jsxRuntime(){return data;};return data;}var
+function _inlineFunc(){var data=_interopRequireDefault(require("./inline-func"));_inlineFunc=function(){return data;};return data;}
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function(){return data;};return data;}var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_callSuper2().default)(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
@@ -197,21 +197,21 @@ function unusedFunction(){
 `;
 
 exports[`"lazyImports" option accepts true 1`] = `
-"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function _classCallCheck2(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function _createClass2(){return data;};return data;}function _callSuper2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));_callSuper2=function _callSuper2(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function _inherits2(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function _vectorIcons(){return data;};return data;}
-function Boo(){var data=_interopRequireWildcard(require("Boo"));Boo=function Boo(){return data;};return data;}
-function _expoAppLoading(){var data=_interopRequireDefault(require("expo-app-loading"));_expoAppLoading=function _expoAppLoading(){return data;};return data;}
+"var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;function _classCallCheck2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));_classCallCheck2=function(){return data;};return data;}function _createClass2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));_createClass2=function(){return data;};return data;}function _callSuper2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));_callSuper2=function(){return data;};return data;}function _inherits2(){var data=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));_inherits2=function(){return data;};return data;}function _vectorIcons(){var data=require("@expo/vector-icons");_vectorIcons=function(){return data;};return data;}
+function Boo(){var data=_interopRequireWildcard(require("Boo"));Boo=function(){return data;};return data;}
+function _expoAppLoading(){var data=_interopRequireDefault(require("expo-app-loading"));_expoAppLoading=function(){return data;};return data;}
 var _expoAsset=require("expo-asset");
-function _fooView(){var data=_interopRequireDefault(require("foo-view"));_fooView=function _fooView(){return data;};return data;}
-function _inlineComp(){var data=_interopRequireDefault(require("inline-comp"));_inlineComp=function _inlineComp(){return data;};return data;}
-function _react(){var data=_interopRequireDefault(require("react"));_react=function _react(){return data;};return data;}
-function _reactNative(){var data=require("react-native");_reactNative=function _reactNative(){return data;};return data;}
-function _reactRedux(){var data=require("react-redux");_reactRedux=function _reactRedux(){return data;};return data;}
+function _fooView(){var data=_interopRequireDefault(require("foo-view"));_fooView=function(){return data;};return data;}
+function _inlineComp(){var data=_interopRequireDefault(require("inline-comp"));_inlineComp=function(){return data;};return data;}
+function _react(){var data=_interopRequireDefault(require("react"));_react=function(){return data;};return data;}
+function _reactNative(){var data=require("react-native");_reactNative=function(){return data;};return data;}
+function _reactRedux(){var data=require("react-redux");_reactRedux=function(){return data;};return data;}
 require("Foo");
 
 require("./local-file/i-have-side-effects.fx.js");
 require("../i-also-have-side-effects.fx");
 var _inlineFunc=_interopRequireDefault(require("./inline-func"));
-var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function _jsxRuntime(){return data;};return data;}var
+var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require("../inline-func-with-side-effects.fx.ts"));function _jsxRuntime(){var data=require("react/jsx-runtime");_jsxRuntime=function(){return data;};return data;}var
 
 Lazy=function(_React$Component){function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return(0,_callSuper2().default)(this,Lazy,arguments);}(0,_inherits2().default)(Lazy,_React$Component);return(0,_createClass2().default)(Lazy,[{key:"componentDidMount",value:
 function componentDidMount(){
@@ -261,10 +261,10 @@ console.log("Hey I'm running on the UI thread");
 
 exports[`metro supports reanimated worklets 1`] = `
 "var _worklet_14307677064221_init_data={code:"function someWorklet_workletJs1(greeting){console.log(\\"Hey I'm running on the UI thread\\");}",location:"[mock]/worklet.js",sourceMap:"{\\"version\\":3,\\"names\\":[\\"someWorklet_workletJs1\\",\\"greeting\\",\\"console\\",\\"log\\"],\\"sources\\":[\\"[mock]/worklet.js\\"],\\"mappings\\":\\"AAAA,SAAAA,uBAAAC,QAAA,EAAAC,OAAA,CAAAC,GAAA,qCACA\\",\\"ignoreList\\":[]}"};var someWorklet=
-function someWorklet_workletJs1Factory(_ref){var _worklet_14307677064221_init_data=_ref._worklet_14307677064221_init_data;var _e=[new global.Error(),1,-27];var someWorklet=function someWorklet(greeting){
+function someWorklet_workletJs1Factory({_worklet_14307677064221_init_data}){var _e=[new global.Error(),1,-27];var someWorklet=function(greeting){
 
 console.log("Hey I'm running on the UI thread");
-};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="[GLOBAL]";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data:_worklet_14307677064221_init_data});"
+};someWorklet.__closure={};someWorklet.__workletHash=14307677064221;someWorklet.__pluginVersion="[GLOBAL]";someWorklet.__initData=_worklet_14307677064221_init_data;someWorklet.__stackDetails=_e;return someWorklet;}({_worklet_14307677064221_init_data});"
 `;
 
 exports[`metro transpiles non-standard exports 1`] = `

@@ -18,9 +18,9 @@ android {
 }
 
 dependencies {
-  def camerax_version = "1.5.1"
+  def camerax_version = "1.5.3"
 
-  api "androidx.exifinterface:exifinterface:1.4.1"
+  api "androidx.exifinterface:exifinterface:1.4.2"
   api "androidx.appcompat:appcompat:1.7.1"
 
   implementation "androidx.camera:camera-core:${camerax_version}"
@@ -30,6 +30,7 @@ dependencies {
 
   implementation "androidx.camera:camera-view:${camerax_version}"
   implementation "androidx.camera:camera-extensions:${camerax_version}"
+  implementation "androidx.core:core-ktx:1.17.0"
 
   def barcodeDependencyConfiguration = isBarcodeScannerEnabled ? "implementation" : "compileOnly"
   add(barcodeDependencyConfiguration, "com.google.android.gms:play-services-code-scanner:16.1.0")

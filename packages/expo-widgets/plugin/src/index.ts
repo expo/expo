@@ -24,12 +24,12 @@ type ExpoWidgetsConfigPluginProps = {
   widgets?: WidgetConfig[];
 };
 
-const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) => {
+const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps | undefined> = (config, props) => {
   let plugins: (StaticPlugin | ConfigPlugin | string)[] = [];
   const deploymentTarget = '16.2';
   const targetName = 'ExpoWidgetsTarget';
 
-  let bundleIdentifier = props.bundleIdentifier;
+  let bundleIdentifier = props?.bundleIdentifier;
   if (!bundleIdentifier) {
     bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
     plugins.push([
@@ -41,7 +41,7 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) 
     ]);
   }
 
-  let groupIdentifier = props.groupIdentifier;
+  let groupIdentifier = props?.groupIdentifier;
   if (!groupIdentifier) {
     if (!config.ios?.bundleIdentifier) {
       throw new Error(
@@ -58,9 +58,9 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) 
     ]);
   }
 
-  const widgets = props.widgets ?? [];
-  const enablePushNotifications = props.enablePushNotifications ?? false;
-  const frequentUpdates = props.frequentUpdates ?? false;
+  const widgets = props?.widgets ?? [];
+  const enablePushNotifications = props?.enablePushNotifications ?? false;
+  const frequentUpdates = props?.frequentUpdates ?? false;
 
   let sharedFiles: string[] = [];
   const setFiles = (files: string[]) => {

@@ -51,18 +51,12 @@ export function hasValidConstraints(
 }
 
 function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPictureOptions {
-  const captureOptions: CameraPictureOptions = {
-    scale: 1,
-    imageType: 'png' as ImageType,
-    isImageMirror: false,
+  return {
+    ...config,
+    scale: config.scale ?? 1,
+    imageType: config.imageType ?? 'png',
+    isImageMirror: config.isImageMirror ?? false,
   };
-  for (const key in config) {
-    const prop = key as keyof CameraPictureOptions;
-    if (prop in config && config[prop] !== undefined && prop in captureOptions) {
-      captureOptions[prop] = config[prop] as any;
-    }
-  }
-  return captureOptions;
 }
 
 const DEFAULT_QUALITY = 0.92;
@@ -190,13 +184,8 @@ export async function getStreamDevice(
   preferredWidth?: number | ConstrainLongRange,
   preferredHeight?: number | ConstrainLongRange
 ): Promise<MediaStream> {
-  const constraints: MediaStreamConstraints = getIdealConstraints(
-    preferredCameraType,
-    preferredWidth,
-    preferredHeight
-  );
-  const stream: MediaStream = await requestUserMediaAsync(constraints);
-  return stream;
+  const constraints = getIdealConstraints(preferredCameraType, preferredWidth, preferredHeight);
+  return requestUserMediaAsync(constraints);
 }
 
 export function isWebKit(): boolean {
@@ -218,25 +207,18 @@ export function capture(
   config: CameraPictureOptions
 ): CameraCapturedPicture {
   const base64 = captureImage(video, config);
+  const { width = 0, height = 0 } = settings;
 
   const capturedPicture: CameraCapturedPicture = {
     uri: base64,
     base64,
-    width: 0,
-    height: 0,
+    width,
+    height,
     format: config.imageType ?? 'jpg',
+    exif: settings,
   };
 
-  if (settings) {
-    const { width = 0, height = 0 } = settings;
-    capturedPicture.width = width;
-    capturedPicture.height = height;
-    capturedPicture.exif = settings;
-  }
-
-  if (config.onPictureSaved) {
-    config.onPictureSaved(capturedPicture);
-  }
+  config.onPictureSaved?.(capturedPicture);
   return capturedPicture;
 }
 
