@@ -23,20 +23,20 @@ internal struct ControlGroupView: ExpoSwiftUI.View {
 
   var body: some View {
     if #available(iOS 15.0, tvOS 17.0, *) {
-      let labelContent = props.children?
-        .compactMap { $0.childView as? ControlGroupLabel }
-        .first
+      if #available(iOS 16.0, macOS 13.0, tvOS 17.0, *) {
+        let labelContent = props.children?
+          .compactMap { $0.childView as? ControlGroupLabel }
+          .first
 
-      if let systemImage = props.systemImage, let label = props.label {
-        if #available(iOS 16.0, *) {
+        if let systemImage = props.systemImage, let label = props.label {
           ControlGroup(label, systemImage: systemImage) { Children() }
-        } else {
+        } else if let labelContent {
+          ControlGroup { Children() } label: { labelContent }
+        } else if let label = props.label {
           ControlGroup(label) { Children() }
+        } else {
+          ControlGroup { Children() }
         }
-      } else if let labelContent {
-        ControlGroup { Children() } label: { labelContent }
-      } else if let label = props.label {
-        ControlGroup(label) { Children() }
       } else {
         ControlGroup { Children() }
       }

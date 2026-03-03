@@ -6,7 +6,7 @@ export interface ControlGroupProps extends CommonViewModifierProps {
      * The label for the control group. Can be a string for simple text labels,
      * or a `Label` component for custom label content. When omitted, the control group
      * has no label.
-     * @platform iOS
+     * @platform iOS 16.0+
      * @platform tvOS 17.0+
      */
     label?: string | ReactNode;
