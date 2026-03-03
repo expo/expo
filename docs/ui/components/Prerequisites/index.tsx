@@ -58,7 +58,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
     }, [open]);
     return (
       <details
-        id={anchorId}
+        id={heading.current.slug}
         className={mergeClasses(
           'mb-3 scroll-m-4 rounded-md border border-default p-0',
           '[&[open]]:shadow-xs',
