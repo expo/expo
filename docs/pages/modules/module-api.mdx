@@ -362,29 +362,19 @@ See [Sending events](#sending-events) to learn how to send events from the nativ
 
 Defines the function that is invoked when the first event listener is added.
 
-You can also pass an event name to scope the listener to a specific event. This is useful when you need to set up or tear down resources per-event rather than globally.
+You need to pass an event name to scope the listener to a specific event. This is useful when you need to set up or tear down resources per-event rather than globally.
 
 <CodeBlocksTable>
 
 ```swift
-// Global: called when any event listener is added
-OnStartObserving {
-  /* @hide ... */ /* @end */
-}
-
-// Per-event: called when a listener for "onURLReceived" is added
-OnStartObserving(onURLReceived) {
+// Called when a listener for "onURLReceived" is added
+OnStartObserving("onURLReceived") {
   /* @hide ... */ /* @end */
 }
 ```
 
 ```kotlin
-// Global: called when any event listener is added
-OnStartObserving {
-  /* @hide ... */ /* @end */
-}
-
-// Per-event: called when a listener for "onURLReceived" is added
+// Called when a listener for "onURLReceived" is added
 OnStartObserving("onURLReceived") {
   /* @hide ... */ /* @end */
 }
@@ -394,31 +384,21 @@ OnStartObserving("onURLReceived") {
 </PaddedAPIBox>
 <PaddedAPIBox header="OnStopObserving" headerNestingLevel={4}>
 
-Defines the function that is invoked when all event listeners are removed.
+Defines the function that is invoked when all event listeners for a given event are removed.
 
-Like `OnStartObserving`, you can pass an event name to scope the listener to a specific event.
+Like `OnStartObserving`, you need to pass an event name to scope the listener to a specific event.
 
 <CodeBlocksTable>
 
 ```swift
-// Global: called when all event listeners are removed
-OnStopObserving {
-  /* @hide ... */ /* @end */
-}
-
-// Per-event: called when listeners for "onURLReceived" are removed
-OnStopObserving(onURLReceived) {
+// Called when listeners for "onURLReceived" are removed
+OnStopObserving("onURLReceived") {
   /* @hide ... */ /* @end */
 }
 ```
 
 ```kotlin
-// Global: called when all event listeners are removed
-OnStopObserving {
-  /* @hide ... */ /* @end */
-}
-
-// Per-event: called when listeners for "onURLReceived" are removed
+// Called when listeners for "onURLReceived" are removed
 OnStopObserving("onURLReceived") {
   /* @hide ... */ /* @end */
 }
@@ -518,7 +498,7 @@ Defines the activity lifecycle listener that is called when the activity receive
 
 #### Arguments
 
-- **intent**: `Intent` — The new intent that was delivered to the activity.
+- **intent**: `Intent` — The new intent was delivered to the activity. For more information about the `Intent` type, visit: [https://developer.android.com/reference/android/content/Intent](https://developer.android.com/reference/android/content/Intent).
 
 ```kotlin Kotlin
 OnNewIntent { intent ->
@@ -530,12 +510,11 @@ OnNewIntent { intent ->
 </PaddedAPIBox>
 <PaddedAPIBox header="OnUserLeavesActivity" platforms={["android"]} headerNestingLevel={4}>
 
-Defines the activity lifecycle listener that is called as part of the activity lifecycle when an activity is about to go into the background as the result of user choice.
-For example, when the user presses the Home key, `OnUserLeavesActivity` will be called, but when an incoming phone call causes the in-call Activity to be automatically brought to the foreground, `OnUserLeavesActivity` will not be called on the activity being interrupted.
+Defines the activity lifecycle listener called during the activity lifecycle when an activity is about to go into the background as a result of user choice. For example, when the user presses the Home key, `OnUserLeavesActivity` will be called, but when an incoming phone call causes the in-call Activity to be automatically brought to the foreground, `OnUserLeavesActivity` will not be called on the activity being interrupted.
 
 ```kotlin Kotlin
 OnUserLeavesActivity {
-  // Your implement
+  // Your implementation
 }
 ```
 
@@ -923,7 +902,7 @@ extension CMTime: @retroactive Convertible {
 
 </PaddedAPIBox>
 
-In Kotlin, extending an existing type with a protocol isn't possible. Therefore, to extend available types, you can use the `ModuleConverters` builder:
+In Kotlin, extending an existing type with a protocol isn't possible. To extend available types, you can use the `ModuleConverters` builder:
 
 <PaddedAPIBox header="ModuleConverters" platforms={["android"]} headerNestingLevel={4}>
 
