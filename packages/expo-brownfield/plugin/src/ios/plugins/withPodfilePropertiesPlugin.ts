@@ -4,7 +4,7 @@ import type { PluginConfig } from '../types';
 
 const withPodfilePropertiesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withPodfileProperties(config, (config) => {
-    if (!pluginConfig.usePrebuiltReactNative) {
+    if (pluginConfig.buildReactNativeFromSource) {
       config.modResults['ios.useFrameworks'] = 'static';
     }
     return config;
