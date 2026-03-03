@@ -261,7 +261,7 @@ You can build an iOS Simulator app without targeting a specific device by using 
 
 <Terminal cmd={['$ npx expo run:ios --device generic']} />
 
-This uses a generic Xcode destination (`generic/platform=iOS Simulator`) instead of a specific simulator UDID, which is useful for:
+The above command uses a generic Xcode destination (`generic/platform=iOS Simulator`) instead of a specific simulator UDID, which is useful for:
 
 - **CI/CD pipelines**: Build simulator apps without needing simulators configured on the build machine.
 - **Distributing simulator builds**: Create **.app** bundles that can be shared and run on any compatible simulator.
@@ -278,7 +278,7 @@ You can combine this with `--configuration Release` to create a production simul
 
 <Terminal cmd={['$ npx expo run:ios --configuration Release --device generic --output ./build']} />
 
-This will copy the built **.app** bundle to `./build/MyApp.app`.
+The above command will copy the built **.app** bundle to **./build/MyApp.app**.
 
 **iOS development signing**
 
