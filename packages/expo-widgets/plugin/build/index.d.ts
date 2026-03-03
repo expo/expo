@@ -7,5 +7,5 @@ type ExpoWidgetsConfigPluginProps = {
     frequentUpdates?: boolean;
     widgets?: WidgetConfig[];
 };
-declare const _default: ConfigPlugin<ExpoWidgetsConfigPluginProps>;
+declare const _default: ConfigPlugin<ExpoWidgetsConfigPluginProps | undefined>;
 export default _default;
