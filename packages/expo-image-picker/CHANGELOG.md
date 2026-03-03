@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] fix cropper default colors in light mode ([#42437](https://github.com/expo/expo/pull/42437) by [@fobos531](https://github.com/fobos531))
+
 ### 💡 Others
 
 ## 55.0.10 — 2026-02-26
