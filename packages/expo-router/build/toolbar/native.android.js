@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RouterToolbarHost = RouterToolbarHost;
 exports.RouterToolbarItem = RouterToolbarItem;
 const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
+const modifiers_1 = require("@expo/ui/jetpack-compose/modifiers");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
@@ -20,10 +21,13 @@ function RouterToolbarItem(props) {
     if (props.hidden) {
         return null;
     }
-    if (props.type === 'fixedSpacer' || props.type === 'fluidSpacer') {
-        if (process.env.NODE_ENV !== 'production') {
-            // prettier-ignore
-            console.warn('Stack.Toolbar.Spacer is not supported on Android. The spacer will not render.');
+    if (props.type === 'fluidSpacer') {
+        // Silently ignore fluid spacer on android
+        return null;
+    }
+    if (props.type === 'fixedSpacer') {
+        if (props.width) {
+            return <jetpack_compose_1.Box modifiers={[(0, modifiers_1.size)(props.width)]}/>;
         }
         return null;
     }

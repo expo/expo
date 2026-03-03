@@ -525,6 +525,7 @@ export default function ToolbarScreen() {
               icon={require('../../../assets/expo-transparent.png')}
               onPress={() => Alert.alert('Android', 'Expo transparent icon pressed')}
             />
+            <Stack.Toolbar.Spacer width={20} />
             <Stack.Toolbar.Button
               icon={require('../../../assets/expo-logo.png')}
               tintColor="#4630EB"
