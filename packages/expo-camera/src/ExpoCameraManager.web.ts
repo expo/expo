@@ -36,7 +36,7 @@ function handleGetUserMediaError({ message }: { message: string }): PermissionRe
     return {
       status: PermissionStatus.DENIED,
       expires: 'never',
-      canAskAgain: true,
+      canAskAgain: false,
       granted: false,
     };
   }
@@ -57,7 +57,7 @@ async function handleRequestPermissionsAsync(): Promise<PermissionResponse> {
     return {
       status: PermissionStatus.GRANTED,
       expires: 'never',
-      canAskAgain: true,
+      canAskAgain: false,
       granted: true,
     };
   } catch (error: any) {
@@ -86,14 +86,14 @@ async function handlePermissionsQueryAsync(
         return {
           status: PermissionStatus.GRANTED,
           expires: 'never',
-          canAskAgain: true,
+          canAskAgain: false,
           granted: true,
         };
       case 'denied':
         return {
           status: PermissionStatus.DENIED,
           expires: 'never',
-          canAskAgain: true,
+          canAskAgain: false,
           granted: false,
         };
     }
@@ -216,7 +216,7 @@ export default {
       return {
         status: PermissionStatus.GRANTED,
         expires: 'never',
-        canAskAgain: true,
+        canAskAgain: false,
         granted: true,
       };
     } catch (error: any) {
