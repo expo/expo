@@ -1,1 +1,1 @@
-export { updateXCodeProject } from './xcodeProjectUpdates';
+export { updateXcodeProject, InlineModulesXcodeParams } from './xcodeProjectUpdates';

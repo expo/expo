@@ -31,7 +31,6 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "dependencies": {
-    "@expo/config": "~55.0.2",
     "@expo/config-plugins": "~55.0.2",
     "@expo/metro": "~54.2.0"
   },

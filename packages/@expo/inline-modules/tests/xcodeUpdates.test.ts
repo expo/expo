@@ -1,17 +1,12 @@
-import { getConfig } from '@expo/config';
 import { IOSConfig } from '@expo/config-plugins';
 import { it } from '@jest/globals';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-import { updateXCodeProject } from '../src/xcodeProjectUpdates';
+import { updateXcodeProject } from '../src/xcodeProjectUpdates';
 
-jest.mock('@expo/config', () => ({
-  getConfig: jest.fn(),
-}));
-
-describe('updateXCodeProject', () => {
+describe('updateXcodeProject', () => {
   let tempProjectRoot: string | null = null;
   const FIXTURE_PATH = path.resolve(__dirname, 'bare-project');
 
@@ -29,21 +24,11 @@ describe('updateXCodeProject', () => {
   });
 
   it('adds watched directories to the PBX project', async () => {
-    (getConfig as jest.Mock).mockReturnValue({
-      exp: {
-        experiments: {
-          inlineModules: {
-            watchedDirectories: ['app'],
-          },
-        },
-      },
-    });
-
     expect(tempProjectRoot).toBeTruthy();
     expect(tempProjectRoot).toBeDefined();
     tempProjectRoot = tempProjectRoot as string;
 
-    await updateXCodeProject(tempProjectRoot);
+    await updateXcodeProject(tempProjectRoot, { watchedDirectories: ['app'] });
 
     const pbxProject = IOSConfig.XcodeUtils.getPbxproj(tempProjectRoot);
     const objects = pbxProject.hash.project.objects;
@@ -63,10 +48,6 @@ describe('updateXCodeProject', () => {
   });
 
   it('does nothing if watchedDirectories is empty', async () => {
-    (getConfig as jest.Mock).mockReturnValue({
-      exp: { experiments: { inlineModules: { watchedDirectories: [] } } },
-    });
-
     expect(tempProjectRoot).toBeTruthy();
     expect(tempProjectRoot).toBeDefined();
     tempProjectRoot = tempProjectRoot as string;
@@ -80,7 +61,7 @@ describe('updateXCodeProject', () => {
     const contentBefore = await fs.promises.readFile(pbxProjPath, 'utf8');
     expect(contentBefore).toBeTruthy();
 
-    await updateXCodeProject(tempProjectRoot);
+    await updateXcodeProject(tempProjectRoot, { watchedDirectories: [] });
 
     const contentAfter = await fs.promises.readFile(pbxProjPath, 'utf8');
 

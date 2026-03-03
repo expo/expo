@@ -3,13 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateXCodeProject = updateXCodeProject;
-const config_1 = require("@expo/config");
+exports.updateXcodeProject = updateXcodeProject;
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-async function updateXCodeProject(projectRoot) {
-    const swiftWatchedDirectories = (0, config_1.getConfig)(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
+/**
+ * Add watched directories as PBXFileSystemSynchronizedRootGroups to pbxproj file in the project and save the changes.
+ */
+async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
+    const swiftWatchedDirectories = inlineModulesXcodeParams.watchedDirectories;
     // Only perform changes to pbxproj if necessary
     if (swiftWatchedDirectories.length === 0) {
         return;
@@ -17,41 +19,38 @@ async function updateXCodeProject(projectRoot) {
     const pbxProject = config_plugins_1.IOSConfig.XcodeUtils.getPbxproj(projectRoot);
     const mainGroupUUID = pbxProject.getFirstProject().firstProject.mainGroup;
     const mainTarget = pbxProject.getFirstProject().firstProject.targets[0];
-    const iosFolderPath = path_1.default.resolve(projectRoot, 'ios');
     const objects = pbxProject.hash.project.objects;
-    const dirEntryExists = (dir) => {
-        if (!objects.PBXFileSystemSynchronizedRootGroup) {
-            return false;
-        }
+    const projectRootRelativeToIos = '..';
+    const fsSynchronizedRootGroups = new Set();
+    if (objects.PBXFileSystemSynchronizedRootGroup) {
         for (const key of Object.keys(objects.PBXFileSystemSynchronizedRootGroup)) {
             if (key.endsWith('_comment')) {
                 continue;
             }
-            if (path_1.default.relative(iosFolderPath, path_1.default.resolve(projectRoot, dir)) ===
-                objects.PBXFileSystemSynchronizedRootGroup[key].path) {
-                return true;
-            }
+            fsSynchronizedRootGroups.add(objects.PBXFileSystemSynchronizedRootGroup[key].path);
         }
-        return false;
-    };
+    }
+    else {
+        objects.PBXFileSystemSynchronizedRootGroup = {};
+    }
+    let projectHasChanged = false;
     for (const dir of swiftWatchedDirectories) {
-        if (dirEntryExists(dir)) {
+        const dirRelativeToIos = path_1.default.join(projectRootRelativeToIos, dir);
+        if (fsSynchronizedRootGroups.has(dirRelativeToIos)) {
             continue;
         }
+        projectHasChanged = true;
         const newUUID = pbxProject.generateUuid();
         objects.PBXGroup[mainGroupUUID].children.push({
             value: newUUID,
             comment: dir,
         });
-        if (!objects.PBXFileSystemSynchronizedRootGroup) {
-            objects.PBXFileSystemSynchronizedRootGroup = {};
-        }
         objects.PBXFileSystemSynchronizedRootGroup[newUUID] = {
             isa: 'PBXFileSystemSynchronizedRootGroup',
             explicitFileTypes: {},
             explicitFolders: [],
             name: dir,
-            path: path_1.default.relative(iosFolderPath, path_1.default.resolve(projectRoot, dir)),
+            path: dirRelativeToIos,
             sourceTree: 'SOURCE_ROOT',
         };
         if (mainTarget) {
@@ -62,5 +61,7 @@ async function updateXCodeProject(projectRoot) {
             nativeTargetGroup.fileSystemSynchronizedGroups.push({ value: newUUID, comment: dir });
         }
     }
-    await fs_1.default.promises.writeFile(pbxProject.filepath, pbxProject.writeSync());
+    if (projectHasChanged) {
+        await fs_1.default.promises.writeFile(pbxProject.filepath, pbxProject.writeSync());
+    }
 }

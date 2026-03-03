@@ -45,25 +45,29 @@ open class ExpoAutolinkingPlugin : Plugin<Project> {
     }
 
    project.gradle.projectsEvaluated {
-     val srcDir = project.file("src/main/java/inline/modules/").absolutePath
-     val buildDir = project.file("build/inline/modules/").absolutePath
-     val nodeWorkingDir = project.rootProject.projectDir
+    val srcDir = project.file("src/main/java/inline/modules/").absolutePath
+    val buildDir = project.file("build/inline/modules/").absolutePath
+    val nodeWorkingDir = project.rootProject.projectDir
+    val watchedDirectoriesSerialized = project.findProperty("expo.inlineModules.watchedDirectories") ?: emptyList<String>()
 
-     project.providers.exec { spec ->
-       spec.workingDir(nodeWorkingDir)
-       spec.commandLine(
-         "node",
-         "--no-warnings",
-         "--eval",
-         "require('expo/bin/autolinking')",
-         "expo-modules-autolinking",
-         "mirror-kotlin-inline-modules",
-         srcDir,
-         buildDir,
-         project.findProperty("expo.inlineModules.watchedDirectories") ?: emptyList<String>()
-       )
-     }.standardOutput.asText.get()
-   }
+    project.providers.exec { spec ->
+        spec.workingDir(nodeWorkingDir)
+        spec.commandLine(
+            "node",
+            "--no-warnings",
+            "--eval",
+            "require('expo/bin/autolinking')",
+            "expo-modules-autolinking",
+            "mirror-kotlin-inline-modules",
+            "--kotlin-files-mirror-directory",
+            srcDir,
+            "--inline-modules-list-directory",
+            buildDir,
+            "--watched-directories-serialized",
+            watchedDirectoriesSerialized
+        )
+    }.standardOutput.asText.get()
+}
 
     prebuiltProjects.forEach { prebuiltProject ->
       val publication = requireNotNull(prebuiltProject.publication)

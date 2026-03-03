@@ -12,6 +12,7 @@ import { resolveModulesAsync } from '../autolinking/resolveModules';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
+  podfilePropertiesFilePath: string;
   entitlement?: string;
   packages?: string[] | null;
   appRoot?: string;
@@ -23,9 +24,7 @@ type PartialPodfileProperties = {
 
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
-  return registerAutolinkingArguments(
-    cli.command('generate-modules-provider <podfilePropertiesFilePath> [searchPaths...]')
-  )
+  return registerAutolinkingArguments(cli.command('generate-modules-provider [searchPaths...]'))
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'
@@ -36,12 +35,9 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
       'Names of the packages to include in the generated modules provider.'
     )
     .option('--app-root <path>', 'Path to the app root directory.')
+    .option('--podfile-properties-file-path <path>', 'Path to the Podfile properties file.')
     .action(
-      async (
-        podfilePropertiesFilePath: string,
-        searchPaths: string[] | null,
-        commandArguments: GenerateModulesProviderArguments
-      ) => {
+      async (searchPaths: string[] | null, commandArguments: GenerateModulesProviderArguments) => {
         const platform = commandArguments.platform ?? 'apple';
         const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
           ...commandArguments,
@@ -64,7 +60,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         );
 
         const podfileProperties: PartialPodfileProperties = await fs.promises
-          .readFile(podfilePropertiesFilePath, {
+          .readFile(commandArguments.podfilePropertiesFilePath, {
             encoding: 'utf8',
           })
           .then((file) => JSON.parse(file))
