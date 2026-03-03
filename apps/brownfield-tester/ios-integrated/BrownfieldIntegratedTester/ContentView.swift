@@ -7,11 +7,23 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            NavigationLink(destination: ReactNativeView(moduleName: "main"), label: {
-                Text("Open React Native App")
+            List {
+                NavigationLink(destination: ReactNativeView(moduleName: "main"), label: {
+                    HStack {
+                        Image(systemName: "atom")
+                        Text("React Native App")
+                    }
                     .accessibilityIdentifier("openReactNativeButton")
-                    .font(.largeTitle)
-            })
+                })
+                NavigationLink(destination: StateView(), label: {
+                    HStack {
+                        Image(systemName: "cylinder.split.1x2")
+                        Text("Shared State")
+                    }
+                    .accessibilityIdentifier("openStateView")
+                })
+            }
+            .listStyle(.sidebar)
         }
         .onAppear { brownfieldTester.start() }
         .onDisappear { brownfieldTester.stop() }

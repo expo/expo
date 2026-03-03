@@ -30,6 +30,7 @@ public struct BrownfieldState {
     }
   }
 
+  @discardableResult
   public static func delete(_ key: String) -> Any? {
     return BrownfieldStateInternal.shared.delete(key)
   }
