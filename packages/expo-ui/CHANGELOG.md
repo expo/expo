@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ## 55.0.1 — 2026-02-25
 
 ### 🎉 New features
