@@ -8,8 +8,8 @@ internal struct MenuView: ExpoSwiftUI.View {
 
   // If label is a component, it is passed as a child, so we need to exclude it in order to display the menu content
   @ViewBuilder
-  func ChildrenWithoutSlots() -> some View {
-    ForEach(props.children?.withoutSlots() ?? [], id: \.id) { child in
+  func ChildrenWithoutLabel() -> some View {
+    ForEach(props.children?.withoutSlot("label") ?? [], id: \.id) { child in
       let view: any View = child.childView
       AnyView(view)
     }
@@ -24,7 +24,7 @@ internal struct MenuView: ExpoSwiftUI.View {
         if let systemImage = props.systemImage, let label = props.label {
           Menu(LocalizedStringKey(label), systemImage: systemImage) { Children() } primaryAction: { props.onPrimaryAction() }
         } else if let labelContent {
-          Menu { ChildrenWithoutSlots() } label: { labelContent } primaryAction: { props.onPrimaryAction() }
+          Menu { ChildrenWithoutLabel() } label: { labelContent } primaryAction: { props.onPrimaryAction() }
         } else if let label = props.label {
           Menu(LocalizedStringKey(label)) { Children() } primaryAction: { props.onPrimaryAction() }
         }
@@ -33,7 +33,7 @@ internal struct MenuView: ExpoSwiftUI.View {
         if let systemImage = props.systemImage, let label = props.label {
           Menu(label, systemImage: systemImage) { Children() }
         } else if let labelContent {
-          Menu { ChildrenWithoutSlots() } label: { labelContent }
+          Menu { ChildrenWithoutLabel() } label: { labelContent }
         } else if let label = props.label {
           Menu(label) { Children() }
         }

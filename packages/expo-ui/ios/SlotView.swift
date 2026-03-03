@@ -25,6 +25,13 @@ extension [any ExpoSwiftUI.AnyChild] {
       .first { $0.props.name == name }
   }
 
+  func withoutSlot(_ name: String) -> [any ExpoSwiftUI.AnyChild] {
+    filter {
+      guard let slot = $0.childView as? SlotView else { return true }
+      return slot.props.name != name
+    }
+  }
+
   func withoutSlots() -> [any ExpoSwiftUI.AnyChild] {
     filter { !($0.childView is SlotView) }
   }
