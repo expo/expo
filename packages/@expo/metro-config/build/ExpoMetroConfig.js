@@ -9,7 +9,6 @@ exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
-const json_file_1 = __importDefault(require("@expo/json-file"));
 const metro_cache_1 = require("@expo/metro/metro-cache");
 const chalk_1 = __importDefault(require("chalk"));
 const os_1 = __importDefault(require("os"));
@@ -26,6 +25,7 @@ const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const filePath_1 = require("./utils/filePath");
+const getPkgVersion_1 = require("./utils/getPkgVersion");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
 let hasWarnedAboutExotic = false;
@@ -145,12 +145,12 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const sourceExts = (0, paths_1.getBareExtensions)([], sourceExtsConfig);
     // Add support for cjs (without platform extensions).
     sourceExts.push('cjs');
-    const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
-    const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
-    const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
+    const reanimatedVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, 'react-native-reanimated');
+    const workletsVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, 'react-native-worklets');
+    const babelRuntimeVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, '@babel/runtime');
     let sassVersion = null;
     if (isCSSEnabled) {
-        sassVersion = getPkgVersion(projectRoot, 'sass');
+        sassVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, 'sass');
         // Enable SCSS by default so we can provide a better error message
         // when sass isn't installed.
         sourceExts.push('scss', 'sass', 'css');
@@ -340,30 +340,6 @@ exports.unstable_transformerPath = require.resolve('./transform-worker/transform
 exports.internal_supervisingTransformerPath = require.resolve('./transform-worker/supervising-transform-worker');
 // re-export for legacy cases.
 exports.EXPO_DEBUG = env_1.env.EXPO_DEBUG;
-function getPkgVersion(projectRoot, pkgName) {
-    const targetPkg = resolve_from_1.default.silent(projectRoot, pkgName);
-    if (!targetPkg)
-        return null;
-    const targetPkgJson = findUpPackageJson(targetPkg);
-    if (!targetPkgJson)
-        return null;
-    const pkg = json_file_1.default.read(targetPkgJson);
-    debug(`${pkgName} package.json:`, targetPkgJson);
-    const pkgVersion = pkg.version;
-    if (typeof pkgVersion === 'string') {
-        return pkgVersion;
-    }
-    return null;
-}
-function findUpPackageJson(cwd) {
-    if (['.', path_1.default.sep].includes(cwd))
-        return null;
-    const found = resolve_from_1.default.silent(cwd, './package.json');
-    if (found) {
-        return found;
-    }
-    return findUpPackageJson(path_1.default.dirname(cwd));
-}
 function getExpoOptional(projectRoot, subModule = 'package.json') {
     return resolve_from_1.default.silent(projectRoot, `expo/${subModule}`);
 }

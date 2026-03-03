@@ -4,8 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
+const path_1 = __importDefault(require("path"));
+const resolve_from_1 = __importDefault(require("resolve-from"));
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
+const getPkgVersion_1 = require("./utils/getPkgVersion");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
     return String(value) === 'true';
@@ -25,14 +28,12 @@ function memoize(fn) {
 const memoizeWarning = memoize((message) => {
     debug(message);
 });
-function getIsHermesV1() {
-    try {
-        const { version } = require('hermes-compiler/package.json');
-        return typeof version === 'string' && version.startsWith('250829098');
-    }
-    catch {
+function getIsHermesV1(projectRoot) {
+    const reactNativePath = resolve_from_1.default.silent(projectRoot, 'react-native/package.json');
+    if (!reactNativePath)
         return false;
-    }
+    const hermesVersion = (0, getPkgVersion_1.getPkgVersion)(path_1.default.dirname(reactNativePath), 'hermes-compiler');
+    return typeof hermesVersion === 'string' && hermesVersion.startsWith('250829098');
 }
 function getBabelCaller({ filename, options, }) {
     const isNodeModule = filename.includes('node_modules');
@@ -72,7 +73,7 @@ function getBabelCaller({ filename, options, }) {
         // target environment.
         engine: stringOrUndefined(options.customTransformOptions?.engine),
         // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
-        isHermesV1: getIsHermesV1(),
+        isHermesV1: getIsHermesV1(options.projectRoot),
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
         isNodeModule,
