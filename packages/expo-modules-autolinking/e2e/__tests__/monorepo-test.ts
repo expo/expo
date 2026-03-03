@@ -117,6 +117,7 @@ describe('monorepo', () => {
       const generatePackageListResult = await autolinkingRunAsync(
         [
           'generate-modules-provider',
+          '--podfile-properties-file-path',
           podfilePropertiesFilePath,
           '--platform',
           platform,

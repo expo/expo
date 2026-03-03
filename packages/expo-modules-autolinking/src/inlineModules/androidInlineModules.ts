@@ -2,28 +2,27 @@ import fs from 'fs';
 import path from 'path';
 
 import { getMirrorStateObject } from './inlineModules';
+import { taskAll } from '../concurrency';
 
 export async function createSymlinksToKotlinFiles(
   mirrorPath: string,
   watchedDirectories: string[]
 ) {
   const inlineModulesObject = await getMirrorStateObject(watchedDirectories);
+  const kotlinFiles = inlineModulesObject.files.filter(({ filePath }) => filePath.endsWith('.kt'));
 
-  for (const { filePath, watchedDirRoot } of inlineModulesObject.files) {
-    if (!filePath.endsWith('.kt')) {
-      continue;
-    }
+  await taskAll(kotlinFiles, async ({ filePath, watchedDirRoot }) => {
     const filePathRelativeToWatchedDirRoot = path.relative(watchedDirRoot, filePath);
     const targetPath = path.resolve(mirrorPath, filePathRelativeToWatchedDirRoot);
 
     await fs.promises.mkdir(path.dirname(targetPath), { recursive: true });
     await fs.promises.symlink(filePath, targetPath);
-  }
+  });
 }
 
 function getClassName(classNameWithPackage: string): string {
   const index = classNameWithPackage.lastIndexOf('.');
-  if (index < 0 || index > classNameWithPackage.length) {
+  if (index < 0) {
     return classNameWithPackage;
   }
   return classNameWithPackage.substring(index + 1);
@@ -51,7 +50,9 @@ public class ExpoInlineModulesList implements ModulesProvider {
   @Override
   public Map<Class<? extends Module>, String> getModulesMap() {
     return Map.of(
-${inlineModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.class, "${getClassName(moduleClass)}"`).join(',\n')}
+${inlineModulesObject.kotlinClasses
+  .map((moduleClass) => `      ${moduleClass}.class, "${getClassName(moduleClass)}"`)
+  .join(',\n')}
     );
   }
 

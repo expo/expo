@@ -11,12 +11,13 @@ const generatePackageList_1 = require("../autolinking/generatePackageList");
 const resolveModules_1 = require("../autolinking/resolveModules");
 /** Generates a source file listing all packages to link in the runtime */
 function generateModulesProviderCommand(cli) {
-    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('generate-modules-provider <podfilePropertiesFilePath> [searchPaths...]'))
+    return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('generate-modules-provider [searchPaths...]'))
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
         .option('-p, --packages <packages...>', 'Names of the packages to include in the generated modules provider.')
         .option('--app-root <path>', 'Path to the app root directory.')
-        .action(async (podfilePropertiesFilePath, searchPaths, commandArguments) => {
+        .option('--podfile-properties-file-path <path>', 'Path to the Podfile properties file.')
+        .action(async (searchPaths, commandArguments) => {
         const platform = commandArguments.platform ?? 'apple';
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)({
             ...commandArguments,
@@ -31,7 +32,7 @@ function generateModulesProviderCommand(cli) {
         const includeModules = new Set(commandArguments.packages ?? []);
         const filteredModules = expoModulesResolveResults.filter((module) => includeModules.has(module.packageName));
         const podfileProperties = await fs_1.default.promises
-            .readFile(podfilePropertiesFilePath, {
+            .readFile(commandArguments.podfilePropertiesFilePath, {
             encoding: 'utf8',
         })
             .then((file) => JSON.parse(file))

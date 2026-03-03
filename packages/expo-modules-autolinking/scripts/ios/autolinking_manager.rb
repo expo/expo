@@ -28,6 +28,10 @@ module Expo
       @extraPods = resolve_result['extraDependencies']
     end
 
+    public def get_podfile_properties_path
+      return @podfile_properties_path
+    end
+
     public def use_expo_modules!
       if has_packages?
         return
@@ -193,7 +197,7 @@ module Expo
       search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
       ignore_paths = @options.fetch(:ignorePaths, nil)
       exclude = @options.fetch(:exclude, [])
-      args = ["\"#{@podfile_properties_path}\""]
+      args = []
 
       if !search_paths.nil? && !search_paths.empty?
         args.concat(search_paths)
@@ -236,14 +240,13 @@ module Expo
     end
 
     public def generate_modules_provider_command_args(target_path)
-      command_args = ['--target', target_path]
+      command_args = ['--target', target_path, "--podfile-properties-file-path", "\"#{@podfile_properties_path}\""]
 
       if !custom_app_root.nil?
         command_args.concat(['--app-root', custom_app_root])
       end
 
       node_command_args('generate-modules-provider').concat(
-        [@podfile_properties_path],
         command_args,
         ['--packages'],
         packages_to_generate.map(&:name)

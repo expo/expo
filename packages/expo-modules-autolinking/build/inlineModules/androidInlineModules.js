@@ -8,21 +8,20 @@ exports.generateInlineModulesListFile = generateInlineModulesListFile;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const inlineModules_1 = require("./inlineModules");
+const concurrency_1 = require("../concurrency");
 async function createSymlinksToKotlinFiles(mirrorPath, watchedDirectories) {
     const inlineModulesObject = await (0, inlineModules_1.getMirrorStateObject)(watchedDirectories);
-    for (const { filePath, watchedDirRoot } of inlineModulesObject.files) {
-        if (!filePath.endsWith('.kt')) {
-            continue;
-        }
+    const kotlinFiles = inlineModulesObject.files.filter(({ filePath }) => filePath.endsWith('.kt'));
+    await (0, concurrency_1.taskAll)(kotlinFiles, async ({ filePath, watchedDirRoot }) => {
         const filePathRelativeToWatchedDirRoot = path_1.default.relative(watchedDirRoot, filePath);
         const targetPath = path_1.default.resolve(mirrorPath, filePathRelativeToWatchedDirRoot);
         await fs_1.default.promises.mkdir(path_1.default.dirname(targetPath), { recursive: true });
         await fs_1.default.promises.symlink(filePath, targetPath);
-    }
+    });
 }
 function getClassName(classNameWithPackage) {
     const index = classNameWithPackage.lastIndexOf('.');
-    if (index < 0 || index > classNameWithPackage.length) {
+    if (index < 0) {
         return classNameWithPackage;
     }
     return classNameWithPackage.substring(index + 1);
@@ -46,7 +45,9 @@ public class ExpoInlineModulesList implements ModulesProvider {
   @Override
   public Map<Class<? extends Module>, String> getModulesMap() {
     return Map.of(
-${inlineModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.class, "${getClassName(moduleClass)}"`).join(',\n')}
+${inlineModulesObject.kotlinClasses
+        .map((moduleClass) => `      ${moduleClass}.class, "${getClassName(moduleClass)}"`)
+        .join(',\n')}
     );
   }
 
