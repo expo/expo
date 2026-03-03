@@ -129,7 +129,7 @@ class Asset: SharedObject {
       let request = PHAssetChangeRequest(for: phAsset)
       request.isFavorite = isFavorite
     }
-    self.phAsset = nil
+    invalidateCache()
   }
 
   private func requirePHAsset() async throws -> PHAsset {
@@ -157,6 +157,11 @@ class Asset: SharedObject {
       throw AssetNotFoundException(id)
     }
     self.phAsset = fetchedAsset
+  }
+
+  private func invalidateCache() {
+    // phAsset is an immutable cache, therefore it must be cleared after each performChanges
+    self.phAsset = nil
   }
 
   static func from(filePath: URL) async throws -> Asset {
