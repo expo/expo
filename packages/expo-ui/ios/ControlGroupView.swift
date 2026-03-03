@@ -22,7 +22,7 @@ internal struct ControlGroupView: ExpoSwiftUI.View {
   @ObservedObject var props: ControlGroupViewProps
 
   var body: some View {
-    if #available(iOS 15.0, tvOS 17.0, *) {
+    if #available(iOS 15.0, macOS 12.0, tvOS 17.0, *) {
       if #available(iOS 16.0, macOS 13.0, tvOS 17.0, *) {
         let labelContent = props.children?
           .compactMap { $0.childView as? ControlGroupLabel }
