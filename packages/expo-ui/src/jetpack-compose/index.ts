@@ -35,6 +35,7 @@ export * from './RadioButton';
 export * from './Surface';
 export * from './Text';
 
+export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';
 export * from './Column';
