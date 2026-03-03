@@ -48,12 +48,12 @@ internal class LinkPreviewNativeNavigation {
     guard let stackOrTabView else {
       return
     }
-    if let tabView = stackOrTabView as? RNSBottomTabsScreenComponentView {
+    if RNScreensTabCompat.isTabScreen(stackOrTabView) {
       let newTabKeys = tabPath?.path.map { $0.newTabKey } ?? []
       // The order is important here. findStackViewWithScreenIdInSubViews must be called
       // even if screenId is nil to compute the tabChangeCommands.
       if let stackView = findStackViewWithScreenIdInSubViews(
-        screenId: screenId, tabKeys: newTabKeys, rootView: tabView), let screenId {
+        screenId: screenId, tabKeys: newTabKeys, rootView: stackOrTabView), let screenId {
         setPreloadedView(stackView: stackView, screenId: screenId)
       }
     } else if let stackView = stackOrTabView as? RNSScreenStackView, let screenId {
@@ -150,8 +150,7 @@ internal class LinkPreviewNativeNavigation {
     if let result =
       enumeratedViews
       .first(where: { _, view in
-        guard let tabView = view as? RNSBottomTabsScreenComponentView, let tabKey = tabView.tabKey
-        else {
+        guard let tabKey = RNScreensTabCompat.tabKey(from: view) else {
           return false
         }
         return tabKeys.contains(tabKey)
@@ -162,13 +161,10 @@ internal class LinkPreviewNativeNavigation {
   }
 
   private func getTabBarControllerFromTabView(view: UIView) -> UITabBarController? {
-    if let tabScreenView = view as? RNSBottomTabsScreenComponentView {
-      return tabScreenView.reactViewController()?.tabBarController as? UITabBarController
+    if let tabBarController = RNScreensTabCompat.tabBarController(fromTabScreen: view) {
+      return tabBarController
     }
-    if let tabHostView = view as? RNSBottomTabsHostComponentView {
-      return tabHostView.controller as? UITabBarController
-    }
-    return nil
+    return RNScreensTabCompat.tabBarController(fromTabHost: view)
   }
 
   private func findStackViewWithScreenIdOrTabBarController(
@@ -182,10 +178,10 @@ internal class LinkPreviewNativeNavigation {
         if view.screenIds.contains(screenId) {
           return view
         }
-      } else if let tabView = nextResponder as? RNSBottomTabsScreenComponentView {
-        if let tabKey = tabView.tabKey, tabKeys.contains(tabKey) {
-          return tabView
-        }
+      } else if let nextView = nextResponder as? UIView,
+        let tabKey = RNScreensTabCompat.tabKey(from: nextView),
+        tabKeys.contains(tabKey) {
+          return nextView
       }
       currentResponder = nextResponder
     }
