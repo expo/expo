@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Automatically detect and use Bundler-managed CocoaPods when a `Gemfile` lists `cocoapods`. ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

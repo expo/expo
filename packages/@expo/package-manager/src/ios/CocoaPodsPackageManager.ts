@@ -1,6 +1,6 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
@@ -31,10 +31,63 @@ export function extractMissingDependencyError(errorOutput: string): [string, str
   return null;
 }
 
+/**
+ * Walk up from `startDir` looking for a Gemfile.
+ * Stops at the filesystem root, a `.git` directory boundary, or the user's home directory.
+ */
+function findGemfile(startDir: string): string | null {
+  let dir = startDir;
+  const { root } = path.parse(dir);
+  const homeDir = path.normalize(os.homedir());
+  while (dir !== root) {
+    const candidate = path.join(dir, 'Gemfile');
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+    if (existsSync(path.join(dir, '.git')) || dir === homeDir) {
+      break;
+    }
+    dir = path.dirname(dir);
+  }
+  return null;
+}
+
+/**
+ * Check if the project uses Bundler to manage CocoaPods.
+ * Returns `true` if a `Gemfile` exists in the project root (or a parent)
+ * that lists `cocoapods` as a dependency, and `bundle exec pod --version` succeeds.
+ */
+export async function isUsingBundlerAsync(projectRoot: string): Promise<boolean> {
+  const gemfilePath = findGemfile(projectRoot);
+  if (!gemfilePath) {
+    return false;
+  }
+
+  try {
+    const content = readFileSync(gemfilePath, 'utf8');
+    if (!/gem\s*\(?\s*(?:'cocoapods'|"cocoapods")/.test(content)) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  try {
+    await spawnAsync('bundle', ['exec', 'pod', '--version'], {
+      cwd: projectRoot,
+      stdio: 'pipe',
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export class CocoaPodsPackageManager {
   options: SpawnOptions;
 
   private silent: boolean;
+  private useBundler: boolean;
 
   static getPodProjectRoot(projectRoot: string): string | null {
     if (CocoaPodsPackageManager.isUsingPods(projectRoot)) return projectRoot;
@@ -160,18 +213,30 @@ export class CocoaPodsPackageManager {
   }
 
   static async isCLIInstalledAsync(
-    spawnOptions: SpawnOptions = { stdio: 'inherit' }
+    spawnOptions: SpawnOptions = { stdio: 'inherit' },
+    { useBundler = false }: { useBundler?: boolean } = {}
   ): Promise<boolean> {
     try {
-      await spawnAsync('pod', ['--version'], spawnOptions);
+      if (useBundler) {
+        await spawnAsync('bundle', ['exec', 'pod', '--version'], spawnOptions);
+      } else {
+        await spawnAsync('pod', ['--version'], spawnOptions);
+      }
       return true;
-    } catch {
+    } catch (error: any) {
+      if (useBundler) {
+        console.warn(chalk.yellow(`\u203A Failed to run \`bundle exec pod\``));
+        if (error.stderr) {
+          console.warn(chalk.red(error.stderr));
+        }
+      }
       return false;
     }
   }
 
-  constructor({ cwd, silent }: { cwd: string; silent?: boolean }) {
+  constructor({ cwd, silent, useBundler }: { cwd: string; silent?: boolean; useBundler?: boolean }) {
     this.silent = !!silent;
+    this.useBundler = !!useBundler;
     this.options = {
       cwd,
       // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
@@ -190,7 +255,9 @@ export class CocoaPodsPackageManager {
   }
 
   public isCLIInstalledAsync() {
-    return CocoaPodsPackageManager.isCLIInstalledAsync(this.options);
+    return CocoaPodsPackageManager.isCLIInstalledAsync(this.options, {
+      useBundler: this.useBundler,
+    });
   }
 
   public installCLIAsync() {
@@ -349,7 +416,9 @@ export class CocoaPodsPackageManager {
   }
 
   async versionAsync() {
-    const { stdout } = await spawnAsync('pod', ['--version'], this.options);
+    const { stdout } = this.useBundler
+      ? await spawnAsync('bundle', ['exec', 'pod', '--version'], this.options)
+      : await spawnAsync('pod', ['--version'], this.options);
     return stdout.trim();
   }
 
@@ -382,16 +451,16 @@ export class CocoaPodsPackageManager {
 
   // Exposed for testing
   async _runAsync(args: string[]): Promise<SpawnResult> {
+    const [command, commandArgs] = this.useBundler
+      ? ['bundle', ['exec', 'pod', ...args, '--ansi']]
+      : ['pod', [...args, '--ansi']];
+
     if (!this.silent) {
-      console.log(`> pod ${args.join(' ')}`);
+      console.log(`> ${this.useBundler ? 'bundle exec pod' : 'pod'} ${args.join(' ')}`);
     }
     const promise = spawnAsync(
-      'pod',
-      [
-        ...args,
-        // Enables colors while collecting output.
-        '--ansi',
-      ],
+      command,
+      commandArgs,
       {
         // Add the cwd and other options to the spawn options.
         ...this.options,

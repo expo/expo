@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `isUsingBundlerAsync` helper to detect Bundler-managed CocoaPods projects. ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
