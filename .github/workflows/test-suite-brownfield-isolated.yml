@@ -241,7 +241,7 @@ jobs:
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: 🧪 Run e2e tests (Release)
         run: ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
-      - name: 🍏 Build iOS artifacts (Release)
+      - name: 🍏 Build iOS artifacts (Debug)
         run: |
           npx expo-brownfield build:ios -d --verbose -a ../../../artifacts
       - name: 🧪 Run e2e tests (Debug)

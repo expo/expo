@@ -79,7 +79,7 @@ There are built-in URL schemes that provide access to core functionality on all 
 
 <Collapsible summary="Specify Android intents to handle common URL schemes">
 
-For Android 11 (API level 30) and above, you must specify the intents your app will handle in the **AndroidManifest.xml** file. You can accomplish this by [creating a config plugin](/config-plugins/plugins-and-mods/#create-a-plugin).
+For Android 11 (API level 30) and above, you must specify the intents your app will handle in the **AndroidManifest.xml** file. You can accomplish this by [creating a config plugin](/config-plugins/plugins/#creating-a-config-plugin).
 
 The following config plugin example enables linking to email and phone apps by defining the intents:
 
@@ -109,7 +109,7 @@ const withAndroidQueries: ConfigPlugin = config => {
 module.exports = withAndroidQueries;
 ```
 
-After creating the config plugin, [import the custom config plugin](/config-plugins/plugins-and-mods/#import-a-plugin) under the `plugins` property:
+After creating the config plugin, [import the custom config plugin](/config-plugins/plugins/#call-the-config-plugin-from-your-dynamic-app-config) under the `plugins` property:
 
 ```json app.json
 {

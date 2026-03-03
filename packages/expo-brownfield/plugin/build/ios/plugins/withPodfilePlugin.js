@@ -5,6 +5,9 @@ const utils_1 = require("../utils");
 const withPodfilePlugin = (config, pluginConfig) => {
     return (0, config_plugins_1.withPodfile)(config, (config) => {
         config.modResults.contents = (0, utils_1.addNewPodsTarget)(config.modResults.contents, pluginConfig.targetName);
+        if (pluginConfig.usePrebuiltReactNative) {
+            config.modResults.contents = (0, utils_1.addPrebuiltSettings)(config.modResults.contents);
+        }
         return config;
     });
 };
