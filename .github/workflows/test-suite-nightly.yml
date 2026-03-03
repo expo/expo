@@ -64,7 +64,7 @@ jobs:
         run: ./scripts/start-ios-e2e-test.ts --build
         working-directory: apps/bare-expo
         env:
-          EXPO_DEBUG: 1
+          EXPO_UNSTABLE_HEADLESS: 1
           NODE_ENV: production
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v4

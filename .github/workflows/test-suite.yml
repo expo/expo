@@ -201,7 +201,7 @@ jobs:
         uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 55
         env:
-          EXPO_DEBUG: 1
+          EXPO_UNSTABLE_HEADLESS: 1
           NODE_ENV: production
           RCT_USE_PREBUILT_RNCORE: 1
           RCT_USE_RN_DEP: 1
@@ -401,7 +401,7 @@ jobs:
         uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 35
         env:
-          EXPO_DEBUG: 1
+          EXPO_UNSTABLE_HEADLESS: 1
           NODE_ENV: production
         with:
           platform: android
