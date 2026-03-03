@@ -8,12 +8,15 @@ private enum AudioConstants {
 
 public class AudioPlayer: SharedRef<AVPlayer> {
   let id = UUID().uuidString
-  var isLooping = false
   var shouldCorrectPitch = true
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
   var isActiveForLockScreen = false
   var metadata: Metadata?
-  var currentRate: Float = 0.0
+  var currentRate: Float = 1.0 {
+    didSet {
+      currentRate = max(0, currentRate)
+    }
+  }
   let interval: Double
   var wasPlaying = false
   var isPaused: Bool {
@@ -21,6 +24,22 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+
+  var isLooping = false {
+    didSet {
+      guard isLooping != oldValue else {
+        return
+      }
+      if isLooping {
+        ref.actionAtItemEnd = .advance
+        enqueueNextLoopItem()
+      } else {
+        removeQueuedLoopItems()
+        ref.actionAtItemEnd = .pause
+      }
+      updateStatus(with: [:])
+    }
+  }
 
   private var source: AudioSource?
 
@@ -65,7 +84,15 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     playerIsBuffering()
   }
 
+  private var effectiveRate: Float {
+    currentRate > 0 ? currentRate : 1.0
+  }
+
   func play(at rate: Float) {
+    ref.actionAtItemEnd = isLooping ? .advance : .pause
+    if isLooping {
+      enqueueNextLoopItem()
+    }
     addPlaybackEndNotification()
     registerTimeObserver()
     ref.playImmediately(atRate: rate)
@@ -165,6 +192,9 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           self.updateStatus(with: [
             "isLoaded": true
           ])
+          if self.isLooping {
+            self.enqueueNextLoopItem()
+          }
           if shouldInstallAudioTap || samplingEnabled {
             installTap()
             shouldInstallAudioTap = false
@@ -178,7 +208,12 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         guard let self else {
           return
         }
+        if self.isLooping {
+          self.enqueueNextLoopItem()
+          self.addPlaybackEndNotification()
+        }
         if self.samplingEnabled && self.isLoaded {
+          self.uninstallTap()
           self.installTap()
         }
       }
@@ -188,19 +223,20 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   func replaceWithPreloadedItem(_ item: AVPlayerItem?) {
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
+    removeQueuedLoopItems()
     ref.pause()
 
     if samplingEnabled {
       uninstallTap()
     }
-    ref.replaceCurrentItem(with: item)
+    replacePlayerItem(with: item)
 
     if wasSamplingEnabled {
       shouldInstallAudioTap = true
     }
 
     if wasPlaying {
-      ref.play()
+      play(at: effectiveRate)
     }
   }
 
@@ -208,13 +244,14 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     self.source = source
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
+    removeQueuedLoopItems()
     ref.pause()
 
     if samplingEnabled {
       uninstallTap()
     }
     let item = AudioUtils.createAVPlayerItem(from: source)
-    ref.replaceCurrentItem(with: item)
+    replacePlayerItem(with: item)
 
     if wasSamplingEnabled {
       shouldInstallAudioTap = true
@@ -222,7 +259,8 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
     if wasPlaying {
       onReady { [weak self] in
-        self?.ref.play()
+        guard let self else { return }
+        self.play(at: self.effectiveRate)
       }
     }
   }
@@ -261,6 +299,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   private func teardownPlayer() {
+    removeQueuedLoopItems()
     if samplingEnabled {
       uninstallTap()
     }
@@ -360,6 +399,41 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     audioProcessor?.sampleBufferCallback = nil
   }
 
+  private func replacePlayerItem(with item: AVPlayerItem?) {
+    if let queuePlayer = ref as? AVQueuePlayer {
+      queuePlayer.removeAllItems()
+      if let item {
+        queuePlayer.insert(item, after: nil)
+      }
+    } else {
+      ref.replaceCurrentItem(with: item)
+    }
+  }
+
+  private func enqueueNextLoopItem() {
+    guard let queuePlayer = ref as? AVQueuePlayer,
+      let currentItem = queuePlayer.currentItem else {
+      return
+    }
+
+    guard queuePlayer.items().count <= 1 else {
+      return
+    }
+    let nextItem = AVPlayerItem(asset: currentItem.asset)
+    nextItem.audioTimePitchAlgorithm = currentItem.audioTimePitchAlgorithm
+    queuePlayer.insert(nextItem, after: currentItem)
+  }
+
+  private func removeQueuedLoopItems() {
+    guard let queuePlayer = ref as? AVQueuePlayer else {
+      return
+    }
+
+    for item in queuePlayer.items() where item != queuePlayer.currentItem {
+      queuePlayer.remove(item)
+    }
+  }
+
   private func addPlaybackEndNotification() {
     if let endObserver {
       NotificationCenter.default.removeObserver(endObserver)
@@ -367,20 +441,24 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
     endObserver = NotificationCenter.default.addObserver(
       forName: .AVPlayerItemDidPlayToEndTime,
-      object: ref.currentItem,
+      object: nil,
       queue: nil
-    ) { [weak self] _ in
-      guard let self else {
+    ) { [weak self] notification in
+      guard let self,
+        let finishedItem = notification.object as? AVPlayerItem else {
         return
       }
 
-      if self.isLooping {
-        self.ref.seek(to: CMTime.zero)
-        self.ref.play()
-      } else {
+      guard let queuePlayer = self.ref as? AVQueuePlayer,
+        finishedItem == queuePlayer.currentItem || queuePlayer.items().contains(finishedItem) else {
+        return
+      }
+
+      if !self.isLooping {
+        let currentTime = finishedItem.duration.seconds
         self.updateStatus(with: [
           "playing": false,
-          "currentTime": self.duration,
+          "currentTime": currentTime.isNaN ? 0.0 : currentTime,
           "didJustFinish": true
         ])
         self.onPlaybackComplete?()

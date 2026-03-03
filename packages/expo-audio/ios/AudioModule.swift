@@ -656,7 +656,7 @@ public class AudioModule: Module {
             player.ref.volume = originalVolume
           }
         case .doNotMix, .mixWithOthers:
-          player.ref.play()
+          player.play(at: player.currentRate > 0 ? player.currentRate : 1.0)
         }
       }
     }
@@ -705,7 +705,7 @@ public class AudioModule: Module {
   private func resumeAllPlayers() {
     registry.allPlayers.values.forEach { player in
       if player.wasPlaying {
-        player.ref.play()
+        player.play(at: player.currentRate > 0 ? player.currentRate : 1.0)
         player.wasPlaying = false
       }
     }
