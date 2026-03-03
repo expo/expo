@@ -146,6 +146,50 @@ export default function StyledMenuExample() {
 }
 ```
 
+### With control group
+
+Use a [`ControlGroup`](controlgroup) inside a menu to render a horizontal row of icon buttons, similar to the quick actions row in Apple Music or Safari menus.
+
+```tsx MenuWithControlGroupExample.tsx
+import { Host, Menu, ControlGroup, Button, Section, Divider } from '@expo/ui/swift-ui';
+
+export default function MenuWithControlGroupExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Song Options" systemImage="ellipsis.circle">
+        <ControlGroup>
+          <Button systemImage="plus" label="Add" onPress={() => console.log('Add')} />
+          <Button systemImage="star" label="Favorite" onPress={() => console.log('Favorite')} />
+          <Button
+            systemImage="square.and.arrow.up"
+            label="Share"
+            onPress={() => console.log('Share')}
+          />
+        </ControlGroup>
+        <Section>
+          <Button
+            systemImage="text.badge.plus"
+            label="Add to a Playlist"
+            onPress={() => console.log('Add to Playlist')}
+          />
+          <Button
+            systemImage="antenna.radiowaves.left.and.right"
+            label="Create Station"
+            onPress={() => console.log('Create Station')}
+          />
+        </Section>
+        <Divider />
+        <Button
+          systemImage="hand.thumbsdown"
+          label="Suggest Less"
+          onPress={() => console.log('Suggest Less')}
+        />
+      </Menu>
+    </Host>
+  );
+}
+```
+
 ### Icon only menu button
 
 Use the `labelStyle('iconOnly')` modifier to display only the icon without the label text. The `label` prop should still be provided for accessibility purposes.
