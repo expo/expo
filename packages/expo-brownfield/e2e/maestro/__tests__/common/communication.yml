@@ -1,0 +1,32 @@
+appId: ${APP_ID}
+---
+# Launch the app
+- runFlow: ../common/_nested-flows/launch-brownfield.yml
+
+# Navigate to the communication screen
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-communication
+- assertVisible:
+    id: communication-send-message
+
+# Assert message can be sent from RN
+# to the native app
+- repeat:
+    times: 2
+    commands:
+      - tapOn:
+          id: communication-send-message
+      - assertVisible: React Native(brownfield-tester/expo-app)
+      - tapOn: OK
+
+# Assert messages can be sent from the
+# native app to the RN app
+- assertVisible: '.*"platform": "(Android|iOS)".*'
+- assertVisible: '.*"array": \[.*'
+- assertVisible: '.*"ab".*'
+- assertVisible: '.*2\.45.*'
+
+# Assert JS receives multiple messages
+- assertVisible: "Received message (multiple: true)"
