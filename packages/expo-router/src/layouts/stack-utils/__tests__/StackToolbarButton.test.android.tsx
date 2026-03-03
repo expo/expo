@@ -4,6 +4,15 @@ import { StackToolbarButton } from '../toolbar/StackToolbarButton';
 import { ToolbarPlacementContext } from '../toolbar/context';
 import { StackToolbarIcon } from '../toolbar/toolbar-primitives';
 
+const mockUseMaterialIconSource = jest.fn(
+  () => undefined as import('react-native').ImageSourcePropType | undefined
+);
+
+jest.mock('../../../utils/materialIcon', () => ({
+  useMaterialIconSource: (...args: Parameters<typeof mockUseMaterialIconSource>) =>
+    mockUseMaterialIconSource(...args),
+}));
+
 jest.mock('../../../toolbar/native', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   return {
@@ -21,6 +30,7 @@ const MockedRouterToolbarItem = RouterToolbarItem as jest.MockedFunction<typeof 
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockUseMaterialIconSource.mockReturnValue(undefined);
 });
 
 describe('StackToolbarButton source extraction on Android', () => {
@@ -104,6 +114,114 @@ describe('StackToolbarButton source extraction on Android', () => {
     expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
       expect.objectContaining({
         source: childSource,
+      }),
+      undefined
+    );
+  });
+});
+
+describe('StackToolbarButton md icon support on Android', () => {
+  it('extracts md icon name from Icon child and passes as mdIconName', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton>
+          <StackToolbarIcon md="search" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(mockUseMaterialIconSource).toHaveBeenCalledWith('search');
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mdIconName: 'search',
+      }),
+      undefined
+    );
+  });
+
+  it('md prop on Button directly works', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton md="star" />
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(mockUseMaterialIconSource).toHaveBeenCalledWith('star');
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mdIconName: 'star',
+      }),
+      undefined
+    );
+  });
+
+  it('Icon child md takes priority over Button md prop', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton md="star">
+          <StackToolbarIcon md="search" />
+        </StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    // Child "search" should take priority over prop "star"
+    expect(mockUseMaterialIconSource).toHaveBeenCalledWith('search');
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mdIconName: 'search',
+      }),
+      undefined
+    );
+  });
+
+  it('explicit src takes priority over resolved md source', () => {
+    const explicitSource = { uri: 'https://example.com/explicit.png' };
+    const materialSource = { uri: 'resolved-material-icon' };
+    mockUseMaterialIconSource.mockReturnValue(materialSource);
+
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton md="search" icon={explicitSource} />
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        source: explicitSource,
+      }),
+      undefined
+    );
+  });
+
+  it('uses resolved material source when no explicit source', () => {
+    const materialSource = { uri: 'resolved-material-icon' };
+    mockUseMaterialIconSource.mockReturnValue(materialSource);
+
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton md="search" />
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        source: materialSource,
+      }),
+      undefined
+    );
+  });
+
+  it('md + sf combination passes both systemImageName and mdIconName', () => {
+    render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton icon="magnifyingglass" md="search" />
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        systemImageName: 'magnifyingglass',
+        mdIconName: 'search',
       }),
       undefined
     );

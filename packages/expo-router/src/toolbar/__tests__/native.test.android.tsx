@@ -180,6 +180,16 @@ describe('RouterToolbarItem', () => {
     consoleSpy.mockRestore();
   });
 
+  it('returns null without warning when mdIconName is set but source is missing (loading state)', () => {
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const { toJSON } = render(<RouterToolbarItem identifier="test" mdIconName="search" />);
+
+    expect(toJSON()).toBeNull();
+    expect(consoleSpy).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
   it('renders normally when type is normal', () => {
     const source = { uri: 'test-icon.png' };
     render(<RouterToolbarItem identifier="test" type="normal" source={source} />);

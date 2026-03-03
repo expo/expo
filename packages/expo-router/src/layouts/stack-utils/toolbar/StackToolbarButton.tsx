@@ -1,6 +1,7 @@
 'use client';
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
+import type { AndroidSymbol } from 'expo-symbols';
 import { Children, useId, useMemo, type ReactNode } from 'react';
 import {
   StyleSheet,
@@ -16,6 +17,7 @@ import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
   extractImageSource,
+  extractMdIconName,
   extractXcassetName,
   type StackHeaderItemSharedProps,
 } from './shared';
@@ -23,6 +25,7 @@ import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolba
 import { RouterToolbarItem } from '../../../toolbar/native';
 import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../utils/children';
 import type { BasicTextStyle } from '../../../utils/font';
+import { useMaterialIconSource } from '../../../utils/materialIcon';
 
 export interface StackToolbarButtonProps {
   accessibilityLabel?: string;
@@ -82,14 +85,26 @@ export interface StackToolbarButtonProps {
    * @platform iOS 26+
    */
   hidesSharedBackground?: boolean;
+  // TODO(@ubax): Consider splitting into `sf` and `src` props to align with `md` and `Stack.Toolbar.Icon` child API.
   /**
    * Icon to display in the button.
    *
    * Can be a string representing an SFSymbol or an image source.
    *
    * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
+   *
    */
   icon?: StackHeaderItemSharedProps['icon'];
+  /**
+   * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+   *
+   * The icon is resolved asynchronously — the button is invisible until the icon loads.
+   *
+   * Can also be specified via `<Stack.Toolbar.Icon md="..." />` child component.
+   *
+   * @platform android
+   */
+  md?: AndroidSymbol;
   // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display in the button.
@@ -214,12 +229,18 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
     throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
   }
 
+  // md icon: child Icon takes priority over Button md prop
+  const mdIconName = extractMdIconName(props) ?? props.md;
+  const materialSource = useMaterialIconSource(mdIconName);
+
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props, true);
   // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
   const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
   const xcassetName = extractXcassetName(props);
   const imageRenderingMode = extractIconRenderingMode(props) ?? props.iconRenderingMode;
   const source = extractImageSource(props);
+  // Explicit source takes priority over resolved material icon
+  const resolvedSource = source ?? materialSource;
   return (
     <NativeToolbarButton
       {...sharedProps}
@@ -227,7 +248,8 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
       xcassetName={xcassetName}
       image={props.image}
       imageRenderingMode={imageRenderingMode}
-      source={source}
+      source={resolvedSource}
+      mdIconName={mdIconName}
     />
   );
 };
@@ -261,6 +283,7 @@ interface NativeToolbarButtonProps {
   xcassetName?: string;
   image?: ImageRef;
   imageRenderingMode?: 'template' | 'original';
+  mdIconName?: string;
   onPress?: () => void;
   possibleTitles?: string[];
   selected?: boolean;
@@ -295,6 +318,7 @@ const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) => {
       identifier={id}
       image={props.image}
       imageRenderingMode={renderingMode}
+      mdIconName={props.mdIconName}
       onSelected={props.onPress}
       possibleTitles={props.possibleTitles}
       selected={props.selected}
