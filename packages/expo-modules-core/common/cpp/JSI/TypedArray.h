@@ -38,7 +38,19 @@ class TypedArray : public jsi::Object {
 
   size_t byteLength(jsi::Runtime &runtime) const;
 
+  /**
+   * Returns the typed array's backing ArrayBuffer.
+   * Always returns the full buffer, even when the typed array covers only a subset of it.
+   */
   jsi::ArrayBuffer getBuffer(jsi::Runtime &runtime) const;
+
+  /**
+   * Returns only the portion of the backing buffer spanned by this typed array's view.
+   * If the view covers the entire buffer, returns the buffer directly (zero-copy).
+   * If the view is a subset, allocates a new ArrayBuffer containing only that slice
+   * via ArrayBuffer.prototype.slice() — this involves a data copy.
+   */
+  jsi::ArrayBuffer getViewedBufferSlice(jsi::Runtime &runtime) const;
 
   void* getRawPointer(jsi::Runtime &runtime) const;
 };

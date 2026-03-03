@@ -5,6 +5,7 @@ description: Learn how to set up and use pre-packaged jobs in EAS Workflows.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 
 Pre-packaged jobs are ready-to-use workflow jobs that help you automate common tasks like building, submitting, and testing your app. They provide a standardized way to handle these operations without having to write custom job configurations from scratch. This guide covers the available pre-packaged jobs and how to use them in your workflows.
 
@@ -1657,6 +1658,8 @@ jobs:
 
 ### Common questions
 
+<FAQ>
+
 <Collapsible summary="When to use and when not to use repack?">
 
 Repack job is suitable for the following use cases:
@@ -1670,6 +1673,8 @@ Repack job is not suitable for the following use cases:
 - Production builds that require builds to go through the complete pipeline for correct symbolication and app signing
 
 </Collapsible>
+
+</FAQ>
 
 #### Parameters
 

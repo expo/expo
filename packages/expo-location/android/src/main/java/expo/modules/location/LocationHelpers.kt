@@ -159,7 +159,7 @@ class LocationHelpers {
               continuation.resume(PermissionRequestResponse(result))
             }
 
-            override fun reject(code: String, message: String?, cause: Throwable?) {
+            override fun reject(code: String?, message: String?, cause: Throwable?) {
               continuation.resumeWithException(CodedException(code, message, cause))
             }
           },
@@ -181,7 +181,7 @@ class LocationHelpers {
               )
             }
 
-            override fun reject(code: String, message: String?, cause: Throwable?) {
+            override fun reject(code: String?, message: String?, cause: Throwable?) {
               it.resumeWithException(CodedException(code, message, cause))
             }
           },

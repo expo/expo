@@ -179,7 +179,7 @@ Building locally is useful for developing native modules and [debugging complex 
 
 If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
 
-For example, if your project does not have an **ios** directory in the root of your project, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. For more information on this process, see [Expo Prebuild](/workflow/prebuild).
+For example, if your project does not have an **ios** directory in the root of your project, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. For more information on this process, see [Expo Prebuild](/workflow/continuous-native-generation).
 
 **Cross-platform arguments**
 
@@ -364,7 +364,7 @@ This command will be disabled if your project is configured to use `metro` for b
 
 <Terminal cmd={['$ npx expo prebuild']} />
 
-Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild/).
+Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/continuous-native-generation/).
 
 ## Lint
 
@@ -406,7 +406,7 @@ Evaluate the app config (**app.json**, or **app.config.js**) by running:
 There are three different config types that are generated from the app config:
 
 - `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
-- `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
+- `prebuild`: The config that is used for [Expo Prebuild](/workflow/continuous-native-generation) including async modifiers. This is the only time the config is not serializable.
 - `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or **AndroidManifest.xml** changes. Learn more about [introspection](/config-plugins/development-and-debugging/#introspection).
 
 ## Install

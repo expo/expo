@@ -12,6 +12,7 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { PackagesGraphNode } from '../../packages-graph';
+import { NON_CASCADING_PACKAGES } from '../constants';
 import {
   getSuggestedVersions,
   isParcelUnpublished,
@@ -117,10 +118,23 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     // This call mutates `parcelsToPublish` set, adding the selected parcels.
     await selectParcelsToPublish(parcelsToSelect, parcelsToPublish, options);
 
+    // Filter out non-cascading shared packages unless --cascade-all is set.
+    const cascadingParcels = parcels.filter(
+      (parcel) => parcel.state.isRequested && parcelsToPublish.has(parcel)
+    );
+    const skippedFromCascade = cascadingParcels.filter(
+      (p) => !options.cascadeAll && NON_CASCADING_PACKAGES.has(p.pkg.packageName)
+    );
+    if (skippedFromCascade.length > 0) {
+      logger.info(
+        `\n📦 Skipping dependent cascade for shared packages: ${skippedFromCascade.map((p) => green(p.pkg.packageName)).join(', ')}\n   Use ${chalk.bold('--cascade-all')} to include their dependents.`
+      );
+    }
+
     // A set of graph nodes representing the dependents of the selected packages.
     const dependentNodes = new Set<PackagesGraphNode>(
-      parcels
-        .filter((parcel) => parcel.state.isRequested && parcelsToPublish.has(parcel))
+      cascadingParcels
+        .filter((p) => !skippedFromCascade.includes(p))
         .map((parcel) => parcel.graphNode.getAllDependents())
         .flat()
         // If templates-only, do not suggest dependents since we are restricting to templates

@@ -20,6 +20,48 @@ export function buildBreadcrumbListSchema(items: BreadcrumbItem[]) {
   };
 }
 
+type TechArticleInput = {
+  title: string;
+  description?: string;
+  modificationDate?: string;
+  url: string;
+};
+
+export function buildTechArticleSchema({
+  title,
+  description,
+  modificationDate,
+  url,
+}: TechArticleInput) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: title,
+    ...(description ? { description } : {}),
+    ...(modificationDate ? { dateModified: modificationDate } : {}),
+    publisher: websiteSchema.publisher,
+    url,
+  };
+}
+
+type FAQItem = { question: string; answer: string };
+
+export function buildFAQPageSchema(items: FAQItem[]) {
+  if (items.length === 0) {
+    return null;
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map(item => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  };
+}
+
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',

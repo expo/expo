@@ -240,7 +240,14 @@ export async function grantReadWriteAccessAsync(
   packageName: string,
   teamName: string
 ): Promise<void> {
-  await spawnAsync('npm', ['access', 'grant', 'read-write', teamName, packageName]);
+  await spawnAsync('npm', [
+    'access',
+    'grant',
+    'read-write',
+    teamName,
+    packageName,
+    ...maybeNpmOtpFlag(),
+  ]);
 }
 
 /**

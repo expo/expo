@@ -51,6 +51,27 @@ jsi::ArrayBuffer TypedArray::getBuffer(jsi::Runtime &runtime) const {
   }
 }
 
+jsi::ArrayBuffer TypedArray::getViewedBufferSlice(jsi::Runtime &runtime) const {
+  auto buffer = getBuffer(runtime);
+
+  auto offset = byteOffset(runtime);
+  auto length = byteLength(runtime);
+
+  if (offset == 0 && length == buffer.size(runtime)) {
+    return buffer;
+  }
+
+  jsi::Function sliceFunc = buffer.getPropertyAsFunction(runtime, "slice");
+
+  // ArrayBuffer.prototype.slice(begin, end)
+  // Note: end is byteOffset + byteLength
+  auto slicedBuffer = sliceFunc.callWithThis(runtime, buffer, {
+    jsi::Value((double)offset),
+    jsi::Value((double)offset + length)
+  });
+  return slicedBuffer.asObject(runtime).getArrayBuffer(runtime);
+}
+
 void* TypedArray::getRawPointer(jsi::Runtime &runtime) const {
   return reinterpret_cast<void *>(getBuffer(runtime).data(runtime) + byteOffset(runtime));
 }

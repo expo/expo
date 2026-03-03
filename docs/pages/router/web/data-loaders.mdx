@@ -5,6 +5,7 @@ isAlpha: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -366,6 +367,8 @@ export default function Post() {
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="Can I use data loaders without server rendering?">
 
 Yes. Data loaders work with both static rendering (`web.output: 'static'`) and server rendering (`web.output: 'server'`).
@@ -377,3 +380,5 @@ Yes. Data loaders work with both static rendering (`web.output: 'static'`) and s
 No, `loader` exports are dropped from the client bundle. However, if another module contains server-side logic and is imported by client-side code outside of the **src/app** directory, it may be included in your client-side bundle.
 
 </Collapsible>
+
+</FAQ>

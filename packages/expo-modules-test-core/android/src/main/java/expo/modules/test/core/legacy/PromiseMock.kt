@@ -53,7 +53,7 @@ class PromiseMock : Promise {
     resolveValue = value
   }
 
-  override fun reject(code: String, message: String?, cause: Throwable?) {
+  override fun reject(code: String?, message: String?, cause: Throwable?) {
     assertNotResolvedNorRejected()
     state = PromiseState.REJECTED
     rejectCode = code

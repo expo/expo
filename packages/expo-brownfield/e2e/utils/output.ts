@@ -54,7 +54,7 @@ export const BUILD_IOS = {
     `- Verbose: false`,
     `- Artifacts path: ${projectRoot}/artifacts`,
   ],
-  HERMES_COPYING: `Copying hermes XCFramework from Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework to`,
+  HERMES_COPYING: (projectRoot: string) => `Copying XCFrameworks to: ${projectRoot}/artifacts`,
   PACKAGE_COMMAND: (projectRoot: string, workspace: string, configuration: 'Debug' | 'Release') => [
     `xcodebuild`,
     `-create-xcframework`,

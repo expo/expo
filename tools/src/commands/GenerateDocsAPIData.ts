@@ -29,6 +29,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/confirmationdialog': ['swift-ui/ConfirmationDialog/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/controlgroup': ['swift-ui/ControlGroup/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/datepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/disclosuregroup': ['swift-ui/DisclosureGroup/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/divider': ['swift-ui/Divider/index.tsx', 'expo-ui'],

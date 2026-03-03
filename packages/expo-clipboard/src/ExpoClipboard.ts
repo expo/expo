@@ -15,7 +15,6 @@ type ExpoClipboardEvents = {
 };
 
 declare class NativeExpoClipboard extends NativeModule<ExpoClipboardEvents> {
-  setString(text: string): void;
   getStringAsync(options?: GetStringOptions): Promise<string>;
   setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
   hasStringAsync(): Promise<boolean>;

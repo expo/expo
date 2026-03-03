@@ -54,7 +54,7 @@ Projects can configure how Babel is used by modifying the [**babel.config.js**](
 
 Describes the approach when the native projects (in the **android** and **ios** directories) are versioned in Git and maintained manually. It's typical for **existing "bare" React Native apps** where you manually make changes to the native projects. There is freedom to customize them but also high maintenance overhead.
 
-This is in contrast to using [app config and prebuild](/workflow/prebuild), where the native projects are not versioned. Instead, they are generated on demand using the `npx expo prebuild`, which is the [recommended approach](/workflow/prebuild/#pitch).
+This is in contrast to using [app config and prebuild](/workflow/continuous-native-generation), where the native projects are not versioned. Instead, they are generated on demand using the `npx expo prebuild`, which is the [recommended approach](/workflow/continuous-native-generation).
 
 ### Bun
 
@@ -82,7 +82,7 @@ A JavaScript function that is used to append [config mods](#config-mods) to the 
 
 ### Continuous Native Generation (CNG)
 
-An abstract concept that describes the process of generating native projects from a set of inputs. In the context of Expo, CNG is implemented via the [`prebuild`](#prebuild) command. See [CNG](/workflow/continuous-native-generation/) and [Expo Prebuild](/workflow/prebuild/) for more information.
+An abstract concept that describes the process of generating native projects from a set of inputs. In the context of Expo, CNG is implemented via the [`prebuild`](#prebuild) command. See [Continuous Native Generation](/workflow/continuous-native-generation/) for more information.
 
 ### create-expo-app
 

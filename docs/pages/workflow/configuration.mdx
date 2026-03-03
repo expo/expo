@@ -12,7 +12,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
 
-The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring [Expo Prebuild](/workflow/prebuild) generation, how a project loads in [Expo Go](/get-started/expo-go/), and the OTA update manifest.
+The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring [Expo Prebuild](/more/glossary-of-terms/#prebuild) generation, how a project loads in [Expo Go](/get-started/expo-go/), and the OTA update manifest.
 
 It must be located at the root of your project, next to the **package.json**. Here is a minimal example:
 
@@ -62,7 +62,7 @@ The following fields are filtered out of the public app config (and not accessib
 
 Library authors can extend the app config by using [Expo Config plugins](/config-plugins/introduction/).
 
-> **info** Config plugins are mostly used to configure the [`npx expo prebuild`](/workflow/prebuild) command.
+> **info** Config plugins are mostly used to configure the [`npx expo prebuild`](/more/glossary-of-terms/#prebuild) command.
 
 ## Dynamic configuration
 

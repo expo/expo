@@ -99,7 +99,7 @@ fun FunctionalComposableScope.PickerContent(
           onClick = {
             onOptionSelected(PickerOptionSelectedEvent(index, label))
           },
-          modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+          modifier = ModifierRegistry.applyModifiers(props.buttonModifiers, appContext, composableScope, globalEventDispatcher),
           selected = index == selectedIndex,
           label = { Text(label) },
           colors = SegmentedButtonDefaults.colors(
