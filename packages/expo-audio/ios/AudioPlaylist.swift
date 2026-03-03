@@ -123,8 +123,14 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
 
   func seekTo(seconds: Double) async {
     let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    await ref.currentItem?.seek(to: time)
-    updateStatus(with: ["currentTime": currentTime])
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      ref.seek(to: time) { [weak self] _ in
+        if let self {
+          self.updateStatus(with: ["currentTime": self.currentTime])
+        }
+        continuation.resume()
+      }
+    }
   }
 
   func add(source: AudioSource) {
@@ -357,6 +363,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
   }
 
   public override func sharedObjectWillRelease() {
+    ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
     cancellables.removeAll()
 
