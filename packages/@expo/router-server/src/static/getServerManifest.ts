@@ -31,15 +31,15 @@ export async function getBuildTimeServerManifestAsync(
     ...options,
   });
 
-  if (!routeTree) {
-    throw new Error('No routes found');
-  }
-
   // Evaluate all static params; skip for SSR mode where routes are matched at runtime
-  if (!options.skipStaticParams) {
+  if (routeTree && !options.skipStaticParams) {
     await loadStaticParamsAsync(routeTree);
   }
 
+  // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+  // has no route tree set up. This can happen when we build against a project that
+  // isn't an expo-router project or not fully set up yet, but has expo-router options
+  // in the app.json already
   return getServerManifest(routeTree, options);
 }
 
@@ -52,12 +52,14 @@ export async function getManifest(options: GetRoutesOptions = {}) {
     ...options,
   });
 
-  if (!routeTree) {
-    throw new Error('No routes found');
+  if (routeTree) {
+    // Evaluate all static params
+    await loadStaticParamsAsync(routeTree);
   }
 
-  // Evaluate all static params
-  await loadStaticParamsAsync(routeTree);
-
+  // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+  // has no route tree set up. This can happen when we build against a project that
+  // isn't an expo-router project or not fully set up yet, but has expo-router options
+  // in the app.json already
   return getReactNavigationConfig(routeTree, false);
 }
