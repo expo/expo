@@ -7,7 +7,6 @@ module.exports = {
   ios: {
     bundleIdentifier: 'com.example.minimal',
   },
-  plugins: ['expo-router'],
   web: {
     bundler: 'metro',
     output: process.env.E2E_USE_STATIC ?? 'single',
