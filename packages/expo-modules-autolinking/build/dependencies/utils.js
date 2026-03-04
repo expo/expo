@@ -70,6 +70,10 @@ function mergeWithDuplicate(a, b) {
             target = b;
             duplicate = a;
         }
+        else if (b < a) {
+            target = b;
+            duplicate = a;
+        }
         else {
             target = a;
             duplicate = b;
