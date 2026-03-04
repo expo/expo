@@ -10,12 +10,14 @@ export async function registerDatabaseForDevToolsAsync(database) {
         return;
     }
     await maybeInitClientAsync();
+    console.log('Registering database for devtools:', database.databasePath);
     registeredDatabases.set(database.databasePath, new WeakRef(database));
 }
 export async function unregisterDatabaseForDevToolsAsync(database) {
     if (!__DEV__) {
         return;
     }
+    console.log('Unregistering database for devtools:', database.databasePath);
     registeredDatabases.delete(database.databasePath);
 }
 async function maybeInitClientAsync() {

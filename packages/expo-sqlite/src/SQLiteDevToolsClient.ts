@@ -46,6 +46,7 @@ export async function registerDatabaseForDevToolsAsync(database: SQLiteDatabase)
     return;
   }
   await maybeInitClientAsync();
+  console.log('Registering database for devtools:', database.databasePath);
   registeredDatabases.set(database.databasePath, new WeakRef(database));
 }
 
@@ -53,6 +54,7 @@ export async function unregisterDatabaseForDevToolsAsync(database: SQLiteDatabas
   if (!__DEV__) {
     return;
   }
+  console.log('Unregistering database for devtools:', database.databasePath);
   registeredDatabases.delete(database.databasePath);
 }
 
