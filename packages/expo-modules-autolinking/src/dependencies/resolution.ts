@@ -125,13 +125,10 @@ export async function scanDependenciesRecursively(
     depth = 0
   ): Promise<ResolutionResult> => {
     const searchResults: ResolutionResult = Object.create(null);
-    if (_visitedPackagePaths.has(resolution.path)) {
-      return searchResults;
-    } else {
-      _visitedPackagePaths.add(resolution.path);
-    }
+    const hasVisitedPath = _visitedPackagePaths.has(resolution.path);
+    _visitedPackagePaths.add(resolution.path);
     const [nodeModulePaths, packageJson] = await Promise.all([
-      getNodeModulePaths(resolution.path),
+      !hasVisitedPath ? getNodeModulePaths(resolution.path) : [],
       loadPackageJson(fastJoin(resolution.path, 'package.json')),
     ]);
     if (!packageJson) {
@@ -140,7 +137,7 @@ export async function scanDependenciesRecursively(
       resolution.version = packageJson.version || '';
     }
 
-    if (depth + 1 < maxDepth) {
+    if (!hasVisitedPath && depth + 1 < maxDepth) {
       const modules = await resolveDependencies(
         packageJson,
         nodeModulePaths,
