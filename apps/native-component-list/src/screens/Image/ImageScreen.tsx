@@ -113,6 +113,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Density variants (@2x/@3x)',
+    route: 'image/density',
+    getComponent() {
+      return optionalRequire(() => require('./ImageDensityScreen'));
+    },
+  },
+  {
     name: 'Transitions',
     route: 'image/transitions',
     getComponent() {

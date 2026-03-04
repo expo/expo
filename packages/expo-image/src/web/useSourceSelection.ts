@@ -40,7 +40,7 @@ function findBestSourceForSize(
 
 export interface SrcSetSource extends ImageSource {
   srcset: string;
-  sizes: string;
+  sizes?: string;
   // used as key and a fallback in case srcset is not supported
   uri: string;
   type: 'srcset';
@@ -57,6 +57,16 @@ function selectSource(
 ): ImageSource | SrcSetSource | null {
   if (sources == null || sources.length === 0) {
     return null;
+  }
+
+  // Single source with density variants from require() → density-based srcSet
+  if (sources.length === 1 && sources[0].sources && sources[0].sources.length > 1) {
+    const densitySources = sources[0].sources;
+    return {
+      srcset: densitySources.map((s) => `${s.uri} ${s.scale}x`).join(', '),
+      uri: densitySources[0].uri,
+      type: 'srcset',
+    } as SrcSetSource;
   }
 
   if (sources.length === 1) {

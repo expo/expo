@@ -36,6 +36,16 @@ const buildStaticObjectClientRef = template.statement(
   `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`
 );
 
+// Static asset objects with density-variant sources for web.
+// The browser picks the best variant via srcSet with density descriptors (1x, 2x, 3x).
+const buildStaticObjectWithSourcesRef = template.statement(
+  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, sources: SOURCES };`
+);
+
+const buildStaticObjectWithSourcesClientRef = template.statement(
+  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, sources: SOURCES, toString() { return this.uri } };`
+);
+
 export async function transform(
   {
     filename,
@@ -113,18 +123,61 @@ export async function transform(
 
   if (isServerEnv || options.platform === 'web') {
     const type = !data.type ? '' : `.${data.type}`;
-    let assetPath: string;
+    let assetBasePath: string;
     if (useMd5Filename) {
-      assetPath = data.hash + type;
+      assetBasePath = data.hash;
     } else if (!isExport) {
-      assetPath = data.httpServerLocation + '/' + data.name + type;
+      assetBasePath = data.httpServerLocation + '/' + data.name;
     } else {
-      assetPath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+      assetBasePath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name;
     }
+    const assetPath = assetBasePath + type;
+
+    // Does the asset have density variants (@2x, @3x)?
+    // Both server and client need the same `sources` array for hydration parity.
+    const hasDensityVariants =
+      data.scales?.length > 1 &&
+      data.scales.some((s) => s !== 1) &&
+      !useMd5Filename;
 
     // If size data is known then it should be passed back to ensure the correct dimensions are used.
     if (data.width != null || data.height != null) {
-      const options: Parameters<typeof buildStaticObjectRef>[0] = {
+      if (hasDensityVariants) {
+        const sourcesAst = t.arrayExpression(
+          data.scales.map((scale) => {
+            const suffix = scale === 1 ? '' : `@${scale}x`;
+            return t.objectExpression([
+              t.objectProperty(
+                t.identifier('uri'),
+                t.stringLiteral(assetBasePath + suffix + type)
+              ),
+              t.objectProperty(t.identifier('scale'), t.numericLiteral(scale)),
+            ]);
+          })
+        );
+
+        const creatorFunction = isReactServer
+          ? buildStaticObjectWithSourcesRef
+          : buildStaticObjectWithSourcesClientRef;
+
+        const templateOptions = {
+          FILE_PATH: JSON.stringify(assetBasePath + type),
+          WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
+          HEIGHT: data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
+          SOURCES: sourcesAst,
+        };
+
+        return {
+          ast: {
+            comments: null,
+            ...t.file(t.program([creatorFunction(templateOptions)])),
+            errors: [],
+          },
+          reactClientReference: getClientReference(),
+        };
+      }
+
+      const templateOptions: Parameters<typeof buildStaticObjectRef>[0] = {
         FILE_PATH: JSON.stringify(assetPath),
         WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
         HEIGHT: data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
@@ -134,7 +187,7 @@ export async function transform(
       return {
         ast: {
           comments: null,
-          ...t.file(t.program([creatorFunction(options)])),
+          ...t.file(t.program([creatorFunction(templateOptions)])),
           errors: [],
         },
         reactClientReference: getClientReference(),
