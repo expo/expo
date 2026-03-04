@@ -23,6 +23,8 @@ Since the `Host` component is a React Native [`View`](https://reactnative.dev/do
 
 Use `matchContents` to let the `Host` automatically size itself to fit its SwiftUI content, instead of requiring explicit dimensions.
 
+> **Note:** `matchContents` only works correctly with components that have an intrinsic size or an explicit [`frame`](modifiers/#frameparams) (for example, `Button`, `Toggle`, `Text`). Flexible-width components like `Slider` and linear `ProgressView` expand to fill available space and have no intrinsic width, using `matchContents` with them will result in near-zero width. For those components, either apply a [`frame`](modifiers/#frameparams) modifier on the component to give it an explicit width, or use explicit sizing with `style` on the `Host` instead (for example, `style={{ flex: 1 }}` or `style={{ width: 300 }}`).
+
 ```tsx MatchContentsExample.tsx
 import { Button, Host } from '@expo/ui/swift-ui';
 
