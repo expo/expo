@@ -32,7 +32,7 @@ object DependencyInjection {
   var devLauncherController: DevLauncherController? = null
     private set
 
-  var packagerService: PackagerService = PackagerService(httpClientService)
+  var packagerService: PackagerService? = null
     private set
 
   var devMenuPreferences: DevMenuPreferences? = null
@@ -67,6 +67,8 @@ object DependencyInjection {
     )
 
     errorRegistryService = ErrorRegistryService(context.applicationContext)
+
+    packagerService = PackagerService(application)
 
     wasInitialized = true
   }

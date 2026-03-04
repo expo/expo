@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 
 sealed interface HomeAction {
   class OpenApp(val url: String) : HomeAction
-  object RefetchRunningApps : HomeAction
   object ResetRecentlyOpenedApps : HomeAction
   class NavigateToCrashReport(val crashReport: DevLauncherErrorInstance) : HomeAction
   object ScanQRCode : HomeAction
@@ -30,7 +29,6 @@ sealed interface HomeAction {
 
 data class HomeState(
   val runningPackagers: Set<PackagerInfo> = emptySet(),
-  val isFetchingPackagers: Boolean = false,
   val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList(),
   val crashReport: DevLauncherErrorInstance? = null,
   val loadingError: String? = null
@@ -62,11 +60,11 @@ class HomeViewModel() : ViewModel() {
       }
       .launchIn(viewModelScope)
 
-    packagerService.isLoading.onEach { isLoading ->
-      _state.value = _state.value.copy(
-        isFetchingPackagers = isLoading
-      )
-    }.launchIn(viewModelScope)
+    packagerService.start()
+  }
+
+  override fun onCleared() {
+    packagerService.stop()
   }
 
   fun onAction(action: HomeAction) {
@@ -81,8 +79,6 @@ class HomeViewModel() : ViewModel() {
             )
           }
         }
-
-      HomeAction.RefetchRunningApps -> packagerService.refetchedPackager()
 
       HomeAction.ResetRecentlyOpenedApps -> viewModelScope.launch {
         devLauncherController.clearRecentlyOpenedApps()
