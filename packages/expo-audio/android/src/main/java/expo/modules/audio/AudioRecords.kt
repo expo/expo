@@ -5,7 +5,6 @@ import android.os.Build
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import java.net.URL
 
 class AudioSource(
   @Field val uri: String?,
@@ -43,7 +42,7 @@ class Metadata(
   @Field val title: String?,
   @Field val artist: String?,
   @Field val albumTitle: String?,
-  @Field val artworkUrl: URL?
+  @Field val artworkUrl: String?
 ) : Record
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {

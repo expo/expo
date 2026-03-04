@@ -622,11 +622,33 @@ export type RecordingSource =
   | 'voice_performance'
   | 'voice_recognition';
 
-// @docsMissing
+/**
+ * Metadata to display on the lock screen for the currently active audio player.
+ * Used with `setActiveForLockScreen()` and `updateLockScreenMetadata()`.
+ */
 export type AudioMetadata = {
+  /** The title of the audio track to display on the lock screen. */
   title?: string;
+  /** The artist name to display on the lock screen. */
   artist?: string;
+  /** The album title to display on the lock screen. */
   albumTitle?: string;
+  /**
+   * URL for the lock screen artwork image.
+   *
+   * Must be a remote HTTP or HTTPS URL (e.g. `'https://example.com/artwork.jpg'`).
+   * Local assets obtained via `require()` or `Image.resolveAssetSource()` are **not** supported
+   * on Android release builds and may not work as expected on iOS.
+   * Omit this field or use a hosted remote URL instead.
+   *
+   * @example
+   * ```tsx
+   * player.setActiveForLockScreen(true, {
+   *   title: 'My Track',
+   *   artworkUrl: 'https://example.com/artwork.jpg', // ✅ Remote URL only
+   * });
+   * ```
+   */
   artworkUrl?: string;
 };
 

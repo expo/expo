@@ -53,6 +53,57 @@ if (!Platform.isTV || Platform.OS !== 'ios') {
   };
 }
 
+const setActiveForLockScreen = AudioModule.AudioPlayer.prototype.setActiveForLockScreen;
+AudioModule.AudioPlayer.prototype.setActiveForLockScreen = function (
+  active: boolean,
+  metadata?: any,
+  options?: any
+) {
+  if (active && metadata && 'artworkUrl' in metadata) {
+    const url = metadata.artworkUrl;
+    // We intentionally check even if url is undefined/falsy, because developers might accidentally
+    // pass undefined (e.g. by accessing a wrong property like resolveAssetSource().url instead of .uri).
+    // This ensures they get a warning instead of a silent failure.
+    const isString = typeof url === 'string';
+
+    // To prevent false positives, we only consider it a Metro dev server URL if it's an HTTP/HTTPS URL
+    // specifically pointing to localhost or 10.0.2.2 (Android emulator localhost) on a typical Metro port (e.g., 8081).
+    let isDevServerUrl = false;
+    if (isString && (url.startsWith('http://') || url.startsWith('https://'))) {
+      try {
+        const parsedUrl = new URL(url);
+        isDevServerUrl =
+          (parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '10.0.2.2') &&
+          /^808\d$/.test(parsedUrl.port);
+      } catch (e) {
+        // Ignore invalid URLs
+      }
+    }
+
+    const isUnrecognizedProtocol =
+      isString &&
+      !url.startsWith('http://') &&
+      !url.startsWith('https://') &&
+      !url.startsWith('file://');
+
+    if (!isString || isUnrecognizedProtocol || isDevServerUrl) {
+      const typeStr = typeof url;
+      const valueStr = isString ? `"${url}"` : String(url);
+      console.warn(
+        `[expo-audio] Invalid or unsupported data provided for 'artworkUrl': ${valueStr} (type: ${typeStr}).\n` +
+          `Using a local asset identifier (or Metro development server URL) will not work in Android release environments.\n` +
+          `Please use a remote HTTP/HTTPS URL, or a local 'file://' URL through the file system instead.`
+      );
+    }
+
+    if (!isString) {
+      metadata = { ...metadata };
+      delete metadata.artworkUrl;
+    }
+  }
+  return setActiveForLockScreen.call(this, active, metadata, options);
+};
+
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.
  *

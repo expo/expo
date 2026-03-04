@@ -33,7 +33,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
+import java.net.MalformedURLException
 import java.net.URL
+import android.util.Log
 
 @OptIn(UnstableApi::class)
 class AudioControlsService : MediaSessionService() {
@@ -43,7 +45,7 @@ class AudioControlsService : MediaSessionService() {
   private var currentPlayer: AudioPlayer? = null
   private var currentOptions: AudioLockScreenOptions? = null
   private val scope = CoroutineScope(Dispatchers.IO)
-  private var currentArtworkUrl: URL? = null
+  private var currentArtworkUrl: String? = null
   private var currentArtwork: Bitmap? = null
   private var artworkLoadJob: Job? = null
   private val notificationId: Int
@@ -307,7 +309,6 @@ class AudioControlsService : MediaSessionService() {
       currentMetadata = metadata
       currentOptions = options
 
-      // Reload artwork if metadata has changed
       metadata?.artworkUrl?.let {
         loadArtworkFromUrl(it) { bitmap ->
           currentArtwork = bitmap
@@ -326,23 +327,32 @@ class AudioControlsService : MediaSessionService() {
     clearSessionInternal()
   }
 
-  private fun loadArtworkFromUrl(url: URL, callback: (Bitmap?) -> Unit) {
-    if (url != currentArtworkUrl) {
-      currentArtworkUrl = url
-      artworkLoadJob?.cancel()
+  private fun loadArtworkFromUrl(urlString: String, callback: (Bitmap?) -> Unit) {
+    if (urlString == currentArtworkUrl) {
+      return
+    }
+    currentArtworkUrl = urlString
+    artworkLoadJob?.cancel()
 
-      artworkLoadJob = scope.launch {
-        try {
-          val inputStream = url.openConnection().getInputStream()
-          val bitmap = BitmapFactory.decodeStream(inputStream)
+    val url = try {
+      URL(urlString)
+    } catch (e: MalformedURLException) {
+      callback(null)
+      return
+    }
 
-          if (isActive) {
-            callback(bitmap)
-          }
-        } catch (e: Exception) {
-          if (isActive) {
-            callback(null)
-          }
+    artworkLoadJob = scope.launch {
+      try {
+        val inputStream = url.openConnection().getInputStream()
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+
+        if (isActive) {
+          callback(bitmap)
+        }
+      } catch (e: Exception) {
+        if (isActive) {
+          Log.e("expo-audio", "Failed to load lock screen artwork", e)
+          callback(null)
         }
       }
     }

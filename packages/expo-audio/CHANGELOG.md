@@ -10,8 +10,14 @@
 
 - [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve looping support. ([#43600](https://github.com/expo/expo/pull/43600) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `setActiveForLockScreen` being rejected when `artworkUrl` is a local asset. Changed `artworkUrl` field in `Metadata` from `URL?` to `String?` to prevent `MalformedURLException` from the bridge type conversion, and added graceful handling with a developer warning when an invalid URL is provided.
 
 ### 💡 Others
+
+- Add runtime validation in TypeScript (`ExpoAudio.ts`) to emit a `console.warn` when a local asset or invalid URL is passed as lock screen `artworkUrl`, improving visibility on release builds and error reporting tools.
+- Add JSDoc to `AudioMetadata.artworkUrl` to document that only remote HTTP/HTTPS URLs are supported for lock screen artwork.
+- [iOS] Log a warning when lock screen artwork fails to load in `MediaController`, to help developers identify unsupported local asset URLs.
+- Document the `artworkUrl` remote URL requirement in the background audio playback usage guide.
 
 ## 55.0.8 — 2026-02-25
 
