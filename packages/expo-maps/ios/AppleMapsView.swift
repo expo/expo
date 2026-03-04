@@ -71,7 +71,7 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
   }
 
   func selectMarker(id: String?, options: SelectOptions? = nil) {
-    guard let id = id else {
+    guard let id else {
       applySelection(mapItem: nil, coordinate: nil, options: options)
       return
     }
@@ -84,7 +84,7 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
   }
 
   func selectAnnotation(id: String?, options: SelectOptions? = nil) {
-    guard let id = id else {
+    guard let id else {
       applySelection(mapItem: nil, coordinate: nil, options: options)
       return
     }
