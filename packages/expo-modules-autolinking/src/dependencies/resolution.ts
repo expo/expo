@@ -15,7 +15,7 @@ declare module 'node:module' {
 
 // NOTE(@kitten): There's no need to search very deep for modules
 // We don't expect native modules to be excessively nested in the dependency tree
-const MAX_DEPTH = 8;
+const MAX_DEPTH = 9;
 
 const createNodeModulePathsCreator = () => {
   const _nodeModulePathCache = new Map<string, string | null>();
