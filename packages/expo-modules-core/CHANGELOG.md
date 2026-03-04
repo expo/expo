@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed compilation issues due to missing fallthrough case in `EXJavaScriptSerializable`. ([#43634](https://github.com/expo/expo/pull/43634) by [@tjzel](https://github.com/tjzel))
+
 ### 💡 Others
 
 ## 55.0.15 — 2026-03-11
