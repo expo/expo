@@ -14,6 +14,10 @@ class GoogleMapsModule : Module() {
       AsyncFunction("setCameraPosition") Coroutine { view: GoogleMapsView, config: SetCameraPositionConfig? ->
         view.setCameraPosition(config)
       }
+
+      AsyncFunction("selectMarker") Coroutine { view: GoogleMapsView, id: String?, options: SelectOptionsRecord? ->
+        view.selectMarker(id, options)
+      }
     }
   }
 }

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
