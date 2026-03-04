@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import React
 import ExpoModulesCore
 import EXManifests
 import Combine
@@ -28,7 +27,13 @@ public class DevMenuManager: NSObject {
     super.init()
     self.window = DevMenuWindow(manager: self)
     DevMenuPreferences.setup()
-    readAutoLaunchDisabledState()
+    
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleContentDidAppear),
+      name: Notification.Name("RCTContentDidAppearNotification"),
+      object: nil
+    )
   }
 
   deinit {
@@ -43,8 +48,13 @@ public class DevMenuManager: NSObject {
     return EXKernel.sharedInstance().visibleApp.appLoader.manifestUrl
   }
 
-  var currentBridge: RCTBridge? {
-    return RCTBridge.current()
+  var currentBundleURL: URL? {
+    guard let manifest = currentManifest else { return nil }
+    return ApiUtil.bundleUrlFromManifest(manifest)
+  }
+
+  var hasActiveApp: Bool {
+    return EXKernel.sharedInstance().visibleApp.appManager.reactHost != nil
   }
 
   var isCurrentAppSnack: Bool {
@@ -58,7 +68,7 @@ public class DevMenuManager: NSObject {
 
   @objc
   @discardableResult
-  func openMenu(_ screen: String? = nil) -> Bool {
+  func openMenu() -> Bool {
     return setVisibility(true)
   }
 
@@ -66,13 +76,7 @@ public class DevMenuManager: NSObject {
   @discardableResult
   func closeMenu(completion: (() -> Void)? = nil) -> Bool {
     if isVisible {
-      if Thread.isMainThread {
-        window?.closeBottomSheet(completion)
-      } else {
-        DispatchQueue.main.async { [self] in
-          window?.closeBottomSheet(completion)
-        }
-      }
+      window?.closeBottomSheet(completion)
       return true
     }
     return false
@@ -92,7 +96,7 @@ public class DevMenuManager: NSObject {
 
   private func setVisibility(_ visible: Bool) -> Bool {
     if isVisible == visible { return false }
-    if visible && currentBridge == nil { return false }
+    if visible && !hasActiveApp { return false }
 
     if visible {
       menuWillShowSubject.send()
@@ -116,10 +120,7 @@ public class DevMenuManager: NSObject {
 
   func reload() {
     hideMenu()
-
-    guard let bridge = currentBridge else { return }
-    let emc = bridge.module(forName: "ExpoModulesCore") as? ExpoBridgeModule
-    emc?.appContext?.reloadAppAsync()
+    EXKernel.sharedInstance().reloadVisibleApp()
   }
 
   @objc func goHome() {
@@ -137,11 +138,11 @@ public class DevMenuManager: NSObject {
   }
 
   func openJSInspector() {
-    guard let bridge = currentBridge, let bundleURL = bridge.bundleURL else {
+    guard let manifestURL = currentManifestURL else {
       return
     }
-    let port = bundleURL.port ?? Int(RCT_METRO_PORT)
-    let host = bundleURL.host ?? "localhost"
+    let port = manifestURL.port ?? 8081
+    let host = manifestURL.host ?? "localhost"
     let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
     guard let url = URL(string: openURL) else { return }
     let request = NSMutableURLRequest(url: url)
@@ -150,11 +151,7 @@ public class DevMenuManager: NSObject {
   }
 
   func toggleFastRefresh() {
-    guard let bridge = currentBridge,
-          let devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings else {
-      return
-    }
-    devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled
+    EXKernel.sharedInstance().visibleApp.appManager.selectDevMenuItem(withKey: "dev-hmr")
   }
 
   func getAppInfo() -> AppInfo {
@@ -163,11 +160,11 @@ public class DevMenuManager: NSObject {
 
     let appName = manifest?.name() ?? bundleDisplayName()
     let appVersion = manifest?.version() ?? formattedAppVersion()
-    let runtimeVersion: String? = nil // only available on ExpoUpdatesManifest
+    let runtimeVersion: String? = nil
     let sdkVersion = manifest?.expoGoSDKVersion()
     let hostUrl = manifestURL?.absoluteString
     let appIcon = manifest?.iosAppIconUrl() ?? bundleAppIcon()
-    let engine = resolveEngine()
+    let engine = "Hermes"
 
     return AppInfo(
       appName: appName,
@@ -181,27 +178,15 @@ public class DevMenuManager: NSObject {
   }
 
   func getDevSettings() -> DevSettings {
-    guard let bridge = currentBridge,
-          let bridgeSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings else {
-      return DevSettings(
-        isElementInspectorAvailable: false,
-        isHotLoadingAvailable: false,
-        isPerfMonitorAvailable: false,
-        isJSInspectorAvailable: false,
-        isHotLoadingEnabled: false
-      )
-    }
-
-    let perfMonitor = bridge.module(forName: "PerfMonitor")
-    let isDev = currentManifest?.isDevelopmentMode() == true
-    let isPerfMonitorAvailable = perfMonitor != nil && isDev
+    let appManager = EXKernel.sharedInstance().visibleApp.appManager
+    let isDev = appManager.enablesDeveloperTools()
 
     return DevSettings(
       isElementInspectorAvailable: isDev,
-      isHotLoadingAvailable: bridgeSettings.isHotLoadingAvailable,
-      isPerfMonitorAvailable: isPerfMonitorAvailable,
-      isJSInspectorAvailable: bridgeSettings.isDeviceDebuggingAvailable,
-      isHotLoadingEnabled: bridgeSettings.isHotLoadingEnabled
+      isHotLoadingAvailable: appManager.isHotLoadingAvailable(),
+      isPerfMonitorAvailable: appManager.isPerfMonitorAvailable(),
+      isJSInspectorAvailable: isDev,
+      isHotLoadingEnabled: appManager.isHotLoadingEnabled()
     )
   }
 
@@ -218,7 +203,7 @@ public class DevMenuManager: NSObject {
 
       let shouldShow = DevMenuPreferences.showFloatingActionButton
         && !self.isVisible
-        && self.currentBridge != nil
+        && self.hasActiveApp
         && !self.isNavigatingHome
         && DevMenuPreferences.isOnboardingFinished
       self.fabWindow?.setVisible(shouldShow, animated: true)
@@ -237,38 +222,20 @@ public class DevMenuManager: NSObject {
   }
 
   @objc func handleThreeFingerLongPress(_ recognizer: UIGestureRecognizer) {
-    if recognizer.state == .began {
-      toggleMenu()
-    }
-  }
+    if recognizer.state == .began, DevMenuPreferences.touchGestureEnabled {
+      if toggleMenu() {
+        let feedback = UIImpactFeedbackGenerator(style: .light)
+        feedback.prepare()
+        feedback.impactOccurred()
+      }
 
-  private var canLaunchDevMenuOnStart = true
-
-  func shouldAutoLaunch() -> Bool {
-    return canLaunchDevMenuOnStart
-      && currentBridge != nil
-      && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding())
-  }
-
-  @objc func autoLaunch() {
-    NotificationCenter.default.removeObserver(self)
-    DispatchQueue.main.async {
-      self.openMenu()
+      recognizer.isEnabled = false
+      recognizer.isEnabled = true
     }
   }
 
   func shouldShowOnboarding() -> Bool {
     return !isOnboardingFinished
-  }
-
-  private func readAutoLaunchDisabledState() {
-    let userDefaultsValue = UserDefaults.standard.bool(forKey: "EXDevMenuDisableAutoLaunch")
-    if userDefaultsValue {
-      canLaunchDevMenuOnStart = false
-      UserDefaults.standard.removeObject(forKey: "EXDevMenuDisableAutoLaunch")
-    } else {
-      canLaunchDevMenuOnStart = true
-    }
   }
 
   @objc var isOnboardingFinished: Bool {
@@ -296,13 +263,26 @@ public class DevMenuManager: NSObject {
   }
 
   @objc func notifyManifestChanged() {
+    isNavigatingHome = false
     manifestSubject.send()
   }
 
+  @objc private func handleContentDidAppear() {
+    NotificationCenter.default.removeObserver(
+      self,
+      name: Notification.Name("RCTContentDidAppearNotification"),
+      object: nil
+    )
+
+    if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
+      openMenu()
+    } else {
+      updateFABVisibility()
+    }
+  }
+
   private func bundleDisplayName() -> String {
-    return Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-      ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleExecutable") as? String
-      ?? "Expo Go"
+    return "Expo Go"
   }
 
   private func formattedAppVersion() -> String {
@@ -318,13 +298,5 @@ public class DevMenuManager: NSObject {
     }
     let resourcePath = Bundle.main.resourcePath ?? ""
     return "file://" + resourcePath + "/" + iconName + ".png"
-  }
-
-  private func resolveEngine() -> String {
-    #if USE_HERMES
-    return "Hermes"
-    #else
-    return "JSC"
-    #endif
   }
 }

@@ -15,7 +15,7 @@ class SourceMapService {
   /// Bundle: http://localhost:8081/index.bundle?platform=ios&dev=true
   /// SourceMap: http://localhost:8081/index.map?platform=ios&dev=true
   func getSourceMapURL() -> URL? {
-    guard let bundleURL = devMenuManager.currentBridge?.bundleURL else {
+    guard let bundleURL = devMenuManager.currentBundleURL else {
       return nil
     }
 
@@ -38,19 +38,17 @@ class SourceMapService {
 
   // MARK: - Expo Go Integration via EXKernel
 
-  /// Gets the local bundle path from Expo Go's EXKernel
-  /// Path: EXKernel.sharedInstance.visibleApp.appLoader.appLauncher.launchAssetUrl
-  private func getLaunchAssetURL() -> URL? {
-    // Direct access to EXKernel instead of runtime reflection
-    // NOTE: This will compile once EXKernel headers are available via the ObjC bridging header
-    return nil // placeholder - will be connected when integrated
+  /// Gets the loaded bundle data directly from the app loader.
+  /// This is the JS bundle that EXKernel loaded for the current app.
+  private func getLoadedBundleData() -> Data? {
+    return EXKernel.sharedInstance().visibleApp.appLoader.bundle as Data?
   }
 
   // MARK: - Source Map Fetching
 
   /// Fetches and parses the source map, trying multiple strategies
   func fetchSourceMap() async throws -> SourceMap {
-    let bundleURL = devMenuManager.currentBridge?.bundleURL
+    let bundleURL = devMenuManager.currentBundleURL
 
     // Strategy 1: If the bundle is from Metro dev server, try to fetch external .map file
     if let bundleURL = bundleURL,
@@ -60,14 +58,10 @@ class SourceMapService {
       return externalSourceMap
     }
 
-    // Strategy 2: Check if Expo Go has downloaded the bundle locally
-    if let localBundleURL = getLaunchAssetURL(), localBundleURL.isFileURL {
-      return try extractInlineSourceMapFromLocalFile(localBundleURL)
-    }
-
-    // Strategy 3: Check if bridge's bundle URL is a local file
-    if let bundleURL = bundleURL, bundleURL.isFileURL {
-      return try extractInlineSourceMapFromLocalFile(bundleURL)
+    // Strategy 2: Extract inline source map from the loaded bundle data
+    if let bundleData = getLoadedBundleData(),
+       let bundleContent = String(data: bundleData, encoding: .utf8) {
+      return try extractInlineSourceMap(from: bundleContent)
     }
 
     throw SourceMapError.noSourceMapFound
@@ -87,17 +81,6 @@ class SourceMapService {
     }
 
     return try JSONDecoder().decode(SourceMap.self, from: data)
-  }
-
-  /// Reads a local bundle file and extracts inline source map
-  private func extractInlineSourceMapFromLocalFile(_ fileURL: URL) throws -> SourceMap {
-    let data = try Data(contentsOf: fileURL)
-
-    guard let bundleContent = String(data: data, encoding: .utf8) else {
-      throw SourceMapError.noSourceMapFound
-    }
-
-    return try extractInlineSourceMap(from: bundleContent)
   }
 
   /// Extracts and decodes an inline source map from bundle content

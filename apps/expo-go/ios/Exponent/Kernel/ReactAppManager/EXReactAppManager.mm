@@ -23,6 +23,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTRootView.h>
 
 #if __has_include(<ExpoModulesCore-Swift.h>)
@@ -505,6 +506,27 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   dispatch_async(dispatch_get_main_queue(), ^{
     [self.versionManager selectDevMenuItemWithKey:key host:self.reactHost bundleURL:[self bundleUrl]];
   });
+}
+
+- (RCTDevSettings *)_devSettings
+{
+  return (RCTDevSettings *)[[self.reactHost moduleRegistry] moduleForName:"DevSettings"];
+}
+
+- (BOOL)isHotLoadingEnabled
+{
+  return [[self _devSettings] isHotLoadingEnabled];
+}
+
+- (BOOL)isHotLoadingAvailable
+{
+  return [[self _devSettings] isHotLoadingAvailable];
+}
+
+- (BOOL)isPerfMonitorAvailable
+{
+  id perfMonitor = [[self.reactHost moduleRegistry] moduleForName:"PerfMonitor"];
+  return perfMonitor != nil && [self enablesDeveloperTools];
 }
 
 #pragma mark - RN configuration

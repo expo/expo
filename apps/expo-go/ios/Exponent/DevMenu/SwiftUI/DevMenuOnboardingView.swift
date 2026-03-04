@@ -23,14 +23,13 @@ private struct OnboardingOverlay: View {
   var body: some View {
     ScrollView {
       VStack(spacing: 16) {
-        Image(systemName: "wrench.and.screwdriver")
+        Image("dev-tools")
           .resizable()
           .scaledToFit()
           .frame(height: 80)
           .frame(maxWidth: .infinity)
           .padding(.vertical, 20)
           .background(Color.black)
-          .foregroundColor(.white)
           .cornerRadius(12)
 
         VStack(spacing: 12) {
