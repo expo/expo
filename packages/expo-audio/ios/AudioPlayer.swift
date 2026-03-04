@@ -6,7 +6,7 @@ private enum AudioConstants {
   static let audioSample = "audioSampleUpdate"
 }
 
-public class AudioPlayer: SharedRef<AVPlayer> {
+public class AudioPlayer: SharedRef<AVPlayer>, Playable {
   let id = UUID().uuidString
   var shouldCorrectPitch = true
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
@@ -468,6 +468,19 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         "currentTime": time.seconds
       ])
     }
+  }
+
+  var volume: Float {
+    get { ref.volume }
+    set { ref.volume = newValue }
+  }
+
+  func pause() {
+    ref.pause()
+  }
+
+  func resumePlayback() {
+    ref.play()
   }
 
   public override func sharedObjectWillRelease() {
