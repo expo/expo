@@ -51,12 +51,10 @@ class DevMenuFABWindow: UIWindow {
   }
 
   func setVisible(_ visible: Bool, animated: Bool = true) {
-    // Skip if already animating to the same state
     if targetVisibility == visible {
       return
     }
 
-    // Cancel any in-progress animation and reset to clean state
     if currentAnimator != nil {
       currentAnimator?.stopAnimation(true)
       currentAnimator = nil
