@@ -31,5 +31,5 @@ extension ExpoSwiftUI {
  Internal protocol for type-erased access to a SwiftUI virtual view's content view.
  */
 internal protocol AnyContentViewProvider {
-  nonisolated func getAnyContentView() -> Any
+  func getAnyContentView() -> Any
 }
