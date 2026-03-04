@@ -95,6 +95,22 @@ export const wrapContentHeight = (alignment?: 'top' | 'centerVertically' | 'bott
   createModifier('wrapContentHeight', alignment ? { alignment } : {});
 
 // =============================================================================
+// Inset Modifiers
+// =============================================================================
+
+/**
+ * Adds padding to avoid the software keyboard (IME).
+ * When the keyboard is visible, padding is added to keep content above it.
+ */
+export const imePadding = () => createModifier('imePadding');
+
+/**
+ * Adds padding to keep content within the safe drawing area,
+ * avoiding system UI like status bars, navigation bars, and display cutouts.
+ */
+export const safeDrawingPadding = () => createModifier('safeDrawingPadding');
+
+// =============================================================================
 // Position Modifiers
 // =============================================================================
 
