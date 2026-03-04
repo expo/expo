@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `RevokeTokenRequest` sending client credentials in both the `Authorization` header and the request body, causing 400 errors on RFC 6749 §2.3.1 compliant OAuth servers. ([#43637](https://github.com/expo/expo/issues/43637) by [@tychota](https://github.com/tychota))
+- Fixed `RevokeTokenRequest` sending client credentials in both the `Authorization` header and the request body, causing 400 errors on RFC 6749 §2.3.1 compliant OAuth servers. ([#43637](https://github.com/expo/expo/issues/43637) by [@tychota](https://github.com/tychota)) ([#43641](https://github.com/expo/expo/pull/43641) by [@tychota](https://github.com/tychota))
 
 ### 💡 Others
 
