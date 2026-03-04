@@ -8,6 +8,7 @@
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
+      "react-native": "./build/index.native.js",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
