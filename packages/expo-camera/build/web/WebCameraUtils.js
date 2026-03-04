@@ -24,18 +24,12 @@ export function hasValidConstraints(preferredCameraType, width, height) {
     return preferredCameraType !== undefined && width !== undefined && height !== undefined;
 }
 function ensureCameraPictureOptions(config) {
-    const captureOptions = {
-        scale: 1,
-        imageType: 'png',
-        isImageMirror: false,
+    return {
+        ...config,
+        scale: config.scale ?? 1,
+        imageType: config.imageType ?? 'png',
+        isImageMirror: config.isImageMirror ?? false,
     };
-    for (const key in config) {
-        const prop = key;
-        if (prop in config && config[prop] !== undefined && prop in captureOptions) {
-            captureOptions[prop] = config[prop];
-        }
-    }
-    return captureOptions;
 }
 const DEFAULT_QUALITY = 0.92;
 export function captureImageContext(video, { scale = 1, isImageMirror = false }) {
@@ -131,8 +125,7 @@ export async function getPreferredStreamDevice(preferredCameraType, preferredWid
 }
 export async function getStreamDevice(preferredCameraType, preferredWidth, preferredHeight) {
     const constraints = getIdealConstraints(preferredCameraType, preferredWidth, preferredHeight);
-    const stream = await requestUserMediaAsync(constraints);
-    return stream;
+    return requestUserMediaAsync(constraints);
 }
 export function isWebKit() {
     return /WebKit/.test(navigator.userAgent) && !/Edg/.test(navigator.userAgent);
@@ -147,22 +140,16 @@ export function compareStreams(a, b) {
 }
 export function capture(video, settings, config) {
     const base64 = captureImage(video, config);
+    const { width = 0, height = 0 } = settings;
     const capturedPicture = {
         uri: base64,
         base64,
-        width: 0,
-        height: 0,
+        width,
+        height,
         format: config.imageType ?? 'jpg',
+        exif: settings,
     };
-    if (settings) {
-        const { width = 0, height = 0 } = settings;
-        capturedPicture.width = width;
-        capturedPicture.height = height;
-        capturedPicture.exif = settings;
-    }
-    if (config.onPictureSaved) {
-        config.onPictureSaved(capturedPicture);
-    }
+    config.onPictureSaved?.(capturedPicture);
     return capturedPicture;
 }
 export async function syncTrackCapabilities(cameraType, stream, settings = {}) {

@@ -3,7 +3,7 @@
   "apple": {
     "podspecPath": "expo-dev-menu.podspec",
     "swiftModuleName": "EXDevMenu",
-    "modules": ["DevMenuModule", "DevMenuInternalModule", "DevMenuPreferences"],
+    "modules": ["DevMenuModule", "DevMenuPreferences"],
     "reactDelegateHandlers": ["ExpoDevMenuReactDelegateHandler"],
     "debugOnly": true
   },

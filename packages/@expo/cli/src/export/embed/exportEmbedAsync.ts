@@ -215,10 +215,12 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
+    // We optimistically build the server-side API routes code here, to ensure they're
+    // valid or to enable parallel deployment in the future (TBD). This is disabled using
+    // the explicit `--skip-server` flag.
     const apiRoutesEnabled =
       devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-
-    if (apiRoutesEnabled) {
+    if (!options.skipServer && apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
         pkg,

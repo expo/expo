@@ -70,7 +70,7 @@ extension ExpoSwiftUI {
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
       self.contentView = ContentView(props: props)
-      let rootView = AnyView(contentView.environmentObject(shadowNodeProxy))
+      let rootView = AnyView(contentView)
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -88,6 +88,8 @@ extension ExpoSwiftUI {
       shadowNodeProxy.setStyleSize = { [weak self] width, height in
         self?.setStyleSize(width, height: height)
       }
+
+      props.shadowNodeProxy = shadowNodeProxy
 
       shadowNodeProxy.objectWillChange.send()
 

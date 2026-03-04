@@ -42,11 +42,6 @@ Pod::Spec.new do |s|
   new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
   other_c_flags = "$(inherited) -DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
-  dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
-  if dev_launcher_url != ""
-    escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
-    other_c_flags += " -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
-  end
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
     other_c_flags += ' -DUSE_HERMES'
   end

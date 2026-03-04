@@ -394,8 +394,7 @@ class ExpoCameraView(
 
                 else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
-                    event.cause?.message
-                      ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
+                    event.cause?.message ?: "Unknown error"
                   )
                 )
               }

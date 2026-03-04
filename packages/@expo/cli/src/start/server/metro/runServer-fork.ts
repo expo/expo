@@ -48,9 +48,9 @@ export const runServer = async (
     onError,
     onReady,
     secureServerOptions,
-    waitForBundler = false,
     websocketEndpoints = {},
     watch,
+    waitForBundler = !!watch,
   }: RunServerOptionsFork,
   {
     mockServer,

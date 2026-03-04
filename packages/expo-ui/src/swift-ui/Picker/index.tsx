@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -42,14 +43,6 @@ const PickerNativeView: React.ComponentType<NativePickerProps> = requireNativeVi
   'PickerView'
 );
 
-const PickerContentNativeView: React.ComponentType<{ children: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'PickerContentView');
-
-const PickerLabelNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'PickerLabelView'
-);
-
 function transformPickerProps<T extends SelectionValueType>(
   props: PickerProps<T>
 ): NativePickerProps {
@@ -81,14 +74,14 @@ export function Picker<T extends SelectionValueType>(props: PickerProps<T>) {
   if (typeof label === 'string') {
     return (
       <PickerNativeView {...restProps} label={label}>
-        <PickerContentNativeView>{children}</PickerContentNativeView>
+        <Slot name="content">{children}</Slot>
       </PickerNativeView>
     );
   } else {
     return (
       <PickerNativeView {...restProps}>
-        <PickerLabelNativeView>{label}</PickerLabelNativeView>
-        <PickerContentNativeView>{children}</PickerContentNativeView>
+        <Slot name="label">{label}</Slot>
+        <Slot name="content">{children}</Slot>
       </PickerNativeView>
     );
   }

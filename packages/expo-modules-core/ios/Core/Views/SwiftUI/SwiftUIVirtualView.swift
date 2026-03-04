@@ -8,6 +8,8 @@ extension ExpoSwiftUI {
    This class is the Swift component of SwiftUIVirtualView, as referenced in ExpoFabricView.swift.
    */
   final class SwiftUIVirtualView<Props: ViewProps, ContentView: View<Props>>: SwiftUIVirtualViewObjC, ExpoSwiftUIView {
+    var uiView: UIView?
+    
     /**
      A weak reference to the app context associated with this view.
      The app context is injected into the class after the context is initialized.
@@ -39,6 +41,14 @@ extension ExpoSwiftUI {
       self.viewDefinition = viewDefinition
       self.appContext = appContext
       super.init()
+
+      props.shadowNodeProxy.setViewSize = { [weak self] size in
+        self?.setViewSize(size)
+      }
+      props.shadowNodeProxy.setStyleSize = { [weak self] width, height in
+        self?.setStyleSize(width, height: height)
+      }
+
       installEventDispatchers()
     }
 

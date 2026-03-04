@@ -7,7 +7,6 @@ import android.media.audiofx.Visualizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -19,21 +18,7 @@ import expo.modules.audio.service.AudioPlaybackServiceConnection
 import expo.modules.audio.service.ServiceBindingState
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.sharedobjects.SharedRef
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
-import java.util.UUID
 
 private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
 private const val AUDIO_SAMPLE_UPDATE = "audioSampleUpdate"
@@ -44,10 +29,10 @@ class AudioPlayer(
   context: Context,
   appContext: AppContext,
   source: MediaSource?,
-  private val updateInterval: Double,
+  updateInterval: Double,
   bufferDurationMs: Long = 0
-) : SharedRef<ExoPlayer>(
-  ExoPlayer.Builder(context)
+) : BaseAudioPlayer(
+  player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
     .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
@@ -67,15 +52,11 @@ class AudioPlayer(
       }
     }
     .build(),
-  appContext
-),
-  Playable {
-  override val id = UUID.randomUUID().toString()
+  appContext = appContext,
+  updateInterval = updateInterval,
+  statusEventName = PLAYBACK_STATUS_UPDATE
+) {
   var preservesPitch = true
-  override var isPaused = false
-  override var isMuted = false
-  override var previousVolume = 1f
-  override var onPlaybackStateChange: ((Boolean) -> Unit)? = null
 
   // Lock screen controls
   var isActiveForLockScreen = false
@@ -84,24 +65,15 @@ class AudioPlayer(
   internal var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
   val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
 
-  private var playerScope = CoroutineScope(Dispatchers.Main)
-  private var playerListener: Player.Listener? = null
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
-  private var playing = false
   private val context by lazy {
     appContext.reactContext
       ?: throw Exceptions.ReactContextLost()
   }
 
-  private var updateJob: Job? = null
-  private var previousPlaybackState = Player.STATE_IDLE
-  private var intendedPlayingState = false
-
-  override val player get() = ref
-
   init {
-    addPlayerListeners()
+    installPlayerListeners()
     source?.let {
       setMediaSource(source)
     }
@@ -161,82 +133,15 @@ class AudioPlayer(
     }
   }
 
-  private fun startUpdating() {
-    updateJob?.cancel()
-    updateJob = flow {
-      while (true) {
-        emit(Unit)
-        delay(updateInterval.toLong())
-      }
+  override fun onPlaybackStateUpdated(playbackState: Int, justFinished: Boolean) {
+    val updateMap = mutableMapOf<String, Any?>(
+      "playbackState" to playbackStateToString(playbackState)
+    )
+    if (justFinished) {
+      updateMap["didJustFinish"] = true
+      updateMap["playing"] = false
     }
-      .onStart {
-        sendPlayerUpdate()
-      }
-      .onEach {
-        if (playing) {
-          sendPlayerUpdate()
-        }
-      }
-      .launchIn(playerScope)
-  }
-
-  private fun addPlayerListeners() {
-    val listener = object : Player.Listener {
-      override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playing = isPlaying
-        onPlaybackStateChange?.invoke(isPlaying)
-
-        val isTransient = !isPlaying &&
-          (ref.playbackState == Player.STATE_ENDED || ref.playbackState == Player.STATE_BUFFERING)
-        if (!isTransient) {
-          intendedPlayingState = isPlaying
-        }
-
-        if (isTransient) {
-          return
-        }
-        sendPlayerUpdate(mapOf("playing" to isPlaying))
-      }
-
-      override fun onIsLoadingChanged(isLoading: Boolean) {
-        sendPlayerUpdate()
-      }
-
-      override fun onPlaybackStateChanged(playbackState: Int) {
-        val justFinished = playbackState == Player.STATE_ENDED &&
-          previousPlaybackState != Player.STATE_ENDED
-        previousPlaybackState = playbackState
-
-        if (justFinished) {
-          intendedPlayingState = false
-        }
-
-        val updateMap = mutableMapOf<String, Any?>(
-          "playbackState" to playbackStateToString(playbackState)
-        )
-        if (justFinished) {
-          updateMap["didJustFinish"] = true
-          updateMap["playing"] = false
-        }
-        sendPlayerUpdate(updateMap)
-      }
-
-      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        sendPlayerUpdate()
-      }
-
-      override fun onPositionDiscontinuity(
-        oldPosition: Player.PositionInfo,
-        newPosition: Player.PositionInfo,
-        reason: Int
-      ) {
-        if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-          sendPlayerUpdate(mapOf("currentTime" to (newPosition.positionMs / 1000f)))
-        }
-      }
-    }
-    playerListener = listener
-    ref.addListener(listener)
+    sendStatusUpdate(updateMap)
   }
 
   fun setSamplingEnabled(enabled: Boolean) {
@@ -297,12 +202,6 @@ class AudioPlayer(
     mediaSession = buildBasicMediaSession(context, ref)
   }
 
-  private fun sendPlayerUpdate(map: Map<String, Any?>? = null) {
-    val data = currentStatus()
-    val body = map?.let { data + it } ?: data
-    emit(PLAYBACK_STATUS_UPDATE, body)
-  }
-
   private fun sendAudioSampleUpdate(sample: List<Float>) {
     val body = mapOf(
       "channels" to listOf(
@@ -350,25 +249,19 @@ class AudioPlayer(
     }
   }
 
-  @OptIn(DelicateCoroutinesApi::class)
   override fun sharedObjectDidRelease() {
-    super.sharedObjectDidRelease()
-
     serviceConnection.release()
+    super.sharedObjectDidRelease()
+  }
 
-    // Run on global scope (not appContext.mainQueue) so that reloading doesn't cancel the release process
-    // https://github.com/expo/expo/blob/cdf592a7fea56fc01b0149e9b2e5dbd294bcdc4c/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt#L277-L279
-    GlobalScope.launch(Dispatchers.Main) {
-      mediaSession.release()
-      if (isActiveForLockScreen) {
-        serviceConnection.playbackServiceBinder?.service?.unregisterPlayer()
-      }
-      serviceConnection.unbind()
-      playerListener?.let { ref.removeListener(it) }
-      playerScope.cancel()
-      visualizer?.release()
-      ref.release()
+  override fun releasePlayer() {
+    mediaSession.release()
+    if (isActiveForLockScreen) {
+      serviceConnection.playbackServiceBinder?.service?.unregisterPlayer()
     }
+    serviceConnection.unbind()
+    visualizer?.release()
+    super.releasePlayer()
   }
 
   companion object {

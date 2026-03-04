@@ -45,16 +45,20 @@ export class SQLiteSession {
    * Create a changeset asynchronously.
    * @see [`sqlite3session_changeset`](https://www.sqlite.org/session/sqlite3session_changeset.html)
    */
-  public createChangesetAsync(): Promise<Changeset> {
-    return this.nativeSession.createChangesetAsync(this.nativeDatabase);
+  public async createChangesetAsync(): Promise<Changeset> {
+    const changesetBuffer = await this.nativeSession.createChangesetAsync(this.nativeDatabase);
+    return new Uint8Array(changesetBuffer);
   }
 
   /**
    * Create an inverted changeset asynchronously.
    * This is a shorthand for [`createChangesetAsync()`](#createchangesetasync) + [`invertChangesetAsync()`](#invertchangesetasyncchangeset).
    */
-  public createInvertedChangesetAsync(): Promise<Changeset> {
-    return this.nativeSession.createInvertedChangesetAsync(this.nativeDatabase);
+  public async createInvertedChangesetAsync(): Promise<Changeset> {
+    const changesetBuffer = await this.nativeSession.createInvertedChangesetAsync(
+      this.nativeDatabase
+    );
+    return new Uint8Array(changesetBuffer);
   }
 
   /**
@@ -71,8 +75,12 @@ export class SQLiteSession {
    * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
    * @param changeset The changeset to invert.
    */
-  public invertChangesetAsync(changeset: Changeset): Promise<Changeset> {
-    return this.nativeSession.invertChangesetAsync(this.nativeDatabase, changeset);
+  public async invertChangesetAsync(changeset: Changeset): Promise<Changeset> {
+    const changesetBuffer = await this.nativeSession.invertChangesetAsync(
+      this.nativeDatabase,
+      changeset
+    );
+    return new Uint8Array(changesetBuffer);
   }
 
   //#endregion
@@ -122,7 +130,8 @@ export class SQLiteSession {
    * @see [`sqlite3session_changeset`](https://www.sqlite.org/session/sqlite3session_changeset.html)
    */
   public createChangesetSync(): Changeset {
-    return this.nativeSession.createChangesetSync(this.nativeDatabase);
+    const changesetBuffer = this.nativeSession.createChangesetSync(this.nativeDatabase);
+    return new Uint8Array(changesetBuffer);
   }
 
   /**
@@ -132,7 +141,8 @@ export class SQLiteSession {
    * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
    */
   public createInvertedChangesetSync(): Changeset {
-    return this.nativeSession.createInvertedChangesetSync(this.nativeDatabase);
+    const changesetBuffer = this.nativeSession.createInvertedChangesetSync(this.nativeDatabase);
+    return new Uint8Array(changesetBuffer);
   }
 
   /**
@@ -156,7 +166,8 @@ export class SQLiteSession {
    * @see [`sqlite3changeset_invert`](https://www.sqlite.org/session/sqlite3changeset_invert.html)
    */
   public invertChangesetSync(changeset: Changeset): Changeset {
-    return this.nativeSession.invertChangesetSync(this.nativeDatabase, changeset);
+    const changesetBuffer = this.nativeSession.invertChangesetSync(this.nativeDatabase, changeset);
+    return new Uint8Array(changesetBuffer);
   }
 
   //#endregion

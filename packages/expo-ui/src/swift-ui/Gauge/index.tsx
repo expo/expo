@@ -1,12 +1,8 @@
 import { requireNativeView } from 'expo';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
-
-/**
- * The type of gauge label.
- */
-type GaugeLabelKind = 'label' | 'currentValue' | 'minimumValue' | 'maximumValue';
 
 export type GaugeProps = {
   /**
@@ -53,11 +49,6 @@ const GaugeNativeView: React.ComponentType<NativeGaugeProps> = requireNativeView
   'GaugeView'
 );
 
-const GaugeLabelNativeView: React.ComponentType<{
-  kind: GaugeLabelKind;
-  children?: React.ReactNode;
-}> = requireNativeView('ExpoUI', 'GaugeLabelView');
-
 /**
  * Renders a SwiftUI `Gauge` component.
  */
@@ -76,16 +67,10 @@ export function Gauge(props: GaugeProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {children && <GaugeLabelNativeView kind="label">{children}</GaugeLabelNativeView>}
-      {currentValueLabel && (
-        <GaugeLabelNativeView kind="currentValue">{currentValueLabel}</GaugeLabelNativeView>
-      )}
-      {minimumValueLabel && (
-        <GaugeLabelNativeView kind="minimumValue">{minimumValueLabel}</GaugeLabelNativeView>
-      )}
-      {maximumValueLabel && (
-        <GaugeLabelNativeView kind="maximumValue">{maximumValueLabel}</GaugeLabelNativeView>
-      )}
+      {children && <Slot name="label">{children}</Slot>}
+      {currentValueLabel && <Slot name="currentValue">{currentValueLabel}</Slot>}
+      {minimumValueLabel && <Slot name="minimumValue">{minimumValueLabel}</Slot>}
+      {maximumValueLabel && <Slot name="maximumValue">{maximumValueLabel}</Slot>}
     </GaugeNativeView>
   );
 }

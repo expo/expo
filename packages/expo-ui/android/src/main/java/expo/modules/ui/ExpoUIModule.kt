@@ -282,6 +282,10 @@ class ExpoUIModule : Module() {
       SurfaceContent(props)
     }
 
+    ExpoUIView("AnimatedVisibilityView") { props: AnimatedVisibilityProps ->
+      AnimatedVisibilityContent(props)
+    }
+
     ExpoUIView("RadioButtonView", events = {
       Events("onNativeClick")
     }) { props: RadioButtonProps ->

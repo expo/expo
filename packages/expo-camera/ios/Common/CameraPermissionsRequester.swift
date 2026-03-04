@@ -71,40 +71,6 @@ class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester, BaseCamer
   }
 }
 
-class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
-  let mediaType: AVMediaType = .video
-
-  static func permissionType() -> String {
-    "camera"
-  }
-
-  func getPermissions() -> [AnyHashable: Any] {
-    var systemStatus: AVAuthorizationStatus
-
-    let cameraUsuageDescription = Bundle.main.infoDictionary?[cameraKey] as? String
-    let microphoneUsuageDescription = Bundle.main.infoDictionary?[microphoneKey] as? String
-
-    if let cameraUsuageDescription, let microphoneUsuageDescription {
-      systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
-    } else {
-      RCTFatal(RCTErrorWithMessage("""
-      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription,
-      so audio/video services will fail. Add one of these entries to
-      your bundle's Info.plist
-      """))
-      systemStatus = .denied
-    }
-
-    return permissionWith(status: systemStatus)
-  }
-
-  func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    requestAccess { [weak self] _ in
-      resolve(self?.getPermissions())
-    }
-  }
-}
-
 class CameraMicrophonePermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
   let mediaType: AVMediaType = .audio
 

@@ -94,11 +94,6 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
   }
 }
 
-enum class LockScreenButtons(val value: Int) : Enumerable {
-  SEEK_FORWARD(0),
-  SEEK_BACKWARD(1)
-}
-
 class AudioLockScreenOptions(
   @Field val showSeekForward: Boolean,
   @Field val showSeekBackward: Boolean

@@ -11,5 +11,9 @@ abstract class AnyViewProp(
 ) {
   abstract fun set(prop: Dynamic, onView: View, appContext: AppContext? = null)
 
+  abstract fun set(prop: Any?, onView: View, appContext: AppContext? = null)
+
   abstract val isNullable: Boolean
+
+  internal abstract val isStateProp: Boolean
 }

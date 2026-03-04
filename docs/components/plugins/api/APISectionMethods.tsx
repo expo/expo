@@ -156,7 +156,7 @@ export const renderMethod = (
           platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
           // only show first overload in sidebar to avoid duplicates
-          hideInSidebar={overloadIndex > 0}
+          hideInSidebar={!exposeInSidebar || overloadIndex > 0}
           tags={hasOverloads ? ['overload'] : undefined}
         />
         {hasOverloads && (

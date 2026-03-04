@@ -7,6 +7,9 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.jni.ArrayBuffer
+import expo.modules.kotlin.jni.JavaScriptArrayBuffer
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineScope
@@ -216,10 +219,10 @@ class SQLiteModule : Module() {
         return@Constructor NativeStatement()
       }
 
-      AsyncFunction("runAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
+      AsyncFunction("runAsync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, NativeArrayBuffer>, shouldPassAsArray: Boolean ->
         return@AsyncFunction run(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
       }.runOnQueue(moduleCoroutineScope)
-      Function("runSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean ->
+      Function("runSync") { statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, JavaScriptArrayBuffer>, shouldPassAsArray: Boolean ->
         return@Function run(statement, database, bindParams, bindBlobParams, shouldPassAsArray)
       }
 
@@ -305,17 +308,17 @@ class SQLiteModule : Module() {
         return@Function sessionCreateInvertedChangeset(database, session)
       }
 
-      AsyncFunction("applyChangesetAsync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+      AsyncFunction("applyChangesetAsync") { session: NativeSession, database: NativeDatabase, changeset: NativeArrayBuffer ->
         sessionApplyChangeset(database, session, changeset)
       }.runOnQueue(moduleCoroutineScope)
-      Function("applyChangesetSync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+      Function("applyChangesetSync") { session: NativeSession, database: NativeDatabase, changeset: JavaScriptArrayBuffer ->
         sessionApplyChangeset(database, session, changeset)
       }
 
-      AsyncFunction("invertChangesetAsync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+      AsyncFunction("invertChangesetAsync") { session: NativeSession, database: NativeDatabase, changeset: NativeArrayBuffer ->
         return@AsyncFunction sessionInvertChangeset(database, session, changeset)
       }.runOnQueue(moduleCoroutineScope)
-      Function("invertChangesetSync") { session: NativeSession, database: NativeDatabase, changeset: ByteArray ->
+      Function("invertChangesetSync") { session: NativeSession, database: NativeDatabase, changeset: JavaScriptArrayBuffer ->
         return@Function sessionInvertChangeset(database, session, changeset)
       }
     }
@@ -382,7 +385,7 @@ class SQLiteModule : Module() {
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ByteArray>, shouldPassAsArray: Boolean): Map<String, Any> {
+  private fun run(statement: NativeStatement, database: NativeDatabase, bindParams: Map<String, Any?>, bindBlobParams: Map<String, ArrayBuffer>, shouldPassAsArray: Boolean): Map<String, Any> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
 
@@ -408,7 +411,7 @@ class SQLiteModule : Module() {
       for ((key, param) in bindBlobParams) {
         val index = getBindParamIndex(statement, key, shouldPassAsArray)
         if (index > 0) {
-          statement.ref.bindStatementParam(index, param)
+          statement.ref.bindStatementParam(index, param.toDirectBuffer())
         }
       }
 
@@ -418,7 +421,7 @@ class SQLiteModule : Module() {
       }
       val firstRowValues: SQLiteColumnValues =
         if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-          statement.ref.getColumnValues()
+          statement.getTransformedColumnValues()
         } else {
           arrayListOf()
         }
@@ -436,7 +439,7 @@ class SQLiteModule : Module() {
     maybeThrowForFinalizedStatement(statement)
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.ref.getColumnValues()
+      return statement.getTransformedColumnValues()
     }
     if (ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -452,7 +455,7 @@ class SQLiteModule : Module() {
     while (true) {
       val ret = statement.ref.sqlite3_step()
       if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        columnValuesList.add(statement.ref.getColumnValues())
+        columnValuesList.add(statement.getTransformedColumnValues())
         continue
       } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
         break
@@ -643,32 +646,38 @@ class SQLiteModule : Module() {
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun sessionCreateChangeset(database: NativeDatabase, session: NativeSession): ByteArray {
+  private fun sessionCreateChangeset(database: NativeDatabase, session: NativeSession): NativeArrayBuffer {
     maybeThrowForClosedDatabase(database)
-    return session.ref.sqlite3session_changeset()
+    val byteBuffer = session.ref.sqlite3session_changeset()
       ?: throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+
+    return NativeArrayBuffer(byteBuffer)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession): ByteArray {
+  private fun sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession): NativeArrayBuffer {
     maybeThrowForClosedDatabase(database)
-    return session.ref.sqlite3session_changeset_inverted()
+    val byteBuffer = session.ref.sqlite3session_changeset_inverted()
       ?: throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+
+    return NativeArrayBuffer(byteBuffer)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: ByteArray) {
+  private fun sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: ArrayBuffer) {
     maybeThrowForClosedDatabase(database)
-    if (session.ref.sqlite3changeset_apply(database.ref, changeset) != NativeDatabaseBinding.SQLITE_OK) {
+    if (session.ref.sqlite3changeset_apply(database.ref, changeset.toDirectBuffer()) != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
-  private fun sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: ByteArray): ByteArray {
+  private fun sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: ArrayBuffer): NativeArrayBuffer {
     maybeThrowForClosedDatabase(database)
-    return session.ref.sqlite3changeset_invert(changeset)
+    val byteBuffer = session.ref.sqlite3changeset_invert(changeset.toDirectBuffer())
       ?: throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+
+    return NativeArrayBuffer(byteBuffer)
   }
 
   // endregion

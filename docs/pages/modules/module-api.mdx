@@ -2,6 +2,7 @@
 title: Module API Reference
 description: An API reference of Expo modules API.
 sidebar_title: Module API
+maxHeadingDepth: 2
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
@@ -43,6 +44,44 @@ Constant("PI") {
 ```kotlin
 Constant("PI") {
   Math.PI
+}
+```
+
+</CodeBlocksTable>
+</PaddedAPIBox>
+<PaddedAPIBox header="Constants">
+
+> **warning** **Deprecated:** Use [`Constant`](#constant) instead.
+
+Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
+
+<CodeBlocksTable>
+
+```swift
+// Created from the dictionary
+Constants([
+  "PI": Double.pi
+])
+
+// or returned by the closure
+Constants {
+  return [
+    "PI": Double.pi
+  ]
+}
+```
+
+```kotlin
+// Passed as arguments
+Constants(
+  "PI" to kotlin.math.PI
+)
+
+// or returned by the closure
+Constants {
+  return@Constants mapOf(
+    "PI" to kotlin.math.PI
+  )
 }
 ```
 
@@ -191,27 +230,6 @@ AsyncFunction("suspendFunction") Coroutine { message: String ->
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox header="Events">
-
-Defines event names that the module can send to JavaScript.
-
-> **Note:** This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
-
-<CodeBlocksTable>
-
-```swift
-Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
-```
-
-```kotlin
-Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
-```
-
-</CodeBlocksTable>
-
-See [Sending events](#sending-events) to learn how to send events from the native code to JavaScript/TypeScript.
-
-</PaddedAPIBox>
 <PaddedAPIBox header="Property">
 
 Defines a new property directly on the JavaScript object that represents a native module. It is the same as calling [`Object.defineProperty`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty) on the module object.
@@ -316,67 +334,133 @@ View(TextView::class) {
 > **Info** Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnCreate">
+
+### Event observing
+
+<PaddedAPIBox header="Events" headerNestingLevel={4}>
+
+Defines event names that the module can send to JavaScript.
+
+> **Note:** This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
+
+<CodeBlocksTable>
+
+```swift
+Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
+```
+
+```kotlin
+Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
+```
+
+</CodeBlocksTable>
+
+See [Sending events](#sending-events) to learn how to send events from the native code to JavaScript/TypeScript.
+
+</PaddedAPIBox>
+<PaddedAPIBox header="OnStartObserving" headerNestingLevel={4}>
+
+Defines the function that is invoked when the first event listener is added.
+
+You need to pass an event name to scope the listener to a specific event. This is useful when you need to set up or tear down resources per-event rather than globally.
+
+<CodeBlocksTable>
+
+```swift
+// Called when a listener for "onURLReceived" is added
+OnStartObserving("onURLReceived") {
+  /* @hide ... */ /* @end */
+}
+```
+
+```kotlin
+// Called when a listener for "onURLReceived" is added
+OnStartObserving("onURLReceived") {
+  /* @hide ... */ /* @end */
+}
+```
+
+</CodeBlocksTable>
+</PaddedAPIBox>
+<PaddedAPIBox header="OnStopObserving" headerNestingLevel={4}>
+
+Defines the function that is invoked when all event listeners for a given event are removed.
+
+Like `OnStartObserving`, you need to pass an event name to scope the listener to a specific event.
+
+<CodeBlocksTable>
+
+```swift
+// Called when listeners for "onURLReceived" are removed
+OnStopObserving("onURLReceived") {
+  /* @hide ... */ /* @end */
+}
+```
+
+```kotlin
+// Called when listeners for "onURLReceived" are removed
+OnStopObserving("onURLReceived") {
+  /* @hide ... */ /* @end */
+}
+```
+
+</CodeBlocksTable>
+
+</PaddedAPIBox>
+
+### Lifecycle listeners
+
+<PaddedAPIBox header="OnCreate" headerNestingLevel={4}>
 
 Defines module's lifecycle listener that is called right after module initialization. If you need to set up something when the module gets initialized, use this instead of module's class initializer.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnDestroy">
+<PaddedAPIBox header="OnDestroy" headerNestingLevel={4}>
 
 Defines module's lifecycle listener that is called when the module is about to be deallocated. Use it instead of module's class destructor.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnStartObserving">
-
-Defines the function that is invoked when the first event listener is added.
-
-</PaddedAPIBox>
-<PaddedAPIBox header="OnStopObserving">
-
-Defines the function that is invoked when all event listeners are removed.
-
-</PaddedAPIBox>
-<PaddedAPIBox header="OnAppContextDestroys">
+<PaddedAPIBox header="OnAppContextDestroys" headerNestingLevel={4}>
 
 Defines module's lifecycle listener that is called when the app context owning the module is about to be deallocated.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnAppEntersForeground" platforms={["ios"]}>
+<PaddedAPIBox header="OnAppEntersForeground" platforms={["ios"]} headerNestingLevel={4}>
 
 Defines the listener that is called when the app is about to enter the foreground mode.
 
 > **Note:** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnAppEntersBackground" platforms={["ios"]}>
+<PaddedAPIBox header="OnAppEntersBackground" platforms={["ios"]} headerNestingLevel={4}>
 
 Defines the listener that is called when the app enters the background mode.
 
 > **Note:** This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnAppBecomesActive" platforms={["ios"]}>
+<PaddedAPIBox header="OnAppBecomesActive" platforms={["ios"]} headerNestingLevel={4}>
 
 Defines the listener that is called when the app becomes active again (after `OnAppEntersForeground`).
 
 > **Note:** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnActivityEntersForeground" platforms={["android"]}>
+<PaddedAPIBox header="OnActivityEntersForeground" platforms={["android"]} headerNestingLevel={4}>
 
 Defines the activity lifecycle listener that is called right after the activity is resumed.
 
 > **Note:** This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnActivityEntersBackground" platforms={["android"]}>
+<PaddedAPIBox header="OnActivityEntersBackground" platforms={["android"]} headerNestingLevel={4}>
 
 Defines the activity lifecycle listener that is called right after the activity is paused.
 
 > **Note:** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </PaddedAPIBox>
-<PaddedAPIBox header="OnActivityDestroys" platforms={["android"]}>
+<PaddedAPIBox header="OnActivityDestroys" platforms={["android"]} headerNestingLevel={4}>
 
 Defines the activity lifecycle listener that is called when the activity owning the JavaScript context is about to be destroyed.
 
@@ -384,7 +468,7 @@ Defines the activity lifecycle listener that is called when the activity owning 
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="OnActivityResult" platforms={["android"]}>
+<PaddedAPIBox header="OnActivityResult" platforms={["android"]} headerNestingLevel={4}>
 
 Defines the activity lifecycle listener that is called when the activity launched with `startActivityForResult` returns a result.
 
@@ -408,43 +492,68 @@ OnActivityResult { activity, payload ->
 ```
 
 </PaddedAPIBox>
-<PaddedAPIBox header="Constants">
+<PaddedAPIBox header="OnNewIntent" platforms={["android"]} headerNestingLevel={4}>
 
-> **warning** **Deprecated:** Use [`Constant`](#constant) instead.
+Defines the activity lifecycle listener that is called when the activity receives a new intent (for example, from a deep link).
 
-Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
+#### Arguments
 
-<CodeBlocksTable>
+- **intent**: `Intent` — The new intent was delivered to the activity. For more information about the `Intent` type, visit: [https://developer.android.com/reference/android/content/Intent](https://developer.android.com/reference/android/content/Intent).
 
-```swift
-// Created from the dictionary
-Constants([
-  "PI": Double.pi
-])
-
-// or returned by the closure
-Constants {
-  return [
-    "PI": Double.pi
-  ]
+```kotlin Kotlin
+OnNewIntent { intent ->
+  val data = intent.data
+  // Handle the incoming intent
 }
 ```
 
-```kotlin
-// Passed as arguments
-Constants(
-  "PI" to kotlin.math.PI
-)
+</PaddedAPIBox>
+<PaddedAPIBox header="OnUserLeavesActivity" platforms={["android"]} headerNestingLevel={4}>
 
-// or returned by the closure
-Constants {
-  return@Constants mapOf(
-    "PI" to kotlin.math.PI
-  )
+Defines the activity lifecycle listener called during the activity lifecycle when an activity is about to go into the background as a result of user choice. For example, when the user presses the Home key, `OnUserLeavesActivity` will be called, but when an incoming phone call causes the in-call Activity to be automatically brought to the foreground, `OnUserLeavesActivity` will not be called on the activity being interrupted.
+
+```kotlin Kotlin
+OnUserLeavesActivity {
+  // Your implementation
 }
 ```
 
-</CodeBlocksTable>
+</PaddedAPIBox>
+<PaddedAPIBox header="RegisterActivityContracts" platforms={["android"]} headerNestingLevel={4}>
+
+Registers Android [activity result contracts](https://developer.android.com/training/basics/intents/result) that let you launch activities and handle their results in a type-safe way. This is the modern replacement for `startActivityForResult`.
+
+Inside the `RegisterActivityContracts` block, use `registerForActivityResult` to register each contract. The registered launchers can then be used in async functions to launch activities.
+
+```kotlin Kotlin
+class ImagePickerModule : Module() {
+  private lateinit var cameraLauncher: ActivityResultLauncher<CameraContractOptions>
+  private lateinit var imageLibraryLauncher: ActivityResultLauncher<ImageLibraryContractOptions>
+
+  override fun definition() = ModuleDefinition {
+    Name("ImagePicker")
+
+    RegisterActivityContracts {
+      cameraLauncher = registerForActivityResult(
+        CameraContract(this@ImagePickerModule)
+      ) { input, result ->
+        handleResult(result, input.options)
+      }
+
+      imageLibraryLauncher = registerForActivityResult(
+        ImageLibraryContract(this@ImagePickerModule)
+      ) { input, result ->
+        handleResult(result, input.options)
+      }
+    }
+
+    AsyncFunction("launchCameraAsync") { options: PickerOptions ->
+      cameraLauncher.launch(CameraContractOptions(options))
+    }
+  }
+}
+```
+
 </PaddedAPIBox>
 
 ## View definition components
@@ -460,7 +569,6 @@ Name("MyViewName")
 ```
 
 </PaddedAPIBox>
-
 <PaddedAPIBox header="Prop">
 
 Defines a setter for the view prop of given name.
@@ -510,30 +618,61 @@ Prop("background", Color.BLACK) { view: View, @ColorInt color: Int ->
 > **Note:** Props of function type (callbacks) are not supported yet.
 
 </PaddedAPIBox>
+<PaddedAPIBox header="PropGroup" platforms={["android"]}>
 
-<PaddedAPIBox header="OnViewDidUpdateProps">
+Batch-registers multiple props that share a common setter pattern. Instead of defining each prop individually, you can register them all at once with a single handler.
+
+Two overloads are available:
+
+- **Pair-based**: Each prop is a `Pair<String, CustomValueType>`. The handler receives the view, the mapped custom value, and the prop value.
+- **String-based**: Each prop is a name string. The handler receives the view, the positional index, and the prop value.
+
+```kotlin Kotlin
+// Pair-based: map each prop name to a custom value
+PropGroup(
+  "borderTopColor" to LogicalEdge.TOP,
+  "borderBottomColor" to LogicalEdge.BOTTOM,
+  "borderLeftColor" to LogicalEdge.LEFT,
+  "borderRightColor" to LogicalEdge.RIGHT
+) { view: View, edge: LogicalEdge, color: Int? ->
+  BackgroundStyleApplicator.setBorderColor(view, edge, color)
+}
+
+// String-based: use positional index
+PropGroup(
+  "borderWidth", "borderLeftWidth", "borderRightWidth",
+  "borderTopWidth", "borderBottomWidth"
+) { view: View, index: Int, width: Float? ->
+  val edge = LogicalEdge.entries[index]
+  BackgroundStyleApplicator.setBorderWidth(view, edge, width ?: Float.NaN)
+}
+```
+
+> **Note:** `PropGroup` is used internally by the CSS prop decorators. Most modules should use individual `Prop` definitions unless they have many props with a shared setter pattern.
+
+</PaddedAPIBox>
+
+### Lifecycle
+
+<PaddedAPIBox header="OnViewDidUpdateProps" headerNestingLevel={4}>
 
 Defines the view lifecycle method that is called when the view finished updating all props.
 
 ```swift
-View(MyView.self) {
-  OnViewDidUpdateProps { view: MyView in
-    /* @hide ... */ /* @end */
-  }
+OnViewDidUpdateProps { view: MyView in
+  /* @hide ... */ /* @end */
 }
 ```
 
 ```kotlin
-View(MyView::class) {
-  OnViewDidUpdateProps { view: MyView ->
-    /* @hide ... */ /* @end */
-  }
+OnViewDidUpdateProps { view: MyView ->
+  /* @hide ... */ /* @end */
 }
 ```
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="OnViewDestroys" platforms={["android"]}>
+<PaddedAPIBox header="OnViewDestroys" platforms={["android"]} headerNestingLevel={4}>
 
 Creates a view's lifecycle listener that is called right after the view is no longer used by React Native.
 
@@ -548,8 +687,7 @@ View(MyView::class) {
 > **Note:** This function is not available on iOS. You may want to use the destructor of the native view to achieve similar results.
 
 </PaddedAPIBox>
-
-<PaddedAPIBox header="(View) AsyncFunction">
+<PaddedAPIBox header="AsyncFunction">
 
 Similarly to the [`AsyncFunction`](#asyncfunction) inside the module definition, you can define functions attached to the view ref to allow direct modification of the native view.
 
@@ -591,7 +729,9 @@ function MyComponent() {
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="GroupView" platforms={["android"]}>
+### View groups
+
+<PaddedAPIBox header="GroupView" platforms={["android"]} headerNestingLevel={4}>
 
 Enables the view to be used as a view group. Definition components that are accepted as part of the group view definition: [`AddChildView`](#addchildview), [`GetChildCount`](#getchildcount), [`GetChildViewAt`](#getchildviewat), [`RemoveChildView`](#removechildview), [`RemoveChildViewAt`](#removechildviewat).
 
@@ -610,7 +750,7 @@ GroupView<ViewGroup> {
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="AddChildView" platforms={["android"]}>
+<PaddedAPIBox header="AddChildView" platforms={["android"]} headerNestingLevel={4}>
 
 Defines action that adds a child view to the view group.
 
@@ -628,7 +768,7 @@ AddChildView { parent, child: View, index ->
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="GetChildCount" platforms={["android"]}>
+<PaddedAPIBox header="GetChildCount" platforms={["android"]} headerNestingLevel={4}>
 
 Defines action the retrieves the number of child views in the view group.
 
@@ -646,7 +786,7 @@ GetChildCount { parent ->
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="GetChildViewAt" platforms={["android"]}>
+<PaddedAPIBox header="GetChildViewAt" platforms={["android"]} headerNestingLevel={4}>
 
 Defines action that retrieves a child view at a specific index from the view group.
 
@@ -664,7 +804,7 @@ GetChildViewAt { parent, index ->
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="RemoveChildView" platforms={["android"]}>
+<PaddedAPIBox header="RemoveChildView" platforms={["android"]} headerNestingLevel={4}>
 
 Defines action that removes a specific child view from the view group.
 
@@ -682,7 +822,7 @@ RemoveChildView { parent, child: View ->
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="RemoveChildViewAt" platforms={["android"]}>
+<PaddedAPIBox header="RemoveChildViewAt" platforms={["android"]} headerNestingLevel={4}>
 
 Defines action that removes a child view at a specific index from the view group.
 
@@ -718,9 +858,11 @@ All functions and view prop setters accept all common primitive types in Swift a
 
 _Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(x, y)` or a JavaScript object with numeric `x` and `y` properties.
 
-The built-in Convertibles are documented [further below](#built-in-convertibles). You can define additional Convertibles by making native Swift types conform to the `Convertible` protocol:
+The built-in Convertibles are documented [further below](#built-in-convertibles).
 
-<PaddedAPIBox header="Convertible" platforms={["ios"]}>
+You can define additional Convertibles by making native Swift types conform to the `Convertible` protocol:
+
+<PaddedAPIBox header="Convertible" platforms={["ios"]} headerNestingLevel={4}>
 
 `Convertible` is a Swift protocol with one static method:
 
@@ -728,6 +870,7 @@ The built-in Convertibles are documented [further below](#built-in-convertibles)
   name="convert"
   comment="A static method that converts a dynamically typed value from JavaScript to an instance of the Swift type conforming to `Convertible`. Implementers should throw an exception when the given value is invalid or of an unsupported type."
   returnTypeName="Self"
+  exposeInSidebar={false}
   parameters={[
     {
       name: 'value',
@@ -742,7 +885,7 @@ The built-in Convertibles are documented [further below](#built-in-convertibles)
   ]}
 />
 
-### Example
+#### Example
 
 ```swift Swift
 import ExpoModulesCore
@@ -759,11 +902,44 @@ extension CMTime: @retroactive Convertible {
 
 </PaddedAPIBox>
 
-> **Info** Support for defining Convertibles with Kotlin is planned to be available by SDK 53.
+In Kotlin, extending an existing type with a protocol isn't possible. To extend available types, you can use the `ModuleConverters` builder:
 
----
+<PaddedAPIBox header="ModuleConverters" platforms={["android"]} headerNestingLevel={4}>
 
-## Built-in Convertibles
+On Android, modules can define custom type converters that allow non-standard types to be used as function arguments. Override the `converters()` method in your `Module` class and use the `ModuleConverters` builder to register converters with `.from<SourceType> { }` chains.
+
+```kotlin Kotlin
+class MyModule : Module() {
+  override fun converters() = ModuleConverters {
+    TypeConverter(CustomType::class)
+      .from { number: Int ->
+        CustomType.fromInt(number)
+      }
+      .from { string: String ->
+        CustomType.parse(string)
+      }
+  }
+
+  override fun definition() = ModuleDefinition {
+    Name("MyModule")
+
+    // CustomType can now be used as an argument type
+    Function("process") { value: CustomType ->
+      value.doSomething()
+    }
+  }
+}
+```
+
+Each `.from<T> { }` call registers a converter from type `T` to your custom type. At runtime, the framework tries each registered converter until one matches the incoming JavaScript value.
+
+> **Note:** On iOS, use the `Convertible` protocol instead (documented above).
+
+</PaddedAPIBox>
+
+</PaddedAPIBox>
+
+### Built-in Convertibles
 
 Some common iOS types from the `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
@@ -796,7 +972,6 @@ Similarly, some common Android types from packages like `java.io`, `java.net`, o
 | `kotlin.IntArray`<br/>`kotlin.FloatArray`<br/>`kotlin.LongArray`<br/>`kotlin.DoubleArray` | `number[]`                                                                                                                                                                        |
 | `kotlin.time.Duration`                                                                    | `number` represents a duration in seconds <StatusTag note="SDK 52+" />                                                                                                            |
 
-</PaddedAPIBox>
 <PaddedAPIBox header="Records">
 
 _Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its type and provide a default value.
@@ -1265,6 +1440,8 @@ A base class for a native module.
   name="appContext"
   comment="Provides access to the [`AppContext`](#appcontext)."
   returnTypeName="AppContext"
+  exposeInSidebar
+  baseNestingLevel={4}
   isProperty
   isReturnTypeReference
 />
@@ -1275,6 +1452,8 @@ A base class for a native module.
   name="sendEvent"
   comment="Sends an event with a given name and a payload to JavaScript. See [`Sending events`](#sending-events)"
   returnTypeName="void"
+  exposeInSidebar
+  baseNestingLevel={4}
   parameters={[
     {
       name: 'eventName',
@@ -1301,6 +1480,8 @@ The app context is an interface to a single Expo app.
   name="constants"
   comment="Provides access to app's constants from legacy module registry."
   returnTypeName="Android: ConstantsInterface? iOS: EXConstantsInterface?"
+  exposeInSidebar
+  baseNestingLevel={4}
   isProperty
 />
 
@@ -1308,60 +1489,17 @@ The app context is an interface to a single Expo app.
   name="permissions"
   comment="Provides access to the permissions manager from legacy module registry."
   returnTypeName="Android: Permissions? iOS: EXPermissionsInterface?"
+  exposeInSidebar
+  baseNestingLevel={4}
   isProperty
-/>
-
-<APIMethod
-  name="imageLoader"
-  comment="Provides access to the image loader from the legacy module registry."
-  returnTypeName="Android: ImageLoaderInterface? iOS: EXImageLoaderInterface?"
-  isProperty
-/>
-
-<APIMethod
-  name="barcodeScanner"
-  comment="Provides access to the bar code scanner manager from the legacy module registry."
-  returnTypeName="ImageLoaderInterface?"
-  isProperty
-  platforms={['Android']}
-/>
-
-<APIMethod
-  name="camera"
-  comment="Provides access to the camera view manager from the legacy module registry."
-  returnTypeName="CameraViewInterface?"
-  isProperty
-  platforms={['Android']}
-/>
-
-<APIMethod
-  name="font"
-  comment="Provides access to the font manager from the legacy module registry."
-  returnTypeName="FontManagerInterface?"
-  isProperty
-  platforms={['Android']}
-/>
-
-<APIMethod
-  name="sensor"
-  comment="Provides access to the sensor manager from the legacy module registry."
-  returnTypeName="SensorServiceInterface?"
-  isProperty
-  platforms={['Android']}
-/>
-
-<APIMethod
-  name="taskManager"
-  comment="Provides access to the task manager from the legacy module registry."
-  returnTypeName="TaskManagerInterface?"
-  isProperty
-  platforms={['Android']}
 />
 
 <APIMethod
   name="activityProvider"
   comment="Provides access to the activity provider from the legacy module registry."
   returnTypeName="ActivityProvider?"
+  exposeInSidebar
+  baseNestingLevel={4}
   isProperty
   platforms={['Android']}
 />
@@ -1370,6 +1508,8 @@ The app context is an interface to a single Expo app.
   name="reactContext"
   comment="Provides access to the react application context."
   returnTypeName="Context?"
+  exposeInSidebar
+  baseNestingLevel={4}
   isProperty
   platforms={['Android']}
 />
@@ -1378,6 +1518,8 @@ The app context is an interface to a single Expo app.
   name="hasActiveReactInstance"
   comment="Checks if there is an not-null, alive react native instance."
   returnTypeName="Boolean"
+  exposeInSidebar
+  baseNestingLevel={4}
   isProperty
   platforms={['Android']}
 />
@@ -1386,6 +1528,8 @@ The app context is an interface to a single Expo app.
   name="utilities"
   comment="Provides access to the utilities from legacy module registry."
   returnTypeName="EXUtilitiesInterface?"
+  exposeInSidebar
+  baseNestingLevel={4}
   isProperty
   platforms={['iOS']}
 />

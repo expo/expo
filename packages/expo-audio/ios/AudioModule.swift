@@ -558,28 +558,15 @@ public class AudioModule: Module {
     interruptedPlayers.removeAll()
     playerVolumes.removeAll()
 
-    registry.allPlayers.values.forEach { player in
-      if player.isPlaying {
-        interruptedPlayers.insert(player.id)
+    registry.allPlayables.forEach { playable in
+      if playable.isPlaying {
+        interruptedPlayers.insert(playable.id)
         switch interruptionMode {
         case .duckOthers:
-          playerVolumes[player.id] = player.ref.volume
-          player.ref.volume *= 0.5
+          playerVolumes[playable.id] = playable.volume
+          playable.volume *= 0.5
         case .doNotMix, .mixWithOthers:
-          player.ref.pause()
-        }
-      }
-    }
-
-    registry.allPlaylists.values.forEach { playlist in
-      if playlist.isPlaying {
-        interruptedPlayers.insert(playlist.id)
-        switch interruptionMode {
-        case .duckOthers:
-          playerVolumes[playlist.id] = playlist.ref.volume
-          playlist.ref.volume *= 0.5
-        case .doNotMix, .mixWithOthers:
-          playlist.pause()
+          playable.pause()
         }
       }
     }
@@ -648,28 +635,15 @@ public class AudioModule: Module {
   #endif
 
   private func resumeInterruptedPlayers() {
-    registry.allPlayers.values.forEach { player in
-      if interruptedPlayers.contains(player.id) {
+    registry.allPlayables.forEach { playable in
+      if interruptedPlayers.contains(playable.id) {
         switch interruptionMode {
         case .duckOthers:
-          if let originalVolume = playerVolumes[player.id] {
-            player.ref.volume = originalVolume
+          if let originalVolume = playerVolumes[playable.id] {
+            playable.volume = originalVolume
           }
         case .doNotMix, .mixWithOthers:
-          player.ref.play()
-        }
-      }
-    }
-
-    registry.allPlaylists.values.forEach { playlist in
-      if interruptedPlayers.contains(playlist.id) {
-        switch interruptionMode {
-        case .duckOthers:
-          if let originalVolume = playerVolumes[playlist.id] {
-            playlist.ref.volume = originalVolume
-          }
-        case .doNotMix, .mixWithOthers:
-          playlist.play(at: playlist.currentRate)
+          playable.resumePlayback()
         }
       }
     }
@@ -687,33 +661,19 @@ public class AudioModule: Module {
   }
 
   private func pauseAllPlayers() {
-    registry.allPlayers.values.forEach { player in
-      if player.isPlaying {
-        player.wasPlaying = true
-        player.ref.pause()
-      }
-    }
-
-    registry.allPlaylists.values.forEach { playlist in
-      if playlist.isPlaying {
-        playlist.wasPlaying = true
-        playlist.pause()
+    registry.allPlayables.forEach { playable in
+      if playable.isPlaying {
+        playable.wasPlaying = true
+        playable.pause()
       }
     }
   }
 
   private func resumeAllPlayers() {
-    registry.allPlayers.values.forEach { player in
-      if player.wasPlaying {
-        player.ref.play()
-        player.wasPlaying = false
-      }
-    }
-
-    registry.allPlaylists.values.forEach { playlist in
-      if playlist.wasPlaying {
-        playlist.play(at: playlist.currentRate)
-        playlist.wasPlaying = false
+    registry.allPlayables.forEach { playable in
+      if playable.wasPlaying {
+        playable.resumePlayback()
+        playable.wasPlaying = false
       }
     }
   }
@@ -838,9 +798,8 @@ public class AudioModule: Module {
       guard let self else {
         return
       }
-      let hasActivePlayers = self.registry.allPlayers.values.contains { $0.isPlaying }
-      let hasActivePlaylists = self.registry.allPlaylists.values.contains { $0.isPlaying }
-      if !hasActivePlayers && !hasActivePlaylists {
+      let hasActivePlayables = self.registry.allPlayables.contains { $0.isPlaying }
+      if !hasActivePlayables {
         do {
           try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
         } catch {
