@@ -13,6 +13,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+- Fixed broken Async Storage documentation links by updating Expo integration and usage URLs to Async Storage 3.0 docs.
+
 ## 55.0.0 — 2026-02-25
 
 ### 🛠 Breaking changes
