@@ -41,10 +41,11 @@ function RouterToolbarItem(props) {
         return null;
     }
     if (hasChildren(props.children)) {
-        if (process.env.NODE_ENV !== 'production') {
-            console.warn('Stack.Toolbar.View is not supported on Android. Custom views inside the toolbar will not render.');
-        }
-        return null;
+        return (<AnimatedWrapper visible={!props.hidden}>
+        <jetpack_compose_1.RNHostView matchContents>
+          <>{props.children}</>
+        </jetpack_compose_1.RNHostView>
+      </AnimatedWrapper>);
     }
     if (!props.source) {
         if (process.env.NODE_ENV !== 'production' && !props.mdIconName) {
@@ -74,8 +75,8 @@ function hasChildren(children) {
 const styles = react_native_1.StyleSheet.create({
     hostContainer: {
         position: 'absolute',
-        left: 0,
-        right: 0,
+        left: 24,
+        right: 24,
         alignItems: 'center',
     },
 });

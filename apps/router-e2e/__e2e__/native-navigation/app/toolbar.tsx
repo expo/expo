@@ -292,36 +292,10 @@ export default function ToolbarScreen() {
           hidesSharedBackground={hidesSharedBackgroundSearchBar}
         />
 
-        {/* Fixed width spacer */}
-        {/* {showFixedSpacer && ( */}
-        <Stack.Toolbar.Spacer
-          hidden={!showFixedSpacer}
-          sharesBackground={fixedSpacerShareBackground}
-          width={fixedSpacerWidth}
-        />
-        {/* )} */}
-
-        <Stack.Toolbar.Button
-          hidden={!showMicButton}
-          // icon="mic"
-          // md="mic"
-          icon={require('../../../assets/expo-transparent.png')}
-          tintColor={Color.ios.systemGreen}
-          onPress={handleMic}
-        />
-
-        <Stack.Toolbar.Button
-          md="11mp"
-          onPress={() => Alert.alert('Android', 'Expo transparent icon pressed')}
-          tintColor={Platform.select({
-            android: Color.android.dynamic.primary,
-            ios: Color.ios.systemBlue,
-          })}
-        />
-
+        {/* Search button */}
         <Stack.Toolbar.Button
           hidden={!showSearchButton}
-          icon={require('../../../assets/expo-transparent.png')}
+          icon="magnifyingglass"
           md="search"
           tintColor={Color.ios.systemBlue}
           onPress={handleSearch}
@@ -329,17 +303,230 @@ export default function ToolbarScreen() {
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
 
+        <Stack.Toolbar.Button
+          image={image}
+          icon={require('../../../assets/expo-transparent.png')}
+        />
+
+        {/* TODO: On android mounting and unmounting does not work properly with animations */}
+        {/* Fixed width spacer */}
+        {(showFixedSpacer || Platform.OS === 'android') && (
+          <Stack.Toolbar.Spacer
+            hidden={!showFixedSpacer}
+            sharesBackground={fixedSpacerShareBackground}
+            width={fixedSpacerWidth}
+          />
+        )}
+
+        {/* Custom view with TextInput */}
+        <Stack.Toolbar.View hidden={!showCustomView}>
+          <TextInput
+            ref={searchInputRef}
+            testID="toolbar-search-input"
+            value={searchText}
+            onChangeText={setSearchText}
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            placeholder="Search"
+            placeholderTextColor={Color.ios.placeholderText}
+            style={styles.searchInput}
+          />
+        </Stack.Toolbar.View>
+
+        {/* Conditional buttons based on search focus */}
+        {!isSearchFocused && (
+          <Stack.Toolbar.Button
+            hidden={!showMicButton}
+            icon="mic"
+            md="mic"
+            tintColor={Color.ios.systemGreen}
+            onPress={handleMic}
+          />
+        )}
+
+        {isSearchFocused && (
+          <Stack.Toolbar.Button
+            icon="xmark.circle.fill"
+            md="close"
+            tintColor={Color.ios.systemRed}
+            onPress={handleClearSearch}
+          />
+        )}
+
+        {/* Custom view with custom component */}
+        <Stack.Toolbar.View separateBackground>
+          <Pressable
+            testID="custom-plus-button"
+            onPress={() => Alert.alert('Custom Button', 'Plus button pressed!')}
+            style={styles.customButton}>
+            <SymbolView
+              size={22}
+              tintColor={Color.ios.label}
+              style={{
+                width: 22,
+                height: 22,
+                transform: [{ rotate: isSearchFocused ? '45deg' : '0deg' }],
+              }}
+              name={{
+                ios: 'plus',
+                android: 'add',
+              }}
+            />
+          </Pressable>
+        </Stack.Toolbar.View>
+
         {/* Xcasset button */}
         <Stack.Toolbar.Button
           hidden={!showXcassetButton}
           tintColor={Platform.select({
             ios: Color.ios.systemTeal,
-            android: Color.android.dynamic.primary,
+            android: undefined, // iconRenderingMode="original" does not affect Android
           })}
           iconRenderingMode="original"
           onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
           <Stack.Toolbar.Icon xcasset="expo-logo" src={require('../../../assets/expo-logo.png')} />
         </Stack.Toolbar.Button>
+
+        {/* Xcasset menu */}
+        {showXcassetMenu && (
+          <Stack.Toolbar.Menu title="Xcasset Menu" tintColor={Color.ios.systemTeal}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+            <Stack.Toolbar.Label>Expo</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from xcasset menu')}>
+              Xcasset Action
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        )}
+
+        {/* Nested menu with dynamic content */}
+        {showMenu && (
+          <Stack.Toolbar.Menu
+            icon="ellipsis.circle"
+            title="Actions"
+            tintColor={Color.ios.systemBrown}>
+            {/* Simple actions */}
+            <Stack.Toolbar.MenuAction icon="paperplane" onPress={handleSendEmail}>
+              Send email
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction icon="trash" destructive onPress={handleDeleteEmail}>
+              Delete email
+            </Stack.Toolbar.MenuAction>
+
+            {/* Toggle action with isOn state */}
+            <Stack.Toolbar.MenuAction
+              icon={emailsArchived ? 'tray.full' : 'tray'}
+              isOn={emailsArchived}
+              onPress={handleArchiveToggle}>
+              {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
+            </Stack.Toolbar.MenuAction>
+
+            {/* Nested inline menu */}
+            <Stack.Toolbar.Menu inline title="Organize">
+              <Stack.Toolbar.MenuAction
+                icon="folder"
+                onPress={() => Alert.alert('Move', 'Moving to folder...')}>
+                Move to folder
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                icon="tag"
+                onPress={() => Alert.alert('Tag', 'Adding tag...')}>
+                Add tag
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+
+            {/* Nested menu with state-based selections */}
+            <Stack.Toolbar.Menu title="Preferences" image={image2}>
+              <Stack.Toolbar.MenuAction
+                icon="bell"
+                isOn={notificationsEnabled}
+                onPress={handleNotificationsToggle}>
+                {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+              </Stack.Toolbar.MenuAction>
+
+              {/* Color selection submenu */}
+              <Stack.Toolbar.Menu inline title="Favorite Color">
+                <Stack.Toolbar.MenuAction
+                  icon="circle.fill"
+                  isOn={favoriteColors.includes('red')}
+                  onPress={() => handleColorSelect('red')}>
+                  Red
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  icon="circle.fill"
+                  isOn={favoriteColors.includes('blue')}
+                  onPress={() => handleColorSelect('blue')}>
+                  Blue
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  icon="circle.fill"
+                  isOn={favoriteColors.includes('green')}
+                  onPress={() => handleColorSelect('green')}>
+                  Green
+                </Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
+            </Stack.Toolbar.Menu>
+
+            {/* Palette menu example (small icons only) */}
+            <Stack.Toolbar.Menu palette inline title="Palette Actions">
+              <Stack.Toolbar.MenuAction icon="star" onPress={() => Alert.alert('Star')}>
+                Star-palette
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+                Flag-palette
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                Pin-palette
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+
+            <Stack.Toolbar.Menu inline elementSize="small" title="Small Actions">
+              <Stack.Toolbar.MenuAction icon="star.fill" onPress={() => Alert.alert('Star')}>
+                Star
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="flag.fill" onPress={() => Alert.alert('Flag')}>
+                Flag
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="pin.fill" onPress={() => Alert.alert('Pin')}>
+                Pin
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+
+            {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
+            <Stack.Toolbar.Menu inline elementSize="medium" title="Medium Size">
+              <Stack.Toolbar.MenuAction
+                icon="arrow.clockwise"
+                onPress={() => Alert.alert('Refreshing')}>
+                Refresh
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                icon="arrow.2.circlepath"
+                onPress={() => Alert.alert('Resuming')}>
+                Resume
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                Pin
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+
+            {/* elementSize="large" displays actions with larger icons and titles */}
+            <Stack.Toolbar.Menu inline elementSize="large" title="Large Size">
+              <Stack.Toolbar.MenuAction
+                icon="square.and.arrow.up"
+                onPress={() => Alert.alert('Sharing')}>
+                Share
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="doc.on.doc" onPress={() => Alert.alert('Copying')}>
+                Copy
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+
+            {/* Disabled action */}
+            <Stack.Toolbar.MenuAction icon="lock" disabled onPress={() => {}}>
+              Locked action
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        )}
 
         {/* Flexible spacer at the end */}
         <Stack.Toolbar.Spacer />
@@ -396,13 +583,13 @@ const styles = StyleSheet.create({
   searchInput: {
     fontSize: 16,
     width: 200,
-    height: 32,
+    height: Platform.OS === 'ios' ? 32 : 48,
     paddingLeft: 8,
     color: Color.ios.label,
   },
   customButton: {
-    width: 32,
-    height: 32,
+    width: Platform.OS === 'ios' ? 32 : 48,
+    height: Platform.OS === 'ios' ? 32 : 48,
     justifyContent: 'center',
     alignItems: 'center',
   },

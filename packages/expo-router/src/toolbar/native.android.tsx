@@ -7,6 +7,7 @@ import {
   AnimatedVisibility,
   EnterTransition,
   ExitTransition,
+  RNHostView,
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, width, height } from '@expo/ui/jetpack-compose/modifiers';
 import { Children, type ReactNode } from 'react';
@@ -58,12 +59,13 @@ export function RouterToolbarItem(props: RouterToolbarItemProps) {
   }
 
   if (hasChildren(props.children)) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(
-        'Stack.Toolbar.View is not supported on Android. Custom views inside the toolbar will not render.'
-      );
-    }
-    return null;
+    return (
+      <AnimatedWrapper visible={!props.hidden}>
+        <RNHostView matchContents>
+          <>{props.children}</>
+        </RNHostView>
+      </AnimatedWrapper>
+    );
   }
 
   if (!props.source) {
@@ -105,8 +107,8 @@ function hasChildren(children: ReactNode | undefined): boolean {
 const styles = StyleSheet.create({
   hostContainer: {
     position: 'absolute',
-    left: 0,
-    right: 0,
+    left: 24,
+    right: 24,
     alignItems: 'center',
   },
 });

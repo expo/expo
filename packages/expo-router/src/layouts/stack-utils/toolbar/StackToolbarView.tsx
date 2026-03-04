@@ -63,7 +63,7 @@ export interface StackToolbarViewProps {
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 export const StackToolbarView: React.FC<StackToolbarViewProps> = (props) => {
   const placement = useToolbarPlacement();
