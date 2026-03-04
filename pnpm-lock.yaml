@@ -5928,6 +5928,9 @@ importers:
       '@expo/code-signing-certificates':
         specifier: ^0.0.6
         version: 0.0.6
+      '@expo/env':
+        specifier: workspace:^2.3.0
+        version: link:../@expo/env
       '@expo/plist':
         specifier: workspace:^0.7.0
         version: link:../@expo/plist
