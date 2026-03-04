@@ -75,7 +75,7 @@ internal class FileSystemPath: SharedObject {
       try FileManager.default.removeItem(at: destinationUrl)
     }
 
-    try FileManager.default.copyItem(at: url, to: getMoveOrCopyPath(to: destination))
+    try FileManager.default.copyItem(at: url, to: destinationUrl)
   }
 
   func move(to destination: FileSystemPath, options: RelocationOptions) throws {
