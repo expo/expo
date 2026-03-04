@@ -615,10 +615,10 @@ public final class SQLiteModule: Module {
       return String(cString: text)
     case SQLITE_BLOB:
       guard let blob = exsqlite3_column_blob(instance, index) else {
-        return Data()
+        return NativeArrayBuffer.allocate(size: 0)
       }
       let size = exsqlite3_column_bytes(instance, index)
-      return Data(bytes: blob, count: Int(size))
+      return NativeArrayBuffer.copy(of: blob, count: Int(size))
     case SQLITE_NULL:
       return NSNull()
     default:
