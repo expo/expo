@@ -3,6 +3,7 @@ package dev.expo.brownfieldintegratedtester
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -19,15 +20,17 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ReactNativeHostManager.shared.initialize(this.application)
+
         val rootLayout =
             LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER
+                gravity = Gravity.TOP
                 layoutParams =
                     ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT,
                     )
+                setPadding(dpToPx(16), dpToPx(24), dpToPx(16), dpToPx(24))
             }
 
         val button =
@@ -38,9 +41,11 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
                 setTextColor(Color.WHITE)
                 layoutParams =
                     LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                    )
+                    ).apply {
+                        setMargins(0, 0, 0, dpToPx(24))
+                    }
 
                 setOnClickListener {
                     startActivity(
@@ -57,7 +62,9 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     400
-                )
+                ).apply {
+                    setMargins(0, dpToPx(16), 0, 0)
+                }
             }
         } else {
             FrameLayout(this).apply {
@@ -65,13 +72,23 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     400
-                )
+                ).apply {
+                    setMargins(0, dpToPx(16), 0, 0)
+                }
             }
         }
 
         rootLayout.addView(button)
         rootLayout.addView(customComponent)
         setContentView(rootLayout)
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp.toFloat(),
+            resources.displayMetrics
+        ).toInt()
     }
 
     override fun invokeDefaultOnBackPressed() {
