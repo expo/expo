@@ -58,6 +58,16 @@ export declare const wrapContentWidth: (alignment?: "start" | "centerHorizontall
  */
 export declare const wrapContentHeight: (alignment?: "top" | "centerVertically" | "bottom") => import("./createModifier").ModifierConfig;
 /**
+ * Adds padding to avoid the software keyboard (IME).
+ * When the keyboard is visible, padding is added to keep content above it.
+ */
+export declare const imePadding: () => import("./createModifier").ModifierConfig;
+/**
+ * Adds padding to keep content within the safe drawing area,
+ * avoiding system UI like status bars, navigation bars, and display cutouts.
+ */
+export declare const safeDrawingPadding: () => import("./createModifier").ModifierConfig;
+/**
  * Offsets the view from its natural position.
  * @param x - Horizontal offset in dp.
  * @param y - Vertical offset in dp.
