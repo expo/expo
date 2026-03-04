@@ -32,7 +32,7 @@ val Uri.isAssetUri
 fun Uri.isSAFUri(context: Context): Boolean =
   isContentUri && (
     DocumentsContract.isDocumentUri(context, this) || DocumentsContract.isTreeUri(this)
-    )
+  )
 
 fun slashifyFilePath(path: String?): String? {
   return if (path == null) {

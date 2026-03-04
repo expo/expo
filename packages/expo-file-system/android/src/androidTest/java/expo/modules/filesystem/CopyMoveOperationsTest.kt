@@ -27,10 +27,6 @@ class CopyMoveOperationsTest {
   private val context = InstrumentationRegistry.getInstrumentation().targetContext
   private val resolver = context.contentResolver
 
-  // ============================================================================
-  // TEST HELPERS
-  // ============================================================================
-
   private fun getLocalTestDir() = File(context.cacheDir, "test_${System.currentTimeMillis()}").apply {
     deleteRecursively()
     mkdirs()
@@ -47,10 +43,6 @@ class CopyMoveOperationsTest {
   }
 
   private fun File.toUri(): Uri = Uri.parse(this.toURI().toString())
-
-  // ============================================================================
-  // COPY OPERATIONS: LOCAL → LOCAL
-  // ============================================================================
 
   @Test
   fun testCopyLocalFile_ToLocalFile() {
@@ -107,10 +99,6 @@ class CopyMoveOperationsTest {
     assertTrue(File(copiedDir, "file2.txt").exists())
     assertEquals("content1", File(copiedDir, "file1.txt").readText())
   }
-
-  // ============================================================================
-  // COPY OPERATIONS: SAF → SAF
-  // ============================================================================
 
   @Test
   fun testCopySAFFile_ToSAFFile() {
@@ -179,10 +167,6 @@ class CopyMoveOperationsTest {
     assertEquals("content1", content)
   }
 
-  // ============================================================================
-  // COPY OPERATIONS: CROSS-BACKEND (SAF → LOCAL)
-  // ============================================================================
-
   @Test
   fun testCopySAFFile_ToLocalFile() {
     val safRootDir = getSAFRootDir()
@@ -221,10 +205,6 @@ class CopyMoveOperationsTest {
     assertTrue(copiedFile.exists())
     assertEquals("saf content", copiedFile.readText())
   }
-
-  // ============================================================================
-  // COPY OPERATIONS: CROSS-BACKEND (LOCAL → SAF)
-  // ============================================================================
 
   @Test
   fun testCopyLocalFile_ToSAFDirectory() {
@@ -270,10 +250,6 @@ class CopyMoveOperationsTest {
     assertEquals("nested content", content)
   }
 
-  // ============================================================================
-  // MOVE OPERATIONS: LOCAL → LOCAL
-  // ============================================================================
-
   @Test
   fun testMoveLocalFile_ToLocalFile() {
     val localTestDir = getLocalTestDir()
@@ -309,10 +285,6 @@ class CopyMoveOperationsTest {
     assertTrue(movedFile.exists())
     assertEquals("move content", movedFile.readText())
   }
-
-  // ============================================================================
-  // MOVE OPERATIONS: CROSS-BACKEND (SAF ↔ LOCAL)
-  // ============================================================================
 
   @Test
   fun testMoveSAFFile_ToLocalDirectory() {
@@ -357,10 +329,6 @@ class CopyMoveOperationsTest {
     val content = resolver.openInputStream(movedFile!!.uri)?.bufferedReader()?.readText()
     assertEquals("local to saf move", content)
   }
-
-  // ============================================================================
-  // ERROR HANDLING: OVERWRITE BEHAVIOR
-  // ============================================================================
 
   @Test
   fun testCopy_ThrowsWhenDestinationExists_AndOverwriteIsFalse() {
@@ -431,10 +399,6 @@ class CopyMoveOperationsTest {
     assertEquals("new content", dstFile.readText())
   }
 
-  // ============================================================================
-  // ERROR HANDLING: INVALID OPERATIONS
-  // ============================================================================
-
   @Test
   fun testCopy_ThrowsWhenCopyingDirectoryToFile() {
     val localTestDir = getLocalTestDir()
@@ -488,10 +452,6 @@ class CopyMoveOperationsTest {
     assertTrue("Expected exception for nonexistent directory", result.isFailure)
     assertTrue(result.exceptionOrNull()!! is DestinationDoesNotExistException)
   }
-
-  // ============================================================================
-  // UNIX BEHAVIOR: CP/MV SEMANTICS
-  // ============================================================================
 
   @Test
   fun testCopyDirectory_ToExistingDirectory_CreatesChildDirectory() {

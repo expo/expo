@@ -37,21 +37,17 @@ class ContentProviderFile(
 
   override val parentFile: UnifiedFileInterface? = null
 
-  override fun createFile(mimeType: String, displayName: String): UnifiedFileInterface? {
+  override fun createFile(mimeType: String, displayName: String): UnifiedFileInterface =
     throw UnsupportedOperationException("Cannot create files in generic content provider: $uri")
-  }
 
-  override fun createDirectory(displayName: String): UnifiedFileInterface? {
+  override fun createDirectory(displayName: String): UnifiedFileInterface =
     throw UnsupportedOperationException("Cannot create directories in generic content provider: $uri")
-  }
 
-  override fun delete(): Boolean {
+  override fun delete(): Boolean =
     throw UnsupportedOperationException("Cannot delete from generic content provider: $uri")
-  }
 
-  override fun deleteRecursively(): Boolean {
+  override fun deleteRecursively(): Boolean =
     throw UnsupportedOperationException("Cannot delete from generic content provider: $uri")
-  }
 
   override fun listFilesAsUnified(): List<UnifiedFileInterface> = emptyList()
 
@@ -67,9 +63,7 @@ class ContentProviderFile(
       }
     }
 
-  override fun lastModified(): Long? {
-    return queryColumn(OpenableColumns.SIZE)?.toLongOrNull()
-  }
+  override fun lastModified(): Long? = null
 
   override val creationTime: Long? = null
 
@@ -115,13 +109,16 @@ class ContentProviderFile(
    */
   private fun queryColumn(column: String): String? {
     return runCatching {
-      context.contentResolver.query(uri, arrayOf(column), null, null, null)?.use { cursor ->
-        cursor.takeIf { it.moveToFirst() }?.let { cursor ->
-          cursor.getColumnIndex(column).takeIf { it >= 0 }?.let { index ->
-            cursor.getString(index)
+      context
+        .contentResolver
+        .query(uri, arrayOf(column), null, null, null)
+        ?.use { cursor ->
+          cursor.takeIf { it.moveToFirst() }?.let { cursor ->
+            cursor.getColumnIndex(column).takeIf { it >= 0 }?.let { index ->
+              cursor.getString(index)
+            }
           }
         }
-      }
     }.getOrNull()
   }
 }
