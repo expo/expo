@@ -660,6 +660,35 @@ export async function test({ describe, expect, it, ...t }) {
         expect(dst.exists).toBe(true);
         expect(dst.md5).toBe(src.md5);
       });
+
+      it('throws when destination file exists and overwrite is not set', () => {
+        const src = new File(testDirectory, 'src.txt');
+        src.write('source');
+        const dst = new File(testDirectory, 'dst.txt');
+        dst.write('destination');
+        expect(() => src.copy(dst)).toThrow();
+      });
+
+      it('overwrites destination file when overwrite is true', () => {
+        const src = new File(testDirectory, 'src.txt');
+        src.write('source');
+        const dst = new File(testDirectory, 'dst.txt');
+        dst.write('destination');
+        src.copy(dst, { overwrite: true });
+        expect(dst.textSync()).toBe('source');
+        expect(src.exists).toBe(true);
+      });
+
+      it('overwrites file in destination directory when overwrite is true', () => {
+        const src = new File(testDirectory, 'file.txt');
+        src.write('new content');
+        const dstFolder = new Directory(testDirectory, 'destination');
+        dstFolder.create();
+        const existing = new File(dstFolder, 'file.txt');
+        existing.write('old content');
+        src.copy(dstFolder, { overwrite: true });
+        expect(new File(dstFolder, 'file.txt').textSync()).toBe('new content');
+      });
     });
 
     describe('When copying a directory', () => {
@@ -696,6 +725,19 @@ export async function test({ describe, expect, it, ...t }) {
         const dst = new File(testDirectory, 'file2.txt');
         dst.create();
         expect(() => src.copy(dst)).toThrow();
+      });
+
+      it('overwrites destination directory when overwrite is true', () => {
+        const src = new Directory(testDirectory, 'srcDir');
+        src.create();
+        new File(src, 'file.txt').write('from source');
+
+        const dst = new Directory(testDirectory, 'dstDir');
+        dst.create();
+        new File(dst, 'old.txt').write('old content');
+
+        src.copy(dst, { overwrite: true });
+        expect(dst.exists).toBe(true);
       });
     });
 
@@ -736,6 +778,35 @@ export async function test({ describe, expect, it, ...t }) {
         expect(dst.textSync()).toBe('Hello world');
         expect(src.exists).toBe(true);
         expect(src.uri).toBe(dst.uri);
+      });
+
+      it('throws when destination file exists and overwrite is not set', () => {
+        const src = new File(testDirectory, 'src.txt');
+        src.write('source');
+        const dst = new File(testDirectory, 'dst.txt');
+        dst.write('destination');
+        expect(() => src.move(dst)).toThrow();
+      });
+
+      it('overwrites destination file when overwrite is true', () => {
+        const src = new File(testDirectory, 'src.txt');
+        src.write('source');
+        const dst = new File(testDirectory, 'dst.txt');
+        dst.write('destination');
+        src.move(dst, { overwrite: true });
+        expect(dst.textSync()).toBe('source');
+        expect(src.uri).toBe(dst.uri);
+      });
+
+      it('overwrites file in destination directory when overwrite is true', () => {
+        const src = new File(testDirectory, 'file.txt');
+        src.write('new content');
+        const dstFolder = new Directory(testDirectory, 'destination');
+        dstFolder.create();
+        new File(dstFolder, 'file.txt').write('old content');
+        src.move(dstFolder, { overwrite: true });
+        expect(new File(dstFolder, 'file.txt').textSync()).toBe('new content');
+        expect(src.uri).toBe(new File(dstFolder, 'file.txt').uri);
       });
     });
 
@@ -854,6 +925,23 @@ export async function test({ describe, expect, it, ...t }) {
         const dst = new File(testDirectory, 'file2.txt');
         dst.create();
         expect(() => src.move(dst)).toThrow();
+      });
+
+      it('overwrites destination directory when overwrite is true', () => {
+        const src = new Directory(testDirectory, 'srcDir');
+        src.create();
+        new File(src, 'file.txt').write('from source');
+
+        const dstFolder = new Directory(testDirectory, 'destination');
+        dstFolder.create();
+        const dst = new Directory(dstFolder, 'srcDir');
+        dst.create();
+        new File(dst, 'old.txt').write('old content');
+
+        src.move(dstFolder, { overwrite: true });
+        expect(src.exists).toBe(true);
+        expect(src.uri).toBe(dst.uri);
+        expect(new File(dst, 'file.txt').textSync()).toBe('from source');
       });
     });
 

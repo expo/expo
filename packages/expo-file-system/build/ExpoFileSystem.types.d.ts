@@ -10,6 +10,13 @@ export type FileCreateOptions = {
      */
     overwrite?: boolean;
 };
+export type RelocationOptions = {
+    /**
+     * Whether to overwrite the destination if it exists.
+     * @default false
+     */
+    overwrite?: boolean;
+};
 export declare enum EncodingType {
     /**
      * Standard encoding format.
@@ -94,11 +101,11 @@ export declare class Directory {
     /**
      * Copies a directory.
      */
-    copy(destination: Directory | File): void;
+    copy(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): void;
+    move(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Renames a directory.
      */
@@ -236,11 +243,11 @@ export declare class File {
     /**
      * Copies a file.
      */
-    copy(destination: Directory | File): void;
+    copy(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): void;
+    move(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Renames a file.
      */

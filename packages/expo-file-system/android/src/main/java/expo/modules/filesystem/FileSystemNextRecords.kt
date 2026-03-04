@@ -37,6 +37,11 @@ data class DownloadOptions(
   val idempotent: Boolean = false
 ) : Record
 
+data class RelocationOptions(
+  @Field
+  val overwrite: Boolean = false
+) : Record
+
 data class FileInfo(
   @Field var exists: Boolean,
   @Field var uri: String?,
