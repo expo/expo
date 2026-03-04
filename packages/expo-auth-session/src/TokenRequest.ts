@@ -458,12 +458,13 @@ export class RevokeTokenRequest
     if (this.tokenTypeHint) {
       queryBody.token_type_hint = this.tokenTypeHint;
     }
-    // Include client creds https://tools.ietf.org/html/rfc6749#section-2.3.1
-    if (this.clientId) {
-      queryBody.client_id = this.clientId;
-    }
-    if (this.clientSecret) {
-      queryBody.client_secret = this.clientSecret;
+    if (!this.clientSecret) {
+      // Only add client_id to body when not using Basic Auth (no secret).
+      // Per RFC 6749 §2.3.1, including credentials in both the Authorization header
+      // and the request body is NOT RECOMMENDED and causes 400 errors on compliant servers.
+      if (this.clientId) {
+        queryBody.client_id = this.clientId;
+      }
     }
     return queryBody;
   }
