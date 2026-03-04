@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { ExpoConfig } from '@expo/config';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -24,7 +25,11 @@ import {
 } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
-import { assetsRequiresSort, serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import {
+  assetsRequiresSort,
+  serializeHtmlWithAssets,
+  sortMatchedAssetsByEntryPoints,
+} from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -374,7 +379,7 @@ export async function exportFromServerAsync(
           continue;
         }
 
-        const matchedChunks: string[] = [];
+        const matchedChunks: SerialAsset[] = [];
         for (const asyncChunk of asyncJs) {
           if (!asyncChunk.metadata.modulePaths || !Array.isArray(asyncChunk.metadata.modulePaths)) {
             continue;
@@ -383,12 +388,16 @@ export async function exportFromServerAsync(
             (asyncChunk.metadata.modulePaths as string[]).includes(entryPoint)
           );
           if (hasRouteEntryPoint) {
-            matchedChunks.push(toAssetUrl(asyncChunk.filename));
+            matchedChunks.push(asyncChunk);
           }
         }
 
         if (matchedChunks.length > 0) {
-          routeAssets.set(route.contextKey, matchedChunks);
+          const sorted = sortMatchedAssetsByEntryPoints(matchedChunks, route.entryPoints);
+          routeAssets.set(
+            route.contextKey,
+            sorted.map((chunk) => toAssetUrl(chunk.filename))
+          );
         }
       }
 
