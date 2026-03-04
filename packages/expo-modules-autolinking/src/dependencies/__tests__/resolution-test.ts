@@ -421,11 +421,42 @@ describe(scanDependenciesRecursively, () => {
           "originPath": "/fake/project/node_modules/react-native-third-party",
           "path": "/fake/project/node_modules/react-native-third-party",
           "source": 0,
-          "version": "",
+          "version": "0.0.1",
         },
       }
     `);
   });
+
+  itWithMemoize(
+    'populates version for shared transitive dependency even without recursing into it',
+    async () => {
+      vol.fromNestedJSON(
+        {
+          ...mockedNodeModule('root', {
+            pkgDependencies: { 'parent-a': '*', 'parent-b': '*' },
+          }),
+          node_modules: {
+            'parent-a': mockedNodeModule('parent-a', {
+              pkgDependencies: { 'shared-dep': '*' },
+            }),
+            'parent-b': mockedNodeModule('parent-b', {
+              pkgDependencies: { 'shared-dep': '*' },
+            }),
+            'shared-dep': mockedNodeModule('shared-dep', {
+              pkgVersion: '6.0.0',
+            }),
+          },
+        },
+        projectRoot
+      );
+
+      // limitDepth: 2 prevents recurse from visiting shared-dep (discovered at depth 1).
+      // Without the eager-version fix in resolveDependency, version would be ''.
+      const result = await scanDependenciesRecursively(projectRoot, { limitDepth: 2 });
+
+      expect(result['shared-dep']!.version).toBe('6.0.0');
+    }
+  );
 
   itWithMemoize('discovers transitive peer dependencies', async () => {
     vol.fromNestedJSON(

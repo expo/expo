@@ -75,7 +75,9 @@ function mergeWithDuplicate(a, b) {
             duplicate = b;
         }
     }
-    if (!target.version && duplicate.version) { target.version = duplicate.version; }
+    if (!target.version && duplicate.version) {
+        target.version = duplicate.version;
+    }
     const duplicates = target.duplicates || (target.duplicates = []);
     if (target.path !== duplicate.path) {
         if (duplicates.every((parent) => parent.path !== duplicate.path)) {
@@ -86,9 +88,6 @@ function mergeWithDuplicate(a, b) {
                 originPath: duplicate.originPath,
             });
         }
-    }
-    else if (!target.version && duplicate.version) {
-        target.version = duplicate.version;
     }
     if (duplicate.duplicates?.length) {
         duplicates.push(...duplicate.duplicates.filter((child) => duplicates.every((parent) => parent.path !== child.path)));

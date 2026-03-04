@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed non-deterministic `packageVersion` when merging duplicate dependency resolutions. ([#43517](https://github.com/expo/expo/pull/43517) by [@dawidvdh](https://github.com/dawidvdh))
+- Fixed non-deterministic `packageVersion` in dependency resolution by eagerly reading version from package.json. ([#43517](https://github.com/expo/expo/pull/43517) by [@dawidvdh](https://github.com/dawidvdh))
 
 ### 💡 Others
 

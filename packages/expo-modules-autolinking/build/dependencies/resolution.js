@@ -62,10 +62,11 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
             const originPath = (0, utils_2.fastJoin)(nodeModulePaths[idx], dependencyName);
             const nodeModulePath = await (0, utils_2.maybeRealpath)(originPath);
             if (nodeModulePath != null) {
+                const packageJson = await (0, utils_2.loadPackageJson)((0, utils_2.fastJoin)(nodeModulePath, 'package.json'));
                 return {
                     source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
                     name: dependencyName,
-                    version: '',
+                    version: packageJson?.version || '',
                     path: nodeModulePath,
                     originPath,
                     duplicates: null,
