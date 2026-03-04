@@ -55,7 +55,7 @@ export interface StackToolbarViewProps {
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 export declare const StackToolbarView: React.FC<StackToolbarViewProps>;
 export declare function convertStackToolbarViewPropsToRNHeaderItem(props: StackToolbarViewProps): NativeStackHeaderItemCustom | undefined;
