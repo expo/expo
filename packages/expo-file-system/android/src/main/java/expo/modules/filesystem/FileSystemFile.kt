@@ -4,8 +4,6 @@ import android.net.Uri
 import android.util.Base64
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
-import expo.modules.interfaces.filesystem.Permission
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
