@@ -306,12 +306,10 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
 
   useEffect(() => {
     return () => {
-      if (handleRef.current) {
-        try {
-          handleRef.current.close();
-        } catch {}
-        handleRef.current = null;
-      }
+      try {
+        handleRef.current?.close();
+      } catch {}
+      handleRef.current = null;
     };
   }, []);
 
