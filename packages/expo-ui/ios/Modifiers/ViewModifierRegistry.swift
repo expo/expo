@@ -1500,6 +1500,10 @@ extension ViewModifierRegistry {
       return try RotationEffectModifier(from: params, appContext: appContext)
     }
 
+    register("rotation3DEffect") { params, appContext, _ in
+      return try Rotation3DEffectModifier(from: params, appContext: appContext)
+    }
+
     register("offset") { params, appContext, _ in
       return try OffsetModifier(from: params, appContext: appContext)
     }
