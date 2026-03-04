@@ -258,6 +258,18 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   /**
+   Provides access to a native React Native module by name.
+   In new arch the lookup goes through the host wrapper; in old arch through the bridge.
+   */
+  public func nativeModule<T>(named name: String) -> T? {
+    guard let module = hostWrapper?.findModule(withName: name, lazilyLoadIfNecessary: true) as? T else {
+      log.warn("Unable to get the \(name) module.")
+      return nil
+    }
+    return module
+  }
+
+  /**
    Provides access to the utilities (such as looking up for the current view controller).
    */
   public var utilities: Utilities? = Utilities()
