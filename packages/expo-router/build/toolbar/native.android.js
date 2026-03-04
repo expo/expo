@@ -6,14 +6,10 @@ const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
 const modifiers_1 = require("@expo/ui/jetpack-compose/modifiers");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 function RouterToolbarHost(props) {
-    // TODO(@ubax): This will not work with bottom tabs. At the moment the only way of getting the correct
-    // bottom inset in bottom tabs is to use `SafeAreaView` from `react-native-screens/experimental`.
-    const { bottom } = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
-    return (<react_native_1.View style={[styles.hostContainer, { bottom }]} pointerEvents="box-none">
-      <jetpack_compose_1.Host matchContents>
-        <jetpack_compose_1.Box modifiers={[(0, modifiers_1.fillMaxWidth)()]} contentAlignment="center">
+    return (<react_native_1.View style={[styles.hostContainer]} pointerEvents="box-none">
+      <jetpack_compose_1.Host style={{ width: '100%', height: '100%' }}>
+        <jetpack_compose_1.Box modifiers={[(0, modifiers_1.fillMaxWidth)(), (0, modifiers_1.imePadding)(), (0, modifiers_1.safeDrawingPadding)()]} contentAlignment="bottomCenter">
           <jetpack_compose_1.HorizontalFloatingToolbar modifiers={[(0, modifiers_1.height)(64)]}>
             {props.children}
           </jetpack_compose_1.HorizontalFloatingToolbar>
@@ -75,9 +71,10 @@ function hasChildren(children) {
 const styles = react_native_1.StyleSheet.create({
     hostContainer: {
         position: 'absolute',
-        left: 24,
-        right: 24,
+        inset: 0,
+        paddingHorizontal: 24,
         alignItems: 'center',
+        justifyContent: 'flex-end',
     },
 });
 //# sourceMappingURL=native.android.js.map

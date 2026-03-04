@@ -9,21 +9,25 @@ import {
   ExitTransition,
   RNHostView,
 } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, width, height } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  fillMaxWidth,
+  width,
+  height,
+  imePadding,
+  safeDrawingPadding,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { Children, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
 
 export function RouterToolbarHost(props: RouterToolbarHostProps) {
-  // TODO(@ubax): This will not work with bottom tabs. At the moment the only way of getting the correct
-  // bottom inset in bottom tabs is to use `SafeAreaView` from `react-native-screens/experimental`.
-  const { bottom } = useSafeAreaInsets();
   return (
-    <View style={[styles.hostContainer, { bottom }]} pointerEvents="box-none">
-      <Host matchContents>
-        <Box modifiers={[fillMaxWidth()]} contentAlignment="center">
+    <View style={[styles.hostContainer]} pointerEvents="box-none">
+      <Host style={{ width: '100%', height: '100%' }}>
+        <Box
+          modifiers={[fillMaxWidth(), imePadding(), safeDrawingPadding()]}
+          contentAlignment="bottomCenter">
           <HorizontalFloatingToolbar modifiers={[height(64)]}>
             {props.children}
           </HorizontalFloatingToolbar>
@@ -107,8 +111,9 @@ function hasChildren(children: ReactNode | undefined): boolean {
 const styles = StyleSheet.create({
   hostContainer: {
     position: 'absolute',
-    left: 24,
-    right: 24,
+    inset: 0,
+    paddingHorizontal: 24,
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 });
