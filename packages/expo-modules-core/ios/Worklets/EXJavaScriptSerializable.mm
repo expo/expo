@@ -48,6 +48,8 @@ EXSerializableValueType toObjCValueType(worklets::Serializable::ValueType type) 
       return EXSerializableValueTypeSynchronizable;
     case worklets::Serializable::ValueType::CustomType:
       return EXSerializableValueTypeCustom;
+    default:
+      return EXSerializableValueTypeUndefined;
   }
 }
 
