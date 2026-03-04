@@ -3,18 +3,9 @@ import ExpoModulesCore
 
 struct RecordingUtils {
   static func getAvailableInputs() -> [[String: Any]] {
-    var inputs = [[String: Any]]()
-    if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
-      for desc in availableInputs {
-        inputs.append([
-          "name": desc.portName,
-          "type": desc.portType,
-          "uid": desc.uid
-        ])
-      }
-    }
-
-    return inputs
+    AVAudioSession.sharedInstance().availableInputs?.map { desc in
+      ["name": desc.portName, "type": desc.portType, "uid": desc.uid]
+    } ?? []
   }
 
   static func getCurrentInput() throws -> [String: Any] {
@@ -30,38 +21,32 @@ struct RecordingUtils {
   }
 
   static func setInput(_ input: String) throws {
-    var prefferedInput: AVAudioSessionPortDescription?
+    var preferredInput: AVAudioSessionPortDescription?
     if let currentInputs = AVAudioSession.sharedInstance().availableInputs {
       for desc in currentInputs where desc.uid == input {
-        prefferedInput = desc
+        preferredInput = desc
       }
     }
 
-    guard let prefferedInput else {
+    guard let preferredInput else {
       throw PreferredInputFoundException(input)
     }
 
-    try AVAudioSession.sharedInstance().setPreferredInput(prefferedInput)
+    try AVAudioSession.sharedInstance().setPreferredInput(preferredInput)
   }
 
   static func getActiveInput() throws -> AVAudioSessionPortDescription? {
-    let currentRoute = AVAudioSession.sharedInstance().currentRoute
-    let inputs = currentRoute.inputs
-
-    if !inputs.isEmpty {
-      return inputs.first
+    if let input = AVAudioSession.sharedInstance().currentRoute.inputs.first {
+      return input
     }
 
     if let preferredInput = AVAudioSession.sharedInstance().preferredInput {
       return preferredInput
     }
 
-    if let availableInputs = AVAudioSession.sharedInstance().availableInputs {
-      if !availableInputs.isEmpty {
-        let defaultInput = availableInputs.first
-        try AVAudioSession.sharedInstance().setPreferredInput(defaultInput)
-        return defaultInput
-      }
+    if let defaultInput = AVAudioSession.sharedInstance().availableInputs?.first {
+      try AVAudioSession.sharedInstance().setPreferredInput(defaultInput)
+      return defaultInput
     }
 
     return nil
@@ -209,5 +194,20 @@ struct AudioUtils {
 private extension URL {
   var isBase64Audio: Bool {
     return absoluteString.hasPrefix("data:audio/")
+  }
+}
+
+extension AVPlayer {
+  func isBuffering(isPlaying: Bool) -> Bool {
+    if isPlaying {
+      return false
+    }
+    if timeControlStatus == .waitingToPlayAtSpecifiedRate {
+      return true
+    }
+    if let currentItem {
+      return !currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
+    }
+    return true
   }
 }
