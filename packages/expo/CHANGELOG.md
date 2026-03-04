@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed broken Async Storage documentation links by updating Expo integration and usage URLs to Async Storage 3.0 docs.
+
 ### 💡 Others
 
 ### ⚠️ Notices
