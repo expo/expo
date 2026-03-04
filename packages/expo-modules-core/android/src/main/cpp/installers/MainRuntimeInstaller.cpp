@@ -8,6 +8,8 @@
 #if IS_NEW_ARCHITECTURE_ENABLED
 
 #include "BridgelessJSCallInvoker.h"
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
 #endif
 
@@ -54,11 +56,23 @@ jni::local_ref<JSIContext::javaobject> MainRuntimeInstaller::install(
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
   jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
 ) noexcept {
+  auto *runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
+
+  std::shared_ptr<react::CallInvoker> callInvoker;
+  std::shared_ptr<react::RuntimeScheduler> runtimeScheduler;
+
+  if (auto binding = react::RuntimeSchedulerBinding::getBinding(*runtime)) {
+    runtimeScheduler = binding->getRuntimeScheduler();
+    callInvoker = std::make_shared<react::RuntimeSchedulerCallInvoker>(runtimeScheduler);
+  } else {
+    callInvoker = std::make_shared<BridgelessJSCallInvoker>(runtimeExecutor->cthis()->get());
+  }
+
   auto jsiContext = createJSIContext(
     runtimeContextHolder,
     jsRuntimePointer,
     jniDeallocator,
-    std::make_shared<BridgelessJSCallInvoker>(runtimeExecutor->cthis()->get())
+    callInvoker
   );
 
   prepareRuntime(

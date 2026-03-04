@@ -12,6 +12,7 @@
     "expo": "~55.0.2",
     "expo-clipboard": "55.0.8",
     "expo-dev-client": "~55.0.9",
+    "expo-router": "~55.0.2",
     "expo-image": "~55.0.5",
     "expo-media-library": "55.0.9",
     "expo-notifications": "~55.0.10",
@@ -19,7 +20,7 @@
     "expo-updates": "55.0.11",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.84.0"
+    "react-native": "0.84.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

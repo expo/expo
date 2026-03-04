@@ -20,8 +20,7 @@ class Array
 end
 
 # Overrides CocoaPods class to bypass module dependencies check.
-# We want to add vendored reanimated but then expo-dev-menu needs to 
-# depend on react modules which don't have modular_headers set. 
+# expo-dev-menu depends on React modules which don't have modular_headers set.
 module Pod
   class Installer
     class Xcode

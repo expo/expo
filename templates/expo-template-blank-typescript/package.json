@@ -14,7 +14,7 @@
     "expo": "~55.0.2",
     "expo-status-bar": "~55.0.4",
     "react": "19.2.3",
-    "react-native": "0.84.0"
+    "react-native": "0.84.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",

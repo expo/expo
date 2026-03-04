@@ -49,7 +49,8 @@ const result = await spawn(
     '--entry-file',
     path.join(__dirname, '../bundle/index.ts'),
     '--dev',
-    false,
+    'false',
+    '--skip-server',
     ...argv.slice(2),
   ],
   {

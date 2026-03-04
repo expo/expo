@@ -34,14 +34,9 @@ struct SliderView: ExpoSwiftUI.View {
 #if !os(tvOS)
   @ViewBuilder
   private var sliderContent: some View {
-    let label = props.children?.compactMap({ $0.childView as? SliderLabelView })
-    .first(where: { $0.props.kind == .label })
-    let minimumValueLabel = props.children?
-      .compactMap({ $0.childView as? SliderLabelView })
-      .first(where: { $0.props.kind == .minimum })
-    let maximumValueLabel = props.children?
-      .compactMap({ $0.childView as? SliderLabelView })
-      .first(where: { $0.props.kind == .maximum })
+    let label = props.children?.slot("label")
+    let minimumValueLabel = props.children?.slot("minimum")
+    let maximumValueLabel = props.children?.slot("maximum")
 
     if let min = props.min, let max = props.max, let step = props.step {
       Slider(
@@ -98,20 +93,3 @@ final class SliderProps: UIBaseViewProps {
   var onEditingChanged = EventDispatcher()
 }
 
-internal enum SliderLabelKind: String, Enumerable {
-  case label
-  case minimum
-  case maximum
-}
-
-internal final class SliderLabelProps: ExpoSwiftUI.ViewProps {
-  @Field var kind: SliderLabelKind = .minimum
-}
-
-internal struct SliderLabelView: ExpoSwiftUI.View {
-  @ObservedObject var props: SliderLabelProps
-
-  var body: some View {
-    Children()
-  }
-}

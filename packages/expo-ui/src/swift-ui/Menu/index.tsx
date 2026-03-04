@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { ComponentType } from 'react';
 
 import { type MenuProps } from './types';
+import { Slot } from '../SlotView';
 
 export { type MenuProps } from './types';
 
@@ -12,11 +13,6 @@ type NativeMenuProps = Omit<MenuProps, 'label' | 'onPrimaryAction'> & {
 };
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'MenuView');
-
-const MenuNativeLabelView: ComponentType<{ children: React.ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'MenuLabel'
-);
 
 /**
  * Displays a dropdown menu when tapped.
@@ -33,7 +29,7 @@ export function Menu(props: MenuProps) {
       hasPrimaryAction={onPrimaryAction != null}
       onPrimaryAction={onPrimaryAction}
       {...rest}>
-      {!isStringLabel && <MenuNativeLabelView>{label}</MenuNativeLabelView>}
+      {!isStringLabel && <Slot name="label">{label}</Slot>}
       {children}
     </MenuNativeView>
   );

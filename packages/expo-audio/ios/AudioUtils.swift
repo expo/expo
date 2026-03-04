@@ -87,9 +87,9 @@ struct AudioUtils {
 
   static func createAVPlayer(from source: AudioSource?) -> AVPlayer {
     if let item = createAVPlayerItem(from: source) {
-      return AVPlayer(playerItem: item)
+      return AVQueuePlayer(items: [item])
     }
-    return AVPlayer()
+    return AVQueuePlayer()
   }
 
   static func createAVPlayerItem(from source: AudioSource?) -> AVPlayerItem? {

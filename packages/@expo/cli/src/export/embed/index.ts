@@ -22,6 +22,12 @@ export const expoExportEmbed: Command = async (argv) => {
     '--unstable-transform-profile': String,
     '--config': String,
 
+    // By default we also export a standalone server, which is mostly done
+    // during the `export:embed` native build to ensure that the server is
+    // valid, or to deploy it later (TBD). This can be skipped using this
+    // flag explicitly
+    '--skip-server': Boolean,
+
     // Hack: This is added because react-native-xcode.sh script always includes this value.
     // If supplied, we'll do nothing with the value, but at least the process won't crash.
     // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.

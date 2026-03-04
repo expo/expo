@@ -44,6 +44,11 @@ class JSIContext @DoNotStrip internal constructor(
   external fun createObject(): JavaScriptObject
 
   /**
+   * Schedules a block to run on the JS thread via the RuntimeScheduler.
+   */
+  external fun scheduleOnJSThread(runnable: Runnable)
+
+  /**
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
    */
   external fun drainJSEventLoop()

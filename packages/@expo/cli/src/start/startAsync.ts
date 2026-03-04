@@ -111,7 +111,12 @@ export async function startAsync(
   }
 
   if (!env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly && !options.devClient) {
-    await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+    try {
+      await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+    } catch {
+      // We don't show the dependency validation error, since it's non-essential
+      // for the user to know it ran or failed
+    }
   }
 
   // Open project on devices.

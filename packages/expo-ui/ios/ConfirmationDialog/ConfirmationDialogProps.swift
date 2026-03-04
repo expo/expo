@@ -8,8 +8,3 @@ internal final class ConfirmationDialogProps: UIBaseViewProps {
   var onIsPresentedChange = EventDispatcher()
 }
 
-internal final class ConfirmationDialogTriggerProps: ExpoSwiftUI.ViewProps {}
-
-internal final class ConfirmationDialogActionsProps: ExpoSwiftUI.ViewProps {}
-
-internal final class ConfirmationDialogMessageProps: ExpoSwiftUI.ViewProps {}

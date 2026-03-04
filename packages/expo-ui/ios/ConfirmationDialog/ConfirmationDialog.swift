@@ -33,9 +33,7 @@ internal struct ConfirmationDialogView: ExpoSwiftUI.View {
 
   @ViewBuilder
   private var triggerContent: some View {
-    if let trigger = props.children?
-      .compactMap({ $0.childView as? ConfirmationDialogTrigger })
-      .first {
+    if let trigger = props.children?.slot("trigger") {
       trigger
     } else {
       EmptyView()
@@ -47,18 +45,14 @@ internal struct ConfirmationDialogView: ExpoSwiftUI.View {
 
   @ViewBuilder
   private var actionsContent: some View {
-    if let actions = props.children?
-      .compactMap({ $0.childView as? ConfirmationDialogActions })
-      .first {
+    if let actions = props.children?.slot("actions") {
       actions
     }
   }
 
   @ViewBuilder
   private var messageContent: some View {
-    if let message = props.children?
-      .compactMap({ $0.childView as? ConfirmationDialogMessage })
-      .first {
+    if let message = props.children?.slot("message") {
       message
     }
   }
