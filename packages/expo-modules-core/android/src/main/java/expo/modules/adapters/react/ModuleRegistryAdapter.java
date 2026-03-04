@@ -9,6 +9,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import androidx.annotation.Nullable;
 
@@ -22,7 +23,7 @@ import expo.modules.kotlin.CoreLoggerKt;
 import expo.modules.kotlin.ExpoBridgeModule;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.ModulesProvider;
-import expo.modules.kotlin.views.ViewWrapperDelegateHolder;
+import expo.modules.kotlin.views.ViewManagerWrapperDelegate;
 
 /**
  * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
@@ -43,7 +44,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   }
 
   // We need to save all view holders to update them when the new kotlin module registry will be created.
-  private List<ViewWrapperDelegateHolder> mWrapperDelegateHolders = null;
+  private List<ViewManagerWrapperDelegate> mWrapperDelegates = null;
   private FabricComponentsRegistry mFabricComponentsRegistry = null;
 
   public ModuleRegistryAdapter(List<Package> packageList) {
@@ -69,9 +70,9 @@ public class ModuleRegistryAdapter implements ReactPackage {
     }
 
     List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry, null);
-    if (mWrapperDelegateHolders != null) {
+    if (mWrapperDelegates != null) {
       KotlinInteropModuleRegistry kotlinInteropModuleRegistry = proxy.getKotlinInteropModuleRegistry();
-      kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
+      kotlinInteropModuleRegistry.updateModuleHoldersInViewDelegates(mWrapperDelegates);
     }
 
     return nativeModules;
@@ -108,13 +109,17 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
     NativeModulesProxy modulesProxy = Objects.requireNonNull(getOrCreateNativeModulesProxy(reactContext, null));
     KotlinInteropModuleRegistry kotlinInteropModuleRegistry = modulesProxy.getKotlinInteropModuleRegistry();
-    List<ViewManager<?, ?>> kViewManager = kotlinInteropModuleRegistry.exportViewManagers();
+    List<ViewManagerWrapperDelegate> kViewManagerDelegates = kotlinInteropModuleRegistry.exportViewManagerDelegates();
     // Saves all holders that needs to be in sync with module registry
-    mWrapperDelegateHolders = kotlinInteropModuleRegistry.extractViewManagersDelegateHolders(kViewManager);
-    viewManagerList.addAll(kViewManager);
+    mWrapperDelegates = kViewManagerDelegates;
+    List<? extends ViewManager<?, ?>> viewManagers = kViewManagerDelegates
+      .stream()
+      .map(ViewManagerWrapperDelegate::toRNViewManager)
+      .collect(Collectors.toList());
+    viewManagerList.addAll(viewManagers);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Intentionally to only add Sweet API view managers for Fabric support
-      mFabricComponentsRegistry = new FabricComponentsRegistry(kViewManager);
+      mFabricComponentsRegistry = new FabricComponentsRegistry(kViewManagerDelegates);
     }
 
     return viewManagerList;
