@@ -29,13 +29,6 @@
 #import <ExpoModulesCore-Swift.h>
 #endif
 
-#if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
-#import <EXDevMenu/EXDevMenu-Swift.h>
-#else
-#import "EXDevMenu-Swift.h"
-#endif
-
-
 #import "Expo_Go-Swift.h"
 
 NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
@@ -135,12 +128,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     
     if (!_isHeadless) {
       _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
-    }
-
-    RCTHost *host = (RCTHost *)self.reactHost;
-    if (host) {
-      [DevMenuManager.shared updateCurrentManifest:_appRecord.appLoader.manifest
-                                       manifestURL:_appRecord.appLoader.manifestUrl];
     }
 
     [self setupWebSocketControls];
@@ -339,10 +326,9 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
-    // Update expo-dev-menu with the manifest
+    // Notify the dev menu that the manifest has changed
     if ([self enablesDeveloperTools]) {
-      [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
-                                         manifestURL:_appRecord.appLoader.manifestUrl];
+      [[DevMenuManager shared] notifyManifestChanged];
     }
 
     // TODO: temporary solution for hiding LoadingProgressWindow

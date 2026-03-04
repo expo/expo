@@ -69,8 +69,6 @@ target 'Expo Go' do
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
-  pod 'expo-dev-menu', :path => '../../../packages/expo-dev-menu', :configurations => ['Debug', 'Release']
-
   config_command = [
     'node',
     '--no-warnings',

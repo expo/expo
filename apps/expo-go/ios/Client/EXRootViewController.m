@@ -10,7 +10,6 @@
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXRootViewController.h"
-#import "EXDevMenu-Swift.h"
 #import "EXUtil.h"
 
 #import "Expo_Go-Swift.h"
@@ -55,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidAppear:animated];
   [self becomeFirstResponder];
+
+  // Attach three-finger long press gesture recognizer for dev menu
+  if (self.view.window) {
+    [[DevMenuManager shared] attachGestureRecognizerToWindow:self.view.window];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -351,22 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentViewController = viewController;
 
     if (isShowingApp && appRecord.appManager.reactHost) {
-      [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
-
-      DevMenuConfiguration *config = [DevMenuManager shared].configuration;
-
-      BOOL isDev = appRecord.appLoader.manifest.isDevelopmentMode || appRecord.appLoader.manifest.isUsingDeveloperTool;
-      BOOL isSnack = [self _isSnackURL:appRecord.appLoader.manifestUrl];
-
-      if (!isDev) {
-        config.showDebuggingTip = NO;
-        config.showFastRefresh = NO;
-        config.showHostUrl = isSnack;
-      } else {
-        config.showDebuggingTip = YES;
-        config.showFastRefresh = YES;
-        config.showHostUrl = NO;
-      }
+      [[DevMenuManager shared] notifyManifestChanged];
     }
   }
 
