@@ -10,7 +10,7 @@ class Image(ref: Drawable) : SharedRef<Drawable>(ref) {
   override fun getAdditionalMemoryPressure(): Int {
     val ref = ref
     if (ref is BitmapDrawable) {
-      return ref.getBitmap().allocationByteCount
+      return ref.bitmap.allocationByteCount
     }
 
     // We can't get the size in bytes of the drawable.

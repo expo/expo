@@ -6,6 +6,7 @@ import {
   View,
   ViewProps,
   ViewStyle,
+  ColorValue,
 } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -204,6 +205,9 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * A color used to tint template images (a bitmap image where only the opacity matters).
    * The color is applied to every non-transparent pixel, causing the image's shape to adopt that color.
    * This effect is not applied to placeholders.
+   *
+   * Note that `useImage` options parameter also has a `tintColor` field.
+   * When you have a `useImage` as a `source` use its `tintColor` instead.
    * @default null
    */
   tintColor?: string | null;
@@ -823,6 +827,13 @@ export type ImageLoadOptions = {
    * If provided, the image will be automatically resized to not exceed this height in pixels, preserving its aspect ratio.
    */
   maxHeight?: number;
+
+  /**
+   * A color used to tint template images (a bitmap image where only the opacity matters).
+   * The color is applied to every non-transparent pixel, causing the image's shape to adopt that color.
+   * @default null
+   */
+  tintColor?: ColorValue | number;
 
   /**
    * Function to call when the image has failed to load. In addition to the error, it also provides a function that retries loading the image.
