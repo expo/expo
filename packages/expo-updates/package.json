@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.6",
+    "@expo/env": "^2.0.11",
     "@expo/plist": "^0.5.2",
     "@expo/spawn-async": "^1.7.2",
     "arg": "^4.1.0",

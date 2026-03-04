@@ -26,6 +26,8 @@ import { findUpProjectRoot } from './findUpProjectRoot';
 
   const entryFileArg = process.argv[6];
 
+  require('@expo/env').load(possibleProjectRoot);
+
   await Promise.all([
     createUpdatesResourcesMode === 'all'
       ? createManifestForBuildAsync(platform, possibleProjectRoot, destinationDir, entryFileArg)
