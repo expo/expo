@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#include <fbjni/ByteBuffer.h>
 #include "NativeStatementBinding.h"
 
 #include <android/log.h>
@@ -87,7 +88,11 @@ int NativeStatementBinding::bindStatementParam(
     auto byteArray = jni::static_ref_cast<jni::JArrayByte>(param);
     auto data = byteArray->getRegion(0, byteArray->size());
     ret = exsqlite3_bind_blob(stmt, index, data.get(), byteArray->size(),
-                            SQLITE_TRANSIENT);
+                              SQLITE_TRANSIENT);
+  } else if (param->isInstanceOf(jni::JByteBuffer::javaClassStatic())) {
+    auto byteBuffer = jni::static_ref_cast<jni::JByteBuffer>(param);
+    ret = exsqlite3_bind_blob(stmt, index, byteBuffer->getDirectAddress(), byteBuffer->getDirectSize(),
+                              SQLITE_TRANSIENT);
   } else {
     std::string stringArg;
     if (param->isInstanceOf(jni::JString::javaClassStatic())) {
