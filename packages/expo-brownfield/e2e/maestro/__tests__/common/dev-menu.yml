@@ -5,7 +5,7 @@ appId: ${APP_ID}
 
 - runFlow:
     when:
-      true: ${DEBUG == true}
+      true: ${DEBUG == "true"}
     commands:
       # Navigate to the dev menu screen
       - tapOn:
