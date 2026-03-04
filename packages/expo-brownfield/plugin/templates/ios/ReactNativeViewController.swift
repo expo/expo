@@ -8,7 +8,7 @@ public class ReactNativeViewController: UIViewController {
 
   @objc
   public init(
-    moduleName: String,
+    moduleName: String = "main",
     initialProps: [AnyHashable: Any]? = nil,
     launchOptions: [AnyHashable: Any]? = nil
   ) {

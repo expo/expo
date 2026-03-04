@@ -37,7 +37,7 @@ public class ReactNativeHostManager {
    * Creates the React Native view using RCTReactNativeFactory
    */
   public func loadView(
-    moduleName: String,
+    moduleName: String = "main",
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
