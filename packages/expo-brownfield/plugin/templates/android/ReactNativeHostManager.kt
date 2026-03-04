@@ -64,9 +64,9 @@ class ReactNativeHostManager {
   }
 }
 
-fun Activity.showReactNativeFragment() {
+fun Activity.showReactNativeFragment(rootComponent: String = "main") {
   ReactNativeHostManager.shared.initialize(this.application)
-  val fragment = ReactNativeFragment.createFragmentHost(this)
+  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
   setContentView(fragment)
   setUpNativeBackHandling()
 }

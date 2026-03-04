@@ -36,9 +36,9 @@ index a9fbbe7d70..f7561327e7 100644
    }
  }
  
- fun Activity.showReactNativeFragment() {
+ fun Activity.showReactNativeFragment(rootComponent: String = "main") {
    ReactNativeHostManager.shared.initialize(this.application)
--  val fragment = ReactNativeFragment.createFragmentHost(this)
+-  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
 -  setContentView(fragment)
 +
 +  if (BuildConfig.DEBUG) {
@@ -51,7 +51,7 @@ index a9fbbe7d70..f7561327e7 100644
 +      val reactNativeView = ReactNativeViewFactory.createFrameLayout(
 +        this,
 +        this as androidx.fragment.app.FragmentActivity,
-+        RootComponent.Main
++        rootComponent
 +      )
 +      fragmentHost.addView(reactNativeView, ViewGroup.LayoutParams.MATCH_PARENT)
 +      setContentView(fragmentHost)
@@ -59,7 +59,7 @@ index a9fbbe7d70..f7561327e7 100644
 +    }
 +  } else {
 +    setContentView(
-+      ReactNativeFragment.createFragmentHost(this)
++      ReactNativeFragment.createFragmentHost(this, rootComponent)
 +    )
 +  }
 +

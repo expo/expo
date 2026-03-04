@@ -15,17 +15,18 @@ class ReactNativeFragment : Fragment() {
       container: ViewGroup?,
       savedInstanceState: Bundle?,
   ): FrameLayout {
+    val rootComponent = arguments?.getString("rootComponentName") ?: "main"
     return ReactNativeViewFactory.createFrameLayout(
         requireContext(),
         requireActivity(),
-        RootComponent.Main,
+        rootComponent,
     )
   }
 
   companion object {
     private const val TAG = "ReactNativeFragment"
 
-    fun createFragmentHost(activity: Activity): ViewGroup {
+    fun createFragmentHost(activity: Activity, rootComponent: String = "main"): ViewGroup {
       val layout =
           object : FrameLayout(activity) {
             init {
@@ -33,7 +34,7 @@ class ReactNativeFragment : Fragment() {
             }
           }
 
-      val fragment = createAndCommit(activity, layout)
+      val fragment = createAndCommit(activity, layout, rootComponent)
 
       return layout
     }
@@ -41,10 +42,13 @@ class ReactNativeFragment : Fragment() {
     internal fun createAndCommit(
         activity: Activity,
         container: ViewGroup,
+        rootComponent: String = "main",
     ): ReactNativeFragment {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
 
-      val fragment = ReactNativeFragment()
+      val fragment = ReactNativeFragment().apply {
+        arguments = Bundle().apply { putString("rootComponentName", rootComponent) }
+      }
 
       fragmentManager.commit(true) {
         setReorderingAllowed(true)
