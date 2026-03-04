@@ -140,17 +140,16 @@ export async function scanDependenciesRecursively(
       resolution.version = packageJson.version || '';
     }
 
-    const modules = await resolveDependencies(
-      packageJson,
-      nodeModulePaths,
-      depth,
-      shouldIncludeDependency
-    );
-    for (let idx = 0; idx < modules.length; idx++) {
-      searchResults[modules[idx].name] = modules[idx];
-    }
-
     if (depth + 1 < maxDepth) {
+      const modules = await resolveDependencies(
+        packageJson,
+        nodeModulePaths,
+        depth,
+        shouldIncludeDependency
+      );
+      for (let idx = 0; idx < modules.length; idx++) {
+        searchResults[modules[idx].name] = modules[idx];
+      }
       const childResults = await taskAll(modules, (resolution) => recurse(resolution, depth + 1));
       return mergeResolutionResults(childResults, searchResults);
     } else {
