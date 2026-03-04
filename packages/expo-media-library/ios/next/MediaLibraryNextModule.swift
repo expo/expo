@@ -66,6 +66,10 @@ public final class MediaLibraryNextModule: Module {
         try await this.delete()
       }
 
+      AsyncFunction("getFavorite") { (this: Asset) in
+        try await this.getFavorite()
+      }
+
       AsyncFunction("setFavorite") { (this: Asset, isFavorite: Bool) in
         try await this.setFavorite(isFavorite)
       }

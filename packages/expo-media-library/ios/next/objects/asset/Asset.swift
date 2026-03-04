@@ -76,7 +76,7 @@ class Asset: SharedObject {
     return date.millisecondsSince1970
   }
 
-  func getIsFavorite() async throws -> Bool {
+  func getFavorite() async throws -> Bool {
     let phAsset = try await requirePHAsset()
     return phAsset.isFavorite
   }
@@ -114,7 +114,7 @@ class Asset: SharedObject {
       width: try getWidth(),
       mediaType: try getMediaType(),
       modificationTime: try getModificationTime(),
-      isFavorite: try getIsFavorite()
+      isFavorite: try getFavorite()
     )
   }
 

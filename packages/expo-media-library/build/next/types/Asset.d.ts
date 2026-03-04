@@ -115,6 +115,19 @@ export declare class Asset {
      */
     delete(): Promise<void>;
     /**
+     * Gets whether the asset is marked as a favorite.
+     * On iOS, this checks if the asset is part of the system "Favorites" smart album.
+     * @returns A promise resolving to `true` if the asset is a favorite, or `false` otherwise.
+     * @platform ios
+     *
+     * @example
+     * ```ts
+     * const isFavorite = await asset.getFavorite();
+     * console.log(isFavorite); // true or false
+     * ```
+     */
+    getFavorite(): Promise<boolean>;
+    /**
      * Marks or unmarks the asset as a favorite. On iOS, this adds or removes the asset from the system "Favorites" smart album.
      * @param isFavorite Whether the asset should be marked as favorite.
      * @returns A promise that resolves once the operation has completed.

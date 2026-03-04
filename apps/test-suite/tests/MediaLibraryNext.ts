@@ -330,6 +330,18 @@ export async function test(t) {
       t.expect(width).toBeGreaterThan(0);
     });
 
+    if (Platform.OS === 'ios') {
+      t.it('sets and gets favorite status', async () => {
+        t.expect(await asset.getFavorite()).toBe(false);
+        // mark as favorite
+        await asset.setFavorite(true);
+        t.expect(await asset.getFavorite()).toBe(true);
+        // unmark as favorite
+        await asset.setFavorite(false);
+        t.expect(await asset.getFavorite()).toBe(false);
+      });
+    }
+
     t.it('returns an asset info object', async () => {
       const info = await asset.getInfo();
       t.expect(info).toBeDefined();
@@ -342,6 +354,9 @@ export async function test(t) {
       t.expect(info.duration).toBe(await asset.getDuration());
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
+      if (Platform.OS === 'ios') {
+        t.expect(info.isFavorite).toBe(await asset.getFavorite());
+      }
     });
   });
 
@@ -678,33 +693,6 @@ export async function test(t) {
       t.expect(exif).toBeDefined();
     });
   });
-
-  if (Platform.OS === 'ios') {
-    t.describe('Favorites Smart Album', () => {
-      t.it('marks an asset as favorite', async () => {
-        // given
-        const asset = await Asset.create(jpgFile.localUri);
-        assetsContainer.push(asset);
-        // when
-        await asset.setFavorite(true);
-        // then
-        const info = await asset.getInfo();
-        t.expect(info.isFavorite).toBe(true);
-      });
-
-      t.it('unmarks an asset as favorite', async () => {
-        // given
-        const asset = await Asset.create(jpgFile.localUri);
-        assetsContainer.push(asset);
-        await asset.setFavorite(true);
-        // when
-        await asset.setFavorite(false);
-        // then
-        const info = await asset.getInfo();
-        t.expect(info.isFavorite).toBe(false);
-      });
-    });
-  }
 
   function createAlbumName(name: string) {
     return name.replaceAll(' ', '_');

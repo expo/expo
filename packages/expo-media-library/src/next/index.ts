@@ -20,6 +20,14 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
   }
 
   // @hidden
+  getFavorite(): Promise<boolean> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'getFavorite is only available on iOS');
+    }
+    return super.getFavorite();
+  }
+
+  // @hidden
   setFavorite(isFavorite: boolean): Promise<void> {
     if (Platform.OS !== 'ios') {
       throw new UnavailabilityError('MediaLibrary', 'setFavorite is only available on iOS');
