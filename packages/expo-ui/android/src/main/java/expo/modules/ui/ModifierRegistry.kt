@@ -5,6 +5,7 @@ package expo.modules.ui
 import android.graphics.Color
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -27,14 +28,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
@@ -43,6 +50,9 @@ import expo.modules.kotlin.records.recordFromMap
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.ui.convertibles.AlignmentType
+import expo.modules.ui.convertibles.CompositingStrategyType
+import expo.modules.ui.convertibles.GraphicsLayerParams
+import expo.modules.ui.convertibles.parseAnimationSpec
 
 typealias ModifierType = Map<String, Any?>
 typealias ModifierList = List<ModifierType>
@@ -190,6 +200,43 @@ internal data class SelectableParams(
 object ModifierRegistry {
 
   private val modifierFactories: MutableMap<String, ModifierFactory> = mutableMapOf()
+
+  @Composable
+  private fun resolveShape(shape: BuiltinShapeRecord): Shape? {
+    return when (shape.type) {
+      BuiltinShapeType.RECTANGLE -> RectangleShape
+      BuiltinShapeType.CIRCLE -> CircleShape
+      BuiltinShapeType.ROUNDED_CORNER -> {
+        val hasPerCorner = shape.topStart != null || shape.topEnd != null || shape.bottomStart != null || shape.bottomEnd != null
+        if (hasPerCorner) {
+          RoundedCornerShape(
+            topStart = (shape.topStart ?: 0f).dp,
+            topEnd = (shape.topEnd ?: 0f).dp,
+            bottomStart = (shape.bottomStart ?: 0f).dp,
+            bottomEnd = (shape.bottomEnd ?: 0f).dp
+          )
+        } else {
+          RoundedCornerShape((shape.radius ?: 0f).dp)
+        }
+      }
+      BuiltinShapeType.CUT_CORNER -> {
+        val hasPerCorner = shape.topStart != null || shape.topEnd != null || shape.bottomStart != null || shape.bottomEnd != null
+        if (hasPerCorner) {
+          CutCornerShape(
+            topStart = (shape.topStart ?: 0f).dp,
+            topEnd = (shape.topEnd ?: 0f).dp,
+            bottomStart = (shape.bottomStart ?: 0f).dp,
+            bottomEnd = (shape.bottomEnd ?: 0f).dp
+          )
+        } else {
+          CutCornerShape((shape.radius ?: 0f).dp)
+        }
+      }
+      BuiltinShapeType.MATERIAL -> {
+        shape.name?.toRoundedPolygon()?.toShape()
+      }
+    }
+  }
 
   init {
     registerBuiltInModifiers()
@@ -342,6 +389,64 @@ object ModifierRegistry {
       Modifier.rotate(params.degrees)
     }
 
+    register("graphicsLayer") { map, _, _, _ ->
+      val density = LocalDensity.current.density
+
+      // Resolve a value that may be a plain number (static) or an animated() wrapper
+      @Composable
+      fun resolveAnimatable(key: String, default: Float): Float {
+        val raw = map[key]
+        return when {
+          raw is Number -> raw.toFloat()
+          raw is Map<*, *> && raw["\$animated"] == true -> {
+            val target = (raw["targetValue"] as Number).toFloat()
+            val spec = parseAnimationSpec(raw["animationSpec"]) ?: spring()
+            val animated by animateFloatAsState(target, spec)
+            animated
+          }
+          else -> default
+        }
+      }
+
+      val rotationX = resolveAnimatable("rotationX", 0f)
+      val rotationY = resolveAnimatable("rotationY", 0f)
+      val rotationZ = resolveAnimatable("rotationZ", 0f)
+      val scaleX = resolveAnimatable("scaleX", 1f)
+      val scaleY = resolveAnimatable("scaleY", 1f)
+      val alphaVal = resolveAnimatable("alpha", 1f)
+      val translationX = resolveAnimatable("translationX", 0f)
+      val translationY = resolveAnimatable("translationY", 0f)
+      val shadowElevation = resolveAnimatable("shadowElevation", 0f)
+
+      // Non-animatable params parsed via Record
+      val params = recordFromMap<GraphicsLayerParams>(map)
+      val composeShape = params.shape?.let { resolveShape(it) } ?: RectangleShape
+      val compositingStrategy = when (params.compositingStrategy) {
+        CompositingStrategyType.OFFSCREEN -> CompositingStrategy.Offscreen
+        CompositingStrategyType.MODULATE -> CompositingStrategy.ModulateAlpha
+        else -> CompositingStrategy.Auto
+      }
+
+      Modifier.graphicsLayer {
+        this.rotationX = rotationX
+        this.rotationY = rotationY
+        this.rotationZ = rotationZ
+        this.scaleX = scaleX
+        this.scaleY = scaleY
+        this.alpha = alphaVal
+        this.translationX = translationX * density
+        this.translationY = translationY * density
+        this.cameraDistance = params.cameraDistance * density
+        this.shadowElevation = shadowElevation * density
+        this.transformOrigin = TransformOrigin(params.transformOriginX, params.transformOriginY)
+        this.clip = params.clip
+        this.shape = composeShape
+        this.compositingStrategy = compositingStrategy
+        params.ambientShadowColor?.let { this.ambientShadowColor = it.compose }
+        params.spotShadowColor?.let { this.spotShadowColor = it.compose }
+      }
+    }
+
     register("zIndex") { map, _, _, _ ->
       val params = recordFromMap<ZIndexParams>(map)
       Modifier.zIndex(params.index)
@@ -393,48 +498,23 @@ object ModifierRegistry {
     register("clip") { map, _, _, _ ->
       val params = recordFromMap<ClipParams>(map)
       params.shape?.let { shape ->
-        val composeShape = when (shape.type) {
-          BuiltinShapeType.RECTANGLE -> RectangleShape
-          BuiltinShapeType.CIRCLE -> CircleShape
-          BuiltinShapeType.ROUNDED_CORNER -> {
-            val hasPerCorner = shape.topStart != null || shape.topEnd != null || shape.bottomStart != null || shape.bottomEnd != null
-            if (hasPerCorner) {
-              RoundedCornerShape(
-                topStart = (shape.topStart ?: 0f).dp,
-                topEnd = (shape.topEnd ?: 0f).dp,
-                bottomStart = (shape.bottomStart ?: 0f).dp,
-                bottomEnd = (shape.bottomEnd ?: 0f).dp
-              )
-            } else {
-              RoundedCornerShape((shape.radius ?: 0f).dp)
-            }
-          }
-          BuiltinShapeType.CUT_CORNER -> {
-            val hasPerCorner = shape.topStart != null || shape.topEnd != null || shape.bottomStart != null || shape.bottomEnd != null
-            if (hasPerCorner) {
-              CutCornerShape(
-                topStart = (shape.topStart ?: 0f).dp,
-                topEnd = (shape.topEnd ?: 0f).dp,
-                bottomStart = (shape.bottomStart ?: 0f).dp,
-                bottomEnd = (shape.bottomEnd ?: 0f).dp
-              )
-            } else {
-              CutCornerShape((shape.radius ?: 0f).dp)
-            }
-          }
-          BuiltinShapeType.MATERIAL -> {
-            shape.name?.toRoundedPolygon()?.toShape()
-          }
-        }
-        composeShape?.let {
-          Modifier.clip(it)
-        }
+        resolveShape(shape)?.let { Modifier.clip(it) }
       } ?: Modifier
     }
 
-    register("clickable") { _, _, _, eventDispatcher ->
-      Modifier.clickable {
-        eventDispatcher("clickable", emptyMap())
+    register("clickable") { map, _, _, eventDispatcher ->
+      val indication = map["indication"] as? Boolean ?: true
+      if (indication) {
+        Modifier.clickable {
+          eventDispatcher("clickable", emptyMap())
+        }
+      } else {
+        Modifier.clickable(
+          interactionSource = null,
+          indication = null
+        ) {
+          eventDispatcher("clickable", emptyMap())
+        }
       }
     }
 
