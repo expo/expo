@@ -57,8 +57,8 @@ import { runCliExtension } from '@expo/devtools';
 
 runCliExtension<{
   list: Record<string, never>;
-}>(async ({ command }, console) => {
-  console.log(`Running command: ${command}`);
+}>(async ({ command, app }, console) => {
+  console.log(`Running command: ${command} on ${app.title}`);
 });
 ```
 
@@ -70,37 +70,29 @@ You can now restart the Expo CLI by running `npx expo start` and test your CLI e
 
 ### Add communication between your CLI extension and your Expo app
 
-To add communication between your CLI extension and your Expo app, you can use the `sendCliMessageAsync` function from the `expo/devtools` package. This function allows you to send messages from your CLI extension to the running Expo app and receive responses.
+To add communication between your CLI extension and your Expo app, you can use the `sendCliMessageAsync` function from the `@expo/devtools` package. This function allows you to send messages from your CLI extension to the running Expo app and receive responses.
+
+The connected app is automatically resolved and passed to your executor as the `app` parameter.
 
 ```ts cli/index.ts
-import { runCliExtension, sendCliMessageAsync, queryAllInspectorAppsAsync } from '@expo/devtools';
-import chalk from 'chalk';
+import { runCliExtension, sendCliMessageAsync } from '@expo/devtools';
 
 const PLUGIN_NAME = 'expo-background-task';
-const GET_REGISTERED_TASKS = 'get-registered-tasks';
+const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
+
+const blue = (s: string) => `\x1b[34m${s}\x1b[0m`;
 
 runCliExtension<{
   list: Record<string, never>;
-}>(async ({ command, metroServerOrigin }, console) => {
-  // Query connected apps
-  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-  if (apps.length === 0) {
-    console.error(`No connected apps found at ${metroServerOrigin}`);
-    return;
-  }
-
+}>(async ({ command, app }, console) => {
   if (command === 'list') {
     try {
-      // Send message to the app
-      const response = await sendCliMessageAsync(GET_REGISTERED_TASKS, PLUGIN_NAME, apps);
-      // Handle response from the running apps (there may be multiple)
-      Object.keys(response).forEach(appId => {
-        const app = apps.find(a => a.id === appId);
-        console.info(`${chalk.blue(app?.title ?? appId)}: ${response[appId] ?? ''}`);
-      });
+      // Send message to the app and receive a response
+      const response = await sendCliMessageAsync(GET_REGISTERED_TASKS, PLUGIN_NAME, app);
+      console.info(`${blue(app.title)}: ${response}`);
     } catch (error) {
       // Catch and rethrow error with more context
-      throw new Error('An error occured connecting to the app.', { cause: error });
+      throw new Error('An error occurred connecting to the app.', { cause: error });
     }
   }
 });
@@ -114,7 +106,7 @@ To receive and respond to messages from your CLI extension, use the `startCliLis
 import { startCliListenerAsync } from 'expo/devtools';
 
 const PLUGIN_NAME = 'expo-background-task';
-const GET_REGISTERED_TASKS = 'get-registered-tasks';
+const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
 
 startCliListenerAsync(PLUGIN_NAME)
   .then(({ addMessageListener }) => {
