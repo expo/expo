@@ -270,31 +270,31 @@ public final class SQLiteModule: Module {
         try sessionClose(database: database, session: session)
       }
 
-      AsyncFunction("createChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
+      AsyncFunction("createChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> NativeArrayBuffer in
         return try sessionCreateChangeset(database: database, session: session)
       }.runOnQueue(moduleQueue)
-      Function("createChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
+      Function("createChangesetSync") { (session: NativeSession, database: NativeDatabase) -> NativeArrayBuffer in
         return try sessionCreateChangeset(database: database, session: session)
       }
 
-      AsyncFunction("createInvertedChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> Data in
+      AsyncFunction("createInvertedChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> NativeArrayBuffer in
         return try sessionCreateInvertedChangeset(database: database, session: session)
       }.runOnQueue(moduleQueue)
-      Function("createInvertedChangesetSync") { (session: NativeSession, database: NativeDatabase) -> Data in
+      Function("createInvertedChangesetSync") { (session: NativeSession, database: NativeDatabase) -> NativeArrayBuffer in
         return try sessionCreateInvertedChangeset(database: database, session: session)
       }
 
-      AsyncFunction("applyChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
+      AsyncFunction("applyChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: NativeArrayBuffer) in
         try sessionApplyChangeset(database: database, session: session, changeset: changeset)
       }.runOnQueue(moduleQueue)
-      Function("applyChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) in
+      Function("applyChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: JavaScriptArrayBuffer) in
         try sessionApplyChangeset(database: database, session: session, changeset: changeset)
       }
 
-      AsyncFunction("invertChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
+      AsyncFunction("invertChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: NativeArrayBuffer) -> NativeArrayBuffer in
         return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
       }.runOnQueue(moduleQueue)
-      Function("invertChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: Data) -> Data in
+      Function("invertChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: JavaScriptArrayBuffer) -> NativeArrayBuffer in
         return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
       }
     }
@@ -762,7 +762,7 @@ public final class SQLiteModule: Module {
     exsqlite3session_delete(session.pointer)
   }
 
-  private func sessionCreateChangeset(database: NativeDatabase, session: NativeSession) throws -> Data {
+  private func sessionCreateChangeset(database: NativeDatabase, session: NativeSession) throws -> NativeArrayBuffer {
     try maybeThrowForClosedDatabase(database)
     var size: Int32 = 0
     var buffer: UnsafeMutableRawPointer?
@@ -770,13 +770,13 @@ public final class SQLiteModule: Module {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
     guard let buffer else {
-      return Data()
+      return NativeArrayBuffer.allocate(size: 0)
     }
     defer { exsqlite3_free(buffer) }
-    return Data(bytes: buffer, count: Int(size))
+    return NativeArrayBuffer.copy(of: buffer, count: Int(size))
   }
 
-  private func sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession) throws -> Data {
+  private func sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession) throws -> NativeArrayBuffer {
     do {
       let changeset = try sessionCreateChangeset(database: database, session: session)
       return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
@@ -785,13 +785,13 @@ public final class SQLiteModule: Module {
     }
   }
 
-  private func sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws {
+  private func sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: ArrayBuffer) throws {
     try maybeThrowForClosedDatabase(database)
     try changeset.withUnsafeBytes {
       let buffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
       if exsqlite3changeset_apply(
         database.pointer,
-        Int32(changeset.count),
+        Int32(changeset.byteLength),
         buffer,
         nil,
         { _, _, _ -> Int32 in
@@ -804,21 +804,21 @@ public final class SQLiteModule: Module {
     }
   }
 
-  private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: Data) throws -> Data {
+  private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: ArrayBuffer) throws -> NativeArrayBuffer {
     try maybeThrowForClosedDatabase(database)
     return try changeset.withUnsafeBytes {
       let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
       var outSize: Int32 = 0
       var outBuffer: UnsafeMutableRawPointer?
 
-      if exsqlite3changeset_invert(Int32(changeset.count), inBuffer, &outSize, &outBuffer) != SQLITE_OK {
+      if exsqlite3changeset_invert(Int32(changeset.byteLength), inBuffer, &outSize, &outBuffer) != SQLITE_OK {
         throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
       guard let outBuffer else {
-        return Data()
+        return NativeArrayBuffer.allocate(size: 0)
       }
       defer { exsqlite3_free(outBuffer) }
-      return Data(bytes: outBuffer, count: Int(outSize))
+      return NativeArrayBuffer.copy(of: outBuffer, count: Int(outSize))
     }
   }
 }
