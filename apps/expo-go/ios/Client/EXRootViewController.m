@@ -20,15 +20,12 @@
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
-NSString * const kEXIsLocalNetworkAccessGrantedKey = @"EXIsLocalNetworkAccessGranted";
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRootViewController () <EXAppBrowserController>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
-@property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
 @property (nonatomic, strong) HomeViewController *homeViewController;
 @property (nonatomic, strong) NSURL *pendingInitialHomeURL;
 
@@ -82,14 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
   return YES;
 }
 
-- (BOOL)isLocalNetworkAccessGranted {
-  if ([[NSUserDefaults standardUserDefaults] objectForKey:kEXIsLocalNetworkAccessGrantedKey] != nil) {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXIsLocalNetworkAccessGrantedKey];
-  } else {
-    return NO;
-  }
-}
-
 /**
  * supportedInterfaceOrienation has to defined by the currently visible app (to support multiple apps with different settings),
  * but according to the iOS docs 'Typically, the system calls this method only on the root view controller of the window',
@@ -137,39 +126,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
-  if ([EXUtil isExpoHostedUrl:appRecord.appLoader.manifestUrl] || [self isLocalNetworkAccessGranted]) {
-    [self foregroundApp:appRecord];
-    return;
-  }
-
-  [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (success) {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        [userDefaults setBool:YES forKey:kEXIsLocalNetworkAccessGrantedKey];
-        [self foregroundApp:appRecord];
-      } else {
-        [self createLocalNetworkDeniedAlert];
-      }
-    });
-  }];
+  [self foregroundApp:appRecord];
 }
 
 - (void)foregroundApp:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
 }
-
-- (void)createLocalNetworkDeniedAlert
-{
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Local network access required"
-                                                                 message:@"Local network access has been denied. This permission is required to run projects in Expo Go. Enable \"Local Network\" for Expo Go from the Settings app."
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-  UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-  [alert addAction:okAction];
-  [self presentViewController:alert animated:YES completion:nil];
-}
-
 
 - (void)moveHomeToVisible
 {

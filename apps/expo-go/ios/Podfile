@@ -51,6 +51,7 @@ target 'Expo Go' do
       'expo-dev-launcher',
       'expo-dev-client',
       'expo-dev-menu',
+      'expo-dev-menu-interface',
       'expo-maps',
       'expo-network-addons',
       'expo-insights',
