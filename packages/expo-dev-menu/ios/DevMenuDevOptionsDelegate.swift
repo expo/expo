@@ -4,22 +4,12 @@ import React
 import ExpoModulesCore
 
 class DevMenuDevOptionsDelegate {
-  internal private(set) weak var bridge: RCTBridge?
   internal private(set) weak var appContext: AppContext?
   internal private(set) weak var devSettings: RCTDevSettings?
 
   #if DEBUG
   internal private(set) weak var perfMonitor: NSObject?
   #endif
-
-  internal init(forBridge bridge: RCTBridge) {
-    self.bridge = bridge
-    devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings
-
-    #if DEBUG && !os(macOS)
-    perfMonitor = bridge.module(forName: "PerfMonitor") as? NSObject
-    #endif
-  }
 
   internal init(forAppContext appContext: AppContext) {
     self.appContext = appContext

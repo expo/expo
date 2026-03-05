@@ -200,16 +200,7 @@ open class DevMenuManager: NSObject {
     DevMenuPreferences.showFloatingActionButton = enabled
   }
 
-  @objc
-  public func updateCurrentBridge(_ bridge: RCTBridge?) {
-    currentBridge = bridge
-    if bridge != nil {
-      isNavigatingHome = false
-      isReactAppRunning = true
-    }
-  }
-
-  public func updateAppContext(_ appContext: AppContext?) {
+  public func setAppContext(_ appContext: AppContext?) {
     currentAppContext = appContext
     if appContext != nil {
       isNavigatingHome = false
