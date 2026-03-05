@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Add runtime validation in TypeScript (`ExpoAudio.ts`) to emit a `console.warn` when a local asset or invalid URL is passed as lock screen `artworkUrl`, improving visibility on release builds and error reporting tools.
+- Add runtime validation in TypeScript (`ExpoAudio.ts`) to emit a `console.warn` when a local asset or invalid URL is passed as lock screen `artworkUrl`, improving visibility on release builds and error reporting tools. ([#43649](https://github.com/expo/expo/pull/43649) by [@WaokE](https://github.com/WaokE))
 - Add JSDoc to `AudioMetadata.artworkUrl` to document that only remote HTTP/HTTPS URLs are supported for lock screen artwork.
 - [iOS] Log a warning when lock screen artwork fails to load in `MediaController`, to help developers identify unsupported local asset URLs.
 - Document the `artworkUrl` remote URL requirement in the background audio playback usage guide.
