@@ -61,7 +61,7 @@ export async function launchAppAsync(
     {
       applicationId: appId,
     },
-    { device }
+    { device: device.device }
   );
 }
 
