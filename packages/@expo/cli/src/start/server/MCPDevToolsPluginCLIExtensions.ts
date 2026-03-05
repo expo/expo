@@ -30,7 +30,7 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
         'tool calls in the same conversation. Do NOT ask the user to select again unless they ' +
         'explicitly ask to switch devices.',
       inputSchema: {
-        parameters: z.object({}), //   no parameters needed for this command
+        parameters: z.object({}),
       },
     },
     async () => {
