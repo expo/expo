@@ -17,7 +17,7 @@ declare global {
 }
 
 const __expoWidgetRender = function (props: Dictionary, environment: Dictionary) {
-  const { timestamp, widgetFamily, ...rest } = environment;
+  const { timestamp, ...rest } = environment;
   const decoratedEnvironment: Dictionary = { ...rest };
   if (timestamp) {
     decoratedEnvironment.date = new Date(timestamp as number);
