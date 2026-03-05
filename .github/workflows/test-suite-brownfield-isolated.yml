@@ -242,8 +242,13 @@ jobs:
       - name: 🍏 Build iOS artifacts (Debug)
         run: |
           npx expo-brownfield build:ios -d --verbose -a ../../../artifacts -p BrownfieldPackage
+        working-directory: apps/brownfield-tester/expo-app
       - name: 🔨 Add XCFrameworks to SwiftUI project
         run: ruby packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
+      - name: 🚇 Start Metro server
+        run: |
+          yarn start --clear &
+          npx wait-on http://localhost:8081 --timeout 60000
       - name: 🧪 Run e2e tests (Debug)
         run: CONFIGURATION=Debug ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
       - name: 💾 Save ccache
