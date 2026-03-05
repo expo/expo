@@ -158,9 +158,8 @@ const nextConfig: NextConfig = {
     const pagesDir = join(__dirname, 'pages');
     for (const urlPath of Object.keys(pathMap)) {
       const mdxPath =
-        [join(pagesDir, `${urlPath}.mdx`), join(pagesDir, urlPath, 'index.mdx')].find(
-          existsSync
-        ) ?? null;
+        [join(pagesDir, `${urlPath}.mdx`), join(pagesDir, urlPath, 'index.mdx')].find(existsSync) ??
+        null;
       if (mdxPath) {
         try {
           const { attributes } = frontmatter<{ modificationDate?: string }>(
@@ -178,8 +177,8 @@ const nextConfig: NextConfig = {
               modificationDates[urlPath] = `${y}-${m}-${d}`;
             }
           }
-        } catch (e) {
-          error(`Failed to read lastmod date from ${mdxPath}: ${e}`);
+        } catch (catchError) {
+          error(`Failed to read lastmod date from ${mdxPath}: ${catchError}`);
         }
       }
     }
