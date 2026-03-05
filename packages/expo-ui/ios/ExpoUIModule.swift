@@ -77,8 +77,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ConfirmationDialogView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)
 
-    ExpoUIView(ControlGroupView.self)
-
     ExpoUIView(MenuView.self)
 
     ExpoUIView(FormView.self)
