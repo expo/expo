@@ -60,11 +60,11 @@ class HomeViewModel() : ViewModel() {
       }
       .launchIn(viewModelScope)
 
-    packagerService.start()
+    packagerService.resumeHealthCheck()
   }
 
   override fun onCleared() {
-    packagerService.stop()
+    packagerService.pauseHealthCheck()
   }
 
   fun onAction(action: HomeAction) {
