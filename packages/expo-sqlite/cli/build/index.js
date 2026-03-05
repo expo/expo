@@ -1,12 +1,7 @@
-import { queryAllInspectorAppsAsync, runCliExtension, sendCliMessageAsync } from '@expo/devtools';
+import { runCliExtension, sendCliMessageAsync } from '@expo/devtools';
 const EXTENSION_NAME = 'expo-sqlite-cli-extension';
 const blue = (s) => `\x1b[34m${s}\x1b[0m`;
-runCliExtension(async ({ command, metroServerOrigin, args, app }, console) => {
-    const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-    if (apps.length === 0) {
-        console.error(`No connected apps found at ${metroServerOrigin}`);
-        return;
-    }
+runCliExtension(async ({ command, args, app }, console) => {
     switch (command) {
         case 'list_databases': {
             try {
