@@ -3,6 +3,7 @@ import path from 'path';
 
 import { evaluateTsConfig, importTypeScriptFromProjectOptionally } from './evaluateTsConfig';
 import { fileExistsAsync } from '../dir';
+import { Log } from '../../log';
 
 export type TsConfigPaths = {
   paths?: Record<string, string[]>;
@@ -55,7 +56,9 @@ export async function readTsconfigAsync(projectRoot: string): Promise<null | Con
     if (ts) {
       return [configPath, evaluateTsConfig(ts, configPath)];
     }
-    debug(`typescript module not found in: ${projectRoot}`);
+    Log.warn(
+      `Found tsconfig.json but 'typescript' is not installed. tsconfig.json settings such as path aliases will not be applied.`
+    );
   }
   return null;
 }
