@@ -18,4 +18,18 @@ extension ExpoSwiftUI {
   public protocol FocusableView {
     func forceResignFirstResponder()
   }
+
+  /**
+   Protocol for wrapper views (e.g., UIBaseView) that wrap an inner view.
+   */
+  public protocol ViewWrapper {
+    func getWrappedView() -> Any
+  }
+}
+
+/**
+ Internal protocol for type-erased access to a SwiftUI virtual view's content view.
+ */
+internal protocol AnyContentViewProvider {
+  nonisolated func getAnyContentView() -> Any
 }
