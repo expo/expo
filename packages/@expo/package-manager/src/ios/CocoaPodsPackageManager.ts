@@ -5,7 +5,7 @@ import { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 
-import { findGemfile } from './gemfile/findGemfile';
+import { isUsingBundlerAsync } from './gemfile';
 
 export type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
 
@@ -33,35 +33,11 @@ export function extractMissingDependencyError(errorOutput: string): [string, str
   return null;
 }
 
-/**
- * Check if the project uses Bundler to manage CocoaPods.
- * Returns `true` if a `Gemfile` exists in the project root (or a parent)
- * that lists `cocoapods` as a dependency, and `bundle exec pod --version` succeeds.
- */
-export async function isUsingBundlerAsync(projectRoot: string): Promise<boolean> {
-  const gemfilePath = await findGemfile(projectRoot);
-  if (!gemfilePath) {
-    return false;
-  }
-  const [gemfileContents, podExec] = await Promise.allSettled([
-    fs.promises.readFile(gemfilePath, 'utf8'),
-    spawnAsync('bundle', ['exec', 'pod', '--version'], {
-      cwd: projectRoot,
-      stdio: 'ignore',
-    }),
-  ]);
-  if (gemfileContents.status === 'rejected' || podExec.status === 'rejected') {
-    return false;
-  } else {
-    return /gem\s*\(?\s*(?:'cocoapods'|"cocoapods")/.test(gemfileContents.value);
-  }
-}
-
 export class CocoaPodsPackageManager {
   options: SpawnOptions;
 
   private silent: boolean;
-  private useBundler: boolean;
+  private cwd: string;
 
   static getPodProjectRoot(projectRoot: string): string | null {
     if (CocoaPodsPackageManager.isUsingPods(projectRoot)) return projectRoot;
@@ -218,13 +194,22 @@ export class CocoaPodsPackageManager {
     useBundler?: boolean;
   }) {
     this.silent = !!silent;
-    this.useBundler = !!useBundler;
+    this.cwd = cwd;
     this.options = {
       cwd,
       // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
       // Later we'll also pipe the stdout/stderr to the terminal when silent is false.
       stdio: 'pipe',
     };
+    // NOTE(@kitten): Override for tests
+    if (useBundler != null) {
+      this._useBundler = Promise.resolve(useBundler);
+    }
+  }
+
+  private _useBundler?: Promise<boolean>;
+  async #useBundlerAsync() {
+    return (this._useBundler ||= isUsingBundlerAsync(this.cwd));
   }
 
   get name() {
@@ -236,9 +221,9 @@ export class CocoaPodsPackageManager {
     await this._installAsync({ spinner });
   }
 
-  public isCLIInstalledAsync() {
+  public async isCLIInstalledAsync() {
     return CocoaPodsPackageManager.isCLIInstalledAsync(this.options, {
-      useBundler: this.useBundler,
+      useBundler: await this.#useBundlerAsync(),
     });
   }
 
@@ -398,7 +383,7 @@ export class CocoaPodsPackageManager {
   }
 
   async versionAsync() {
-    const { stdout } = this.useBundler
+    const { stdout } = (await this.#useBundlerAsync())
       ? await spawnAsync('bundle', ['exec', 'pod', '--version'], this.options)
       : await spawnAsync('pod', ['--version'], this.options);
     return stdout.trim();
@@ -433,12 +418,13 @@ export class CocoaPodsPackageManager {
 
   // Exposed for testing
   async _runAsync(args: string[]): Promise<SpawnResult> {
-    const [command, commandArgs] = this.useBundler
+    const useBundler = await this.#useBundlerAsync();
+    const [command, commandArgs] = useBundler
       ? ['bundle', ['exec', 'pod', ...args, '--ansi']]
       : ['pod', [...args, '--ansi']];
 
     if (!this.silent) {
-      console.log(`> ${this.useBundler ? 'bundle exec pod' : 'pod'} ${args.join(' ')}`);
+      console.log(`> ${useBundler ? 'bundle exec pod' : 'pod'} ${args.join(' ')}`);
     }
     const promise = spawnAsync(command, commandArgs, {
       // Add the cwd and other options to the spawn options.
