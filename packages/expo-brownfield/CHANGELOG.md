@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- [android] set react native version for all published artfacts ([#43693](https://github.com/expo/expo/pull/43693) by [@pmleczek](https://github.com/pmleczek))
+
 ## 55.0.11 — 2026-02-25
 
 ### 💡 Others
