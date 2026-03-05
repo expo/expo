@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fixed build issue with Expo Go in `PermissionsModule.swift` ([#43690](https://github.com/expo/expo/pull/43690) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.11 — 2026-03-05
