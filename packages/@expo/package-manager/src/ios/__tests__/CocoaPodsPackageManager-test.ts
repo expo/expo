@@ -9,7 +9,6 @@ import {
   CocoaPodsPackageManager,
   getPodRepoUpdateMessage,
   getPodUpdateMessage,
-  isUsingBundlerAsync,
 } from '../CocoaPodsPackageManager';
 
 const projectRoot = getTemporaryPath();
@@ -172,7 +171,7 @@ describe('installAsync', () => {
   });
 
   it(`auto updates malformed package versions`, async () => {
-    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+    const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler: false });
 
     let invokedOnce = false;
     manager._runAsync = jest.fn((commands: string[]): any => {
@@ -205,7 +204,7 @@ describe('installAsync', () => {
   });
 
   it(`runs install as expected`, async () => {
-    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+    const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler: false });
 
     manager._runAsync = jest.fn((commands: string[]) => {
       const cmd = commands.join(' ');
@@ -226,7 +225,7 @@ describe('installAsync', () => {
 });
 
 it(`throws for unimplemented methods`, async () => {
-  const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+  const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler: false });
 
   expect(() => manager.addAsync()).toThrow('Unimplemented');
   expect(() => manager.addDevAsync()).toThrow('Unimplemented');
@@ -240,7 +239,7 @@ it(`throws for unimplemented methods`, async () => {
 });
 
 it(`gets the cocoapods version`, async () => {
-  const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+  const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler: false });
 
   jest
     .mocked(spawnAsync)
@@ -263,7 +262,7 @@ it(`gets the cocoapods version via bundler`, async () => {
 });
 
 it(`can detect if the CLI is installed`, async () => {
-  const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+  const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler: false });
 
   jest
     .mocked(spawnAsync)
@@ -301,45 +300,6 @@ it(`can get the directory of a pods project`, async () => {
   // finally test that the current directory has higher priority than the ios directory
   fs.writeFileSync(path.join(projectRoot, 'Podfile'), '...');
   expect(CocoaPodsPackageManager.getPodProjectRoot(projectRoot)).toBe(projectRoot);
-});
-
-describe('isUsingBundlerAsync', () => {
-  it(`returns false when no Gemfile exists`, async () => {
-    const root = getRoot('bundler-no-gemfile');
-    await fs.promises.mkdir(root, { recursive: true });
-    expect(await isUsingBundlerAsync(root)).toBe(false);
-  });
-
-  it(`returns false when Gemfile does not contain cocoapods`, async () => {
-    const root = getRoot('bundler-no-cocoapods');
-    await fs.promises.mkdir(root, { recursive: true });
-    fs.writeFileSync(path.join(root, 'Gemfile'), "gem 'fastlane'\n");
-    expect(await isUsingBundlerAsync(root)).toBe(false);
-  });
-
-  it(`returns false when Gemfile has cocoapods but bundle exec pod fails`, async () => {
-    const root = getRoot('bundler-pod-fails');
-    await fs.promises.mkdir(root, { recursive: true });
-    fs.writeFileSync(path.join(root, 'Gemfile'), "gem 'cocoapods'\n");
-
-    jest.mocked(spawnAsync).mockImplementation(() => {
-      throw new Error('bundle exec pod failed');
-    });
-
-    expect(await isUsingBundlerAsync(root)).toBe(false);
-  });
-
-  it(`returns true when Gemfile has cocoapods and bundle exec pod succeeds`, async () => {
-    const root = getRoot('bundler-pod-ok');
-    await fs.promises.mkdir(root, { recursive: true });
-    fs.writeFileSync(path.join(root, 'Gemfile'), "gem 'cocoapods', '~> 1.16'\n");
-
-    jest
-      .mocked(spawnAsync)
-      .mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.16.2' })));
-
-    expect(await isUsingBundlerAsync(root)).toBe(true);
-  });
 });
 
 describe('bundler mode', () => {

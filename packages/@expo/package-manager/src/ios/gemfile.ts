@@ -49,3 +49,27 @@ export async function findGemfile(root = process.cwd()): Promise<string | null> 
   }
   return null;
 }
+
+/**
+ * Check if the project uses Bundler to manage CocoaPods.
+ * Returns `true` if a `Gemfile` exists in the project root (or a parent)
+ * that lists `cocoapods` as a dependency, and `bundle exec pod --version` succeeds.
+ */
+export async function isUsingBundlerAsync(projectRoot: string): Promise<boolean> {
+  const gemfilePath = await findGemfile(projectRoot);
+  if (!gemfilePath) {
+    return false;
+  }
+  const [gemfileContents, podExec] = await Promise.allSettled([
+    fs.promises.readFile(gemfilePath, 'utf8'),
+    spawnAsync('bundle', ['exec', 'pod', '--version'], {
+      cwd: projectRoot,
+      stdio: 'ignore',
+    }),
+  ]);
+  if (gemfileContents.status === 'rejected' || podExec.status === 'rejected') {
+    return false;
+  } else {
+    return /gem\s*\(?\s*(?:'cocoapods'|"cocoapods")/.test(gemfileContents.value);
+  }
+}
