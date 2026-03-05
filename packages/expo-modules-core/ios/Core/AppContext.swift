@@ -270,6 +270,14 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   /**
+   The bundle URL of the running React Native app.
+   Resolved from RCTBundleManager via RCTHost.
+   */
+  public var bundleURL: URL? {
+    return hostWrapper?.bundleURL()
+  }
+
+  /**
    Provides access to the utilities (such as looking up for the current view controller).
    */
   public var utilities: Utilities? = Utilities()
