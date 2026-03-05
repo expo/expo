@@ -1,6 +1,8 @@
 import { withSentryConfig } from '@sentry/nextjs';
+import frontmatter from 'front-matter';
 import type { NextConfig } from 'next';
 import { event, error } from 'next/dist/build/output/log.js';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { exit } from 'node:process';
 import rehypeSlug from 'rehype-slug';
@@ -151,6 +153,37 @@ const nextConfig: NextConfig = {
       })
     );
 
+    // Build a map of URL paths to ISO date strings from MDX frontmatter
+    const modificationDates: Record<string, string> = {};
+    const pagesDir = join(__dirname, 'pages');
+    for (const urlPath of Object.keys(pathMap)) {
+      const mdxPath =
+        [join(pagesDir, `${urlPath}.mdx`), join(pagesDir, urlPath, 'index.mdx')].find(
+          existsSync
+        ) ?? null;
+      if (mdxPath) {
+        try {
+          const { attributes } = frontmatter<{ modificationDate?: string }>(
+            readFileSync(mdxPath, 'utf-8')
+          );
+          if (attributes.modificationDate) {
+            // Strip ordinal suffixes (e.g., "17th" -> "17") before parsing
+            const cleaned = attributes.modificationDate.replace(/(\d+)(st|nd|rd|th)/, '$1');
+            const parsed = new Date(cleaned);
+            if (!isNaN(parsed.getTime())) {
+              // Use local date parts to avoid timezone shift (Date parses as local midnight)
+              const y = parsed.getFullYear();
+              const m = String(parsed.getMonth() + 1).padStart(2, '0');
+              const d = String(parsed.getDate()).padStart(2, '0');
+              modificationDates[urlPath] = `${y}-${m}-${d}`;
+            }
+          }
+        } catch (e) {
+          error(`Failed to read lastmod date from ${mdxPath}: ${e}`);
+        }
+      }
+    }
+
     const sitemapEntries = createSitemap({
       pathMap,
       domain: `https://docs.expo.dev`,
@@ -167,6 +200,7 @@ const nextConfig: NextConfig = {
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories, 'internal'],
+      modificationDates,
     });
     event(`Generated sitemap with ${sitemapEntries.length} entries`);
 
