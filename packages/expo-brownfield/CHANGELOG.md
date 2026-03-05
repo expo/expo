@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.13 — 2026-03-05
+
+### 🛠 Breaking changes
+
 - [ios] rename option from 'usePrebuiltReactNative' to 'buildReactNativeFromSource' ([#43574](https://github.com/expo/expo/pull/43574) by [@pmleczek](https://github.com/pmleczek))
 
 ### 🎉 New features
 
 - [iOS] Enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 55.0.12 — 2026-02-26
 

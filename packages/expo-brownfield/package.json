@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "55.0.12",
+  "version": "55.0.13",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",

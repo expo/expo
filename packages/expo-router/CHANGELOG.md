@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.4 — 2026-03-05
+
+### 💡 Others
+
 - use KVC to provide native API compatible with both react-native-screens 4.24.0 and 4.23.0 ([#43576](https://github.com/expo/expo/pull/43576) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.3 — 2026-02-26

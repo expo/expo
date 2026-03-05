@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Access `crypto` on `globalThis` rather than just `window.crypto` ([#43405](https://github.com/expo/expo/pull/43405) by [@bradleyayers](https://github.com/bradleyayers))
-
 ### 💡 Others
+
+## 55.0.9 — 2026-03-05
+
+### 🐛 Bug fixes
+
+- Access `crypto` on `globalThis` rather than just `window.crypto` ([#43405](https://github.com/expo/expo/pull/43405) by [@bradleyayers](https://github.com/bradleyayers))
 
 ## 55.0.8 — 2026-02-25
 
