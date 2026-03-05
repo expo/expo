@@ -2,10 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RouterToolbarHost = RouterToolbarHost;
 exports.RouterToolbarItem = RouterToolbarItem;
+exports.RouterToolbarMenu = RouterToolbarMenu;
 const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
 const modifiers_1 = require("@expo/ui/jetpack-compose/modifiers");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const color_1 = require("../color");
 function RouterToolbarHost(props) {
     return (<react_native_1.View style={[styles.hostContainer]} pointerEvents="box-none">
       <jetpack_compose_1.Host style={{ width: '100%', height: '100%' }}>
@@ -62,6 +64,39 @@ function AnimatedWrapper({ visible, children }) {
     enterTransition={jetpack_compose_1.EnterTransition.scaleIn().plus(jetpack_compose_1.EnterTransition.expandIn())} exitTransition={jetpack_compose_1.ExitTransition.scaleOut().plus(jetpack_compose_1.ExitTransition.shrinkOut())} visible={visible}>
       {children}
     </jetpack_compose_1.AnimatedVisibility>);
+}
+function renderMenuItems(actions, submenus) {
+    const items = actions.map((action, i) => (<jetpack_compose_1.Button key={`action-${i}`} onPress={action.onPress} disabled={action.disabled} elementColors={{
+            containerColor: color_1.Color.android.dynamic.surfaceContainer,
+            contentColor: color_1.Color.android.dynamic.onSecondaryContainer,
+        }}>
+      {action.label}
+    </jetpack_compose_1.Button>));
+    if (submenus) {
+        for (let i = 0; i < submenus.length; i++) {
+            const sub = submenus[i];
+            items.push(<jetpack_compose_1.Submenu key={`submenu-${i}`} button={<jetpack_compose_1.Button>{sub.label}</jetpack_compose_1.Button>}>
+          {renderMenuItems(sub.actions, sub.submenus)}
+        </jetpack_compose_1.Submenu>);
+        }
+    }
+    return items;
+}
+function RouterToolbarMenu({ source, tintColor, disabled, hidden, actions, submenus, }) {
+    if (!source) {
+        return null;
+    }
+    const menuItems = renderMenuItems(actions, submenus);
+    return (<AnimatedWrapper visible={!hidden}>
+      <jetpack_compose_1.ContextMenu>
+        <jetpack_compose_1.ContextMenu.Trigger>
+          <jetpack_compose_1.IconButton disabled={disabled}>
+            <jetpack_compose_1.Icon source={source} tintColor={tintColor} size={24}/>
+          </jetpack_compose_1.IconButton>
+        </jetpack_compose_1.ContextMenu.Trigger>
+        <jetpack_compose_1.ContextMenu.Items>{menuItems}</jetpack_compose_1.ContextMenu.Items>
+      </jetpack_compose_1.ContextMenu>
+    </AnimatedWrapper>);
 }
 function hasChildren(children) {
     if (children == null)

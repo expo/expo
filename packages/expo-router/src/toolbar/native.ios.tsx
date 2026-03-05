@@ -2,7 +2,11 @@ import { requireNativeView } from 'expo';
 import { type ColorValue, type TextStyle, type ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
+import type {
+  RouterToolbarHostProps,
+  RouterToolbarItemProps,
+  RouterToolbarMenuProps,
+} from './native.types';
 
 const RouterToolbarHostView: React.ComponentType<ViewProps> = requireNativeView(
   'ExpoRouterToolbarModule',
@@ -55,4 +59,9 @@ export function RouterToolbarItem(props: RouterToolbarItemProps) {
   // Destructure `source` to avoid passing Android-only prop to the iOS native view
   const { source, ...nativeProps } = props;
   return <RouterToolbarItemView {...nativeProps} image={imageObjectId} />;
+}
+
+// iOS uses NativeToolbarMenu/NativeLinkPreviewAction for menus — this is a no-op.
+export function RouterToolbarMenu(props: RouterToolbarMenuProps) {
+  return null;
 }

@@ -5,9 +5,9 @@ import type {
   NativeStackHeaderItemMenuSubmenu,
 } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
+import type { AndroidSymbol } from 'expo-symbols';
 import { Children, useId, useMemo, type ReactNode } from 'react';
 import {
-  Platform,
   StyleSheet,
   type ColorValue,
   type ImageSourcePropType,
@@ -21,17 +21,26 @@ import { useToolbarPlacement } from './context';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
+  extractImageSource,
+  extractMdIconName,
   extractXcassetName,
   type StackHeaderItemSharedProps,
 } from './shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
 import { LinkMenuAction } from '../../../link/elements';
 import { NativeLinkPreviewAction } from '../../../link/preview/native';
+import { RouterToolbarMenu } from '../../../toolbar/native';
+import type {
+  RouterToolbarMenuAction,
+  RouterToolbarMenuSubmenu,
+} from '../../../toolbar/native.types';
 import {
   filterAllowedChildrenElements,
+  getAllChildrenOfType,
   getFirstChildOfType,
   isChildOfType,
 } from '../../../utils/children';
+import { useMaterialIconSource } from '../../../utils/materialIcon';
 
 /**
  * Computes the label and menu title from children and title prop.
@@ -104,6 +113,16 @@ export interface StackToolbarMenuProps {
    * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
    */
   icon?: StackHeaderItemSharedProps['icon'];
+  /**
+   * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+   *
+   * The icon is resolved asynchronously — the menu trigger is invisible until the icon loads.
+   *
+   * Can also be specified via `<Stack.Toolbar.Icon md="..." />` child component.
+   *
+   * @platform android
+   */
+  md?: AndroidSymbol;
   /**
    * Controls how image-based icons are rendered on iOS.
    *
@@ -205,7 +224,7 @@ export interface StackToolbarMenuProps {
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
- * @platform ios
+ * @platform ios, android
  */
 export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
   const placement = useToolbarPlacement();
@@ -222,13 +241,8 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     [props.children]
   );
 
-  if (Platform.OS === 'android') {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(
-        'Stack.Toolbar.Menu is not supported on Android. The menu will not render. Use Stack.Toolbar.Button with ImageSourcePropType icons instead.'
-      );
-    }
-    return null;
+  if (process.env.EXPO_OS === 'android') {
+    return <AndroidToolbarMenu {...props} validChildren={validChildren} />;
   }
 
   const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
@@ -271,6 +285,70 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     />
   );
 };
+
+// #region AndroidToolbarMenu
+
+/** @internal */
+export function collectActions(children: ReactNode): RouterToolbarMenuAction[] {
+  return getAllChildrenOfType(children, StackToolbarMenuAction)
+    .filter((child) => !child.props.hidden)
+    .map((child) => {
+      const actionProps = child.props;
+      const label =
+        typeof actionProps.children === 'string'
+          ? actionProps.children
+          : (getFirstChildOfType(actionProps.children, StackToolbarLabel)?.props.children ?? '');
+      return {
+        label,
+        onPress: actionProps.onPress,
+        disabled: actionProps.disabled,
+        destructive: actionProps.destructive,
+      };
+    });
+}
+
+/** @internal */
+export function collectSubmenus(children: ReactNode): RouterToolbarMenuSubmenu[] {
+  return getAllChildrenOfType(children, StackToolbarMenu).map((child) => {
+    const submenuProps = child.props;
+    const { label } = computeMenuLabelAndTitle(submenuProps.children, submenuProps.title);
+    const nestedSubmenus = collectSubmenus(submenuProps.children);
+    return {
+      label,
+      actions: collectActions(submenuProps.children),
+      ...(nestedSubmenus.length > 0 ? { submenus: nestedSubmenus } : undefined),
+    };
+  });
+}
+
+/**
+ * Android-specific toolbar menu implementation using ContextMenu from @expo/ui.
+ */
+function AndroidToolbarMenu({
+  validChildren,
+  ...props
+}: StackToolbarMenuProps & { validChildren: ReactNode[] }) {
+  const mdIconName = extractMdIconName(props) ?? props.md;
+  const materialSource = useMaterialIconSource(mdIconName);
+  const source = extractImageSource(props) ?? materialSource;
+
+  const actions = collectActions(validChildren);
+  const submenus = collectSubmenus(validChildren);
+
+  return (
+    <RouterToolbarMenu
+      source={source}
+      mdIconName={mdIconName}
+      tintColor={props.tintColor}
+      disabled={props.disabled}
+      hidden={props.hidden}
+      actions={actions}
+      submenus={submenus}
+    />
+  );
+}
+
+// #endregion
 
 export function convertStackToolbarMenuPropsToRNHeaderItem(
   props: StackToolbarMenuProps,
@@ -470,7 +548,7 @@ export interface StackToolbarMenuActionProps {
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (props) => {
   const placement = useToolbarPlacement();

@@ -2,6 +2,26 @@ import type { ImageRef } from 'expo-image';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type { BasicTextStyle } from '../utils/font';
+export interface RouterToolbarMenuAction {
+    label: string;
+    onPress?: () => void;
+    disabled?: boolean;
+    destructive?: boolean;
+}
+export interface RouterToolbarMenuSubmenu {
+    label: string;
+    actions: RouterToolbarMenuAction[];
+    submenus?: RouterToolbarMenuSubmenu[];
+}
+export interface RouterToolbarMenuProps {
+    source?: ImageSourcePropType;
+    mdIconName?: string;
+    tintColor?: ColorValue;
+    disabled?: boolean;
+    hidden?: boolean;
+    actions: RouterToolbarMenuAction[];
+    submenus?: RouterToolbarMenuSubmenu[];
+}
 export interface RouterToolbarHostProps {
     children?: React.ReactNode;
 }

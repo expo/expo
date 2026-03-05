@@ -2,6 +2,8 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarMenuAction = exports.StackToolbarMenu = void 0;
+exports.collectActions = collectActions;
+exports.collectSubmenus = collectSubmenus;
 exports.convertStackToolbarMenuPropsToRNHeaderItem = convertStackToolbarMenuPropsToRNHeaderItem;
 exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMenuActionPropsToRNHeaderItem;
 const react_1 = require("react");
@@ -11,7 +13,9 @@ const shared_1 = require("./shared");
 const toolbar_primitives_1 = require("./toolbar-primitives");
 const elements_1 = require("../../../link/elements");
 const native_1 = require("../../../link/preview/native");
+const native_2 = require("../../../toolbar/native");
 const children_1 = require("../../../utils/children");
+const materialIcon_1 = require("../../../utils/materialIcon");
 /**
  * Computes the label and menu title from children and title prop.
  *
@@ -56,7 +60,7 @@ function computeMenuLabelAndTitle(children, title) {
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
- * @platform ios
+ * @platform ios, android
  */
 const StackToolbarMenu = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
@@ -67,11 +71,8 @@ const StackToolbarMenu = (props) => {
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
     const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
-    if (react_native_1.Platform.OS === 'android') {
-        if (process.env.NODE_ENV !== 'production') {
-            console.warn('Stack.Toolbar.Menu is not supported on Android. The menu will not render. Use Stack.Toolbar.Button with ImageSourcePropType icons instead.');
-        }
-        return null;
+    if (process.env.EXPO_OS === 'android') {
+        return <AndroidToolbarMenu {...props} validChildren={validChildren}/>;
     }
     const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
     const computedLabel = sharedProps?.label;
@@ -95,6 +96,49 @@ const StackToolbarMenu = (props) => {
     return (<NativeToolbarMenu {...props} icon={icon} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
+// #region AndroidToolbarMenu
+/** @internal */
+function collectActions(children) {
+    return (0, children_1.getAllChildrenOfType)(children, exports.StackToolbarMenuAction)
+        .filter((child) => !child.props.hidden)
+        .map((child) => {
+        const actionProps = child.props;
+        const label = typeof actionProps.children === 'string'
+            ? actionProps.children
+            : ((0, children_1.getFirstChildOfType)(actionProps.children, toolbar_primitives_1.StackToolbarLabel)?.props.children ?? '');
+        return {
+            label,
+            onPress: actionProps.onPress,
+            disabled: actionProps.disabled,
+            destructive: actionProps.destructive,
+        };
+    });
+}
+/** @internal */
+function collectSubmenus(children) {
+    return (0, children_1.getAllChildrenOfType)(children, exports.StackToolbarMenu).map((child) => {
+        const submenuProps = child.props;
+        const { label } = computeMenuLabelAndTitle(submenuProps.children, submenuProps.title);
+        const nestedSubmenus = collectSubmenus(submenuProps.children);
+        return {
+            label,
+            actions: collectActions(submenuProps.children),
+            ...(nestedSubmenus.length > 0 ? { submenus: nestedSubmenus } : undefined),
+        };
+    });
+}
+/**
+ * Android-specific toolbar menu implementation using ContextMenu from @expo/ui.
+ */
+function AndroidToolbarMenu({ validChildren, ...props }) {
+    const mdIconName = (0, shared_1.extractMdIconName)(props) ?? props.md;
+    const materialSource = (0, materialIcon_1.useMaterialIconSource)(mdIconName);
+    const source = (0, shared_1.extractImageSource)(props) ?? materialSource;
+    const actions = collectActions(validChildren);
+    const submenus = collectSubmenus(validChildren);
+    return (<native_2.RouterToolbarMenu source={source} mdIconName={mdIconName} tintColor={props.tintColor} disabled={props.disabled} hidden={props.hidden} actions={actions} submenus={submenus}/>);
+}
+// #endregion
 function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
     if (props.hidden) {
         return undefined;
@@ -195,7 +239,7 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 const StackToolbarMenuAction = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();

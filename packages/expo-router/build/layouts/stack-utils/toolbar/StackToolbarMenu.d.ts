@@ -1,9 +1,11 @@
 import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
+import type { AndroidSymbol } from 'expo-symbols';
 import { type ReactNode } from 'react';
 import { type ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { type StackHeaderItemSharedProps } from './shared';
+import type { RouterToolbarMenuAction, RouterToolbarMenuSubmenu } from '../../../toolbar/native.types';
 export interface StackToolbarMenuProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
@@ -55,6 +57,16 @@ export interface StackToolbarMenuProps {
      * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
      */
     icon?: StackHeaderItemSharedProps['icon'];
+    /**
+     * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+     *
+     * The icon is resolved asynchronously — the menu trigger is invisible until the icon loads.
+     *
+     * Can also be specified via `<Stack.Toolbar.Icon md="..." />` child component.
+     *
+     * @platform android
+     */
+    md?: AndroidSymbol;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -154,9 +166,13 @@ export interface StackToolbarMenuProps {
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
- * @platform ios
+ * @platform ios, android
  */
 export declare const StackToolbarMenu: React.FC<StackToolbarMenuProps>;
+/** @internal */
+export declare function collectActions(children: ReactNode): RouterToolbarMenuAction[];
+/** @internal */
+export declare function collectSubmenus(children: ReactNode): RouterToolbarMenuSubmenu[];
 export declare function convertStackToolbarMenuPropsToRNHeaderItem(props: StackToolbarMenuProps, isBottomPlacement?: boolean): NativeStackHeaderItemMenu | undefined;
 export interface StackToolbarMenuActionProps {
     /**
@@ -248,7 +264,7 @@ export interface StackToolbarMenuActionProps {
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 export declare const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps>;
 export declare function convertStackToolbarMenuActionPropsToRNHeaderItem(props: StackToolbarMenuActionProps): NativeStackHeaderItemMenuAction;

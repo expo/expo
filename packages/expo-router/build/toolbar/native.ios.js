@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RouterToolbarHost = RouterToolbarHost;
 exports.RouterToolbarItem = RouterToolbarItem;
+exports.RouterToolbarMenu = RouterToolbarMenu;
 const expo_1 = require("expo");
 const RouterToolbarHostView = (0, expo_1.requireNativeView)('ExpoRouterToolbarModule', 'RouterToolbarHostView');
 function RouterToolbarHost(props) {
@@ -21,5 +22,9 @@ function RouterToolbarItem(props) {
     // Destructure `source` to avoid passing Android-only prop to the iOS native view
     const { source, ...nativeProps } = props;
     return <RouterToolbarItemView {...nativeProps} image={imageObjectId}/>;
+}
+// iOS uses NativeToolbarMenu/NativeLinkPreviewAction for menus — this is a no-op.
+function RouterToolbarMenu(props) {
+    return null;
 }
 //# sourceMappingURL=native.ios.js.map

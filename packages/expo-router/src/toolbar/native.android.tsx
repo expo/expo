@@ -8,6 +8,10 @@ import {
   EnterTransition,
   ExitTransition,
   RNHostView,
+  ContextMenu,
+  Submenu,
+  Button,
+  type ContextMenuContentProps,
 } from '@expo/ui/jetpack-compose';
 import {
   fillMaxWidth,
@@ -19,7 +23,12 @@ import {
 import { Children, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
+import type {
+  RouterToolbarHostProps,
+  RouterToolbarItemProps,
+  RouterToolbarMenuProps,
+} from './native.types';
+import { Color } from '../color';
 
 export function RouterToolbarHost(props: RouterToolbarHostProps) {
   return (
@@ -100,6 +109,65 @@ function AnimatedWrapper({ visible, children }: { visible: boolean; children: Re
       visible={visible}>
       {children}
     </AnimatedVisibility>
+  );
+}
+
+function renderMenuItems(
+  actions: RouterToolbarMenuProps['actions'],
+  submenus: RouterToolbarMenuProps['submenus']
+) {
+  const items: ContextMenuContentProps['children'] = actions.map((action, i) => (
+    <Button
+      key={`action-${i}`}
+      onPress={action.onPress}
+      disabled={action.disabled}
+      elementColors={{
+        containerColor: Color.android.dynamic.surfaceContainer,
+        contentColor: Color.android.dynamic.onSecondaryContainer,
+      }}>
+      {action.label}
+    </Button>
+  ));
+
+  if (submenus) {
+    for (let i = 0; i < submenus.length; i++) {
+      const sub = submenus[i];
+      items.push(
+        <Submenu key={`submenu-${i}`} button={<Button>{sub.label}</Button>}>
+          {renderMenuItems(sub.actions, sub.submenus)}
+        </Submenu>
+      );
+    }
+  }
+
+  return items;
+}
+
+export function RouterToolbarMenu({
+  source,
+  tintColor,
+  disabled,
+  hidden,
+  actions,
+  submenus,
+}: RouterToolbarMenuProps) {
+  if (!source) {
+    return null;
+  }
+
+  const menuItems = renderMenuItems(actions, submenus);
+
+  return (
+    <AnimatedWrapper visible={!hidden}>
+      <ContextMenu>
+        <ContextMenu.Trigger>
+          <IconButton disabled={disabled}>
+            <Icon source={source} tintColor={tintColor} size={24} />
+          </IconButton>
+        </ContextMenu.Trigger>
+        <ContextMenu.Items>{menuItems}</ContextMenu.Items>
+      </ContextMenu>
+    </AnimatedWrapper>
   );
 }
 
