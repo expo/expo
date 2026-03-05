@@ -94,7 +94,6 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
               .getDefaultDevServer()
               .getJsInspectorBaseUrl();
 
-            // Auto-resolve the connected app
             const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
             if (apps.length === 0) {
               return {
