@@ -636,7 +636,7 @@ export type AudioMetadata = {
   /**
    * URL for the lock screen artwork image.
    *
-   * Must be a remote HTTP or HTTPS URL (e.g. `'https://example.com/artwork.jpg'`).
+   * Must be a remote HTTP or HTTPS URL (for example, `'https://example.com/artwork.jpg'`).
    * Local assets obtained via `require()` or `Image.resolveAssetSource()` are **not** supported
    * on Android release builds and may not work as expected on iOS.
    * Omit this field or use a hosted remote URL instead.
