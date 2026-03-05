@@ -14,7 +14,9 @@ class ExpoBlurTargetView(context: Context, appContext: AppContext) : ExpoView(co
   init {
     super.addView(
       blurTargetView,
-      LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
+      LayoutParams(
+        LayoutParams.MATCH_PARENT,
+        LayoutParams.MATCH_PARENT
       )
     )
   }
