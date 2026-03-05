@@ -16,10 +16,13 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
 
   // Register tool for looking up running apps through the JsInspector middleware.
   mcpServer.registerTool(
-    'expo-cli-apps',
+    'expo-cli-list-apps',
     {
       title: 'Expo CLI Apps',
-      description: 'Query running apps and their details from the Expo Metro server',
+      description:
+        'List connected apps and devices running in the Expo Metro server. ' +
+        'Call this tool FIRST before using any other expo- tools to discover ' +
+        'available appIds and verify device connectivity',
       inputSchema: {
         parameters: z.object({}), //   no parameters needed for this command
       },
@@ -88,7 +91,7 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
                 isError: true,
               };
             }
-            const app = appId ? apps.find((a) => a.appId === appId) : apps[0];
+            const app = apps.find((a) => a.appId === appId);
             if (!app) {
               return {
                 content: [
