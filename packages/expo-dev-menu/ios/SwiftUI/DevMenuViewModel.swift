@@ -2,6 +2,7 @@
 
 import Foundation
 import Combine
+import React
 import ExpoModulesCore
 
 @MainActor
