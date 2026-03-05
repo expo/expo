@@ -1,6 +1,6 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { existsSync, readFileSync } from 'fs';
+import fs from 'fs';
 import { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
@@ -43,24 +43,17 @@ export async function isUsingBundlerAsync(projectRoot: string): Promise<boolean>
   if (!gemfilePath) {
     return false;
   }
-
-  try {
-    const content = readFileSync(gemfilePath, 'utf8');
-    if (!/gem\s*\(?\s*(?:'cocoapods'|"cocoapods")/.test(content)) {
-      return false;
-    }
-  } catch {
-    return false;
-  }
-
-  try {
-    await spawnAsync('bundle', ['exec', 'pod', '--version'], {
+  const [gemfileContents, podExec] = await Promise.allSettled([
+    fs.promises.readFile(gemfilePath, 'utf8'),
+    spawnAsync('bundle', ['exec', 'pod', '--version'], {
       cwd: projectRoot,
-      stdio: 'pipe',
-    });
-    return true;
-  } catch {
+      stdio: 'ignore',
+    }),
+  ]);
+  if (gemfileContents.status === 'rejected' || podExec.status === 'rejected') {
     return false;
+  } else {
+    return /gem\s*\(?\s*(?:'cocoapods'|"cocoapods")/.test(gemfileContents.value);
   }
 }
 
@@ -80,7 +73,7 @@ export class CocoaPodsPackageManager {
   }
 
   static isUsingPods(projectRoot: string): boolean {
-    return existsSync(path.join(projectRoot, 'Podfile'));
+    return fs.existsSync(path.join(projectRoot, 'Podfile'));
   }
 
   static async gemInstallCLIAsync(
