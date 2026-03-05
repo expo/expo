@@ -42,7 +42,7 @@ class DevMenuDevOptionsDelegate {
   }
 
   internal func openJSInspector() {
-    guard let bundleURL = bridge?.bundleURL else {
+    guard let bundleURL = appContext?.bundleURL else {
       return
     }
     let port = bundleURL.port ?? Int(RCT_METRO_PORT)

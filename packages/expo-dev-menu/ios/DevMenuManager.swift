@@ -392,7 +392,7 @@ open class DevMenuManager: NSObject {
 
   @objc
   public func sendEventToDelegateBridge(_ eventName: String, data: Any?) {
-    if let eventDispatcher = currentAppContext?.nativeModule(named: "EventDispatcher") as? NSObject {
+    if let eventDispatcher: NSObject = currentAppContext?.nativeModule(named: "EventDispatcher") {
       let selector = NSSelectorFromString("sendDeviceEventWithName:body:")
       if eventDispatcher.responds(to: selector) {
         eventDispatcher.perform(selector, with: eventName, with: data)
