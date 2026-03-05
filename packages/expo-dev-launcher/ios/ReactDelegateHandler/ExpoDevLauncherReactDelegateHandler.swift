@@ -117,8 +117,9 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     )
     developmentClientController.appBridge = RCTBridge.current()
 
-    let windowRootVC = rootViewController?.view?.window?.rootViewController
     let targetVC: UIViewController
+#if !os(macOS)
+    let windowRootVC = rootViewController?.view?.window?.rootViewController
     if let windowRootVC, windowRootVC.view is DevLauncherWrapperView {
       // Greenfield: set root view on the window's root VC so react-native-screens parents its
       // UINavigationController to a VC in the containment hierarchy with correct layout margins.
@@ -132,6 +133,16 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     } else {
       fatalError("Invalid rootViewController returned from ExpoReactDelegate")
     }
+#else
+    // macOS: NSWindow has no rootViewController, fall back to DevLauncherViewController.
+    if let rootViewController {
+      targetVC = rootViewController
+    } else if let fallbackVC = self.reactDelegate?.createRootViewController() {
+      targetVC = fallbackVC
+    } else {
+      fatalError("Invalid rootViewController returned from ExpoReactDelegate")
+    }
+#endif
 #if os(macOS)
     let newViewController = UIViewController()
     newViewController.view = rootView
