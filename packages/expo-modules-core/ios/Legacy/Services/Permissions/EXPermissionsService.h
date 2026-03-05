@@ -9,8 +9,6 @@
 
 + (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
 
-+ (NSDictionary *)parsePermissionFromRequester:(NSDictionary *)permission;
-
 - (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
                                     withResolver:(EXPromiseResolveBlock)resolver
                                     withRejecter:(EXPromiseRejectBlock)reject;
