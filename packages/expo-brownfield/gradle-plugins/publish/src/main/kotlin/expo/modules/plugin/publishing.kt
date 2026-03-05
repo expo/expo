@@ -30,22 +30,11 @@ internal fun setupPublishing(project: Project) {
         return@afterEvaluate
       }
 
-      // TODO(pmleczek): Cache the value somewhere
       val rnVersion = getReactNativeVersion(project)
-        // if (project.name == configExtension.libraryName.get()) {
-        //   getReactNativeVersion(project)
-        // } else {
-        //   null
-        // }
-
-      // TODO(pmleczek): Cache the value somewhere
       val hermesVersion = getHermesVersion(project)
-        // if (project.name == configExtension.libraryName.get()) {
-        //   getHermesVersion(project)
-        // } else {
-        //   null
-        // }
+
       val libraryName = configExtension.libraryName.get()
+      println("libraryName: $libraryName")
 
       variants.forEach { variant ->
         publicationExtension.createPublication(

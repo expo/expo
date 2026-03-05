@@ -183,6 +183,7 @@ internal fun PublishingExtension.createPublication(
   rnVersion: String?,
   hermesVersion: String?,
 ) {
+  println("project.name: ${project.name}, libraryName: $libraryName, namespace: ${libraryExtension.namespace}")
   val _artifactId =
     if (project.name == libraryName) {
       project.name
