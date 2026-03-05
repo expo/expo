@@ -11,6 +11,8 @@ import { SendMessageError } from './CliExtensionUtils.js';
 // than Metro's own timeout (10 seconds) to be able to report errors before Metro does.
 const DEFAULT_TIMEOUT_MS = 5_000;
 
+let nextMessageId = 1;
+
 /**
  * Sends out a message to the WebSocket server using a broadcast channel and waits for a response.
  * If the connection times out or an error occurs, it rejects the promise with an error.
@@ -46,10 +48,17 @@ export async function sendCliMessageAsync<Params extends Record<string, unknown>
       clearTimeout(timeoutHandler);
     }, timeoutMs);
 
+    const messageId = String(nextMessageId++);
+
     ws.addEventListener('message', ({ data }: { data: Data }) => {
       const parsedData = parseWebSocketData(data);
       const { messageKey, payload } = parsedData;
       if (messageKey.pluginName === pluginName && messageKey.method === message + '_response') {
+        // Skip responses that don't match our messageId (but accept responses
+        // from older apps that don't support messageId yet).
+        if (payload.messageId != null && payload.messageId !== messageId) {
+          return;
+        }
         const { deviceName, applicationId } = payload;
         const result = payload.message;
         if (app.deviceName !== deviceName || app.appId !== applicationId) {
@@ -73,6 +82,7 @@ export async function sendCliMessageAsync<Params extends Record<string, unknown>
         messageKey,
         payload: {
           from: 'cli',
+          messageId,
           targetDeviceName: app.deviceName,
           targetAppId: app.appId,
           params,

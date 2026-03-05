@@ -33,7 +33,12 @@ describe('sendCliMessageAsync', () => {
     expect(mockWsInstance.send).toHaveBeenCalledWith(
       JSON.stringify({
         messageKey: { pluginName: 'my-plugin', method: 'doSomething' },
-        payload: { from: 'cli', targetDeviceName: 'iPhone 15', targetAppId: 'com.test.app' },
+        payload: {
+          from: 'cli',
+          messageId: '2',
+          targetDeviceName: 'iPhone 15',
+          targetAppId: 'com.test.app',
+        },
       })
     );
   });
@@ -50,6 +55,7 @@ describe('sendCliMessageAsync', () => {
       params: { sql: 'SELECT 1', dbName: 'test.db' },
       targetAppId: 'com.test.app',
       targetDeviceName: 'iPhone 15',
+      messageId: '3',
     });
   });
 
