@@ -10,7 +10,7 @@
 
 - [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve looping support. ([#43600](https://github.com/expo/expo/pull/43600) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fix `setActiveForLockScreen` being rejected when `artworkUrl` is a local asset. Changed `artworkUrl` field in `Metadata` from `URL?` to `String?` to prevent `MalformedURLException` from the bridge type conversion, and added graceful handling with a developer warning when an invalid URL is provided.
+- [Android] Fix `setActiveForLockScreen` being rejected when `artworkUrl` is a local asset. Changed `artworkUrl` field in `Metadata` from `URL?` to `String?` to prevent `MalformedURLException` from the bridge type conversion, and added graceful handling with a developer warning when an invalid URL is provided. ([#43649](https://github.com/expo/expo/pull/43649) by [@WaokE](https://github.com/WaokE))
 
 ### 💡 Others
 
