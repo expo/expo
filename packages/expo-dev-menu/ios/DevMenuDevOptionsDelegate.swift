@@ -5,6 +5,7 @@ import ExpoModulesCore
 
 class DevMenuDevOptionsDelegate {
   internal private(set) weak var bridge: RCTBridge?
+  internal private(set) weak var appContext: AppContext?
   internal private(set) weak var devSettings: RCTDevSettings?
 
   #if DEBUG
@@ -20,13 +21,20 @@ class DevMenuDevOptionsDelegate {
     #endif
   }
 
+  internal init(forAppContext appContext: AppContext) {
+    self.appContext = appContext
+    devSettings = appContext.nativeModule(named: "DevSettings")
+
+    #if DEBUG && !os(macOS)
+    perfMonitor = appContext.nativeModule(named: "PerfMonitor")
+    #endif
+  }
+
   internal func reload() {
     // Without this the `expo-splash-screen` will reject
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
-
-    let emc = self.bridge?.moduleRegistry.module(forName: "ExpoModulesCore") as? ExpoBridgeModule
-    emc?.appContext?.reloadAppAsync()
+    appContext?.reloadAppAsync()
   }
 
   internal func toggleElementInsector() {

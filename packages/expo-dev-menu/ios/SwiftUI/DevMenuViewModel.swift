@@ -100,7 +100,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func openRNDevMenu() {
-    guard let rctDevMenu = devMenuManager.currentBridge?.devMenu else {
+    guard let rctDevMenu: RCTDevMenu = devMenuManager.currentAppContext?.nativeModule(named: "RCTDevMenu") else {
       return
     }
 

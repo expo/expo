@@ -2,6 +2,7 @@
 
 import Foundation
 import React
+import ExpoModulesCore
 
 class DevMenuPackagerConnectionHandler {
   weak var manager: DevMenuManager?
@@ -17,7 +18,7 @@ class DevMenuPackagerConnectionHandler {
 #if DEBUG
     self.swizzleRCTDevMenuShow()
 
-    let devSettings = self.manager?.currentBridge?.module(forName: "DevSettings") as? RCTDevSettings
+    let devSettings: RCTDevSettings? = self.manager?.currentAppContext?.nativeModule(named: "DevSettings")
 // TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
 #if !os(macOS)
     let packagerConnection = devSettings?.packagerConnection
@@ -70,12 +71,12 @@ class DevMenuPackagerConnectionHandler {
   func sendDevCommandNotificationHandler(_ params: [String: Any]) {
     guard let manager = manager,
       let command = params["name"] as? String,
-      let bridge = manager.currentBridge
+      let appContext = manager.currentAppContext
     else {
       return
     }
 
-    let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
+    let devDelegate = DevMenuDevOptionsDelegate(forAppContext: appContext)
 
     switch command {
     case "reload":
