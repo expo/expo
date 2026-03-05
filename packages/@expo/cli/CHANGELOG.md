@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Warn when `tsconfig.json` exists but `typescript` is not installed, which silently disables path alias resolution in production builds. ([#43664](https://github.com/expo/expo/issues/43664) by [@MBlancoC](https://github.com/MBlancoC))
+- Warn when `tsconfig.json` exists but `typescript` is not installed, which silently disables path alias resolution in production builds. ([#43664](https://github.com/expo/expo/issues/43664) by [@MBlancoC](https://github.com/MBlancoC)) ([#43665](https://github.com/expo/expo/pull/43665) by [@MBlancoC](https://github.com/MBlancoC))
 - Prevent hanging when installing iOS apps on device. ([#43618](https://github.com/expo/expo/pull/43618) by [@EvanBacon](https://github.com/EvanBacon))
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))
 - Fix server being started before Metro is ready, or, if it's started, status middleware responding too soon ([#43557](https://github.com/expo/expo/pull/43557) by [@kitten](https://github.com/kitten))
