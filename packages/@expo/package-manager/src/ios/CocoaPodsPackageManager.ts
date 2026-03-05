@@ -5,6 +5,8 @@ import { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 
+import { findGemfile } from './gemfile/findGemfile';
+
 export type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
 
 export class CocoaPodsError extends Error {
@@ -32,33 +34,12 @@ export function extractMissingDependencyError(errorOutput: string): [string, str
 }
 
 /**
- * Walk up from `startDir` looking for a Gemfile.
- * Stops at the filesystem root, a `.git` directory boundary, or the user's home directory.
- */
-function findGemfile(startDir: string): string | null {
-  let dir = startDir;
-  const { root } = path.parse(dir);
-  const homeDir = path.normalize(os.homedir());
-  while (dir !== root) {
-    const candidate = path.join(dir, 'Gemfile');
-    if (existsSync(candidate)) {
-      return candidate;
-    }
-    if (existsSync(path.join(dir, '.git')) || dir === homeDir) {
-      break;
-    }
-    dir = path.dirname(dir);
-  }
-  return null;
-}
-
-/**
  * Check if the project uses Bundler to manage CocoaPods.
  * Returns `true` if a `Gemfile` exists in the project root (or a parent)
  * that lists `cocoapods` as a dependency, and `bundle exec pod --version` succeeds.
  */
 export async function isUsingBundlerAsync(projectRoot: string): Promise<boolean> {
-  const gemfilePath = findGemfile(projectRoot);
+  const gemfilePath = await findGemfile(projectRoot);
   if (!gemfilePath) {
     return false;
   }
@@ -234,7 +215,15 @@ export class CocoaPodsPackageManager {
     }
   }
 
-  constructor({ cwd, silent, useBundler }: { cwd: string; silent?: boolean; useBundler?: boolean }) {
+  constructor({
+    cwd,
+    silent,
+    useBundler,
+  }: {
+    cwd: string;
+    silent?: boolean;
+    useBundler?: boolean;
+  }) {
     this.silent = !!silent;
     this.useBundler = !!useBundler;
     this.options = {
@@ -458,20 +447,16 @@ export class CocoaPodsPackageManager {
     if (!this.silent) {
       console.log(`> ${this.useBundler ? 'bundle exec pod' : 'pod'} ${args.join(' ')}`);
     }
-    const promise = spawnAsync(
-      command,
-      commandArgs,
-      {
-        // Add the cwd and other options to the spawn options.
-        ...this.options,
-        // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
-        // This is particularly required for the `pod install --repo-update` error.
+    const promise = spawnAsync(command, commandArgs, {
+      // Add the cwd and other options to the spawn options.
+      ...this.options,
+      // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
+      // This is particularly required for the `pod install --repo-update` error.
 
-        // Later we'll also pipe the stdout/stderr to the terminal when silent is false,
-        // currently this means we lose out on the ansi colors unless passing the `--ansi` flag to every command.
-        stdio: 'pipe',
-      }
-    );
+      // Later we'll also pipe the stdout/stderr to the terminal when silent is false,
+      // currently this means we lose out on the ansi colors unless passing the `--ansi` flag to every command.
+      stdio: 'pipe',
+    });
 
     if (!this.silent) {
       // If not silent, pipe the stdout/stderr to the terminal.
