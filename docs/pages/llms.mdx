@@ -1,16 +1,45 @@
 ---
-title: Documentation for LLMs
-sidebar_title: llms.txt
-description: A list of Expo and EAS documentation files available for large language models (LLMs) and apps that use them.
+title: Documentation for AI agents and LLMs
+sidebar_title: AI agents
+description: Efficient ways for AI agents and LLMs to access and consume Expo documentation.
 hideTOC: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide documentation for large language models (LLMs) and apps that use them. Below is a list of documentation files available:
+Use the following endpoints and tools to give AI agents and LLMs access to Expo documentation at lower token cost than fetching full web pages.
+
+## Quick start
+
+Pick the method that matches your tool:
+
+| Method                 | Best for                             | How                                                                                                     |
+| ---------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| **Per-page markdown**  | Chat interfaces (ChatGPT, Claude.ai) | Append `/index.md` to any docs page URL.                                                                |
+| **Copy page** dropdown | Quick prompts with a single page     | Click **Copy page** at the top of any docs page.                                                        |
+| **Section bundles**    | Project rules and coding assistants  | Add a section-level `llms.txt` URL to your AI tool config or the general purpose sitemap (`/llms.txt`). |
+
+## Per-page markdown
+
+Every documentation page has a lightweight markdown version accessible by appending `/index.md` to the page URL. For example:
+
+```text Create a development build on EAS
+https://docs.expo.dev/develop/development-builds/create-a-build/index.md
+```
+
+This method is useful when you want to give an AI agent context about a specific topic or page without overwhelming it with the full HTML of that page.
+
+## Documentation bundles
+
+At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide documentation for large language models (LLMs) and apps that use them. Below is a list of documentation files available.
+
+### Site-wide bundles
 
 - [/llms.txt](/llms.txt): A list of all available documentation files
 - [/llms-full.txt](/llms-full.txt): Complete documentation for Expo, including Expo Router, Expo Modules API, development process, and more
+
+### By section
+
 - [/llms-eas.txt](/llms-eas.txt): Complete documentation for the Expo Application Services (EAS)
 - [/llms-sdk.txt](/llms-sdk.txt): Complete documentation for the latest Expo SDK
 
@@ -25,3 +54,4 @@ At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide d
 - [/llms-sdk-v51.0.0.txt](/llms-sdk-v51.0.0.txt): Documentation for the Expo SDK v51.0.0
 
 </Collapsible>
+```
