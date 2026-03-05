@@ -1,4 +1,5 @@
 import type { MetroConfig } from '@expo/metro/metro';
+import type MetroBundler from '@expo/metro/metro/Bundler';
 import connect from 'connect';
 import { Body } from 'fetch-nodeshim';
 
@@ -8,7 +9,14 @@ import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
 
-export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
+interface MetroMiddlewareOptions {
+  getMetroBundler(): MetroBundler;
+}
+
+export function createMetroMiddleware(
+  metroConfig: Pick<MetroConfig, 'projectRoot'>,
+  options: MetroMiddlewareOptions
+) {
   const messages = createMessagesSocket({ logger: Log });
   const events = createEventsSocket(messages);
 
@@ -18,7 +26,7 @@ export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoo
     // Support opening stack frames from clients directly in the editor
     .use('/open-stack-frame', metroOpenStackFrameMiddleware)
     // Support status check to detect if the packager needs to be started from the native side
-    .use('/status', createMetroStatusMiddleware(metroConfig));
+    .use('/status', createMetroStatusMiddleware(metroConfig, options));
 
   return {
     middleware,
@@ -54,10 +62,13 @@ const metroOpenStackFrameMiddleware: connect.NextHandleFunction = async (req, re
 };
 
 function createMetroStatusMiddleware(
-  metroConfig: Pick<MetroConfig, 'projectRoot'>
+  metroConfig: Pick<MetroConfig, 'projectRoot'>,
+  options: MetroMiddlewareOptions
 ): connect.NextHandleFunction {
-  return (_req, res) => {
+  return async (_req, res) => {
     res.setHeader('X-React-Native-Project-Root', encodeURI(metroConfig.projectRoot!));
+    res.flushHeaders();
+    await options.getMetroBundler().ready();
     res.end('packager-status:running');
   };
 }

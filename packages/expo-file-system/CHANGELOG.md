@@ -6,7 +6,12 @@
 
 ### 🎉 New features
 
+- Add `overwrite` option to copy and move methods. ([#42979](https://github.com/expo/expo/pull/42979) by [@barthap](https://github.com/barthap))
+- [Android] Add `mode` option when opening file handle. ([#42983](https://github.com/expo/expo/pull/42983) by [@barthap](https://github.com/barthap))
+
 ### 🐛 Bug fixes
+
+- [Android] Fix copy/move support for SAF and content provider URIs. ([#42887](https://github.com/expo/expo/pull/42887) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 

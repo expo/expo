@@ -12,6 +12,9 @@ extension ExpoSwiftUI {
     var childView: ChildViewType { get }
 
     var id: ObjectIdentifier { get }
+
+    // The underlying UIKit view, if this child wraps one. Returns `nil` for pure SwiftUI child.
+    var uiView: UIView? { get }
   }
 }
 
@@ -22,5 +25,9 @@ public extension ExpoSwiftUI.AnyChild where Self == ChildViewType {
 
   var id: ObjectIdentifier {
     fatalError("Expected override by derived SwiftUIVirtualView or UIViewHost")
+  }
+
+  var uiView: UIView? {
+    nil
   }
 }

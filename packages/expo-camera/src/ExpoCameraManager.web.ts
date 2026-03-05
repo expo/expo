@@ -20,26 +20,20 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
   return navigator.mediaDevices.getUserMedia(constraints);
 }
 
-function handleGetUserMediaError({ message }: { message: string }): PermissionResponse {
-  // name: NotAllowedError
-  // code: 0
+function permissionResponse(status: PermissionStatus): PermissionResponse {
+  return {
+    status,
+    expires: 'never',
+    canAskAgain: true,
+    granted: status === PermissionStatus.GRANTED,
+  };
+}
+
+function handleGetUserMediaError(message: string): PermissionResponse {
   if (message === 'Permission dismissed') {
-    return {
-      status: PermissionStatus.UNDETERMINED,
-      expires: 'never',
-      canAskAgain: true,
-      granted: false,
-    };
-  } else {
-    // TODO: Bacon: [OSX] The system could deny access to chrome.
-    // TODO: Bacon: add: { status: 'unimplemented' }
-    return {
-      status: PermissionStatus.DENIED,
-      expires: 'never',
-      canAskAgain: true,
-      granted: false,
-    };
+    return permissionResponse(PermissionStatus.UNDETERMINED);
   }
+  return permissionResponse(PermissionStatus.DENIED);
 }
 
 async function handleRequestPermissionsAsync(): Promise<PermissionResponse> {
@@ -54,12 +48,7 @@ async function handleRequestPermissionsAsync(): Promise<PermissionResponse> {
       track.stop();
       streams.removeTrack(track);
     });
-    return {
-      status: PermissionStatus.GRANTED,
-      expires: 'never',
-      canAskAgain: true,
-      granted: true,
-    };
+    return permissionResponse(PermissionStatus.GRANTED);
   } catch (error: any) {
     return handleGetUserMediaError(error.message);
   }
@@ -76,36 +65,16 @@ async function handlePermissionsQueryAsync(
     const { state } = await navigator.permissions.query({ name: query });
     switch (state) {
       case 'prompt':
-        return {
-          status: PermissionStatus.UNDETERMINED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: false,
-        };
+        return permissionResponse(PermissionStatus.UNDETERMINED);
       case 'granted':
-        return {
-          status: PermissionStatus.GRANTED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: true,
-        };
+        return permissionResponse(PermissionStatus.GRANTED);
       case 'denied':
-        return {
-          status: PermissionStatus.DENIED,
-          expires: 'never',
-          canAskAgain: true,
-          granted: false,
-        };
+        return permissionResponse(PermissionStatus.DENIED);
     }
   } catch (e) {
     // Firefox doesn't support querying for the camera permission, so return undetermined status
     if (e instanceof TypeError) {
-      return {
-        status: PermissionStatus.UNDETERMINED,
-        expires: 'never',
-        canAskAgain: true,
-        granted: false,
-      };
+      return permissionResponse(PermissionStatus.UNDETERMINED);
     }
     throw e;
   }
@@ -160,13 +129,13 @@ export default {
     options: CameraPictureOptions,
     camera: ExponentCameraRef
   ): Promise<CameraCapturedPicture> {
-    return await camera.takePicture(options);
+    return camera.takePicture(options);
   },
   async pausePreview(camera: ExponentCameraRef): Promise<void> {
-    await camera.pausePreview();
+    return camera.pausePreview();
   },
   async resumePreview(camera: ExponentCameraRef): Promise<void> {
-    return await camera.resumePreview();
+    return camera.resumePreview();
   },
   async getAvailableCameraTypesAsync(): Promise<string[]> {
     if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) return [];
@@ -181,18 +150,8 @@ export default {
     return types.filter(Boolean) as string[];
   },
   async getAvailablePictureSizes(ratio: string, camera: ExponentCameraRef): Promise<string[]> {
-    return await camera.getAvailablePictureSizes(ratio);
+    return camera.getAvailablePictureSizes(ratio);
   },
-  /*
-  async record(
-    options?: CameraRecordingOptions,
-    camera: ExponentCameraRef
-  ): Promise<{ uri: string }> {
-    // TODO: Support on web
-  },
-  async stopRecording(camera: ExponentCameraRef): Promise<void> {
-    // TODO: Support on web
-  }, */
   async getPermissionsAsync(): Promise<PermissionResponse> {
     return handlePermissionsQueryAsync('camera');
   },
@@ -210,15 +169,8 @@ export default {
   },
   async requestMicrophonePermissionsAsync(): Promise<PermissionResponse> {
     try {
-      await getUserMedia({
-        audio: true,
-      });
-      return {
-        status: PermissionStatus.GRANTED,
-        expires: 'never',
-        canAskAgain: true,
-        granted: true,
-      };
+      await getUserMedia({ audio: true });
+      return permissionResponse(PermissionStatus.GRANTED);
     } catch (error: any) {
       return handleGetUserMediaError(error.message);
     }

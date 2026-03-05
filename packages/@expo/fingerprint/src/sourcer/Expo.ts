@@ -39,7 +39,23 @@ export async function getExpoConfigSourcesAsync(
     android?: NonNullable<ExpoConfig['android']>['splash'];
     ios?: NonNullable<ExpoConfig['ios']>['splash'];
   }>(expoConfig, 'expo-splash-screen');
+  const fontPluginProps = getConfigPluginProps<{
+    // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts
+    fonts?: string[];
+    android?: { fonts?: (string | { fontDefinitions: { path: string }[] })[] };
+    ios?: { fonts?: string[] };
+  }>(expoConfig, 'expo-font');
+
   const externalFiles = [
+    // expo-font files
+    ...(fontPluginProps?.fonts ?? []),
+    ...(isIos ? (fontPluginProps?.ios?.fonts ?? []) : []),
+    ...(isAndroid
+      ? (fontPluginProps?.android?.fonts ?? []).flatMap((f) =>
+          typeof f === 'string' ? [f] : (f.fontDefinitions ?? []).map((d) => d.path)
+        )
+      : []),
+
     // icons
     expoConfig.icon,
     isAndroid ? expoConfig.android?.icon : undefined,

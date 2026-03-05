@@ -8,14 +8,20 @@
 
 ### 🐛 Bug fixes
 
-- Fix `SimulatorAppPrerequisite` to fall back to reading `Simulator.app/Contents/Info.plist` directly when LaunchServices has not indexed the app (e.g. Xcode installed on an external or renamed volume). This prevents a spurious "Simulator is most likely not installed" error when running `expo run:ios --device` on a physical device. ([#43597](https://github.com/expo/expo/pull/43597) by [@ciospettw](https://github.com/ciospettw))
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
+- Prevent hanging when installing iOS apps on device. ([#43618](https://github.com/expo/expo/pull/43618) by [@EvanBacon](https://github.com/EvanBacon))
+- Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))
+- Fix server being started before Metro is ready, or, if it's started, status middleware responding too soon ([#43557](https://github.com/expo/expo/pull/43557) by [@kitten](https://github.com/kitten))
+- Don't let `expo start`'s dependency validation fail the `start` command ([#43619](https://github.com/expo/expo/pull/43619) by [@kitten](https://github.com/kitten))
+- Sort async chunks by route `entryPoints` order when `asyncRoutes` is enabled ([#43531](https://github.com/expo/expo/pull/43531) by [@hassankhan](https://github.com/hassankhan))
+- Fix `SimulatorAppPrerequisite` to fall back to reading `Simulator.app/Contents/Info.plist` directly when LaunchServices has not indexed the app (e.g. Xcode installed on an external or renamed volume). This prevents a spurious "Simulator is most likely not installed" error when running `expo run:ios --device` on a physical device. ([#43597](https://github.com/expo/expo/pull/43597) by [@ciospettw](https://github.com/ciospettw))
 
 ### 💡 Others
 
 - Add `@react-navigation/core` and `@react-navigation/native` to autolinking resolution ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
 - Drop `expo-router/doctor` install check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
 - Pass on `tls` options from Metro config to Metro `runServer` fork ([#43186](https://github.com/expo/expo/pull/43186) by [@cortinico](https://github.com/cortinico))
+- Add internal `--skip-server` flag to skip server bundling in `export:embed` ([#43602](https://github.com/expo/expo/pull/43602) by [@kitten](https://github.com/kitten))
 
 ## 55.0.12 — 2026-02-25
 
