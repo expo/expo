@@ -2,17 +2,22 @@ import commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
-import { registerAutolinkingArguments } from './autolinkingOptions';
+import {
+  AutolinkingCommonArguments,
+  createAutolinkingOptionsLoader,
+  registerAutolinkingArguments,
+} from './autolinkingOptions';
 import {
   createSymlinksToKotlinFiles,
   generateInlineModulesListFile,
 } from '../inlineModules/androidInlineModules';
+import { getMirrorStateObject } from '../inlineModules/inlineModules';
 
-type MirrorKotlinInlineModulesCommandArguments = {
+interface MirrorKotlinInlineModulesCommandArguments extends AutolinkingCommonArguments {
   kotlinFilesMirrorDirectory: string;
   inlineModulesListDirectory: string;
   watchedDirectoriesSerialized: string;
-};
+}
 
 /**
  * A cli command which:
@@ -34,13 +39,16 @@ export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic)
       '--watched-directories-serialized <watchedDirectories>',
       'JSON serialized watched directories array'
     )
-    .action(async (options: MirrorKotlinInlineModulesCommandArguments) => {
+    .action(async (commandArguments: MirrorKotlinInlineModulesCommandArguments) => {
       const {
         kotlinFilesMirrorDirectory,
         inlineModulesListDirectory,
         watchedDirectoriesSerialized,
-      } = options;
-
+      } = commandArguments;
+      const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
+        ...commandArguments,
+      });
+      const appRoot = await autolinkingOptionsLoader.getAppRoot();
       const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
 
       if (
@@ -59,13 +67,15 @@ export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic)
         );
       }
 
+      const inlineModulesMirror = await getMirrorStateObject(watchedDirectories, appRoot);
+
       const createMirrorStructurePromise = fs.promises
         .rm(kotlinFilesMirrorDirectory, { recursive: true, force: true })
-        .then(() => createSymlinksToKotlinFiles(kotlinFilesMirrorDirectory, watchedDirectories));
+        .then(() => createSymlinksToKotlinFiles(kotlinFilesMirrorDirectory, inlineModulesMirror));
 
       const generateInlineModulesListPromise = generateInlineModulesListFile(
         inlineModulesListDirectory,
-        watchedDirectories
+        inlineModulesMirror
       );
       await Promise.all([createMirrorStructurePromise, generateInlineModulesListPromise]);
     });

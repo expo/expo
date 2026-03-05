@@ -1,2 +1,2 @@
 import { ModuleIosConfig } from '../types';
-export declare function getIosInlineModulesClassNames(watchedDirectories: string[]): Promise<ModuleIosConfig[]>;
+export declare function getIosInlineModulesClassNames(watchedDirectories: string[], appRoot: string): Promise<ModuleIosConfig[]>;

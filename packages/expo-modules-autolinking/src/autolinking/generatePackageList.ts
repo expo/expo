@@ -5,14 +5,15 @@ interface GenerateModulesProviderParams {
   platform: SupportedPlatform;
   targetPath: string;
   entitlementPath: string | null;
+  watchedDirectories: string[];
+  appRoot: string;
 }
 
 /** Generates ExpoModulesProvider file listing all packages to link (Apple-only)
  */
 export async function generateModulesProviderAsync(
   modules: ModuleDescriptor[],
-  params: GenerateModulesProviderParams,
-  watchedDirectories: string[]
+  params: GenerateModulesProviderParams
 ) {
   const platformLinking = getLinkingImplementationForPlatform(params.platform);
   if (!('generateModulesProviderAsync' in platformLinking)) {
@@ -24,6 +25,6 @@ export async function generateModulesProviderAsync(
     modules as ModuleDescriptorIos[],
     params.targetPath,
     params.entitlementPath,
-    watchedDirectories
+    params
   );
 }

@@ -24,9 +24,10 @@ function generateModulesProviderCommand(cli) {
             searchPaths,
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
+        const appRoot = commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot());
         const expoModulesSearchResults = await (0, findModules_1.findModulesAsync)({
             autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-            appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
+            appRoot,
         });
         const expoModulesResolveResults = await (0, resolveModules_1.resolveModulesAsync)(expoModulesSearchResults, autolinkingOptions);
         const includeModules = new Set(commandArguments.packages ?? []);
@@ -42,7 +43,9 @@ function generateModulesProviderCommand(cli) {
             platform,
             targetPath: commandArguments.target,
             entitlementPath: commandArguments.entitlement ?? null,
-        }, watchedDirectories);
+            watchedDirectories,
+            appRoot,
+        });
     });
 }
 //# sourceMappingURL=generateModulesProviderCommand.js.map

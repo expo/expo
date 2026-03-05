@@ -5,11 +5,16 @@ export declare function resolveModuleAsync(packageName: string, revision: Packag
     flags?: Record<string, any>;
 }): Promise<ModuleDescriptorIos | null>;
 export declare function resolveExtraBuildDependenciesAsync(projectNativeRoot: string): Promise<ExtraDependencies | null>;
+interface GenerateModulesProviderParams {
+    watchedDirectories: string[];
+    appRoot: string;
+}
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
-export declare function generateModulesProviderAsync(modules: ModuleDescriptorIos[], targetPath: string, entitlementPath: string | null, watchedDirectories: string[]): Promise<void>;
+export declare function generateModulesProviderAsync(modules: ModuleDescriptorIos[], targetPath: string, entitlementPath: string | null, params: GenerateModulesProviderParams): Promise<void>;
 /**
  * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
 export declare function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]): string;
+export {};

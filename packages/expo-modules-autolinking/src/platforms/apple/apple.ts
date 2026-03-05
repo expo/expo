@@ -91,6 +91,10 @@ export async function resolveExtraBuildDependenciesAsync(
   return null;
 }
 
+interface GenerateModulesProviderParams {
+  watchedDirectories: string[];
+  appRoot: string;
+}
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
@@ -98,7 +102,7 @@ export async function generateModulesProviderAsync(
   modules: ModuleDescriptorIos[],
   targetPath: string,
   entitlementPath: string | null,
-  watchedDirectories: string[]
+  params: GenerateModulesProviderParams
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
@@ -106,11 +110,16 @@ export async function generateModulesProviderAsync(
     modules,
     className,
     entitlements,
-    watchedDirectories
+    params
   );
   const parentPath = path.dirname(targetPath);
   await fs.promises.mkdir(parentPath, { recursive: true });
   await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
+}
+
+interface GeneratePackageListFileContentParams {
+  watchedDirectories: string[];
+  appRoot: string;
 }
 
 /**
@@ -120,7 +129,7 @@ async function generatePackageListFileContentAsync(
   modules: ModuleDescriptorIos[],
   className: string,
   entitlements: AppleCodeSignEntitlements,
-  watchedDirectories: string[]
+  params: GenerateModulesProviderParams
 ): Promise<string> {
   const iosModules = modules.filter(
     (module) =>
@@ -145,7 +154,7 @@ async function generatePackageListFileContentAsync(
     .filter(Boolean);
 
   modulesClassNames = modulesClassNames.concat(
-    await getIosInlineModulesClassNames(watchedDirectories)
+    await getIosInlineModulesClassNames(params.watchedDirectories, params.appRoot)
   );
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])

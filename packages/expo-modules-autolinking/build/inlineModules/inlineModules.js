@@ -3,34 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAppRoot = getAppRoot;
+exports.inlineModuleFileNameInformation = inlineModuleFileNameInformation;
+exports.getKotlinFileNameWithItsPackage = getKotlinFileNameWithItsPackage;
+exports.getSwiftModuleClassName = getSwiftModuleClassName;
 exports.getMirrorStateObject = getMirrorStateObject;
+const console_1 = require("console");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const concurrency_1 = require("../concurrency");
 const utils_1 = require("../utils");
-function findUpProjectRoot(cwd) {
-    const packageJsonPath = path_1.default.resolve(cwd, './package.json');
-    if (fs_1.default.existsSync(packageJsonPath)) {
-        return path_1.default.dirname(packageJsonPath);
-    }
-    const parent = path_1.default.dirname(cwd);
-    if (parent === cwd)
-        return null;
-    return findUpProjectRoot(parent);
-}
-/**
- * Finds the project root - the closest ancestor directory with package.json.
- * @returns path to the project root.
- */
-async function getAppRoot() {
-    const cwd = process.cwd();
-    const result = findUpProjectRoot(cwd);
-    if (!result) {
-        throw new Error(`Couldn't find "package.json" up from path "${cwd}"`);
-    }
-    return result;
-}
 const nativeExtensions = ['.kt', '.swift'];
 /**
  * Checks if the fileName is valid for an inline module.
@@ -47,7 +28,14 @@ function inlineModuleFileNameInformation(fileName) {
 async function getKotlinFileNameWithItsPackage(absoluteFilePath) {
     const HEADER_SIZE = 512;
     const buffer = Buffer.alloc(HEADER_SIZE);
-    const fileHandle = await fs_1.default.promises.open(absoluteFilePath, 'r');
+    let fileHandle;
+    try {
+        fileHandle = await fs_1.default.promises.open(absoluteFilePath, 'r');
+    }
+    catch (e) {
+        (0, console_1.warn)(`Kotlin inline module '${absoluteFilePath}' couldn't be opened.`);
+        return null;
+    }
     try {
         const { bytesRead } = await fileHandle.read(buffer, 0, HEADER_SIZE, 0);
         const header = buffer.toString('utf8', 0, bytesRead);
@@ -55,9 +43,14 @@ async function getKotlinFileNameWithItsPackage(absoluteFilePath) {
         const pacakgeRegex = /^package\s+([\w.]+)/m;
         const packageMatch = header.match(pacakgeRegex);
         if (!packageMatch) {
-            return '';
+            (0, console_1.warn)(`Package name couldn't be found in ${absoluteFilePath}.`);
+            return null;
         }
         return `${packageMatch[1]}.${path_1.default.basename(absoluteFilePath, path_1.default.extname(absoluteFilePath))}`;
+    }
+    catch (e) {
+        console.warn(`Couldn't read inline module '${absoluteFilePath}' package.`);
+        return null;
     }
     finally {
         await fileHandle.close();
@@ -69,8 +62,7 @@ function getSwiftModuleClassName(absoluteFilePath) {
 /**
  * Scans the project and returns information about all of the inline modules inside in an InlineModulesMirror object.
  */
-async function getMirrorStateObject(watchedDirectories) {
-    const appRoot = await getAppRoot();
+async function getMirrorStateObject(watchedDirectories, appRoot) {
     const inlineModulesMirror = {
         kotlinClasses: [],
         swiftModuleClassNames: [],
@@ -91,18 +83,21 @@ async function getMirrorStateObject(watchedDirectories) {
             if (!absoluteFilePath) {
                 continue;
             }
-            inlineModulesMirror.files.push({
-                filePath: absoluteFilePath,
-                watchedDirRoot: absoluteDirPath,
-            });
             if (ext === '.kt') {
                 const kotlinFileWithPackage = await getKotlinFileNameWithItsPackage(absoluteFilePath);
+                if (kotlinFileWithPackage === null) {
+                    continue;
+                }
                 inlineModulesMirror.kotlinClasses.push(kotlinFileWithPackage);
             }
             else {
                 const swiftClassName = getSwiftModuleClassName(absoluteFilePath);
                 inlineModulesMirror.swiftModuleClassNames.push(swiftClassName);
             }
+            inlineModulesMirror.files.push({
+                filePath: absoluteFilePath,
+                watchedDir: absoluteDirPath,
+            });
         }
     });
     // Sort the kotlin and swift classes as later we want to use them to generate module providers and it's better to do it consistently for caching.
