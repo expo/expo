@@ -69,7 +69,7 @@ The typical use case for a Notification Message is to have it presented to the u
 
 ### Notification Message with data payload
 
-This is an Android-only term ([see the official docs](https://firebase.google.com/docs/cloud-messaging/concept-options#data_messages)) where a push notification request contains both `data` field and a `notification` field.
+This is an Android-only term ([see the official docs](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#data-messages)) where a push notification request contains both `data` field and a `notification` field.
 
 On iOS, extra data may be part of a regular Notification Message request. Apple doesn't distinguish between Notification Message which does and does not carry data.
 
@@ -77,7 +77,7 @@ On iOS, extra data may be part of a regular Notification Message request. Apple 
 
 Headless Notification is a remote notification that doesn't directly specify presentational information such as the title or body text. With the exception below\*, headless notifications are not presented to users. Instead, they carry data (JSON) which is processed by a JavaScript task defined in your app via [`registerTaskAsync`](/versions/latest/sdk/notifications/#registertaskasynctaskname). The task may perform arbitrary logic. For example, write to `AsyncStorage`, make an api request, or present a local notification whose content is taken from the push notification's data.
 
-> **info** We use the term "Headless Background Notification" to refer to the [Data Message](https://firebase.google.com/docs/cloud-messaging/concept-options#data_messages) on Android and the [background notification](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#Create-a-background-notification) on iOS. Their key similarities are that both of these notification types allow sending only JSON data, and background processing by the app.
+> **info** We use the term "Headless Background Notification" to refer to the [Data Message](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#data-messages) on Android and the [background notification](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#Create-a-background-notification) on iOS. Their key similarities are that both of these notification types allow sending only JSON data, and background processing by the app.
 
 Headless Background Notifications have the ability to run custom JavaScript in response to a notification _even when the app is terminated_. This is powerful but comes with a limitation: even when the notification is delivered to the device, the OS does not guarantee its delivery to your app. This may happen due to a variety of reasons, such as when [Doze mode](https://developer.android.com/training/monitoring-device-state/doze-standby) is enabled on Android, or when you send too many background notifications &mdash; Apple recommends not to [send more than two or three per hour](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app#overview).
 
@@ -93,7 +93,7 @@ The rule of thumb is to prefer a regular Notification Message if you don't requi
 
 ### Data-only notifications
 
-Android has a concept of [Data Messages](https://firebase.google.com/docs/cloud-messaging/concept-options#data_messages). iOS does not have exactly the same concept, but a close equivalent is [Headless Background Notifications](#headless-background-notifications).
+Android has a concept of [Data Messages](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#data-messages). iOS does not have exactly the same concept, but a close equivalent is [Headless Background Notifications](#headless-background-notifications).
 
 You may also come across the term "silent notification", which is yet another name for notifications that don't present anything to the user &mdash; we describe these as [Headless Background Notifications](#headless-background-notifications).
 
