@@ -626,7 +626,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:self.appBridge];
 
   if (self.manifest != nil) {
     [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
@@ -638,8 +637,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (void)invalidateDevMenuApp
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:nil];
   [manager updateCurrentManifest:nil manifestURL:nil];
+  [manager setAppContext:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants

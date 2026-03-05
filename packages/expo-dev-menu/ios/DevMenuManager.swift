@@ -201,15 +201,7 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
-  public func updateCurrentBridge(_ bridge: RCTBridge?) {
-    currentBridge = bridge
-    if bridge != nil {
-      isNavigatingHome = false
-      isReactAppRunning = true
-    }
-  }
-
-  public func updateAppContext(_ appContext: AppContext?) {
+  public func setAppContext(_ appContext: AppContext?) {
     currentAppContext = appContext
     if appContext != nil {
       isNavigatingHome = false
@@ -217,6 +209,8 @@ open class DevMenuManager: NSObject {
       // Re-run packager connection setup now that the app context (and devSettings) is available.
       packagerConnectionHandler?.setup()
       updateFABVisibility()
+    } else {
+      isReactAppRunning = false
     }
   }
 
