@@ -1,0 +1,41 @@
+---
+title: Stack
+description: Stack navigator, toolbar, and screen components for Expo Router.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-router'
+packageName: 'expo-router'
+platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import APISection from '~/components/plugins/APISection';
+import { BoxLink } from '~/ui/components/BoxLink';
+
+> See the [Expo Router](./index) reference for installation and configuration.
+
+## Usage
+
+```tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return <Stack />;
+}
+```
+
+For more information about using stack navigator, read the stack layout guide:
+
+<BoxLink
+  title="Stack layout"
+  Icon={BookOpen02Icon}
+  href="/router/basics/layout-types/stack/"
+  description="Learn how to use the Stack layout in Expo Router."
+/>
+
+## API
+
+```js
+import { Stack } from 'expo-router';
+```
+
+<APISection packageName="expo-router/stack" apiName="Stack" />

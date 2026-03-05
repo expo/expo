@@ -331,6 +331,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     SharedRef: '/versions/v54.0.0/sdk/expo/#sharedreftype',
     VectorIconProps: '/versions/v54.0.0/sdk/router/#vectoriconprops',
   },
+  // TODO: reflect unversioned router changes in the hardcoded links when making changes to the latest
   'v55.0.0': {
     BaseNativeTabsTriggerIconProps:
       '/versions/v55.0.0/sdk/router-native-tabs/#basenativetabstriggericonprops',
@@ -358,6 +359,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     TriggerProps: '/versions/v55.0.0/sdk/router-ui/#triggerprops',
     VectorIconProps: '/versions/v55.0.0/sdk/router/#vectoriconprops',
   },
+  // TODO: reflect unversioned router changes in the hardcoded links, when making changes to the latest
+  // TODO: update the docs pages to point to correct links, when making changes to the latest
   latest: {
     BaseNativeTabsTriggerIconProps:
       '/versions/latest/sdk/router-native-tabs/#basenativetabstriggericonprops',
@@ -386,8 +389,6 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     VectorIconProps: '/versions/latest/sdk/router/#vectoriconprops',
   },
   unversioned: {
-    BaseNativeTabsTriggerIconProps:
-      '/versions/unversioned/sdk/router-native-tabs/#basenativetabstriggericonprops',
     BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
     ButtonElementColors: '/versions/unversioned/sdk/ui/jetpack-compose/button/#buttonelementcolors',
     CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
@@ -395,19 +396,24 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     EventEmitter: '/versions/unversioned/sdk/expo/#eventemittertype',
     ExpoModifier: '/versions/unversioned/sdk/ui/jetpack-compose/modifiers/#expomodifier',
     Href: '/versions/unversioned/sdk/router/#href-1',
+    HrefObject: '/versions/unversioned/sdk/router/#hrefobject',
     NativeModule: '/versions/unversioned/sdk/expo/#nativemoduletype',
     NativeTabsTriggerBadgeProps:
-      '/versions/unversioned/sdk/router-native-tabs/#nativetabstriggerbadgeprops',
+      '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggerbadgeprops',
     NativeTabsTriggerIconProps:
-      '/versions/unversioned/sdk/router-native-tabs/#nativetabstriggericonprops',
+      '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggericonprops',
     NativeTabsTriggerLabelProps:
-      '/versions/unversioned/sdk/router-native-tabs/#nativetabstriggerlabelprops',
+      '/versions/unversioned/sdk/router/native-tabs/#nativetabstriggerlabelprops',
     ScrubbingModeOptions: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
     SeekTolerance: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
     ShapeJSXElement: '/versions/unversioned/sdk/ui/jetpack-compose/shape/#shapejsxelement',
     SharedObject: '/versions/unversioned/sdk/expo/#sharedobjecttype',
     SharedRef: '/versions/unversioned/sdk/expo/#sharedreftype',
     SharedRefType: '/versions/unversioned/sdk/expo/#sharedreftype',
+    SingularOptions: '/versions/unversioned/sdk/router/stack/#singularoptions',
+    StackToolbarBadgeProps: '/versions/unversioned/sdk/router/stack/#stacktoolbarbadgeprops',
+    StackToolbarIconProps: '/versions/unversioned/sdk/router/stack/#stacktoolbariconprops',
+    StackToolbarLabelProps: '/versions/unversioned/sdk/router/stack/#stacktoolbarlabelprops',
     TabsProps: '/versions/unversioned/sdk/router-ui/#tabsprops',
     TriggerProps: '/versions/unversioned/sdk/router-ui/#triggerprops',
     VectorIconProps: '/versions/unversioned/sdk/router/#vectoriconprops',

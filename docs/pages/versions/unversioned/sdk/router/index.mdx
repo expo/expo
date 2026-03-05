@@ -1,5 +1,6 @@
 ---
 title: Router
+sidebar_title: Overview
 description: A file-based routing library for React Native and web applications.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-router'
 packageName: 'expo-router'
@@ -146,10 +147,19 @@ For information core concepts, notation patterns, navigation layouts, and common
 
 <BoxLink title="Router 101" Icon={BookOpen02Icon} href="/router/basics/core-concepts/" />
 
+## Sub-modules
+
+- [Stack](stack) — Stack navigator, toolbar, and screen components
+- [Link](link) — Link and Redirect components
+- [Color](color) — Platform color utilities
+- [Native Tabs](native-tabs) — Native tab navigation
+- [Split View](split-view) — Split view layout
+- [UI](ui) — Headless tab components
+
 ## API
 
 ```js
-import { Stack, Tabs, Link } from 'expo-router';
+import { useRouter, Tabs, Navigator, Slot } from 'expo-router';
 ```
 
 <APISection packageName="expo-router" />
