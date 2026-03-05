@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 
-import {
-  CocoaPodsPackageManager,
-  isUsingBundlerAsync,
-} from '@expo/package-manager/build/ios/CocoaPodsPackageManager';
+import { CocoaPodsPackageManager } from '@expo/package-manager/build/ios/CocoaPodsPackageManager';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { existsSync, readFileSync } from 'fs';
@@ -68,26 +65,14 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
 
   info('🔍️ Scanning for pods...');
 
-  const useBundler = await isUsingBundlerAsync(projectRoot);
-  if (useBundler) {
-    info(chalk.gray('Using Bundler to run CocoaPods'));
-  }
-
-  if (!(await CocoaPodsPackageManager.isCLIInstalledAsync(undefined, { useBundler }))) {
-    if (useBundler) {
-      console.error(
-        chalk.red(
-          'Gemfile lists cocoapods but `bundle exec pod` failed. Run `bundle install` first.'
-        )
-      );
-      process.exit(1);
-    }
-    await CocoaPodsPackageManager.installCLIAsync({
-      nonInteractive: program.opts().nonInteractive,
-    });
-  }
-  const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler });
   try {
+    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+    if (!(await manager.isCLIInstalledAsync())) {
+      await manager.installCLIAsync({
+        nonInteractive: program.opts().nonInteractive,
+      });
+    }
+
     await manager.installAsync();
   } catch (error: any) {
     if (error.isPackageManagerError) {
