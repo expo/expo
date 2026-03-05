@@ -12,7 +12,6 @@ const DEFAULT_TIMEOUT_MS = 5_000;
  * @param timeoutMs Timeout in milliseconds to wait for a response. Defaults to 10 seconds.
  */
 export async function sendCliMessageAsync(message, pluginName, app, params, timeoutMs = DEFAULT_TIMEOUT_MS) {
-    // Sanity check: ensure that all apps share the same WebSocket URL
     if (!app) {
         return Promise.reject(new Error('No app provided to send the message to.'));
     }
