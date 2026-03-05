@@ -21,10 +21,11 @@ export function VideoBoxLink({ title, description, videoId, time, className }: V
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
     name: title,
+    ...(typeof description === 'string' && { description }),
     thumbnailUrl: `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
     embedUrl: `https://www.youtube.com/embed/${videoId}`,
     contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
-    ...(uploadDate && { uploadDate }),
+    ...(uploadDate && { uploadDate: `${uploadDate}T00:00:00Z` }),
   };
 
   return (
