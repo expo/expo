@@ -200,6 +200,7 @@ open class DevMenuManager: NSObject {
     DevMenuPreferences.showFloatingActionButton = enabled
   }
 
+  @objc
   public func setAppContext(_ appContext: AppContext?) {
     currentAppContext = appContext
     if appContext != nil {
@@ -208,6 +209,8 @@ open class DevMenuManager: NSObject {
       // Re-run packager connection setup now that the app context (and devSettings) is available.
       packagerConnectionHandler?.setup()
       updateFABVisibility()
+    } else {
+      isReactAppRunning = false
     }
   }
 

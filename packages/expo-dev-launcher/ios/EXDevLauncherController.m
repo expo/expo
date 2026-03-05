@@ -638,6 +638,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 {
   DevMenuManager *manager = [DevMenuManager shared];
   [manager updateCurrentManifest:nil manifestURL:nil];
+  [manager setAppContext:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants
