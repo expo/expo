@@ -30,12 +30,24 @@ describe(createMCPDevToolsExtensionSchema, () => {
     const schema = createMCPDevToolsExtensionSchema(new DevToolsPlugin(mockPlugin, ''));
     const parameters = {
       command: 'task',
+      appId: 'dev.expo.Payments',
       name: 'task 1',
     };
     expect(schema.parse(parameters)).toEqual({
       command: 'task',
+      appId: 'dev.expo.Payments',
       name: 'task 1',
     });
+  });
+
+  it('rejects when appId is missing', () => {
+    const schema = createMCPDevToolsExtensionSchema(new DevToolsPlugin(mockPlugin, ''));
+    expect(() => schema.parse({ command: 'list' })).toThrow();
+  });
+
+  it('rejects when appId is not a string', () => {
+    const schema = createMCPDevToolsExtensionSchema(new DevToolsPlugin(mockPlugin, ''));
+    expect(() => schema.parse({ command: 'list', appId: 123 })).toThrow();
   });
 
   it('throws error if plugin has no commands', () => {

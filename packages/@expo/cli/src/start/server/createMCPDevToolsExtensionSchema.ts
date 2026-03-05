@@ -29,7 +29,7 @@ import { DevToolsPlugin } from './DevToolsPlugin';
  *     "foo": { "type": "string", "description": "Foo description (Used by: \"cmd1\")" },
  *     ...
  *   },
- *   "required": ["command"],
+ *   "required": ["command", "appId"],
  *   "additionalProperties": false
  * }
  * ```
@@ -103,11 +103,9 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPlugin) {
       command: z.enum(commandNames).describe(commandDescription),
       appId: z
         .string()
-        .optional()
         .describe(
-          'Optional. The application ID to target (e.g. "dev.expo.myapp"). ' +
-            'Use the expo-cli-apps tool to list connected apps and their appId values. ' +
-            'If not provided, the first connected app is used.'
+          "Required. The appId of the connected app to target (e.g. 'dev.expo.Payments'). " +
+            'Get this value by calling expo-cli-list-apps first.'
         ),
       ...allParameters,
     })
