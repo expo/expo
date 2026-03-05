@@ -190,3 +190,11 @@ extension ExpoSwiftUI {
     }
   }
 }
+
+// MARK: - AnyContentViewProvider
+
+extension ExpoSwiftUI.SwiftUIVirtualView: AnyContentViewProvider {
+  func getAnyContentView() -> Any {
+    return contentView
+  }
+}
