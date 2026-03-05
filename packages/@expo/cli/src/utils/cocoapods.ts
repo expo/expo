@@ -85,7 +85,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
       // prompt user -- do you want to install cocoapods right now?
       step.text = 'CocoaPods CLI not found in your PATH, installing it now.';
       step.stopAndPersist();
-      await PackageManager.CocoaPodsPackageManager.installCLIAsync({
+      await packageManager.installCLIAsync({
         nonInteractive: true,
         spawnOptions: {
           ...packageManager.options,
