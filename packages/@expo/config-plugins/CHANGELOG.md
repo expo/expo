@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.deploymentTarget` config support to set the minimum iOS version. ([#43700](https://github.com/expo/expo/pull/43700) by [@evanbacon](https://github.com/evanbacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
