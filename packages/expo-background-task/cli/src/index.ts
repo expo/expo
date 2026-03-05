@@ -1,4 +1,4 @@
-import { queryAllInspectorAppsAsync, runCliExtension, sendCliMessageAsync } from '@expo/devtools';
+import { runCliExtension, sendCliMessageAsync } from '@expo/devtools';
 
 const PLUGIN_NAME = 'expo-background-task-cli-extension';
 const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
