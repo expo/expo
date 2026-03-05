@@ -27,7 +27,6 @@ export async function sendCliMessageAsync<Params extends Record<string, unknown>
   params?: Params,
   timeoutMs = DEFAULT_TIMEOUT_MS
 ): Promise<string | null> {
-  // Sanity check: ensure that all apps share the same WebSocket URL
   if (!app) {
     return Promise.reject(new Error('No app provided to send the message to.'));
   }
