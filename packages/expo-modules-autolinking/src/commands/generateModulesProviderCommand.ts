@@ -45,9 +45,10 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         });
         const autolinkingOptions = await autolinkingOptionsLoader.getPlatformOptions(platform);
 
+        const appRoot = commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot());
         const expoModulesSearchResults = await findModulesAsync({
           autolinkingOptions: await autolinkingOptionsLoader.getPlatformOptions(platform),
-          appRoot: commandArguments.appRoot ?? (await autolinkingOptionsLoader.getAppRoot()),
+          appRoot,
         });
         const expoModulesResolveResults = await resolveModulesAsync(
           expoModulesSearchResults,
@@ -70,15 +71,13 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           podfileProperties['expo.inlineModules.watchedDirectories'] ?? '[]'
         );
 
-        await generateModulesProviderAsync(
-          filteredModules,
-          {
-            platform,
-            targetPath: commandArguments.target,
-            entitlementPath: commandArguments.entitlement ?? null,
-          },
-          watchedDirectories
-        );
+        await generateModulesProviderAsync(filteredModules, {
+          platform,
+          targetPath: commandArguments.target,
+          entitlementPath: commandArguments.entitlement ?? null,
+          watchedDirectories,
+          appRoot,
+        });
       }
     );
 }
