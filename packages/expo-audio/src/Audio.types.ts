@@ -645,7 +645,7 @@ export type AudioMetadata = {
    * ```tsx
    * player.setActiveForLockScreen(true, {
    *   title: 'My Track',
-   *   artworkUrl: 'https://example.com/artwork.jpg', // ✅ Remote URL only
+   *   artworkUrl: 'https://example.com/artwork.jpg', // Remote URL only
    * });
    * ```
    */
