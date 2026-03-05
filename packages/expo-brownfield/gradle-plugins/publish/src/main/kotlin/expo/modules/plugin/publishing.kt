@@ -30,21 +30,32 @@ internal fun setupPublishing(project: Project) {
         return@afterEvaluate
       }
 
-      val rnVersion =
-        if (project.name == configExtension.libraryName.get()) {
-          getReactNativeVersion(project)
-        } else {
-          null
-        }
-      val hermesVersion =
-        if (project.name == configExtension.libraryName.get()) {
-          getHermesVersion(project)
-        } else {
-          null
-        }
+      // TODO(pmleczek): Cache the value somewhere
+      val rnVersion = getReactNativeVersion(project)
+        // if (project.name == configExtension.libraryName.get()) {
+        //   getReactNativeVersion(project)
+        // } else {
+        //   null
+        // }
+
+      // TODO(pmleczek): Cache the value somewhere
+      val hermesVersion = getHermesVersion(project)
+        // if (project.name == configExtension.libraryName.get()) {
+        //   getHermesVersion(project)
+        // } else {
+        //   null
+        // }
+      val libraryName = configExtension.libraryName.get()
 
       variants.forEach { variant ->
-        publicationExtension.createPublication(variant, project, libraryExtension, rnVersion, hermesVersion)
+        publicationExtension.createPublication(
+          variant,
+          project,
+          libraryExtension,
+          libraryName,
+          rnVersion,
+          hermesVersion
+        )
       }
 
       createModuleRelatedTasks(project, rnVersion, hermesVersion)

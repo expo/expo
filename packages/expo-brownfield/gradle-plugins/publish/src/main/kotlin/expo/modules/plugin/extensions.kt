@@ -179,11 +179,12 @@ internal fun PublishingExtension.createPublication(
   from: String,
   project: Project,
   libraryExtension: LibraryExtension,
+  libraryName: String,
   rnVersion: String?,
   hermesVersion: String?,
 ) {
   val _artifactId =
-    if (rnVersion != null) {
+    if (project.name == libraryName) {
       project.name
     } else {
       requireNotNull(libraryExtension.namespace)
