@@ -35,9 +35,10 @@ export const startCliListenerAsync = async (pluginName) => {
         // Create the addMessageListener function for the plugin
         const addMessageListener = (eventName, callback) => {
             listenerRemovals.push(client.addMessageListener(eventName, async (requestPayload) => {
-                const { targetDeviceName, targetAppId } = requestPayload;
+                const { messageId, targetDeviceName, targetAppId } = requestPayload;
                 const sendResponseAsync = async (message) => {
                     const response = {
+                        messageId,
                         message,
                         deviceName: targetDeviceName,
                         applicationId: targetAppId,

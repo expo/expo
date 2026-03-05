@@ -46,10 +46,11 @@ export const startCliListenerAsync = async (pluginName: string) => {
     ) => {
       listenerRemovals.push(
         client.addMessageListener(eventName, async (requestPayload: CliRequestPayload<P>) => {
-          const { targetDeviceName, targetAppId } = requestPayload;
+          const { messageId, targetDeviceName, targetAppId } = requestPayload;
 
           const sendResponseAsync = async (message: string) => {
             const response: CliResponsePayload = {
+              messageId,
               message,
               deviceName: targetDeviceName,
               applicationId: targetAppId,

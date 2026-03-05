@@ -109,6 +109,8 @@ export type CliMessageEnvelope<P> = {
 /** Payload sent from the CLI to a running app. Generic over the user-provided params. */
 export type CliRequestPayload<Params extends Record<string, unknown> = Record<string, unknown>> = {
     from: 'cli';
+    /** Unique ID for this request, used to correlate with the matching response. */
+    messageId: string;
     /** Device name as reported by Metro's /json/list — used for targeting a specific device. */
     targetDeviceName: string;
     /** Application ID as reported by Metro's /json/list — used for targeting a specific app. */
@@ -118,6 +120,8 @@ export type CliRequestPayload<Params extends Record<string, unknown> = Record<st
 };
 /** Payload sent from the app back to the CLI. */
 export type CliResponsePayload = {
+    /** Unique ID echoed from the request, used to correlate this response with the original request. */
+    messageId: string;
     /** The result message from the app. */
     message: string;
     /** Device name — should match the targetDeviceName from the request. */
