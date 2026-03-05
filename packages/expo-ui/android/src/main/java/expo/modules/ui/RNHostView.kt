@@ -31,18 +31,29 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   ExpoComposeView<RNHostViewProps>(context, appContext) {
   override val props = RNHostViewProps()
 
-  private var childView: View? = null
+  private val childViewState = mutableStateOf<View?>(null)
 
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
-    childView = child
-    super.addView(child, index, params)
+    childViewState.value = child
+  }
+
+  override fun removeView(view: View) {
+    if (view == childViewState.value) {
+      childViewState.value = null
+    } else {
+      super.removeView(view)
+    }
+  }
+
+  override fun removeViewAt(index: Int) {
+    childViewState.value = null
   }
 
   @Composable
   override fun ComposableScope.Content() {
     val matchContents = props.matchContents.value ?: false
 
-    childView?.let { view ->
+    childViewState.value?.let { view ->
       if (matchContents) {
         AndroidView(
           factory = { view },
