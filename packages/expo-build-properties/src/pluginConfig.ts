@@ -20,11 +20,11 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
 };
 
 /**
- * The hermes-compiler version expected to use hermesV1 compiler version.
+ * The hermes-compiler version expected to use legacy Hermes compiler version.
  * Keep this in sync with the expected `react-native` version.
  * @ignore
  */
-const HERMES_V1_COMPILER_VERSION = '250829098.0.4';
+const LEGACY_HERMES_COMPILER_VERSION = '0.15.0';
 
 /**
  * Shared build configuration fields that can be set at the top level
@@ -904,35 +904,36 @@ export function validateConfig(config: unknown, projectRoot?: string): PluginCon
     );
   }
 
-  const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
-  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+  const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1') ?? true;
+  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1') ?? true;
 
-  // TODO(gabrieldonadel): Revisit this before releasing SDK 56
-  // Hermes v1 requires a specific hermes-compiler version
-  if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
+  // Disabling Hermes V1 requires a specific hermes-compiler version
+  if ((!androidUseHermesV1 || !iosUseHermesV1) && projectRoot) {
     const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
-    if (hermesCompilerVersion && hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
+    if (hermesCompilerVersion && hermesCompilerVersion !== LEGACY_HERMES_COMPILER_VERSION) {
       throw new Error(
-        `\`useHermesV1\` requires setting the hermes-compiler version to ${HERMES_V1_COMPILER_VERSION} through resolutions. ` +
+        `\`useHermesV1\`: false, requires setting the hermes-compiler version to ${LEGACY_HERMES_COMPILER_VERSION} through resolutions. ` +
           `Found version "${hermesCompilerVersion}" instead.`
       );
     }
   }
 
-  // Validate useHermesV1 requires buildReactNativeFromSource for Android
+  // Validate legacy Hermes requires buildReactNativeFromSource for Android
   const androidBuildFromSource =
     resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
     config.android?.buildFromSource; // Deprecated fallback
-  if (androidUseHermesV1 === true && androidBuildFromSource !== true) {
+  if (androidUseHermesV1 === false && androidBuildFromSource !== true) {
     throw new Error(
-      '`useHermesV1` requires `buildReactNativeFromSource` to be `true` for Android.'
+      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for Android.'
     );
   }
 
-  // Validate useHermesV1 requires buildReactNativeFromSource for iOS
+  // Validate legacy Hermes requires buildReactNativeFromSource for iOS
   const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
-  if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
-    throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');
+  if (iosUseHermesV1 === false && iosBuildFromSource !== true) {
+    throw new Error(
+      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for iOS.'
+    );
   }
 
   return config;
