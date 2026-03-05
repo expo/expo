@@ -101,6 +101,37 @@ describe('startAsync', () => {
     );
   });
 
+  it(`uses custom ngrok authtoken and domain from env`, async () => {
+    process.env.EXPO_TUNNEL_NGROK_AUTHTOKEN = 'my-custom-token';
+    process.env.EXPO_TUNNEL_NGROK_DOMAIN = 'my-custom.domain';
+    const { ngrok } = createNgrokInstance();
+    await ngrok._connectToNgrokAsync();
+    const instance = await new NgrokResolver('/').resolveAsync();
+    expect(instance.connect).toHaveBeenCalledWith(
+      expect.objectContaining({ authtoken: 'my-custom-token' })
+    );
+    const hostname = await ngrok._getProjectHostnameAsync();
+    expect(hostname).toEqual(expect.stringMatching(/.*-anonymous-3000\.my-custom\.domain/));
+    delete process.env.EXPO_TUNNEL_NGROK_AUTHTOKEN;
+    delete process.env.EXPO_TUNNEL_NGROK_DOMAIN;
+  });
+  it(`throws if only EXPO_TUNNEL_NGROK_AUTHTOKEN is set`, async () => {
+    process.env.EXPO_TUNNEL_NGROK_AUTHTOKEN = 'my-custom-token';
+    const { ngrok } = createNgrokInstance();
+    await expect(ngrok._connectToNgrokAsync()).rejects.toThrow(
+      /Both EXPO_TUNNEL_NGROK_AUTHTOKEN and EXPO_TUNNEL_NGROK_DOMAIN must be set together/
+    );
+    delete process.env.EXPO_TUNNEL_NGROK_AUTHTOKEN;
+  });
+  it(`throws if only EXPO_TUNNEL_NGROK_DOMAIN is set`, async () => {
+    process.env.EXPO_TUNNEL_NGROK_DOMAIN = 'my-custom.domain';
+    const { ngrok } = createNgrokInstance();
+    await expect(ngrok._getProjectHostnameAsync()).rejects.toThrow(
+      /Both EXPO_TUNNEL_NGROK_AUTHTOKEN and EXPO_TUNNEL_NGROK_DOMAIN must be set together/
+    );
+    delete process.env.EXPO_TUNNEL_NGROK_DOMAIN;
+  });
+
   it(`retries three times`, async () => {
     const { ngrok } = createNgrokInstance();
 

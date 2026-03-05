@@ -15,10 +15,20 @@ import { ProjectSettings } from '../project/settings';
 
 const debug = require('debug')('expo:start:server:ngrok') as typeof console.log;
 
-const NGROK_CONFIG = {
-  authToken: '5W1bR67GNbWcXqmxZzBG1_56GezNeaX6sSRvn8npeQ8',
-  domain: 'exp.direct',
-};
+function getNgrokConfig() {
+  const hasAuthToken = !!env.EXPO_TUNNEL_NGROK_AUTHTOKEN;
+  const hasDomain = !!env.EXPO_TUNNEL_NGROK_DOMAIN;
+  if (hasAuthToken !== hasDomain) {
+    throw new CommandError(
+      'NGROK_CONFIG',
+      `Both EXPO_TUNNEL_NGROK_AUTHTOKEN and EXPO_TUNNEL_NGROK_DOMAIN must be set together. Missing: ${hasAuthToken ? 'EXPO_TUNNEL_NGROK_DOMAIN' : 'EXPO_TUNNEL_NGROK_AUTHTOKEN'}.`
+    );
+  }
+  return {
+    authToken: env.EXPO_TUNNEL_NGROK_AUTHTOKEN || '5W1bR67GNbWcXqmxZzBG1_56GezNeaX6sSRvn8npeQ8',
+    domain: env.EXPO_TUNNEL_NGROK_DOMAIN || 'exp.direct',
+  };
+}
 
 const TUNNEL_TIMEOUT = 10 * 1000;
 
@@ -60,7 +70,7 @@ export class AsyncNgrok {
 
   /** Exposed for testing. */
   async _getProjectHostnameAsync(): Promise<string> {
-    return `${(await this._getIdentifyingUrlSegmentsAsync()).join('-')}.${NGROK_CONFIG.domain}`;
+    return `${(await this._getIdentifyingUrlSegmentsAsync()).join('-')}.${getNgrokConfig().domain}`;
   }
 
   /** Exposed for testing. */
@@ -164,7 +174,7 @@ export class AsyncNgrok {
 
       const url = await instance.connect({
         ...urlProps,
-        authtoken: NGROK_CONFIG.authToken,
+        authtoken: getNgrokConfig().authToken,
         configPath,
         onStatusChange(status) {
           if (status === 'closed') {

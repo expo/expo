@@ -131,6 +131,16 @@ class Env {
     return subdomain;
   }
 
+  /** Override the default ngrok auth token used for `--tunnel` connections. */
+  get EXPO_TUNNEL_NGROK_AUTHTOKEN(): string {
+    return string('EXPO_TUNNEL_NGROK_AUTHTOKEN', '');
+  }
+
+  /** Override the default ngrok domain used for `--tunnel` connections. */
+  get EXPO_TUNNEL_NGROK_DOMAIN(): string {
+    return string('EXPO_TUNNEL_NGROK_DOMAIN', '');
+  }
+
   /**
    * Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project `metro.config.js` for all platforms.
    *
