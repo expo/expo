@@ -14,6 +14,7 @@
 
 - Remove `expo-router/doctor` since this is covered by `expo-doctor`'s duplicates check now ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
 - use KVC to provide native API compatible with both react-native-screens 4.24.0 and 4.23.0 ([#43576](https://github.com/expo/expo/pull/43576) by [@Ubax](https://github.com/Ubax))
+- Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
 
 ## 55.0.2 — 2026-02-25
 
