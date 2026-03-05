@@ -15,12 +15,13 @@ export const startCliListenerAsync = async (pluginName) => {
         const listenerRemovals = [];
         const client = await getDevToolsPluginClientAsync(pluginName);
         if (clientRef != null) {
-            // Clean up the previous client if it exists
             listenerRemovals.forEach((remove) => remove());
             listenerRemovals.length = 0;
         }
         clientRef = client;
         // Ensure the module is properly cleaned up on hot reloads
+        // This is internal metro functionality, but we need to use it to be able to avoid the need for
+        // the user to use a specific hook to be able to use this functionality in their apps.
         const m = module;
         if ('hot' in m && m.hot) {
             const hot = m.hot;
@@ -35,7 +36,6 @@ export const startCliListenerAsync = async (pluginName) => {
         const addMessageListener = (eventName, callback) => {
             listenerRemovals.push(client.addMessageListener(eventName, async (requestPayload) => {
                 const { targetDeviceName, targetAppId } = requestPayload;
-                // Create response message function that echoes back the CLI-provided identity
                 const sendResponseAsync = async (message) => {
                     const response = {
                         message,

@@ -31,14 +31,9 @@ export async function sendCliMessageAsync<Params extends Record<string, unknown>
     return Promise.reject(new Error('No app provided to send the message to.'));
   }
 
-  // Create connection
   const url = new URL(app.webSocketDebuggerUrl);
   const address = `ws://${url.host}/expo-dev-plugins/broadcast`;
-
-  // Create results for all apps
   let results: string | null;
-
-  // Create a websocket connection to the broadcast channel
   const ws = new WebSocket(address);
 
   // Lets do the rest of the handling in the event listeners through a promise that will be resolved
@@ -46,7 +41,6 @@ export async function sendCliMessageAsync<Params extends Record<string, unknown>
   return new Promise<string | null>((resolve, reject) => {
     // Setup timeout handler
     const timeoutHandler = setTimeout(() => {
-      // Close the WebSocket to allow the process to exit
       ws.close();
       reject(new SendMessageError(`Timeout while waiting for response from app.`, app));
       clearTimeout(timeoutHandler);
@@ -56,7 +50,6 @@ export async function sendCliMessageAsync<Params extends Record<string, unknown>
       const parsedData = parseWebSocketData(data);
       const { messageKey, payload } = parsedData;
       if (messageKey.pluginName === pluginName && messageKey.method === message + '_response') {
-        // We got a response for our message. Now get the app ID and result
         const { deviceName, applicationId } = payload;
         const result = payload.message;
         if (app.deviceName !== deviceName || app.appId !== applicationId) {
@@ -68,16 +61,13 @@ export async function sendCliMessageAsync<Params extends Record<string, unknown>
 
         results = result.toString();
 
-        // Check if we have results for all apps
         clearTimeout(timeoutHandler);
         ws.close();
-        // Resolve the promise with the results
         resolve(results);
       }
     });
 
     ws.addEventListener('open', () => {
-      // On Open we'll send the message to the broadcast channel
       const messageKey = getMessageKey(pluginName, message);
       const envelope: CliMessageEnvelope<CliRequestPayload<Params>> = {
         messageKey,

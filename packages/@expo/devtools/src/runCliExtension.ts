@@ -36,13 +36,11 @@ export async function runCliExtension<T extends ExpoCliExtensionCommandSchema>(
 const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSchema>(
   argv: string[]
 ): ExpoCliExtensionParameters<T> => {
-  // Extract command, args, and apps from process arguments
   const command = argv[2]?.toLowerCase();
   const argsString = argv[3] ?? '{}';
   const metroServerOrigin = argv[4] ?? '';
   const appString = argv[5] ?? '{}';
 
-  // Verify command exists
   if (!command) {
     throw new Error('No command provided.');
   }
@@ -62,7 +60,7 @@ const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSchema>(
   }
 
   if (Array.isArray(args) || typeof args !== 'object') {
-    throw new Error('Expected object for args parameter, got ' + JSON.stringify(args));
+    throw new Error(`Expected object for args parameter, got ${argsString}`);
   }
 
   if (appString === '{}') {
@@ -79,7 +77,7 @@ const getExpoCliPluginParameters = <T extends ExpoCliExtensionCommandSchema>(
   }
 
   if (Array.isArray(app) || typeof app !== 'object') {
-    throw new Error('Expected object for app parameter, got ' + JSON.stringify(app));
+    throw new Error(`Expected object for app parameter, got ${appString}`);
   }
 
   return {
