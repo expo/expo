@@ -103,7 +103,7 @@ const asJson = (level: 'log' | 'info' | 'warning' | 'error', message: string, ar
 const CliExtensionConsole = {
   log: (message: string, ...args: any[]) => console.log(asJson('info', message, args)),
   info: (message: string, ...args: any[]) => console.log(asJson('info', message, args)),
-  warn: (message: string, ...args: any[]) => console.error(asJson('warning', message, args)),
+  warn: (message: string, ...args: any[]) => console.warn(asJson('warning', message, args)),
   error: (message: string, ...args: any[]) => console.error(asJson('error', message, args)),
   uri: (uri: string, altText?: string) => {
     console.log(JSON.stringify([{ type: 'uri', uri, altText }]));
