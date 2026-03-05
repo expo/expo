@@ -91,8 +91,8 @@ describe(addMcpCapabilities, () => {
     expect(typeof toolHandler).toBe('function');
 
     const schema = toolDefinition.inputSchema.parameters;
-    expect(schema.safeParse({ command: 'first-command', foo: 'bar' }).success).toBe(true);
-    expect(schema.safeParse({ command: 'second-command' }).success).toBe(true);
+    expect(schema.safeParse({ command: 'first-command', id: '1', foo: 'bar' }).success).toBe(true);
+    expect(schema.safeParse({ command: 'second-command', id: '1' }).success).toBe(true);
     expect(MockedExecutor).not.toHaveBeenCalled();
   });
 
@@ -124,6 +124,7 @@ describe(addMcpCapabilities, () => {
     const result = await handler({
       parameters: {
         command: 'run-analysis',
+        id: '1',
         path: '/tmp/data',
       },
     });
@@ -157,7 +158,7 @@ describe(addMcpCapabilities, () => {
     });
   });
 
-  it('resolves the correct app when appId is provided', async () => {
+  it('resolves the correct app when id is provided', async () => {
     const command = createCommand({ name: 'run' });
     const plugin = createPlugin('test-plugin', 'Test Plugin', [command]);
     const { devServerManager } = createDevServerManager([plugin]);
@@ -170,13 +171,13 @@ describe(addMcpCapabilities, () => {
     await addMcpCapabilities(mcpServer, devServerManager);
     const [, , handler] = registerTool.mock.calls[1];
     await handler({
-      parameters: { command: 'run', appId: 'com.test.app2' },
+      parameters: { command: 'run', id: '2' },
     });
 
     expect(executeMock).toHaveBeenCalledWith(expect.objectContaining({ app: MOCK_APP_2 }));
   });
 
-  it('returns error when appId does not match any connected app', async () => {
+  it('returns error when id does not match any connected app', async () => {
     const command = createCommand({ name: 'run' });
     const plugin = createPlugin('test-plugin', 'Test Plugin', [command]);
     const { devServerManager } = createDevServerManager([plugin]);
@@ -188,11 +189,11 @@ describe(addMcpCapabilities, () => {
     await addMcpCapabilities(mcpServer, devServerManager);
     const [, , handler] = registerTool.mock.calls[1];
     const result = await handler({
-      parameters: { command: 'run', appId: 'com.nonexistent.app' },
+      parameters: { command: 'run', id: 'nonexistent-id' },
     });
 
     expect(result).toEqual({
-      content: [{ type: 'text', text: 'No connected app found with ID: com.nonexistent.app' }],
+      content: [{ type: 'text', text: 'No connected app found with ID: nonexistent-id' }],
       isError: true,
     });
     expect(executeMock).not.toHaveBeenCalled();
@@ -211,7 +212,7 @@ describe(addMcpCapabilities, () => {
     // First call is expo-inspector, second is the plugin
     const [, , handler] = registerTool.mock.calls[1];
     const response = await handler({
-      parameters: { command: 'failing-command' },
+      parameters: { command: 'failing-command', id: '1' },
     });
 
     const logError = Log.error as jest.Mock;
@@ -255,7 +256,7 @@ describe(addMcpCapabilities, () => {
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
     // Only expo-inspector is registered, no plugin tools
     expect(registerTool).toHaveBeenCalledTimes(1);
-    expect(registerTool.mock.calls[0][0]).toBe('expo-cli-apps');
+    expect(registerTool.mock.calls[0][0]).toBe('expo-cli-list-apps');
   });
 });
 

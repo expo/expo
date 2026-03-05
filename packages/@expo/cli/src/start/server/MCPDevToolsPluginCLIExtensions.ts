@@ -20,9 +20,15 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
     {
       title: 'Expo CLI Apps',
       description:
-        'List connected apps and devices running in the Expo Metro server. ' +
-        'Call this tool FIRST before using any other expo- tools to discover ' +
-        'available appIds and verify device connectivity',
+        'List connected apps and devices running in the Expo Metro server. Call this tool first ' +
+        'before using any other expo- tools to discover available apps and verify device ' +
+        'connectivity if the tool requires an id parameter. When multiple apps are connected, you MUST ' +
+        'present the user with a tool for selecting which app to target, then STOP and wait for the user to respond ' +
+        'with their selection. Do NOT proceed, guess, or pick a default app. Only after the user has ' +
+        'explicitly selected an app should you continue with the next tool call. ' +
+        'Once the user has selected an app, remember that selection and reuse it for all subsequent ' +
+        'tool calls in the same conversation. Do NOT ask the user to select again unless they ' +
+        'explicitly ask to switch devices.',
       inputSchema: {
         parameters: z.object({}), //   no parameters needed for this command
       },
@@ -31,12 +37,22 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
       const metroServerOrigin = devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
       try {
         const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-        return {
-          content: apps.map((app) => ({
+        const content = apps.map((app) => ({
+          type: 'text' as const,
+          text: JSON.stringify(app, null, 2),
+        }));
+        if (apps.length > 1) {
+          content.push({
             type: 'text' as const,
-            text: JSON.stringify(app, null, 2),
-          })),
-        };
+            text:
+              'IMPORTANT: Multiple apps are connected. You MUST present the user with a tool for selecting ' +
+              'which app to target, then STOP and wait for the user to respond with their selection. ' +
+              'Do NOT automatically pick one or proceed without the user explicitly choosing an app. ' +
+              'Once selected, remember the chosen app id and reuse it for all subsequent tool calls ' +
+              'in this conversation without asking again.',
+          });
+        }
+        return { content };
       } catch (e: any) {
         Log.error(' Error querying running apps from Metro server:', e);
         return {
@@ -72,7 +88,7 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
         },
         async ({ parameters }) => {
           try {
-            const { command, appId, ...args } = parameters;
+            const { command, id, ...args } = parameters;
 
             const metroServerOrigin = devServerManager
               .getDefaultDevServer()
@@ -91,13 +107,13 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
                 isError: true,
               };
             }
-            const app = apps.find((a) => a.appId === appId);
+            const app = apps.find((a) => a.id === id);
             if (!app) {
               return {
                 content: [
                   {
                     type: 'text' as const,
-                    text: `No connected app found with ID: ${appId}`,
+                    text: `No connected app found with ID: ${id}`,
                   },
                 ],
                 isError: true,
