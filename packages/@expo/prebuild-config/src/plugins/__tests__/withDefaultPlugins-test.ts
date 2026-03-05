@@ -96,6 +96,7 @@ function getLargeConfig(): ExportedConfig {
     ios: {
       bundleIdentifier: 'com.bacon.tester.expoapp',
       buildNumber: '6.5.0',
+      deploymentTarget: '15.1',
       backgroundColor: '#ff0000',
       appStoreUrl: 'https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8',
       config: {
