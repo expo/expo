@@ -242,6 +242,8 @@ jobs:
       - name: 🍏 Build iOS artifacts (Debug)
         run: |
           npx expo-brownfield build:ios -d --verbose -a ../../../artifacts -p BrownfieldPackage
+      - name: 🔨 Add XCFrameworks to SwiftUI project
+        run: ruby packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
       - name: 🧪 Run e2e tests (Debug)
         run: CONFIGURATION=Debug ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
       - name: 💾 Save ccache
