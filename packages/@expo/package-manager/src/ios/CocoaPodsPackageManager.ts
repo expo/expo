@@ -52,6 +52,7 @@ export class CocoaPodsPackageManager {
     return fs.existsSync(path.join(projectRoot, 'Podfile'));
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async gemInstallCLIAsync(
     nonInteractive: boolean = false,
     spawnOptions: SpawnOptions = { stdio: 'inherit' }
@@ -77,16 +78,19 @@ export class CocoaPodsPackageManager {
     }
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async brewLinkCLIAsync(spawnOptions: SpawnOptions = { stdio: 'inherit' }): Promise<void> {
     await spawnAsync('brew', ['link', 'cocoapods'], spawnOptions);
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async brewInstallCLIAsync(
     spawnOptions: SpawnOptions = { stdio: 'inherit' }
   ): Promise<void> {
     await spawnAsync('brew', ['install', 'cocoapods'], spawnOptions);
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async installCLIAsync({
     nonInteractive = false,
     spawnOptions = { stdio: 'inherit' },
@@ -162,6 +166,7 @@ export class CocoaPodsPackageManager {
     return true;
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#isCLIInstalledAsync` instead */
   static async isCLIInstalledAsync(
     spawnOptions: SpawnOptions = { stdio: 'inherit' },
     { useBundler = false }: { useBundler?: boolean } = {}
@@ -174,11 +179,11 @@ export class CocoaPodsPackageManager {
       }
       return true;
     } catch (error: any) {
+      // NOTE(@kitten): We abort here to prevent any command from proceeding
+      // We don't want to trigger `installCLIAsync` and let users resolve this
       if (useBundler) {
         console.warn(chalk.yellow(`\u203A Failed to run \`bundle exec pod\``));
-        if (error.stderr) {
-          console.warn(chalk.red(error.stderr));
-        }
+        throw new CocoaPodsError(error.stderr, 'COMMAND_FAILED');
       }
       return false;
     }
@@ -227,10 +232,19 @@ export class CocoaPodsPackageManager {
     });
   }
 
-  public installCLIAsync() {
+  public installCLIAsync({
+    nonInteractive = true,
+    spawnOptions,
+  }: {
+    nonInteractive?: boolean;
+    spawnOptions?: spawnAsync.SpawnOptions;
+  } = {}) {
     return CocoaPodsPackageManager.installCLIAsync({
-      nonInteractive: true,
-      spawnOptions: this.options,
+      nonInteractive,
+      spawnOptions: {
+        ...this.options,
+        ...spawnOptions,
+      },
     });
   }
 
