@@ -23,9 +23,9 @@ public struct UIBaseView<Props: UIBaseViewProps, Content: ExpoSwiftUI.View<Props
 }
 
 /**
- Base view modifier in expo-ui
- This is useful for View with AsyncFunctions that cannot use the `ExpoUIView` builder.
+ Deprecated. Use `applyModifiers` method directly instead.
  */
+@available(*, deprecated, message: "Use applyModifiers method directly on the content view instead.")
 public struct UIBaseViewModifier<Props: UIBaseViewProps>: ViewModifier {
   @ObservedObject var props: Props
   var defaultFrameAlignment = Alignment.center
