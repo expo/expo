@@ -74,6 +74,7 @@ export const home = [
     makePage('get-started/start-developing.mdx'),
     makePage('get-started/next-steps.mdx'),
   ]),
+  makeSection('AI', [makePage('skills.mdx'), makePage('llms.mdx')]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
     makePage('develop/app-navigation.mdx'),
@@ -146,7 +147,6 @@ export const home = [
     makePage('deploy/web.mdx'),
   ]),
   makeSection('Monitor', [makePage('monitoring/services.mdx')]),
-  makeSection('AI', [makePage('skills.mdx'), makePage('llms.mdx')]),
   makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
