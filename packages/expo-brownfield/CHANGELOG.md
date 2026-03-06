@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Align using custom components between the platforms ([#43633](https://github.com/expo/expo/pull/43633) by [@pmleczek](https://github.com/pmleczek))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
