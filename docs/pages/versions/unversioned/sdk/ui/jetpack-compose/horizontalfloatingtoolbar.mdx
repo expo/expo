@@ -38,12 +38,8 @@ import { align, fillMaxSize, fillMaxWidth, offset } from '@expo/ui/jetpack-compo
 export default function FloatingToolbarExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Box
-        modifiers={[fillMaxSize()]}
-        floatingToolbarExitAlwaysScrollBehavior="bottom">
-        <LazyColumn modifiers={[fillMaxSize()]}>
-          {/* ...list items... */}
-        </LazyColumn>
+      <Box modifiers={[fillMaxSize()]} floatingToolbarExitAlwaysScrollBehavior="bottom">
+        <LazyColumn modifiers={[fillMaxSize()]}>{/* ...list items... */}</LazyColumn>
 
         <HorizontalFloatingToolbar
           variant="vibrant"
@@ -79,8 +75,7 @@ export default function ToolbarWithFABExample() {
         <IconButton onPress={() => console.log('Share pressed')}>
           <Icon source={require('./assets/share.xml')} />
         </IconButton>
-        <HorizontalFloatingToolbar.FloatingActionButton
-          onPress={() => console.log('Add pressed')}>
+        <HorizontalFloatingToolbar.FloatingActionButton onPress={() => console.log('Add pressed')}>
           <Icon source={require('./assets/add.xml')} />
         </HorizontalFloatingToolbar.FloatingActionButton>
       </HorizontalFloatingToolbar>

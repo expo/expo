@@ -75,10 +75,7 @@ export default function ExtendedFABExample() {
 
   return (
     <Host matchContents>
-      <FloatingActionButton
-        label="Edit"
-        expanded={expanded}
-        onPress={() => setExpanded((v) => !v)}>
+      <FloatingActionButton label="Edit" expanded={expanded} onPress={() => setExpanded(v => !v)}>
         <Icon source={require('./assets/edit.xml')} />
       </FloatingActionButton>
     </Host>
@@ -91,16 +88,21 @@ export default function ExtendedFABExample() {
 Use a Compose `Box` with `align('bottomEnd')` to position the FAB over scrollable content entirely within the Compose layer.
 
 ```tsx FloatingFABExample.tsx
-import { Box, FloatingActionButton, Host, Icon, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
+import {
+  Box,
+  FloatingActionButton,
+  Host,
+  Icon,
+  LazyColumn,
+  ListItem,
+} from '@expo/ui/jetpack-compose';
 import { align, fillMaxSize, fillMaxWidth, offset } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function FloatingFABExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Box modifiers={[fillMaxSize()]}>
-        <LazyColumn modifiers={[fillMaxSize()]}>
-          {/* ...list items... */}
-        </LazyColumn>
+        <LazyColumn modifiers={[fillMaxSize()]}>{/* ...list items... */}</LazyColumn>
 
         <FloatingActionButton
           modifiers={[align('bottomEnd'), offset(-16, -16)]}
@@ -138,4 +140,7 @@ export default function FABCustomColorExample() {
 import { FloatingActionButton } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/floatingactionbutton" apiName="FloatingActionButton" />
+<APISection
+  packageName="expo-ui/jetpack-compose/floatingactionbutton"
+  apiName="FloatingActionButton"
+/>
