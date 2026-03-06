@@ -9,9 +9,14 @@ import * as mdx from 'eslint-plugin-mdx';
 import testingLibrary from 'eslint-plugin-testing-library';
 import unicorn from 'eslint-plugin-unicorn'; // eslint-disable-line
 
+const CLASS_NAME_PREFIXES = ['container', 'icon', 'text'];
+
+const CLASS_NAME_PATTERN = '(c|C)lass(Name)?$';
+
 const TAILWIND_SETTINGS = {
   entryPoint: 'styles/global.css',
   callees: ['mergeClasses'],
+  attributes: [`^(${CLASS_NAME_PREFIXES.join('|')})?${CLASS_NAME_PATTERN}`],
 };
 
 const CORE_RULES = {
