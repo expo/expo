@@ -10,11 +10,17 @@ enum HomeTab: Hashable {
   case settings
 }
 
+#if targetEnvironment(simulator)
+var initialOnboardingState: Bool = true
+#else
+var initialOnboardingState: Bool = false
+#endif
+
 struct HomeRootView: View {
   @ObservedObject var viewModel: HomeViewModel
   @State private var showingUserProfile = false
   @State private var selectedTab: HomeTab = .home
-  @AppStorage("ExpoGoOnboardingFinished") private var isOnboardingFinished = false
+  @AppStorage("ExpoGoOnboardingFinished") private var isOnboardingFinished = initialOnboardingState
 
   init(viewModel: HomeViewModel) {
     self.viewModel = viewModel
