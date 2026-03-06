@@ -35,9 +35,9 @@ export function AppJSBanner() {
         'max-md-gutters:flex-wrap'
       )}>
       <div className="flex items-center gap-4">
-        <div className="relative z-10 p-2 max-sm-gutters:hidden">
+        <div className="max-sm-gutters:hidden relative z-10 p-2">
           <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#494CFC]" />
-          <AppJSIcon className="icon-lg relative z-10 text-palette-white" />
+          <AppJSIcon className="icon-lg text-palette-white relative z-10" />
         </div>
         <div className="relative grid grid-cols-1">
           <p className="text-base font-medium text-[#494CFC] dark:text-[#a0b9ff]">
@@ -55,7 +55,7 @@ export function AppJSBanner() {
           openInNewTab
           rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-white opacity-75" />}
           className={mergeClasses(
-            'gap-1.5 border-[#494CFC] bg-[#494CFC] text-palette-white shadow-none',
+            'text-palette-white gap-1.5 border-[#494CFC] bg-[#494CFC] shadow-none',
             'dark:hocus:border-[#23257b] dark:hocus:bg-[#23257b]',
             'hocus:border-[#7189ff] hocus:bg-[#7189ff]'
           )}>
@@ -68,7 +68,7 @@ export function AppJSBanner() {
           onClick={() => {
             setIsAppJSBannerVisible(false);
           }}
-          className="bg-transparent text-palette-white shadow-none hocus:bg-[#ccd8ff] dark:hocus:bg-[#23257b]"
+          className="text-palette-white hocus:bg-[#ccd8ff] dark:hocus:bg-[#23257b] bg-transparent shadow-none"
           leftSlot={<XIcon className="text-[#494CFC]" />}
         />
       </div>

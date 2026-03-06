@@ -3,6 +3,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+#include <fbjni/ByteBuffer.h>
 #include <string>
 
 #include "NativeDatabaseBinding.h"
@@ -26,13 +27,13 @@ public:
   int sqlite3session_attach(jni::alias_ref<jni::JString> tableName);
   int sqlite3session_enable(bool enabled);
   void sqlite3session_delete();
-  jni::local_ref<jni::JArrayByte> sqlite3session_changeset();
-  jni::local_ref<jni::JArrayByte> sqlite3session_changeset_inverted();
+  jni::local_ref<jni::JByteBuffer> sqlite3session_changeset();
+  jni::local_ref<jni::JByteBuffer> sqlite3session_changeset_inverted();
   int sqlite3changeset_apply(
       jni::alias_ref<NativeDatabaseBinding::javaobject> db,
-      jni::alias_ref<jni::JArrayByte> changeset);
-  jni::local_ref<jni::JArrayByte>
-  sqlite3changeset_invert(jni::alias_ref<jni::JArrayByte> changeset);
+      jni::alias_ref<jni::JByteBuffer> changeset);
+  jni::local_ref<jni::JByteBuffer>
+  sqlite3changeset_invert(jni::alias_ref<jni::JByteBuffer> changeset);
 
 private:
   explicit NativeSessionBinding(

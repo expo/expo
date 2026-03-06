@@ -56,3 +56,13 @@ internal class DestinationAlreadyExistsException :
   CodedException(
     "Destination already exists"
   )
+
+internal class UnableToCopyException(reason: String) :
+  CodedException(
+    "Unable to copy file or directory: $reason"
+  )
+
+internal class UnableToMoveException(reason: String) :
+  CodedException(
+    "Unable to move file or directory: $reason"
+  )

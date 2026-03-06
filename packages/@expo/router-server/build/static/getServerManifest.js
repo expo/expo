@@ -24,13 +24,14 @@ async function getBuildTimeServerManifestAsync(options = {}) {
         platform: 'web',
         ...options,
     });
-    if (!routeTree) {
-        throw new Error('No routes found');
-    }
     // Evaluate all static params; skip for SSR mode where routes are matched at runtime
-    if (!options.skipStaticParams) {
+    if (routeTree && !options.skipStaticParams) {
         await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     }
+    // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+    // has no route tree set up. This can happen when we build against a project that
+    // isn't an expo-router project or not fully set up yet, but has expo-router options
+    // in the app.json already
     return (0, getServerManifest_1.getServerManifest)(routeTree, options);
 }
 /** Get the linking manifest from a Node.js process. */
@@ -41,11 +42,14 @@ async function getManifest(options = {}) {
         platform: 'web',
         ...options,
     });
-    if (!routeTree) {
-        throw new Error('No routes found');
+    if (routeTree) {
+        // Evaluate all static params
+        await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     }
-    // Evaluate all static params
-    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
+    // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+    // has no route tree set up. This can happen when we build against a project that
+    // isn't an expo-router project or not fully set up yet, but has expo-router options
+    // in the app.json already
     return (0, routing_1.getReactNavigationConfig)(routeTree, false);
 }
 //# sourceMappingURL=getServerManifest.js.map

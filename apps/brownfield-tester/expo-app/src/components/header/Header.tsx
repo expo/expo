@@ -4,7 +4,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import type { HeaderProps } from './types';
 
-const Header = ({ title }: HeaderProps) => {
+const Header = ({ title, testID }: HeaderProps) => {
   const router = useRouter();
 
   return (
@@ -15,7 +15,7 @@ const Header = ({ title }: HeaderProps) => {
         testID="header-back-button">
         <Feather name="arrow-left" size={24} color="black" />
       </Pressable>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title} testID={testID}>{title}</Text>
     </View>
   );
 };

@@ -2,6 +2,7 @@ package dev.expo.brownfieldintegratedtester
 
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import expo.modules.brownfield.BrownfieldMessage
 import expo.modules.brownfield.BrownfieldMessaging
@@ -26,7 +27,7 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
         BrownfieldMessaging.addListener { message ->
           Log.i("BrownfieldTestActivity", "Message from React Native received:")
           Log.i("BrownfieldTestActivity", message.toString())
-          showToast(message)
+          showDialog(message)
         }
 
     setupStateListeners()
@@ -97,12 +98,20 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
     messageTimer = null
   }
 
-  private fun showToast(message: BrownfieldMessage) {
+  private fun showDialog(message: BrownfieldMessage) {
     val sender = message["sender"] as? String
     val nested = message["source"] as? Map<*, *>
     val platform = nested?.get("platform") as? String
     if (sender != null && platform != null) {
-      Toast.makeText(this, "$platform($sender)", Toast.LENGTH_LONG).show()
+      runOnUiThread {
+        AlertDialog.Builder(this)
+            .setTitle("Message Received") // Optional: give it a title
+            .setMessage("$platform($sender)")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss() // Closes the dialog when clicked
+            }
+            .show()
+      }
     }
   }
 

@@ -41,7 +41,7 @@
         "expo-brownfield", 
         {
           "ios": {
-            "usePrebuiltReactNative": true
+            "buildReactNativeFromSource": false
           }
         }
       ]

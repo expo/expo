@@ -49,6 +49,7 @@ export namespace AppleMaps {
   export type ContourStyle = AppleTypes.AppleMapsContourStyle;
 
   export type Marker = AppleTypes.AppleMapsMarker;
+  export type Annotation = AppleTypes.AppleMapsAnnotation;
   export type MapUISettings = AppleTypes.AppleMapsUISettings;
   export type MapProperties = AppleTypes.AppleMapsProperties;
 

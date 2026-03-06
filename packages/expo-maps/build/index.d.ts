@@ -32,6 +32,7 @@ export declare namespace AppleMaps {
     const ContourStyle: typeof AppleTypes.AppleMapsContourStyle;
     type ContourStyle = AppleTypes.AppleMapsContourStyle;
     type Marker = AppleTypes.AppleMapsMarker;
+    type Annotation = AppleTypes.AppleMapsAnnotation;
     type MapUISettings = AppleTypes.AppleMapsUISettings;
     type MapProperties = AppleTypes.AppleMapsProperties;
     type MapProps = AppleTypes.AppleMapsViewProps;
