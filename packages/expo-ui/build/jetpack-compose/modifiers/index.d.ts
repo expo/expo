@@ -142,8 +142,8 @@ export declare const graphicsLayer: (params: {
 export declare const zIndex: (index: number) => import("./createModifier").ModifierConfig;
 /**
  * Animates size changes with spring animation.
- * @param dampingRatio - Spring damping ratio. Default is DampingRatioNoBouncy.
- * @param stiffness - Spring stiffness. Default is StiffnessMedium.
+ * @param dampingRatio - Spring damping ratio. Default is `DampingRatioNoBouncy`.
+ * @param stiffness - Spring stiffness. Default is `StiffnessMedium`.
  */
 export declare const animateContentSize: (dampingRatio?: number, stiffness?: number) => import("./createModifier").ModifierConfig;
 /**
@@ -165,7 +165,7 @@ export declare const matchParentSize: () => import("./createModifier").ModifierC
  * Makes the view clickable.
  * @param handler - Function to call when clicked.
  * @param options - Optional configuration.
- * @param options.indication - Whether to show a ripple indication. Defaults to true.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
  */
 export declare const clickable: (handler: () => void, options?: {
     indication?: boolean;

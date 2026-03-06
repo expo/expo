@@ -146,6 +146,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./HostingRNViewsScreen'));
     },
   },
+  {
+    name: 'graphicsLayer modifier',
+    route: 'ui/graphics-layer',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GraphicsLayerScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

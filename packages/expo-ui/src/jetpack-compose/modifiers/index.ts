@@ -215,8 +215,8 @@ export const zIndex = (index: number) => createModifier('zIndex', { index });
 
 /**
  * Animates size changes with spring animation.
- * @param dampingRatio - Spring damping ratio. Default is DampingRatioNoBouncy.
- * @param stiffness - Spring stiffness. Default is StiffnessMedium.
+ * @param dampingRatio - Spring damping ratio. Default is `DampingRatioNoBouncy`.
+ * @param stiffness - Spring stiffness. Default is `StiffnessMedium`.
  */
 export const animateContentSize = (dampingRatio?: number, stiffness?: number) =>
   createModifier('animateContentSize', { dampingRatio, stiffness });
@@ -251,7 +251,7 @@ export const matchParentSize = () => createModifier('matchParentSize');
  * Makes the view clickable.
  * @param handler - Function to call when clicked.
  * @param options - Optional configuration.
- * @param options.indication - Whether to show a ripple indication. Defaults to true.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
  */
 export const clickable = (handler: () => void, options?: { indication?: boolean }) =>
   createModifierWithEventListener('clickable', handler, {

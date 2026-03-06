@@ -4,8 +4,10 @@ package expo.modules.ui
 
 import android.graphics.Color
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -182,7 +184,29 @@ internal data class SelectableParams(
   @Field val selected: Boolean = false
 ) : Record
 
+internal data class ClickableParams(
+  @Field val indication: Boolean = true
+) : Record
+
 // endregion
+
+@Composable
+private fun resolveAnimatable(map: Map<String, Any?>, key: String, default: Float): Float {
+  val raw = map[key]
+  val targetValue = when {
+    raw is Number -> raw.toFloat()
+    raw is Map<*, *> && raw["\$animated"] == true ->
+      (raw["targetValue"] as Number).toFloat()
+    else -> default
+  }
+  val spec: AnimationSpec<Float> = when {
+    raw is Map<*, *> && raw["\$animated"] == true ->
+      parseAnimationSpec(raw["animationSpec"]) ?: spring()
+    else -> snap()
+  }
+  val animated by animateFloatAsState(targetValue, spec, label = key)
+  return animated
+}
 
 /**
  * Registry for Compose view modifiers that can be applied from React Native.
@@ -392,31 +416,15 @@ object ModifierRegistry {
     register("graphicsLayer") { map, _, _, _ ->
       val density = LocalDensity.current.density
 
-      // Resolve a value that may be a plain number (static) or an animated() wrapper
-      @Composable
-      fun resolveAnimatable(key: String, default: Float): Float {
-        val raw = map[key]
-        return when {
-          raw is Number -> raw.toFloat()
-          raw is Map<*, *> && raw["\$animated"] == true -> {
-            val target = (raw["targetValue"] as Number).toFloat()
-            val spec = parseAnimationSpec(raw["animationSpec"]) ?: spring()
-            val animated by animateFloatAsState(target, spec)
-            animated
-          }
-          else -> default
-        }
-      }
-
-      val rotationX = resolveAnimatable("rotationX", 0f)
-      val rotationY = resolveAnimatable("rotationY", 0f)
-      val rotationZ = resolveAnimatable("rotationZ", 0f)
-      val scaleX = resolveAnimatable("scaleX", 1f)
-      val scaleY = resolveAnimatable("scaleY", 1f)
-      val alphaVal = resolveAnimatable("alpha", 1f)
-      val translationX = resolveAnimatable("translationX", 0f)
-      val translationY = resolveAnimatable("translationY", 0f)
-      val shadowElevation = resolveAnimatable("shadowElevation", 0f)
+      val rotationX = resolveAnimatable(map, "rotationX", 0f)
+      val rotationY = resolveAnimatable(map, "rotationY", 0f)
+      val rotationZ = resolveAnimatable(map, "rotationZ", 0f)
+      val scaleX = resolveAnimatable(map, "scaleX", 1f)
+      val scaleY = resolveAnimatable(map, "scaleY", 1f)
+      val alphaVal = resolveAnimatable(map, "alpha", 1f)
+      val translationX = resolveAnimatable(map, "translationX", 0f)
+      val translationY = resolveAnimatable(map, "translationY", 0f)
+      val shadowElevation = resolveAnimatable(map, "shadowElevation", 0f)
 
       // Non-animatable params parsed via Record
       val params = recordFromMap<GraphicsLayerParams>(map)
@@ -503,8 +511,8 @@ object ModifierRegistry {
     }
 
     register("clickable") { map, _, _, eventDispatcher ->
-      val indication = map["indication"] as? Boolean ?: true
-      if (indication) {
+      val params = recordFromMap<ClickableParams>(map)
+      if (params.indication) {
         Modifier.clickable {
           eventDispatcher("clickable", emptyMap())
         }
