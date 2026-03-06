@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+- Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25
