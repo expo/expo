@@ -1,3 +1,4 @@
+export * from './AccessoryWidgetBackground';
 export * from './BottomSheet';
 export * from './Button';
 export * from './Chart';
