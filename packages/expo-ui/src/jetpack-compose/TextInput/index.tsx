@@ -13,6 +13,8 @@ export type TextInputRef = {
   setText: (newText: string) => Promise<void>;
 };
 
+export type TextInputVariant = 'filled' | 'outlined';
+
 export type TextInputProps = {
   /**
    * Can be used for imperatively setting text on the TextInput component.
@@ -22,6 +24,15 @@ export type TextInputProps = {
    * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
    */
   defaultValue?: string;
+  /**
+   * The visual style of the text input field.
+   * - `filled` - A text field with a filled background (default).
+   * - `outlined` - A text field with a transparent background and a border outline.
+   * @default filled
+   * @platform android
+   * @see {@link https://m3.material.io/components/text-fields/guidelines}
+   */
+  variant?: TextInputVariant;
   /**
    * A callback triggered when user types in text into the TextInput.
    */
