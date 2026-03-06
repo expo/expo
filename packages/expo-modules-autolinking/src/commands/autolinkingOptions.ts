@@ -97,6 +97,12 @@ const parsePackageJsonOptions = (
     }
   }
   const mergedOptions = { ...autolinkingOptions, ...platformOptions };
+
+  // NOTE(@kitten): For `include`, we don't override options per platform, but merge the lists
+  if (Array.isArray(autolinkingOptions?.include) && Array.isArray(platformOptions?.include)) {
+    mergedOptions.include = [...autolinkingOptions.include, ...platformOptions.include];
+  }
+
   const outputOptions: Partial<AutolinkingOptions> = {};
   // legacy_shallowReactNativeLinking
   if (mergedOptions.legacy_shallowReactNativeLinking != null) {
