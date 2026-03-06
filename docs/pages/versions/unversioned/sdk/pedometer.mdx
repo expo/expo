@@ -15,7 +15,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 > **warning** Pedometer is not available in Expo Go for Android. Expo Go does not include the `ACTIVITY_RECOGNITION` permission that Pedometer needs. With this permission, Google Play could classify Expo Go as a health app. To use Pedometer on Android, create a [development build](/develop/development-builds/introduction/).
 
-> **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires Google Play Services Recording API support and an active `subscribeRecording()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecording` / `unsubscribeRecording`) are no-ops on iOS.
+> **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires Google Play Services Recording API support and an active `subscribeRecordingAsync()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecordingAsync()` / `unsubscribeRecordingAsync()`) are no-ops on iOS.
 
 ### Pause and resume events
 
@@ -30,10 +30,12 @@ const subscription = Pedometer.watchEventUpdates((event) => {
   console.log(`Pedometer ${event.type} at`, new Date(event.date));
 });
 
-const started = await Pedometer.startEventUpdatesAsync();
-if (!started) {
+const isAvailable = await Pedometer.isEventTrackingAvailableAsync();
+if (!isAvailable) {
   subscription.remove();
   console.log('Pedometer events are not available on this device.');
+} else {
+  await Pedometer.startEventUpdatesAsync();
 }
 
 // Later, to stop listening:
@@ -68,7 +70,7 @@ export default function App() {
 
     if (isHistoryAvailable) {
       if (Platform.OS === 'android') {
-        await Pedometer.subscribeRecording();
+        await Pedometer.subscribeRecordingAsync();
       }
       const end = new Date();
       const start = new Date();

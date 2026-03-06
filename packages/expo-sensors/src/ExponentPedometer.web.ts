@@ -5,16 +5,19 @@ export default {
   async isRecordingAvailableAsync(): Promise<boolean> {
     return false;
   },
-  async startEventUpdates(): Promise<boolean> {
+  async isEventTrackingAvailableAsync(): Promise<boolean> {
     return false;
+  },
+  async startEventUpdates(): Promise<void> {
+    // no-op on web
   },
   async stopEventUpdates(): Promise<void> {
     // no-op on web
   },
-  async subscribeRecording(): Promise<void> {
+  async subscribeRecordingAsync(): Promise<void> {
     // no-op on web
   },
-  async unsubscribeRecording(): Promise<void> {
+  async unsubscribeRecordingAsync(): Promise<void> {
     // no-op on web
   },
   addListener() {

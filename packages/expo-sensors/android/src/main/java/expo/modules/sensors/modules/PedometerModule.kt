@@ -207,6 +207,10 @@ class PedometerModule : Module() {
       ) == ConnectionResult.SUCCESS
     }
 
+    AsyncFunction("isEventTrackingAvailableAsync") {
+      GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
+    }
+
     AsyncFunction("startEventUpdates") {
       if (isEventUpdatesActive) {
         return@AsyncFunction true
@@ -253,7 +257,7 @@ class PedometerModule : Module() {
       stopActivityTransitionUpdates()
     }
 
-    AsyncFunction("subscribeRecording") {
+    AsyncFunction("subscribeRecordingAsync") {
       if (!isRecordingAvailable()) {
         throw NotSupportedException("Pedometer Recording API is not available on this device.")
       }
@@ -266,7 +270,7 @@ class PedometerModule : Module() {
       }
     }
 
-    AsyncFunction("unsubscribeRecording") {
+    AsyncFunction("unsubscribeRecordingAsync") {
       if (!isRecordingAvailable()) {
         return@AsyncFunction null
       }
