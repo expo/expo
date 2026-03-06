@@ -146,6 +146,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./HostingRNViewsScreen'));
     },
   },
+  {
+    name: 'FloatingActionButton component',
+    route: 'ui/floating-action-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./FloatingActionButtonScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

@@ -14,6 +14,8 @@ import expo.modules.ui.button.ButtonPressedEvent
 import expo.modules.ui.button.ButtonProps
 import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.IconButtonProps
+import expo.modules.ui.floatingactionbutton.FloatingActionButtonContent
+import expo.modules.ui.floatingactionbutton.FloatingActionButtonProps
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.menu.ContextMenuButtonPressedEvent
 import expo.modules.ui.menu.ContextMenuContent
@@ -291,6 +293,13 @@ class ExpoUIModule : Module() {
     }) { props: RadioButtonProps ->
       val onNativeClick by remember { EventDispatcher<Unit>() }
       RadioButtonContent(props) { onNativeClick(Unit) }
+    }
+
+    ExpoUIView("FloatingActionButtonView", events = {
+      Events("onPress")
+    }) { props: FloatingActionButtonProps ->
+      val onPress by remember { EventDispatcher<Unit>() }
+      FloatingActionButtonContent(props) { onPress(Unit) }
     }
 
     //endregion Expo UI views

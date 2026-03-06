@@ -1,0 +1,114 @@
+---
+title: FloatingActionButton
+description: A Jetpack Compose FloatingActionButton component following Material Design 3.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI `FloatingActionButton` wraps Material Design 3's [`FloatingActionButton`](https://developer.android.com/develop/ui/compose/components/fab) and [`ExtendedFloatingActionButton`](https://developer.android.com/develop/ui/compose/components/fab#extended). When `label` is absent a standard FAB is rendered; when `label` is present an `ExtendedFloatingActionButton` with animated label expansion is rendered.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Standard FAB
+
+```tsx StandardFABExample.tsx
+import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+
+export default function StandardFABExample() {
+  return (
+    <Host matchContents>
+      <FloatingActionButton
+        icon={require('./assets/add.xml')}
+        onPress={() => console.log('FAB pressed')}
+      />
+    </Host>
+  );
+}
+```
+
+### FAB sizes
+
+```tsx FABSizesExample.tsx
+import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+import { View } from 'react-native';
+
+export default function FABSizesExample() {
+  return (
+    <View style={{ flexDirection: 'row', gap: 16 }}>
+      <Host matchContents>
+        <FloatingActionButton icon={require('./assets/add.xml')} size="small" onPress={() => {}} />
+      </Host>
+      <Host matchContents>
+        <FloatingActionButton icon={require('./assets/add.xml')} size="medium" onPress={() => {}} />
+      </Host>
+      <Host matchContents>
+        <FloatingActionButton icon={require('./assets/add.xml')} size="large" onPress={() => {}} />
+      </Host>
+    </View>
+  );
+}
+```
+
+### Extended FAB
+
+```tsx ExtendedFABExample.tsx
+import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+export default function ExtendedFABExample() {
+  const [expanded, setExpanded] = useState(true);
+
+  return (
+    <Host matchContents>
+      <FloatingActionButton
+        icon={require('./assets/edit.xml')}
+        label="Edit"
+        expanded={expanded}
+        variant="primary"
+        onPress={() => setExpanded((v) => !v)}
+      />
+    </Host>
+  );
+}
+```
+
+### Variants
+
+```tsx FABVariantsExample.tsx
+import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+import { View } from 'react-native';
+
+export default function FABVariantsExample() {
+  const variants = ['surface', 'primary', 'secondary', 'tertiary'] as const;
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 16 }}>
+      {variants.map((variant) => (
+        <Host key={variant} matchContents>
+          <FloatingActionButton
+            icon={require('./assets/add.xml')}
+            variant={variant}
+            onPress={() => console.log(`${variant} FAB pressed`)}
+          />
+        </Host>
+      ))}
+    </View>
+  );
+}
+```
+
+## API
+
+```tsx
+import { FloatingActionButton } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/floatingactionbutton" apiName="FloatingActionButton" />
