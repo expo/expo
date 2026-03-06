@@ -21,9 +21,7 @@ export default function FloatingActionButtonScreen() {
             <View style={styles.fabWrapper}>
               <Text style={styles.label}>small</Text>
               <Host matchContents>
-                <FloatingActionButton
-                  size="small"
-                  onPress={() => Alert.alert('Small FAB pressed')}>
+                <FloatingActionButton size="small" onPress={() => Alert.alert('Small FAB pressed')}>
                   <Icon source={addIcon} />
                 </FloatingActionButton>
               </Host>
@@ -41,9 +39,7 @@ export default function FloatingActionButtonScreen() {
             <View style={styles.fabWrapper}>
               <Text style={styles.label}>large</Text>
               <Host matchContents>
-                <FloatingActionButton
-                  size="large"
-                  onPress={() => Alert.alert('Large FAB pressed')}>
+                <FloatingActionButton size="large" onPress={() => Alert.alert('Large FAB pressed')}>
                   <Icon source={addIcon} />
                 </FloatingActionButton>
               </Host>

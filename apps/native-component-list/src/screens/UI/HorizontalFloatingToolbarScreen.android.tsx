@@ -22,9 +22,7 @@ const items = Array.from({ length: 30 }, (_, i) => ({
 export default function HorizontalFloatingToolbarScreen() {
   return (
     <Host style={styles.host}>
-      <Box
-        modifiers={[fillMaxSize()]}
-        floatingToolbarExitAlwaysScrollBehavior="bottom">
+      <Box modifiers={[fillMaxSize()]} floatingToolbarExitAlwaysScrollBehavior="bottom">
         <LazyColumn modifiers={[fillMaxSize()]}>
           {items.map((item) => (
             <ListItem

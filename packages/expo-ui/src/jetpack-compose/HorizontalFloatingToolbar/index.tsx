@@ -54,7 +54,9 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
  * FloatingActionButton component for HorizontalFloatingToolbar.
  * This component marks its children to be rendered in the FAB slot.
  */
-export function HorizontalFloatingToolbarFloatingActionButton(props: HorizontalFloatingToolbarFloatingActionButtonProps) {
+export function HorizontalFloatingToolbarFloatingActionButton(
+  props: HorizontalFloatingToolbarFloatingActionButtonProps
+) {
   return (
     <SlotNativeView slotName="floatingActionButton" onSlotEvent={props.onPress}>
       {props.children}
