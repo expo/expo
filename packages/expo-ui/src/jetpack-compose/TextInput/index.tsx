@@ -30,7 +30,6 @@ export type TextInputProps = {
    * - `outlined` - A text field with a transparent background and a border outline.
    * @default filled
    * @platform android
-   * @see {@link https://m3.material.io/components/text-fields/guidelines}
    */
   variant?: TextInputVariant;
   /**
