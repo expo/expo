@@ -138,7 +138,7 @@ export function MarkdownActionsDropdown() {
   const dropdownTrigger = (
     <Button
       theme="quaternary"
-      className="justify-center pl-2.5 pr-2"
+      className="justify-center pr-2 pl-2.5"
       aria-haspopup="menu"
       aria-label="Copy page actions">
       <div className="flex flex-row items-center gap-1.5">

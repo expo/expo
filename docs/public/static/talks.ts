@@ -852,6 +852,12 @@ export const YOUTUBE_VIDEOS = [
     uploadDate: '2024-09-12',
   },
   {
+    title: 'Expo Notifications with EAS | Complete Guide',
+    event: 'Expo Tutorials',
+    videoId: 'BCCjGtKtBjE',
+    uploadDate: '2024-09-11',
+  },
+  {
     title: 'How to create a native module with the Expo modules API',
     event: 'Expo Tutorials',
     videoId: 'CdaQSlyGik8',
@@ -898,6 +904,18 @@ export const YOUTUBE_VIDEOS = [
     event: 'Expo Tutorials',
     videoId: 'LvCci4Bwmpc',
     uploadDate: '2023-09-27',
+  },
+  {
+    title: 'How to quickly publish to the App Store & Play Store with EAS Submit',
+    event: 'EAS Tutorials',
+    videoId: '-KZjr576tuE',
+    uploadDate: '2023-05-30',
+  },
+  {
+    title: 'Automatic App Version Management',
+    event: 'Expo Tutorials',
+    videoId: 'Gk7RHDWsLsQ',
+    uploadDate: '2023-01-05',
   },
 ] as Talk[];
 

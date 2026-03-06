@@ -49,9 +49,9 @@ export function CopyTextButton({ children, copyText, className }: CopyTextButton
         type="button"
         onClick={handleCopyAsync}
         className={mergeClasses(
-          'rounded inline-flex items-center justify-center p-1 transition-colors',
+          'inline-flex items-center justify-center rounded-sm p-1 transition-colors',
           'hover:bg-element focus-visible:bg-element',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-link',
+          'focus-visible:ring-link focus:outline-none focus-visible:ring-2',
           copied && 'opacity-100'
         )}
         aria-label="Copy to clipboard"
