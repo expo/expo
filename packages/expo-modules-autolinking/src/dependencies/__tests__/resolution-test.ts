@@ -412,19 +412,7 @@ describe(scanDependenciesRecursively, () => {
 
     const result = await scanDependenciesRecursively(projectRoot, { limitDepth: 1 });
 
-    expect(result).toMatchInlineSnapshot(`
-      {
-        "react-native-third-party": {
-          "depth": 0,
-          "duplicates": null,
-          "name": "react-native-third-party",
-          "originPath": "/fake/project/node_modules/react-native-third-party",
-          "path": "/fake/project/node_modules/react-native-third-party",
-          "source": 0,
-          "version": "",
-        },
-      }
-    `);
+    expect(result).toMatchInlineSnapshot(`{}`);
   });
 
   itWithMemoize('discovers transitive peer dependencies', async () => {
@@ -530,7 +518,7 @@ describe(scanDependenciesRecursively, () => {
     expect(resultAB['dep']?.version).toBe('2.0.0');
   });
 
-  it('resolves multi-level isolated duplicates with stable path and version, unstable originPath', async () => {
+  it('resolves multi-level isolated duplicates with stable path and version, stable originPath', async () => {
     const runWithOrder = async (first: string, second: string) => {
       const result = await createMemoizer().withMemoizer(async () => {
         vol.fromNestedJSON(
@@ -595,7 +583,7 @@ describe(scanDependenciesRecursively, () => {
     }
     expect(resultAB['shared-dep']?.version).toBe('2.0.0');
     expect(resultAB['grandchild']?.version).toBe('3.0.0');
-    expect(resultAB['shared-dep']?.originPath).not.toBe(resultBA['shared-dep']?.originPath);
+    expect(resultAB['shared-dep']?.originPath).toBe(resultBA['shared-dep']?.originPath);
   });
 
   it('resolves mixed-depth diamond with stable path and version', async () => {
@@ -773,5 +761,33 @@ describe(scanDependenciesRecursively, () => {
         },
       }
     `);
+  });
+
+  itWithMemoize('populates versions while stopping recursion at deepest dependency', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedNodeModule('root', {
+          pkgDependencies: { 'parent-a': '*', 'parent-b': '*' },
+        }),
+        node_modules: {
+          'parent-a': mockedNodeModule('parent-a', {
+            pkgDependencies: { 'shared-dep': '*' },
+          }),
+          'parent-b': mockedNodeModule('parent-b', {
+            pkgDependencies: { 'shared-dep': '*' },
+          }),
+          'shared-dep': mockedNodeModule('shared-dep', {
+            pkgVersion: '6.0.0',
+          }),
+        },
+      },
+      projectRoot
+    );
+
+    // limitDepth: 2 prevents recurse from visiting shared-dep (discovered at depth 1).
+    // Without the eager-version fix in resolveDependency, version would be ''.
+    const result = await scanDependenciesRecursively(projectRoot, { limitDepth: 2 });
+
+    expect(result['shared-dep']).toBe(undefined);
   });
 });
