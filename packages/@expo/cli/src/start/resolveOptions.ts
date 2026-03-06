@@ -23,6 +23,7 @@ export type Options = {
   devClient: boolean;
   scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
+  platformsOptions: { appId?: string };
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
@@ -61,6 +62,8 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   });
 
   return {
+    platformsOptions: { appId: args['--app-id'] },
+
     privateKeyPath: args['--private-key-path'] ?? null,
 
     android: !!args['--android'],

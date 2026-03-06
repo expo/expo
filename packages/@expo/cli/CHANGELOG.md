@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support in `expo start` for custom app ids. ([#42555](https://github.com/expo/expo/pull/42555) by [@sebryu](https://github.com/sebryu))
+
 ### 🐛 Bug fixes
 
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`

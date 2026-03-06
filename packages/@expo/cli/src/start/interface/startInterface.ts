@@ -4,6 +4,7 @@ import { KeyPressHandler } from './KeyPressHandler';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
+import { resolveLaunchPropsAsync } from '../../run/android/resolveLaunchProps';
 import { openInEditorAsync } from '../../utils/editor';
 import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
@@ -36,7 +37,7 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'platformsOptions'>
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
 
@@ -49,6 +50,8 @@ export async function startInterfaceAsync(
   };
 
   actions.printDevServerInfo(usageOptions);
+
+  let cachedAndroidLaunchProps: Awaited<ReturnType<typeof resolveLaunchPropsAsync>> | null = null;
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -126,7 +129,24 @@ export async function startInterfaceAsync(
         );
       } else {
         try {
-          await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
+          if (platform === 'android' && options.platformsOptions?.appId) {
+            cachedAndroidLaunchProps ??= await resolveLaunchPropsAsync(
+              devServerManager.projectRoot,
+              options.platformsOptions
+            );
+
+            await server.openCustomRuntimeAsync(
+              settings.launchTarget,
+              {
+                applicationId: cachedAndroidLaunchProps.packageName,
+                customAppId: cachedAndroidLaunchProps.customAppId,
+                launchActivity: cachedAndroidLaunchProps.launchActivity,
+              },
+              { shouldPrompt }
+            );
+          } else {
+            await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
+          }
           printHelp();
         } catch (error: any) {
           if (!(error instanceof AbortCommandError)) {
