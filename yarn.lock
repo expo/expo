@@ -8463,10 +8463,10 @@ fdir@^6.5.0:
   resolved "https://registry.yarnpkg.com/fdir/-/fdir-6.5.0.tgz#ed2ab967a331ade62f18d077dae192684d50d350"
   integrity sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==
 
-fetch-nodeshim@^0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/fetch-nodeshim/-/fetch-nodeshim-0.4.6.tgz#4c7a4848d315b9b27e7366a2be56e11f1eecf368"
-  integrity sha512-RP+zh0GZLp/7bUoS37+pN8zKIhqQ5YuI3m2RQfxZSqPzwYO1wRzwWqq4Va0kWpNPQbtpomEYAQ7zC/VjJWGmIw==
+fetch-nodeshim@^0.4.9:
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/fetch-nodeshim/-/fetch-nodeshim-0.4.9.tgz#e2688d8df2de3d4e4ead5b9f6f52fe407a88f0ce"
+  integrity sha512-XIQWlB2A4RZ7NebXWGxS0uDMdvRHkiUDTghBVJKFg9yEOd45w/PP8cZANuPf2H08W6Cor3+2n7Q6TTZgAS3Fkw==
 
 fetch-retry@^4.1.1:
   version "4.1.1"
@@ -11859,10 +11859,10 @@ ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multitars@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/multitars/-/multitars-0.2.3.tgz#356e6b000f16dcc7f633db2473b4f33e7335996e"
-  integrity sha512-PzKo1i2pC9+OVLOSOnLrzHImyCemcGGkPJs+EVSbLcyX0TcOBIkECtes79s8cYUfqVca7oRaAzafoO92o95kQg==
+multitars@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/multitars/-/multitars-0.2.4.tgz#37d003ca1dfddb5c4fbf1e51077831d576100b38"
+  integrity sha512-XgLbg1HHchFauMCQPRwMj6MSyDd5koPlTA1hM3rUFkeXzGpjU/I9fP3to7yrObE9jcN8ChIOQGrM0tV0kUZaKg==
 
 mute-stream@0.0.8:
   version "0.0.8"
