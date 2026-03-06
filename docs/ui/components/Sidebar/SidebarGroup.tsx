@@ -229,7 +229,6 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
 function getIconElement(iconName?: string) {
   switch (iconName) {
     case 'AI':
-    case 'AI agents':
       return Star06Icon;
     case 'Develop':
       return TerminalBrowserIcon;
