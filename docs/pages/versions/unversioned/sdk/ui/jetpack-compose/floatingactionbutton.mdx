@@ -20,15 +20,14 @@ Expo UI `FloatingActionButton` wraps Material Design 3's [`FloatingActionButton`
 ### Standard FAB
 
 ```tsx StandardFABExample.tsx
-import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
 
 export default function StandardFABExample() {
   return (
     <Host matchContents>
-      <FloatingActionButton
-        icon={require('./assets/add.xml')}
-        onPress={() => console.log('FAB pressed')}
-      />
+      <FloatingActionButton onPress={() => console.log('FAB pressed')}>
+        <Icon source={require('./assets/add.xml')} />
+      </FloatingActionButton>
     </Host>
   );
 }
@@ -37,20 +36,26 @@ export default function StandardFABExample() {
 ### FAB sizes
 
 ```tsx FABSizesExample.tsx
-import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
 import { View } from 'react-native';
 
 export default function FABSizesExample() {
   return (
     <View style={{ flexDirection: 'row', gap: 16 }}>
       <Host matchContents>
-        <FloatingActionButton icon={require('./assets/add.xml')} size="small" onPress={() => {}} />
+        <FloatingActionButton size="small" onPress={() => {}}>
+          <Icon source={require('./assets/add.xml')} />
+        </FloatingActionButton>
       </Host>
       <Host matchContents>
-        <FloatingActionButton icon={require('./assets/add.xml')} size="medium" onPress={() => {}} />
+        <FloatingActionButton size="medium" onPress={() => {}}>
+          <Icon source={require('./assets/add.xml')} />
+        </FloatingActionButton>
       </Host>
       <Host matchContents>
-        <FloatingActionButton icon={require('./assets/add.xml')} size="large" onPress={() => {}} />
+        <FloatingActionButton size="large" onPress={() => {}}>
+          <Icon source={require('./assets/add.xml')} />
+        </FloatingActionButton>
       </Host>
     </View>
   );
@@ -60,7 +65,7 @@ export default function FABSizesExample() {
 ### Extended FAB
 
 ```tsx ExtendedFABExample.tsx
-import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
 
 export default function ExtendedFABExample() {
@@ -69,11 +74,11 @@ export default function ExtendedFABExample() {
   return (
     <Host matchContents>
       <FloatingActionButton
-        icon={require('./assets/edit.xml')}
         label="Edit"
         expanded={expanded}
-        onPress={() => setExpanded((v) => !v)}
-      />
+        onPress={() => setExpanded((v) => !v)}>
+        <Icon source={require('./assets/edit.xml')} />
+      </FloatingActionButton>
     </Host>
   );
 }
@@ -82,17 +87,17 @@ export default function ExtendedFABExample() {
 ### Custom color
 
 ```tsx FABCustomColorExample.tsx
-import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
+import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
 
 export default function FABCustomColorExample() {
   return (
     <Host matchContents>
       <FloatingActionButton
-        icon={require('./assets/add.xml')}
         label="New item"
         containerColor="#E8DEF8"
-        onPress={() => console.log('pressed')}
-      />
+        onPress={() => console.log('pressed')}>
+        <Icon source={require('./assets/add.xml')} />
+      </FloatingActionButton>
     </Host>
   );
 }
