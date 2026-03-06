@@ -54,6 +54,21 @@ export default function TextInputScreen() {
         </Host>
       </Section>
 
+      <Section title="Outlined Text Input">
+        <Host matchContents>
+          <TextInput variant="outlined" defaultValue="Outlined" onChangeText={setValue} />
+        </Host>
+        <Host matchContents>
+          <TextInput
+            variant="outlined"
+            multiline
+            numberOfLines={3}
+            defaultValue="Outlined multiline"
+            onChangeText={setValue}
+          />
+        </Host>
+      </Section>
+
       <Section title="Capitalization">
         <Host matchContents>
           <TextInput
