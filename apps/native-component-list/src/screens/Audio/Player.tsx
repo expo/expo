@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   errorMessage: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: Colors.errorBackground,
   },
   errorText: {
