@@ -2,7 +2,6 @@
 title: Documentation for AI agents and LLMs
 sidebar_title: AI agents
 description: Efficient ways for AI agents and LLMs to access and consume Expo documentation.
-hideTOC: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -13,18 +12,18 @@ Use the following endpoints and tools to give AI agents and LLMs access to Expo 
 
 Pick the method that matches your tool:
 
-| Method                 | Best for                             | How                                                                                                     |
-| ---------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| **Per-page markdown**  | Chat interfaces (ChatGPT, Claude.ai) | Append `/index.md` to any docs page URL.                                                                |
-| **Copy page** dropdown | Quick prompts with a single page     | Click **Copy page** at the top of any docs page.                                                        |
-| **Section bundles**    | Project rules and coding assistants  | Add a section-level `llms.txt` URL to your AI tool config or the general purpose sitemap (`/llms.txt`). |
+| Method                 | Best for                                               | How                                                                                                            |
+| ---------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Per-page markdown      | Chat interfaces (ChatGPT, Claude.ai) and coding agents | Append `/index.md` to any documentation page URL.                                                              |
+| Copy Markdown dropdown | Quick prompts with a single page                       | Click **Copy Markdown** at the top of any documentation page.                                                  |
+| Section bundles        | Project rules and coding agents                        | Add a section-level `llms-*.txt` URL to your AI tool configuration or the general purpose index (`/llms.txt`). |
 
 ## Per-page markdown
 
 Every documentation page has a lightweight markdown version accessible by appending `/index.md` to the page URL. For example:
 
 ```text Create a development build on EAS
-https://docs.expo.dev/develop/development-builds/create-a-build/index.md
+https://documentation.expo.dev/develop/development-builds/create-a-build/index.md
 ```
 
 This method is useful when you want to give an AI agent context about a specific topic or page without overwhelming it with the full HTML of that page.
@@ -35,13 +34,17 @@ At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide d
 
 ### Site-wide bundles
 
-- [/llms.txt](/llms.txt): A list of all available documentation files
-- [/llms-full.txt](/llms-full.txt): Complete documentation for Expo, including Expo Router, Expo Modules API, development process, and more
+| Endpoint                         | Description                                                                                              | Size    |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------- | ------- |
+| [/llms.txt](/llms.txt)           | Index page with a list of all available documentation files.                                             | ~94 KB  |
+| [/llms-full.txt](/llms-full.txt) | Complete documentation for Expo, including Expo Router, Expo Modules API, development process, and more. | ~1.9 MB |
 
-### By section
+### Section-wide bundles
 
-- [/llms-eas.txt](/llms-eas.txt): Complete documentation for the Expo Application Services (EAS)
-- [/llms-sdk.txt](/llms-sdk.txt): Complete documentation for the latest Expo SDK
+| Endpoint                       | Description                                                 | Size    |
+| ------------------------------ | ----------------------------------------------------------- | ------- |
+| [/llms-eas.txt](/llms-eas.txt) | Complete documentation for Expo Application Services (EAS). | ~974 KB |
+| [/llms-sdk.txt](/llms-sdk.txt) | Complete documentation for the latest Expo SDK.             | ~2.6 MB |
 
 <Collapsible summary="Looking for deprecated Expo SDK versions?">
 
@@ -54,4 +57,3 @@ At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide d
 - [/llms-sdk-v51.0.0.txt](/llms-sdk-v51.0.0.txt): Documentation for the Expo SDK v51.0.0
 
 </Collapsible>
-```
