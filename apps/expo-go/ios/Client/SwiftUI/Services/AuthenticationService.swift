@@ -80,6 +80,15 @@ class AuthenticationService: ObservableObject {
     }
   }
 
+  func signIn() async throws {
+    isAuthenticating = true
+    defer { isAuthenticating = false }
+
+    if let sessionSecret = try await performAuthentication(path: "login") {
+      await completeLogin(with: sessionSecret)
+    }
+  }
+
   func ssoLogin() async throws {
     isAuthenticating = true
     defer { isAuthenticating = false }
