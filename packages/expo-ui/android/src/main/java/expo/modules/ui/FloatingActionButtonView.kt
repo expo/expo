@@ -1,4 +1,4 @@
-package expo.modules.ui.floatingactionbutton
+package expo.modules.ui
 
 import android.graphics.Color
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -12,9 +12,6 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
-import expo.modules.ui.ModifierList
-import expo.modules.ui.ModifierRegistry
-import expo.modules.ui.compose
 
 enum class FloatingActionButtonSize(val value: String) : Enumerable {
   SMALL("small"),

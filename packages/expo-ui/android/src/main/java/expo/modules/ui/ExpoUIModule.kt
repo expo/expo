@@ -14,8 +14,6 @@ import expo.modules.ui.button.ButtonPressedEvent
 import expo.modules.ui.button.ButtonProps
 import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.IconButtonProps
-import expo.modules.ui.floatingactionbutton.FloatingActionButtonContent
-import expo.modules.ui.floatingactionbutton.FloatingActionButtonProps
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.menu.ContextMenuButtonPressedEvent
 import expo.modules.ui.menu.ContextMenuContent
