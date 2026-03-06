@@ -6,7 +6,12 @@ export interface ImageProps extends CommonViewModifierProps {
      * The name of the system image (SF Symbol).
      * For example: 'photo', 'heart.fill', 'star.circle'
      */
-    systemName: SFSymbol;
+    systemName?: SFSymbol;
+    /**
+     * The URI of the local image file to display.
+     * For example: 'file:///path/to/image.jpg'
+     */
+    uri?: string;
     /**
      * The size of the system image.
      */
