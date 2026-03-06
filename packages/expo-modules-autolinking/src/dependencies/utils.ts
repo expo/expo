@@ -77,6 +77,9 @@ export function mergeWithDuplicate(
       duplicate = b;
     }
   }
+  if (!target.version && duplicate.version) {
+    target.version = duplicate.version;
+  }
   const duplicates = target.duplicates || (target.duplicates = []);
   if (target.path !== duplicate.path) {
     if (duplicates.every((parent) => parent.path !== duplicate.path)) {
@@ -87,8 +90,6 @@ export function mergeWithDuplicate(
         originPath: duplicate.originPath,
       });
     }
-  } else if (!target.version && duplicate.version) {
-    target.version = duplicate.version;
   }
   if (duplicate.duplicates?.length) {
     duplicates.push(
