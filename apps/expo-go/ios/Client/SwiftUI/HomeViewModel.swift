@@ -84,6 +84,17 @@ class HomeViewModel: ObservableObject {
     serverService.stopDiscovery()
   }
 
+  func signIn() async {
+    do {
+      try await authService.signIn()
+      if let account = selectedAccount {
+        dataService.startPolling(accountName: account.name)
+      }
+    } catch {
+      showError("Failed to sign in")
+    }
+  }
+
   func signUp() async {
     do {
       try await authService.signUp()
