@@ -6,6 +6,9 @@
   "bin": {
     "expo-internal": "build/bin/cli"
   },
+  "engines": {
+    "node": ">=22"
+  },
   "files": [
     "add-module.js",
     "internal",
