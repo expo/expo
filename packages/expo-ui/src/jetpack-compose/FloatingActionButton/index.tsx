@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { type ColorValue, type ImageSourcePropType, type ImageResolvedAssetSource, Image } from 'react-native';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -14,10 +14,9 @@ export type FloatingActionButtonSize = 'small' | 'medium' | 'large';
 
 export type FloatingActionButtonProps = {
   /**
-   * The icon to display. Accepts an `ImageSourcePropType` (e.g., `require('./icon.xml')`).
-   * On Android, supports XML vector drawables loaded via Metro bundler.
+   * The icon content to display inside the button. Pass an `Icon` component as a child.
    */
-  icon: ImageSourcePropType;
+  children?: React.JSX.Element;
 
   /**
    * Optional text label. When provided, renders an `ExtendedFloatingActionButton`
@@ -58,9 +57,8 @@ export type FloatingActionButtonProps = {
 /**
  * @hidden
  */
-export type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'icon' | 'onPress'> & {
-  icon: ImageResolvedAssetSource;
-} & ViewEvent<'onPress', void>;
+export type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onPress'> &
+  ViewEvent<'onPress', void>;
 
 const FloatingActionButtonNativeView: React.ComponentType<NativeFloatingActionButtonProps> =
   requireNativeView('ExpoUI', 'FloatingActionButtonView');
@@ -68,13 +66,13 @@ const FloatingActionButtonNativeView: React.ComponentType<NativeFloatingActionBu
 function transformFloatingActionButtonProps(
   props: FloatingActionButtonProps
 ): NativeFloatingActionButtonProps {
-  const { icon, onPress, modifiers, ...restProps } = props;
+  const { children, onPress, modifiers, ...restProps } = props;
 
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    icon: Image.resolveAssetSource(icon),
+    children,
     onPress,
   };
 }
@@ -89,23 +87,22 @@ function transformFloatingActionButtonProps(
  * @example
  * Standard FAB:
  * ```tsx
- * import { FloatingActionButton } from '@expo/ui/jetpack-compose';
+ * import { FloatingActionButton, Icon } from '@expo/ui/jetpack-compose';
  *
- * <FloatingActionButton
- *   icon={require('./assets/add.xml')}
- *   onPress={() => console.log('pressed')}
- * />
+ * <FloatingActionButton onPress={() => console.log('pressed')}>
+ *   <Icon source={require('./assets/add.xml')} />
+ * </FloatingActionButton>
  * ```
  *
  * @example
  * Extended FAB with label:
  * ```tsx
  * <FloatingActionButton
- *   icon={require('./assets/add.xml')}
  *   label="New Item"
  *   expanded={true}
- *   onPress={() => console.log('pressed')}
- * />
+ *   onPress={() => console.log('pressed')}>
+ *   <Icon source={require('./assets/add.xml')} />
+ * </FloatingActionButton>
  * ```
  */
 export function FloatingActionButton(props: FloatingActionButtonProps) {

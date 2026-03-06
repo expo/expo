@@ -21,7 +21,7 @@ export type HorizontalFloatingToolbarProps = {
   modifiers?: ExpoModifier[];
 };
 
-export type FloatingActionButtonProps = {
+export type HorizontalFloatingToolbarFloatingActionButtonProps = {
   /**
    * A callback that is called when the button is pressed.
    */
@@ -54,7 +54,7 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
  * FloatingActionButton component for HorizontalFloatingToolbar.
  * This component marks its children to be rendered in the FAB slot.
  */
-export function HorizontalFloatingToolbarFloatingActionButton(props: FloatingActionButtonProps) {
+export function HorizontalFloatingToolbarFloatingActionButton(props: HorizontalFloatingToolbarFloatingActionButtonProps) {
   return (
     <SlotNativeView slotName="floatingActionButton" onSlotEvent={props.onPress}>
       {props.children}
