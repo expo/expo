@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] detect FAB in HorizontalFloatingToolbar ([#43601](https://github.com/expo/expo/pull/43601) by [@Ubax](https://github.com/Ubax))
