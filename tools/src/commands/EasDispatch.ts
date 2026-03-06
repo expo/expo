@@ -160,6 +160,11 @@ async function confirmPromptIfOverridingRemoteFileAsync(
 }
 
 async function enforceRunningOnSdkReleaseBranchAsync(): Promise<string> {
+  const envSdkVersion = process.env.ET_EXPO_SDK;
+  if (envSdkVersion) {
+    logger.info(`Using SDK version from ET_EXPO_SDK env: ${envSdkVersion}.0.0`);
+    return `${envSdkVersion}.0.0`;
+  }
   const sdkBranchVersion = await Git.getSDKVersionFromBranchNameAsync();
   if (!sdkBranchVersion) {
     logger.error(`Client builds can be released only from the release branch!`);
