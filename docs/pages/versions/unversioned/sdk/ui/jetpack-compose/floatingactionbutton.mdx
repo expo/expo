@@ -72,7 +72,6 @@ export default function ExtendedFABExample() {
         icon={require('./assets/edit.xml')}
         label="Edit"
         expanded={expanded}
-        variant="primary"
         onPress={() => setExpanded((v) => !v)}
       />
     </Host>
@@ -80,27 +79,21 @@ export default function ExtendedFABExample() {
 }
 ```
 
-### Variants
+### Custom color
 
-```tsx FABVariantsExample.tsx
+```tsx FABCustomColorExample.tsx
 import { FloatingActionButton, Host } from '@expo/ui/jetpack-compose';
-import { View } from 'react-native';
 
-export default function FABVariantsExample() {
-  const variants = ['surface', 'primary', 'secondary', 'tertiary'] as const;
-
+export default function FABCustomColorExample() {
   return (
-    <View style={{ flexDirection: 'row', gap: 16 }}>
-      {variants.map((variant) => (
-        <Host key={variant} matchContents>
-          <FloatingActionButton
-            icon={require('./assets/add.xml')}
-            variant={variant}
-            onPress={() => console.log(`${variant} FAB pressed`)}
-          />
-        </Host>
-      ))}
-    </View>
+    <Host matchContents>
+      <FloatingActionButton
+        icon={require('./assets/add.xml')}
+        label="New item"
+        containerColor="#E8DEF8"
+        onPress={() => console.log('pressed')}
+      />
+    </Host>
   );
 }
 ```

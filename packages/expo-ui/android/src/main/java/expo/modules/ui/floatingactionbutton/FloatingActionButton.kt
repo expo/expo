@@ -1,12 +1,12 @@
 package expo.modules.ui.floatingactionbutton
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +22,7 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ExpoUIModule
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
+import expo.modules.ui.compose
 import expo.modules.ui.icon.Source
 import expo.modules.ui.icon.VectorIconLoader
 import expo.modules.ui.icon.rememberIconPainter
@@ -33,19 +34,12 @@ enum class FloatingActionButtonSize(val value: String) : Enumerable {
   LARGE("large")
 }
 
-enum class FloatingActionButtonVariant(val value: String) : Enumerable {
-  SURFACE("surface"),
-  PRIMARY("primary"),
-  SECONDARY("secondary"),
-  TERTIARY("tertiary")
-}
-
 data class FloatingActionButtonProps(
   val icon: Source? = null,
   val label: String? = null,
   val expanded: Boolean = true,
   val size: FloatingActionButtonSize = FloatingActionButtonSize.MEDIUM,
-  val variant: FloatingActionButtonVariant = FloatingActionButtonVariant.PRIMARY,
+  val containerColor: Color? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -58,7 +52,7 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
   val label = props.label
   val expanded = props.expanded
   val size = props.size
-  val variant = props.variant
+  val containerColor = props.containerColor?.compose ?: FloatingActionButtonDefaults.containerColor
 
   val module = appContext.registry.getModule<ExpoUIModule>()
   val iconLoader = remember(appContext) {
@@ -84,13 +78,6 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
   }
 
   val painter = rememberIconPainter(imageVector, drawable)
-
-  val containerColor = when (variant) {
-    FloatingActionButtonVariant.SURFACE -> FloatingActionButtonDefaults.containerColor
-    FloatingActionButtonVariant.PRIMARY -> MaterialTheme.colorScheme.primaryContainer
-    FloatingActionButtonVariant.SECONDARY -> MaterialTheme.colorScheme.secondaryContainer
-    FloatingActionButtonVariant.TERTIARY -> MaterialTheme.colorScheme.tertiaryContainer
-  }
 
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 

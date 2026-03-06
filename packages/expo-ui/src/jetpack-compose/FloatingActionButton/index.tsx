@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { type ImageSourcePropType, type ImageResolvedAssetSource, Image } from 'react-native';
+import { type ColorValue, type ImageSourcePropType, type ImageResolvedAssetSource, Image } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -11,15 +11,6 @@ import { createViewModifierEventListener } from '../modifiers/utils';
  * - `'large'` - Renders a `LargeFloatingActionButton`.
  */
 export type FloatingActionButtonSize = 'small' | 'medium' | 'large';
-
-/**
- * The color variant of the FloatingActionButton, following Material Design 3 container color roles.
- * - `'surface'` - Uses the surface container color.
- * - `'primary'` - Uses the primary container color.
- * - `'secondary'` - Uses the secondary container color.
- * - `'tertiary'` - Uses the tertiary container color.
- */
-export type FloatingActionButtonVariant = 'surface' | 'primary' | 'secondary' | 'tertiary';
 
 export type FloatingActionButtonProps = {
   /**
@@ -48,10 +39,10 @@ export type FloatingActionButtonProps = {
   size?: FloatingActionButtonSize;
 
   /**
-   * The color variant following Material Design 3 container color roles.
-   * @default 'primary'
+   * The background color of the button container.
+   * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
    */
-  variant?: FloatingActionButtonVariant;
+  containerColor?: ColorValue;
 
   /**
    * Callback invoked when the button is pressed.
@@ -113,7 +104,6 @@ function transformFloatingActionButtonProps(
  *   icon={require('./assets/add.xml')}
  *   label="New Item"
  *   expanded={true}
- *   variant="primary"
  *   onPress={() => console.log('pressed')}
  * />
  * ```

@@ -50,22 +50,39 @@ export default function FloatingActionButtonScreen() {
         </View>
       </View>
 
-      {/* Variants */}
+      {/* Custom container colors */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Variants</Text>
+        <Text style={styles.sectionTitle}>Custom container colors</Text>
         <View style={styles.row}>
-          {(['surface', 'primary', 'secondary', 'tertiary'] as const).map((variant) => (
-            <View key={variant} style={styles.fabWrapper}>
-              <Text style={styles.label}>{variant}</Text>
-              <Host matchContents>
-                <FloatingActionButton
-                  icon={addIcon}
-                  variant={variant}
-                  onPress={() => Alert.alert(`${variant} FAB pressed`)}
-                />
-              </Host>
-            </View>
-          ))}
+          <View style={styles.fabWrapper}>
+            <Text style={styles.label}>default</Text>
+            <Host matchContents>
+              <FloatingActionButton
+                icon={addIcon}
+                onPress={() => Alert.alert('Default FAB pressed')}
+              />
+            </Host>
+          </View>
+          <View style={styles.fabWrapper}>
+            <Text style={styles.label}>#E8DEF8</Text>
+            <Host matchContents>
+              <FloatingActionButton
+                icon={addIcon}
+                containerColor="#E8DEF8"
+                onPress={() => Alert.alert('Custom color FAB pressed')}
+              />
+            </Host>
+          </View>
+          <View style={styles.fabWrapper}>
+            <Text style={styles.label}>#FFD8E4</Text>
+            <Host matchContents>
+              <FloatingActionButton
+                icon={addIcon}
+                containerColor="#FFD8E4"
+                onPress={() => Alert.alert('Custom color FAB pressed')}
+              />
+            </Host>
+          </View>
         </View>
       </View>
 
@@ -82,36 +99,41 @@ export default function FloatingActionButtonScreen() {
               icon={editIcon}
               label="Edit"
               expanded={extended}
-              variant="primary"
               onPress={() => Alert.alert('Extended FAB pressed')}
             />
           </Host>
         </View>
         <View style={styles.row}>
-          <Text
-            style={styles.toggleButton}
-            onPress={() => setExtended((v) => !v)}>
+          <Text style={styles.toggleButton} onPress={() => setExtended((v) => !v)}>
             {extended ? 'Collapse label' : 'Expand label'}
           </Text>
         </View>
       </View>
 
-      {/* Extended variants */}
+      {/* Extended FAB with custom color */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Extended FAB variants</Text>
+        <Text style={styles.sectionTitle}>Extended FAB with custom color</Text>
         <View style={styles.column}>
-          {(['surface', 'primary', 'secondary', 'tertiary'] as const).map((variant) => (
-            <View key={variant} style={[styles.row, { marginBottom: 12 }]}>
-              <Host matchContents>
-                <FloatingActionButton
-                  icon={addIcon}
-                  label={variant.charAt(0).toUpperCase() + variant.slice(1)}
-                  variant={variant}
-                  onPress={() => Alert.alert(`${variant} Extended FAB pressed`)}
-                />
-              </Host>
-            </View>
-          ))}
+          <View style={[styles.row, { marginBottom: 12 }]}>
+            <Host matchContents>
+              <FloatingActionButton
+                icon={addIcon}
+                label="New item"
+                containerColor="#E8DEF8"
+                onPress={() => Alert.alert('Extended FAB pressed')}
+              />
+            </Host>
+          </View>
+          <View style={styles.row}>
+            <Host matchContents>
+              <FloatingActionButton
+                icon={editIcon}
+                label="Edit"
+                containerColor="#FFD8E4"
+                onPress={() => Alert.alert('Extended FAB pressed')}
+              />
+            </Host>
+          </View>
         </View>
       </View>
     </ScrollView>
