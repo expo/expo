@@ -6,7 +6,7 @@ const getPluginConfig = (props, config) => {
     return {
         bundleIdentifier: getBundleIdentifier(props, config, targetName),
         targetName,
-        usePrebuiltReactNative: props?.usePrebuiltReactNative ?? false,
+        buildReactNativeFromSource: props?.buildReactNativeFromSource ?? true,
     };
 };
 exports.getPluginConfig = getPluginConfig;

@@ -7,7 +7,7 @@ private enum PlaylistConstants {
   static let trackChanged = "trackChanged"
 }
 
-public class AudioPlaylist: SharedRef<AVQueuePlayer> {
+public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
   let id = UUID().uuidString
   private let interval: Double
   private(set) var currentRate: Float = 1.0
@@ -47,7 +47,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
   }
 
   var isBuffering: Bool {
-    playerIsBuffering()
+    ref.isBuffering(isPlaying: isPlaying)
   }
 
   var trackCount: Int {
@@ -123,8 +123,14 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
 
   func seekTo(seconds: Double) async {
     let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-    await ref.currentItem?.seek(to: time)
-    updateStatus(with: ["currentTime": currentTime])
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      ref.seek(to: time) { [weak self] _ in
+        if let self {
+          self.updateStatus(with: ["currentTime": self.currentTime])
+        }
+        continuation.resume()
+      }
+    }
   }
 
   func add(source: AudioSource) {
@@ -341,22 +347,17 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer> {
     }
   }
 
-  private func playerIsBuffering() -> Bool {
-    if isPlaying {
-      return false
-    }
+  var volume: Float {
+    get { ref.volume }
+    set { ref.volume = newValue }
+  }
 
-    if ref.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-      return true
-    }
-
-    if let currentItem = ref.currentItem {
-      return !currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
-    }
-    return true
+  func resumePlayback() {
+    play(at: currentRate)
   }
 
   public override func sharedObjectWillRelease() {
+    ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
     cancellables.removeAll()
 

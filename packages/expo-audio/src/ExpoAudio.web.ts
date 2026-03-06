@@ -1,6 +1,6 @@
 import { useEvent } from 'expo';
 import { PermissionResponse, useReleasingSharedObject } from 'expo-modules-core';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import {
   AudioMode,
@@ -10,7 +10,6 @@ import {
   AudioSource,
   AudioStatus,
   PreloadOptions,
-  RecorderState,
   RecordingOptions,
   RecordingStatus,
 } from './Audio.types';
@@ -20,7 +19,7 @@ import {
   PLAYLIST_STATUS_UPDATE,
   RECORDING_STATUS_UPDATE,
 } from './AudioEventKeys';
-import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
+import { AudioPlayer, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource, resolveSources } from './utils/resolveSource';
@@ -134,39 +133,7 @@ export function useAudioRecorder(
   return recorder;
 }
 
-export function useAudioRecorderState(recorder: AudioRecorder, interval: number = 500) {
-  const [state, setState] = useState<RecorderState>(recorder.getStatus());
-
-  useEffect(() => {
-    const int = setInterval(() => {
-      const newState = recorder.getStatus();
-
-      setState((prevState) => {
-        const meteringChanged =
-          (prevState.metering === undefined) !== (newState.metering === undefined) ||
-          (prevState.metering !== undefined &&
-            newState.metering !== undefined &&
-            Math.abs(prevState.metering - newState.metering) > 0.1);
-
-        if (
-          prevState.canRecord !== newState.canRecord ||
-          prevState.isRecording !== newState.isRecording ||
-          prevState.mediaServicesDidReset !== newState.mediaServicesDidReset ||
-          prevState.url !== newState.url ||
-          Math.abs(prevState.durationMillis - newState.durationMillis) > 50 ||
-          meteringChanged
-        ) {
-          return newState;
-        }
-        return prevState;
-      });
-    }, interval);
-
-    return () => clearInterval(int);
-  }, [recorder.id]);
-
-  return state;
-}
+export { useAudioRecorderState } from './utils/useAudioRecorderState';
 
 export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
   return await AudioModule.setIsAudioActiveAsync(active);

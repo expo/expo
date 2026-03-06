@@ -9,7 +9,7 @@ const withPodfilePlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => 
       config.modResults.contents,
       pluginConfig.targetName
     );
-    if (pluginConfig.usePrebuiltReactNative) {
+    if (!pluginConfig.buildReactNativeFromSource) {
       config.modResults.contents = addPrebuiltSettings(config.modResults.contents);
     }
     return config;

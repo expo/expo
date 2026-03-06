@@ -115,6 +115,7 @@ function AudioEvents() {
           highlight={status.didJustFinish}
         />
         <StatusRow label="isLoaded" value={status.isLoaded} />
+        <StatusRow label="loop" value={status.loop} />
         <StatusRow label="currentTime" value={status.currentTime.toFixed(2)} />
         <StatusRow label="duration" value={status.duration.toFixed(2)} />
       </View>
@@ -128,6 +129,12 @@ function AudioEvents() {
         </View>
         <View style={styles.controlsRow}>
           <Button title="Seek Near End (-2s)" onPress={seekToEnd} />
+          <Button
+            title={`Loop: ${player.loop ? 'ON' : 'OFF'}`}
+            onPress={() => {
+              player.loop = !player.loop;
+            }}
+          />
           <Button title="Clear Log" onPress={clearLog} />
         </View>
       </View>

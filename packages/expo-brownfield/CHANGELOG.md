@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [ios] rename option from 'usePrebuiltReactNative' to 'buildReactNativeFromSource' ([#43574](https://github.com/expo/expo/pull/43574) by [@pmleczek](https://github.com/pmleczek))
+
 ### 🎉 New features
 
 - [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
@@ -14,6 +16,8 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [test] add maestro e2e tests for dev menu ([#43421](https://github.com/expo/expo/pull/43421) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.11 — 2026-02-25
 

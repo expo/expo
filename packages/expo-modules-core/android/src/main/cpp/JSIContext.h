@@ -10,6 +10,7 @@
 #include "JSReferencesCache.h"
 #include "JNIDeallocator.h"
 #include "ThreadSafeJNIGlobalRef.h"
+#include "javaclasses/JSRunnable.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -113,6 +114,11 @@ public:
     jni::alias_ref<JSIContext::javaobject> javaObject,
     int objectId
   );
+
+  /**
+   * Schedules a lambda to run on the JS thread via the RuntimeScheduler.
+   */
+  void scheduleOnJSThread(jni::alias_ref<JSRunnable::javaobject> runnable);
 
   /**
    * Exposes a `JavaScriptRuntime::drainJSEventLoop` function to Kotlin

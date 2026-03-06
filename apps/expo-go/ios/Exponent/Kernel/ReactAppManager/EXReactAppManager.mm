@@ -339,9 +339,8 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
-    // Update expo-dev-menu with the current bridge and manifest
+    // Update expo-dev-menu with the manifest
     if ([self enablesDeveloperTools]) {
-      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
       [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
                                          manifestURL:_appRecord.appLoader.manifestUrl];
     }
