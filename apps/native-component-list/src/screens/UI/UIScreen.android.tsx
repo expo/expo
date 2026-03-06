@@ -154,6 +154,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./FloatingActionButtonScreen'));
     },
   },
+  {
+    name: 'HorizontalFloatingToolbar component',
+    route: 'ui/horizontal-floating-toolbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HorizontalFloatingToolbarScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
