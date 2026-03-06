@@ -764,7 +764,7 @@ describe(scanDependenciesRecursively, () => {
   });
 
   itWithMemoize(
-    'populates version for shared transitive dependency even without recursing into it',
+    'populates versions while stopping recursion at deepest dependency',
     async () => {
       vol.fromNestedJSON(
         {
