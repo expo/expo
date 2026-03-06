@@ -80,8 +80,8 @@ const getNodeStyles = (isHighlighted: boolean) => ({
     ? 'bg-palette-green9 text-palette-white'
     : 'bg-palette-blue9 text-palette-white',
   container: isHighlighted
-    ? 'bg-palette-green3 border-palette-green9 border-2 dark:bg-palette-green4 dark:border-palette-green8 !border-palette-green9 dark:!border-palette-green8 !bg-palette-green3 dark:!bg-palette-green4'
-    : 'bg-palette-blue3 border-palette-blue9 border-2 dark:bg-palette-blue4 dark:border-palette-blue8 !border-palette-blue9 dark:!border-palette-blue8 !bg-palette-blue3 dark:!bg-palette-blue4',
+    ? 'bg-palette-green3 border-palette-green9 border-2 dark:bg-palette-green4 dark:border-palette-green8 border-palette-green9! dark:border-palette-green8! bg-palette-green3! dark:bg-palette-green4!'
+    : 'bg-palette-blue3 border-palette-blue9 border-2 dark:bg-palette-blue4 dark:border-palette-blue8 border-palette-blue9! dark:border-palette-blue8! bg-palette-blue3! dark:bg-palette-blue4!',
 });
 
 const createNodeLabel = (data: NodeData, isHighlighted: boolean) => {
@@ -171,7 +171,7 @@ export const ConfigPluginHierarchy: React.FC<ConfigPluginHierarchyProps> = ({
 
   return (
     <div
-      className="mb-4 h-[300px] w-full overflow-hidden rounded-lg border border-default bg-default"
+      className="border-default bg-default mb-4 h-[300px] w-full overflow-hidden rounded-lg border"
       data-md="diagram"
       data-md-alt={diagramAlt}>
       <style dangerouslySetInnerHTML={{ __html: nodeHandleStyles }} />

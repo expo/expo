@@ -15,7 +15,7 @@ export const FileStatus = ({ type }: FileStatusProps) => {
   return (
     <div
       className={mergeClasses(
-        'inline-flex h-[21px] items-center gap-1 rounded-sm border px-1.5 py-1 text-3xs font-semibold',
+        'text-3xs inline-flex h-[21px] items-center gap-1 rounded-sm border px-1.5 py-1 font-semibold',
         getStatusTheme(type)
       )}>
       {STATUS_LABELS[type]}

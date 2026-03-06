@@ -341,7 +341,7 @@ export default function DocumentationPage({
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'bg-gradient-to-b from-default to-transparent opacity-90'
+            'from-default bg-linear-to-b to-transparent opacity-90'
           )}
         />
         <main
@@ -350,7 +350,7 @@ export default function DocumentationPage({
             'max-lg-gutters:px-4 max-lg-gutters:pt-5'
           )}>
           {version && version === 'unversioned' && (
-            <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
+            <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
               <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
               {versionToText(LATEST_VERSION)}).

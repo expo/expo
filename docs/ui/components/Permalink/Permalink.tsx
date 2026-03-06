@@ -52,7 +52,7 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
       <Button
         theme="quaternary"
         className={mergeClasses(
-          'relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all duration-default',
+          'duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all',
           'invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100',
           isDeepNested && 'size-[22px] min-w-[22px]',
           props.additionalProps?.className
