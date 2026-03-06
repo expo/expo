@@ -2,8 +2,7 @@ package expo.modules.devlauncher.services
 
 import android.app.Application
 import expo.modules.devlauncher.nsd.NsdDiscovery
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import okhttp3.OkHttpClient
 
 data class PackagerInfo(
   val url: String,
@@ -11,17 +10,22 @@ data class PackagerInfo(
 )
 
 class PackagerService(
-  application: Application
+  application: Application,
+  httpClient: OkHttpClient
 ) {
-  private var nsdDiscovery = NsdDiscovery(application)
-
-  private val _isLoading = MutableStateFlow(false)
-
+  private var nsdDiscovery = NsdDiscovery(application, httpClient)
   val runningPackagers = nsdDiscovery.discoveredPackagers
-  val isLoading = _isLoading.asStateFlow()
 
   fun start() {
     nsdDiscovery.start()
+  }
+
+  fun resumeHealthCheck() {
+    nsdDiscovery.resumeHealthCheck()
+  }
+
+  fun pauseHealthCheck() {
+    nsdDiscovery.pauseHealthCheck()
   }
 
   fun stop() {

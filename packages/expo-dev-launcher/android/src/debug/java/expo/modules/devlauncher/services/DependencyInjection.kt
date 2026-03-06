@@ -68,7 +68,7 @@ object DependencyInjection {
 
     errorRegistryService = ErrorRegistryService(context.applicationContext)
 
-    packagerService = PackagerService(application)
+    packagerService = PackagerService(application, httpClientService.httpClient)
 
     wasInitialized = true
   }
