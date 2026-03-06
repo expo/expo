@@ -72,7 +72,7 @@ export function mergeWithDuplicate(
     } else if (pathDepthB < pathDepthA) {
       target = b;
       duplicate = a;
-    } else if (b < a) {
+    } else if (b.originPath < a.originPath) {
       target = b;
       duplicate = a;
     } else {
