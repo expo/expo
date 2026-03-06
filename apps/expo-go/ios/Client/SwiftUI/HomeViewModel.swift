@@ -27,6 +27,7 @@ class HomeViewModel: ObservableObject {
   @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
   @Published var isLoadingApp = false
+  @Published var pendingLessonId: Int?
   @Published var dataError: APIError?
 
   private var cancellables = Set<AnyCancellable>()

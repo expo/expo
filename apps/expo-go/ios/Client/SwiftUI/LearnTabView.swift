@@ -77,6 +77,11 @@ struct LearnTabView: View {
     .navigationTitle("Learn")
     .onAppear {
       viewModel.settingsManager.refreshCompletedLessons()
+      if let lessonId = viewModel.pendingLessonId,
+         let lesson = Lesson.allLessons.first(where: { $0.id == lessonId }) {
+        viewModel.pendingLessonId = nil
+        startLesson(lesson)
+      }
     }
     .onChange(of: viewModel.isLoadingApp) { isLoading in
       // Clear local loading state when global loading completes
