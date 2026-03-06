@@ -26,6 +26,7 @@ void JSIContext::registerNatives() {
                    makeNativeMethod("evaluateVoidScript", JSIContext::evaluateVoidScript),
                    makeNativeMethod("global", JSIContext::global),
                    makeNativeMethod("createObject", JSIContext::createObject),
+                   makeNativeMethod("scheduleOnJSThread", JSIContext::scheduleOnJSThread),
                    makeNativeMethod("drainJSEventLoop", JSIContext::drainJSEventLoop),
                    makeNativeMethod("setNativeStateForSharedObject",
                                     JSIContext::jniSetNativeStateForSharedObject),
@@ -148,6 +149,13 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::global() noexcept {
 
 jni::local_ref<JavaScriptObject::javaobject> JSIContext::createObject() noexcept {
   return runtimeHolder->createObject();
+}
+
+void JSIContext::scheduleOnJSThread(jni::alias_ref<JSRunnable::javaobject> runnable) {
+  auto ref = jni::make_global(runnable);
+  runtimeHolder->jsInvoker->invokeAsync([ref = std::move(ref)](jsi::Runtime &) {
+    ref->run();
+  });
 }
 
 void JSIContext::drainJSEventLoop() {

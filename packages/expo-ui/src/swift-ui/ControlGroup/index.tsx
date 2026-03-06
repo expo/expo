@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { type ReactNode, type ComponentType } from 'react';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -39,11 +40,6 @@ const ControlGroupNativeView: ComponentType<NativeControlGroupProps> = requireNa
   'ControlGroupView'
 );
 
-const ControlGroupNativeLabelView: ComponentType<{ children: ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'ControlGroupLabel'
-);
-
 export function ControlGroup(props: ControlGroupProps) {
   const { label, children, systemImage, modifiers, ...rest } = props;
 
@@ -56,9 +52,7 @@ export function ControlGroup(props: ControlGroupProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...rest}>
-      {!isStringLabel && label != null ? (
-        <ControlGroupNativeLabelView>{label}</ControlGroupNativeLabelView>
-      ) : null}
+      {!isStringLabel && label != null ? <Slot name="label">{label}</Slot> : null}
       {children}
     </ControlGroupNativeView>
   );

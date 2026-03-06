@@ -15,9 +15,8 @@ file(
   "${main_dir}/decorators/*.cpp"
   "${main_dir}/installers/*.cpp"
   "${main_dir}/worklets/*.cpp"
+  "${main_dir}/fabric/*.cpp"
 )
-
-file(GLOB fabric_andorid_sources "${ANDROID_SRC_DIR}/fabric/*.cpp")
 
 add_library(
   expo-modules-core

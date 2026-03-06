@@ -128,6 +128,25 @@ To verify if the types used in tests are correct, run:
 yarn test:types
 ```
 
+### Swift Tests (iOS)
+
+Native Swift tests live in `ios/Tests/` and use Apple's Swift Testing framework (`import Testing`).
+
+Run from the `packages/expo-router` directory:
+
+```bash
+et native-unit-tests --packages expo-router -p ios
+```
+
+> Pods must be installed in `apps/native-tests/ios` first (`pod install`).
+
+**Conventions:**
+
+- Use `@Test` / `@Suite` from Swift Testing (not XCTest)
+- Backtick-quoted test names for readability (e.g., `` @Test func `converts options correctly`() ``)
+- Inner structs for grouping related tests within a `@Suite`
+- `#expect` / `#require` for assertions
+
 ### Testing Patterns
 
 Tests use the custom `renderRouter` testing utility:

@@ -120,7 +120,7 @@ jobs:
       - uses: eas/install_node_modules
       - name: Install CocoaPods
         working_directory: ../brownfield-tester
-        run: pod install --project-directory=ios
+        run: bunx pod-install
       - name: Build iOS (Debug)
         working_directory: ../brownfield-tester
         env:

@@ -295,6 +295,7 @@ export async function instantiateMetroAsync(
   messageSocket: MessageSocket;
 }> {
   const projectRoot = metroBundler.projectRoot;
+  const getMetroBundler = () => metro.getBundler().getBundler();
 
   const {
     config: metroConfig,
@@ -303,14 +304,14 @@ export async function instantiateMetroAsync(
   } = await loadMetroConfigAsync(projectRoot, options, {
     exp,
     isExporting,
-    getMetroBundler() {
-      return metro.getBundler().getBundler();
-    },
+    getMetroBundler,
   });
 
   // Create the core middleware stack for Metro, including websocket listeners
-  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
-    createMetroMiddleware(metroConfig);
+  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
+    metroConfig,
+    { getMetroBundler }
+  );
 
   // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
   const serverBaseUrl = metroBundler

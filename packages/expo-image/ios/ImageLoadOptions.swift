@@ -5,7 +5,8 @@ import ExpoModulesCore
 internal struct ImageLoadOptions: Record {
   @Field var maxWidth: Int?
   @Field var maxHeight: Int?
-
+  @Field var tintColor: UIColor? = nil
+    
   func getMaxSize() -> CGSize? {
     // If none of max dimensions are provided, just use the original image without the upper limit.
     // This is important for vector images, where using `CGSize(.max, .max)`
