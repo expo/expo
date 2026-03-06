@@ -100,7 +100,7 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
         else {
             resolution.version = packageJson.version || '';
         }
-        if (!hasVisitedPath && depth + 1 < maxDepth) {
+        if (!hasVisitedPath && depth < maxDepth) {
             const modules = await resolveDependencies(packageJson, nodeModulePaths, depth, shouldIncludeDependency);
             for (let idx = 0; idx < modules.length; idx++) {
                 searchResults[modules[idx].name] = modules[idx];
