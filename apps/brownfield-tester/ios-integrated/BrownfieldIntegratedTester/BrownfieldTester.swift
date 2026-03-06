@@ -61,23 +61,41 @@ class BrownfieldTester: ObservableObject {
         stateListeners.append(contentsOf: [
             BrownfieldState.subscribe("number") { number in
                 if let cast = number as? Double {
-                    print(cast)
+                    print("BrownfieldState \(cast)")
+                    if cast == 1 {
+                        BrownfieldState.set("number", 2)
+                    }
                 }
             },
             BrownfieldState.subscribe("string", as: String.self) { string in
-                print(string)
+                print("BrownfieldState \(string)")
+                if string == "exex" {
+                  BrownfieldState.set("string", string + "po")
+                }
             },
             BrownfieldState.subscribe("boolean") { bool in
                 if let cast = bool as? Bool {
-                    print(cast)
+                    print("BrownfieldState \(String(describing: bool))")
                 }
             },
             BrownfieldState.subscribe("array", as: [Any].self) { array in
-                print(array)
+                print("BrownfieldState \(array)")
+                if array.count == 3 {
+                    var modified = array
+                    BrownfieldState.set("array", modified.append(contentsOf: [
+                        ["a": "b"],
+                        2.34,
+                    ]))
+                }
             },
             BrownfieldState.subscribe("object") { obj in
                 if let cast = obj as? [String: Any?] {
-                    print(cast)
+                    print("BrownfieldState \(cast)")
+                    if cast["d"] == nil && cast["a"] != nil {
+                        var modified = cast
+                        modified["d"] = [["e": "f"]]
+                        BrownfieldState.set("object", modified)
+                    }
                 }
             },
         ])

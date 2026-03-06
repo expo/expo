@@ -53,3 +53,31 @@ appId: dev.expo.brownfieldintegratedtester
     id: object-set-button
 - assertVisible: '.*"a":\{"b":"c"\}.*'
 - assertVisible: '.*"d":\[\{"e":"f"\}\].*'
+
+# Validate property wrappers (SwiftUI)
+# 
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      # Return to initial native view
+      - swipe:
+          direction: RIGHT
+      - swipe:
+          direction: RIGHT
+      # Open Shared State native screen
+      - tapOn:
+          id: openStateView
+      # Assert value from JS is received
+      - assertVisible: 'Time: 2[0-9]{3}.*'
+      # Assert property wrapper works
+      - assertVisible: "0"
+      - tapOn:
+          id: counterIncrement
+      - assertVisible: "1"
+      - tapOn:
+          id: counterDecrement
+      - tapOn:
+          id: counterDecrement
+      - assertVisible: "-1"
+      

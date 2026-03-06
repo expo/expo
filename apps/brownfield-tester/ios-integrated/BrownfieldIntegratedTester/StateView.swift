@@ -8,7 +8,7 @@ struct StateView: View {
     
     var body: some View {
         VStack {
-            Text(time ?? "")
+            Text("Time: \(time ?? "")")
             Button(action: {
                 BrownfieldState.delete("time-js")
             }) {
@@ -23,11 +23,14 @@ struct StateView: View {
                 }) {
                     Image(systemName: "plus")
                 }
+                .accessibilityIdentifier("counterIncrement")
+                
                 Button(action: {
                     counter = (counter ?? 0) - 1
                 }) {
                     Image(systemName: "minus")
                 }
+                .accessibilityIdentifier("counterDecrement")
             }
         }
     }
