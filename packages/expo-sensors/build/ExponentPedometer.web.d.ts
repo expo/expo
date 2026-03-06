@@ -1,10 +1,11 @@
 declare const _default: {
     isAvailableAsync(): Promise<boolean>;
     isRecordingAvailableAsync(): Promise<boolean>;
-    startEventUpdates(): Promise<boolean>;
+    isEventTrackingAvailableAsync(): Promise<boolean>;
+    startEventUpdates(): Promise<void>;
     stopEventUpdates(): Promise<void>;
-    subscribeRecording(): Promise<void>;
-    unsubscribeRecording(): Promise<void>;
+    subscribeRecordingAsync(): Promise<void>;
+    unsubscribeRecordingAsync(): Promise<void>;
     addListener(): {
         remove(): void;
     };

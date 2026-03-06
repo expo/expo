@@ -56,7 +56,7 @@ function usePedometerHistory({
       }
 
       if (Platform.OS === 'android') {
-        await Pedometer.subscribeRecording();
+        await Pedometer.subscribeRecordingAsync();
       }
 
       const result = await Pedometer.getStepCountAsync(start, end);
@@ -83,8 +83,8 @@ function usePedometerEvents() {
     isMounted.current = true;
     let subscription: Pedometer.Subscription | null = null;
 
-    Pedometer.startEventUpdatesAsync()
-      .then((available) => {
+    Pedometer.isEventTrackingAvailableAsync()
+      .then(async (available) => {
         if (!isMounted.current) {
           return;
         }
@@ -92,6 +92,7 @@ function usePedometerEvents() {
         if (!available) {
           return;
         }
+        await Pedometer.startEventUpdatesAsync();
         subscription = Pedometer.watchEventUpdates((event) => {
           if (isMounted.current) {
             setLastEvent(event);

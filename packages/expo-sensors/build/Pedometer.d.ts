@@ -26,7 +26,7 @@ export type PedometerUpdateCallback = (result: PedometerResult) => void;
  * > Pedometer updates will not be delivered while the app is in the background.
  * The `getStepCountAsync` method can be used to get the step count between two dates.
  * On Android, historical step counts require Play Services Recording API support and an active
- * `subscribeRecording()` subscription.
+ * `subscribeRecordingAsync()` subscription.
  *
  * @param callback A callback that is invoked when new step count data is available. The callback is
  * provided with a single argument that is [`PedometerResult`](#pedometerresult).
@@ -51,20 +51,26 @@ export declare function watchEventUpdates(callback: PedometerEventCallback): Eve
  * On iOS, historical data is collected automatically (up to seven days).
  *
  * > **Note:** On Android, this checks whether the required Play Services Recording API components are available.
- * > Step history is only accessible while there is an active `subscribeRecording()` subscription.
+ * > Step history is only accessible while there is an active `subscribeRecordingAsync()` subscription.
  *
  * @return a promise that fulfills with a `boolean`, indicating whether
  * historical step count data is available on this device.
  */
 export declare function isRecordingAvailableAsync(): Promise<boolean>;
 /**
- * Start pedometer pause/resume event tracking.
- * Resolves to `false` when the platform does not support pedometer events.
+ * Check whether pedometer pause/resume event tracking is supported on this device.
  *
  * @platform android
  * @platform ios
  */
-export declare function startEventUpdatesAsync(): Promise<boolean>;
+export declare function isEventTrackingAvailableAsync(): Promise<boolean>;
+/**
+ * Start pedometer pause/resume event tracking.
+ *
+ * @platform android
+ * @platform ios
+ */
+export declare function startEventUpdatesAsync(): Promise<void>;
 /**
  * Stop pedometer pause/resume event tracking.
  *
@@ -76,7 +82,7 @@ export declare function stopEventUpdatesAsync(): Promise<void>;
  * Subscribe to pedometer tracking. Step count will be tracked by Google Play Services
  * Recording API, if available, until unsubscribed. Subsequent calls are safe and ignored.
  *
- * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
+ * As [Android's documentation states](https://developer.android.com/health-and-fitness/recording-api):
  * > **Note:** `LocalRecordingClient` stores up to 10 days of data.
  * > Data is only accessible while there is an active subscription.
  *
@@ -84,11 +90,11 @@ export declare function stopEventUpdatesAsync(): Promise<void>;
  *
  * @platform android
  */
-export declare function subscribeRecording(): Promise<void>;
+export declare function subscribeRecordingAsync(): Promise<void>;
 /**
  * Unsubscribe from pedometer tracking.
  *
- * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
+ * As [Android's documentation states](https://developer.android.com/health-and-fitness/recording-api):
  * > **Note:** To free up resources, you should make sure to unsubscribe from
  * > the collection of sensor data when your app is no longer in need of it.
  * > Unsubscribing will also reset the historical data that was collected.
@@ -97,7 +103,7 @@ export declare function subscribeRecording(): Promise<void>;
  *
  * @platform android
  */
-export declare function unsubscribeRecording(): Promise<void>;
+export declare function unsubscribeRecordingAsync(): Promise<void>;
 /**
  * Get the step count between two dates.
  *
@@ -105,11 +111,11 @@ export declare function unsubscribeRecording(): Promise<void>;
  * > Only the past seven days worth of data is stored and available for you to retrieve. Specifying
  * > a start date that is more than seven days in the past returns only the available data.
  *
- * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
+ * As [Android's documentation states](https://developer.android.com/health-and-fitness/recording-api):
  * > **Note:** `LocalRecordingClient` stores up to 10 days of data.
  * > Data is only accessible while there is an active subscription.
  *
- * On Android, call `subscribeRecording()` before querying step history and keep it active if you want
+ * On Android, call `subscribeRecordingAsync()` before querying step history and keep it active if you want
  * the previous days to be available.
  *
  * @param start A date indicating the start of the range over which to measure steps.

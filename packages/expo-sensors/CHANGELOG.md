@@ -6,9 +6,9 @@
 
 ### 🎉 New features
 
-- Added pedometer pause/resume event helpers (`startEventUpdatesAsync`, `stopEventUpdatesAsync`, `watchEventUpdates`) via `Pedometer` ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
+- Added pedometer pause/resume event helpers (`isEventTrackingAvailableAsync`, `startEventUpdatesAsync`, `stopEventUpdatesAsync`, `watchEventUpdates`) via `Pedometer` ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
 - [Android] Implemented `getStepCountAsync` for `Pedometer` ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
-- [Android] Added Recording API related functions to `Pedometer` ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
+- [Android] Added Recording API related functions to `Pedometer` (`subscribeRecordingAsync`, `unsubscribeRecordingAsync`) ([#35652](https://github.com/expo/expo/pull/35652) by [@Krisztiaan](https://github.com/Krisztiaan))
 
 ### 🐛 Bug fixes
 
