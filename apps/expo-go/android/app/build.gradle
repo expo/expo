@@ -59,7 +59,7 @@ android {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 229
-    versionName '55.0.3'
+    versionName '55.0.4'
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
