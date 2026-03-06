@@ -2,6 +2,7 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,10 @@ internal data class RNHostViewProps(
 @SuppressLint("ViewConstructor")
 internal class RNHostView(context: Context, appContext: AppContext) :
   ExpoComposeView<RNHostViewProps>(context, appContext) {
+  companion object {
+    private const val TAG = "RNHostView"
+  }
+
   override val props = RNHostViewProps()
 
   private val childViewState = mutableStateOf<View?>(null)
@@ -51,6 +56,8 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       val reactContext = child.context as? ReactContext
       if (reactContext != null) {
         eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, child.id)
+      } else {
+        Log.e(TAG, "RNHostView: child context is not a ReactContext, touch events will not be dispatched to JS")
       }
       addView(child, FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
     }
@@ -59,6 +66,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
   override fun removeView(view: View) {
     if (view == childViewState.value) {
+      wrapperState.value?.removeView(view)
       childViewState.value = null
       wrapperState.value = null
     } else {
@@ -67,6 +75,9 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   }
 
   override fun removeViewAt(index: Int) {
+    childViewState.value?.let { child ->
+      wrapperState.value?.removeView(child)
+    }
     childViewState.value = null
     wrapperState.value = null
   }
