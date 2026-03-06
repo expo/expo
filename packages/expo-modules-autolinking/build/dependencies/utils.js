@@ -70,7 +70,11 @@ function mergeWithDuplicate(a, b) {
             target = b;
             duplicate = a;
         }
-        else if (b < a) {
+        else if (b.source < a.source) {
+            target = b;
+            duplicate = a;
+        }
+        else if (b.originPath < a.originPath) {
             target = b;
             duplicate = a;
         }
