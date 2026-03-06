@@ -20,16 +20,7 @@ onFlowStart:
     when:
       platform: android
     commands:
-      - extendedWaitUntil:
-          visible: New development server
-          timeout: 1800000
-      - tapOn:
-          label: Tap on "New development server"
-          text: New development server
-      - tapOn:
-          label: Tap on "Updates URL" text field
-          text: '.*exp:.*'
-          below: New development server
+      - tapOn: exp://
 - inputText:
     label: Input local update server URL
     text: "http://localhost:8081\n"
