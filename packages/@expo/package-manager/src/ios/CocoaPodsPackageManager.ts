@@ -1,9 +1,11 @@
 import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import chalk from 'chalk';
-import { existsSync } from 'fs';
+import fs from 'fs';
 import { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
+
+import { isUsingBundlerAsync } from './gemfile';
 
 export type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
 
@@ -35,6 +37,7 @@ export class CocoaPodsPackageManager {
   options: SpawnOptions;
 
   private silent: boolean;
+  private cwd: string;
 
   static getPodProjectRoot(projectRoot: string): string | null {
     if (CocoaPodsPackageManager.isUsingPods(projectRoot)) return projectRoot;
@@ -46,9 +49,10 @@ export class CocoaPodsPackageManager {
   }
 
   static isUsingPods(projectRoot: string): boolean {
-    return existsSync(path.join(projectRoot, 'Podfile'));
+    return fs.existsSync(path.join(projectRoot, 'Podfile'));
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async gemInstallCLIAsync(
     nonInteractive: boolean = false,
     spawnOptions: SpawnOptions = { stdio: 'inherit' }
@@ -74,16 +78,19 @@ export class CocoaPodsPackageManager {
     }
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async brewLinkCLIAsync(spawnOptions: SpawnOptions = { stdio: 'inherit' }): Promise<void> {
     await spawnAsync('brew', ['link', 'cocoapods'], spawnOptions);
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async brewInstallCLIAsync(
     spawnOptions: SpawnOptions = { stdio: 'inherit' }
   ): Promise<void> {
     await spawnAsync('brew', ['install', 'cocoapods'], spawnOptions);
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#installCLIAsync` instead */
   static async installCLIAsync({
     nonInteractive = false,
     spawnOptions = { stdio: 'inherit' },
@@ -159,25 +166,55 @@ export class CocoaPodsPackageManager {
     return true;
   }
 
+  /** @deprecated: Use `CocoaPodsPackageManager#isCLIInstalledAsync` instead */
   static async isCLIInstalledAsync(
-    spawnOptions: SpawnOptions = { stdio: 'inherit' }
+    spawnOptions: SpawnOptions = { stdio: 'inherit' },
+    { useBundler = false }: { useBundler?: boolean } = {}
   ): Promise<boolean> {
     try {
-      await spawnAsync('pod', ['--version'], spawnOptions);
+      if (useBundler) {
+        await spawnAsync('bundle', ['exec', 'pod', '--version'], spawnOptions);
+      } else {
+        await spawnAsync('pod', ['--version'], spawnOptions);
+      }
       return true;
-    } catch {
+    } catch (error: any) {
+      // NOTE(@kitten): We abort here to prevent any command from proceeding
+      // We don't want to trigger `installCLIAsync` and let users resolve this
+      if (useBundler) {
+        console.warn(chalk.yellow(`\u203A Failed to run \`bundle exec pod\``));
+        throw new CocoaPodsError(error.stderr, 'COMMAND_FAILED');
+      }
       return false;
     }
   }
 
-  constructor({ cwd, silent }: { cwd: string; silent?: boolean }) {
+  constructor({
+    cwd,
+    silent,
+    useBundler,
+  }: {
+    cwd: string;
+    silent?: boolean;
+    useBundler?: boolean;
+  }) {
     this.silent = !!silent;
+    this.cwd = cwd;
     this.options = {
       cwd,
       // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
       // Later we'll also pipe the stdout/stderr to the terminal when silent is false.
       stdio: 'pipe',
     };
+    // NOTE(@kitten): Override for tests
+    if (useBundler != null) {
+      this._useBundler = Promise.resolve(useBundler);
+    }
+  }
+
+  private _useBundler?: Promise<boolean>;
+  async #useBundlerAsync() {
+    return (this._useBundler ||= isUsingBundlerAsync(this.cwd));
   }
 
   get name() {
@@ -189,14 +226,25 @@ export class CocoaPodsPackageManager {
     await this._installAsync({ spinner });
   }
 
-  public isCLIInstalledAsync() {
-    return CocoaPodsPackageManager.isCLIInstalledAsync(this.options);
+  public async isCLIInstalledAsync() {
+    return CocoaPodsPackageManager.isCLIInstalledAsync(this.options, {
+      useBundler: await this.#useBundlerAsync(),
+    });
   }
 
-  public installCLIAsync() {
+  public installCLIAsync({
+    nonInteractive = true,
+    spawnOptions,
+  }: {
+    nonInteractive?: boolean;
+    spawnOptions?: spawnAsync.SpawnOptions;
+  } = {}) {
     return CocoaPodsPackageManager.installCLIAsync({
-      nonInteractive: true,
-      spawnOptions: this.options,
+      nonInteractive,
+      spawnOptions: {
+        ...this.options,
+        ...spawnOptions,
+      },
     });
   }
 
@@ -349,7 +397,9 @@ export class CocoaPodsPackageManager {
   }
 
   async versionAsync() {
-    const { stdout } = await spawnAsync('pod', ['--version'], this.options);
+    const { stdout } = (await this.#useBundlerAsync())
+      ? await spawnAsync('bundle', ['exec', 'pod', '--version'], this.options)
+      : await spawnAsync('pod', ['--version'], this.options);
     return stdout.trim();
   }
 
@@ -382,27 +432,24 @@ export class CocoaPodsPackageManager {
 
   // Exposed for testing
   async _runAsync(args: string[]): Promise<SpawnResult> {
-    if (!this.silent) {
-      console.log(`> pod ${args.join(' ')}`);
-    }
-    const promise = spawnAsync(
-      'pod',
-      [
-        ...args,
-        // Enables colors while collecting output.
-        '--ansi',
-      ],
-      {
-        // Add the cwd and other options to the spawn options.
-        ...this.options,
-        // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
-        // This is particularly required for the `pod install --repo-update` error.
+    const useBundler = await this.#useBundlerAsync();
+    const [command, commandArgs] = useBundler
+      ? ['bundle', ['exec', 'pod', ...args, '--ansi']]
+      : ['pod', [...args, '--ansi']];
 
-        // Later we'll also pipe the stdout/stderr to the terminal when silent is false,
-        // currently this means we lose out on the ansi colors unless passing the `--ansi` flag to every command.
-        stdio: 'pipe',
-      }
-    );
+    if (!this.silent) {
+      console.log(`> ${useBundler ? 'bundle exec pod' : 'pod'} ${args.join(' ')}`);
+    }
+    const promise = spawnAsync(command, commandArgs, {
+      // Add the cwd and other options to the spawn options.
+      ...this.options,
+      // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
+      // This is particularly required for the `pod install --repo-update` error.
+
+      // Later we'll also pipe the stdout/stderr to the terminal when silent is false,
+      // currently this means we lose out on the ansi colors unless passing the `--ansi` flag to every command.
+      stdio: 'pipe',
+    });
 
     if (!this.silent) {
       // If not silent, pipe the stdout/stderr to the terminal.

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
