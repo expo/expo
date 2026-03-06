@@ -249,6 +249,7 @@ jobs:
         run: |
           yarn start --clear &
           npx wait-on http://localhost:8081 --timeout 60000
+        working-directory: apps/brownfield-tester/expo-app
       - name: 🧪 Run e2e tests (Debug)
         run: CONFIGURATION=Debug ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
       - name: 💾 Save ccache
