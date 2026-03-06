@@ -55,7 +55,7 @@ appId: dev.expo.brownfieldintegratedtester
 - assertVisible: '.*"d":\[\{"e":"f"\}\].*'
 
 # Validate property wrappers (SwiftUI)
-# 
+# and validate JS to native synchronization
 - runFlow:
     when:
       platform: iOS
