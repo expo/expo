@@ -1,5 +1,4 @@
-import { Box, FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
-import { align, fillMaxSize, offset } from '@expo/ui/jetpack-compose/modifiers';
+import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -139,16 +138,12 @@ export default function FloatingActionButtonScreen() {
         </View>
       </ScrollView>
 
-      {/* Floating FAB over the entire screen using Compose Box + align */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-        <Host style={styles.screen}>
-          <Box modifiers={[fillMaxSize()]}>
-            <FloatingActionButton
-              modifiers={[align('bottomEnd'), offset(-24, -24)]}
-              onPress={() => Alert.alert('Floating FAB pressed')}>
-              <Icon source={addIcon} />
-            </FloatingActionButton>
-          </Box>
+      {/* Floating FAB — positioned over content like in a real app */}
+      <View style={styles.floatingFab}>
+        <Host matchContents>
+          <FloatingActionButton onPress={() => Alert.alert('Floating FAB pressed')}>
+            <Icon source={addIcon} />
+          </FloatingActionButton>
         </Host>
       </View>
     </View>
@@ -233,5 +228,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8f0fe',
     borderRadius: 8,
     overflow: 'hidden',
+  },
+  floatingFab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
   },
 });
