@@ -26,8 +26,8 @@ onFlowStart:
       platform: android
     commands:
       - extendedWaitUntil:
-          visible: 'New development server'
-          timeout: 30000
+          visible: New development server
+          timeout: 1800000
       - tapOn:
           label: Tap on "New development server"
           text: New development server
