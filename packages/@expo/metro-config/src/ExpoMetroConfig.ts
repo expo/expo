@@ -398,6 +398,8 @@ export function getDefaultConfig(
       workletsVersion,
       // Ensure invalidation when using identical projects in monorepos
       _expoRelativeProjectRoot: path.relative(serverRoot, projectRoot),
+      // Ensure cache isolation between git worktrees or copies of the same project
+      _expoServerRoot: serverRoot,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,

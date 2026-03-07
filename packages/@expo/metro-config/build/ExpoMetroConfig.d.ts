@@ -92,6 +92,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         reanimatedVersion: string | null;
         workletsVersion: string | null;
         _expoRelativeProjectRoot: string;
+        _expoServerRoot: string;
         unstable_allowRequireContext: true;
         allowOptionalDependencies: true;
         babelTransformerPath: string;
