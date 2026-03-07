@@ -81,6 +81,25 @@ describe('RustMath module', () => {
     expect(RustMath.clamp(-5, 0, 10)).toBe(0);
     expect(RustMath.clamp(15, 0, 10)).toBe(10);
   });
+
+  // 5-parameter function
+  test('sum5 adds five numbers', () => {
+    expect(RustMath.sum5(1, 2, 3, 4, 5)).toBe(15);
+  });
+
+  // Async functions
+  test('factorial returns a promise that resolves correctly', async () => {
+    expect(await RustMath.factorial(0)).toBe(1);
+    expect(await RustMath.factorial(5)).toBe(120);
+    expect(await RustMath.factorial(10)).toBe(3628800);
+  });
+
+  test('is_prime returns a promise that resolves correctly', async () => {
+    expect(await RustMath.is_prime(2)).toBe(true);
+    expect(await RustMath.is_prime(17)).toBe(true);
+    expect(await RustMath.is_prime(4)).toBe(false);
+    expect(await RustMath.is_prime(1)).toBe(false);
+  });
 });
 
 describe('RustString module', () => {

@@ -56,7 +56,7 @@ pub mod value;
 pub mod prelude {
     pub use crate::module::{ExpoModule, ModuleBuilder, ModuleDefinition, ModuleRegistry};
     pub use crate::value::{
-        ExpoError, FromJsValue, IntoJsValue, JsArray, JsObject, JsValue, Runtime,
+        ExpoError, FromJsValue, IntoJsValue, JsArray, JsObject, JsValue, PromiseHandle, Runtime,
     };
     pub use expo_module_macro::expo_module;
 }

@@ -97,6 +97,17 @@ pub mod ffi {
 
         // Throw a JS error
         fn jsi_throw_error(rt: &RuntimeHandle, message: &str);
+
+        // Promise creation — returns an object FfiValue.
+        // The object has properties "promise", "resolve", "reject" (all handles).
+        fn jsi_create_promise(rt: &RuntimeHandle) -> FfiValue;
+
+        // Call a JS function (e.g. resolve/reject) with a single argument
+        fn jsi_call_function(
+            rt: &RuntimeHandle,
+            fn_handle: u64,
+            arg: &FfiValue,
+        );
     }
 
     // Rust functions callable from C++

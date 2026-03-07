@@ -332,6 +332,32 @@ impl<T: FromJsValue> FromJsValue for Option<T> {
     }
 }
 
+// ---- Promise handle ----
+
+/// Handle to a JS Promise's resolve/reject pair.
+/// Used by async functions to settle the promise when work completes.
+pub struct PromiseHandle {
+    pub(crate) promise_obj_handle: u64,
+    pub(crate) resolve_handle: u64,
+    pub(crate) reject_handle: u64,
+    pub(crate) rt_handle: ffi::RuntimeHandle,
+}
+
+impl PromiseHandle {
+    /// Resolve the promise with a value. Consumes the handle.
+    pub fn resolve(self, value: JsValue) {
+        let ffi_val = value.to_ffi();
+        ffi::jsi_call_function(&self.rt_handle, self.resolve_handle, &ffi_val);
+    }
+
+    /// Reject the promise with an error message. Consumes the handle.
+    pub fn reject(self, error: impl Into<String>) {
+        let msg = error.into();
+        let ffi_val = ffi::jsi_make_string(msg.as_str());
+        ffi::jsi_call_function(&self.rt_handle, self.reject_handle, &ffi_val);
+    }
+}
+
 // ---- JsObject operations ----
 
 impl JsObject {
@@ -373,6 +399,31 @@ impl Runtime {
     pub fn create_array(&self, length: u32) -> JsArray {
         let ffi = ffi::jsi_create_array(&self.handle, length);
         JsArray { handle: ffi.handle }
+    }
+
+    /// Create a JS Promise and return handles to the promise, resolve, and reject.
+    /// The returned object has the promise's JSI handle; resolve/reject are in the PromiseHandle.
+    pub fn create_promise(&self) -> (JsObject, PromiseHandle) {
+        let result = ffi::jsi_create_promise(&self.handle);
+        // The result is an object with "promise", "resolve", "reject" as number properties.
+        // We need to extract the handles from the object.
+        let promise_val = ffi::jsi_object_get_property(&self.handle, result.handle, "promise");
+        let resolve_val = ffi::jsi_object_get_property(&self.handle, result.handle, "resolve");
+        let reject_val = ffi::jsi_object_get_property(&self.handle, result.handle, "reject");
+
+        let promise_handle = promise_val.number_val as u64;
+        let resolve_handle = resolve_val.number_val as u64;
+        let reject_handle = reject_val.number_val as u64;
+
+        let promise = JsObject { handle: promise_handle };
+        let handle = PromiseHandle {
+            promise_obj_handle: promise_handle,
+            resolve_handle,
+            reject_handle,
+            rt_handle: ffi::RuntimeHandle { ptr: self.handle.ptr },
+        };
+
+        (promise, handle)
     }
 }
 

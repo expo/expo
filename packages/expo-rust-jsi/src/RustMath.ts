@@ -27,6 +27,11 @@ interface RustMathModule {
   cos(x: number): number;
   fibonacci(n: number): number;
   clamp(value: number, min: number, max: number): number;
+  sum5(a: number, b: number, c: number, d: number, e: number): number;
+
+  // Async functions (return Promise)
+  factorial(n: number): Promise<number>;
+  is_prime(n: number): Promise<boolean>;
 }
 
 export const RustMath = requireNativeModule<RustMathModule>('RustMath');

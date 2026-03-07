@@ -510,21 +510,21 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 
 ## 10. Roadmap
 
-### Phase 1: Stabilize Core (Mostly Complete)
+### Phase 1: Stabilize Core (Complete)
 
-- [x] `ModuleBuilder` with typed sync functions (0-4 params)
+- [x] `ModuleBuilder` with typed sync functions (0-8 params)
 - [x] `#[expo_module]` proc macro with `#[constant]` and `#[async_fn]`
 - [x] `FromJsValue` / `IntoJsValue` trait implementations (primitives, `Option<T>`, `Result<T, E>`)
 - [x] JSI bridge layer via `cxx` (`jsi_shim.cpp` + `bridge.rs`)
-- [x] Example modules: `MathModule`, `StringModule`
+- [x] Example modules: `MathModule`, `StringModule` (with sync, async, and 5-param functions)
 - [x] Bootstrap modules: `ExpoRustJsiModule.kt`, `ExpoRustJsiModule.swift`
 - [x] Callable host functions: `jsi_create_host_function` + Rust callback registry
 - [x] Error propagation: `Result<T, ExpoError>` → `JsValue::Error` → `jsi_throw_error` → JS exception
 - [x] Type conversion errors return `JsValue::Error` instead of silent `undefined`
 - [x] Standalone build mode (`EXPO_RUST_JSI_STANDALONE`) for testing without JSI headers
-- [x] Unit tests (22 tests covering value conversion, module builder, callback registry, error propagation)
-- [ ] Async function bridge: Rust `Future` → JS `Promise` via tokio runtime
-- [ ] Support for 5+ parameter functions (variadic or runtime dispatch)
+- [x] Async function bridge: `#[async_fn]` → JS Promise via `jsi_create_promise` + `PromiseHandle` resolve/reject
+- [x] Support for 5-8 parameter functions (`sync_fn_5` through `sync_fn_8`, `async_fn_5` through `async_fn_8`)
+- [x] Unit tests (25 tests covering value conversion, module builder, callback registry, error propagation, arities 0-8, async builder)
 
 ### Phase 2: Build System Integration (Mostly Complete)
 
@@ -558,8 +558,8 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 
 The `expo-rust-jsi` package demonstrates a working Rust ↔ JSI integration where module authors write plain Rust functions and the `#[expo_module]` macro generates all JSI wiring. The design talks directly to JSI through a thin `cxx` bridge — no dependency on the Kotlin/Swift DSL, no dependency on PR #43580's C++ Module API.
 
-**Current status: MVP ready for device testing.** The full pipeline from Rust → C++ → JSI → JavaScript is wired up. Module functions are registered as real callable JSI host functions via a callback registry. Error propagation works end-to-end: `Result<T, ExpoError>` in Rust becomes a thrown JS exception. Build system integration is complete for both Android (Gradle + CMake + JNI) and iOS (CocoaPods + bridging header). TypeScript types and integration tests are provided. The `example_modules` feature is enabled by default, registering `RustMath` and `RustString` modules.
+**Current status: Phase 1 complete, MVP ready for device testing.** The full pipeline from Rust → C++ → JSI → JavaScript is wired up. Both sync and async functions work: sync functions return values directly, async functions (`#[async_fn]`) return JS Promises via `jsi_create_promise` + `PromiseHandle`. Functions support 0-8 typed parameters. Error propagation works end-to-end: `Result<T, ExpoError>` in Rust becomes a thrown JS exception. Build system integration is complete for both Android (Gradle + CMake + JNI) and iOS (CocoaPods + bridging header). TypeScript types and integration tests are provided. 25 unit tests pass.
 
-**What remains for production:** Async function bridge (Rust `Future` → JS `Promise`), CI toolchain setup, and advanced features (derive macros, SharedObject, events).
+**What remains for production:** CI toolchain setup, and advanced features (derive macros, SharedObject, events, true background async via `CallInvoker`).
 
 **The key unlock is cross-platform shared native code** — writing module logic once in Rust instead of twice in Kotlin + Swift, with direct JSI access for maximum performance.

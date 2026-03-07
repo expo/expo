@@ -67,6 +67,11 @@ void jsi_object_set_host_function(const RuntimeHandle& rt, uint64_t obj_handle,
 // Error throwing
 void jsi_throw_error(const RuntimeHandle& rt, rust::Str message);
 
+// Promise creation and function calling
+FfiValue jsi_create_promise(const RuntimeHandle& rt);
+void jsi_call_function(const RuntimeHandle& rt, uint64_t fn_handle,
+                       const FfiValue& arg);
+
 // ---- Types and classes NOT part of the cxx bridge ----
 
 // Rust callback types for HostObject property access

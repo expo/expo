@@ -286,6 +286,74 @@ void jsi_throw_error(const RuntimeHandle& rth, rust::Str message) {
   throw JSError(rt, msg);
 }
 
+// ---- Promise creation ----
+
+FfiValue jsi_create_promise(const RuntimeHandle& rth) {
+  auto& rt = rt_from_handle(rth);
+
+  // We'll store resolve and reject handles here (captured by the lambda)
+  uint64_t resolve_handle = 0;
+  uint64_t reject_handle = 0;
+
+  // Create the Promise executor (the function passed to new Promise(...))
+  auto executor = Function::createFromHostFunction(
+      rt,
+      PropNameID::forAscii(rt, "promiseExecutor", 15),
+      2, // (resolve, reject)
+      [&resolve_handle, &reject_handle](Runtime& rt, const Value& /*thisVal*/,
+                                         const Value* args, size_t count) -> Value {
+        if (count >= 2) {
+          // Store resolve function
+          auto resolve_fn = std::make_shared<Object>(args[0].getObject(rt));
+          resolve_handle = HandleTable::instance().store(resolve_fn);
+
+          // Store reject function
+          auto reject_fn = std::make_shared<Object>(args[1].getObject(rt));
+          reject_handle = HandleTable::instance().store(reject_fn);
+        }
+        return Value::undefined();
+      });
+
+  // Get the Promise constructor and call new Promise(executor)
+  Value promise_ctor_val = rt.global().getProperty(rt, "Promise");
+  if (!promise_ctor_val.isObject()) {
+    return jsi_make_undefined();
+  }
+  Object promise_ctor = promise_ctor_val.getObject(rt);
+  Value promise_val = promise_ctor.callAsConstructor(rt, executor);
+
+  // Store the promise object
+  auto promise_obj = std::make_shared<Object>(promise_val.getObject(rt));
+  uint64_t promise_handle = HandleTable::instance().store(promise_obj);
+
+  // Return an object with { promise, resolve, reject } handles encoded
+  // We pack them into a single FfiValue using an object
+  auto result_obj = std::make_shared<Object>(rt.createObject());
+  result_obj->setProperty(rt, "promise",
+    Value(static_cast<double>(promise_handle)));
+  result_obj->setProperty(rt, "resolve",
+    Value(static_cast<double>(resolve_handle)));
+  result_obj->setProperty(rt, "reject",
+    Value(static_cast<double>(reject_handle)));
+
+  FfiValue v;
+  v.kind = ValueKind::Object;
+  v.bool_val = false;
+  v.number_val = 0.0;
+  v.handle = HandleTable::instance().store(result_obj);
+  return v;
+}
+
+void jsi_call_function(const RuntimeHandle& rth, uint64_t fn_handle,
+                       const FfiValue& arg) {
+  auto& rt = rt_from_handle(rth);
+  auto fn_obj = std::static_pointer_cast<Object>(HandleTable::instance().get(fn_handle));
+  if (!fn_obj) return;
+
+  auto fn = fn_obj->getFunction(rt);
+  fn.call(rt, ffi_to_jsi_value(rt, arg));
+}
+
 // ---- RustHostObject implementation ----
 
 RustHostObject::RustHostObject(void* rust_ctx,
@@ -377,6 +445,8 @@ FfiValue jsi_create_host_function(const RuntimeHandle&, rust::Str, uint32_t, uin
 }
 void jsi_object_set_host_function(const RuntimeHandle&, uint64_t, rust::Str, uint64_t) {}
 void jsi_throw_error(const RuntimeHandle&, rust::Str) {}
+FfiValue jsi_create_promise(const RuntimeHandle&) { return jsi_make_undefined(); }
+void jsi_call_function(const RuntimeHandle&, uint64_t, const FfiValue&) {}
 #endif
 
 } // namespace rust_jsi

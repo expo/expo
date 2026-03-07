@@ -157,18 +157,15 @@ pub fn expo_module(attr: TokenStream, item: TokenStream) -> TokenStream {
         .map(|f| {
             let js_name = &f.name;
             let param_types = &f.param_types;
+            let ret_type = &f.ret_type;
             let param_names = &f.param_names;
             let fn_ident = &f.fn_ident;
             let arity = param_types.len();
+            let async_fn_ident = format_ident!("async_fn_{}", arity);
 
             quote! {
-                .async_function(#js_name, #arity, move |_rt, args| {
-                    // TODO: Full async support with typed parameters
-                    #struct_type::#fn_ident(
-                        #(
-                            <#param_types as FromJsValue>::from_js_value(&args[{ let i: usize = 0; i }]).unwrap()
-                        ),*
-                    ).into_js_value()
+                .#async_fn_ident::<#(#param_types,)* #ret_type, _>(#js_name, |#(#param_names),*| {
+                    #struct_type::#fn_ident(#(#param_names),*)
                 })
             }
         })

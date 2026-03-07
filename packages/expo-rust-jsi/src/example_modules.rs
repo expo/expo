@@ -85,6 +85,30 @@ impl MathModule {
     fn clamp(value: f64, min: f64, max: f64) -> f64 {
         value.max(min).min(max)
     }
+
+    fn sum5(a: f64, b: f64, c: f64, d: f64, e: f64) -> f64 {
+        a + b + c + d + e
+    }
+
+    #[async_fn]
+    fn factorial(n: f64) -> f64 {
+        let n = n as u64;
+        (1..=n).product::<u64>() as f64
+    }
+
+    #[async_fn]
+    fn is_prime(n: f64) -> bool {
+        let n = n as u64;
+        if n < 2 { return false; }
+        if n < 4 { return true; }
+        if n % 2 == 0 || n % 3 == 0 { return false; }
+        let mut i = 5u64;
+        while i * i <= n {
+            if n % i == 0 || n % (i + 2) == 0 { return false; }
+            i += 6;
+        }
+        true
+    }
 }
 
 pub struct StringModule;
