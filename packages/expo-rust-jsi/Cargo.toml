@@ -16,6 +16,7 @@ example_modules = []
 [dependencies]
 cxx = "1.0"
 thiserror = "2"
+expo-module-macro = { path = "expo-module-macro" }
 
 [build-dependencies]
 cxx-build = "1.0"

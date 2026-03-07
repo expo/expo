@@ -205,19 +205,23 @@ impl ModuleBuilder {
 /// This is the Rust equivalent of `expo.modules.kotlin.modules.Module` (Android)
 /// or `Module` protocol (iOS).
 ///
-/// # Example
+/// Prefer using the `#[expo_module]` attribute macro which generates this
+/// implementation automatically:
+///
 /// ```ignore
+/// use expo_rust_jsi::prelude::*;
+///
 /// struct MyModule;
 ///
-/// impl ExpoModule for MyModule {
-///     fn definition() -> ModuleDefinition {
-///         ModuleBuilder::new("MyModule")
-///             .sync_fn_2::<f64, f64, f64, _>("add", |a, b| a + b)
-///             .sync_fn_1::<String, String, _>("greet", |name| {
-///                 format!("Hello, {}!", name)
-///             })
-///             .constant("PI", std::f64::consts::PI)
-///             .build()
+/// #[expo_module("MyModule")]
+/// impl MyModule {
+///     #[constant]
+///     const PI: f64 = std::f64::consts::PI;
+///
+///     fn add(a: f64, b: f64) -> f64 { a + b }
+///
+///     fn greet(name: String) -> String {
+///         format!("Hello, {}!", name)
 ///     }
 /// }
 /// ```

@@ -26,15 +26,24 @@
 //!
 //! struct MathModule;
 //!
-//! impl ExpoModule for MathModule {
-//!     fn definition() -> ModuleDefinition {
-//!         ModuleBuilder::new("RustMath")
-//!             .sync_fn_2::<f64, f64, f64, _>("add", |a, b| a + b)
-//!             .sync_fn_2::<f64, f64, f64, _>("multiply", |a, b| a * b)
-//!             .sync_fn_1::<f64, f64, _>("sqrt", |x| x.sqrt())
-//!             .constant("PI", std::f64::consts::PI)
-//!             .constant("E", std::f64::consts::E)
-//!             .build()
+//! #[expo_module("RustMath")]
+//! impl MathModule {
+//!     #[constant]
+//!     const PI: f64 = std::f64::consts::PI;
+//!
+//!     #[constant]
+//!     const E: f64 = std::f64::consts::E;
+//!
+//!     fn add(a: f64, b: f64) -> f64 {
+//!         a + b
+//!     }
+//!
+//!     fn multiply(a: f64, b: f64) -> f64 {
+//!         a * b
+//!     }
+//!
+//!     fn sqrt(x: f64) -> f64 {
+//!         x.sqrt()
 //!     }
 //! }
 //! ```
@@ -47,6 +56,7 @@ pub mod value;
 pub mod prelude {
     pub use crate::module::{ExpoModule, ModuleBuilder, ModuleDefinition, ModuleRegistry};
     pub use crate::value::{FromJsValue, IntoJsValue, JsArray, JsObject, JsValue, Runtime};
+    pub use expo_module_macro::expo_module;
 }
 
 /// C entry point called from the native side (Android JNI or iOS ObjC++)
