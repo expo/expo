@@ -137,3 +137,4 @@ tsconfig.tsbuildinfo
 /secrets/keys.json
 /secrets/expotools.env
 /packages/expo-rust-jsi/target/
+/packages/expo-rust-jsi/cpp/tests/build/

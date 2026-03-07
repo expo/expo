@@ -59,24 +59,26 @@ pub enum JsValue {
 /// Handle to a JavaScript object living in the JSI runtime.
 #[derive(Debug, Clone)]
 pub struct JsObject {
-    pub(crate) handle: u64,
+    pub handle: u64,
 }
 
 /// Handle to a JavaScript array living in the JSI runtime.
 #[derive(Debug, Clone)]
 pub struct JsArray {
-    pub(crate) handle: u64,
+    pub handle: u64,
 }
 
 /// A reference to the JSI runtime, required for object/array operations.
 pub struct Runtime {
-    pub(crate) handle: RuntimeHandle,
+    pub handle: RuntimeHandle,
 }
 
 // ---- JsValue conversions ----
 
 impl JsValue {
-    pub(crate) fn from_ffi(ffi: FfiValue) -> Self {
+    /// Convert an FFI value into a JsValue.
+    /// Used internally by the bridge; also useful for integration tests.
+    pub fn from_ffi(ffi: FfiValue) -> Self {
         match ffi.kind {
             ValueKind::Undefined => JsValue::Undefined,
             ValueKind::Null => JsValue::Null,
@@ -89,7 +91,9 @@ impl JsValue {
         }
     }
 
-    pub(crate) fn to_ffi(&self) -> FfiValue {
+    /// Convert this JsValue to an FFI representation.
+    /// Used internally by the bridge; also useful for integration tests.
+    pub fn to_ffi(&self) -> FfiValue {
         match self {
             JsValue::Undefined => ffi::jsi_make_undefined(),
             JsValue::Null => ffi::jsi_make_null(),
