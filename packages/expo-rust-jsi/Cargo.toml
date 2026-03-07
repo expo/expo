@@ -1,0 +1,24 @@
+[package]
+name = "expo-rust-jsi"
+version = "0.1.0"
+edition = "2021"
+description = "Rust bindings for Expo Modules via direct JSI integration"
+license = "MIT"
+
+[lib]
+name = "expo_rust_jsi"
+crate-type = ["staticlib", "lib"]
+
+[features]
+default = []
+example_modules = []
+
+[dependencies]
+cxx = "1.0"
+thiserror = "2"
+
+[build-dependencies]
+cxx-build = "1.0"
+
+[workspace]
+members = ["expo-module-macro"]

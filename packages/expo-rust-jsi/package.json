@@ -1,0 +1,25 @@
+{
+  "name": "expo-rust-jsi",
+  "version": "0.1.0",
+  "description": "Rust bindings for Expo Modules via direct JSI integration",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "MIT",
+  "author": "Expo",
+  "homepage": "https://github.com/nicolo-ribaudo/expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicolo-ribaudo/expo.git",
+    "directory": "packages/expo-rust-jsi"
+  },
+  "scripts": {
+    "build:rust": "cargo build --release",
+    "build:rust:android": "cargo ndk -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 build --release",
+    "build:rust:ios": "cargo build --release --target aarch64-apple-ios && cargo build --release --target x86_64-apple-ios",
+    "clean": "cargo clean"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-modules-core": "*"
+  }
+}
