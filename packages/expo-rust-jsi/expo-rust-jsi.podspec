@@ -27,8 +27,14 @@ Pod::Spec.new do |s|
     'cpp/**/*.{h,cpp}',
   ]
 
+  # cxx-generated headers are under target/<target>/release/build/expo-rust-jsi-*/out/cxxbridge/
+  # We add a wildcard search path so the compiler can find rust/cxx.h and the bridge header.
   s.pod_target_xcconfig = {
-    'HEADER_SEARCH_PATHS' => '"${PODS_ROOT}/Headers/Public/React-jsi"',
+    'HEADER_SEARCH_PATHS' => [
+      '"${PODS_ROOT}/Headers/Public/React-jsi"',
+      '"${PODS_TARGET_SRCROOT}/target/*/release/build/expo-rust-jsi-*/out/cxxbridge/include"',
+      '"${PODS_TARGET_SRCROOT}/target/*/release/build/expo-rust-jsi-*/out/cxxbridge/crate"',
+    ].join(' '),
     'OTHER_LDFLAGS' => '-lresolv',
     'SWIFT_OBJC_BRIDGING_HEADER' => '${PODS_TARGET_SRCROOT}/ios/ExpoRustJsi-Bridging-Header.h',
   }

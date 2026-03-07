@@ -526,11 +526,16 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 - [ ] Async function bridge: Rust `Future` → JS `Promise` via tokio runtime
 - [ ] Support for 5+ parameter functions (variadic or runtime dispatch)
 
-### Phase 2: Build System Integration
+### Phase 2: Build System Integration (Mostly Complete)
 
-- [ ] Android: Gradle plugin wrapping `cargo-ndk` for cross-compilation
-- [ ] iOS: CocoaPods script phase for `cargo build --target aarch64-apple-ios`
-- [ ] `expo-module.config.json` `"rust"` key for autolinking
+- [x] Android: Gradle `build.gradle.kts` with `cargo build` tasks per ABI + CMake integration
+- [x] Android: JNI entry point (`jni_entry.cpp`) bridges `nativeInstall` → `expo_rust_jsi_install`
+- [x] Android: `CMakeLists.txt` finds cxx-generated headers and links Rust static library
+- [x] iOS: CocoaPods script phase for `cargo build --target` (aarch64-apple-ios, x86_64-apple-ios, aarch64-apple-ios-sim)
+- [x] iOS: Bridging header exposes `expo_rust_jsi_install` to Swift
+- [x] `expo-module.config.json` for autolinking (`ExpoRustJsiModule` on both platforms)
+- [x] TypeScript API with typed re-exports (`RustMath`, `RustString`)
+- [x] Integration test suite (`__tests__/RustModules.test.ts`)
 - [ ] CI: Add Rust toolchain to EAS Build images (or document manual setup)
 
 ### Phase 3: Advanced Features
@@ -553,8 +558,8 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 
 The `expo-rust-jsi` package demonstrates a working Rust ↔ JSI integration where module authors write plain Rust functions and the `#[expo_module]` macro generates all JSI wiring. The design talks directly to JSI through a thin `cxx` bridge — no dependency on the Kotlin/Swift DSL, no dependency on PR #43580's C++ Module API.
 
-**Current status:** The core runtime is functional. Module functions are registered as real callable JSI host functions via a callback registry (`jsi_create_host_function` → C++ `Function::createFromHostFunction` → `rust_invoke_host_fn` callback). Error propagation works end-to-end: `Result<T, ExpoError>` in Rust becomes a thrown JS exception via `jsi_throw_error`. Type conversion failures are surfaced as errors rather than silently returning `undefined`. The standalone build mode allows running 22 unit tests without React Native/JSI headers.
+**Current status: MVP ready for device testing.** The full pipeline from Rust → C++ → JSI → JavaScript is wired up. Module functions are registered as real callable JSI host functions via a callback registry. Error propagation works end-to-end: `Result<T, ExpoError>` in Rust becomes a thrown JS exception. Build system integration is complete for both Android (Gradle + CMake + JNI) and iOS (CocoaPods + bridging header). TypeScript types and integration tests are provided. The `example_modules` feature is enabled by default, registering `RustMath` and `RustString` modules.
 
-**What remains:** Async function bridge (Rust `Future` → JS `Promise`), build-system integration (Gradle/CocoaPods), and advanced features (derive macros, SharedObject, events).
+**What remains for production:** Async function bridge (Rust `Future` → JS `Promise`), CI toolchain setup, and advanced features (derive macros, SharedObject, events).
 
 **The key unlock is cross-platform shared native code** — writing module logic once in Rust instead of twice in Kotlin + Swift, with direct JSI access for maximum performance.

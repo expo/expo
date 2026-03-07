@@ -10,7 +10,7 @@ name = "expo_rust_jsi"
 crate-type = ["staticlib", "lib"]
 
 [features]
-default = []
+default = ["example_modules"]
 example_modules = []
 
 [dependencies]

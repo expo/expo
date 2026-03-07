@@ -1,16 +1,14 @@
-//! Example: A math module written in Rust, exposed directly to JS via JSI.
-//!
-//! From JavaScript:
-//! ```js
-//! import { requireNativeModule } from 'expo-modules-core';
-//! const RustMath = requireNativeModule('RustMath');
-//!
-//! console.log(RustMath.PI);              // 3.141592653589793
-//! console.log(RustMath.add(2, 3));       // 5
-//! console.log(RustMath.multiply(4, 5));  // 20
-//! console.log(RustMath.sqrt(16));        // 4
-//! console.log(RustMath.fibonacci(10));   // 55
-//! ```
+// Example: A math module written in Rust, exposed directly to JS via JSI.
+//
+// From JavaScript:
+//   import { requireNativeModule } from 'expo-modules-core';
+//   const RustMath = requireNativeModule('RustMath');
+//
+//   console.log(RustMath.PI);              // 3.141592653589793
+//   console.log(RustMath.add(2, 3));       // 5
+//   console.log(RustMath.multiply(4, 5));  // 20
+//   console.log(RustMath.sqrt(16));        // 4
+//   console.log(RustMath.fibonacci(10));   // 55
 
 use crate::prelude::*;
 

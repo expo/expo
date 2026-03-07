@@ -1,0 +1,9 @@
+{
+  "platforms": ["android", "ios"],
+  "android": {
+    "modules": ["expo.modules.rustjsi.ExpoRustJsiModule"]
+  },
+  "apple": {
+    "modules": ["ExpoRustJsiModule"]
+  }
+}

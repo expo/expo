@@ -17,6 +17,26 @@ set_target_properties(expo_rust_jsi_static PROPERTIES
 
 # --- C++ shim layer ---
 set(CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../cpp")
+set(RUST_TARGET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../target")
+
+# Find the cxx-generated header directory.
+# cargo build puts cxx bridge headers under target/<profile>/build/expo-rust-jsi-*/out/cxxbridge/
+# We glob for it since the hash in the directory name varies.
+file(GLOB CXX_BRIDGE_DIRS "${RUST_TARGET_DIR}/*/build/expo-rust-jsi-*/out/cxxbridge")
+# Also check the target-specific build dirs
+file(GLOB CXX_BRIDGE_DIRS_TARGET "${RUST_TARGET_DIR}/*/*/build/expo-rust-jsi-*/out/cxxbridge")
+list(APPEND CXX_BRIDGE_DIRS ${CXX_BRIDGE_DIRS_TARGET})
+
+# Pick the first match (there should be only one per build)
+set(CXX_INCLUDE_DIR "")
+set(CXX_CRATE_DIR "")
+foreach(dir ${CXX_BRIDGE_DIRS})
+    if(EXISTS "${dir}/include" AND EXISTS "${dir}/crate")
+        set(CXX_INCLUDE_DIR "${dir}/include")
+        set(CXX_CRATE_DIR "${dir}/crate")
+        break()
+    endif()
+endforeach()
 
 add_library(expo-rust-jsi SHARED
     "${CPP_DIR}/jsi_shim.cpp"
@@ -25,7 +45,8 @@ add_library(expo-rust-jsi SHARED
 
 target_include_directories(expo-rust-jsi PRIVATE
     "${CPP_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src"  # For cxx-generated headers
+    "${CXX_INCLUDE_DIR}"   # rust/cxx.h
+    "${CXX_CRATE_DIR}"     # expo-rust-jsi/src/bridge.rs.h
 )
 
 # Find React Native packages
