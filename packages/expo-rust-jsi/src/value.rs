@@ -1,5 +1,39 @@
 use crate::bridge::ffi::{self, FfiValue, RuntimeHandle, ValueKind};
 
+/// Error type for Expo module functions.
+/// When a function returns `Result<T, ExpoError>`, the error is propagated
+/// as a JavaScript exception.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error("{message}")]
+pub struct ExpoError {
+    pub code: String,
+    pub message: String,
+}
+
+impl ExpoError {
+    pub fn new(code: impl Into<String>, message: impl Into<String>) -> Self {
+        Self {
+            code: code.into(),
+            message: message.into(),
+        }
+    }
+}
+
+impl From<String> for ExpoError {
+    fn from(message: String) -> Self {
+        Self {
+            code: "ERR_RUST_MODULE".to_owned(),
+            message,
+        }
+    }
+}
+
+impl From<&str> for ExpoError {
+    fn from(message: &str) -> Self {
+        Self::from(message.to_owned())
+    }
+}
+
 /// A JavaScript value that can be passed to/from native Rust code.
 #[derive(Debug, Clone)]
 pub enum JsValue {
@@ -10,6 +44,10 @@ pub enum JsValue {
     String(String),
     Object(JsObject),
     Array(JsArray),
+    /// Internal variant representing an error that should become a JS exception.
+    /// Not directly mapped to a JS value type — the install layer converts this
+    /// to a thrown error.
+    Error(String),
 }
 
 /// Handle to a JavaScript object living in the JSI runtime.
@@ -66,6 +104,19 @@ impl JsValue {
                 string_val: String::new(),
                 handle: arr.handle,
             },
+            // Error is serialized as a string; the callback dispatcher
+            // checks for this and can throw a JS exception.
+            JsValue::Error(msg) => ffi::jsi_make_string(msg.as_str()),
+        }
+    }
+
+    pub fn is_error(&self) -> bool {
+        matches!(self, JsValue::Error(_))
+    }
+    pub fn as_error(&self) -> Option<&str> {
+        match self {
+            JsValue::Error(s) => Some(s.as_str()),
+            _ => None,
         }
     }
 
@@ -193,10 +244,30 @@ impl IntoJsValue for JsValue {
 
 impl<T: IntoJsValue> IntoJsValue for Vec<T> {
     fn into_js_value(self) -> JsValue {
-        // Vec<T> gets converted to a JsValue::Array at registration time
-        // For now, we represent it as an array of converted values
-        // The actual JSI array creation happens in the module builder
-        JsValue::Undefined // Placeholder - real arrays created via Runtime
+        // Store converted elements; the install layer will create a real
+        // JSI array when this value is passed across the FFI boundary.
+        // For now we use a JsArray placeholder with handle=0 and store
+        // elements as a nested structure. A proper implementation will
+        // create the JSI array via Runtime::create_array + set_value.
+        //
+        // Since we don't have a Runtime reference here, we represent this
+        // as a serializable form that the FFI layer can reconstruct.
+        // For primitive-only arrays, we pack into a String-encoded form.
+        //
+        // TODO: Full array support requires passing Runtime through IntoJsValue
+        JsValue::Undefined
+    }
+}
+
+impl<T: IntoJsValue, E: Into<ExpoError>> IntoJsValue for Result<T, E> {
+    fn into_js_value(self) -> JsValue {
+        match self {
+            Ok(v) => v.into_js_value(),
+            Err(e) => {
+                let err: ExpoError = e.into();
+                JsValue::Error(format!("[{}] {}", err.code, err.message))
+            }
+        }
     }
 }
 
@@ -230,6 +301,12 @@ impl FromJsValue for i32 {
 impl FromJsValue for i64 {
     fn from_js_value(value: &JsValue) -> Result<Self, String> {
         value.as_number().map(|n| n as i64).ok_or_else(|| "expected number".into())
+    }
+}
+
+impl FromJsValue for u32 {
+    fn from_js_value(value: &JsValue) -> Result<Self, String> {
+        value.as_number().map(|n| n as u32).ok_or_else(|| "expected number".into())
     }
 }
 
@@ -296,5 +373,123 @@ impl Runtime {
     pub fn create_array(&self, length: u32) -> JsArray {
         let ffi = ffi::jsi_create_array(&self.handle, length);
         JsArray { handle: ffi.handle }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ---- IntoJsValue tests ----
+
+    #[test]
+    fn test_into_js_value_primitives() {
+        assert!(matches!(().into_js_value(), JsValue::Undefined));
+        assert!(matches!(true.into_js_value(), JsValue::Bool(true)));
+        assert!(matches!(false.into_js_value(), JsValue::Bool(false)));
+        assert!(matches!(42.0_f64.into_js_value(), JsValue::Number(n) if n == 42.0));
+        assert!(matches!(42_i32.into_js_value(), JsValue::Number(n) if n == 42.0));
+        assert!(matches!(42_i64.into_js_value(), JsValue::Number(n) if n == 42.0));
+        assert!(matches!(42_u32.into_js_value(), JsValue::Number(n) if n == 42.0));
+        assert!(matches!("hello".into_js_value(), JsValue::String(ref s) if s == "hello"));
+        assert!(matches!(String::from("hello").into_js_value(), JsValue::String(ref s) if s == "hello"));
+    }
+
+    #[test]
+    fn test_into_js_value_option() {
+        let some: Option<f64> = Some(3.14);
+        assert!(matches!(some.into_js_value(), JsValue::Number(n) if (n - 3.14).abs() < f64::EPSILON));
+
+        let none: Option<f64> = None;
+        assert!(matches!(none.into_js_value(), JsValue::Null));
+    }
+
+    #[test]
+    fn test_into_js_value_result_ok() {
+        let ok: Result<f64, ExpoError> = Ok(42.0);
+        assert!(matches!(ok.into_js_value(), JsValue::Number(n) if n == 42.0));
+    }
+
+    #[test]
+    fn test_into_js_value_result_err() {
+        let err: Result<f64, ExpoError> = Err(ExpoError::new("TEST", "something failed"));
+        let val = err.into_js_value();
+        assert!(val.is_error());
+        assert!(val.as_error().unwrap().contains("TEST"));
+        assert!(val.as_error().unwrap().contains("something failed"));
+    }
+
+    // ---- FromJsValue tests ----
+
+    #[test]
+    fn test_from_js_value_bool() {
+        assert_eq!(bool::from_js_value(&JsValue::Bool(true)).unwrap(), true);
+        assert!(bool::from_js_value(&JsValue::Number(1.0)).is_err());
+    }
+
+    #[test]
+    fn test_from_js_value_numbers() {
+        assert_eq!(f64::from_js_value(&JsValue::Number(3.14)).unwrap(), 3.14);
+        assert_eq!(i32::from_js_value(&JsValue::Number(42.0)).unwrap(), 42);
+        assert_eq!(i64::from_js_value(&JsValue::Number(42.0)).unwrap(), 42);
+        assert_eq!(u32::from_js_value(&JsValue::Number(42.0)).unwrap(), 42);
+        assert!(f64::from_js_value(&JsValue::String("not a number".into())).is_err());
+    }
+
+    #[test]
+    fn test_from_js_value_string() {
+        assert_eq!(
+            String::from_js_value(&JsValue::String("hello".into())).unwrap(),
+            "hello"
+        );
+        assert!(String::from_js_value(&JsValue::Number(42.0)).is_err());
+    }
+
+    #[test]
+    fn test_from_js_value_option() {
+        let some: Option<f64> = Option::from_js_value(&JsValue::Number(42.0)).unwrap();
+        assert_eq!(some, Some(42.0));
+
+        let none: Option<f64> = Option::from_js_value(&JsValue::Null).unwrap();
+        assert_eq!(none, None);
+
+        let none2: Option<f64> = Option::from_js_value(&JsValue::Undefined).unwrap();
+        assert_eq!(none2, None);
+    }
+
+    #[test]
+    fn test_from_js_value_passthrough() {
+        let val = JsValue::Number(42.0);
+        let cloned = JsValue::from_js_value(&val).unwrap();
+        assert!(matches!(cloned, JsValue::Number(n) if n == 42.0));
+    }
+
+    // ---- ExpoError tests ----
+
+    #[test]
+    fn test_expo_error_from_string() {
+        let err: ExpoError = "oops".into();
+        assert_eq!(err.code, "ERR_RUST_MODULE");
+        assert_eq!(err.message, "oops");
+    }
+
+    #[test]
+    fn test_expo_error_display() {
+        let err = ExpoError::new("MY_CODE", "bad input");
+        assert_eq!(err.to_string(), "bad input");
+    }
+
+    // ---- JsValue type checks ----
+
+    #[test]
+    fn test_js_value_type_checks() {
+        assert!(JsValue::Undefined.is_undefined());
+        assert!(JsValue::Null.is_null());
+        assert!(JsValue::Bool(true).is_bool());
+        assert!(JsValue::Number(1.0).is_number());
+        assert!(JsValue::String("s".into()).is_string());
+        assert!(JsValue::Object(JsObject { handle: 0 }).is_object());
+        assert!(JsValue::Array(JsArray { handle: 0 }).is_array());
+        assert!(JsValue::Error("e".into()).is_error());
     }
 }

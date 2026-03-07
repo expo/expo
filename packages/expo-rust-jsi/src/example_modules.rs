@@ -39,11 +39,11 @@ impl MathModule {
         a * b
     }
 
-    fn divide(a: f64, b: f64) -> f64 {
+    fn divide(a: f64, b: f64) -> Result<f64, ExpoError> {
         if b == 0.0 {
-            f64::NAN
+            Err(ExpoError::new("ERR_DIVIDE_BY_ZERO", "Cannot divide by zero"))
         } else {
-            a / b
+            Ok(a / b)
         }
     }
 

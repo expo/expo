@@ -55,7 +55,9 @@ pub mod value;
 /// Prelude module - import everything needed for module development.
 pub mod prelude {
     pub use crate::module::{ExpoModule, ModuleBuilder, ModuleDefinition, ModuleRegistry};
-    pub use crate::value::{FromJsValue, IntoJsValue, JsArray, JsObject, JsValue, Runtime};
+    pub use crate::value::{
+        ExpoError, FromJsValue, IntoJsValue, JsArray, JsObject, JsValue, Runtime,
+    };
     pub use expo_module_macro::expo_module;
 }
 
@@ -70,13 +72,13 @@ pub unsafe extern "C" fn expo_rust_jsi_install(runtime_ptr: *mut std::ffi::c_voi
         return;
     }
 
-    let rt = Runtime {
+    let rt = value::Runtime {
         handle: bridge::ffi::RuntimeHandle {
             ptr: runtime_ptr as *mut u8,
         },
     };
 
-    // Get the module registry and install all modules
+    // Get the module registry and install all modules (consumes registry)
     let registry = get_module_registry();
     registry.install(&rt);
 }
@@ -85,6 +87,7 @@ pub unsafe extern "C" fn expo_rust_jsi_install(runtime_ptr: *mut std::ffi::c_voi
 /// Modules register themselves in this registry (typically via autolinking or
 /// explicit registration in a setup function).
 fn get_module_registry() -> module::ModuleRegistry {
+    #[allow(unused_mut)]
     let mut registry = module::ModuleRegistry::new();
 
     // Auto-register modules that were registered via the inventory pattern

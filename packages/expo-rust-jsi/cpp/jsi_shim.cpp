@@ -1,47 +1,11 @@
+// Include the cxx-generated header first — it defines FfiValue, ValueKind,
+// RuntimeHandle, and the rust_invoke_host_fn declaration.
+#include "expo-rust-jsi/src/bridge.rs.h"
 #include "jsi_shim.h"
-#include <mutex>
-#include <unordered_map>
 #include <stdexcept>
 
 namespace expo {
 namespace rust_jsi {
-
-// ---- FfiValue implementation ----
-
-FfiValue::FfiValue() : kind(ValueKind::Undefined), bool_val(false), number_val(0.0), handle(0) {}
-
-FfiValue FfiValue::make_undefined() {
-  FfiValue v;
-  v.kind = ValueKind::Undefined;
-  return v;
-}
-
-FfiValue FfiValue::make_null() {
-  FfiValue v;
-  v.kind = ValueKind::Null;
-  return v;
-}
-
-FfiValue FfiValue::make_bool(bool val) {
-  FfiValue v;
-  v.kind = ValueKind::Boolean;
-  v.bool_val = val;
-  return v;
-}
-
-FfiValue FfiValue::make_number(double val) {
-  FfiValue v;
-  v.kind = ValueKind::Number;
-  v.number_val = val;
-  return v;
-}
-
-FfiValue FfiValue::make_string(rust::Str s) {
-  FfiValue v;
-  v.kind = ValueKind::String;
-  v.string_val = rust::String(s);
-  return v;
-}
 
 // ---- HandleTable implementation ----
 
@@ -71,13 +35,53 @@ void HandleTable::release(uint64_t handle) {
   table_.erase(handle);
 }
 
-// ---- C++ functions callable from Rust ----
+// ---- C++ functions callable from Rust (value constructors) ----
 
-FfiValue jsi_make_undefined() { return FfiValue::make_undefined(); }
-FfiValue jsi_make_null() { return FfiValue::make_null(); }
-FfiValue jsi_make_bool(bool val) { return FfiValue::make_bool(val); }
-FfiValue jsi_make_number(double val) { return FfiValue::make_number(val); }
-FfiValue jsi_make_string(rust::Str val) { return FfiValue::make_string(val); }
+FfiValue jsi_make_undefined() {
+  FfiValue v;
+  v.kind = ValueKind::Undefined;
+  v.bool_val = false;
+  v.number_val = 0.0;
+  v.handle = 0;
+  return v;
+}
+
+FfiValue jsi_make_null() {
+  FfiValue v;
+  v.kind = ValueKind::Null;
+  v.bool_val = false;
+  v.number_val = 0.0;
+  v.handle = 0;
+  return v;
+}
+
+FfiValue jsi_make_bool(bool val) {
+  FfiValue v;
+  v.kind = ValueKind::Boolean;
+  v.bool_val = val;
+  v.number_val = 0.0;
+  v.handle = 0;
+  return v;
+}
+
+FfiValue jsi_make_number(double val) {
+  FfiValue v;
+  v.kind = ValueKind::Number;
+  v.bool_val = false;
+  v.number_val = val;
+  v.handle = 0;
+  return v;
+}
+
+FfiValue jsi_make_string(rust::Str val) {
+  FfiValue v;
+  v.kind = ValueKind::String;
+  v.bool_val = false;
+  v.number_val = 0.0;
+  v.string_val = rust::String(val.data(), val.size());
+  v.handle = 0;
+  return v;
+}
 
 // ---- JSI-dependent implementations ----
 // These are only compiled when building with the full React Native JSI headers.
@@ -95,20 +99,20 @@ static Runtime& rt_from_handle(const RuntimeHandle& h) {
 
 FfiValue jsi_value_to_ffi(Runtime& rt, const Value& value) {
   if (value.isUndefined()) {
-    return FfiValue::make_undefined();
+    return jsi_make_undefined();
   }
   if (value.isNull()) {
-    return FfiValue::make_null();
+    return jsi_make_null();
   }
   if (value.isBool()) {
-    return FfiValue::make_bool(value.getBool());
+    return jsi_make_bool(value.getBool());
   }
   if (value.isNumber()) {
-    return FfiValue::make_number(value.getNumber());
+    return jsi_make_number(value.getNumber());
   }
   if (value.isString()) {
     auto str = value.getString(rt).utf8(rt);
-    return FfiValue::make_string(rust::Str(str.data(), str.size()));
+    return jsi_make_string(rust::Str(str.data(), str.size()));
   }
   if (value.isObject()) {
     Object obj = value.getObject(rt);
@@ -116,16 +120,20 @@ FfiValue jsi_value_to_ffi(Runtime& rt, const Value& value) {
       auto arr = std::make_shared<Object>(std::move(obj));
       FfiValue v;
       v.kind = ValueKind::Array;
+      v.bool_val = false;
+      v.number_val = 0.0;
       v.handle = HandleTable::instance().store(arr);
       return v;
     }
     auto stored = std::make_shared<Object>(std::move(obj));
     FfiValue v;
     v.kind = ValueKind::Object;
+    v.bool_val = false;
+    v.number_val = 0.0;
     v.handle = HandleTable::instance().store(stored);
     return v;
   }
-  return FfiValue::make_undefined();
+  return jsi_make_undefined();
 }
 
 Value ffi_to_jsi_value(Runtime& rt, const FfiValue& value) {
@@ -161,6 +169,8 @@ FfiValue jsi_create_object(const RuntimeHandle& rth) {
   auto obj = std::make_shared<Object>(rt.createObject());
   FfiValue v;
   v.kind = ValueKind::Object;
+  v.bool_val = false;
+  v.number_val = 0.0;
   v.handle = HandleTable::instance().store(obj);
   return v;
 }
@@ -179,7 +189,7 @@ FfiValue jsi_object_get_property(const RuntimeHandle& rth, uint64_t obj_handle,
                                  rust::Str name) {
   auto& rt = rt_from_handle(rth);
   auto obj = std::static_pointer_cast<Object>(HandleTable::instance().get(obj_handle));
-  if (!obj) return FfiValue::make_undefined();
+  if (!obj) return jsi_make_undefined();
 
   auto prop_name = std::string(name.data(), name.size());
   return jsi_value_to_ffi(rt, obj->getProperty(rt, prop_name.c_str()));
@@ -192,6 +202,8 @@ FfiValue jsi_create_array(const RuntimeHandle& rth, uint32_t length) {
   auto arr = std::make_shared<Object>(rt.createArray(length));
   FfiValue v;
   v.kind = ValueKind::Array;
+  v.bool_val = false;
+  v.number_val = 0.0;
   v.handle = HandleTable::instance().store(arr);
   return v;
 }
@@ -208,7 +220,7 @@ FfiValue jsi_array_get_value(const RuntimeHandle& rth, uint64_t arr_handle,
                              uint32_t index) {
   auto& rt = rt_from_handle(rth);
   auto obj = std::static_pointer_cast<Object>(HandleTable::instance().get(arr_handle));
-  if (!obj) return FfiValue::make_undefined();
+  if (!obj) return jsi_make_undefined();
   return jsi_value_to_ffi(rt, obj->getArray(rt).getValueAtIndex(rt, index));
 }
 
@@ -217,6 +229,61 @@ uint32_t jsi_array_length(const RuntimeHandle& rth, uint64_t arr_handle) {
   auto obj = std::static_pointer_cast<Object>(HandleTable::instance().get(arr_handle));
   if (!obj) return 0;
   return static_cast<uint32_t>(obj->getArray(rt).length(rt));
+}
+
+// ---- Host function creation ----
+
+FfiValue jsi_create_host_function(const RuntimeHandle& rth, rust::Str name,
+                                  uint32_t param_count, uint64_t callback_id) {
+  auto& rt = rt_from_handle(rth);
+  auto fn_name = std::string(name.data(), name.size());
+
+  auto host_fn = Function::createFromHostFunction(
+      rt,
+      PropNameID::forAscii(rt, fn_name.data(), fn_name.size()),
+      static_cast<unsigned int>(param_count),
+      [callback_id, rth](Runtime& rt, const Value& /*thisVal*/,
+                          const Value* args, size_t count) -> Value {
+        // Convert JSI args to FfiValue vector
+        std::vector<FfiValue> ffi_args;
+        ffi_args.reserve(count);
+        for (size_t i = 0; i < count; i++) {
+          ffi_args.push_back(jsi_value_to_ffi(rt, args[i]));
+        }
+
+        // Call into Rust
+        rust::Slice<const FfiValue> args_slice(ffi_args.data(), ffi_args.size());
+        FfiValue result = rust_invoke_host_fn(callback_id, rth, args_slice);
+
+        return ffi_to_jsi_value(rt, result);
+      });
+
+  auto stored = std::make_shared<Object>(std::move(host_fn));
+  FfiValue v;
+  v.kind = ValueKind::Object;
+  v.bool_val = false;
+  v.number_val = 0.0;
+  v.handle = HandleTable::instance().store(stored);
+  return v;
+}
+
+void jsi_object_set_host_function(const RuntimeHandle& rth, uint64_t obj_handle,
+                                  rust::Str name, uint64_t fn_handle) {
+  auto& rt = rt_from_handle(rth);
+  auto obj = std::static_pointer_cast<Object>(HandleTable::instance().get(obj_handle));
+  if (!obj) return;
+
+  auto fn_obj = std::static_pointer_cast<Object>(HandleTable::instance().get(fn_handle));
+  if (!fn_obj) return;
+
+  auto prop_name = std::string(name.data(), name.size());
+  obj->setProperty(rt, prop_name.c_str(), Value(rt, *fn_obj));
+}
+
+void jsi_throw_error(const RuntimeHandle& rth, rust::Str message) {
+  auto& rt = rt_from_handle(rth);
+  auto msg = std::string(message.data(), message.size());
+  throw JSError(rt, msg);
 }
 
 // ---- RustHostObject implementation ----
@@ -237,7 +304,7 @@ Value RustHostObject::get(Runtime& rt, const PropNameID& name) {
 
   auto prop_name = name.utf8(rt);
   try {
-    FfiValue result = getter_(rust_ctx_, rust::Str(prop_name.data(), prop_name.size()));
+    FfiValue result = getter_(rust_ctx_, prop_name.data(), prop_name.size());
     return ffi_to_jsi_value(rt, result);
   } catch (...) {
     return Value::undefined();
@@ -250,7 +317,7 @@ void RustHostObject::set(Runtime& rt, const PropNameID& name, const Value& value
   auto prop_name = name.utf8(rt);
   try {
     FfiValue ffi_val = jsi_value_to_ffi(rt, value);
-    setter_(rust_ctx_, rust::Str(prop_name.data(), prop_name.size()), ffi_val);
+    setter_(rust_ctx_, prop_name.data(), prop_name.size(), ffi_val);
   } catch (...) {
     // Silently ignore setter errors at the boundary
   }
@@ -267,13 +334,10 @@ std::vector<PropNameID> RustHostObject::getPropertyNames(Runtime& rt) {
 
 // ---- Module registration ----
 
-// This function installs a Rust-backed HostObject into expo.modules[name].
-// It expects the expo global to already be set up by expo-modules-core.
 void jsi_register_module(const RuntimeHandle& rth, rust::Str name,
                          uint64_t obj_handle) {
   auto& rt = rt_from_handle(rth);
 
-  // Get the expo.modules object
   Value expo_val = rt.global().getProperty(rt, "expo");
   if (!expo_val.isObject()) {
     throw std::runtime_error("expo global not found - is expo-modules-core initialized?");
@@ -296,18 +360,23 @@ void jsi_register_module(const RuntimeHandle& rth, rust::Str name,
 
 #else
 // Standalone stubs for compilation without React Native
-FfiValue jsi_create_object(const RuntimeHandle&) { return FfiValue::make_undefined(); }
+FfiValue jsi_create_object(const RuntimeHandle&) { return jsi_make_undefined(); }
 void jsi_object_set_property(const RuntimeHandle&, uint64_t, rust::Str, const FfiValue&) {}
 FfiValue jsi_object_get_property(const RuntimeHandle&, uint64_t, rust::Str) {
-  return FfiValue::make_undefined();
+  return jsi_make_undefined();
 }
-FfiValue jsi_create_array(const RuntimeHandle&, uint32_t) { return FfiValue::make_undefined(); }
+FfiValue jsi_create_array(const RuntimeHandle&, uint32_t) { return jsi_make_undefined(); }
 void jsi_array_set_value(const RuntimeHandle&, uint64_t, uint32_t, const FfiValue&) {}
 FfiValue jsi_array_get_value(const RuntimeHandle&, uint64_t, uint32_t) {
-  return FfiValue::make_undefined();
+  return jsi_make_undefined();
 }
 uint32_t jsi_array_length(const RuntimeHandle&, uint64_t) { return 0; }
 void jsi_register_module(const RuntimeHandle&, rust::Str, uint64_t) {}
+FfiValue jsi_create_host_function(const RuntimeHandle&, rust::Str, uint32_t, uint64_t) {
+  return jsi_make_undefined();
+}
+void jsi_object_set_host_function(const RuntimeHandle&, uint64_t, rust::Str, uint64_t) {}
+void jsi_throw_error(const RuntimeHandle&, rust::Str) {}
 #endif
 
 } // namespace rust_jsi
