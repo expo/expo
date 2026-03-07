@@ -538,61 +538,139 @@ where
 
 ---
 
-## 7. Recommended Approach
+## 7. Chosen Approach & Current Implementation
 
-### Phase 1: Foundation (Approach A + Tooling)
+We are pursuing **Approach B** — a proc-macro-based Rust DSL that integrates with
+JSI through a thin C++ shim layer via the `cxx` crate. The implementation lives in
+`packages/expo-rust-jsi/`.
 
-**Goal:** Enable Rust libraries in Expo modules with minimal friction
+### 7.1 What's Been Built
 
-1. Create an `expo-rust-helper` package with:
-   - Gradle plugin for `cargo-ndk` integration
-   - CocoaPods script phase for iOS Rust builds
-   - Cross-compilation setup for all target architectures
-2. Provide templates showing how to use Rust from Kotlin/Swift modules
-3. Add `rust` configuration to `expo-module.config.json` schema
+The `expo-rust-jsi` package now contains a working foundation:
 
-**Effort:** ~2-4 weeks
-**Impact:** Unblocks teams wanting Rust for performance-critical code
+| Crate | Purpose |
+|-------|---------|
+| `expo-rust-jsi` | Core runtime: `ModuleBuilder`, `ExpoModule` trait, JSI bridge via `cxx`, type conversion (`FromJsValue`/`IntoJsValue`) |
+| `expo-module-macro` | Proc macro crate: `#[expo_module("Name")]` attribute that generates `ExpoModule` impl from a plain `impl` block |
 
-### Phase 2: C++ Module API (PR #43580)
+#### The `#[expo_module]` Proc Macro
 
-**Goal:** Land and stabilize the C++ API
+The macro transforms idiomatic Rust into the builder pattern automatically:
 
-1. Merge PR #43580 with refinements
-2. Add AsyncFunction support to C++ API
-3. Add SharedObject support
-4. Integrate C++ modules with the autolinking system
-5. Add event emission support
+```rust
+use expo_rust_jsi::prelude::*;
 
-**Effort:** ~4-6 weeks (some already in progress)
-**Impact:** Foundation for all non-Kotlin/Swift modules
+struct MathModule;
 
-### Phase 3: Rust DSL (Approach B)
+#[expo_module("RustMath")]
+impl MathModule {
+    #[constant]
+    const PI: f64 = std::f64::consts::PI;
 
-**Goal:** First-class Rust module authoring
+    #[constant]
+    const E: f64 = std::f64::consts::E;
 
-1. Create `expo-modules-rust` crate with:
-   - `#[expo_module]` proc macro
-   - `#[expo_function]`, `#[expo_async_function]` attribute macros
-   - `FromJSI` / `ToJSI` derive macros
-   - Promise/Future bridge
-2. Create `RustModuleAdapter` C++ class that reads Rust module definitions via C FFI
-3. Extend autolinking to detect and build Rust crates
-4. Add SharedObject, View, and Event support
+    fn add(a: f64, b: f64) -> f64 {
+        a + b
+    }
 
-**Effort:** ~8-12 weeks
-**Impact:** True Rust-first module development
+    fn sqrt(x: f64) -> f64 {
+        x.sqrt()
+    }
 
-### Phase 4: Direct JSI Bindings (Approach C, Optional)
+    fn fibonacci(n: i32) -> f64 {
+        // compute-heavy logic stays in Rust
+        let mut a: i64 = 0;
+        let mut b: i64 = 1;
+        for _ in 2..=n {
+            let tmp = a + b;
+            a = b;
+            b = tmp;
+        }
+        b as f64
+    }
+}
+```
 
-**Goal:** Zero-overhead Rust-to-JSI bridge
+This expands to:
 
-1. Create `expo-jsi-rs` crate with safe Rust wrappers around JSI
-2. Eliminate C++ adapter layer
-3. Enable Rust modules to directly manipulate JSI objects
+```rust
+impl MathModule {
+    const PI: f64 = std::f64::consts::PI;
+    const E: f64 = std::f64::consts::E;
+    fn add(a: f64, b: f64) -> f64 { a + b }
+    fn sqrt(x: f64) -> f64 { x.sqrt() }
+    fn fibonacci(n: i32) -> f64 { /* ... */ }
+}
 
-**Effort:** ~6-8 weeks additional
-**Impact:** Maximum performance, minimal overhead
+impl ExpoModule for MathModule {
+    fn definition() -> ModuleDefinition {
+        ModuleBuilder::new("RustMath")
+            .constant("PI", std::f64::consts::PI)
+            .constant("E", std::f64::consts::E)
+            .sync_fn_2::<f64, f64, f64, _>("add", |a, b| MathModule::add(a, b))
+            .sync_fn_1::<f64, f64, _>("sqrt", |x| MathModule::sqrt(x))
+            .sync_fn_1::<i32, f64, _>("fibonacci", |n| MathModule::fibonacci(n))
+            .build()
+    }
+}
+```
+
+**Key features of the macro:**
+- Function arity (0–4 params) and types are inferred from the Rust signature
+- `#[constant]` works on both `const` items and zero-arg methods
+- `#[async_fn]` marks methods for async JS function registration
+- Methods remain callable as `MathModule::add(1.0, 2.0)` from Rust
+- `&self` is rejected at compile time — module functions must be static
+
+#### Type Conversion Layer
+
+The `value` module provides `FromJsValue` and `IntoJsValue` traits with implementations for:
+- Primitives: `f64`, `i32`, `i64`, `u32`, `bool`, `String`
+- Containers: `Option<T>`, `Vec<T>`
+- Pass-through: `JsValue`, `JsObject`, `JsArray`
+- Unit: `()` ↔ `undefined`
+
+#### JSI Bridge
+
+The `bridge` module uses the `cxx` crate to communicate with C++ JSI:
+- `FfiValue` enum bridges Rust ↔ C++ value types
+- `RuntimeHandle` wraps a raw pointer to `jsi::Runtime`
+- FFI functions: `jsi_register_module`, `jsi_create_object`, `jsi_make_*`, etc.
+
+### 7.2 Remaining Work
+
+#### Phase 1: Stabilize Core (In Progress)
+
+- [x] `ModuleBuilder` with typed sync functions (0–4 params)
+- [x] `#[expo_module]` proc macro with `#[constant]` and `#[async_fn]`
+- [x] `FromJsValue` / `IntoJsValue` trait implementations
+- [x] JSI bridge layer via `cxx`
+- [x] Example modules: `MathModule`, `StringModule`
+- [ ] Error propagation: `Result<T, ExpoError>` → JS exceptions
+- [ ] Async function bridge: Rust `Future` → JS `Promise` via tokio runtime
+- [ ] Support for 5+ parameter functions (variadic or runtime dispatch)
+
+#### Phase 2: Build System Integration
+
+- [ ] Android: Gradle plugin wrapping `cargo-ndk` for cross-compilation
+- [ ] iOS: CocoaPods script phase for `cargo build --target aarch64-apple-ios`
+- [ ] `expo-module.config.json` `"rust"` key for autolinking
+- [ ] CI: Add Rust toolchain to EAS Build images (or document manual setup)
+
+#### Phase 3: Advanced Features
+
+- [ ] `#[derive(FromJsValue, IntoJsValue)]` for structs/enums
+- [ ] SharedObject support (persistent Rust objects accessible from JS)
+- [ ] View module support (Rust-backed native views)
+- [ ] Event emission (`sendEvent` from Rust to JS listeners)
+- [ ] `serde` integration for complex type marshaling
+
+#### Phase 4: Direct JSI Bindings (Optional, Future)
+
+- [ ] Eliminate C++ shim — Rust creates `jsi::Object`/`jsi::Function` directly
+- [ ] Safe Rust wrappers around JSI's C++ API via `cxx`
+- [ ] Zero-overhead module installation
 
 ---
 
@@ -632,12 +710,13 @@ Module authors would need to know Rust. **Mitigation:** Excellent proc macros, c
 
 ## 10. Conclusion
 
-First-class Rust support in Expo Modules is not only feasible but strategically valuable. The architecture's existing C++/JSI core provides a natural integration point. PR #43580's C++ API POC validates the approach and provides the scaffolding that Rust modules would build upon.
+First-class Rust support in Expo Modules is not only feasible — it's actively under development. The `expo-rust-jsi` package demonstrates a working proc-macro DSL where module authors write plain Rust functions and the `#[expo_module]` macro generates all the JSI integration code.
 
-The recommended path is incremental:
-1. Start with Rust-as-library support (low effort, immediate value)
-2. Build on the C++ API to create a Rust module adapter
-3. Develop proc macros for an ergonomic Rust DSL
-4. Optionally pursue direct JSI bindings for zero-overhead
+**Current status:** The core abstraction (trait, builder, proc macro, type conversion, JSI bridge) is implemented. What remains is build-system integration (Gradle/CocoaPods), error/async bridges, and advanced features (derive macros, SharedObject, events).
 
-The biggest unlock is **cross-platform shared native code** — writing module logic once in Rust instead of twice in Kotlin + Swift. Combined with Rust's memory safety, performance, and rich ecosystem, this could become a compelling option for performance-critical Expo modules.
+**What we chose and why:**
+- **Approach B** (Rust DSL + C++ shim via `cxx`) — best balance of ergonomics, safety, and incremental delivery
+- The proc macro approach means module authors write zero boilerplate: no turbofish generics, no manual type annotations, no `Box<dyn Fn>` closures
+- The `cxx` bridge keeps the unsafe boundary small and auditable
+
+**The key unlock remains cross-platform shared native code** — writing module logic once in Rust instead of twice in Kotlin + Swift. The `#[expo_module]` DSL makes this nearly as ergonomic as the Kotlin/Swift DSLs while adding Rust's memory safety, performance, and access to the crates.io ecosystem.
