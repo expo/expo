@@ -95,7 +95,7 @@ fun rememberFabState(screenBounds: Offset, totalFabSizePx: Offset): FabState {
         y = (savedY * (safeMaxY - fabBounds.safeMinY) + fabBounds.safeMinY).coerceIn(fabBounds.safeMinY, safeMaxY)
       )
     } else {
-      Offset(safeMaxX, fabBounds.safeMinY)
+      Offset(fabBounds.safe.x, fabBounds.safeMinY)
     }
   }
 
