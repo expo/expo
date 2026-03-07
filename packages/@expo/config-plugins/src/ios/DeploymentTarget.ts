@@ -2,13 +2,13 @@ import type { ExpoConfig } from '@expo/config-types';
 import type { XCBuildConfiguration } from 'xcode';
 
 import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
-import { getNativeTargets } from './Target';
+import { findFirstNativeTarget } from './Target';
 import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import { getBuildConfigurationsForListId } from './utils/Xcodeproj';
 
 /**
- * Set the iOS deployment target for all build configurations using all native targets.
+ * Set the iOS deployment target for all build configurations in the main application target.
  */
 export const withDeploymentTarget: ConfigPlugin = (config) => {
   return withXcodeProject(config, (config) => {
@@ -49,19 +49,17 @@ export function setDeploymentTargetForBuildConfiguration(
 }
 
 /**
- * Update the iOS deployment target for all XCBuildConfiguration entries, in all native targets.
+ * Update the iOS deployment target for all XCBuildConfiguration entries in the main application target.
  */
 export function updateDeploymentTargetForPbxproj(
   project: XcodeProject,
   deploymentTarget: string
 ): XcodeProject {
-  const nativeTargets = getNativeTargets(project);
+  const [, mainTarget] = findFirstNativeTarget(project);
 
-  nativeTargets.forEach(([, nativeTarget]) => {
-    getBuildConfigurationsForListId(project, nativeTarget.buildConfigurationList).forEach(
-      ([, buildConfig]) => setDeploymentTargetForBuildConfiguration(buildConfig, deploymentTarget)
-    );
-  });
+  getBuildConfigurationsForListId(project, mainTarget.buildConfigurationList).forEach(
+    ([, buildConfig]) => setDeploymentTargetForBuildConfiguration(buildConfig, deploymentTarget)
+  );
 
   return project;
 }

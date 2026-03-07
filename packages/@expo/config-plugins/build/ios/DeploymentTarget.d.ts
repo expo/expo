@@ -2,7 +2,7 @@ import type { ExpoConfig } from '@expo/config-types';
 import type { XCBuildConfiguration } from 'xcode';
 import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 /**
- * Set the iOS deployment target for all build configurations using all native targets.
+ * Set the iOS deployment target for all build configurations in the main application target.
  */
 export declare const withDeploymentTarget: ConfigPlugin;
 /**
@@ -14,6 +14,6 @@ export declare function getDeploymentTarget(config: Pick<ExpoConfig, 'ios'>): st
 /** Set the iOS deployment target for an XCBuildConfiguration object */
 export declare function setDeploymentTargetForBuildConfiguration(xcBuildConfiguration: XCBuildConfiguration, deploymentTarget?: string): void;
 /**
- * Update the iOS deployment target for all XCBuildConfiguration entries, in all native targets.
+ * Update the iOS deployment target for all XCBuildConfiguration entries in the main application target.
  */
 export declare function updateDeploymentTargetForPbxproj(project: XcodeProject, deploymentTarget: string): XcodeProject;

@@ -36,7 +36,7 @@ function _Xcodeproj() {
   return data;
 }
 /**
- * Set the iOS deployment target for all build configurations using all native targets.
+ * Set the iOS deployment target for all build configurations in the main application target.
  */
 const withDeploymentTarget = config => {
   return (0, _iosPlugins().withXcodeProject)(config, config => {
@@ -70,13 +70,11 @@ function setDeploymentTargetForBuildConfiguration(xcBuildConfiguration, deployme
 }
 
 /**
- * Update the iOS deployment target for all XCBuildConfiguration entries, in all native targets.
+ * Update the iOS deployment target for all XCBuildConfiguration entries in the main application target.
  */
 function updateDeploymentTargetForPbxproj(project, deploymentTarget) {
-  const nativeTargets = (0, _Target().getNativeTargets)(project);
-  nativeTargets.forEach(([, nativeTarget]) => {
-    (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).forEach(([, buildConfig]) => setDeploymentTargetForBuildConfiguration(buildConfig, deploymentTarget));
-  });
+  const [, mainTarget] = (0, _Target().findFirstNativeTarget)(project);
+  (0, _Xcodeproj().getBuildConfigurationsForListId)(project, mainTarget.buildConfigurationList).forEach(([, buildConfig]) => setDeploymentTargetForBuildConfiguration(buildConfig, deploymentTarget));
   return project;
 }
 //# sourceMappingURL=DeploymentTarget.js.map
