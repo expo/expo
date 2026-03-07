@@ -524,7 +524,9 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 - [x] Standalone build mode (`EXPO_RUST_JSI_STANDALONE`) for testing without JSI headers
 - [x] Async function bridge: `#[async_fn]` → JS Promise via `jsi_create_promise` + `PromiseHandle` resolve/reject
 - [x] Support for 5-8 parameter functions (`sync_fn_5` through `sync_fn_8`, `async_fn_5` through `async_fn_8`)
-- [x] Unit tests (25 tests covering value conversion, module builder, callback registry, error propagation, arities 0-8, async builder)
+- [x] `#[derive(ExpoRecord)]` for typed JS object parameters with `#[field(key, required)]` support
+- [x] `JsValue::Map` variant and `HashMap<String, JsValue>` conversions for Record marshaling
+- [x] Unit tests (28 unit + 15 Record integration = 43 tests covering value conversion, module builder, callback registry, error propagation, arities 0-8, async builder, Record derive)
 
 ### Phase 2: Build System Integration (Mostly Complete)
 
@@ -540,7 +542,7 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 
 ### Phase 3: Advanced Features
 
-- [ ] `#[derive(FromJsValue, IntoJsValue)]` for structs/enums
+- [x] `#[derive(ExpoRecord)]` for structs (generates `FromJsValue` + `IntoJsValue`, with `#[field(key, required)]`)
 - [ ] SharedObject support (persistent Rust objects accessible from JS)
 - [ ] View module support (Rust-backed native views)
 - [ ] Event emission (`sendEvent` from Rust to JS listeners)
@@ -558,8 +560,8 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 
 The `expo-rust-jsi` package demonstrates a working Rust ↔ JSI integration where module authors write plain Rust functions and the `#[expo_module]` macro generates all JSI wiring. The design talks directly to JSI through a thin `cxx` bridge — no dependency on the Kotlin/Swift DSL, no dependency on PR #43580's C++ Module API.
 
-**Current status: Phase 1 complete, MVP ready for device testing.** The full pipeline from Rust → C++ → JSI → JavaScript is wired up. Both sync and async functions work: sync functions return values directly, async functions (`#[async_fn]`) return JS Promises via `jsi_create_promise` + `PromiseHandle`. Functions support 0-8 typed parameters. Error propagation works end-to-end: `Result<T, ExpoError>` in Rust becomes a thrown JS exception. Build system integration is complete for both Android (Gradle + CMake + JNI) and iOS (CocoaPods + bridging header). TypeScript types and integration tests are provided. 25 unit tests pass.
+**Current status: Phase 1 complete with Record support, MVP ready for device testing.** The full pipeline from Rust → C++ → JSI → JavaScript is wired up. Both sync and async functions work: sync functions return values directly, async functions (`#[async_fn]`) return JS Promises via `jsi_create_promise` + `PromiseHandle`. Functions support 0-8 typed parameters. Error propagation works end-to-end: `Result<T, ExpoError>` in Rust becomes a thrown JS exception. `#[derive(ExpoRecord)]` enables typed JS object parameters with optional fields, custom key names, required validation, and nested records. Build system integration is complete for both Android (Gradle + CMake + JNI) and iOS (CocoaPods + bridging header). TypeScript types and integration tests are provided. 43 tests pass (28 unit + 15 Record integration).
 
-**What remains for production:** CI toolchain setup, and advanced features (derive macros, SharedObject, events, true background async via `CallInvoker`).
+**What remains for production:** CI toolchain setup, and advanced features (enum derive, SharedObject, events, true background async via `CallInvoker`).
 
 **The key unlock is cross-platform shared native code** — writing module logic once in Rust instead of twice in Kotlin + Swift, with direct JSI access for maximum performance.

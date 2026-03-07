@@ -111,6 +111,20 @@ impl MathModule {
     }
 }
 
+/// Example Record type for demonstrating typed JS object parameters.
+#[derive(ExpoRecord, Debug, Default, Clone)]
+pub struct FormatOptions {
+    /// Text to format
+    #[field(required)]
+    pub text: String,
+    /// Whether to convert to uppercase
+    pub uppercase: Option<bool>,
+    /// Number of times to repeat
+    pub repeat_count: Option<i32>,
+    /// Custom separator for repeated text
+    pub separator: Option<String>,
+}
+
 pub struct StringModule;
 
 #[expo_module("RustString")]
@@ -147,5 +161,23 @@ impl StringModule {
             hash = hash.wrapping_mul(0x100000001b3);
         }
         format!("{:016x}", hash)
+    }
+
+    /// Demonstrates a function that accepts a Record (typed JS object).
+    /// JS usage: RustString.format_text({ text: "hello", uppercase: true, repeatCount: 3, separator: "-" })
+    fn format_text(opts: FormatOptions) -> String {
+        let mut result = opts.text;
+        if opts.uppercase.unwrap_or(false) {
+            result = result.to_uppercase();
+        }
+        let count = opts.repeat_count.unwrap_or(1).max(1) as usize;
+        if count > 1 {
+            let sep = opts.separator.as_deref().unwrap_or("");
+            result = std::iter::repeat(result.as_str())
+                .take(count)
+                .collect::<Vec<_>>()
+                .join(sep);
+        }
+        result
     }
 }

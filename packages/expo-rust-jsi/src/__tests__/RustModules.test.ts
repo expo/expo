@@ -143,4 +143,25 @@ describe('RustString module', () => {
     const hash3 = RustString.simple_hash('world');
     expect(hash3).not.toBe(hash1);
   });
+
+  // Record-based function tests
+  test('format_text with basic text', () => {
+    expect(RustString.format_text({ text: 'hello' })).toBe('hello');
+  });
+
+  test('format_text with uppercase', () => {
+    expect(RustString.format_text({ text: 'hello', uppercase: true })).toBe('HELLO');
+  });
+
+  test('format_text with repeat', () => {
+    expect(RustString.format_text({ text: 'ab', repeat_count: 3, separator: '-' })).toBe(
+      'ab-ab-ab'
+    );
+  });
+
+  test('format_text with all options', () => {
+    expect(
+      RustString.format_text({ text: 'hi', uppercase: true, repeat_count: 2, separator: '.' })
+    ).toBe('HI.HI');
+  });
 });

@@ -1,4 +1,6 @@
 use crate::bridge::ffi::{self, FfiValue, RuntimeHandle, ValueKind};
+use crate::bridge::current_runtime_ptr;
+use std::collections::HashMap;
 
 /// Error type for Expo module functions.
 /// When a function returns `Result<T, ExpoError>`, the error is propagated
@@ -44,6 +46,10 @@ pub enum JsValue {
     String(String),
     Object(JsObject),
     Array(JsArray),
+    /// A map of key-value pairs representing a JS object's properties.
+    /// Used for Record conversion — avoids needing Runtime access in FromJsValue.
+    /// The FFI layer converts this to/from real JSI objects.
+    Map(HashMap<String, JsValue>),
     /// Internal variant representing an error that should become a JS exception.
     /// Not directly mapped to a JS value type — the install layer converts this
     /// to a thrown error.
@@ -104,6 +110,28 @@ impl JsValue {
                 string_val: String::new(),
                 handle: arr.handle,
             },
+            // Map is converted to a real JSI object by creating one and setting properties.
+            // This requires a Runtime — use the thread-local current runtime.
+            JsValue::Map(map) => {
+                if let Some(rt_ptr) = current_runtime_ptr() {
+                    let rt_handle = RuntimeHandle { ptr: rt_ptr };
+                    let obj_ffi = ffi::jsi_create_object(&rt_handle);
+                    for (key, val) in map {
+                        let val_ffi = val.to_ffi();
+                        ffi::jsi_object_set_property(&rt_handle, obj_ffi.handle, key.as_str(), &val_ffi);
+                    }
+                    FfiValue {
+                        kind: ValueKind::Object,
+                        bool_val: false,
+                        number_val: 0.0,
+                        string_val: String::new(),
+                        handle: obj_ffi.handle,
+                    }
+                } else {
+                    // No runtime available (e.g. in tests) — fall back to undefined
+                    ffi::jsi_make_undefined()
+                }
+            }
             // Error is serialized as a string; the callback dispatcher
             // checks for this and can throw a JS exception.
             JsValue::Error(msg) => ffi::jsi_make_string(msg.as_str()),
@@ -118,6 +146,23 @@ impl JsValue {
             JsValue::Error(s) => Some(s.as_str()),
             _ => None,
         }
+    }
+
+    /// Convert a JsObject to a HashMap by reading known property names via the FFI.
+    /// Used by the ExpoRecord derive macro when a real JSI object is passed as a function arg.
+    pub fn object_to_map(obj: &JsObject, keys: &[&str]) -> HashMap<String, JsValue> {
+        let mut map = HashMap::new();
+        if let Some(rt_ptr) = current_runtime_ptr() {
+            let rt_handle = RuntimeHandle { ptr: rt_ptr };
+            for &key in keys {
+                let ffi_val = ffi::jsi_object_get_property(&rt_handle, obj.handle, key);
+                let val = JsValue::from_ffi(ffi_val);
+                if !val.is_undefined() {
+                    map.insert(key.to_owned(), val);
+                }
+            }
+        }
+        map
     }
 
     pub fn is_undefined(&self) -> bool {
@@ -140,6 +185,22 @@ impl JsValue {
     }
     pub fn is_array(&self) -> bool {
         matches!(self, JsValue::Array(_))
+    }
+    pub fn is_map(&self) -> bool {
+        matches!(self, JsValue::Map(_))
+    }
+
+    pub fn as_map(&self) -> Option<&HashMap<String, JsValue>> {
+        match self {
+            JsValue::Map(m) => Some(m),
+            _ => None,
+        }
+    }
+    pub fn into_map(self) -> Option<HashMap<String, JsValue>> {
+        match self {
+            JsValue::Map(m) => Some(m),
+            _ => None,
+        }
     }
 
     pub fn as_bool(&self) -> Option<bool> {
@@ -331,6 +392,25 @@ impl<T: FromJsValue> FromJsValue for Option<T> {
         }
     }
 }
+
+// ---- HashMap (untyped Record / dictionary) ----
+
+impl IntoJsValue for HashMap<String, JsValue> {
+    fn into_js_value(self) -> JsValue {
+        JsValue::Map(self)
+    }
+}
+
+impl FromJsValue for HashMap<String, JsValue> {
+    fn from_js_value(value: &JsValue) -> Result<Self, String> {
+        match value {
+            JsValue::Map(m) => Ok(m.clone()),
+            _ => Err("expected object/map".into()),
+        }
+    }
+}
+
+// ---- Object-to-Map conversion ----
 
 // ---- Promise handle ----
 
@@ -542,5 +622,37 @@ mod tests {
         assert!(JsValue::Object(JsObject { handle: 0 }).is_object());
         assert!(JsValue::Array(JsArray { handle: 0 }).is_array());
         assert!(JsValue::Error("e".into()).is_error());
+        assert!(JsValue::Map(HashMap::new()).is_map());
+    }
+
+    // ---- HashMap / Map tests ----
+
+    #[test]
+    fn test_hashmap_into_js_value() {
+        let mut map = HashMap::new();
+        map.insert("name".to_owned(), JsValue::String("Alice".into()));
+        map.insert("age".to_owned(), JsValue::Number(30.0));
+        let val = map.into_js_value();
+        assert!(val.is_map());
+        let m = val.as_map().unwrap();
+        assert_eq!(m.len(), 2);
+        assert!(matches!(m.get("name"), Some(JsValue::String(s)) if s == "Alice"));
+        assert!(matches!(m.get("age"), Some(JsValue::Number(n)) if *n == 30.0));
+    }
+
+    #[test]
+    fn test_hashmap_from_js_value() {
+        let mut map = HashMap::new();
+        map.insert("x".to_owned(), JsValue::Number(1.0));
+        let val = JsValue::Map(map);
+        let result: HashMap<String, JsValue> = HashMap::from_js_value(&val).unwrap();
+        assert_eq!(result.len(), 1);
+        assert!(matches!(result.get("x"), Some(JsValue::Number(n)) if *n == 1.0));
+    }
+
+    #[test]
+    fn test_hashmap_from_non_map_fails() {
+        let result = HashMap::<String, JsValue>::from_js_value(&JsValue::Number(42.0));
+        assert!(result.is_err());
     }
 }

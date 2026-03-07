@@ -58,7 +58,7 @@ pub mod prelude {
     pub use crate::value::{
         ExpoError, FromJsValue, IntoJsValue, JsArray, JsObject, JsValue, PromiseHandle, Runtime,
     };
-    pub use expo_module_macro::expo_module;
+    pub use expo_module_macro::{expo_module, ExpoRecord};
 }
 
 /// C entry point called from the native side (Android JNI or iOS ObjC++)

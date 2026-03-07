@@ -1,9 +1,8 @@
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{
-    parse::{Parse, ParseStream},
-    parse_macro_input, Attribute, FnArg, ImplItem, ImplItemFn, ItemImpl, LitStr, Pat, ReturnType,
-    Type,
+    parse_macro_input, Attribute, Data, DeriveInput, Fields, FnArg, ImplItem, ImplItemFn,
+    ItemImpl, Lit, LitStr, Meta, Pat, ReturnType, Type,
 };
 
 /// Attribute macro that transforms an `impl` block into an Expo module definition.
@@ -256,4 +255,195 @@ fn has_attr(attrs: &[Attribute], name: &str) -> bool {
 
 fn is_attr(attr: &Attribute, name: &str) -> bool {
     attr.path().is_ident(name)
+}
+
+/// Derive macro that generates `FromJsValue` and `IntoJsValue` implementations
+/// for a struct, allowing it to be used as a typed Record in Expo module functions.
+///
+/// All fields participate in conversion by default. Use `#[field(...)]` to customize:
+/// - `#[field(key = "jsName")]` — use a custom JS property name
+/// - `#[field(required)]` — error if the field is missing from the JS object
+///
+/// Fields with `Option<T>` type are automatically optional (default to `None` if missing).
+/// Non-optional fields without `#[field(required)]` will use `Default::default()` if missing.
+///
+/// # Example
+///
+/// ```rust,ignore
+/// use expo_rust_jsi::prelude::*;
+///
+/// #[derive(ExpoRecord, Debug, Default)]
+/// struct ContactOptions {
+///     name: Option<String>,
+///     #[field(key = "maxResults")]
+///     limit: Option<i32>,
+///     #[field(required)]
+///     query: String,
+/// }
+/// ```
+#[proc_macro_derive(ExpoRecord, attributes(field))]
+pub fn derive_expo_record(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let struct_name = &input.ident;
+
+    let fields = match &input.data {
+        Data::Struct(data) => match &data.fields {
+            Fields::Named(named) => &named.named,
+            _ => {
+                return syn::Error::new_spanned(struct_name, "ExpoRecord only supports named fields")
+                    .to_compile_error()
+                    .into();
+            }
+        },
+        _ => {
+            return syn::Error::new_spanned(struct_name, "ExpoRecord can only be derived for structs")
+                .to_compile_error()
+                .into();
+        }
+    };
+
+    let mut from_fields = Vec::new();
+    let mut into_fields = Vec::new();
+
+    for field in fields {
+        let field_ident = field.ident.as_ref().unwrap();
+        let field_ty = &field.ty;
+
+        // Parse #[field(...)] attributes
+        let (js_key, is_required) = parse_field_attrs(&field.attrs, &field_ident.to_string());
+
+        let is_option = is_option_type(field_ty);
+
+        // Generate FromJsValue field extraction
+        if is_option {
+            from_fields.push(quote! {
+                #field_ident: match map.get(#js_key) {
+                    Some(v) if !v.is_null() && !v.is_undefined() => {
+                        match FromJsValue::from_js_value(v) {
+                            Ok(inner) => Some(inner),
+                            Err(e) => return Err(format!("field '{}': {}", #js_key, e)),
+                        }
+                    }
+                    _ => None,
+                }
+            });
+        } else if is_required {
+            from_fields.push(quote! {
+                #field_ident: match map.get(#js_key) {
+                    Some(v) => <#field_ty as FromJsValue>::from_js_value(v)
+                        .map_err(|e| format!("field '{}': {}", #js_key, e))?,
+                    None => return Err(format!("missing required field '{}'", #js_key)),
+                }
+            });
+        } else {
+            // Non-optional, non-required: use Default if missing
+            from_fields.push(quote! {
+                #field_ident: match map.get(#js_key) {
+                    Some(v) => <#field_ty as FromJsValue>::from_js_value(v)
+                        .map_err(|e| format!("field '{}': {}", #js_key, e))?,
+                    None => Default::default(),
+                }
+            });
+        }
+
+        // Generate IntoJsValue field insertion
+        if is_option {
+            into_fields.push(quote! {
+                match &self.#field_ident {
+                    Some(v) => { map.insert(#js_key.to_owned(), v.clone().into_js_value()); }
+                    None => {} // omit null fields
+                }
+            });
+        } else {
+            into_fields.push(quote! {
+                map.insert(#js_key.to_owned(), self.#field_ident.clone().into_js_value());
+            });
+        }
+    }
+
+    // Collect all JS keys for Object→Map conversion
+    let all_js_keys: Vec<_> = fields
+        .iter()
+        .map(|f| {
+            let (key, _) = parse_field_attrs(&f.attrs, &f.ident.as_ref().unwrap().to_string());
+            key
+        })
+        .collect();
+
+    let expanded = quote! {
+        impl FromJsValue for #struct_name {
+            fn from_js_value(value: &JsValue) -> Result<Self, String> {
+                // If it's already a Map (tests, nested records), use it directly.
+                // If it's an Object handle (real JSI), read properties using the thread-local runtime.
+                let owned_map;
+                let map = match value {
+                    JsValue::Map(m) => m,
+                    JsValue::Object(obj) => {
+                        // Read known properties from the JSI object
+                        owned_map = JsValue::object_to_map(obj, &[#(#all_js_keys),*]);
+                        &owned_map
+                    }
+                    _ => return Err(format!("expected object for {}", stringify!(#struct_name))),
+                };
+                Ok(Self {
+                    #(#from_fields,)*
+                })
+            }
+        }
+
+        impl IntoJsValue for #struct_name {
+            fn into_js_value(self) -> JsValue {
+                let mut map = std::collections::HashMap::new();
+                #(#into_fields)*
+                JsValue::Map(map)
+            }
+        }
+    };
+
+    TokenStream::from(expanded)
+}
+
+/// Parse `#[field(...)]` attributes, returning (js_key, is_required).
+fn parse_field_attrs(attrs: &[Attribute], default_key: &str) -> (String, bool) {
+    let mut js_key = default_key.to_owned();
+    let mut is_required = false;
+
+    for attr in attrs {
+        if !attr.path().is_ident("field") {
+            continue;
+        }
+
+        // Parse #[field(key = "...", required)]
+        if let Ok(nested) = attr.parse_args_with(
+            syn::punctuated::Punctuated::<Meta, syn::Token![,]>::parse_terminated,
+        ) {
+            for meta in nested {
+                match &meta {
+                    Meta::Path(path) if path.is_ident("required") => {
+                        is_required = true;
+                    }
+                    Meta::NameValue(nv) if nv.path.is_ident("key") => {
+                        if let syn::Expr::Lit(expr_lit) = &nv.value {
+                            if let Lit::Str(s) = &expr_lit.lit {
+                                js_key = s.value();
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+
+    (js_key, is_required)
+}
+
+/// Check if a type is `Option<T>`.
+fn is_option_type(ty: &Type) -> bool {
+    if let Type::Path(tp) = ty {
+        if let Some(seg) = tp.path.segments.last() {
+            return seg.ident == "Option";
+        }
+    }
+    false
 }

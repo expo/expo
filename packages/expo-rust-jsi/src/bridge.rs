@@ -1,6 +1,22 @@
 use crate::value::{JsValue, Runtime};
+use std::cell::Cell;
 use std::collections::HashMap;
 use std::sync::Mutex;
+
+// Thread-local storage for the current Runtime pointer.
+// Set during rust_invoke_host_fn so that FromJsValue/IntoJsValue impls
+// can access the runtime for object property operations (e.g. Record conversion).
+thread_local! {
+    static CURRENT_RUNTIME_PTR: Cell<*mut u8> = const { Cell::new(std::ptr::null_mut()) };
+}
+
+/// Get the current Runtime pointer (if inside a host function call).
+pub fn current_runtime_ptr() -> Option<*mut u8> {
+    CURRENT_RUNTIME_PTR.with(|c| {
+        let ptr = c.get();
+        if ptr.is_null() { None } else { Some(ptr) }
+    })
+}
 
 /// The cxx bridge module defining the Rust <-> C++ JSI interop boundary.
 ///
@@ -163,6 +179,9 @@ fn rust_invoke_host_fn(
     rt: &ffi::RuntimeHandle,
     args: &[ffi::FfiValue],
 ) -> ffi::FfiValue {
+    // Set the thread-local Runtime pointer so FromJsValue/IntoJsValue can access it.
+    let prev = CURRENT_RUNTIME_PTR.with(|c| c.replace(rt.ptr));
+
     let runtime = Runtime {
         handle: ffi::RuntimeHandle { ptr: rt.ptr },
     };
@@ -189,10 +208,14 @@ fn rust_invoke_host_fn(
     // so the return below is only reached in standalone/test mode.
     if let JsValue::Error(ref msg) = result {
         ffi::jsi_throw_error(rt, msg.as_str());
+        CURRENT_RUNTIME_PTR.with(|c| c.set(prev));
         return ffi::jsi_make_undefined();
     }
 
-    result.to_ffi()
+    let ffi_result = result.to_ffi();
+    // Restore the previous Runtime pointer.
+    CURRENT_RUNTIME_PTR.with(|c| c.set(prev));
+    ffi_result
 }
 
 #[cfg(test)]

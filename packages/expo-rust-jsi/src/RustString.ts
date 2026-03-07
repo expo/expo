@@ -18,6 +18,14 @@ interface RustStringModule {
   contains(haystack: string, needle: string): boolean;
   repeat(s: string, n: number): string;
   simple_hash(s: string): string;
+
+  // Record-based function (accepts a typed JS object)
+  format_text(opts: {
+    text: string;
+    uppercase?: boolean;
+    repeat_count?: number;
+    separator?: string;
+  }): string;
 }
 
 export const RustString = requireNativeModule<RustStringModule>('RustString');
