@@ -1,7 +1,7 @@
 import { type ColorValue } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
 /**
- * The size of the FloatingActionButton. Only applicable when `label` is not set.
+ * The size of the `FloatingActionButton`. Only applicable when `label` is not set.
  * - `'small'` - Renders a `SmallFloatingActionButton`.
  * - `'medium'` - Renders a standard `FloatingActionButton`.
  * - `'large'` - Renders a `LargeFloatingActionButton`.
