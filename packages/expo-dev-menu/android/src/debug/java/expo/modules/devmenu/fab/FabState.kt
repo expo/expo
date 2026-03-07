@@ -87,13 +87,15 @@ fun rememberFabState(screenBounds: Offset, totalFabSizePx: Offset): FabState {
   val initialOffset = remember(fabBounds.safe, fabBounds.safeMinY) {
     val savedX = prefs.getFloat(FAB_POSITION_X, FAB_POSITION_UNSET)
     val savedY = prefs.getFloat(FAB_POSITION_Y, FAB_POSITION_UNSET)
+    val safeMaxX = maxOf(0f, fabBounds.safe.x)
+    val safeMaxY = maxOf(fabBounds.safeMinY, fabBounds.safe.y)
     if (savedX != FAB_POSITION_UNSET && savedY != FAB_POSITION_UNSET) {
       Offset(
-        x = (savedX * fabBounds.safe.x).coerceIn(0f, fabBounds.safe.x),
-        y = (savedY * (fabBounds.safe.y - fabBounds.safeMinY) + fabBounds.safeMinY).coerceIn(fabBounds.safeMinY, fabBounds.safe.y)
+        x = (savedX * safeMaxX).coerceIn(0f, safeMaxX),
+        y = (savedY * (safeMaxY - fabBounds.safeMinY) + fabBounds.safeMinY).coerceIn(fabBounds.safeMinY, safeMaxY)
       )
     } else {
-      Offset(fabBounds.safe.x, fabBounds.safeMinY)
+      Offset(safeMaxX, fabBounds.safeMinY)
     }
   }
 
