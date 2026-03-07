@@ -143,6 +143,7 @@ This means the Rust integration can ship independently, without waiting for the 
 | `module.rs` | `src/` | `ExpoModule` trait, `ModuleBuilder` (fluent API), `ModuleRegistry` (collects and installs modules). |
 | `value.rs` | `src/` | `JsValue` enum, `FromJsValue`/`IntoJsValue` traits with impls for primitives, `Option<T>`, `Vec<T>`, etc. |
 | `expo-module-macro/` | proc macro crate | `#[expo_module("Name")]` attribute macro that generates `ExpoModule` impl from a plain `impl` block. |
+| callback registry | `src/bridge.rs` | `Mutex<HashMap<u64, Box<dyn Fn>>>` mapping callback IDs to Rust closures. `register_callback()` stores a closure and returns an ID; `rust_invoke_host_fn()` (extern "Rust") looks up and invokes the closure when C++ calls back. |
 | `ExpoRustJsiModule.kt` | `android/` | Kotlin bootstrap: loads native lib, calls `nativeInstall(jsiRuntimePtr)`. |
 | `ExpoRustJsiModule.swift` | `ios/` | Swift bootstrap: calls `expo_rust_jsi_install(runtimePtr)`. |
 
@@ -254,7 +255,16 @@ jsi_array_set_value(rt, h, idx, val)
 jsi_array_get_value(rt, h, idx)   → FfiValue
 jsi_array_length(rt, h)           → u32
 jsi_register_module(rt, name, h)  → installs into expo.modules[name]
+jsi_create_host_function(rt, name, param_count, callback_id) → FfiValue (fn handle)
+jsi_object_set_host_function(rt, obj_h, name, fn_h)
+jsi_throw_error(rt, message)      → throws C++ JSError exception
 ```
+
+**Rust → C++ callback (extern "Rust"):**
+```
+rust_invoke_host_fn(callback_id, rt, args: &[FfiValue]) → FfiValue
+```
+Called by `jsi_create_host_function`'s lambda when JS invokes a Rust-backed function.
 
 ### 4.3 RustHostObject
 
@@ -307,7 +317,11 @@ Rust: "register module with handle X" → C++: looks up handle X, sets on expo.m
 
 ### 5.3 Current `FromJsValue`/`IntoJsValue` Implementations
 
-Implemented: `f64`, `i32`, `i64`, `u32`, `bool`, `String`, `Option<T>`, `Vec<T>`, `()`, `JsValue`, `JsObject`, `JsArray`
+**`IntoJsValue`** (Rust → JS): `f64`, `i32`, `i64`, `u32`, `bool`, `String`, `&str`, `Option<T>`, `Result<T, E>` (where `E: Into<ExpoError>`), `Vec<T>` (placeholder), `()`, `JsValue`
+
+**`FromJsValue`** (JS → Rust): `f64`, `i32`, `i64`, `u32`, `bool`, `String`, `Option<T>`, `JsValue`
+
+**Error types**: `ExpoError { code, message }` — converts from `String`, `&str`, or constructed via `ExpoError::new(code, message)`. `Result<T, ExpoError>` maps `Ok(v)` to the value's JS representation and `Err(e)` to `JsValue::Error`, which the callback dispatcher converts to a thrown JS exception via `jsi_throw_error`.
 
 ### 5.4 Planned: Derive Macros for Structs/Enums
 
@@ -496,15 +510,19 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 
 ## 10. Roadmap
 
-### Phase 1: Stabilize Core (In Progress)
+### Phase 1: Stabilize Core (Mostly Complete)
 
 - [x] `ModuleBuilder` with typed sync functions (0-4 params)
 - [x] `#[expo_module]` proc macro with `#[constant]` and `#[async_fn]`
-- [x] `FromJsValue` / `IntoJsValue` trait implementations
+- [x] `FromJsValue` / `IntoJsValue` trait implementations (primitives, `Option<T>`, `Result<T, E>`)
 - [x] JSI bridge layer via `cxx` (`jsi_shim.cpp` + `bridge.rs`)
 - [x] Example modules: `MathModule`, `StringModule`
 - [x] Bootstrap modules: `ExpoRustJsiModule.kt`, `ExpoRustJsiModule.swift`
-- [ ] Error propagation: `Result<T, ExpoError>` → JS exceptions
+- [x] Callable host functions: `jsi_create_host_function` + Rust callback registry
+- [x] Error propagation: `Result<T, ExpoError>` → `JsValue::Error` → `jsi_throw_error` → JS exception
+- [x] Type conversion errors return `JsValue::Error` instead of silent `undefined`
+- [x] Standalone build mode (`EXPO_RUST_JSI_STANDALONE`) for testing without JSI headers
+- [x] Unit tests (22 tests covering value conversion, module builder, callback registry, error propagation)
 - [ ] Async function bridge: Rust `Future` → JS `Promise` via tokio runtime
 - [ ] Support for 5+ parameter functions (variadic or runtime dispatch)
 
@@ -535,6 +553,8 @@ Module authors would need to know Rust. **Mitigation:** The `#[expo_module]` pro
 
 The `expo-rust-jsi` package demonstrates a working Rust ↔ JSI integration where module authors write plain Rust functions and the `#[expo_module]` macro generates all JSI wiring. The design talks directly to JSI through a thin `cxx` bridge — no dependency on the Kotlin/Swift DSL, no dependency on PR #43580's C++ Module API.
 
-**Current status:** Core abstraction (trait, builder, proc macro, type conversion, JSI bridge, platform bootstrap) is implemented. What remains is build-system integration (Gradle/CocoaPods), error/async bridges, and advanced features (derive macros, SharedObject, events).
+**Current status:** The core runtime is functional. Module functions are registered as real callable JSI host functions via a callback registry (`jsi_create_host_function` → C++ `Function::createFromHostFunction` → `rust_invoke_host_fn` callback). Error propagation works end-to-end: `Result<T, ExpoError>` in Rust becomes a thrown JS exception via `jsi_throw_error`. Type conversion failures are surfaced as errors rather than silently returning `undefined`. The standalone build mode allows running 22 unit tests without React Native/JSI headers.
+
+**What remains:** Async function bridge (Rust `Future` → JS `Promise`), build-system integration (Gradle/CocoaPods), and advanced features (derive macros, SharedObject, events).
 
 **The key unlock is cross-platform shared native code** — writing module logic once in Rust instead of twice in Kotlin + Swift, with direct JSI access for maximum performance.
