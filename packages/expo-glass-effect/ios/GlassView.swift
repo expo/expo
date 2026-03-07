@@ -222,6 +222,22 @@ public final class GlassView: ExpoView {
 
   func setColorScheme(_ colorScheme: GlassColorScheme) {
     overrideUserInterfaceStyle = colorScheme.toUIUserInterfaceStyle()
+    glassEffectView.overrideUserInterfaceStyle = colorScheme.toUIUserInterfaceStyle()
+    setNeedsLayout()
+    layoutIfNeeded()
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self, self.isGlassEffectAvailable() else { return }
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
+        #if compiler(>=6.2)
+        if let currentStyle = self.glassStyle, let uiStyle = currentStyle.toUIGlassEffectStyle() {
+          let effect = UIGlassEffect(style: uiStyle)
+          self.glassEffectView.effect = effect
+          self.glassEffect = effect
+          self.updateEffect()
+        }
+        #endif
+      }
+    }
   }
 
   private func updateEffect() {
