@@ -1,9 +1,6 @@
 import UIKit
 
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
-  var window: UIWindow?
-
+class AppDelegate: NSObject, UIApplicationDelegate {
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
