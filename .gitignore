@@ -136,3 +136,4 @@ tsconfig.tsbuildinfo
 # Secrets - contains real secrets fetched from GCP
 /secrets/keys.json
 /secrets/expotools.env
+/packages/expo-rust-jsi/target/
