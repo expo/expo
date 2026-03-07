@@ -161,7 +161,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
     }
   }
 
-  func seekTo(seconds: Double, toleranceMillisBefore: Double? = nil, toleranceMillisAfter: Double? = nil) async {
+  func seekTo(seconds: Double, toleranceMillisBefore: Double? = nil, toleranceMillisAfter: Double? = nil) {
     let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     let toleranceBefore = toleranceMillisBefore.map {
       CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
@@ -170,15 +170,11 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
       CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     } ?? CMTime.positiveInfinity
 
-    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-      ref.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { [weak self] _ in
-        if let self {
-          self.updateStatus(with: [
-            "currentTime": self.currentTime
-          ])
-        }
-        continuation.resume()
-      }
+    ref.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { [weak self] _ in
+      guard let self else { return }
+      self.updateStatus(with: [
+        "currentTime": self.currentTime
+      ])
     }
   }
 
