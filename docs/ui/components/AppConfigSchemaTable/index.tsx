@@ -6,6 +6,7 @@ import { CodeBlock } from '~/components/base/code';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { StatusTag } from '~/ui/components/Tag/StatusTag';
 import {
   CALLOUT,
   CODE,
@@ -79,6 +80,7 @@ function AppConfigProperty({
   nestingLevel,
   subproperties,
   parent,
+  deprecated,
 }: FormattedProperty & { nestingLevel: number }) {
   const canHaveMultipleValues = Array.isArray(type);
   return (
@@ -89,7 +91,10 @@ function AppConfigProperty({
         '[&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b!',
         'px-4 py-3'
       )}>
-      <PropertyName name={name} nestingLevel={nestingLevel} />
+      <div className="flex items-center justify-between">
+        <PropertyName name={name} nestingLevel={nestingLevel} />
+        {deprecated && <StatusTag status="deprecated" />}
+      </div>
       <div className="my-3" data-text="true">
         {canHaveMultipleValues ? (
           <div className="mb-2 grid grid-cols-1">
