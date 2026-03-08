@@ -59,6 +59,12 @@ export type SwitchProps = {
    */
   variant?: 'checkbox' | 'switch' | 'button';
   /**
+   * Whether the switch is enabled.
+   * @default true
+   * @platform android
+   */
+  enabled?: boolean;
+  /**
    * Callback function that is called when the checked state changes.
    */
   onValueChange?: (value: boolean) => void;

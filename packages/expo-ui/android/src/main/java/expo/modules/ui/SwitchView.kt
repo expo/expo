@@ -88,6 +88,7 @@ class SwitchColors : Record {
 
 data class SwitchProps(
   val value: Boolean = false,
+  val enabled: Boolean = true,
   val variant: String = "switch",
   val elementColors: SwitchColors = SwitchColors(),
   val modifiers: ModifierList = emptyList()
@@ -99,12 +100,14 @@ fun SwitchComposable(
   onCheckedChange: ((Boolean) -> Unit)?,
   colors: SwitchColors,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   thumbContent: (@Composable () -> Unit)? = null
 ) {
   Switch(
     checked = checked,
     onCheckedChange = onCheckedChange,
     modifier = modifier,
+    enabled = enabled,
     thumbContent = thumbContent,
     colors = SwitchDefaults.colors(
       // For some reason the default way of passing colors using `compose` results in a transparent view
@@ -145,11 +148,12 @@ fun SwitchComposable(
 }
 
 @Composable
-fun CheckboxComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier) {
+fun CheckboxComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier, enabled: Boolean = true) {
   Checkbox(
     checked = checked,
     onCheckedChange = onCheckedChange,
     modifier = modifier,
+    enabled = enabled,
     colors = CheckboxDefaults.colors(
       checkedColor = colors.checkedColor.compose,
       disabledCheckedColor = colors.disabledCheckedColor.compose,
@@ -168,11 +172,12 @@ fun ThemedHybridSwitch(
   onCheckedChange: ((Boolean) -> Unit)?,
   colors: SwitchColors,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   thumbContent: (@Composable () -> Unit)? = null
 ) {
   when (variant) {
-    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier, thumbContent)
-    else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
+    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier, enabled, thumbContent)
+    else -> CheckboxComposable(checked, onCheckedChange, colors, modifier, enabled)
   }
 }
 
@@ -189,6 +194,7 @@ fun FunctionalComposableScope.SwitchContent(
     { newChecked -> onValueChange(ValueChangeEvent(newChecked)) },
     props.elementColors,
     ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    props.enabled,
     thumbContent = thumbContentSlotView?.let {
       {
         with(ComposableScope()) {
