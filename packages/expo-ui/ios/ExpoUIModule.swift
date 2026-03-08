@@ -89,6 +89,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
     ExpoUIView(ListForEachView.self)
+    ExpoUIView(WorkletListView.self)
 
     ExpoUIView(PickerView.self)
 

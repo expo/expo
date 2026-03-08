@@ -274,6 +274,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
+  {
+    name: 'WorkletList (Experimental)',
+    route: 'ui/worklet-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./WorkletListScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

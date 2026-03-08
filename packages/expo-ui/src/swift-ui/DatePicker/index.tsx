@@ -4,7 +4,7 @@ import { type NativeSyntheticEvent } from 'react-native';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type DatePickerComponent = 'date' | 'hourAndMinute';
+export type DatePickerComponent = 'date' | 'hourAndMinute' | 'yearAndMonth';
 
 export type DateRange = {
   start?: Date;
@@ -25,8 +25,10 @@ export type DatePickerProps = {
    */
   range?: DateRange;
   /**
-   * The components to display: 'date' and/or 'hourAndMinute'.
+   * The components to display: 'date', 'hourAndMinute', or 'yearAndMonth'.
+   * The 'yearAndMonth' component uses UIKit's UIDatePicker under the hood.
    * @default ['date']
+   * @platform 'yearAndMonth' requires ios 17.4+
    */
   displayedComponents?: DatePickerComponent[];
   /**
