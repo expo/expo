@@ -47,6 +47,49 @@ enum class Variant(val value: String) : Enumerable {
   }
 }
 
+class DateTimePickerColorOverrides : Record {
+  // DatePicker colors
+  @Field val containerColor: AndroidColor? = null
+  @Field val titleContentColor: AndroidColor? = null
+  @Field val headlineContentColor: AndroidColor? = null
+  @Field val weekdayContentColor: AndroidColor? = null
+  @Field val subheadContentColor: AndroidColor? = null
+  @Field val navigationContentColor: AndroidColor? = null
+  @Field val yearContentColor: AndroidColor? = null
+  @Field val disabledYearContentColor: AndroidColor? = null
+  @Field val currentYearContentColor: AndroidColor? = null
+  @Field val selectedYearContentColor: AndroidColor? = null
+  @Field val disabledSelectedYearContentColor: AndroidColor? = null
+  @Field val selectedYearContainerColor: AndroidColor? = null
+  @Field val disabledSelectedYearContainerColor: AndroidColor? = null
+  @Field val dayContentColor: AndroidColor? = null
+  @Field val disabledDayContentColor: AndroidColor? = null
+  @Field val selectedDayContentColor: AndroidColor? = null
+  @Field val disabledSelectedDayContentColor: AndroidColor? = null
+  @Field val selectedDayContainerColor: AndroidColor? = null
+  @Field val disabledSelectedDayContainerColor: AndroidColor? = null
+  @Field val todayContentColor: AndroidColor? = null
+  @Field val todayDateBorderColor: AndroidColor? = null
+  @Field val dayInSelectionRangeContentColor: AndroidColor? = null
+  @Field val dayInSelectionRangeContainerColor: AndroidColor? = null
+  @Field val dividerColor: AndroidColor? = null
+
+  // TimePicker colors
+  @Field val clockDialColor: AndroidColor? = null
+  @Field val clockDialSelectedContentColor: AndroidColor? = null
+  @Field val clockDialUnselectedContentColor: AndroidColor? = null
+  @Field val selectorColor: AndroidColor? = null
+  @Field val periodSelectorBorderColor: AndroidColor? = null
+  @Field val periodSelectorSelectedContainerColor: AndroidColor? = null
+  @Field val periodSelectorUnselectedContainerColor: AndroidColor? = null
+  @Field val periodSelectorSelectedContentColor: AndroidColor? = null
+  @Field val periodSelectorUnselectedContentColor: AndroidColor? = null
+  @Field val timeSelectorSelectedContainerColor: AndroidColor? = null
+  @Field val timeSelectorUnselectedContainerColor: AndroidColor? = null
+  @Field val timeSelectorSelectedContentColor: AndroidColor? = null
+  @Field val timeSelectorUnselectedContentColor: AndroidColor? = null
+}
+
 data class DateTimePickerProps(
   val title: String = "",
   val initialDate: Long? = null,
@@ -55,6 +98,7 @@ data class DateTimePickerProps(
   val showVariantToggle: Boolean = true,
   val is24Hour: Boolean = true,
   val color: AndroidColor? = null,
+  val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -94,15 +138,38 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     onDateSelected(DatePickerResult(date = state.selectedDateMillis))
   }
 
+  val ec = props.elementColors
+  val defaults = DatePickerDefaults.colors()
+
   DatePicker(
     modifier = modifier,
     state = state,
     showModeToggle = props.showVariantToggle,
     colors = DatePickerDefaults.colors().copy(
-      titleContentColor = colorToComposeColor(props.color),
-      selectedDayContainerColor = colorToComposeColor(props.color),
-      todayDateBorderColor = colorToComposeColor(props.color),
-      headlineContentColor = colorToComposeColor(props.color)
+      containerColor = ec.containerColor.composeOrNull ?: defaults.containerColor,
+      titleContentColor = ec.titleContentColor.composeOrNull ?: defaults.titleContentColor,
+      headlineContentColor = ec.headlineContentColor.composeOrNull ?: defaults.headlineContentColor,
+      weekdayContentColor = ec.weekdayContentColor.composeOrNull ?: defaults.weekdayContentColor,
+      subheadContentColor = ec.subheadContentColor.composeOrNull ?: defaults.subheadContentColor,
+      navigationContentColor = ec.navigationContentColor.composeOrNull ?: defaults.navigationContentColor,
+      yearContentColor = ec.yearContentColor.composeOrNull ?: defaults.yearContentColor,
+      disabledYearContentColor = ec.disabledYearContentColor.composeOrNull ?: defaults.disabledYearContentColor,
+      currentYearContentColor = ec.currentYearContentColor.composeOrNull ?: defaults.currentYearContentColor,
+      selectedYearContentColor = ec.selectedYearContentColor.composeOrNull ?: defaults.selectedYearContentColor,
+      disabledSelectedYearContentColor = ec.disabledSelectedYearContentColor.composeOrNull ?: defaults.disabledSelectedYearContentColor,
+      selectedYearContainerColor = ec.selectedYearContainerColor.composeOrNull ?: defaults.selectedYearContainerColor,
+      disabledSelectedYearContainerColor = ec.disabledSelectedYearContainerColor.composeOrNull ?: defaults.disabledSelectedYearContainerColor,
+      dayContentColor = ec.dayContentColor.composeOrNull ?: defaults.dayContentColor,
+      disabledDayContentColor = ec.disabledDayContentColor.composeOrNull ?: defaults.disabledDayContentColor,
+      selectedDayContentColor = ec.selectedDayContentColor.composeOrNull ?: defaults.selectedDayContentColor,
+      disabledSelectedDayContentColor = ec.disabledSelectedDayContentColor.composeOrNull ?: defaults.disabledSelectedDayContentColor,
+      selectedDayContainerColor = ec.selectedDayContainerColor.composeOrNull ?: defaults.selectedDayContainerColor,
+      disabledSelectedDayContainerColor = ec.disabledSelectedDayContainerColor.composeOrNull ?: defaults.disabledSelectedDayContainerColor,
+      todayContentColor = ec.todayContentColor.composeOrNull ?: defaults.todayContentColor,
+      todayDateBorderColor = ec.todayDateBorderColor.composeOrNull ?: defaults.todayDateBorderColor,
+      dayInSelectionRangeContentColor = ec.dayInSelectionRangeContentColor.composeOrNull ?: defaults.dayInSelectionRangeContentColor,
+      dayInSelectionRangeContainerColor = ec.dayInSelectionRangeContainerColor.composeOrNull ?: defaults.dayInSelectionRangeContainerColor,
+      dividerColor = ec.dividerColor.composeOrNull ?: defaults.dividerColor
     )
   )
 }
@@ -137,14 +204,28 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     onDateSelected(DatePickerResult(date = cal.time.time))
   }
 
+  val ec = props.elementColors
+  val defaults = TimePickerDefaults.colors()
+
   TimePicker(
     modifier = modifier,
     state = state,
     layoutType = TimePickerLayoutType.Vertical,
     colors = TimePickerDefaults.colors().copy(
-      selectorColor = colorToComposeColor(props.color),
-      timeSelectorSelectedContainerColor = colorToComposeColor(props.color),
-      clockDialColor = colorToComposeColor(props.color).copy(alpha = 0.3f)
+      containerColor = ec.containerColor.composeOrNull ?: defaults.containerColor,
+      clockDialColor = ec.clockDialColor.composeOrNull ?: defaults.clockDialColor,
+      clockDialSelectedContentColor = ec.clockDialSelectedContentColor.composeOrNull ?: defaults.clockDialSelectedContentColor,
+      clockDialUnselectedContentColor = ec.clockDialUnselectedContentColor.composeOrNull ?: defaults.clockDialUnselectedContentColor,
+      selectorColor = ec.selectorColor.composeOrNull ?: defaults.selectorColor,
+      periodSelectorBorderColor = ec.periodSelectorBorderColor.composeOrNull ?: defaults.periodSelectorBorderColor,
+      periodSelectorSelectedContainerColor = ec.periodSelectorSelectedContainerColor.composeOrNull ?: defaults.periodSelectorSelectedContainerColor,
+      periodSelectorUnselectedContainerColor = ec.periodSelectorUnselectedContainerColor.composeOrNull ?: defaults.periodSelectorUnselectedContainerColor,
+      periodSelectorSelectedContentColor = ec.periodSelectorSelectedContentColor.composeOrNull ?: defaults.periodSelectorSelectedContentColor,
+      periodSelectorUnselectedContentColor = ec.periodSelectorUnselectedContentColor.composeOrNull ?: defaults.periodSelectorUnselectedContentColor,
+      timeSelectorSelectedContainerColor = ec.timeSelectorSelectedContainerColor.composeOrNull ?: defaults.timeSelectorSelectedContainerColor,
+      timeSelectorUnselectedContainerColor = ec.timeSelectorUnselectedContainerColor.composeOrNull ?: defaults.timeSelectorUnselectedContainerColor,
+      timeSelectorSelectedContentColor = ec.timeSelectorSelectedContentColor.composeOrNull ?: defaults.timeSelectorSelectedContentColor,
+      timeSelectorUnselectedContentColor = ec.timeSelectorUnselectedContentColor.composeOrNull ?: defaults.timeSelectorUnselectedContentColor
     )
   )
 }
