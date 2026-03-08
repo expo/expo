@@ -1,5 +1,6 @@
 import { Host, Switch } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
+import { View } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
@@ -19,7 +20,7 @@ export default function SwitchScreen() {
         </Host>
       </Section>
 
-      <Section title="Switch with Border Colors">
+      <Section title="Switch with Custom Colors">
         <Host matchContents>
           <Switch
             value={checked}
@@ -27,12 +28,26 @@ export default function SwitchScreen() {
             label="Never gonna let you down"
             variant="switch"
             elementColors={{
-              checkedBorderColor: '#0000ff',
-              uncheckedBorderColor: '#ff0000',
-              checkedTrackColor: '#e0e0ff',
-              uncheckedTrackColor: '#ffe0e0',
-            }}
-          />
+              checkedBorderColor: '#7C3AED',
+              uncheckedBorderColor: '#D1D5DB',
+              checkedTrackColor: '#EDE9FE',
+              uncheckedTrackColor: '#F3F4F6',
+              checkedIconColor: '#7C3AED',
+              uncheckedIconColor: '#9CA3AF',
+              checkedThumbColor: '#7C3AED',
+              uncheckedThumbColor: '#9CA3AF',
+            }}>
+            <Switch.ThumbContent>
+              <View
+                style={{
+                  width: Switch.DefaultIconSize,
+                  height: Switch.DefaultIconSize,
+                  borderRadius: Switch.DefaultIconSize / 2,
+                  backgroundColor: checked ? '#ffffff' : '#E5E7EB',
+                }}
+              />
+            </Switch.ThumbContent>
+          </Switch>
         </Host>
       </Section>
 
@@ -48,29 +63,12 @@ export default function SwitchScreen() {
         </Host>
       </Section>
 
-      <Section title="Checkbox with Border Colors">
-        <Host matchContents>
-          <Switch
-            value={checked}
-            onValueChange={setChecked}
-            label="Never gonna make you cry"
-            variant="checkbox"
-            elementColors={{
-              checkedBorderColor: '#00cc00',
-              uncheckedBorderColor: '#cc6600',
-              checkedColor: '#e0ffe0',
-              uncheckedColor: '#ffe0cc',
-            }}
-          />
-        </Host>
-      </Section>
-
       <Section title="Button Switch">
         <Host matchContents>
           <Switch
             value={checked}
             onValueChange={setChecked}
-            label="Never gonna say goodbye"
+            label="Never gonna make you cry"
             variant="button"
           />
         </Host>
