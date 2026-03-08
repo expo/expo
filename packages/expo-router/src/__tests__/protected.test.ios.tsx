@@ -379,3 +379,37 @@ it('works with tabs', () => {
   expect(screen).toHavePathname('/protected');
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });
+
+it('should protect dynamic routes without explicit /index suffix', () => {
+  let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
+
+  renderRouter(
+    {
+      _layout: function Layout() {
+        useStateResult = useState(false);
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={useStateResult[0]}>
+              <Stack.Screen name="otp/[flow]" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+    },
+    { initialUrl: '/otp/signin' }
+  );
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
+  act(() => {
+    useStateResult[1](true);
+  });
+
+  act(() => router.replace('/otp/signin'));
+
+  expect(screen.getByTestId('otp')).toBeVisible();
+  expect(screen).toHavePathname('/otp/signin');
+});
