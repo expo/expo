@@ -26,10 +26,16 @@ class SwitchColors : Record {
   val checkedTrackColor: Color? = null
 
   @Field
+  val checkedBorderColor: Color? = null
+
+  @Field
   val uncheckedThumbColor: Color? = null
 
   @Field
   val uncheckedTrackColor: Color? = null
+
+  @Field
+  val uncheckedBorderColor: Color? = null
 
   @Field
   val checkedColor: Color? = null
@@ -38,10 +44,16 @@ class SwitchColors : Record {
   val disabledCheckedColor: Color? = null
 
   @Field
+  val disabledCheckedBorderColor: Color? = null
+
+  @Field
   val uncheckedColor: Color? = null
 
   @Field
   val disabledUncheckedColor: Color? = null
+
+  @Field
+  val disabledUncheckedBorderColor: Color? = null
 
   @Field
   val checkmarkColor: Color? = null
@@ -76,10 +88,14 @@ fun SwitchComposable(
         ?: SwitchDefaults.colors().checkedThumbColor,
       checkedTrackColor = colors.checkedTrackColor.composeOrNull
         ?: SwitchDefaults.colors().checkedTrackColor,
+      checkedBorderColor = colors.checkedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedBorderColor,
       uncheckedThumbColor = colors.uncheckedThumbColor.composeOrNull
         ?: SwitchDefaults.colors().uncheckedThumbColor,
       uncheckedTrackColor = colors.uncheckedTrackColor.composeOrNull
-        ?: SwitchDefaults.colors().uncheckedTrackColor
+        ?: SwitchDefaults.colors().uncheckedTrackColor,
+      uncheckedBorderColor = colors.uncheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedBorderColor
     )
   )
 }
@@ -93,8 +109,12 @@ fun CheckboxComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, 
     colors = CheckboxDefaults.colors(
       checkedColor = colors.checkedColor.compose,
       disabledCheckedColor = colors.disabledCheckedColor.compose,
+      checkedBorderColor = colors.checkedBorderColor.compose,
+      disabledCheckedBorderColor = colors.disabledCheckedBorderColor.compose,
       uncheckedColor = colors.uncheckedColor.compose,
       disabledUncheckedColor = colors.disabledUncheckedColor.compose,
+      uncheckedBorderColor = colors.uncheckedBorderColor.compose,
+      disabledUncheckedBorderColor = colors.disabledUncheckedBorderColor.compose,
       checkmarkColor = colors.checkmarkColor.compose,
       disabledIndeterminateColor = colors.disabledIndeterminateColor.compose
     )
