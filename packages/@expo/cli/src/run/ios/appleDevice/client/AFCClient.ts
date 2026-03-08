@@ -9,8 +9,6 @@ import Debug from 'debug';
 import * as fs from 'fs';
 import { Socket } from 'net';
 import * as path from 'path';
-import { promisify } from 'util';
-
 import { ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
 import {
@@ -108,14 +106,27 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
   protected async uploadFile(srcPath: string, destPath: string): Promise<void> {
     debug(`uploadFile: ${srcPath}, ${destPath}`);
 
-    // read local file and get fd of destination
-    const [srcFile, destFile] = await Promise.all([
-      await promisify(fs.readFile)(srcPath),
-      await this.openFile(destPath),
-    ]);
+    const stat = fs.statSync(srcPath);
+    const destFile = await this.openFile(destPath);
 
     try {
-      await this.writeFile(destFile, srcFile);
+      // fs.readFile cannot handle files >= 2 GiB due to Node.js Buffer limitations.
+      // Read and write in chunks to support large files (e.g. ML models).
+      const CHUNK_SIZE = 8 * 1024 * 1024; // 8 MiB
+      const fd = fs.openSync(srcPath, 'r');
+      try {
+        const buf = Buffer.allocUnsafe(Math.min(CHUNK_SIZE, stat.size));
+        let bytesRead = 0;
+        let offset = 0;
+        while (offset < stat.size) {
+          const toRead = Math.min(CHUNK_SIZE, stat.size - offset);
+          bytesRead = fs.readSync(fd, buf, 0, toRead, offset);
+          await this.writeFile(destFile, buf.subarray(0, bytesRead));
+          offset += bytesRead;
+        }
+      } finally {
+        fs.closeSync(fd);
+      }
       await this.closeFile(destFile);
     } catch (err) {
       await this.closeFile(destFile);
