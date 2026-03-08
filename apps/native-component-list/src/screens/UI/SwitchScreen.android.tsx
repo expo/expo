@@ -63,12 +63,42 @@ export default function SwitchScreen() {
         </Host>
       </Section>
 
+      <Section title="Disabled Switch">
+        <Host matchContents>
+          <Switch
+            value={checked}
+            enabled={false}
+            label="Never gonna make you cry"
+            variant="switch"
+          />
+        </Host>
+      </Section>
+
+      <Section title="Disabled Switch with Custom Colors">
+        <Host matchContents>
+          <Switch
+            value={checked}
+            enabled={false}
+            label="Never gonna say goodbye"
+            variant="switch"
+            elementColors={{
+              disabledUncheckedThumbColor: '#F87171',
+              disabledUncheckedTrackColor: '#FEE2E2',
+              disabledUncheckedBorderColor: '#FCA5A5',
+              disabledCheckedThumbColor: '#34D399',
+              disabledCheckedTrackColor: '#D1FAE5',
+              disabledCheckedBorderColor: '#6EE7B7',
+            }}
+          />
+        </Host>
+      </Section>
+
       <Section title="Button Switch">
         <Host matchContents>
           <Switch
             value={checked}
             onValueChange={setChecked}
-            label="Never gonna make you cry"
+            label="Never gonna tell a lie and hurt you"
             variant="button"
           />
         </Host>
