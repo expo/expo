@@ -24,4 +24,5 @@ dependencies {
   implementation "com.squareup.okhttp3:okhttp:4.9.2"
   compileOnly "androidx.activity:activity-ktx:1.8.0"
   compileOnly "androidx.core:core-ktx:1.12.0"
+  compileOnly "androidx.compose.runtime:runtime:1.9.3"
 }
