@@ -38,7 +38,7 @@ async function resolveModuleAsync(packageName, revision, extraOutput) {
     const podspecFiles = await findPodspecFiles(revision);
     const isLocal = extraOutput.isLocal ?? false;
     if (!podspecFiles.length && !isLocal) {
-        // Local modules without a podspec are integrated directly in the app project.
+        // External modules without a podspec cannot be integrated.
         return null;
     }
     const pods = podspecFiles.map((podspecFile) => ({

@@ -95,7 +95,7 @@ module Expo
       in_project_packages = targets.flat_map do |target|
         manager = target.target_definition.autolinking_manager
         manager.present? ? manager.in_project_packages : []
-      end.uniq(&:name)
+      end.uniq(&:path)
 
       return if in_project_packages.empty?
 
@@ -103,11 +103,11 @@ module Expo
       local_modules_group = project.main_group.find_subpath('Local Modules', true)
 
       # Find the main app native target (first non-test application target)
-      native_target = project.native_targets.find do |t|
+      native_targets = project.native_targets.select do |t|
         t.product_type == 'com.apple.product-type.application'
       end
 
-      unless native_target
+      if native_targets.empty?
         Pod::UI.warn '[Expo] Could not find an application target to integrate local modules'
         return
       end
@@ -123,14 +123,15 @@ module Expo
           next
         end
 
+        # Compute relative path from the project directory to the module source directory
+        relative_path = Pathname.new(source_dir).relative_path_from(Pathname.new(project.project_dir)).to_s
+
         # Check if already integrated
-        existing = local_modules_group.children.find { |c| c.display_name == package.name }
+        existing = local_modules_group.children.find { |c| c.path == relative_path }
+
         if existing
           next
         end
-
-        # Compute relative path from the project directory to the module source directory
-        relative_path = Pathname.new(source_dir).relative_path_from(Pathname.new(project.project_dir)).to_s
 
         # Create synchronized root group
         sync_group = project.new(Xcodeproj::Project::Object::PBXFileSystemSynchronizedRootGroup)
@@ -141,9 +142,11 @@ module Expo
         # Add to the Local Modules group
         local_modules_group.children << sync_group
 
-        # Register with the app target
-        native_target.file_system_synchronized_groups ||= []
-        native_target.file_system_synchronized_groups << sync_group
+        native_targets.each do |native_target|
+          # Register with the app target
+          native_target.file_system_synchronized_groups ||= []
+          native_target.file_system_synchronized_groups << sync_group
+        end
 
         Pod::UI.puts "[Expo] ".blue + "Integrated local module #{package.name} in app project"
         project.mark_dirty!
