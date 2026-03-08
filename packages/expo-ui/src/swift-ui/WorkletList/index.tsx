@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import * as React from 'react';
 
 import { type CommonViewModifierProps } from '../types';
 
@@ -16,22 +17,27 @@ export interface WorkletListProps<T extends Record<string, unknown> = Record<str
   data: T[];
 
   /**
-   * A JavaScript function source string that takes `(item, index)` and returns
-   * a descriptor tree built with `createElement()`.
+   * A function that takes `(item, index)` and returns a descriptor tree
+   * built with `createElement(type, props, ...children)`.
    *
-   * `createElement` is available as a global in the UI runtime.
+   * This function runs on the UI thread — it must be a **pure function** of
+   * its arguments and marked with `'worklet'`. It cannot capture closure
+   * variables from the surrounding scope. Use `globalThis.createElement`
+   * (available in the UI runtime) and the function parameters.
    *
    * @example
    * ```tsx
-   * renderItemSource={`(function(item, index) {
-   *   var h = createElement;
+   * renderItem={(item, index) => {
+   *   'worklet';
+   *   const h = globalThis.createElement;
    *   return h('HStack', { spacing: 8 },
+   *     h('Image', { systemName: item.icon }),
    *     h('Text', { content: item.title })
    *   );
-   * })`}
+   * }}
    * ```
    */
-  renderItemSource: string;
+  renderItem: (item: T, index: number) => unknown;
 }
 
 type NativeWorkletListProps = CommonViewModifierProps & {
@@ -44,9 +50,12 @@ type NativeWorkletListProps = CommonViewModifierProps & {
  * running on the UI thread, enabling synchronous rendering for SwiftUI's lazy list.
  *
  * Unlike the standard `List` which eagerly renders all React children on the
- * JS thread, `WorkletList` evals the `renderItemSource` function into the UI
- * runtime and calls it synchronously when SwiftUI's `ForEach` requests each item.
- * This eliminates blank cells during fast scrolling.
+ * JS thread, `WorkletList` runs `renderItem` synchronously on the UI thread
+ * when SwiftUI's lazy container requests each item. This eliminates blank cells
+ * during fast scrolling.
+ *
+ * **Important:** `renderItem` must be a pure function — no closure captures.
+ * Only the function parameters and `createElement` (a global) are available.
  *
  * Supported descriptor types: `Text`, `HStack`, `VStack`, `ZStack`, `Image`,
  * `Label`, `Spacer`, `Divider`.
@@ -54,7 +63,19 @@ type NativeWorkletListProps = CommonViewModifierProps & {
  * @experimental This is a proof-of-concept for UI-thread list rendering.
  */
 export function WorkletList<T extends Record<string, unknown>>(props: WorkletListProps<T>) {
-  const { data, renderItemSource, ...restProps } = props;
+  const { data, renderItem, ...restProps } = props;
+
+  // Extract function source from the worklet's __initData (set by the Babel plugin
+  // at compile time). Hermes compiles JS to bytecode, so Function.prototype.toString()
+  // won't work — we rely on the worklet plugin to preserve the source.
+  const renderItemSource = React.useMemo(() => {
+    const fn = renderItem as any;
+    if (fn.__initData?.code) {
+      return `(${fn.__initData.code})`;
+    }
+    // Fallback for non-Hermes engines (e.g. V8 in debug mode)
+    return `(${renderItem.toString()})`;
+  }, [renderItem]);
 
   return (
     <WorkletListNativeView

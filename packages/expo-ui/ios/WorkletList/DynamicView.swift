@@ -41,6 +41,7 @@ struct DynamicView: SwiftUI.View {
       ) {
         buildChildren(children)
       }
+      .applyPadding(props)
 
     case "VStack":
       VStack(
@@ -49,11 +50,13 @@ struct DynamicView: SwiftUI.View {
       ) {
         buildChildren(children)
       }
+      .applyPadding(props)
 
     case "ZStack":
       ZStack {
         buildChildren(children)
       }
+      .applyPadding(props)
 
     case "Image":
       buildImage(props: props)
@@ -89,13 +92,18 @@ struct DynamicView: SwiftUI.View {
   @ViewBuilder
   private func buildText(props: [String: Any]) -> some SwiftUI.View {
     let content = props["content"] as? String ?? ""
-    let text = SwiftUI.Text(content)
+    let weight = fontWeight(from: props["fontWeight"] as? String)
+    let fontSize = cgFloat(from: props["fontSize"])
+    let color: Color? = (props["color"] as? String).flatMap { colorFromString($0) }
 
-    if let colorName = props["color"] as? String, let color = colorFromString(colorName) {
-      text.foregroundColor(color)
-    } else {
-      text
-    }
+    styledText(SwiftUI.Text(content), weight: weight, fontSize: fontSize, color: color)
+  }
+
+  private func styledText(_ text: SwiftUI.Text, weight: Font.Weight?, fontSize: CGFloat?, color: Color?) -> some SwiftUI.View {
+    let styled = weight != nil ? text.fontWeight(weight!) : text
+    return styled
+      .font(fontSize.map { Font.system(size: $0) })
+      .foregroundColor(color)
   }
 
   @ViewBuilder
@@ -170,6 +178,21 @@ struct DynamicView: SwiftUI.View {
     }
   }
 
+  private func fontWeight(from string: String?) -> Font.Weight? {
+    switch string {
+    case "ultraLight": return .ultraLight
+    case "thin": return .thin
+    case "light": return .light
+    case "regular": return .regular
+    case "medium": return .medium
+    case "semibold": return .semibold
+    case "bold": return .bold
+    case "heavy": return .heavy
+    case "black": return .black
+    default: return nil
+    }
+  }
+
   private func colorFromString(_ string: String) -> Color? {
     switch string {
     case "red": return .red
@@ -185,6 +208,30 @@ struct DynamicView: SwiftUI.View {
     case "primary": return .primary
     case "secondary": return .secondary
     default: return nil
+    }
+  }
+}
+
+// MARK: - Padding Modifier
+
+private extension SwiftUI.View {
+  @ViewBuilder
+  func applyPadding(_ props: [String: Any]) -> some SwiftUI.View {
+    if let padding = props["padding"] as? Double {
+      self.padding(CGFloat(padding))
+    } else if let padding = props["padding"] as? Int {
+      self.padding(CGFloat(padding))
+    } else if let paddings = props["padding"] as? [String: Any] {
+      self.padding(
+        .init(
+          top: (paddings["top"] as? Double).map { CGFloat($0) } ?? 0,
+          leading: (paddings["leading"] as? Double).map { CGFloat($0) } ?? 0,
+          bottom: (paddings["bottom"] as? Double).map { CGFloat($0) } ?? 0,
+          trailing: (paddings["trailing"] as? Double).map { CGFloat($0) } ?? 0
+        )
+      )
+    } else {
+      self
     }
   }
 }

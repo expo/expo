@@ -38,8 +38,6 @@ struct WorkletListView: ExpoSwiftUI.View {
       LazyVStack(alignment: .leading, spacing: 0) {
         ForEach(0..<props.data.count, id: \.self) { index in
           itemView(index: index)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
           Divider()
         }
       }

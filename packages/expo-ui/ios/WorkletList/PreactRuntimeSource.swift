@@ -22,10 +22,14 @@ let workletListRuntimeSource = """
       }
       if (Array.isArray(child)) {
         for (var j = 0; j < child.length; j++) {
-          children.push(normalizeChild(child[j]));
+          var nc = normalizeChild(child[j]);
+          if (nc != null) { children.push(nc); }
         }
       } else {
-        children.push(normalizeChild(child));
+        var normalized = normalizeChild(child);
+        if (normalized != null) {
+          children.push(normalized);
+        }
       }
     }
     return {
