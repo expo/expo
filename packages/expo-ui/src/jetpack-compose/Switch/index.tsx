@@ -13,9 +13,19 @@ type SwitchElementColors = {
   checkedThumbColor?: ColorValue;
   checkedTrackColor?: ColorValue;
   checkedBorderColor?: ColorValue;
+  checkedIconColor?: ColorValue;
   uncheckedThumbColor?: ColorValue;
   uncheckedTrackColor?: ColorValue;
   uncheckedBorderColor?: ColorValue;
+  uncheckedIconColor?: ColorValue;
+  disabledCheckedThumbColor?: ColorValue;
+  disabledCheckedTrackColor?: ColorValue;
+  disabledCheckedBorderColor?: ColorValue;
+  disabledCheckedIconColor?: ColorValue;
+  disabledUncheckedThumbColor?: ColorValue;
+  disabledUncheckedTrackColor?: ColorValue;
+  disabledUncheckedBorderColor?: ColorValue;
+  disabledUncheckedIconColor?: ColorValue;
 };
 
 // @docsMissing
@@ -25,12 +35,8 @@ type SwitchElementColors = {
 type CheckboxElementColors = {
   checkedColor?: ColorValue;
   disabledCheckedColor?: ColorValue;
-  checkedBorderColor?: ColorValue;
-  disabledCheckedBorderColor?: ColorValue;
   uncheckedColor?: ColorValue;
   disabledUncheckedColor?: ColorValue;
-  uncheckedBorderColor?: ColorValue;
-  disabledUncheckedBorderColor?: ColorValue;
   checkmarkColor?: ColorValue;
   disabledIndeterminateColor?: ColorValue;
 };

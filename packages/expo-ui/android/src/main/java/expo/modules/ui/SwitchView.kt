@@ -29,6 +29,9 @@ class SwitchColors : Record {
   val checkedBorderColor: Color? = null
 
   @Field
+  val checkedIconColor: Color? = null
+
+  @Field
   val uncheckedThumbColor: Color? = null
 
   @Field
@@ -38,22 +41,43 @@ class SwitchColors : Record {
   val uncheckedBorderColor: Color? = null
 
   @Field
+  val uncheckedIconColor: Color? = null
+
+  @Field
+  val disabledCheckedThumbColor: Color? = null
+
+  @Field
+  val disabledCheckedTrackColor: Color? = null
+
+  @Field
+  val disabledCheckedBorderColor: Color? = null
+
+  @Field
+  val disabledCheckedIconColor: Color? = null
+
+  @Field
+  val disabledUncheckedThumbColor: Color? = null
+
+  @Field
+  val disabledUncheckedTrackColor: Color? = null
+
+  @Field
+  val disabledUncheckedBorderColor: Color? = null
+
+  @Field
+  val disabledUncheckedIconColor: Color? = null
+
+  @Field
   val checkedColor: Color? = null
 
   @Field
   val disabledCheckedColor: Color? = null
 
   @Field
-  val disabledCheckedBorderColor: Color? = null
-
-  @Field
   val uncheckedColor: Color? = null
 
   @Field
   val disabledUncheckedColor: Color? = null
-
-  @Field
-  val disabledUncheckedBorderColor: Color? = null
 
   @Field
   val checkmarkColor: Color? = null
@@ -90,12 +114,32 @@ fun SwitchComposable(
         ?: SwitchDefaults.colors().checkedTrackColor,
       checkedBorderColor = colors.checkedBorderColor.composeOrNull
         ?: SwitchDefaults.colors().checkedBorderColor,
+      checkedIconColor = colors.checkedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedIconColor,
       uncheckedThumbColor = colors.uncheckedThumbColor.composeOrNull
         ?: SwitchDefaults.colors().uncheckedThumbColor,
       uncheckedTrackColor = colors.uncheckedTrackColor.composeOrNull
         ?: SwitchDefaults.colors().uncheckedTrackColor,
       uncheckedBorderColor = colors.uncheckedBorderColor.composeOrNull
-        ?: SwitchDefaults.colors().uncheckedBorderColor
+        ?: SwitchDefaults.colors().uncheckedBorderColor,
+      uncheckedIconColor = colors.uncheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedIconColor,
+      disabledCheckedBorderColor = colors.disabledCheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedBorderColor,
+      disabledCheckedThumbColor = colors.disabledCheckedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedThumbColor,
+      disabledCheckedTrackColor = colors.disabledCheckedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedTrackColor,
+      disabledCheckedIconColor = colors.disabledCheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedIconColor,
+      disabledUncheckedBorderColor = colors.disabledUncheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedBorderColor,
+      disabledUncheckedThumbColor = colors.disabledUncheckedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedThumbColor,
+      disabledUncheckedTrackColor = colors.disabledUncheckedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedTrackColor,
+      disabledUncheckedIconColor = colors.disabledUncheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedIconColor
     )
   )
 }
@@ -109,12 +153,8 @@ fun CheckboxComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, 
     colors = CheckboxDefaults.colors(
       checkedColor = colors.checkedColor.compose,
       disabledCheckedColor = colors.disabledCheckedColor.compose,
-      checkedBorderColor = colors.checkedBorderColor.compose,
-      disabledCheckedBorderColor = colors.disabledCheckedBorderColor.compose,
       uncheckedColor = colors.uncheckedColor.compose,
       disabledUncheckedColor = colors.disabledUncheckedColor.compose,
-      uncheckedBorderColor = colors.uncheckedBorderColor.compose,
-      disabledUncheckedBorderColor = colors.disabledUncheckedBorderColor.compose,
       checkmarkColor = colors.checkmarkColor.compose,
       disabledIndeterminateColor = colors.disabledIndeterminateColor.compose
     )
