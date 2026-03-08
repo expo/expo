@@ -48,7 +48,7 @@ export async function resolveModuleAsync(
   const isLocal = extraOutput.isLocal ?? false;
 
   if (!podspecFiles.length && !isLocal) {
-    // Local modules without a podspec are integrated directly in the app project.
+    // External modules without a podspec cannot be integrated.
     return null;
   }
 
