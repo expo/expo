@@ -51,24 +51,12 @@ export default function SwitchScreen() {
         </Host>
       </Section>
 
-      <Section title="Checkbox Switch">
-        <Host matchContents>
-          <Switch
-            value={checked}
-            onValueChange={setChecked}
-            label="Never gonna run around and desert you"
-            color="#ff0000"
-            variant="checkbox"
-          />
-        </Host>
-      </Section>
-
       <Section title="Disabled Switch">
         <Host matchContents>
           <Switch
             value={checked}
             enabled={false}
-            label="Never gonna make you cry"
+            label="Never gonna run around and desert you"
             variant="switch"
           />
         </Host>
@@ -79,7 +67,7 @@ export default function SwitchScreen() {
           <Switch
             value={checked}
             enabled={false}
-            label="Never gonna say goodbye"
+            label="Never gonna make you cry"
             variant="switch"
             elementColors={{
               disabledUncheckedThumbColor: '#F87171',
@@ -89,6 +77,18 @@ export default function SwitchScreen() {
               disabledCheckedTrackColor: '#D1FAE5',
               disabledCheckedBorderColor: '#6EE7B7',
             }}
+          />
+        </Host>
+      </Section>
+
+      <Section title="Checkbox Switch">
+        <Host matchContents>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            label="Never gonna say goodbye"
+            color="#ff0000"
+            variant="checkbox"
           />
         </Host>
       </Section>
