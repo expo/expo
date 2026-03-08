@@ -18,23 +18,59 @@ export default function SwitchScreen() {
           />
         </Host>
       </Section>
-      <Section title="Checkbox Switch">
+
+      <Section title="Switch with Border Colors">
         <Host matchContents>
           <Switch
             value={checked}
             onValueChange={setChecked}
             label="Never gonna let you down"
-            color="#ff0000"
-            variant="checkbox"
+            variant="switch"
+            elementColors={{
+              checkedBorderColor: '#0000ff',
+              uncheckedBorderColor: '#ff0000',
+              checkedTrackColor: '#e0e0ff',
+              uncheckedTrackColor: '#ffe0e0',
+            }}
           />
         </Host>
       </Section>
-      <Section title="Button Switch">
+
+      <Section title="Checkbox Switch">
         <Host matchContents>
           <Switch
             value={checked}
             onValueChange={setChecked}
             label="Never gonna run around and desert you"
+            color="#ff0000"
+            variant="checkbox"
+          />
+        </Host>
+      </Section>
+
+      <Section title="Checkbox with Border Colors">
+        <Host matchContents>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            label="Never gonna make you cry"
+            variant="checkbox"
+            elementColors={{
+              checkedBorderColor: '#00cc00',
+              uncheckedBorderColor: '#cc6600',
+              checkedColor: '#e0ffe0',
+              uncheckedColor: '#ffe0cc',
+            }}
+          />
+        </Host>
+      </Section>
+
+      <Section title="Button Switch">
+        <Host matchContents>
+          <Switch
+            value={checked}
+            onValueChange={setChecked}
+            label="Never gonna say goodbye"
             variant="button"
           />
         </Host>
