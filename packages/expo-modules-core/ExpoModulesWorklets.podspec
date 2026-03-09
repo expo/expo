@@ -67,17 +67,33 @@ Pod::Spec.new do |s|
 
   header_search_paths = []
   if ENV['USE_FRAMEWORKS']
-    if shouldEnableWorkletsIntegration
-      pods_root = Pod::Config.instance.project_pods_root
-      react_native_worklets_node_modules_dir = File.join(File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native-worklets/package.json')"`), '..')
-      react_native_worklets_dir_absolute = File.join(react_native_worklets_node_modules_dir, 'react-native-worklets')
-      workletsPath = Pathname.new(react_native_worklets_dir_absolute).relative_path_from(pods_root).to_s
+    header_search_paths.concat([
+      # Transitive dependency of React-Core
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectortracing/jsinspector_moderntracing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsinspectorcdp/jsinspector_moderncdp.framework/Headers"',
+      # Transitive dependencies of React-runtimescheduler
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimescheduler/React_runtimescheduler.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-performancetimeline/React_performancetimeline.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererconsistency/React_rendererconsistency.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-timing/React_timing.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/folly.framework/Headers"',
+      '"${PODS_CONFIGURATION_BUILD_DIR}/fmt/fmt.framework/Headers"',
+      '"$(PODS_ROOT)/DoubleConversion"',
+    ])
+  end
 
-      header_search_paths.concat([
-        "\"$(PODS_ROOT)/#{workletsPath}/apple\"",
-        "\"$(PODS_ROOT)/#{workletsPath}/Common/cpp\"",
-      ])
-    end
+  if shouldEnableWorkletsIntegration
+    pods_root = Pod::Config.instance.project_pods_root
+    react_native_worklets_node_modules_dir = File.join(File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native-worklets/package.json')"`), '..')
+    react_native_worklets_dir_absolute = File.join(react_native_worklets_node_modules_dir, 'react-native-worklets')
+    workletsPath = Pathname.new(react_native_worklets_dir_absolute).relative_path_from(pods_root).to_s
+
+    header_search_paths.concat([
+      "\"$(PODS_ROOT)/#{workletsPath}/apple\"",
+      "\"$(PODS_ROOT)/#{workletsPath}/Common/cpp\"",
+    ])
   end
 
   s.pod_target_xcconfig = {
@@ -90,6 +106,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesJSI'
   s.dependency 'ExpoModulesCore'
+  s.dependency 'React-runtimescheduler'
 
   if shouldEnableWorkletsIntegration
     s.dependency 'RNWorklets'
