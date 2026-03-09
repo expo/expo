@@ -79,6 +79,7 @@ function AppConfigProperty({
   nestingLevel,
   subproperties,
   parent,
+  enum: enumValues,
 }: FormattedProperty & { nestingLevel: number }) {
   const canHaveMultipleValues = Array.isArray(type);
   return (
@@ -160,6 +161,17 @@ function AppConfigProperty({
         ) : (
           <CALLOUT theme="secondary" tag="span">
             Type: <CODE>{type ?? 'undefined'}</CODE>
+            {enumValues && (
+              <>
+                &emsp;&bull;&emsp;{'One of: '}
+                {enumValues.map((value, i) => (
+                  <span key={value}>
+                    {i > 0 && ', '}
+                    <CODE>{value}</CODE>
+                  </span>
+                ))}
+              </>
+            )}
           </CALLOUT>
         )}
         {!canHaveMultipleValues && nestingLevel > 0 && (

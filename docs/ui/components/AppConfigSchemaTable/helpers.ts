@@ -47,6 +47,7 @@ export function formatProperty(property: [string, Property], parent?: string): F
     type: _getType(propertyValue),
     example: propertyValue.example,
     bareWorkflow: propertyValue?.meta?.bareWorkflow,
+    enum: propertyValue.enum,
     subproperties,
     parent,
   };
