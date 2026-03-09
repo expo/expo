@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `colorScheme` prop not visually updating the glass effect when changed. ([#43754](https://github.com/expo/expo/pull/43754) by [@mohi86](https://github.com/mohi86))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-25
