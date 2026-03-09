@@ -370,6 +370,34 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               enum
             </code>
+             • 
+            One of: 
+            <span>
+              <code
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                data-text="true"
+              >
+                leanback
+              </code>
+            </span>
+            <span>
+              , 
+              <code
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                data-text="true"
+              >
+                immersive
+              </code>
+            </span>
+            <span>
+              , 
+              <code
+                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                data-text="true"
+              >
+                sticky-immersive
+              </code>
+            </span>
           </span>
           <span
             class="font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary"
