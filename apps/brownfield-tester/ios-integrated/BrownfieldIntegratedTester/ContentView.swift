@@ -16,6 +16,13 @@ struct ContentView: View {
                                 .accessibilityIdentifier("openReactNativeButton")
                         }
                     })
+                    NavigationLink(destination: StateView(), label: {
+                        HStack {
+                            Image(systemName: "cylinder.split.1x2")
+                            Text("Shared State")
+                        }
+                        .accessibilityIdentifier("openStateView")
+                    })
                 }
                 
                 Section(header: Text("Custom component")) {
