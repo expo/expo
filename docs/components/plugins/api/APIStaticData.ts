@@ -178,7 +178,7 @@ export const nonLinkableTypes = [
   'VerticalArrangement',
   'ViewEvent',
   'WritingOptions',
-]
+];
 
 /**
  * List of type names that should not be visible in the docs.
@@ -311,7 +311,6 @@ export const hardcodedTypeLinks: Record<string, string> = {
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
   WebGLTexture: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLTexture',
   WritableStream: 'https://developer.mozilla.org/en-US/docs/Web/API/WritableStream',
-
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
