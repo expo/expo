@@ -3,6 +3,9 @@ package expo.modules.devlauncher.compose.models
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -34,7 +37,7 @@ data class HomeState(
   val loadingError: String? = null
 )
 
-class HomeViewModel() : ViewModel() {
+class HomeViewModel() : ViewModel(), DefaultLifecycleObserver {
   val devLauncherController = inject<DevLauncherController>()
   val packagerService = inject<PackagerService>()
   val errorRegistryService = inject<ErrorRegistryService>()
@@ -61,10 +64,20 @@ class HomeViewModel() : ViewModel() {
       .launchIn(viewModelScope)
 
     packagerService.resumeHealthCheck()
+    ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+  }
+
+  override fun onResume(owner: LifecycleOwner) {
+    packagerService.resumeHealthCheck()
+  }
+
+  override fun onPause(owner: LifecycleOwner) {
+    packagerService.pauseHealthCheck()
   }
 
   override fun onCleared() {
     packagerService.pauseHealthCheck()
+    ProcessLifecycleOwner.get().lifecycle.removeObserver(this)
   }
 
   fun onAction(action: HomeAction) {
