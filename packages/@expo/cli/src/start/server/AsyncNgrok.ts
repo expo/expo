@@ -16,8 +16,8 @@ import { ProjectSettings } from '../project/settings';
 const debug = require('debug')('expo:start:server:ngrok') as typeof console.log;
 
 function getNgrokConfig() {
-  const hasAuthToken = !!env.EXPO_TUNNEL_NGROK_AUTHTOKEN;
-  const hasDomain = !!env.EXPO_TUNNEL_NGROK_DOMAIN;
+  const hasAuthToken = env.EXPO_TUNNEL_NGROK_AUTHTOKEN;
+  const hasDomain = env.EXPO_TUNNEL_NGROK_DOMAIN;
   if (hasAuthToken !== hasDomain) {
     throw new CommandError(
       'NGROK_CONFIG',
@@ -27,6 +27,7 @@ function getNgrokConfig() {
   return {
     authToken: env.EXPO_TUNNEL_NGROK_AUTHTOKEN || '5W1bR67GNbWcXqmxZzBG1_56GezNeaX6sSRvn8npeQ8',
     domain: env.EXPO_TUNNEL_NGROK_DOMAIN || 'exp.direct',
+    isCustomized: hasAuthToken || hasDomain,
   };
 }
 
@@ -70,6 +71,9 @@ export class AsyncNgrok {
 
   /** Exposed for testing. */
   async _getProjectHostnameAsync(): Promise<string> {
+    if (getNgrokConfig().isCustomized) {
+      return getNgrokConfig().domain;
+    }
     return `${(await this._getIdentifyingUrlSegmentsAsync()).join('-')}.${getNgrokConfig().domain}`;
   }
 
@@ -100,7 +104,7 @@ export class AsyncNgrok {
     }
 
     this.serverUrl = await this._connectToNgrokAsync({ timeout });
-
+    debug(`Ngrok config = ${JSON.stringify(getNgrokConfig(), null, 2)}`);
     debug('Tunnel URL:', this.serverUrl);
     Log.log('Tunnel ready.');
   }
@@ -147,6 +151,10 @@ export class AsyncNgrok {
   }
 
   private async _getConnectionPropsAsync(): Promise<{ hostname?: string; subdomain?: string }> {
+    if (getNgrokConfig().isCustomized) {
+      debug(`Customized domain ${getNgrokConfig().domain}`);
+      return { hostname: getNgrokConfig().domain };
+    }
     const userDefinedSubdomain = env.EXPO_TUNNEL_SUBDOMAIN;
     if (userDefinedSubdomain) {
       const subdomain =
