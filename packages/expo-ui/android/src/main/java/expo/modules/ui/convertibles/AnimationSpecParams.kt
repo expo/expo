@@ -1,6 +1,7 @@
 package expo.modules.ui.convertibles
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -10,46 +11,83 @@ import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.EaseInOut
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.recordFromMap
+import expo.modules.kotlin.types.Enumerable
 
-internal fun parseAnimationSpec(raw: Any?): AnimationSpec<Float>? {
-  if (raw !is Map<*, *>) return null
-  return when (raw["\$type"]) {
-    "spring" -> spring(
-      dampingRatio = (raw["dampingRatio"] as? Number)?.toFloat() ?: Spring.DampingRatioNoBouncy,
-      stiffness = (raw["stiffness"] as? Number)?.toFloat() ?: Spring.StiffnessMedium,
-      visibilityThreshold = (raw["visibilityThreshold"] as? Number)?.toFloat()
-    )
-    "tween" -> tween(
-      durationMillis = (raw["durationMillis"] as? Number)?.toInt() ?: 300,
-      delayMillis = (raw["delayMillis"] as? Number)?.toInt() ?: 0,
-      easing = parseEasing(raw["easing"] as? String)
-    )
-    "snap" -> snap(delayMillis = (raw["delayMillis"] as? Number)?.toInt() ?: 0)
-    "keyframes" -> parseKeyframes(raw)
-    else -> null
+internal enum class EasingType(val value: String) : Enumerable {
+  LINEAR("linear"),
+  FAST_OUT_SLOW_IN("fastOutSlowIn"),
+  FAST_OUT_LINEAR_IN("fastOutLinearIn"),
+  LINEAR_OUT_SLOW_IN("linearOutSlowIn"),
+  EASE("ease");
+
+  fun toEasing() = when (this) {
+    LINEAR -> LinearEasing
+    FAST_OUT_SLOW_IN -> FastOutSlowInEasing
+    FAST_OUT_LINEAR_IN -> FastOutLinearInEasing
+    LINEAR_OUT_SLOW_IN -> LinearOutSlowInEasing
+    EASE -> EaseInOut
   }
 }
 
-private fun parseEasing(name: String?) = when (name) {
-  "linear" -> LinearEasing
-  "fastOutSlowIn" -> FastOutSlowInEasing
-  "fastOutLinearIn" -> FastOutLinearInEasing
-  "linearOutSlowIn" -> LinearOutSlowInEasing
-  "ease" -> EaseInOut
-  else -> FastOutSlowInEasing
+internal data class SpringSpecParams(
+  @Field val dampingRatio: Float = Spring.DampingRatioNoBouncy,
+  @Field val stiffness: Float = Spring.StiffnessMedium,
+  @Field val visibilityThreshold: Float? = null
+) : Record {
+  fun toAnimationSpec(): AnimationSpec<Float> = spring(
+    dampingRatio = dampingRatio,
+    stiffness = stiffness,
+    visibilityThreshold = visibilityThreshold
+  )
+}
+
+internal data class TweenSpecParams(
+  @Field val durationMillis: Int = 300,
+  @Field val delayMillis: Int = 0,
+  @Field val easing: EasingType? = null
+) : Record {
+  fun toAnimationSpec(): AnimationSpec<Float> = tween(
+    durationMillis = durationMillis,
+    delayMillis = delayMillis,
+    easing = easing?.toEasing() ?: FastOutSlowInEasing
+  )
+}
+
+internal data class SnapSpecParams(
+  @Field val delayMillis: Int = 0
+) : Record {
+  fun toAnimationSpec(): AnimationSpec<Float> = snap(delayMillis = delayMillis)
+}
+
+internal data class KeyframesSpecParams(
+  @Field val durationMillis: Int = 300,
+  @Field val delayMillis: Int = 0
+) : Record {
+  @Suppress("UNCHECKED_CAST")
+  fun toAnimationSpec(raw: Map<*, *>): AnimationSpec<Float> {
+    val kf = raw["keyframes"] as? Map<String, Number> ?: emptyMap()
+    return keyframes {
+      this.durationMillis = this@KeyframesSpecParams.durationMillis
+      this.delayMillis = this@KeyframesSpecParams.delayMillis
+      for ((time, value) in kf) {
+        value.toFloat() at time.toInt()
+      }
+    }
+  }
 }
 
 @Suppress("UNCHECKED_CAST")
-private fun parseKeyframes(raw: Map<*, *>): AnimationSpec<Float> {
-  val durationMillis = (raw["durationMillis"] as? Number)?.toInt() ?: 300
-  val delayMillis = (raw["delayMillis"] as? Number)?.toInt() ?: 0
-  val kf = raw["keyframes"] as? Map<String, Number> ?: emptyMap()
-  return keyframes {
-    this.durationMillis = durationMillis
-    this.delayMillis = delayMillis
-    for ((time, value) in kf) {
-      value.toFloat() at time.toInt()
-    }
+internal fun parseAnimationSpec(raw: Any?): AnimationSpec<Float>? {
+  if (raw !is Map<*, *>) return null
+  val map = raw as Map<String, Any?>
+  return when (raw["\$type"]) {
+    "spring" -> recordFromMap<SpringSpecParams>(map).toAnimationSpec()
+    "tween" -> recordFromMap<TweenSpecParams>(map).toAnimationSpec()
+    "snap" -> recordFromMap<SnapSpecParams>(map).toAnimationSpec()
+    "keyframes" -> recordFromMap<KeyframesSpecParams>(map).toAnimationSpec(raw)
+    else -> null
   }
 }

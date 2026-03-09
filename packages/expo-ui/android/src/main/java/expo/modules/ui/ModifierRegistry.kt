@@ -4,10 +4,7 @@ package expo.modules.ui
 
 import android.graphics.Color
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -30,7 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import expo.modules.ui.convertibles.resolveAnimatable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
@@ -54,7 +51,6 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.ui.convertibles.AlignmentType
 import expo.modules.ui.convertibles.CompositingStrategyType
 import expo.modules.ui.convertibles.GraphicsLayerParams
-import expo.modules.ui.convertibles.parseAnimationSpec
 
 typealias ModifierType = Map<String, Any?>
 typealias ModifierList = List<ModifierType>
@@ -189,24 +185,6 @@ internal data class ClickableParams(
 ) : Record
 
 // endregion
-
-@Composable
-private fun resolveAnimatable(map: Map<String, Any?>, key: String, default: Float): Float {
-  val raw = map[key]
-  val targetValue = when {
-    raw is Number -> raw.toFloat()
-    raw is Map<*, *> && raw["\$animated"] == true ->
-      (raw["targetValue"] as Number).toFloat()
-    else -> default
-  }
-  val spec: AnimationSpec<Float> = when {
-    raw is Map<*, *> && raw["\$animated"] == true ->
-      parseAnimationSpec(raw["animationSpec"]) ?: spring()
-    else -> snap()
-  }
-  val animated by animateFloatAsState(targetValue, spec, label = key)
-  return animated
-}
 
 /**
  * Registry for Compose view modifiers that can be applied from React Native.
@@ -414,8 +392,6 @@ object ModifierRegistry {
     }
 
     register("graphicsLayer") { map, _, _, _ ->
-      val density = LocalDensity.current.density
-
       val rotationX = resolveAnimatable(map, "rotationX", 0f)
       val rotationY = resolveAnimatable(map, "rotationY", 0f)
       val rotationZ = resolveAnimatable(map, "rotationZ", 0f)
@@ -434,6 +410,8 @@ object ModifierRegistry {
         CompositingStrategyType.MODULATE -> CompositingStrategy.ModulateAlpha
         else -> CompositingStrategy.Auto
       }
+
+      val density = LocalDensity.current.density
 
       Modifier.graphicsLayer {
         this.rotationX = rotationX
