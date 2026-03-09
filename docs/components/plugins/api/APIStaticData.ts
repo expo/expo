@@ -45,7 +45,6 @@ export const nonLinkableTypes = [
   'EventName',
   'EventSubscription',
   'EventType',
-  'ExpoModifier',
   'FC',
   'FileSystemDirectory',
   'FileSystemDownloadResult',
@@ -311,6 +310,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
   },
   'v55.0.0': {
     EventEmitter: '/versions/v55.0.0/sdk/expo/#eventemittertype',
+    ExpoModifier: '/versions/v55.0.0/sdk/ui/jetpack-compose/modifiers/#expomodifier',
     NativeModule: '/versions/v55.0.0/sdk/expo/#nativemoduletype',
     SharedObject: '/versions/v55.0.0/sdk/expo/#sharedobjecttype',
     SharedRef: '/versions/v55.0.0/sdk/expo/#sharedreftype',
@@ -334,6 +334,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
   },
   latest: {
     EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
+    ExpoModifier: '/versions/latest/sdk/ui/jetpack-compose/modifiers/#expomodifier',
     NativeModule: '/versions/latest/sdk/expo/#nativemoduletype',
     SharedObject: '/versions/latest/sdk/expo/#sharedobjecttype',
     SharedRef: '/versions/latest/sdk/expo/#sharedreftype',
@@ -357,6 +358,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
   },
   unversioned: {
     EventEmitter: '/versions/unversioned/sdk/expo/#eventemittertype',
+    ExpoModifier: '/versions/unversioned/sdk/ui/jetpack-compose/modifiers/#expomodifier',
     NativeModule: '/versions/unversioned/sdk/expo/#nativemoduletype',
     SharedObject: '/versions/unversioned/sdk/expo/#sharedobjecttype',
     SharedRef: '/versions/unversioned/sdk/expo/#sharedreftype',
