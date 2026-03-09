@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add support for `after(date)` dismissal policy, final content state, and `contentDate` when ending a Live Activity. ([#43472](https://github.com/expo/expo/pull/43472) by [@jakex7](https://github.com/jakex7))
+- [plugin] Add `contentMarginsDisabled`.
 
 ### 🐛 Bug fixes
 
