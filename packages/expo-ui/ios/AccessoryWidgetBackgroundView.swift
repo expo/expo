@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 import ExpoModulesCore
 
 public final class AccessoryWidgetBackgroundProps: UIBaseViewProps {}
@@ -11,6 +12,10 @@ public struct AccessoryWidgetBackgroundView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
+#if !os(tvOS)
     AccessoryWidgetBackground()
+#else
+    EmptyView()
+#endif
   }
 }
