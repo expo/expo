@@ -7,15 +7,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 
 @Composable
-inline fun <reified T> rememberSharedBrownfieldState(key: String): MutableState<T?> {
+fun <T> rememberSharedState(key: String): MutableState<T?> {
     val backingState = remember(key) {
         @Suppress("UNCHECKED_CAST")
-        mutableStateOf(BrownfieldState.get<Any>(key) as? T)
+        mutableStateOf(BrownfieldState.get(key) as? T)
     }
 
     DisposableEffect(key) {
-        val subscription = BrownfieldState.subscribe(key, T::class.java) { newValue ->
-            backingState.value = newValue
+        val subscription = BrownfieldState.subscribe(key) { newValue ->
+            backingState.value = newValue as? T
         }
         onDispose { subscription.remove() }
     }

@@ -1,6 +1,7 @@
 plugins {
   id("com.android.library")
   id("org.jetbrains.kotlin.android")
+  id("org.jetbrains.kotlin.plugin.compose") version "${KotlinVersion.CURRENT.toString()}"
   id("com.facebook.react")
   id("expo-brownfield-setup")
 }
@@ -56,4 +57,5 @@ dependencies {
   api("com.facebook.react:react-android")
   api("com.facebook.hermes:hermes-android")
   compileOnly("androidx.fragment:fragment-ktx:1.6.1")
+  compileOnly("androidx.compose.runtime:runtime:1.9.3")
 }

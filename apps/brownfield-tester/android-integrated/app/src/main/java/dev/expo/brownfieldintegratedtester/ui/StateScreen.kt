@@ -17,8 +17,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,15 +27,13 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import dev.expo.brownfieldintegratedtester.StateActivity
 import expo.modules.brownfield.BrownfieldState
+import expo.modules.brownfield.rememberSharedState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StateScreen() {
-  // TODO(pmleczek): Replace with rememberSharedState once implemented
-  // var time by rememberSharedState<String>("time-js", "")
-  // var counter by rememberSharedState<Int>("counter", 0)
-  var time by remember { mutableStateOf<String?>("") }
-  var counter by remember { mutableStateOf<Int?>(0) }
+   var time by rememberSharedState<String>("time-js")
+   var counter by rememberSharedState<Int>("counter")
 
   val context = LocalContext.current
 
