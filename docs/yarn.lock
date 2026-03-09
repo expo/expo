@@ -838,7 +838,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-icons@npm:^3.0.0, @expo/styleguide-icons@npm:^3.0.1":
+"@expo/styleguide-icons@npm:^3.0.1":
   version: 3.0.1
   resolution: "@expo/styleguide-icons@npm:3.0.1"
   dependencies:
@@ -850,11 +850,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "@expo/styleguide-search-ui@npm:4.0.1"
+"@expo/styleguide-search-ui@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@expo/styleguide-search-ui@npm:5.0.1"
   dependencies:
-    "@expo/styleguide": "npm:^10.0.1"
+    "@expo/styleguide": "npm:^11.0.1"
     "@expo/styleguide-icons": "npm:^3.0.1"
     "@kapaai/react-sdk": "npm:^0.5.1"
     "@sanity/client": "npm:^7.13.2"
@@ -869,13 +869,13 @@ __metadata:
     next: ">= 13"
     react: ">= 19"
     tailwindcss: ^4.0.0
-  checksum: 10c0/3b7fce33432822b7e4946102613c2a0ec376b496907007549de2c2cce45da8c3be21d3ba2aec4e8f06d6e6ed719fd045fbda3fd2fd3370897011b7a28b20d796
+  checksum: 10c0/f7f3fd3add654d87b46f06e69c2ecb5158921e0e463f264e1cfcf76081f21e57e627937ebda2361220df876cff332a8e84a12df0dce1a8f1e269fc38d61249fc
   languageName: node
   linkType: hard
 
-"@expo/styleguide@npm:^10.0.1":
-  version: 10.0.1
-  resolution: "@expo/styleguide@npm:10.0.1"
+"@expo/styleguide@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "@expo/styleguide@npm:11.0.1"
   dependencies:
     "@expo/styleguide-base": "npm:^2.0.5"
     tailwind-merge: "npm:^3.0.0"
@@ -884,7 +884,7 @@ __metadata:
     next: ">= 13"
     react: ">= 19"
     tailwindcss: ^4.0.0
-  checksum: 10c0/57397eeeebb6258695203b7721e21834029c4b97aa0cbd31e4426acaeb47507f81d723cb3766bc0b0503427e3fdca9f8856d9873c5763258873f9dc1adbdc68f
+  checksum: 10c0/e09d6e0eefb27ee0f019b71df1bda7668f8814f3f05d44aa61bacf8c8313026a8164aff2b8a40c46e48267d7a31c22a4a3642937bd1c8a9689ce0dda11089c6b
   languageName: node
   linkType: hard
 
@@ -7793,11 +7793,11 @@ __metadata:
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.9.3"
     "@expo/spawn-async": "npm:^1.7.2"
-    "@expo/styleguide": "npm:^10.0.1"
+    "@expo/styleguide": "npm:^11.0.1"
     "@expo/styleguide-base": "npm:^2.0.5"
     "@expo/styleguide-cookie-consent": "npm:^0.1.13"
-    "@expo/styleguide-icons": "npm:^3.0.0"
-    "@expo/styleguide-search-ui": "npm:^4.0.0"
+    "@expo/styleguide-icons": "npm:^3.0.1"
+    "@expo/styleguide-search-ui": "npm:^5.0.1"
     "@kapaai/react-sdk": "npm:^0.9.0"
     "@mdx-js/loader": "npm:^3.1.1"
     "@mdx-js/mdx": "npm:^3.1.1"
