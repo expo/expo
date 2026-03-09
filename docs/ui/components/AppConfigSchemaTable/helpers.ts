@@ -48,6 +48,7 @@ export function formatProperty(property: [string, Property], parent?: string): F
     example: propertyValue.example,
     bareWorkflow: propertyValue?.meta?.bareWorkflow,
     deprecated: isDeprecatedDescription(propertyValue),
+    enum: propertyValue.enum,
     subproperties,
     parent,
   };
