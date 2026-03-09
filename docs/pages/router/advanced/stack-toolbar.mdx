@@ -60,7 +60,9 @@ You can browse available symbols in Apple's SF Symbols app.
 
 ### Custom images
 
-You can also use custom images. In header toolbars (`placement="left"` or `placement="right"`), pass an image source directly to the `icon` prop:
+You can also use custom images. In header toolbars (`placement="left"` or `placement="right"`), pass an image source directly to the `icon` prop.
+
+> **info** Using custom images inside submenus (`Stack.Toolbar.Menu`) in header placements requires `react-native-screens` 4.24.0 or later. SDK 55 bundles `~4.23.0`, so you need to install `react-native-screens@~4.24.0` manually to use this feature.
 
 ```tsx
 import { Stack } from 'expo-router';
