@@ -780,7 +780,6 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
-
 internal enum VerticalEdgeOptions: String, Enumerable {
   case all
   case top
@@ -1106,7 +1105,7 @@ internal enum AxisOptions: String, Enumerable {
   case horizontal
   case vertical
   case both
-  
+
   func toAxis() -> Axis.Set {
     switch self {
     case .vertical:
@@ -1307,7 +1306,7 @@ public class ViewModifierRegistry {
   }
 
   /**
-    * Applies `Text returning modifiers. Useful for Text concatenation in TextView.
+   * Applies Text returning modifiers. Useful for Text concatenation in TextView.
    */
   func applyTextModifier(
     _ type: String,
@@ -1349,6 +1348,29 @@ public class ViewModifierRegistry {
       return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
       #else
       return text
+      #endif
+    }
+  }
+
+  /**
+   * Applies Image returning modifiers.
+   */
+  func applyImageModifier(
+    _ type: String,
+    to image: Image,
+    appContext: AppContext,
+    params: [String: Any]
+  ) -> Image {
+    switch type {
+    case "resizable":
+      guard let modifier = try? ResizableModifier(from: params, appContext: appContext)
+      else { return image.resizable() }
+      return image.resizable(capInsets: EdgeInsets(top: modifier.top, leading: modifier.leading, bottom: modifier.bottom, trailing: modifier.trailing), resizingMode: modifier.resizingMode.toResizingMode)
+    default:
+      #if DEBUG
+      return image
+      #else
+      return image
       #endif
     }
   }
