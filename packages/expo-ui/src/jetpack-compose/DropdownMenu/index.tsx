@@ -7,7 +7,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 
 const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(
   'ExpoUI',
-  'ContextMenuView'
+  'DropdownMenuView'
 );
 
 // TODO: Extract into separate SlotView similar to swift-ui
@@ -17,17 +17,17 @@ const SlotNativeView: React.ComponentType<{
 }> = requireNativeView('ExpoUI', 'SlotView');
 
 /**
- * Props of the `ContextMenu` component.
+ * Props of the `DropdownMenu` component.
  */
-export type ContextMenuProps = {
+export type DropdownMenuProps = {
   /**
-   * The contents of the submenu are used as an anchor for the context menu.
-   * The children will be wrapped in a pressable element, which triggers opening of the context menu.
+   * The contents of the submenu are used as an anchor for the dropdown menu.
+   * The children will be wrapped in a pressable element, which triggers opening of the dropdown menu.
    */
   children: ReactNode;
 
   /**
-   * Whether the context menu is expanded (visible).
+   * Whether the dropdown menu is expanded (visible).
    */
   expanded?: boolean;
 
@@ -38,12 +38,12 @@ export type ContextMenuProps = {
   onDismissRequest?: () => void;
 
   /**
-   * The color of the container holding the context menu items.
+   * The color of the container holding the dropdown menu items.
    */
   color?: ColorValue;
 
   /**
-   * Optional styles to apply to the `ContextMenu`.
+   * Optional styles to apply to the `DropdownMenu`.
    */
   style?: StyleProp<ViewStyle>;
 
@@ -63,7 +63,7 @@ type NativeMenuProps = {
 };
 
 /**
- * Container for items displayed in the context menu dropdown.
+ * Container for items displayed in the dropdown menu.
  * Children should be `DropdownMenuItem` components or other native views.
  */
 export function Items(props: { children: ReactNode }) {
@@ -72,7 +72,7 @@ export function Items(props: { children: ReactNode }) {
 Items.tag = 'Items';
 
 /**
- * Container for the trigger element that opens the context menu.
+ * Container for the trigger element that opens the dropdown menu.
  */
 export function Trigger(props: { children: ReactNode }) {
   return <>{props.children}</>;
@@ -86,7 +86,7 @@ export function Preview(props: { children: ReactNode }) {
   return <></>;
 }
 
-function ContextMenu(props: ContextMenuProps) {
+function DropdownMenu(props: DropdownMenuProps) {
   const { modifiers, ...restProps } = props;
   return (
     <MenuNativeView
@@ -99,9 +99,9 @@ function ContextMenu(props: ContextMenuProps) {
   );
 }
 
-ContextMenu.Trigger = Trigger;
-ContextMenu.Preview = Preview;
-ContextMenu.Items = Items;
+DropdownMenu.Trigger = Trigger;
+DropdownMenu.Preview = Preview;
+DropdownMenu.Items = Items;
 
-export { ContextMenu };
+export { DropdownMenu };
 export { DropdownMenuItem } from './DropdownMenuItem';
