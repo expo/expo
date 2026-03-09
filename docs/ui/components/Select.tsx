@@ -70,7 +70,7 @@ export function Select({
           {...{ 'data-testid': testID }}>
           <SelectPrimitive.Value
             placeholder={
-              <div className="whitespace-pre-wrap text-left text-sm leading-tight text-quaternary">
+              <div className="text-quaternary text-left text-sm leading-tight whitespace-pre-wrap">
                 {placeholder}
               </div>
             }
@@ -82,17 +82,17 @@ export function Select({
         <SelectPrimitive.Content
           // z-[605] to be above the dialogs (601)
           className={mergeClasses(
-            'relative z-[605] max-w-[87.5vw] overflow-hidden rounded-md border border-default bg-overlay shadow-md',
+            'border-default bg-overlay relative z-[605] max-w-[87.5vw] overflow-hidden rounded-md border shadow-md',
             'max-md-gutters:max-w-[unset]'
           )}
           data-orientation="horizontal">
-          <SelectPrimitive.ScrollUpButton className="flex h-7 items-center justify-center rounded-t-md bg-element">
+          <SelectPrimitive.ScrollUpButton className="bg-element flex h-7 items-center justify-center rounded-t-md">
             <ChevronUpIcon className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport>
             <SelectPrimitive.Group>
               {optionsLabel && (
-                <SelectPrimitive.Label className="cursor-default px-3 pb-1 pt-2 text-2xs text-tertiary">
+                <SelectPrimitive.Label className="text-2xs text-tertiary cursor-default px-3 pt-2 pb-1">
                   {optionsLabel}
                 </SelectPrimitive.Label>
               )}
@@ -101,14 +101,14 @@ export function Select({
                   key={id}
                   value={id}
                   className={mergeClasses(
-                    'flex h-9 cursor-pointer items-center justify-between !rounded-none px-3 py-2',
+                    'flex h-9 cursor-pointer items-center justify-between rounded-none! px-3 py-2',
                     'hocus:bg-hover hocus:outline-0',
                     size === 'lg' && 'h-[56px]'
                   )}>
                   <SelectPrimitive.ItemText>
                     <div
                       className={mergeClasses(
-                        'flex items-center gap-2 whitespace-pre-wrap text-left text-xs font-normal leading-tight text-default',
+                        'text-default flex items-center gap-2 text-left text-xs leading-tight font-normal whitespace-pre-wrap',
                         size === 'lg' && 'text-lg'
                       )}>
                       {leftSlot}
@@ -127,7 +127,7 @@ export function Select({
                   <SelectPrimitive.ItemIndicator>
                     <CheckIcon
                       className={mergeClasses(
-                        'icon-sm shrink-0 text-icon-secondary',
+                        'icon-sm text-icon-secondary shrink-0',
                         size === 'lg' && 'icon-md'
                       )}
                     />
@@ -136,7 +136,7 @@ export function Select({
               ))}
             </SelectPrimitive.Group>
           </SelectPrimitive.Viewport>
-          <SelectPrimitive.ScrollDownButton className="flex h-7 items-center justify-center rounded-b-md bg-element">
+          <SelectPrimitive.ScrollDownButton className="bg-element flex h-7 items-center justify-center rounded-b-md">
             <ChevronDownIcon className="icon-sm text-icon-secondary" />
           </SelectPrimitive.ScrollDownButton>
         </SelectPrimitive.Content>
@@ -148,7 +148,7 @@ export function Select({
     return (
       <div className="flex flex-col gap-1">
         {typeof caption === 'string' ? (
-          <p className="text-xs font-medium text-tertiary">{caption}</p>
+          <p className="text-tertiary text-xs font-medium">{caption}</p>
         ) : (
           caption
         )}

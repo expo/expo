@@ -15,7 +15,7 @@ export const Checkbox = forwardRef(function Checkbox(
   return (
     <div className={mergeClasses('relative flex items-center gap-2', className)}>
       {checked && (
-        <CheckIcon className="pointer-events-none absolute w-4 px-0.5 text-palette-white [&_path]:!stroke-[3px]" />
+        <CheckIcon className="text-palette-white pointer-events-none absolute w-4 px-0.5 [&_path]:stroke-[3px]!" />
       )}
       <input
         type="checkbox"
@@ -25,7 +25,7 @@ export const Checkbox = forwardRef(function Checkbox(
         data-label={label}
         disabled={disabled}
         className={mergeClasses(
-          'size-4 rounded-sm border border-palette-gray8 bg-default transition-colors',
+          'border-palette-gray8 bg-default size-4 rounded-sm border transition-colors',
           !disabled &&
             'focus-within:ring-palette-blue10 hocus:cursor-pointer hocus:border-palette-blue10 hocus:bg-palette-blue3',
           !disabled && 'dark:focus:ring-palette-blue8 dark:hocus:border-palette-blue8',
@@ -37,7 +37,7 @@ export const Checkbox = forwardRef(function Checkbox(
       {label && (
         <label
           htmlFor={id}
-          className={mergeClasses('select-none text-default', !disabled && 'hocus:cursor-pointer')}>
+          className={mergeClasses('text-default select-none', !disabled && 'hocus:cursor-pointer')}>
           {typeof label === 'string' ? <P>{label}</P> : label}
         </label>
       )}

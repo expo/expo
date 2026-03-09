@@ -3,10 +3,10 @@ import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
-import { Link } from '../exports';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { Link } from '../link';
 import { renderRouter } from '../testing-library';
 
 type HeaderTitleFunction = Extract<

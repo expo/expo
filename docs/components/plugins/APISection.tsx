@@ -275,7 +275,9 @@ const renderAPI = (
     );
     const isRouterUiPackage =
       packageName === 'expo-router-ui' ||
-      (Array.isArray(packageName) && packageName.includes('expo-router-ui'));
+      packageName === 'expo-router/ui' ||
+      (Array.isArray(packageName) &&
+        (packageName.includes('expo-router-ui') || packageName.includes('expo-router/ui')));
     const routerUiComponentOverrides = new Set(['TabContext']);
     const isRouterUiComponentOverride = (entry: GeneratedData) =>
       isRouterUiPackage && routerUiComponentOverrides.has(entry.name);

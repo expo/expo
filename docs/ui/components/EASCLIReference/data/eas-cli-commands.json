@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-02-28T06:56:56.329Z",
-    "cliVersion": "18.0.6"
+    "fetchedAt": "2026-03-06T17:04:50.030Z",
+    "cliVersion": "18.1.0"
   },
   "totalCommands": 102,
   "commands": [
@@ -384,7 +384,7 @@
     {
       "command": "eas update:configure",
       "description": "configure the project to support EAS Update",
-      "usage": "USAGE\n  $ eas update:configure [-p android|ios|all] [--environment <value>] [--non-interactive]\n\nFLAGS\n  -p, --platform=(android|ios|all)  [default: all] Platform to configure\n  --environment=<value>             Environment to use for the server-side defined EAS environment variables during\n                                    command execution, e.g. \"production\", \"preview\", \"development\". Required for\n                                    projects using Expo SDK 55 or greater.\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  configure the project to support EAS Update"
+      "usage": "USAGE\n  $ eas update:configure [-p android|ios|all] [--environment <value>] [--non-interactive]\n\nFLAGS\n  -p, --platform=(android|ios|all)  [default: all] Platform to configure\n  --environment=<value>             Environment to use for the server-side defined EAS environment variables during\n                                    command execution, e.g. \"production\", \"preview\", \"development\".\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  configure the project to support EAS Update"
     },
     {
       "command": "eas update:delete GROUPID",
