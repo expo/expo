@@ -10,8 +10,9 @@ export interface ImageProps extends CommonViewModifierProps {
     /**
      * The URI of the local image file to display.
      * For example: 'file:///path/to/image.jpg'
+     * Performs a synchronous read operation that blocks the main thread.
      */
-    uri?: string;
+    uiImage?: string;
     /**
      * The size of the system image.
      */
