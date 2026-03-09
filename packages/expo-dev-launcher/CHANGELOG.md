@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix missing navigation bar padding ([#43672](https://github.com/expo/expo/pull/43672) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 55.0.13 — 2026-03-09
+
+### 🐛 Bug fixes
+
+- [iOS] Fix missing navigation bar padding ([#43672](https://github.com/expo/expo/pull/43672) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.12 — 2026-03-04
 
