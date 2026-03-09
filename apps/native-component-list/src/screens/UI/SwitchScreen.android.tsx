@@ -10,13 +10,7 @@ export default function SwitchScreen() {
     <Page>
       <Section title="Switch">
         <Host matchContents>
-          <Switch
-            value={checked}
-            onValueChange={setChecked}
-            color="#ff0000"
-            label="Never gonna give you up"
-            variant="switch"
-          />
+          <Switch value={checked} onValueChange={setChecked} color="#ff0000" variant="switch" />
         </Host>
       </Section>
 
@@ -25,7 +19,6 @@ export default function SwitchScreen() {
           <Switch
             value={checked}
             onValueChange={setChecked}
-            label="Never gonna let you down"
             variant="switch"
             elementColors={{
               checkedBorderColor: '#7C3AED',
@@ -53,12 +46,7 @@ export default function SwitchScreen() {
 
       <Section title="Disabled Switch">
         <Host matchContents>
-          <Switch
-            value={checked}
-            enabled={false}
-            label="Never gonna run around and desert you"
-            variant="switch"
-          />
+          <Switch value={checked} enabled={false} variant="switch" />
         </Host>
       </Section>
 
@@ -67,7 +55,6 @@ export default function SwitchScreen() {
           <Switch
             value={checked}
             enabled={false}
-            label="Never gonna make you cry"
             variant="switch"
             elementColors={{
               disabledUncheckedThumbColor: '#F87171',
@@ -83,24 +70,13 @@ export default function SwitchScreen() {
 
       <Section title="Checkbox Switch">
         <Host matchContents>
-          <Switch
-            value={checked}
-            onValueChange={setChecked}
-            label="Never gonna say goodbye"
-            color="#ff0000"
-            variant="checkbox"
-          />
+          <Switch value={checked} onValueChange={setChecked} color="#ff0000" variant="checkbox" />
         </Host>
       </Section>
 
       <Section title="Button Switch">
         <Host matchContents>
-          <Switch
-            value={checked}
-            onValueChange={setChecked}
-            label="Never gonna tell a lie and hurt you"
-            variant="button"
-          />
+          <Switch value={checked} onValueChange={setChecked} variant="button" />
         </Host>
       </Section>
     </Page>
