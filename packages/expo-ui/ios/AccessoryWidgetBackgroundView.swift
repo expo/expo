@@ -1,6 +1,8 @@
 import SwiftUI
-import WidgetKit
 import ExpoModulesCore
+#if !os(tvOS)
+import WidgetKit
+#endif
 
 public final class AccessoryWidgetBackgroundProps: UIBaseViewProps {}
 
