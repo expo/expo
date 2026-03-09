@@ -151,9 +151,7 @@ import { ExtendedFloatingActionButton, Host, Icon, Text } from '@expo/ui/jetpack
 export default function FABCustomColorExample() {
   return (
     <Host matchContents>
-      <ExtendedFloatingActionButton
-        containerColor="#E8DEF8"
-        onPress={() => console.log('pressed')}>
+      <ExtendedFloatingActionButton containerColor="#E8DEF8" onPress={() => console.log('pressed')}>
         <ExtendedFloatingActionButton.Icon>
           <Icon source={require('./assets/add.xml')} />
         </ExtendedFloatingActionButton.Icon>
