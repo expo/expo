@@ -40,14 +40,14 @@ internal fun getType(contentResolver: ContentResolver, uri: Uri): String? {
         null,
         null,
         null
-      ).use { cursor ->
-        if (cursor?.moveToFirst() == true) {
+      )?.use { cursor ->
+        if (cursor.moveToFirst()) {
           val columnIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
           if (columnIndex != -1 && !cursor.isNull(columnIndex)) {
-            cursor.getString(columnIndex)
+            return@use cursor.getString(columnIndex)
           }
         }
-        null
+        return@use null
       }
   }
 
