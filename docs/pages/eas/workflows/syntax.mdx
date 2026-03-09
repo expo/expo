@@ -623,6 +623,12 @@ type GitHubContext = {
     };
     pull_request?: {
       number: number;
+      title: string;
+      body: string | null;
+      state: 'open' | 'closed';
+      draft: boolean;
+      merged: boolean | null;
+      // ... Other fields from the GitHub Pull Request webhook payload
     };
     number?: number;
     schedule?: string;
@@ -630,6 +636,8 @@ type GitHubContext = {
   };
 };
 ```
+
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes all fields from GitHub's Pull Request webhook payload. The commonly used fields are shown above, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
