@@ -571,7 +571,11 @@ const createModuleMapWithUmbrellaHeaderFilesAsync = async (
     if (patterns.length === 0) return false;
     return patterns.some((pattern) => {
       // Convert glob pattern to regex
-      const regexPattern = pattern.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.');
+      // First escape all regex special characters, then convert glob wildcards
+      const regexPattern = pattern
+        .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+        .replace(/\*/g, '.*')
+        .replace(/\?/g, '.');
       return new RegExp(`^${regexPattern}$`).test(headerName);
     });
   };
