@@ -27,6 +27,17 @@ export type ContextMenuProps = {
   children: ReactNode;
 
   /**
+   * Whether the context menu is expanded (visible).
+   */
+  expanded?: boolean;
+
+  /**
+   * Callback fired when the menu requests to be dismissed (e.g. tapping outside).
+   * Must be provided when `expanded` is `true` to allow the menu to close.
+   */
+  onDismissRequest?: () => void;
+
+  /**
    * The color of the container holding the context menu items.
    */
   color?: ColorValue;
@@ -43,6 +54,8 @@ export type ContextMenuProps = {
 };
 
 type NativeMenuProps = {
+  expanded?: boolean;
+  onDismissRequest?: () => void;
   color?: ColorValue;
   style?: StyleProp<ViewStyle>;
   modifiers?: ModifierConfig[];
