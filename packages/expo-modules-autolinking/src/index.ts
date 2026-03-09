@@ -5,6 +5,7 @@ import { reactNativeConfigCommand } from './commands/reactNativeConfigCommand';
 import { resolveCommand } from './commands/resolveCommand';
 import { searchCommand } from './commands/searchCommand';
 import { verifyCommand } from './commands/verifyCommand';
+import { createMemoizer } from './memoize';
 
 async function main(args: string[]) {
   const cli = commander
@@ -17,7 +18,9 @@ async function main(args: string[]) {
   generateModulesProviderCommand(cli);
   reactNativeConfigCommand(cli);
 
-  await cli.parseAsync(args, { from: 'user' });
+  await createMemoizer().withMemoizer(async () => {
+    await cli.parseAsync(args, { from: 'user' });
+  });
 }
 
 module.exports = main;

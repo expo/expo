@@ -16,6 +16,7 @@ export interface NativeLinkPreviewActionProps {
   title: string;
   label?: string;
   icon?: string;
+  xcassetName?: string;
   image?: ImageRef | null;
   imageRenderingMode?: 'template' | 'original';
   children?: React.ReactNode;

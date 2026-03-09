@@ -8,10 +8,8 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A circular progress indicator component for displaying progress in a circular format.
+Expo UI CircularProgress matches the official Jetpack Compose [Progress Indicator API](https://developer.android.com/develop/ui/compose/components/progress) and displays progress in a circular format.
 
 ## Installation
 
@@ -19,30 +17,59 @@ A circular progress indicator component for displaying progress in a circular fo
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="CircularProgress component on Android."
-      src="/static/images/expo-ui/circularprogress/android.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { CircularProgress } from '@expo/ui/jetpack-compose';
+### Indeterminate progress
 
-    <CircularProgress progress={0.5} style={{ width: 300 }} color="blue" elementColors={{ trackColor: '#cccccc' }} />
-    ```
+When no `progress` is provided, the progress indicator displays an indeterminate spinning animation.
 
-  </Tab>
-</Tabs>
+```tsx IndeterminateCircularExample.tsx
+import { Host, CircularProgress } from '@expo/ui/jetpack-compose';
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress) for more information.
+export default function IndeterminateCircularExample() {
+  return (
+    <Host matchContents>
+      <CircularProgress />
+    </Host>
+  );
+}
+```
+
+### Determinate progress
+
+Provide a `progress` value between `0` and `1` to show determinate progress.
+
+```tsx DeterminateCircularExample.tsx
+import { Host, CircularProgress } from '@expo/ui/jetpack-compose';
+
+export default function DeterminateCircularExample() {
+  return (
+    <Host matchContents>
+      <CircularProgress progress={0.75} />
+    </Host>
+  );
+}
+```
+
+### Wavy progress
+
+`CircularWavyProgress` renders a circular progress indicator with a wavy animation style.
+
+```tsx CircularWavyExample.tsx
+import { Host, CircularWavyProgress } from '@expo/ui/jetpack-compose';
+
+export default function CircularWavyExample() {
+  return (
+    <Host matchContents>
+      <CircularWavyProgress progress={0.6} />
+    </Host>
+  );
+}
+```
 
 ## API
 
 ```tsx
-import { CircularProgress } from '@expo/ui/jetpack-compose';
+import { CircularProgress, CircularWavyProgress } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/circularprogress" apiName="CircularProgress" />
+<APISection packageName="expo-ui/jetpack-compose/circularprogress" apiName="CircularWavyProgress" />

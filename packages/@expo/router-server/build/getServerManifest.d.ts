@@ -21,7 +21,7 @@ export interface RouteRegex {
 type GetServerManifestOptions = {
     headers?: Record<string, string | string[]>;
 };
-export declare function getServerManifest(route: RouteNode, options: GetServerManifestOptions | undefined): RoutesManifest<string>;
+export declare function getServerManifest(route: RouteNode | null, options: GetServerManifestOptions | undefined): RoutesManifest<string>;
 export declare function parseParameter(param: string): {
     name: string;
     repeat: boolean;

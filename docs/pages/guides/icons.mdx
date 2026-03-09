@@ -69,6 +69,8 @@ export default function CustomIconExample() {
 
 The `createIconSetFromIcoMoon` method is used to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. You have to save the **selection.json** and **.ttf** in your project, preferably in the **assets** directory, and then load the font using either `useFonts` hook or `Font.loadAsync` method from `expo-font`.
 
+> **IcoMoon app versions:** The [new IcoMoon app](https://icomoon.io/new-app) exports a different JSON format than the [old IcoMoon app](https://icomoon.io/app). The current `createIconSetFromIcoMoon` function only supports the old app's output. See the [Pull Request on GitHub](https://github.com/expo/vector-icons/pull/356), which adds support for the new format. This support will work once released in `@expo/vector-icons`.
+
 See the example below that uses the `useFonts` hook to load the font:
 
 <SnackInline

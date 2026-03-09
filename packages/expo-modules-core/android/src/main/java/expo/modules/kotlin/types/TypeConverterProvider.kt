@@ -7,7 +7,6 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.arguments.ReadableArguments
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
@@ -173,7 +172,6 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ?: throw MissingTypeConverter(type)
   }
 
-  @OptIn(EitherType::class)
   private fun handelEither(type: KType, jClass: Class<*>): TypeConverter<*>? {
     if (Either::class.java.isAssignableFrom(jClass)) {
       if (EitherOfFour::class.java.isAssignableFrom(jClass)) {

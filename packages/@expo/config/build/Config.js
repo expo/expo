@@ -312,21 +312,29 @@ function getConfigFilePaths(projectRoot) {
     staticConfigPath: getStaticConfigFilePath(projectRoot)
   };
 }
+const DYNAMIC_CONFIG_EXTS = ['.ts', '.mts', '.cts', '.mjs', '.cjs', '.js'];
 function getDynamicConfigFilePath(projectRoot) {
-  for (const fileName of ['app.config.ts', 'app.config.js']) {
+  const fileNames = DYNAMIC_CONFIG_EXTS.map(ext => `app.config${ext}`);
+  for (const fileName of fileNames) {
     const configPath = _path().default.join(projectRoot, fileName);
-    if (_fs().default.existsSync(configPath)) {
-      return configPath;
-    }
+    try {
+      const stat = _fs().default.statSync(configPath);
+      if (stat.isFile()) {
+        return configPath;
+      }
+    } catch {}
   }
   return null;
 }
 function getStaticConfigFilePath(projectRoot) {
   for (const fileName of ['app.config.json', 'app.json']) {
     const configPath = _path().default.join(projectRoot, fileName);
-    if (_fs().default.existsSync(configPath)) {
-      return configPath;
-    }
+    try {
+      const stat = _fs().default.statSync(configPath);
+      if (stat.isFile()) {
+        return configPath;
+      }
+    } catch {}
   }
   return null;
 }

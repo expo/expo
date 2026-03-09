@@ -2,12 +2,16 @@ package expo.modules.plugin.gradle
 
 import expo.modules.plugin.AutolinkingIntegration
 import expo.modules.plugin.AutolinkingIntegrationImpl
-import org.gradle.api.Project
-import java.io.File
-import java.util.Properties
 import expo.modules.plugin.Version
 import expo.modules.plugin.safeGet
+import org.gradle.api.Action
+import org.gradle.api.Project
+import org.gradle.api.publish.maven.MavenPom
 import org.gradle.internal.extensions.core.extra
+import java.io.File
+import java.util.Properties
+
+typealias POMConfigurator = Action<MavenPom>
 
 /**
  * An user-facing interface to interact with the `ExpoGradleHelperExtension`.
@@ -39,4 +43,10 @@ open class ExpoModuleExtension(val project: Project) {
   }
 
   var canBePublished: Boolean = true
+
+  internal var pomConfigurator: POMConfigurator? = null
+
+  fun pom(configurator: POMConfigurator) {
+    pomConfigurator = configurator
+  }
 }

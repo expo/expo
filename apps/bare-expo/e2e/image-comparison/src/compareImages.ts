@@ -34,7 +34,9 @@ function createSuccessResult(
   totalPixels: number,
   diffRatio: number,
   similarityThreshold: number,
-  diffImagePath?: string
+  diffImagePath?: string,
+  image1Path?: string,
+  image2Path?: string
 ): ComparisonResult {
   const success = diffRatio <= similarityThreshold;
   let message: string;
@@ -44,7 +46,7 @@ function createSuccessResult(
   } else if (success) {
     message = `✅ Images are similar (${(diffRatio * 100).toFixed(2)}% difference, threshold ${(similarityThreshold * 100).toFixed(2)}%)`;
   } else {
-    message = `❌ Images are significantly different (${(diffRatio * 100).toFixed(2)}% difference)`;
+    message = `❌ Images are significantly different (${(diffRatio * 100).toFixed(2)}% difference). image1: ${image1Path}, image2: ${image2Path}`;
   }
 
   return {
@@ -158,7 +160,9 @@ export async function compareImages({
       totalPixels,
       diffPercentageFormatted,
       similarityThreshold,
-      outputPath
+      outputPath,
+      finalImage1Path,
+      finalImage2Path
     );
   } catch (error) {
     return createErrorResult(error instanceof Error ? error.message : 'Unknown error occurred');

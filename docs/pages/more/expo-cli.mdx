@@ -179,14 +179,15 @@ Building locally is useful for developing native modules and [debugging complex 
 
 If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
 
-For example, if your project does not have an **ios** directory in the root of your project, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. For more information on this process, see [Expo Prebuild](/workflow/prebuild).
+For example, if your project does not have an **ios** directory in the root of your project, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. For more information on this process, see [Expo Prebuild](/workflow/continuous-native-generation).
 
 **Cross-platform arguments**
 
 - `--no-build-cache`: Clear the native cache before building. On iOS, this is the **derived data** directory. Cache clearing is useful for profiling your build times.
 - `--no-install`: Skip installing dependencies. On iOS, this will also skip running `npx pod-install` if the `dependencies` field in the project's `package.json` has changed.
 - `--no-bundler`: Skip starting the dev server. Enabled automatically if the dev server is already serving the app from a different process.
-- `-d, --device [device]`: Device name or ID to build the app on. You can pass `--device` without arguments to select a device from a list of available options. This supports connected devices as well as virtual devices.
+- `-d, --device [device]`: Device name or ID to build the app on. You can pass `--device` without arguments to select a device from a list of available options. This supports connected devices as well as virtual devices. Use `--device generic` to build without targeting a specific device (build-only workflow).
+- `-o, --output <path>`: Directory to copy the built app binary to after the build completes. Useful for CI/CD pipelines or when you want the binary in a predictable location.
 - `-p, --port <port>`: Port to start the development server. **Default: 8081**. This is only relevant for development builds. Production builds will [export](#exporting) the project and embed the files in the native binary before installing them on a device.
 - `--binary <path>`: File path to the binary to install on the device. When this is provided, the build process will be skipped and the binary will attempt to be installed directly. If the binary was not built for the correct device, for example, it is built for the simulator or installed on the device, then the command will fail.
 
@@ -253,6 +254,31 @@ You can debug using `lldb` and all of the native Apple debugging tools by openin
 <Terminal cmd={['$ xed ios']} />
 
 Building from Xcode is useful because you can set native breakpoints and profile any part of the application. Be sure to track changes in source control (git) in case you need to regenerate the native app with `npx expo prebuild -p ios --clean`.
+
+##### Build-only workflow
+
+You can build an iOS Simulator app without targeting a specific device by using the `generic` device option:
+
+<Terminal cmd={['$ npx expo run:ios --device generic']} />
+
+The above command uses a generic Xcode destination (`generic/platform=iOS Simulator`) instead of a specific simulator UDID, which is useful for:
+
+- **CI/CD pipelines**: Build simulator apps without needing simulators configured on the build machine.
+- **Distributing simulator builds**: Create **.app** bundles that can be shared and run on any compatible simulator.
+- **Build-only workflows**: When you only need the compiled binary without installing or launching.
+
+After the build completes, the CLI outputs the path to the built **.app** bundle:
+
+```sh
+✓ Build complete
+Binary: ~/Library/Developer/Xcode/DerivedData/.../Release-iphonesimulator/MyApp.app
+```
+
+You can combine this with `--configuration Release` to create a production simulator build, and use `--output` to copy the binary to a specific directory:
+
+<Terminal cmd={['$ npx expo run:ios --configuration Release --device generic --output ./build']} />
+
+The above command will copy the built **.app** bundle to **./build/MyApp.app**.
 
 **iOS development signing**
 
@@ -364,7 +390,7 @@ This command will be disabled if your project is configured to use `metro` for b
 
 <Terminal cmd={['$ npx expo prebuild']} />
 
-Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild/).
+Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/continuous-native-generation/).
 
 ## Lint
 
@@ -406,7 +432,7 @@ Evaluate the app config (**app.json**, or **app.config.js**) by running:
 There are three different config types that are generated from the app config:
 
 - `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
-- `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
+- `prebuild`: The config that is used for [Expo Prebuild](/workflow/continuous-native-generation) including async modifiers. This is the only time the config is not serializable.
 - `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or **AndroidManifest.xml** changes. Learn more about [introspection](/config-plugins/development-and-debugging/#introspection).
 
 ## Install
@@ -542,6 +568,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_WEB_DEV_HYDRATE`               | **boolean** | Enable React hydration in development for a web project. This can help you identify hydration issues early.                                                                                                                                                                                                                                                                                                                     |
 | `EXPO_UNSTABLE_LIVE_BINDINGS`        | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 54+" /></div>Disable live binding in experimental import export support. Enabled by default. Live bindings improve circular dependencies support, but can lead to slightly worse performance.                                                                                                                               |
 | `EXPO_UNSTABLE_LOG_BOX`              | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 55+" /></div>Enable the experimental LogBox error overlay for native applications. Enabled by default for web.                                                                                                                                                                                                              |
+| `EXPO_NO_QR_CODE`                    | **boolean** | Prevents the CLI from showing the QR code on console.                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## Telemetry
 

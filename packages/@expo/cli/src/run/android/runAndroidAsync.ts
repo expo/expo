@@ -10,7 +10,7 @@ import type { AndroidOpenInCustomProps } from '../../start/platforms/android/And
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
-import { setNodeEnv } from '../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
@@ -23,7 +23,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
   const isProduction = options.variant?.toLowerCase().endsWith('release');
   setNodeEnv(isProduction ? 'production' : 'development');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
 

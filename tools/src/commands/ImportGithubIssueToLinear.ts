@@ -78,7 +78,7 @@ async function importIssueAsync(githubIssueNumber: number, importer?: string) {
     Linear.ENG_TEAM_ID
   );
 
-  Linear.createIssueAsync({
+  return Linear.createIssueAsync({
     title: issue.title,
     labelIds: [githubLabel.id, expoSDKLabel.id],
     stateId: backlogWorkflowState.id,

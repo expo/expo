@@ -43,7 +43,7 @@ import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOption
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { setNodeEnv } from '../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
   projectRoot: string,
@@ -80,8 +80,7 @@ export async function exportAppAsync(
   const environment = dev ? 'development' : 'production';
   process.env.NODE_ENV = environment;
   setNodeEnv(environment);
-
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {

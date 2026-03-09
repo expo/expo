@@ -1,14 +1,18 @@
 package expo.modules.filesystem
 
+import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.provider.DocumentsContract
 import androidx.core.net.toUri
 import expo.modules.filesystem.unifiedfile.AssetFile
+import expo.modules.filesystem.unifiedfile.ContentProviderFile
+import expo.modules.filesystem.fsops.DestinationSpec
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
 import java.util.EnumSet
@@ -24,6 +28,11 @@ val Uri.isAssetUri
   get(): Boolean {
     return scheme == "asset"
   }
+
+fun Uri.isSAFUri(context: Context): Boolean =
+  isContentUri && (
+    DocumentsContract.isDocumentUri(context, this) || DocumentsContract.isTreeUri(this)
+    )
 
 fun slashifyFilePath(path: String?): String? {
   return if (path == null) {
@@ -44,16 +53,17 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       if (currentAdapter?.uri == uri) {
         return currentAdapter
       }
-      val newAdapter = if (uri.isContentUri) {
-        SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), uri)
-      } else if (uri.isAssetUri) {
-        AssetFile(appContext?.reactContext ?: throw Exception("No context"), uri)
-      } else {
-        JavaFile(uri)
+
+      val context = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
+      val newAdapter = when {
+        uri.isSAFUri(context) -> SAFDocumentFile(context, uri)
+        uri.isContentUri -> ContentProviderFile(context, uri)
+        uri.isAssetUri -> AssetFile(context, uri)
+        else -> JavaFile(uri)
       }
-      fileAdapter = newAdapter
-      return newAdapter
+      return newAdapter.also { fileAdapter = it }
     }
+
   val javaFile: File
     get() =
       if (uri.isContentUri) {
@@ -107,13 +117,13 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     return destination.javaFile
   }
 
-  fun validatePermission(permission: Permission) {
+  fun validatePermission(permission: FilePermissionService.Permission) {
     if (!checkPermission(permission)) {
       throw InvalidPermissionException(permission)
     }
   }
 
-  fun checkPermission(permission: Permission): Boolean {
+  fun checkPermission(permission: FilePermissionService.Permission): Boolean {
     if (uri.isContentUri) {
       // TODO: Consider adding a check for content URIs (not in legacy FS)
       return true
@@ -125,7 +135,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
 
     val permissions = appContext?.filePermission?.getPathPermissions(
       appContext?.reactContext ?: throw Exceptions.ReactContextLost(), javaFile.path
-    ) ?: EnumSet.noneOf(Permission::class.java)
+    ) ?: EnumSet.noneOf(FilePermissionService.Permission::class.java)
     return permissions.contains(permission)
   }
 
@@ -135,35 +145,31 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
   }
 
-  fun copy(to: FileSystemPath) {
+  fun copy(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
-    validatePermission(Permission.READ)
-    to.validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.READ)
+    to.validatePermission(FilePermissionService.Permission.WRITE)
 
-    javaFile.copyRecursively(getMoveOrCopyPath(to))
+    file.copyTo(to.asCopyOrMoveDestination(options.overwrite))
   }
 
-  fun move(to: FileSystemPath) {
+  fun move(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
-    validatePermission(Permission.WRITE)
-    to.validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
+    to.validatePermission(FilePermissionService.Permission.WRITE)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val destination = getMoveOrCopyPath(to)
-      javaFile.toPath().moveTo(destination.toPath())
-      uri = destination.toUri()
-    } else {
-      javaFile.copyTo(getMoveOrCopyPath(to))
-      javaFile.delete()
-      uri = getMoveOrCopyPath(to).toUri()
-    }
+    // moveTo returns the URI of where the file was actually moved to
+    val finalUri = file.moveTo(to.asCopyOrMoveDestination(options.overwrite))
+
+    // Update URI to reflect the new location
+    uri = finalUri
   }
 
   fun rename(newName: String) {
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     val newFile = File(javaFile.parent, newName)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       javaFile.toPath().moveTo(newFile.toPath())
@@ -186,3 +192,9 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       return file.creationTime
     }
 }
+
+fun FileSystemPath.asCopyOrMoveDestination(overwrite: Boolean = false) = DestinationSpec(
+  path = file,
+  overwrite = overwrite,
+  isDirectory = this is FileSystemDirectory
+)

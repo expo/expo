@@ -1,5 +1,5 @@
 import { type ImmutableRequest } from './ImmutableRequest';
-import { type GetStaticContentOptions } from './manifest';
+import type { AssetInfo, GetStaticContentOptions } from './manifest';
 
 /**
  * The SSR render module exported from `_expo/server/render.js`.
@@ -12,7 +12,8 @@ export interface ServerRenderModule {
 }
 
 export interface RenderOptions {
-  loader?: { data: unknown };
+  loader?: { data: unknown; key: string };
+  assets?: AssetInfo;
 }
 
 export type SsrRenderFn = (request: Request, options?: RenderOptions) => Promise<string>;

@@ -30,7 +30,6 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.runtime.MainRuntime
-import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.runtime.WorkletRuntime
 import expo.modules.kotlin.services.AppDirectoriesService
 import expo.modules.kotlin.services.FilePermissionService
@@ -56,7 +55,7 @@ class AppContext(
   @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
   val hostingRuntimeContext = MainRuntime(this, reactContextHolder)
 
-  val runtime: Runtime
+  val runtime: MainRuntime
     get() = hostingRuntimeContext
 
   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
@@ -152,7 +151,7 @@ class AppContext(
    * It will be a NOOP if the remote debugging was activated.
    */
   fun installJSIInterop() {
-    hostingRuntimeContext.install()
+    runtime.install()
   }
 
   /**
@@ -223,13 +222,13 @@ class AppContext(
    * Provides access to the react application context
    */
   val reactContext: Context?
-    get() = hostingRuntimeContext.reactContext
+    get() = runtime.reactContext
 
   /**
    * @return true if there is an non-null, alive react native instance
    */
   val hasActiveReactInstance: Boolean
-    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() == true
+    get() = runtime.reactContext?.hasActiveReactInstance() == true
 
   /**
    * Provides access to the event emitter
@@ -243,7 +242,7 @@ class AppContext(
         "Cannot create an event emitter for module ${module.javaClass} that isn't present in the module registry. Available modules: [$availableModulesNames]."
       },
       legacyEventEmitter,
-      hostingRuntimeContext.reactContextHolder
+      runtime.reactContextHolder
     )
   }
 
@@ -251,7 +250,7 @@ class AppContext(
     get() {
       val legacyEventEmitter = legacyModule<expo.modules.core.interfaces.services.EventEmitter>()
         ?: return null
-      return KEventEmitterWrapper(legacyEventEmitter, hostingRuntimeContext.reactContextHolder)
+      return KEventEmitterWrapper(legacyEventEmitter, runtime.reactContextHolder)
     }
 
   @Deprecated("Use AppContext.jsLogger instead")
@@ -354,14 +353,14 @@ class AppContext(
   @Suppress("UNCHECKED_CAST")
   @UiThread
   fun <T : View> findView(viewTag: Int): T? {
-    val reactContext = hostingRuntimeContext.reactContext ?: return null
+    val reactContext = runtime.reactContext ?: return null
     return UIManagerHelper
       .getUIManagerForReactTag(reactContext, viewTag)
       ?.resolveView(viewTag) as? T
   }
 
   internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
-    val reactContext = hostingRuntimeContext.reactContext ?: throw Exceptions.ReactContextLost()
+    val reactContext = runtime.reactContext ?: throw Exceptions.ReactContextLost()
     val uiManager = UIManagerHelper.getUIManagerForReactTag(
       reactContext,
       UIManagerType.DEFAULT
@@ -381,7 +380,7 @@ class AppContext(
    */
   @Deprecated("Use RuntimeContext.schedule instead", ReplaceWith("runtime.schedule(runnable)"))
   fun executeOnJavaScriptThread(runnable: Runnable) {
-    hostingRuntimeContext.reactContext?.runOnJSQueueThread(runnable)
+    runtime.reactContext?.runOnJSQueueThread(runnable)
   }
 
 // region CurrentActivityProvider

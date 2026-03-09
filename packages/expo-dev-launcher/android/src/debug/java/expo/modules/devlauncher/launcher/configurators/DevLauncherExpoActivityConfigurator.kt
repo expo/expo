@@ -14,7 +14,6 @@ import android.view.WindowManager
 import androidx.annotation.UiThread
 import androidx.core.view.ViewCompat
 import com.facebook.react.ReactActivity
-import expo.modules.devlauncher.helpers.RGBAtoARGB
 import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.launcher.manifest.DevLauncherNavigationBarStyle
 import expo.modules.devlauncher.launcher.manifest.DevLauncherNavigationBarVisibility
@@ -54,59 +53,29 @@ class DevLauncherExpoActivityConfigurator(
   fun applyStatusBarConfiguration(activity: ReactActivity) {
     val statusBarOptions = manifest.getAndroidStatusBarOptions()
     val style = statusBarOptions?.optString("barStyle")
-    val backgroundColor = statusBarOptions?.optString("backgroundColor")
-    val translucent = statusBarOptions == null || statusBarOptions.optBoolean("translucent", true)
     val hidden = statusBarOptions != null && statusBarOptions.optBoolean("hidden", false)
 
     activity.runOnUiThread {
       // clear android:windowTranslucentStatus flag from Window as RN achieves translucency using WindowInsets
       activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
       setHidden(hidden, activity)
-      setTranslucent(translucent, activity)
-      val appliedStyle = setStyle(style, activity)
-
-      // Color passed from manifest is in format '#RRGGBB(AA)' and Android uses '#AARRGGBB'
-      val normalizedStatusBarBackgroundColor = RGBAtoARGB(backgroundColor)
-
-      val finalBackgroundColor = if (normalizedStatusBarBackgroundColor == null || !isValidColor(normalizedStatusBarBackgroundColor)) {
-        // backgroundColor is invalid or not set
-        if (appliedStyle == DevLauncherStatusBarStyle.LIGHT) {
-          // appliedStatusBarStyle is "light-content" so background color should be semi transparent black
-          Color.parseColor("#88000000")
-        } else {
-          // otherwise it has to be transparent
-          Color.TRANSPARENT
-        }
-      } else {
-        Color.parseColor(normalizedStatusBarBackgroundColor)
-      }
-
-      setColor(finalBackgroundColor, activity)
+      setTranslucent(activity)
+      setStyle(style, activity)
+      setColor(Color.TRANSPARENT, activity)
     }
   }
 
   @UiThread
-  private fun setStyle(style: String?, activity: Activity): String {
-    var appliedStatusBarStyle = DevLauncherStatusBarStyle.LIGHT
+  private fun setStyle(style: String?, activity: Activity) {
     val decorView = activity.window.decorView
-    var systemUiVisibilityFlags = decorView.systemUiVisibility
-    when (style) {
-      DevLauncherStatusBarStyle.LIGHT -> {
-        systemUiVisibilityFlags = systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-        appliedStatusBarStyle = DevLauncherStatusBarStyle.LIGHT
-      }
-      DevLauncherStatusBarStyle.DARK -> {
-        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        appliedStatusBarStyle = DevLauncherStatusBarStyle.DARK
-      }
-      else -> {
-        systemUiVisibilityFlags = systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        appliedStatusBarStyle = DevLauncherStatusBarStyle.DARK
-      }
+    decorView.systemUiVisibility = when (style) {
+      DevLauncherStatusBarStyle.LIGHT ->
+        decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+      DevLauncherStatusBarStyle.DARK ->
+        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+      else ->
+        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
     }
-    decorView.systemUiVisibility = systemUiVisibilityFlags
-
-    return appliedStatusBarStyle
   }
 
   @UiThread
@@ -121,22 +90,18 @@ class DevLauncherExpoActivityConfigurator(
   }
 
   @UiThread
-  private fun setTranslucent(translucent: Boolean, activity: Activity) {
-    // If the status bar is translucent hook into the window insets calculations
+  private fun setTranslucent(activity: Activity) {
+    // As the status bar is translucent, hook into the window insets calculations
     // and consume all the top insets so no padding will be added under the status bar.
     val decorView = activity.window.decorView
-    if (translucent) {
-      decorView.setOnApplyWindowInsetsListener { v: View, insets: WindowInsets? ->
-        val defaultInsets = v.onApplyWindowInsets(insets)
-        defaultInsets.replaceSystemWindowInsets(
-          defaultInsets.systemWindowInsetLeft,
-          0,
-          defaultInsets.systemWindowInsetRight,
-          defaultInsets.systemWindowInsetBottom
-        )
-      }
-    } else {
-      decorView.setOnApplyWindowInsetsListener(null)
+    decorView.setOnApplyWindowInsetsListener { v: View, insets: WindowInsets? ->
+      val defaultInsets = v.onApplyWindowInsets(insets)
+      defaultInsets.replaceSystemWindowInsets(
+        defaultInsets.systemWindowInsetLeft,
+        0,
+        defaultInsets.systemWindowInsetRight,
+        defaultInsets.systemWindowInsetBottom
+      )
     }
     ViewCompat.requestApplyInsets(decorView)
   }
@@ -152,17 +117,6 @@ class DevLauncherExpoActivityConfigurator(
 
   fun applyNavigationBarConfiguration(activity: ReactActivity) {
     val navBarOptions = manifest.getAndroidNavigationBarOptions() ?: return
-
-    // Set background color of navigation bar
-    val navBarColor = navBarOptions.optString("backgroundColor")
-    if (isValidColor(navBarColor)) {
-      try {
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        activity.window.navigationBarColor = Color.parseColor(navBarColor)
-      } catch (e: Throwable) {
-        Log.e(TAG, "Failed to configure androidNavigationBar.backgroundColor", e)
-      }
-    }
 
     // Set icon color of navigation bar
     val navBarAppearance = navBarOptions.optString("barStyle")

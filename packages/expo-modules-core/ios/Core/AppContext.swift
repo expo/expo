@@ -122,14 +122,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   @objc
   public var appIdentifier: String? {
-    #if RCT_NEW_ARCH_ENABLED
     guard let moduleRegistry = reactBridge?.moduleRegistry else {
       return nil
     }
     return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
-    #else
-    return nil
-    #endif
   }
 
   /**
@@ -262,6 +258,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   /**
+   Provides access to a native React Native module by name.
+   In new arch the lookup goes through the host wrapper; in old arch through the bridge.
+   */
+  public func nativeModule<T>(named name: String) -> T? {
+    guard let module = hostWrapper?.findModule(withName: name, lazilyLoadIfNecessary: true) as? T else {
+      log.warn("Unable to get the \(name) module.")
+      return nil
+    }
+    return module
+  }
+
+  /**
+   The bundle URL of the running React Native app.
+   Resolved from RCTBundleManager via RCTHost.
+   */
+  public var bundleURL: URL? {
+    return hostWrapper?.bundleURL()
+  }
+
+  /**
    Provides access to the utilities (such as looking up for the current view controller).
    */
   public var utilities: Utilities? = Utilities()
@@ -368,7 +384,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
   /**
    Returns a JavaScript object that represents a module with given name.
    This is a non-actor-isolated wrapper for ObjC interop that uses `assumeIsolated` internally.
-  
+
    - Warning: This method must only be called from the JavaScript thread.
    It will crash if called from other threads.
    */
@@ -377,27 +393,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
     return JavaScriptActor.assumeIsolated {
       return moduleRegistry.get(moduleHolderForName: moduleName)?.javaScriptObject
     }
-  }
-
-  /**
-   Returns an array of event names supported by all Swift modules.
-   */
-  @objc
-  public func getSupportedEvents() -> [String] {
-    return moduleRegistry.reduce(into: [String]()) { events, holder in
-      events.append(contentsOf: holder.definition.eventNames)
-    }
-  }
-
-  /**
-   Modifies listeners count for module with given name. Depending on the listeners count,
-   `onStartObserving` and `onStopObserving` are called.
-   */
-  @objc
-  public func modifyEventListenersCount(_ moduleName: String, count: Int) {
-    moduleRegistry
-      .get(moduleHolderForName: moduleName)?
-      .modifyListenersCount(count)
   }
 
   /**
@@ -504,19 +499,17 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Registers native views defined by registered native modules.
-   - Note: It should stay private as `registerNativeModules` should be the only call site. Works only with the New Architecture.
+   - Note: It should stay private as `registerNativeModules` should be the only call site.
    - Todo: `RCTComponentViewFactory` is thread-safe, so this function should be as well.
    */
   @MainActor
   private func registerNativeViews() {
-#if RCT_NEW_ARCH_ENABLED
     for holder in moduleRegistry {
       for (key, viewDefinition) in holder.definition.views {
         let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
         ExpoFabricView.registerComponent(viewModule, appContext: self)
       }
     }
-#endif
   }
 
   // MARK: - Runtime

@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 
-const CLI_PATH = require.resolve('../../bin/cli.js');
-const CREATE_EXPO_BIN = require.resolve('../../../create-expo/build/index.js');
-const EXPO_CLI_BIN = require.resolve('../../../@expo/cli/build/bin/cli');
+export const CLI_PATH = require.resolve('../../bin/cli.js');
+export const CREATE_EXPO_BIN = require.resolve('../../../create-expo/build/index.js');
+export const EXPO_CLI_BIN = require.resolve('../../../@expo/cli/build/bin/cli');
 
 export interface ExecuteCLIOptions {
   ignoreErrors?: boolean;

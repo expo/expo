@@ -1,45 +1,97 @@
 package dev.expo.brownfieldintegratedtester
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.community.minimaltester.brownfield.BrownfieldActivity
-import com.community.minimaltester.brownfield.showReactNativeFragment
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import host.exp.exponent.brownfield.ReactNativeFragment
+import host.exp.exponent.brownfield.ReactNativeHostManager
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
-import dev.expo.brownfieldintegratedtester.ui.theme.BrownfieldIntegratedTesterTheme
 
-class MainActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
+class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        showReactNativeFragment()
+        ReactNativeHostManager.shared.initialize(this.application)
+
+        val rootLayout =
+            LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.TOP
+                layoutParams =
+                    ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    )
+                setPadding(dpToPx(16), dpToPx(24), dpToPx(16), dpToPx(24))
+            }
+
+        val button =
+            Button(this).apply {
+                text = "Open React Native app"
+                backgroundTintList = ContextCompat.getColorStateList(context, R.color.purple_500)
+                id = R.id.openReactNativeButton
+                setTextColor(Color.WHITE)
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ).apply {
+                        setMargins(0, 0, 0, dpToPx(24))
+                    }
+
+                setOnClickListener {
+                    startActivity(
+                        Intent(
+                            context,
+                            ReactNativeActivity::class.java
+                        )
+                    )
+                }
+            }
+
+        val customComponent = if (savedInstanceState == null) {
+            ReactNativeFragment.createFragmentHost(this, "custom-component").apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    400
+                ).apply {
+                    setMargins(0, dpToPx(16), 0, 0)
+                }
+            }
+        } else {
+            FrameLayout(this).apply {
+                id = View.generateViewId()
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    400
+                ).apply {
+                    setMargins(0, dpToPx(16), 0, 0)
+                }
+            }
+        }
+
+        rootLayout.addView(button)
+        rootLayout.addView(customComponent)
+        setContentView(rootLayout)
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp.toFloat(),
+            resources.displayMetrics
+        ).toInt()
     }
 
     override fun invokeDefaultOnBackPressed() {
-        TODO("Not yet implemented")
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BrownfieldIntegratedTesterTheme {
-        Greeting("Android")
+        // TODO: Implement this
     }
 }

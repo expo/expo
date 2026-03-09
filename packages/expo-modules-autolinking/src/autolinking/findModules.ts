@@ -7,6 +7,7 @@ import {
   filterMapResolutionResult,
   mergeResolutionResults,
 } from '../dependencies';
+import { createMemoizer } from '../memoize';
 import { PackageRevision, SearchResults, SupportedPlatform } from '../types';
 
 export async function resolveExpoModule(
@@ -46,6 +47,7 @@ export async function findModulesAsync({
   appRoot,
   autolinkingOptions,
 }: FindModulesParams): Promise<SearchResults> {
+  const memoizer = createMemoizer();
   const excludeNames = new Set(autolinkingOptions.exclude);
 
   // custom native modules should be resolved first so that they can override other modules
@@ -53,13 +55,15 @@ export async function findModulesAsync({
     ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
     : autolinkingOptions.searchPaths;
 
-  return filterMapResolutionResult(
-    mergeResolutionResults(
-      await Promise.all([
-        ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
-        scanDependenciesRecursively(appRoot),
-      ])
-    ),
-    (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames)
-  );
+  return memoizer.withMemoizer(async () => {
+    return filterMapResolutionResult(
+      mergeResolutionResults(
+        await Promise.all([
+          ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
+          scanDependenciesRecursively(appRoot),
+        ])
+      ),
+      (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames)
+    );
+  });
 }

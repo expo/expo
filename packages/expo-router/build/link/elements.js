@@ -68,7 +68,11 @@ function LinkMenuAction(props) {
     const icon = props.icon ??
         (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
     const sf = typeof icon === 'string' ? icon : undefined;
-    return (<native_1.NativeLinkPreviewAction {...rest} identifier={identifier} icon={sf} title={label ?? title ?? ''} keepPresented={unstable_keepPresented} onSelected={() => onPress?.()}/>);
+    const rawXcasset = iconComponent?.props && 'xcasset' in iconComponent.props
+        ? iconComponent.props.xcasset
+        : undefined;
+    const xcassetName = typeof rawXcasset === 'string' ? rawXcasset : undefined;
+    return (<native_1.NativeLinkPreviewAction {...rest} identifier={identifier} icon={sf} xcassetName={xcassetName} title={label ?? title ?? ''} keepPresented={unstable_keepPresented} onSelected={() => onPress?.()}/>);
 }
 /**
  * Groups context menu actions for a link.

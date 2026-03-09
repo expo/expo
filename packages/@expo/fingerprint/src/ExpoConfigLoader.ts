@@ -4,12 +4,10 @@
 
 import fs from 'fs/promises';
 import module from 'module';
-import assert from 'node:assert';
 import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { resolveExpoEnvPath } from './ExpoResolver';
 import { DEFAULT_IGNORE_PATHS } from './Options';
 import { isIgnoredPath } from './utils/Path';
 
@@ -22,16 +20,14 @@ async function runAsync(programName: string, args: string[] = []) {
   const projectRoot = path.resolve(args[0]);
   const ignoredFile = args[1] ? path.resolve(args[1]) : null;
 
-  // @ts-expect-error: module internal _cache
+  setNodeEnv('development');
+  require('@expo/env').load(projectRoot);
+
   const loadedModulesBefore = new Set(Object.keys(module._cache));
 
-  const expoEnvPath = resolveExpoEnvPath(projectRoot);
-  assert(expoEnvPath, `Could not find '@expo/env' package for the project from ${projectRoot}.`);
-  require(expoEnvPath).load(projectRoot);
-  setNodeEnv('development');
   const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
   const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  // @ts-expect-error: module internal _cache
+
   const loadedModules = Object.keys(module._cache)
     .filter((modulePath) => !loadedModulesBefore.has(modulePath))
     .map((modulePath) => path.relative(projectRoot, modulePath));

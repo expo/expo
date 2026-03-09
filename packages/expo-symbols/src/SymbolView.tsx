@@ -1,5 +1,5 @@
 import { useFonts } from '@expo-google-fonts/material-symbols';
-import { useMemo } from 'react';
+import { useMemo, type JSX } from 'react';
 import { Platform, PlatformColor, Text, View } from 'react-native';
 
 import { SymbolViewProps } from './SymbolModule.types';
@@ -10,7 +10,7 @@ import { getFont } from './utils';
 const DEFAULT_SYMBOL_COLOR =
   Platform.OS === 'android' ? PlatformColor('@android:color/system_primary_dark') : '#7d9bd4';
 
-export function SymbolView(props: SymbolViewProps) {
+export function SymbolView(props: SymbolViewProps): JSX.Element {
   const font = useMemo(() => getFont(props.weight), [props.weight]);
   const name =
     typeof props.name === 'object'

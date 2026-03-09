@@ -57,15 +57,15 @@ function getAndroidManifestTemplate(config) {
   // Keep in sync with https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
   // TODO: Read from remote template when possible
   return (0, _XML().parseXMLAsync)(`
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${config.android?.package ?? 'com.placeholder.appid'}">
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="${config.android?.package ?? 'com.placeholder.appid'}">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- These require runtime permissions on M -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
     <!-- END OPTIONAL PERMISSIONS -->
 
     <queries>

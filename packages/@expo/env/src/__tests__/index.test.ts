@@ -333,7 +333,7 @@ describe(loadProjectEnv, () => {
 
     expect(loadProjectEnv('/', { force: true })).toEqual({
       result: 'loaded',
-      env: { FOO: 'previous' },
+      env: { FOO: 'bar' },
       files: ['/.env'],
       loaded: [],
     });

@@ -4,17 +4,18 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 import type { HeaderProps } from './types';
 
-const Header = ({ title }: HeaderProps) => {
+const Header = ({ title, testID }: HeaderProps) => {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
       <Pressable
         style={({ pressed }) => [styles.backButton, pressed && styles.focused]}
-        onPress={() => router.back()}>
+        onPress={() => router.back()}
+        testID="header-back-button">
         <Feather name="arrow-left" size={24} color="black" />
       </Pressable>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title} testID={testID}>{title}</Text>
     </View>
   );
 };
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    paddingLeft: 16,
+    marginLeft: 16,
     left: 0,
   },
 });

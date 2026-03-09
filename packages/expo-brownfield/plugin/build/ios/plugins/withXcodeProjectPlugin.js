@@ -21,6 +21,8 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
             'ReactNativeHostManager.swift',
             // Messaging proxy
             'Messaging.swift',
+            // State proxy
+            'State.swift',
             //SwiftUI brownfield entrypoint
             'ReactNativeView.swift',
             // UIKit brownfield view controller
@@ -48,7 +50,7 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
         // - Add template files to the compile sources phase
         (0, utils_1.configureBuildPhases)(xcodeProject, target, pluginConfig.targetName, projectName, templateFiles.map((file) => `${pluginConfig.targetName}/${file}`));
         // Add the required build settings
-        (0, utils_1.configureBuildSettings)(xcodeProject, pluginConfig.targetName, config.ios?.buildNumber || '1', pluginConfig.bundleIdentifier);
+        (0, utils_1.configureBuildSettings)(xcodeProject, pluginConfig.targetName, config.ios?.buildNumber || '1', pluginConfig.bundleIdentifier, config.ios?.version || config.version);
         return config;
     });
 };

@@ -348,7 +348,7 @@ describe('Icons', () => {
     {
       sf: '0.circle',
       src: { uri: 'some-uri' },
-      material: 'ic_some_drawable',
+      md: 'home',
       expectedIcon: { type: 'sfSymbol', name: '0.circle' },
     },
     {
@@ -362,22 +362,22 @@ describe('Icons', () => {
     },
     {
       src: { uri: 'some-uri' },
-      material: 'ic_some_drawable',
+      md: 'home',
       expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
     },
   ] as (DrawableIcon &
     MaterialIcon &
     SrcIcon &
     SFSymbolIcon & {
-      expectedIcon: TabsScreenProps['icon']['ios'];
+      expectedIcon: NonNullable<TabsScreenProps['icon']>['ios'] | undefined;
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
-    ({ sf, src, drawable, material, expectedIcon }) => {
+    ({ sf, src, drawable, md, expectedIcon }) => {
       renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <NativeTabs.Trigger.Icon sf={sf} material={material} src={src} drawable={drawable} />
+              <NativeTabs.Trigger.Icon {...{ sf, md, src, drawable }} />
             </NativeTabs.Trigger>
           </NativeTabs>
         ),

@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon'
+  s.dependency 'React-runtimescheduler'
 
   should_use_prebuilt = ENV['EXPO_USE_PRECOMPILED_MODULES'] == '1'
   if (should_use_prebuilt)
@@ -66,14 +67,7 @@ Pod::Spec.new do |s|
       ])
     end
 
-    # Swift/Objective-C compatibility
-    s.pod_target_xcconfig = {
-      'USE_HEADERMAP' => 'YES',
-      'DEFINES_MODULE' => 'YES',
-      'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
-    }
     # Build from sources
-    s.header_dir = 'ExpoModulesJSI'
     s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,cpp}', 'common/cpp/JSI/**/*.{h,cpp}']
     s.exclude_files = ['ios/JSI/Tests']
     s.private_header_files = ['ios/JSI/**/*+Private.h', 'ios/JSI/**/Swift.h']
@@ -81,6 +75,7 @@ Pod::Spec.new do |s|
     s.pod_target_xcconfig = {
       'USE_HEADERMAP' => 'YES',
       'DEFINES_MODULE' => 'YES',
+      'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     }
   end
 

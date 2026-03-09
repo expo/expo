@@ -7,7 +7,7 @@ final class ColorPickerProps: UIBaseViewProps {
   @Field var selection: Color = .clear
   @Field var label: String?
   @Field var supportsOpacity: Bool = true
-  var onValueChanged = EventDispatcher()
+  var onSelectionChange = EventDispatcher()
 }
 
 struct ColorPickerView: ExpoSwiftUI.View {
@@ -15,19 +15,21 @@ struct ColorPickerView: ExpoSwiftUI.View {
   @State private var previousHex: String = ""
   @State private var selection: Color = .clear
 
+  init(props: ColorPickerProps) {
+    self.props = props
+    _selection = State(initialValue: props.selection)
+    _previousHex = State(initialValue: Self.colorToHex(props.selection, supportsOpacity: props.supportsOpacity))
+  }
+
   var body: some View {
 #if !os(tvOS)
     ColorPicker(props.label ?? "", selection: $selection, supportsOpacity: props.supportsOpacity)
-      .onAppear {
-        selection = props.selection
-        previousHex = colorToHex(props.selection)
-      }
       .onChange(of: selection) { newValue in
-        let newHex = colorToHex(newValue)
+        let newHex = Self.colorToHex(newValue, supportsOpacity: props.supportsOpacity)
         if newHex != previousHex {
           previousHex = newHex
           let payload = ["value": newHex]
-          props.onValueChanged(payload)
+          props.onSelectionChange(payload)
         }
       }
 #else
@@ -35,7 +37,7 @@ struct ColorPickerView: ExpoSwiftUI.View {
 #endif
   }
 
-  private func colorToHex(_ color: Color) -> String {
+  private static func colorToHex(_ color: Color, supportsOpacity: Bool) -> String {
     let newColor = UIColor(color)
     guard let components = newColor.cgColor.components else {
       return ""
@@ -48,7 +50,7 @@ struct ColorPickerView: ExpoSwiftUI.View {
       newColor.cgColor.alpha
     ].map { Int(max(0, min(255, $0 * 255))) }
 
-    let format = props.supportsOpacity ? "#%02X%02X%02X%02X" : "#%02X%02X%02X"
-    return String(format: format, rgba[0], rgba[1], rgba[2], props.supportsOpacity ? rgba[3] : 255)
+    let format = supportsOpacity ? "#%02X%02X%02X%02X" : "#%02X%02X%02X"
+    return String(format: format, rgba[0], rgba[1], rgba[2], supportsOpacity ? rgba[3] : 255)
   }
 }

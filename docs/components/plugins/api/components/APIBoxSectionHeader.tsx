@@ -28,10 +28,10 @@ export const APIBoxSectionHeader = ({
   return (
     <CALLOUT
       className={mergeClasses(
-        'flex border-y border-palette-gray4 bg-subtle px-4 py-2 text-2xs font-medium text-tertiary',
+        'border-palette-gray4 bg-subtle text-2xs text-tertiary flex border-y px-4 py-2 font-medium',
         className
       )}>
-      <TextWrapper className="flex flex-row items-center gap-2 text-2xs font-medium text-tertiary">
+      <TextWrapper className="text-2xs text-tertiary flex flex-row items-center gap-2 font-medium">
         {Icon && <Icon className="icon-sm text-icon-secondary" />}
         {text}
       </TextWrapper>

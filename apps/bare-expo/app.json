@@ -34,7 +34,8 @@
       "requireFullScreen": false,
       "entitlements": {
         "com.apple.security.application-groups": ["group.dev.expo.Payments"]
-      }
+      },
+      "associatedDomains": ["applinks:bare-expo.expo.app", "webcredentials:bare-expo.expo.app"]
     },
     "web": {
       "bundler": "metro"

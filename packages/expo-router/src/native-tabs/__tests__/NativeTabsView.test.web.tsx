@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 
 import { NativeTabsView } from '../NativeTabsView';
-import type { NativeTabOptions, NativeTabsProps, NativeTabsViewProps } from '../types';
+import type { NativeTabsViewProps } from '../types';
 
 describe('Native Bottom Tabs Navigation', () => {
   it('renders tabs correctly for two elements', () => {

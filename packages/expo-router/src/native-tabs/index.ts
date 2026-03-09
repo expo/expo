@@ -2,6 +2,7 @@ export type {
   NativeTabsTriggerLabelProps,
   SrcIcon,
   SFSymbolIcon,
+  XcassetIcon,
   DrawableIcon,
   MaterialIcon,
   BaseNativeTabsTriggerIconProps,

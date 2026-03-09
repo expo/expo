@@ -23,6 +23,7 @@ export type { ScreenProps } from './useScreens';
 export * as SplashScreen from './views/Splash';
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
+export { useIsFocused } from './useIsFocused';
 export type { ResultState } from './fork/getStateFromPath';
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';

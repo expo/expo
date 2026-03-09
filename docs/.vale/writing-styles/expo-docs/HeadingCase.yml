@@ -18,6 +18,7 @@ exceptions:
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
   - '.*^iOS(.*)'
+  - '.*iPhone.*'
   - '.*web.*'
   - '.*AASA.*'
   - '.*AES.*'
@@ -60,6 +61,7 @@ exceptions:
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
+  - '.*Convex.*'
   - '.*Command Line Tools.*'
   - '.*Config Plugin.*'
   - '.*CORS.*'
@@ -134,9 +136,11 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*MCP*'
+  - '.*MultiBrowse.*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
   - '.*metro\.config\.js.*'
+  - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
   - '.*Node Package Managers.*'
@@ -293,7 +297,9 @@ exceptions:
   - 'Method 2: Use'
   - 'Image manipulation without disk I/O'
   - Live Activities
-  - Starting a Live Activity
-  - Updating a Live Activity
+  - Live Activity
+  - 'Prerequisite: Creating widget'
+  - 'Prerequisite: Creating Live Activity'
   - Hiding the Tab bar
   - Integrated vs Isolated
+  - Expo Skills

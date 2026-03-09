@@ -17,10 +17,11 @@ function assertSupport(name, v) {
     return v;
 }
 export { StatusError } from './error';
-/** Returns the current request's origin URL.
+/** Returns the current request's URL.
  *
- * This typically returns the request's `Origin` header, which contains the
- * request origin URL or defaults to `null`.
+ * This typically returns the request's URL, or on certain platform,
+ * the origin of the request. This does not use the `Origin` header
+ * in development as it may contain an untrusted value.
  * @returns A request origin
  */
 export function origin() {

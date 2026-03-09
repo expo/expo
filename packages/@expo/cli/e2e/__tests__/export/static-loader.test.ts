@@ -63,13 +63,14 @@ describe.each(
     expect(files).toContain('_expo/loaders/request');
     expect(files).toContain('_expo/loaders/response');
     expect(files).toContain('_expo/loaders/second');
-    expect(files).toContain('_expo/loaders/nested');
+    expect(files).toContain('_expo/loaders/nested/index');
     expect(files).toContain('_expo/loaders/nullish/[value]');
     expect(files).toContain('_expo/loaders/nullish/null');
     expect(files).toContain('_expo/loaders/nullish/undefined');
     expect(files).toContain('_expo/loaders/posts/[postId]');
     expect(files).toContain('_expo/loaders/posts/static-post-1');
     expect(files).toContain('_expo/loaders/posts/static-post-2');
+    expect(files).toContain('_expo/loaders/(group)/index');
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
@@ -99,6 +100,17 @@ describe.each(
     }
   );
 
+  it.each(getPageAndLoaderData('/(group)', true))(
+    'can access data for group index route $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'grouped-index' });
+    }
+  );
+
   it.each(getPageAndLoaderData('/second'))(
     'can access data for $url ($name)',
     async ({ getData, url }) => {
@@ -110,7 +122,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/nested'))(
+  it.each(getPageAndLoaderData('/nested', true))(
     'can access data for nested index route $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);

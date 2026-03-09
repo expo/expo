@@ -56,7 +56,7 @@ function expand(inputEnv, sourceEnv) {
   for (const key in outputEnv) {
     let value = outputEnv[key];
     if (Object.prototype.hasOwnProperty.call(sourceEnv, key)) {
-      value = value != null && sourceEnv[key] === value ? interpolate(value, key, sourceEnv, outputEnv) : sourceEnv[key];
+      value = value != null && sourceEnv[key] === value ? interpolate(value, key, sourceEnv, outputEnv) : inputEnv[key];
     } else if (value != null) {
       value = interpolate(value, key, sourceEnv, outputEnv);
     }

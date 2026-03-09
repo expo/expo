@@ -21,8 +21,9 @@ import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
-import { runServer } from './runServer-fork';
+import { runServer, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
+import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -30,6 +31,30 @@ import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
+
+// prettier-ignore
+export const event = events('metro', (t) => [
+  t.event<'config', {
+    serverRoot: string;
+    projectRoot: string;
+    exporting: boolean;
+    flags: {
+      autolinkingModuleResolution: boolean;
+      serverActions: boolean;
+      serverComponents: boolean;
+      reactCompiler: boolean;
+      optimizeGraph?: boolean;
+      treeshaking?: boolean;
+      logbox?: boolean;
+    };
+  }>(),
+  t.event<'instantiate', {
+    atlas: boolean;
+    workers: number | null;
+    host: string | null;
+    port: number | null;
+  }>(),
+]);
 
 // NOTE(@kitten): We pass a custom createStableModuleIdFactory function into the Metro module ID factory sometimes
 interface MetroServerWithModuleIdMod extends MetroServer {
@@ -97,18 +122,24 @@ export async function loadMetroConfigAsync(
 ) {
   let reportEvent: ((event: any) => void) | undefined;
 
+  // We're resolving a monorepo root, higher up than the `projectRoot`. If this
+  // folder is different (presumably a parent) we're in a monorepo
+  const serverRoot = getMetroServerRoot(projectRoot);
+  const isWorkspace = serverRoot !== projectRoot;
+
+  // Autolinking Module Resolution will be enabled by default when we're in a monorepo
   const autolinkingModuleResolutionEnabled =
-    exp.experiments?.autolinkingModuleResolution ?? env.EXPO_USE_STICKY_RESOLVER;
+    exp.experiments?.autolinkingModuleResolution ?? isWorkspace;
 
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
-
+  const serverComponentsEnabled = !!exp.experiments?.reactServerComponentRoutes;
   if (serverActionsEnabled) {
     process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS = '1';
   }
 
   // NOTE: Enable all the experimental Metro flags when RSC is enabled.
-  if (exp.experiments?.reactServerComponentRoutes || serverActionsEnabled) {
+  if (serverComponentsEnabled || serverActionsEnabled) {
     process.env.EXPO_USE_METRO_REQUIRE = '1';
   }
 
@@ -116,7 +147,6 @@ export async function loadMetroConfigAsync(
     Log.warn(`React 19 is enabled by default. Remove unused experiments.reactCanary flag.`);
   }
 
-  const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
@@ -155,6 +185,15 @@ export async function loadMetroConfigAsync(
     },
   };
 
+  // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
+  // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
+  // which is slower than just using the Node filesystem API
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
+  if (config.resolver.useWatchman === true) {
+    asWritable(config.resolver).useWatchman = null as any;
+  }
+
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
   if (isExporting) {
@@ -167,9 +206,15 @@ export async function loadMetroConfigAsync(
   }
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
+  const reduceLogs = shouldReduceLogs();
 
-  if (exp.experiments?.reactCompiler) {
+  const reactCompilerEnabled = !!exp.experiments?.reactCompiler;
+  if (!reduceLogs && reactCompilerEnabled) {
     Log.log(chalk.gray`React Compiler enabled`);
+  }
+
+  if (!reduceLogs && autolinkingModuleResolutionEnabled) {
+    Log.log(chalk.gray`Expo Autolinking module resolution enabled`);
   }
 
   if (env.EXPO_UNSTABLE_TREE_SHAKING && !env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
@@ -178,20 +223,17 @@ export async function loadMetroConfigAsync(
     );
   }
 
-  if (env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH) {
     Log.warn(`Experimental bundle optimization is enabled.`);
   }
-  if (env.EXPO_UNSTABLE_TREE_SHAKING) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_TREE_SHAKING) {
     Log.warn(`Experimental tree shaking is enabled.`);
   }
-  if (env.EXPO_UNSTABLE_LOG_BOX) {
+  if (!reduceLogs && env.EXPO_UNSTABLE_LOG_BOX) {
     Log.warn(`Experimental Expo LogBox is enabled.`);
   }
-  if (autolinkingModuleResolutionEnabled) {
-    Log.warn(`Experimental Expo Autolinking module resolver is enabled.`);
-  }
 
-  if (serverActionsEnabled) {
+  if (!reduceLogs && serverActionsEnabled) {
     Log.warn(
       `React Server Functions (beta) are enabled. Route rendering mode: ${exp.experiments?.reactServerComponentRoutes ? 'server' : 'client'}`
     );
@@ -205,8 +247,23 @@ export async function loadMetroConfigAsync(
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isExporting,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
-    isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
+    isReactServerComponentsEnabled: serverComponentsEnabled,
     getMetroBundler,
+  });
+
+  event('config', {
+    serverRoot: event.path(serverRoot),
+    projectRoot: event.path(projectRoot),
+    exporting: isExporting,
+    flags: {
+      autolinkingModuleResolution: autolinkingModuleResolutionEnabled,
+      serverActions: serverActionsEnabled,
+      serverComponents: serverComponentsEnabled,
+      reactCompiler: reactCompilerEnabled,
+      optimizeGraph: env.EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH,
+      treeshaking: env.EXPO_UNSTABLE_TREE_SHAKING,
+      logbox: env.EXPO_UNSTABLE_LOG_BOX,
+    },
   });
 
   return {
@@ -238,6 +295,7 @@ export async function instantiateMetroAsync(
   messageSocket: MessageSocket;
 }> {
   const projectRoot = metroBundler.projectRoot;
+  const getMetroBundler = () => metro.getBundler().getBundler();
 
   const {
     config: metroConfig,
@@ -246,14 +304,14 @@ export async function instantiateMetroAsync(
   } = await loadMetroConfigAsync(projectRoot, options, {
     exp,
     isExporting,
-    getMetroBundler() {
-      return metro.getBundler().getBundler();
-    },
+    getMetroBundler,
   });
 
   // Create the core middleware stack for Metro, including websocket listeners
-  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
-    createMetroMiddleware(metroConfig);
+  const { middleware, messagesSocket, eventsSocket, websocketEndpoints } = createMetroMiddleware(
+    metroConfig,
+    { getMetroBundler }
+  );
 
   // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
   const serverBaseUrl = metroBundler
@@ -302,18 +360,39 @@ export async function instantiateMetroAsync(
     resetAtlasFile: isExporting,
   });
 
-  const { server, hmrServer, metro } = await runServer(
+  // Support HTTPS based on the metro's tls server config
+  // TODO(@kitten): Remove cast once `@expo/metro` is updated to a Metro version that supports the tls config
+  const tls = (metroConfig.server as typeof metroConfig.server & { tls?: SecureServerOptions })
+    ?.tls;
+  const secureServerOptions = tls
+    ? {
+        key: tls.key,
+        cert: tls.cert,
+        ca: tls.ca,
+        requestCert: tls.requestCert,
+      }
+    : undefined;
+
+  const { address, server, hmrServer, metro } = await runServer(
     metroBundler,
     metroConfig,
     {
       host: options.host,
       websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
+      secureServerOptions,
     },
     {
       mockServer: isExporting,
     }
   );
+
+  event('instantiate', {
+    atlas: env.EXPO_ATLAS,
+    workers: metroConfig.maxWorkers ?? null,
+    host: address?.address ?? null,
+    port: address?.port ?? null,
+  });
 
   // Patch transform file to remove inconvenient customTransformOptions which are only used in single well-known files.
   const originalTransformFile = metro

@@ -65,7 +65,7 @@ export function createRequestHandler(
     try {
       const request = convertRequest(req, res);
       const response = await requestHandler(request);
-      await respond(res, response);
+      await respond(res, response, { signal: request.signal });
     } catch (error: unknown) {
       // http doesn't support async functions, so we have to pass along the
       // error manually using next().
@@ -86,16 +86,16 @@ function convertRawHeaders(requestHeaders: readonly string[]): Headers {
 export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request {
   const url = new URL(req.url!, `http://${req.headers.host}`);
 
-  // Abort action/loaders once we can no longer write a response
+  // Abort action/loaders once we can no longer write a response or request aborts
   const controller = new AbortController();
-  res.on('close', () => controller.abort());
+  res.once('close', () => controller.abort());
+  res.once('error', (err) => controller.abort(err));
+  req.once('error', (err) => controller.abort(err));
 
   const init: RequestInit = {
     method: req.method,
     headers: convertRawHeaders(req.rawHeaders),
-    // Cast until reason/throwIfAborted added
-    // https://github.com/mysticatea/abort-controller/issues/36
-    signal: controller.signal as RequestInit['signal'],
+    signal: controller.signal,
   };
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -106,38 +106,47 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
   return new Request(url.href, init);
 }
 
-// NOTE(@hassankhan): This doesn't seem to be used anywhere and is likely safe to remove
-export function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers {
-  const headers = new Headers();
-  for (const [key, values] of Object.entries(requestHeaders)) {
-    if (values) {
-      if (Array.isArray(values)) {
-        for (const value of values) {
-          headers.append(key, value);
-        }
-      } else {
-        headers.set(key, values);
-      }
+/** Assign Headers to a Node.js OutgoingMessage (request) */
+const assignOutgoingMessageHeaders = (outgoing: http.OutgoingMessage, headers: Headers) => {
+  // Preassemble array headers, mostly only for Set-Cookie
+  // We're avoiding `getSetCookie` since support is unclear in Node 18
+  const collection: Record<string, string | string[]> = {};
+  for (const [key, value] of headers) {
+    if (Array.isArray(collection[key])) {
+      collection[key].push(value);
+    } else if (collection[key] != null) {
+      collection[key] = [collection[key], value];
+    } else {
+      collection[key] = value;
     }
   }
-  return headers;
+  // We don't use `setHeaders` due to a Bun bug (Fix: https://github.com/oven-sh/bun/pull/27050)
+  for (const key in collection) {
+    outgoing.setHeader(key, collection[key]);
+  }
+};
+
+interface RespondOptions {
+  signal?: AbortSignal;
 }
 
-export async function respond(res: http.ServerResponse, expoRes: Response): Promise<void> {
-  res.statusMessage = expoRes.statusText;
-  res.statusCode = expoRes.status;
-
-  if (typeof res.setHeaders === 'function') {
-    res.setHeaders(expoRes.headers);
-  } else {
-    for (const [key, value] of expoRes.headers.entries()) {
-      res.appendHeader(key, value);
-    }
+export async function respond(
+  nodeResponse: http.ServerResponse,
+  webResponse: Response,
+  options?: RespondOptions
+): Promise<void> {
+  if (nodeResponse.writableEnded || nodeResponse.destroyed) {
+    return;
   }
 
-  if (expoRes.body) {
-    await pipeline(Readable.fromWeb(expoRes.body as NodeReadableStream), res);
+  nodeResponse.statusMessage = webResponse.statusText;
+  nodeResponse.statusCode = webResponse.status;
+  assignOutgoingMessageHeaders(nodeResponse, webResponse.headers);
+
+  if (webResponse.body && !options?.signal?.aborted) {
+    const body = Readable.fromWeb(webResponse.body as NodeReadableStream);
+    await pipeline(body, nodeResponse, { signal: options?.signal });
   } else {
-    res.end();
+    nodeResponse.end();
   }
 }

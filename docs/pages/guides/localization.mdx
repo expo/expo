@@ -331,7 +331,7 @@ However, the default unset value of `textDirection` property signifies the actua
 
 It's best to define this style in your custom reusable `<Text>` component that you can then import everywhere you need to render text strings.
 
-```tsx MobileText.tsx
+```tsx mobile-text.tsx
 import { Text as RNText, TextProps as RNTextProps } from 'react-native';
 
 const MobileText = (props: RNTextProps) => {
@@ -344,7 +344,7 @@ export default MobileText;
 
 For each text tag, you need to add the `lang` property with the current locale identifier. It's best to define this style in a custom reusable component.
 
-```tsx WebText.tsx
+```tsx web-text.tsx
 import { getLocales } from 'expo-localization';
 
 const deviceLanguage = getLocales()[0].languageCode;

@@ -204,19 +204,19 @@ function saveOptionsToFile(options) {
 
 async function main() {
   try {
-    const allOptions = [];
+    const results = await Promise.all(
+      SOURCES.map(async source => {
+        const markdown = await fetchMarkdownContent(source.url);
+        const options = parseOptionsFromMarkdown(markdown, source).map(option => ({
+          ...option,
+          origin: source.id,
+        }));
+        console.log(`✅ ${source.name}: ${options.length} options`);
+        return options;
+      })
+    );
 
-    for (const source of SOURCES) {
-      const markdown = await fetchMarkdownContent(source.url);
-      const options = parseOptionsFromMarkdown(markdown, source).map(option => ({
-        ...option,
-        origin: source.id,
-      }));
-
-      allOptions.push(...options);
-
-      console.log(`✅ ${source.name}: ${options.length} options`);
-    }
+    const allOptions = results.flat();
 
     saveOptionsToFile(allOptions);
 

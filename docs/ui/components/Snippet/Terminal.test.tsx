@@ -105,6 +105,25 @@ describe(Terminal, () => {
     expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe('yarn add expo');
   });
 
+  it('adds data-md-commands only for package-manager command maps', () => {
+    const { container } = render(
+      <>
+        <Terminal
+          cmd={{
+            npm: ['$ npm install expo'],
+            bun: ['$ bun add expo'],
+          }}
+        />
+        <Terminal cmd={['$ npx expo start']} />
+      </>
+    );
+
+    const terminals = container.querySelectorAll('[data-md="terminal"]');
+    expect(terminals.length).toBe(2);
+    expect(terminals[0].getAttribute('data-md-commands')).not.toBeNull();
+    expect(terminals[1].getAttribute('data-md-commands')).toBeNull();
+  });
+
   it('renders browser action when provided', async () => {
     const originalWindowOpen = window.open;
     const openMock = jest.fn();

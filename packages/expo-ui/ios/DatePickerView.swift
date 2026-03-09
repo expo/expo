@@ -5,14 +5,16 @@ internal struct DatePickerView: ExpoSwiftUI.View {
   @ObservedObject var props: DatePickerProps
   @State private var date = Date()
 
+  init(props: DatePickerProps) {
+    self.props = props
+    _date = State(initialValue: props.selection ?? Date())
+  }
+
   var body: some View {
 #if os(tvOS)
     Text("DatePicker is not supported on tvOS")
 #else
     createDatePicker()
-      .onAppear {
-        date = props.selection ?? Date()
-      }
       .onChange(of: date) { newDate in
         props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
       }

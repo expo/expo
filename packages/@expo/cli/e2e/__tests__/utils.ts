@@ -5,6 +5,7 @@ import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
 import assert from 'node:assert';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import { copySync } from '../../src/utils/dir';
@@ -115,6 +116,11 @@ export async function createFromFixtureAsync(
       const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
       const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
       const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
+
+      // hermes-compiler v1+ doesn't ship Windows binaries, pin to 0.14.1 which does
+      if (os.platform() === 'win32') {
+        resolutions['hermes-compiler'] = '0.14.1';
+      }
 
       if (linkExpoPackages) {
         for (const pkg of linkExpoPackages) {
@@ -300,11 +306,15 @@ export function stripWhitespace(str: string): string {
  * @remarks We retrieve the loader first to check for a module ID collision between the main and
  * loader bundles. See https://github.com/expo/expo/pull/42245
  */
-export function getPageAndLoaderData(url: string) {
+export function getPageAndLoaderData(url: string, addIndexSuffixToLoaderPath?: boolean) {
+  let effectiveLoaderPath = url === '/' ? '/index' : url;
+  if (addIndexSuffixToLoaderPath) {
+    effectiveLoaderPath += '/index';
+  }
   return [
     {
       name: 'loader endpoint',
-      url: `/_expo/loaders${url === '/' ? '/index' : url}`,
+      url: `/_expo/loaders${effectiveLoaderPath}`,
       getData: (response: Response) => {
         return response.json();
       },

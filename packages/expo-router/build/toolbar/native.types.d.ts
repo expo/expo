@@ -10,6 +10,7 @@ export interface RouterToolbarItemProps {
     identifier: string;
     title?: string;
     systemImageName?: SFSymbol;
+    xcassetName?: string;
     image?: ImageRef | null;
     imageRenderingMode?: 'template' | 'original';
     type?: 'normal' | 'fixedSpacer' | 'fluidSpacer' | 'searchBar';

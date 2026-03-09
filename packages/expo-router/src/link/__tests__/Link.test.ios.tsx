@@ -27,7 +27,7 @@ jest.mock('../preview/native', () => {
   return {
     NativeLinkPreview: jest.fn(
       ({ children, onWillPreviewOpen, onPreviewTapped }: NativeLinkPreviewProps) => {
-        handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen();
+        handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen?.();
         handlerMap['link-onPreviewTapped'] = onPreviewTapped;
         return <View testID="link-preview-native-view">{children}</View>;
       }
@@ -1094,7 +1094,7 @@ describe('Preview', () => {
       return <Text testID="counter-text">Counter: {counter}</Text>;
     };
 
-    const ComponentWithButtonAndPreview = ({ href }: { href: (counter) => string }) => {
+    const ComponentWithButtonAndPreview = ({ href }: { href: (counter: number) => string }) => {
       const [counter, setCounter] = React.useState(0);
       return (
         <View testID="component-with-button-and-preview">
@@ -1120,7 +1120,7 @@ describe('Preview', () => {
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
         const router = useRouter();
-        const navigation = useNavigation();
+        useNavigation();
         const preloadAandC = () => {
           router.prefetch('/slotA/test');
           router.prefetch('/slotC/test');
@@ -1159,7 +1159,7 @@ describe('Preview', () => {
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
         const router = useRouter();
-        const navigation = useNavigation();
+        useNavigation();
         const preloadOtherRoutes = () => {
           router.prefetch('/slotA/test0/test');
           router.prefetch('/slotC/test0/test');

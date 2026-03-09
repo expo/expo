@@ -74,7 +74,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
             }
             let item = UIBarButtonItem(
               title: menu.label,
-              image: menu.icon.flatMap { UIImage(systemName: $0) },
+              image: menu.image,
               primaryAction: nil,
               menu: menu.uiAction as? UIMenu
             )

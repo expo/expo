@@ -4,11 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.os.OperationCanceledException
 import androidx.core.content.ContextCompat
-import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.CameraContractOptions
 import expo.modules.imagepicker.contracts.CropImageContract
@@ -212,8 +212,12 @@ class ImagePickerModule : Module() {
         result.data.size == 1 &&
         result.data[0].first == MediaType.IMAGE
       ) {
+        val sourceUri = result.data[0].second
+        val mediaType = getType(context.contentResolver, sourceUri)
+        val compressFormat = mediaType?.toBitmapCompressFormat() ?: Bitmap.CompressFormat.JPEG
+        val outputFile = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension())
         result = launchPicker {
-          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second.toString(), options))
+          cropImageLauncher.launch(CropImageContractOptions(sourceUri.toString(), options, outputFile, compressFormat))
         }
       }
       mediaHandler.readExtras(result.data, options)
@@ -269,7 +273,10 @@ class ImagePickerModule : Module() {
   }
 
   private suspend fun ensureCameraPermissionsAreGranted(): Unit = suspendCancellableCoroutine { continuation ->
-    val permissions = appContext.permissions ?: throw ModuleNotFoundException("Permissions")
+    val permissions = appContext.permissions ?: run {
+      continuation.resumeWithException(Exceptions.ModuleNotFound(Permissions::class))
+      return@suspendCancellableCoroutine
+    }
 
     permissions.askForPermissions(
       { permissionsResponse ->

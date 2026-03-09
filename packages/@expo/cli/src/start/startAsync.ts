@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { shouldReduceLogs } from '../events';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
@@ -17,8 +18,6 @@ import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { maybeCreateMCPServerAsync } from './server/MCP';
 import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
-
-const debug = require('debug')('expo:start');
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -69,7 +68,9 @@ export async function startAsync(
   options: Options,
   settings: { webOnly?: boolean }
 ) {
-  Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+  if (!shouldReduceLogs()) {
+    Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+  }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
@@ -110,7 +111,12 @@ export async function startAsync(
   }
 
   if (!env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly && !options.devClient) {
-    await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+    try {
+      await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+    } catch {
+      // We don't show the dependency validation error, since it's non-essential
+      // for the user to know it ran or failed
+    }
   }
 
   // Open project on devices.

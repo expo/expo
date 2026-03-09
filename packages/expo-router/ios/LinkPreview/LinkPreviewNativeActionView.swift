@@ -6,6 +6,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   @NativeActionProp(updateAction: true, updateMenu: true) var title: String = ""
   @NativeActionProp(updateMenu: true) var label: String?
   @NativeActionProp(updateAction: true, updateMenu: true) var icon: String?
+  @NativeActionProp(updateAction: true, updateMenu: true) var xcassetName: String?
   var customImage: SharedRef<UIImage>? {
     didSet {
       updateUiAction()
@@ -56,10 +57,14 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     isMenuAction ? menuAction : baseUiAction
   }
 
-  private var image: UIImage? {
+  var image: UIImage? {
     if let customImage = customImage {
       let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
       return customImage.ref.withRenderingMode(renderingMode)
+    }
+    if let xcassetName = xcassetName {
+      let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      return UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
     }
     if let icon = icon {
       return UIImage(systemName: icon)

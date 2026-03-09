@@ -24,6 +24,12 @@ exports[`renders Icon src 1`] = `
 0:null"
 `;
 
+exports[`renders Icon xcasset 1`] = `
+"1:{"name":"Icon","env":"Server","key":null,"owner":null,"props":{"xcasset":"custom-icon"}}
+0:D"$1"
+0:null"
+`;
+
 exports[`renders Label 1`] = `
 "1:{"name":"Label","env":"Server","key":null,"owner":null,"props":{"children":"Test"}}
 0:D"$1"

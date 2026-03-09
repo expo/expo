@@ -8,7 +8,6 @@ jest.mock('child_process');
 jest.mock('fs');
 jest.mock('fs/promises');
 jest.mock('better-opn');
-jest.mock('env-editor');
 jest.mock('lan-network');
 jest.mock('ora');
 jest.mock('os');

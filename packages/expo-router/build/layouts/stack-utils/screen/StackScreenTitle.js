@@ -37,8 +37,8 @@ exports.StackScreenTitle = StackScreenTitle;
 exports.appendStackScreenTitlePropsToOptions = appendStackScreenTitlePropsToOptions;
 const react_1 = __importStar(require("react"));
 const react_native_1 = require("react-native");
+const composition_options_1 = require("../../../fork/native-stack/composition-options");
 const style_1 = require("../../../utils/style");
-const Screen_1 = require("../../../views/Screen");
 /**
  * Component to set the screen title.
  *
@@ -92,10 +92,16 @@ const Screen_1 = require("../../../views/Screen");
  *   );
  * }
  * ```
+ *
+ * > **Note:** If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
  */
-function StackScreenTitle(props) {
-    const updatedOptions = (0, react_1.useMemo)(() => appendStackScreenTitlePropsToOptions({}, props), [props]);
-    return <Screen_1.Screen options={updatedOptions}/>;
+function StackScreenTitle({ children, asChild, style, largeStyle, large, }) {
+    const options = (0, react_1.useMemo)(() => appendStackScreenTitlePropsToOptions({}, 
+    // satisfies ensures every prop is listed here
+    { children, asChild, style, largeStyle, large }), [children, asChild, style, largeStyle, large]);
+    (0, composition_options_1.useCompositionOption)(options);
+    return null;
 }
 function appendStackScreenTitlePropsToOptions(options, props) {
     const flattenedStyle = react_native_1.StyleSheet.flatten(props.style);

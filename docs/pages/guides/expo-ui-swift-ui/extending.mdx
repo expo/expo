@@ -14,7 +14,7 @@ This guide explains how to create custom SwiftUI components and modifiers that i
 
 Before you begin, make sure you have:
 
-- `@expo/ui` installed in your project. See [Building SwiftUI apps with Expo UI](/expo-ui-swift-ui/) for more information.
+- `@expo/ui` installed in your project. See [Building SwiftUI apps with Expo UI](/guides/expo-ui-swift-ui/) for more information.
 - A [development build](/develop/development-builds/introduction/) of your app (Expo UI is not available in Expo Go)
 - Basic familiarity with [Expo Modules API](/modules/overview/) and [SwiftUI](https://developer.apple.com/swiftui/)
 
@@ -56,7 +56,7 @@ end
 
 Create your SwiftUI view with two parts:
 
-1. **Props class**: Extends `UIBaseViewProps` from `ExpoUI` to get automatic support for the [`modifiers`](/versions/unversioned/sdk/ui/swift-ui/modifiers/) prop
+1. **Props class**: Extends `UIBaseViewProps` from `ExpoUI` to get automatic support for the [`modifiers`](/versions/latest/sdk/ui/swift-ui/modifiers/) prop
 2. **View struct**: Conforms to `ExpoSwiftUI.View` protocol, which requires an `@ObservedObject` props property and a `body`
 
 ```swift my-ui/ios/MyCustomView.swift

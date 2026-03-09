@@ -2,7 +2,6 @@ package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.runtime.Runtime
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
@@ -523,7 +522,6 @@ class JSIFunctionsTest {
     }
   }
 
-  @OptIn(EitherType::class)
   @Test
   fun either_should_be_convertible() = withSingleModule({
     Function("eitherFirst") { either: Either<Int, String> ->

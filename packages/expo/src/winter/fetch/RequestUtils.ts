@@ -136,3 +136,19 @@ export function overrideHeaders(
   }
   return result;
 }
+
+/** Normalizes known HTTP methods to uppercase */
+export function normalizeMethod(method: string): string {
+  const normalized = method.toUpperCase();
+  switch (method.toUpperCase()) {
+    case 'DELETE':
+    case 'GET':
+    case 'HEAD':
+    case 'OPTIONS':
+    case 'POST':
+    case 'PUT':
+      return normalized;
+    default:
+      return method;
+  }
+}

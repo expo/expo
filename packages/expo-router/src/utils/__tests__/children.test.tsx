@@ -10,7 +10,7 @@ import {
 
 const A: React.FC<{ label?: string }> = () => <div />;
 const B: React.FC<{ label?: string }> = () => <span />;
-class C extends React.Component {
+class C extends React.Component<{ label?: string }> {
   render() {
     return <p />;
   }
@@ -45,7 +45,7 @@ describe(filterAllowedChildrenElements, () => {
 
   it('filterAllowedChildrenElements does not match components by shape, only by reference', () => {
     // another component with same render as A but different reference
-    const AClone: React.FC = () => <div />;
+    const AClone: React.FC<{ label?: string }> = () => <div />;
     const children = [<A label="a1" />, <AClone label="a2" />];
 
     const filtered = filterAllowedChildrenElements(children, [AClone]);
@@ -124,8 +124,8 @@ describe('getAllChildrenNotOfType', () => {
     const children = [<A label="a1" />, <B label="b1" />, <C label="c1" />, <A label="a2" />];
     const result = getAllChildrenNotOfType(children, A);
     expect(result).toHaveLength(2);
-    expect(result[0].type).toBe(B);
-    expect(result[1].type).toBe(C);
+    expect((result[0] as React.ReactElement).type).toBe(B);
+    expect((result[1] as React.ReactElement).type).toBe(C);
   });
 
   it('returns all children when type does not match any', () => {

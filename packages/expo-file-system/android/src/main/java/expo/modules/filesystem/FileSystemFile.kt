@@ -2,14 +2,18 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import android.util.Base64
-import expo.modules.interfaces.filesystem.Permission
-import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.SAFDocumentFile
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
-@OptIn(EitherType::class)
 class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
+  private val contentResolver
+    get() = appContext?.reactContext?.contentResolver ?: throw Exceptions.ReactContextLost()
+
   // Kept empty for now, but can be used to validate if the uri is a valid file uri. // TODO: Move to the constructor once also moved on iOS
   fun validatePath() {
   }
@@ -17,14 +21,14 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   // This makes sure that if a file already exists at a location, it is the correct type so that all available operations perform as expected.
   // After calling this function, we can use the `isDirectory` and `isFile` functions safely as they will match the shared class used.
   override fun validateType() {
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     if (file.exists() && file.isDirectory()) {
       throw InvalidTypeFileException()
     }
   }
 
   val exists: Boolean get() {
-    return if (checkPermission(Permission.READ)) {
+    return if (checkPermission(FilePermissionService.Permission.READ)) {
       file.isFile()
     } else {
       false
@@ -33,7 +37,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun create(options: CreateOptions = CreateOptions()) {
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     validateCanCreate(options)
     if (uri.isContentUri) {
       throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
@@ -50,9 +54,18 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
+  fun openHandle(mode: FileMode?): FileSystemFileHandle {
+    val fileImpl = file
+    return when (fileImpl) {
+      is JavaFile -> FileSystemFileHandle.forJavaFile(fileImpl, mode ?: FileMode.READ_WRITE)
+      is SAFDocumentFile -> FileSystemFileHandle.forContentURI(fileImpl.uri, mode ?: FileMode.READ, contentResolver)
+      else -> throw Exceptions.IllegalStateException("File handle is not supported for ${file.uri}")
+    }
+  }
+
   fun write(content: String, append: Boolean = false) {
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     if (!exists) {
       create()
     }
@@ -63,7 +76,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun write(content: TypedArray, append: Boolean = false) {
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     if (!exists) {
       create()
     }
@@ -82,7 +95,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun write(content: ByteArray, append: Boolean = false) {
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     if (!exists) {
       create()
     }
@@ -104,7 +117,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun text(): String {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     return file.inputStream().use { inputStream ->
       inputStream.bufferedReader().use { it.readText() }
     }
@@ -112,7 +125,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun base64(): String {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     file.inputStream().use {
       return Base64.encodeToString(it.readBytes(), Base64.NO_WRAP)
     }
@@ -120,7 +133,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun bytes(): ByteArray {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     file.inputStream().use {
       return it.readBytes()
     }
@@ -128,13 +141,13 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun asContentUri(): Uri {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     return file.getContentUri(appContext ?: throw MissingAppContextException())
   }
 
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     val md = MessageDigest.getInstance("MD5")
     file.inputStream().use {
       val digest = md.digest(it.readBytes())
@@ -156,7 +169,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun info(options: InfoOptions?): FileInfo {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     if (!file.exists()) {
       val fileInfo = FileInfo(
         exists = false,

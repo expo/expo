@@ -90,6 +90,7 @@ function LinkWithPreview({ children, ...rest }) {
     const trigger = react_1.default.useMemo(() => triggerElement ?? <elements_1.LinkTrigger>{children}</elements_1.LinkTrigger>, [triggerElement, children]);
     const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
+    const blockPressRef = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
         path: tabPath,
     }), [tabPath]);
@@ -99,8 +100,9 @@ function LinkWithPreview({ children, ...rest }) {
     }
     return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
             if (hasPreview) {
+                blockPressRef.current = true;
                 isPreviewTapped.current = false;
-                prefetch(rest.hrefForPreviewNavigation);
+                prefetch(rest.href);
                 setIsCurrenPreviewOpen(true);
             }
         }} onPreviewWillClose={() => {
@@ -113,17 +115,22 @@ function LinkWithPreview({ children, ...rest }) {
                 }
             }
         }} onPreviewDidClose={() => {
+            blockPressRef.current = false;
             if (hasPreview && isPreviewTapped.current && isPad) {
-                router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
+                router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
         }} onPreviewTapped={() => {
             isPreviewTapped.current = true;
             if (!isPad) {
-                router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
+                router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
         }} style={{ display: 'contents' }} disableForceFlatten>
       <NativeMenuContext_1.NativeMenuContext value>
-        <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
+        <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{
+            isVisible: isCurrentPreviewOpen,
+            href: rest.hrefForPreviewNavigation,
+            blockPressRef,
+        }}>
           <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
           {preview}
           {menuElement}

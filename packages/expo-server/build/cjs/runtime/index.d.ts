@@ -1,6 +1,6 @@
 import { type ScopeDefinition, type RequestAPI } from './scope';
 export interface RequestAPISetup extends RequestAPI {
-    origin?: string;
+    origin?: string | null;
     environment?: string | null;
     requestHeaders?: Headers;
     waitUntil?(promise: Promise<unknown>): void;

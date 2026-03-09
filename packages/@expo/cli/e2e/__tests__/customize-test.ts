@@ -89,8 +89,8 @@ it('runs `npx expo customize tsconfig.json`', async () => {
     'with-router',
     {
       reuseExisting: false,
-      // TODO(@hassankhan): remove @expo/router-server after publishing
-      linkExpoPackages: ['expo-router', '@expo/router-server'],
+      // TODO(@hassankhan): remove @expo/router-server & require-utils after publishing
+      linkExpoPackages: ['expo-router', '@expo/router-server', '@expo/require-utils'],
     }
   );
 
@@ -111,8 +111,8 @@ it('runs `npx expo customize tsconfig.json` on a partially setup project', async
     'with-router',
     {
       reuseExisting: false,
-      // TODO(@hassankhan): remove expo-router and @expo/router-server after publishing
-      linkExpoPackages: ['expo-router', '@expo/router-server'],
+      // TODO(@hassankhan): remove @expo/router-server & require-utils after publishing
+      linkExpoPackages: ['expo-router', '@expo/router-server', '@expo/require-utils'],
     }
   );
 
@@ -146,10 +146,10 @@ it('runs `npx expo customize tsconfig.json` sets up typed routes', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'expo-customize-typed-routes',
     'with-router-typed-routes',
-    // TODO(@hassankhan): remove @expo/router-server after publishing
     {
       reuseExisting: false,
-      linkExpoPackages: ['expo-router', '@expo/log-box', '@expo/router-server'],
+      // TODO(@hassankhan): remove @expo/router-server & require-utils after publishing
+      linkExpoPackages: ['expo-router', '@expo/log-box', '@expo/router-server', '@expo/require-utils'],
     }
   );
 

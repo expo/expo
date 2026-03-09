@@ -51,8 +51,7 @@ function isRestrictedPort(port: number) {
 async function isBusyPortRunningSameProcessAsync(projectRoot: string, { port }: { port: number }) {
   const { getRunningProcess } =
     require('./getRunningProcess') as typeof import('./getRunningProcess');
-
-  const runningProcess = isRestrictedPort(port) ? null : getRunningProcess(port);
+  const runningProcess = isRestrictedPort(port) ? null : await getRunningProcess(port);
   if (runningProcess) {
     if (runningProcess.directory === projectRoot) {
       return true;
@@ -91,7 +90,7 @@ export async function choosePortAsync(
 
     const { getRunningProcess } =
       require('./getRunningProcess') as typeof import('./getRunningProcess');
-    const runningProcess = isRestricted ? null : getRunningProcess(defaultPort);
+    const runningProcess = isRestricted ? null : await getRunningProcess(defaultPort);
 
     if (runningProcess) {
       const pidTag = chalk.gray(`(pid ${runningProcess.pid})`);

@@ -60,6 +60,17 @@ struct DynamicEitherTypeTests {
   }
 
   @Test
+  func `decodes numeric 0 and 1 as Double not Bool`() throws {
+    let either0 = try (~Either<Bool, Double>.self).cast(jsValue: .number(0), appContext: appContext) as! Either<Bool, Double>
+    #expect(either0.is(Double.self) == true)
+    #expect(either0.is(Bool.self) == false)
+
+    let either1 = try (~Either<Bool, Double>.self).cast(jsValue: .number(1), appContext: appContext) as! Either<Bool, Double>
+    #expect(either1.is(Double.self) == true)
+    #expect(either1.is(Bool.self) == false)
+  }
+
+  @Test
   func `supports arrays`() throws {
     let either = try (~Either<String, [String]>.self).cast(["foo"], appContext: appContext) as! Either<String, [String]>
     let value: [String]? = either.get()

@@ -41,7 +41,7 @@ fun FunctionalComposableScope.ProgressContent(props: ProgressProps) {
   val progress = props.progress
   val color = props.color
   val colors = props.elementColors
-  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
   when (props.variant) {
     ProgressVariant.LINEAR -> {

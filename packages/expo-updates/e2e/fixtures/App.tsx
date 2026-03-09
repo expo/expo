@@ -8,7 +8,55 @@ import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const ExpoUpdatesE2ETest = requireNativeModule('ExpoUpdatesE2ETest');
+const ExpoUpdatesE2ETestModule = requireNativeModule('ExpoUpdatesE2ETest');
+
+ExpoUpdatesE2ETestModule.addListener('Expo.updatesE2EStateChangeEvent', _handleE2EStateChangeEvent);
+
+type NativeInterfaceState = {
+  runtimeVersion: string;
+  embeddedUpdateId: string;
+  launchedUpdateId: string;
+  type?: string | null;
+  manifest?: ExpoUpdatesManifest | null;
+};
+
+const _nativeInterfaceStateChangeListeners = new Set<(event: any) => void>();
+
+// Reemits native state change events
+function _handleE2EStateChangeEvent(params: any) {
+  const newParams = typeof params === 'string' ? JSON.parse(params) : { ...params };
+
+  _nativeInterfaceStateChangeListeners.forEach((listener) => listener(newParams));
+}
+
+function useNativeInterfaceState() {
+  const runtimeVersion = ExpoUpdatesE2ETestModule.getRuntimeVersion();
+  const embeddedUpdateId = ExpoUpdatesE2ETestModule.getEmbeddedUpdateId()?.toLowerCase();
+  const launchedUpdateId = ExpoUpdatesE2ETestModule.getLaunchedUpdateId()?.toLowerCase();
+  const [state, setState] = React.useState<NativeInterfaceState>({
+    type: null,
+    manifest: null,
+    runtimeVersion,
+    embeddedUpdateId,
+    launchedUpdateId,
+  });
+  const listener = React.useCallback((event: any) => {
+    setState({
+      type: event.type,
+      manifest: event.manifest,
+      runtimeVersion,
+      embeddedUpdateId,
+      launchedUpdateId: ExpoUpdatesE2ETestModule.getLaunchedUpdateId(),
+    });
+  }, []);
+  React.useEffect(() => {
+    _nativeInterfaceStateChangeListeners.add(listener);
+    return () => {
+      _nativeInterfaceStateChangeListeners.delete(listener);
+    };
+  }, [listener]);
+  return state;
+}
 
 require('./includedAssets/test.png');
 require('./includedAssets/lock-filled.svg');
@@ -70,6 +118,8 @@ export default function App() {
     restartCount,
     downloadProgress,
   } = Updates.useUpdates();
+
+  const nativeInterfaceState = useNativeInterfaceState();
 
   React.useEffect(() => {
     setStartTime(Date.now());
@@ -135,13 +185,13 @@ export default function App() {
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
-    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
   const handleClearAssetFiles = runBlockAsync(async () => {
-    await ExpoUpdatesE2ETest.clearInternalAssetsFolderAsync();
-    const numFiles = await ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    await ExpoUpdatesE2ETestModule.clearInternalAssetsFolderAsync();
+    const numFiles = await ExpoUpdatesE2ETestModule.readInternalAssetsFolderAsync();
     setNumAssetFiles(numFiles);
   });
 
@@ -254,6 +304,15 @@ export default function App() {
       <TestValue testID="state.isRestarting" value={`${isRestarting}`} />
       <TestValue testID="state.restartCount" value={`${restartCount}`} />
       <TestValue testID="state.downloadProgress" value={`${downloadProgress}`} />
+      <TestValue testID="nativeInterfaceState.type" value={`${nativeInterfaceState.type}`} />
+      <TestValue
+        testID="nativeInterfaceState.launchedUpdateId"
+        value={`${nativeInterfaceState.launchedUpdateId}`}
+      />
+      <TestValue
+        testID="nativeInterfaceState.availableUpdateId"
+        value={`${nativeInterfaceState.manifest?.id}`}
+      />
 
       <Text>Log messages</Text>
       <ScrollView contentContainerStyle={styles.logEntriesContainer}>

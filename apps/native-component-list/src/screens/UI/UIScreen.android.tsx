@@ -138,6 +138,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./JetpackComposePrimitivesScreen'));
     },
   },
+  {
+    name: 'Hosting RN Views',
+    route: 'ui/hosting-rn-views',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

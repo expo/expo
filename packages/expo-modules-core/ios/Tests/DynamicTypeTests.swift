@@ -31,7 +31,7 @@ struct DynamicTypeTests {
     @Test
     func `is created`() {
       #expect(~Any.self is DynamicRawType<Any>)
-      #expect(~Bool.self is DynamicRawType<Bool>)
+      #expect(~Bool.self is DynamicBoolType)
       #expect(~DynamicRawTypeTests.self is DynamicRawType<DynamicRawTypeTests>)
     }
 
@@ -40,6 +40,28 @@ struct DynamicTypeTests {
       #expect(try (~String.self).cast("expo", appContext: appContext) as? String == "expo")
       #expect(try (~Double.self).cast(2.1, appContext: appContext) as? Double == 2.1)
       #expect(try (~Bool.self).cast(false, appContext: appContext) as? Bool == false)
+    }
+
+    @Test
+    func `rejects NSNumber created from number as Bool`() {
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 0 as Int), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 1 as Int), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 0.0), appContext: appContext)
+      }
+      #expect(throws: Conversions.CastingException<Bool>.self) {
+        try (~Bool.self).cast(NSNumber(value: 1.0), appContext: appContext)
+      }
+    }
+
+    @Test
+    func `accepts NSNumber created from boolean as Bool`() throws {
+      #expect(try (~Bool.self).cast(NSNumber(value: true), appContext: appContext) as? Bool == true)
+      #expect(try (~Bool.self).cast(NSNumber(value: false), appContext: appContext) as? Bool == false)
     }
 
     @Test
@@ -208,6 +230,14 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `arrayizes a single JS value`() throws {
+      let jsInt = try appContext.runtime.eval("67")
+      let jsString = try appContext.runtime.eval("'Expo'")
+      #expect(try (~[Int].self).cast(jsValue: jsInt, appContext: appContext) as? [Int] == [67])
+      #expect(try (~[String].self).cast(jsValue: jsString, appContext: appContext) as? [String] == ["Expo"])
+    }
+
+    @Test
     func `arrayizes single element`() throws {
       // The dynamic array type can arrayize the single element
       // if only the array element's dynamic type can cast it.
@@ -220,6 +250,19 @@ struct DynamicTypeTests {
       #expect(throws: Conversions.CastingException<String>.self) {
         try (~[String].self).cast(84, appContext: appContext)
       }
+    }
+    
+    @Test
+    func `returns mixed elements to JS`() throws {
+      let mixedArray: [Any] = [1, ArrayBuffer.allocate(size: 3)]
+
+      let converted = try (~[Any].self).convertResult(mixedArray, appContext: appContext)
+      let jsValue = try (~[Any].self).castToJS(converted, appContext: appContext)
+      
+      #expect(jsValue.kind == .object)
+      let jsArray = try jsValue.asArray()
+      #expect(try jsArray.first??.getInt() == 1)
+      #expect(try jsArray.last??.isArrayBuffer() == true)
     }
 
     @Test
@@ -247,6 +290,97 @@ struct DynamicTypeTests {
       #expect((~[Int].self != ~[Double].self) == true)
       #expect((~[[String]].self != ~[String].self) == true)
       #expect((~[URL].self != ~[String].self) == true)
+    }
+  }
+
+  // MARK: - DynamicDictionaryType
+
+  @Suite("DynamicDictionaryType")
+  struct DynamicDictionaryTypeTests {
+    let appContext: AppContext
+
+    init() {
+      appContext = AppContext.create()
+    }
+
+    @Test
+    func `is created`() {
+      #expect(~[String: Double].self is DynamicDictionaryType)
+      #expect(~[String: String?].self is DynamicDictionaryType)
+      #expect(~[String: [Int]].self is DynamicDictionaryType)
+      #expect(~[String: Any].self is DynamicDictionaryType)
+    }
+
+    @Test
+    func `casts succeeds`() throws {
+      #expect(try (~[String: Double].self).cast(["a": 1.2, "b": 3.4], appContext: appContext) as? [String: Double] == ["a": 1.2, "b": 3.4])
+      #expect(try (~[String: [String]].self).cast(["key": ["hello", "expo"]], appContext: appContext) as? [String: [String]] == ["key": ["hello", "expo"]])
+    }
+
+    @Test
+    func `casts from JS value`() throws {
+      let appContext = AppContext.create()
+      let jsValue = try appContext.runtime.eval("({a: 1.2, b: 3.4})")
+      #expect(try (~[String: Double].self).cast(jsValue: jsValue, appContext: appContext) as? [String: Double] == ["a": 1.2, "b": 3.4])
+    }
+
+    @Test
+    func `casts dictionary values`() throws {
+      let value = 9.9
+      let anyValue: [String: Any] = ["key": value]
+      let result = try (~[String: Double].self).cast(anyValue, appContext: appContext) as! [AnyHashable: Any]
+
+      #expect(result is [String: Double])
+      #expect(result as? [String: Double] == ["key": value])
+    }
+
+    @Test
+    func `returns mixed elements to JS`() throws {
+      let mixedDict: [String: Any] = ["num": 1, "buf": ArrayBuffer.allocate(size: 3)]
+
+      let converted = try (~[String: Any].self).convertResult(mixedDict, appContext: appContext)
+      let jsValue = try (~[String: Any].self).castToJS(converted, appContext: appContext)
+
+      #expect(jsValue.kind == .object)
+      let jsObject = try jsValue.asObject()
+      #expect(try jsObject.getProperty("num").getInt() == 1)
+      #expect(jsObject.getProperty("buf").isArrayBuffer() == true)
+    }
+
+    @Test
+    func `throws CastingException`() {
+      #expect(throws: Conversions.CastingException<[AnyHashable: Any]>.self) {
+        try (~[String: String].self).cast(84, appContext: appContext)
+      }
+    }
+
+    @Test
+    func `wraps is true`() {
+      #expect((~[String: Double].self ~> [String: Double].self) == true)
+      #expect((~[String: [String]].self ~> [String: [String]].self) == true)
+      #expect((~[String: CGPoint].self ~> [String: CGPoint].self) == true)
+      #expect((~[String: Any].self ~> [String: Any].self) == true)
+    }
+
+    @Test
+    func `wraps is false`() {
+      #expect((~[String: String].self !~> [String: Int].self) == true)
+      #expect((~[String: Double].self !~> Double.self) == true)
+    }
+
+    @Test
+    func `equals is true`() {
+      #expect((~[String: String].self == ~[String: String].self) == true)
+      #expect((~[String: CGSize].self == ~[String: CGSize].self) == true)
+      #expect((~[String: [[Double]]].self == ~[String: [[Double]]].self) == true)
+      #expect((~[String: Any].self == ~[String: Any].self) == true)
+    }
+
+    @Test
+    func `equals is false`() {
+      #expect((~[String: Int].self != ~[String: Double].self) == true)
+      #expect((~[String: [String]].self != ~[String: String].self) == true)
+      #expect((~[String: URL].self != ~[String: String].self) == true)
     }
   }
 

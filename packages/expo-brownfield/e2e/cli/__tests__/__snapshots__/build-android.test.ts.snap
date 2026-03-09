@@ -1,29 +1,73 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`build:android command without prebuild should display help message for --help/-h option 1`] = `
-"Usage: expo-brownfield build:android [<options>]
+exports[`build:android command with prebuild should infer and print build configuration 1`] = `
+"Resolved build configuration
+ - Build variant: All
+ - Library: brownfield
+ - Verbose: false
+ - Dry run: true
+ - Tasks:
+   - someGradleTask
 
-Options:
-  --help, -h                    display help for 'build:android'
-  --debug, -d                   build in debug configuration
-  --release, -r                 build in release configuration
-  --verbose                     forward all output to the terminal
-  --all, -a                     build both debug and release configurations
-  --repository, --repo          maven repository for publishing artifacts (multiple can be passed)
-  --task, -t                    publishing task to be run (multiple can be passed)
-  --library, -l                 name of the brownfield library"
+./gradlew someGradleTask"
 `;
 
-exports[`build:android command without prebuild should display help message for --help/-h option 2`] = `
-"Usage: expo-brownfield build:android [<options>]
+exports[`build:android command without prebuild should display help message for --help/-h/help <command> option 1`] = `
+"Usage: expo-brownfield build:android [options]
+
+Build and publish Android brownfield artifacts
 
 Options:
-  --help, -h                    display help for 'build:android'
-  --debug, -d                   build in debug configuration
-  --release, -r                 build in release configuration
-  --verbose                     forward all output to the terminal
-  --all, -a                     build both debug and release configurations
-  --repository, --repo          maven repository for publishing artifacts (multiple can be passed)
-  --task, -t                    publishing task to be run (multiple can be passed)
-  --library, -l                 name of the brownfield library"
+  -d, --debug                           build debug variant
+  -r, --release                         build release variant
+  -a, --all                             build both debug and release variants
+  --verbose                             forward all output to the terminal
+  -l, --library <library>               name of the brownfield library
+  -t, --task <task...>                  publishing task to be run (multiple can
+                                        be passed)
+  --repo, --repository <repository...>  repository to publish to (multiple can
+                                        be passed)
+  --dry-run                             only print the commands without
+                                        executing them
+  -h, --help                            display help for command"
+`;
+
+exports[`build:android command without prebuild should display help message for --help/-h/help <command> option 2`] = `
+"Usage: expo-brownfield build:android [options]
+
+Build and publish Android brownfield artifacts
+
+Options:
+  -d, --debug                           build debug variant
+  -r, --release                         build release variant
+  -a, --all                             build both debug and release variants
+  --verbose                             forward all output to the terminal
+  -l, --library <library>               name of the brownfield library
+  -t, --task <task...>                  publishing task to be run (multiple can
+                                        be passed)
+  --repo, --repository <repository...>  repository to publish to (multiple can
+                                        be passed)
+  --dry-run                             only print the commands without
+                                        executing them
+  -h, --help                            display help for command"
+`;
+
+exports[`build:android command without prebuild should display help message for --help/-h/help <command> option 3`] = `
+"Usage: expo-brownfield build:android [options]
+
+Build and publish Android brownfield artifacts
+
+Options:
+  -d, --debug                           build debug variant
+  -r, --release                         build release variant
+  -a, --all                             build both debug and release variants
+  --verbose                             forward all output to the terminal
+  -l, --library <library>               name of the brownfield library
+  -t, --task <task...>                  publishing task to be run (multiple can
+                                        be passed)
+  --repo, --repository <repository...>  repository to publish to (multiple can
+                                        be passed)
+  --dry-run                             only print the commands without
+                                        executing them
+  -h, --help                            display help for command"
 `;

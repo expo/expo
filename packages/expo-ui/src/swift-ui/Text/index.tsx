@@ -30,7 +30,7 @@ const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
 export function Text(props: TextProps) {
   const { children, modifiers, ...restProps } = props;
 
-  if (!children) {
+  if (children === undefined || children === null) {
     return null;
   }
 

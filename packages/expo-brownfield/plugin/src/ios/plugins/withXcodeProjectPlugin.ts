@@ -37,6 +37,8 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       'ReactNativeHostManager.swift',
       // Messaging proxy
       'Messaging.swift',
+      // State proxy
+      'State.swift',
       //SwiftUI brownfield entrypoint
       'ReactNativeView.swift',
       // UIKit brownfield view controller
@@ -83,7 +85,8 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       xcodeProject,
       pluginConfig.targetName,
       config.ios?.buildNumber || '1',
-      pluginConfig.bundleIdentifier
+      pluginConfig.bundleIdentifier,
+      config.ios?.version || config.version
     );
 
     return config;

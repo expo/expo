@@ -21,14 +21,17 @@ describe(appendStackSearchBarPropsToOptions, () => {
       });
     });
 
-    it.each(['onChangeText', 'onSearchButtonPress', 'onCancelButtonPress', 'onFocus', 'onBlur'])(
-      'passes %s callback prop',
-      (propName) => {
-        const callback = jest.fn();
-        const result = appendStackSearchBarPropsToOptions({}, { [propName]: callback });
-        expect(result.headerSearchBarOptions?.[propName]).toBe(callback);
-      }
-    );
+    it.each([
+      'onChangeText',
+      'onSearchButtonPress',
+      'onCancelButtonPress',
+      'onFocus',
+      'onBlur',
+    ] as const)('passes %s callback prop', (propName) => {
+      const callback = jest.fn();
+      const result = appendStackSearchBarPropsToOptions({}, { [propName]: callback });
+      expect(result.headerSearchBarOptions?.[propName]).toBe(callback);
+    });
 
     it.each(['none', 'words', 'sentences', 'characters'] as const)(
       'passes autoCapitalize=%s prop',

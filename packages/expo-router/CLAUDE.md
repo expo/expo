@@ -122,6 +122,31 @@ yarn test
 yarn test src/__tests__/navigation.test.ios.tsx
 ```
 
+To verify if the types used in tests are correct, run:
+
+```bash
+yarn test:types
+```
+
+### Swift Tests (iOS)
+
+Native Swift tests live in `ios/Tests/` and use Apple's Swift Testing framework (`import Testing`).
+
+Run from the `packages/expo-router` directory:
+
+```bash
+et native-unit-tests --packages expo-router -p ios
+```
+
+> Pods must be installed in `apps/native-tests/ios` first (`pod install`).
+
+**Conventions:**
+
+- Use `@Test` / `@Suite` from Swift Testing (not XCTest)
+- Backtick-quoted test names for readability (e.g., `` @Test func `converts options correctly`() ``)
+- Inner structs for grouping related tests within a `@Suite`
+- `#expect` / `#require` for assertions
+
 ### Testing Patterns
 
 Tests use the custom `renderRouter` testing utility:
@@ -184,8 +209,12 @@ jest.mock('react-native-screens', () => {
 
 ```ts
 let spy: jest.SpyInstance;
-beforeEach(() => { spy = jest.spyOn(Module, 'fn'); }); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
-afterEach(() => { spy.mockRestore(); });
+beforeEach(() => {
+  spy = jest.spyOn(Module, 'fn');
+}); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
+afterEach(() => {
+  spy.mockRestore();
+});
 ```
 
 **Mock call assertions:** Use array index access. Comment non-zero indices:
@@ -246,13 +275,13 @@ Native tabs (`expo-router/unstable-native-tabs`) provide native bottom tab navig
 
 ### E2E Testing (router-e2e)
 
-The `apps/router-e2e` app contains end-to-end tests and examples for Expo Router. Different apps are in `__e2e__/` subdirectory.
-
 **Running tests/apps:**
 
 - From `packages/@expo/cli`: `yarn test:e2e <PROJECT_NAME>` or `yarn test:playwright <PROJECT_NAME>`
 - Maestro tests (native navigation): `yarn test:e2e` from `apps/router-e2e`
 - Some of the apps are only for manual testing
+
+**Manual Android testing:** Use the `/android-e2e-testing` skill for step-by-step guidance on testing Expo Router screens on Android emulators using ADB. This covers launching E2E apps, navigating via UI dumps, interacting with the app, and verifying results.
 
 ## Verification
 
@@ -260,7 +289,12 @@ After developing a feature, run these commands in `packages/expo-router`:
 
 1. `CI=1 yarn test` - Run all tests. During development use `yarn test [test file]` for efficiency. For RSC tests: `yarn test:rsc`
 2. `yarn build` - Build and verify TypeScript correctness. If you moved or deleted files, run `yarn clean` first.
-3. `yarn lint` - Run last to find linting issues
+3. `yarn test:types` - Verify type correctness in tests
+4. `yarn lint` - Run last to find linting issues
+
+Then test the feature on the simulator using one of the `apps/router-e2e/__e2e__/` projects. For android, use the `/android-e2e-testing` skill for testing on emulators.
+
+Lastly, span a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
 
@@ -293,6 +327,13 @@ To run the docs site locally run `yarn dev` in the `docs/` directory of the mono
 - http://localhost:3002/versions/unversioned/sdk/router-native-tabs/ for native tabs
 - http://localhost:3002/versions/unversioned/sdk/router-split-view/ for split view
 - http://localhost:3002/versions/unversioned/sdk/router-ui/ for headless tabs
+
+## Coding style
+
+- Always use latest React 19 hooks and patterns - `use` instead of `useContext`, `useId`, etc.
+- Make sure the code works with and without React Compiler enabled.
+- Don't use `any` types, unless strictly necessary. Use `unknown` instead and narrow types as much as possible.
+- Never import files with platform-specific extensions directly. Always import from the base path and let the bundler resolve the correct file. Correct `import { Component } from './Component'`, not `import { Component } from './Component.ios'`.
 
 ## Maintaining This Document
 

@@ -157,7 +157,7 @@ export interface StackToolbarMenuProps {
  * @platform ios
  */
 export declare const StackToolbarMenu: React.FC<StackToolbarMenuProps>;
-export declare function convertStackToolbarMenuPropsToRNHeaderItem(props: StackToolbarMenuProps): NativeStackHeaderItemMenu | undefined;
+export declare function convertStackToolbarMenuPropsToRNHeaderItem(props: StackToolbarMenuProps, isBottomPlacement?: boolean): NativeStackHeaderItemMenu | undefined;
 export interface StackToolbarMenuActionProps {
     /**
      * Can be an Icon, Label or string title.

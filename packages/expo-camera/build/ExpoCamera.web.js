@@ -5,37 +5,35 @@ import createElement from 'react-native-web/dist/exports/createElement';
 import CameraManager from './ExpoCameraManager.web';
 import { capture } from './web/WebCameraUtils';
 import { PictureSizes } from './web/WebConstants';
+import { useWebBarcodeScanner } from './web/useWebBarcodeScanner';
 import { useWebCameraStream } from './web/useWebCameraStream';
-import { useWebQRScanner } from './web/useWebQRScanner';
 const ExponentCamera = ({ facing, poster, ref, ...props }) => {
     const video = useRef(null);
-    const native = useWebCameraStream(video, facing, props, {
-        onCameraReady() {
-            if (props.onCameraReady) {
-                props.onCameraReady();
-            }
-        },
+    const cameraSettings = useMemo(() => ({
+        ...props,
+        flashMode: props.enableTorch ? 'torch' : props.flashMode,
+    }), [props.enableTorch, props.flashMode, props.zoom, props.autoFocus]);
+    const native = useWebCameraStream(video, facing, cameraSettings, {
+        onCameraReady: props.onCameraReady,
         onMountError: props.onMountError,
     });
-    const isQRScannerEnabled = useMemo(() => {
-        return Boolean(props.barcodeScannerSettings?.barcodeTypes?.includes('qr') && !!props.onBarcodeScanned);
-    }, [props.barcodeScannerSettings?.barcodeTypes, props.onBarcodeScanned]);
-    useWebQRScanner(video, {
+    const barcodeTypes = props.barcodeScannerSettings?.barcodeTypes;
+    const isScannerEnabled = useMemo(() => {
+        return !!barcodeTypes?.length && !!props.onBarcodeScanned;
+    }, [barcodeTypes, props.onBarcodeScanned]);
+    useWebBarcodeScanner(video, {
         interval: 300,
-        isEnabled: isQRScannerEnabled,
-        captureOptions: { scale: 1, isImageMirror: native.type === 'front' },
-        onScanned(event) {
-            if (props.onBarcodeScanned) {
-                props.onBarcodeScanned(event);
-            }
-        },
+        isEnabled: isScannerEnabled,
+        barcodeTypes: barcodeTypes ?? [],
+        isMirrored: native.type === 'front',
+        onScanned: props.onBarcodeScanned,
     });
     useImperativeHandle(ref, () => ({
         async getAvailablePictureSizes() {
             return PictureSizes;
         },
         async takePicture(options) {
-            if (!video.current || video.current?.readyState !== video.current?.HAVE_ENOUGH_DATA) {
+            if (!video.current || video.current.readyState !== video.current.HAVE_ENOUGH_DATA) {
                 throw new CodedError('ERR_CAMERA_NOT_READY', 'HTMLVideoElement does not have enough camera data to construct an image yet.');
             }
             const settings = native.mediaTrackSettings;
@@ -44,14 +42,9 @@ const ExponentCamera = ({ facing, poster, ref, ...props }) => {
             }
             return capture(video.current, settings, {
                 ...options,
-                // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
                 onPictureSaved(picture) {
-                    if (options.onPictureSaved) {
-                        options.onPictureSaved(picture);
-                    }
-                    if (props.onPictureSaved) {
-                        props.onPictureSaved({ nativeEvent: { data: picture, id: -1 } });
-                    }
+                    options.onPictureSaved?.(picture);
+                    props.onPictureSaved?.({ nativeEvent: { data: picture, id: -1 } });
                 },
             });
         },
@@ -83,9 +76,6 @@ const ExponentCamera = ({ facing, poster, ref, ...props }) => {
             return [];
         },
     }), [native.mediaTrackSettings, props.onPictureSaved]);
-    // TODO(Bacon): Create a universal prop, on native the microphone is only used when recording videos.
-    // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
-    const isMuted = true;
     const style = useMemo(() => {
         const isFrontFacingCamera = native.type === CameraManager.Type.front;
         return [
@@ -99,7 +89,7 @@ const ExponentCamera = ({ facing, poster, ref, ...props }) => {
         ];
     }, [props.pointerEvents, native.type]);
     return (<View style={[styles.videoWrapper, props.style]}>
-      <Video autoPlay playsInline muted={isMuted} poster={poster} ref={video} style={style}/>
+      <Video autoPlay playsInline muted poster={poster} ref={video} style={style}/>
       {props.children}
     </View>);
 };

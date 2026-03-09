@@ -127,7 +127,7 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
 jest.mock('expo/src/async-require/messageSocket', () => undefined);
 
 try {
-  jest.mock('expo-file-system', () => ({
+  jest.mock('expo-file-system/legacy', () => ({
     downloadAsync: jest.fn(() => Promise.resolve({ md5: 'md5', uri: 'uri' })),
     getInfoAsync: jest.fn(() => Promise.resolve({ exists: true, md5: 'md5', uri: 'uri' })),
     readAsStringAsync: jest.fn(() => Promise.resolve()),
@@ -266,7 +266,14 @@ jest.doMock('expo-modules-core', () => {
 
     const nativeModule = new NativeModule();
     for (const [key, value] of Object.entries(nativeModuleMock)) {
-      nativeModule[key] = typeof value === 'function' ? jest.fn(value) : value;
+      if (typeof value === 'function') {
+        // Don't wrap classes with jest.fn() as it destroys the prototype chain
+        // needed for `extends` (e.g. File extends ExpoFileSystem.FileSystemFile).
+        const isClass = Object.getOwnPropertyNames(value.prototype ?? {}).length > 1;
+        nativeModule[key] = isClass ? value : jest.fn(value);
+      } else {
+        nativeModule[key] = value;
+      }
     }
     return nativeModule;
   }

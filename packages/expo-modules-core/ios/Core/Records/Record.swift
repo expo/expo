@@ -97,7 +97,7 @@ internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
     guard var field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
       return nil
     }
-    field.options.insert(.keyed(key))
+    field.options = field.options.union([.keyed(key)])
     return field
   }
 }

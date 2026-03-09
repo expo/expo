@@ -6,9 +6,23 @@
 
 ### 🎉 New features
 
+- Include expo-font plugin font files in fingerprint hash calculation ([#43575](https://github.com/expo/expo/pull/43575) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.16.5 — 2026-02-25
+
+### 💡 Others
+
+- Bump to `minimatch@^10.2.2` ([#43325](https://github.com/expo/expo/pull/43325) by [@kitten](https://github.com/kitten))
+
+## 0.16.4 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Fix resolution to `expo -> @expo/cli -> @expo/env` being unstable ([#42764](https://github.com/expo/expo/pull/42764) by [@kitten](https://github.com/kitten))
 
 ## 0.16.3 — 2026-02-03
 

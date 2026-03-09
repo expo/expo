@@ -50,6 +50,7 @@ export * as SplashScreen from './views/Splash';
 // React Navigation
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
+export { useIsFocused } from './useIsFocused';
 export type { ResultState } from './fork/getStateFromPath';
 
 export type { RedirectConfig } from './getRoutesCore';

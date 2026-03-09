@@ -1,12 +1,12 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "55.0.4",
+  "version": "55.0.6",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "main": "src/index.ts",
   "types": "build",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
-  "keywords": [],
+  "keywords": [ ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "files": [
@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "55.0.5",
+    "@expo/log-box": "55.0.7",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",
@@ -51,6 +51,6 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.3"
   }
 }

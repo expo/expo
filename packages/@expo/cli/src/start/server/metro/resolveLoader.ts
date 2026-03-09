@@ -9,6 +9,9 @@ export interface ResolvedLoaderRoute {
   file: string;
   /** The pathname being rendered */
   pathname: string;
+  // TODO(@hassankhan): Rename `contextKey` property to `page`
+  /** The context key for the route including unresolved parameters. For example, `/x/[y]/z` */
+  contextKey: string;
   /** Extracted URL parameters */
   params: Record<string, string | string[]>;
 }
@@ -50,6 +53,7 @@ export function fromRuntimeManifestRoute(
 
   return {
     file: serverManifestRoute.file,
+    contextKey: serverManifestRoute.page,
     pathname,
     params: extractParams(pathname, serverManifestRoute),
   };
@@ -68,6 +72,7 @@ export function fromServerManifestRoute(
 
   return {
     file: route.file,
+    contextKey: route.page,
     pathname,
     params: extractParams(pathname, route),
   };

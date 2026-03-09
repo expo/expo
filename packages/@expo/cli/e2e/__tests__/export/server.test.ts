@@ -245,7 +245,7 @@ describe('server-output', () => {
     (server.isWorkerd ? it.skip : it)('supports runtime API', async () => {
       await expect(server.fetchAsync('/api/runtime').then((r) => r.json())).resolves.toEqual({
         environment: expect.stringMatching(/production|development/),
-        origin: 'null',
+        origin: expect.stringMatching(/^http/),
       });
     });
 

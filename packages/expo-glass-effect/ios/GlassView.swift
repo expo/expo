@@ -6,6 +6,10 @@ import React
 public final class GlassView: ExpoView {
   private var glassEffect: Any?
   private var glassEffectView = UIVisualEffectView()
+  // TODO: Find a better fix
+  // Glass effect does not work sometimes if view has not been laid out yet
+  // https://github.com/expo/expo/issues/41024#issuecomment-3867466289
+  private var isMounted = false
 
   private var glassStyle: GlassStyle?
   private var glassTintColor: UIColor?
@@ -43,6 +47,14 @@ public final class GlassView: ExpoView {
     }
     #endif
     return false
+  }
+
+  override public func layoutSubviews() {
+    super.layoutSubviews()
+    if !isMounted {
+      isMounted = true
+      updateEffect()
+    }
   }
 
   func updateBorderRadius() {
@@ -103,9 +115,7 @@ public final class GlassView: ExpoView {
         #if compiler(>=6.2) // Xcode 26
         let applyEffect = {
           if let uiStyle = newStyle.toUIGlassEffectStyle() {
-            let effect = UIGlassEffect(style: uiStyle)
-            self.glassEffectView.effect = effect
-            self.glassEffect = effect
+            self.glassEffect = UIGlassEffect(style: uiStyle)
             self.updateEffect()
           } else {
             // TODO: revisit this in newer versions of iOS
@@ -215,6 +225,9 @@ public final class GlassView: ExpoView {
   }
 
   private func updateEffect() {
+    if !isMounted {
+      return
+    }
     guard isGlassEffectAvailable() else {
       return
     }

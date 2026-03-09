@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
-@property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
+@property (nonatomic, strong) id<EXUpdatesDevLauncherInterface> updatesInterface;
 
 + (instancetype)sharedInstance;
 

@@ -8,6 +8,7 @@ CLI tool for all Expo projects. The public interface should be lean, all command
 ├── bin/cli.ts         # CLI entry point - registers all commands
 ├── src/
 │   ├── api/           # expo.dev API client
+│   ├── events/        # JSONL event-based debugger
 │   ├── config/        # `expo config` command
 │   ├── customize/     # `expo customize` command
 │   ├── export/        # `expo export` command (production bundling)
@@ -138,7 +139,42 @@ See `src/utils/open.ts` for an example of handling the `SYSTEMROOT`/`SystemRoot`
 
 ## Debug logs
 
-Debug logs support `DEBUG=expo:*`, for legacy reasons we support `EXPO_DEBUG=1` which sets `DEBUG=expo:*` in the bin.ts file.
+**Old debugging system:**
+Debug logs used to be created with the `debug` package with individual modules creating a `debug` function to use for logging.
+This can then be activated with `DEBUG=expo:*`, and for legacy reasons `EXPO_DEBUG=1` currently sets `DEBUG=expo:*` in the bin.ts file.
+
+```ts
+const debug = require('debug')('expo:utils:example');
+debug('hello');
+```
+
+**New debugging system:**
+Newer modules use the `events` helper from `src/events/index.ts` to define structured events in JSON format.
+
+```ts
+export const event = events('metro', (t) => [
+  t.event<'example:start', {
+    value: string;
+  }>(),
+]);
+
+event('metro:example:start', { value: 'hello' });
+```
+
+The `events` function accepts a category name and a function that is used to define the event types, but never called.
+When setting `LOG_EVENTS=1` JSONL events will be logged to the standard output, or with `LOG_EVENTS=events.log` events will log to an events.log file.
+This is a faster events system than `debug`, captures structured JSON events, and is scalable, and can be used in any module to add richer debug output.
+
+When creatin a nwe events category, add the `event` function it returns to the `Events` type in `src/events/types.ts` to collect all the events' types in one place:
+
+```
+// Add a new import:
+import type { event as myNewEvent } from '...';
+
+export type Events = collectEventLoggers<[
+  typeof myNewEvent, // Add the imported new event function here
+]>;
+```
 
 ## Production
 

@@ -1,3 +1,4 @@
+import { useEvent } from 'expo';
 import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
@@ -21,6 +22,7 @@ export default function VideoChangePlayerOutputScreen() {
   // this by displaying the video in the last `VideoView` to use it.
   const [useIncorrectReplace, setUseIncorrectReplace] = useState(false);
   const [nativeControls, setNativeControls] = useState(true);
+  const [e2eSetupDone, setE2eSetupDone] = useState(false);
 
   const player = useVideoPlayer(bigBuckBunnySource, playerFactory);
   const player2 = useVideoPlayer(elephantsDreamSource, playerFactory);
@@ -28,6 +30,10 @@ export default function VideoChangePlayerOutputScreen() {
     { ref: player, viewIndex: 0 },
     { ref: player2, viewIndex: 1 },
   ]);
+  const { status: status1 } = useEvent(player, 'statusChange', { status: player.status });
+  const { status: status2 } = useEvent(player2, 'statusChange', { status: player2.status });
+  const bothReady = status1 === 'readyToPlay' && status2 === 'readyToPlay';
+
   const [viewPlayers, setViewPlayers] = useState([player, player2, null, null]);
 
   const advancePlayer = useCallback(
@@ -99,8 +105,10 @@ export default function VideoChangePlayerOutputScreen() {
           player2.pause();
           player.currentTime = 10;
           player2.currentTime = 10;
+          setE2eSetupDone(true);
         }}
       />
+      {e2eSetupDone && bothReady && <Text>Players ready</Text>}
     </View>
   );
 }

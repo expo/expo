@@ -89,7 +89,10 @@ export const Terminal = ({
   ) : null;
 
   return (
-    <Snippet className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
+    <Snippet
+      data-md="terminal"
+      data-md-commands={packageManagers ? JSON.stringify(packageManagers) : undefined}
+      className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
       <SnippetHeader
         alwaysDark
         title={title}
@@ -217,7 +220,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
 const PackageSelect = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
   <Select
     className={mergeClasses(
-      '!h-6 !min-h-[16px] min-w-[76px] !gap-1 !px-2 !py-0 text-xs [&_svg]:!h-3 [&_svg]:!w-3',
+      'h-6! min-h-[16px]! min-w-[76px] gap-1! px-2! py-0! text-xs [&_svg]:size-3!',
       className
     )}
     ariaLabel="Select package manager"
@@ -235,7 +238,7 @@ const BrowserAction = ({ href, label }: BrowserActionProps) => (
   <SnippetAction
     alwaysDark
     className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
-    rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
+    rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary shrink-0" />}
     onClick={() => {
       if (typeof window !== 'undefined') {
         window.open(href, '_blank', 'noopener,noreferrer');
@@ -257,14 +260,15 @@ function cmdMapper(line: string, index: number) {
   const key = `line-${index}`;
 
   if (line.trim() === '') {
-    return <br key={key} className="select-none" />;
+    return <br key={key} data-md="skip" className="select-none" />;
   }
 
   if (line.startsWith('#')) {
     return (
       <CODE
         key={key}
-        className="select-none whitespace-pre !border-none !bg-transparent !text-palette-gray10">
+        data-md="skip"
+        className="text-palette-gray10! border-none! bg-transparent! whitespace-pre select-none">
         {line}
       </CODE>
     );
@@ -273,11 +277,13 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key} className="w-fit">
-        <CODE className="select-none whitespace-pre !border-none !bg-transparent !text-secondary">
+        <CODE
+          data-md="skip"
+          className="text-secondary! border-none! bg-transparent! whitespace-pre select-none">
           -&nbsp;
         </CODE>
         <CODE
-          className="whitespace-pre !border-none !bg-transparent text-default"
+          className="text-default border-none! bg-transparent! whitespace-pre"
           dangerouslySetInnerHTML={{
             __html: Prism.highlight(
               line.slice(1).trim(),
@@ -291,7 +297,7 @@ function cmdMapper(line: string, index: number) {
   }
 
   return (
-    <CODE key={key} className="whitespace-pre !border-none !bg-transparent text-default">
+    <CODE key={key} className="text-default border-none! bg-transparent! whitespace-pre">
       {line}
     </CODE>
   );

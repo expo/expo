@@ -147,7 +147,7 @@ export declare const opacity: (value: number) => ModifierConfig;
  * @param cornerRadius - Corner radius for rounded rectangle (default: 8)
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
-export declare const clipShape: (shape: "rectangle" | "circle" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
+export declare const clipShape: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
 /**
  * Adds a border to a view.
  * @param params - The border parameters. Color and width.
@@ -159,16 +159,33 @@ export declare const border: (params: {
 }) => ModifierConfig;
 /**
  * Applies scaling transformation.
- * @param scale - Scale factor (1.0 = normal size).
+ * @param scale - Uniform scale factor (1.0 = normal size), or an object with separate `x` and `y` scale factors.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
  */
-export declare const scaleEffect: (scale: number) => ModifierConfig;
+export declare const scaleEffect: (scale: number | {
+    x: number;
+    y: number;
+}) => ModifierConfig;
 /**
  * Applies rotation transformation.
  * @param angle - Rotation angle in degrees.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotationeffect(_:anchor:)).
  */
 export declare const rotationEffect: (angle: number) => ModifierConfig;
+/**
+ * Applies a 3D rotation transformation.
+ * @param params - The rotation parameters: `angle` (in degrees), `axis` (x, y, z), and `perspective`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotation3deffect(_:axis:anchor:anchorz:perspective:)).
+ */
+export declare const rotation3DEffect: (params: {
+    angle: number;
+    axis?: {
+        x?: number;
+        y?: number;
+        z?: number;
+    };
+    perspective?: number;
+}) => ModifierConfig;
 /**
  * Applies an offset (translation) to a view.
  * @param params - The offset parameters: `x` and `y`.
@@ -313,6 +330,12 @@ export declare const bold: () => ModifierConfig;
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
  */
 export declare const italic: () => ModifierConfig;
+/**
+ * Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.
+ * When applied to `Text`, modifies the text view's font to use fixed-width digits, while leaving other characters proportionally spaced.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/monospaceddigit()).
+ */
+export declare const monospacedDigit: () => ModifierConfig;
 /**
  * Sets the tint color of a view.
  * @param color - The tint color (hex string). For example, `#FF0000`.
@@ -484,7 +507,7 @@ export declare const layoutPriority: (priority: number) => ModifierConfig;
  * @param cornerRadius - Corner radius for rounded rectangle (default: `8`).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
-export declare const mask: (shape: "rectangle" | "circle" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
+export declare const mask: (shape: "rectangle" | "circle" | "capsule" | "ellipse" | "roundedRectangle", cornerRadius?: number) => ModifierConfig;
 /**
  * Overlays another view on top.
  * @param params - Overlay color and alignment.
@@ -766,6 +789,29 @@ export declare const gridCellAnchor: (anchor: {
  * ```
  */
 export declare const submitLabel: (submitLabel: "continue" | "done" | "go" | "join" | "next" | "return" | "route" | "search" | "send") => ModifierConfig;
+/**
+ * Sets the content transition type for a view.
+ * Useful for animating changes in text content, especially numeric text.
+ * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
+ *
+ * @param transitionType - The type of content transition.
+ * @param params - Optional parameters.
+ * @param params.countsDown - Whether the numeric text counts down.
+ *
+ * @example
+ * ```tsx
+ * <Text modifiers={[contentTransition('numericText'), animation(Animation.default, count)]}>
+ *   {count.toString()}
+ * </Text>
+ * ```
+ *
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
+ */
+export declare const contentTransition: (transitionType: "numericText" | "identity" | "opacity" | "interpolate", params?: {
+    countsDown?: boolean;
+}) => ModifierConfig;
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
 /**
  * Sets the style for a List view.
@@ -774,11 +820,16 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
  */
 export declare const listStyle: (style: ListStyle) => ModifierConfig;
 /**
+ * Adds a luminance to alpha effect to this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
+ */
+export declare const luminanceToAlpha: () => ModifierConfig;
+/**
  * Union type of all built-in modifier return types.
  * This provides type safety for the modifiers array.
  * @hidden
  */
-export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle>;
+export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType<typeof background> | ReturnType<typeof cornerRadius> | ReturnType<typeof shadow> | ReturnType<typeof frame> | ReturnType<typeof padding> | ReturnType<typeof fixedSize> | ReturnType<typeof ignoreSafeArea> | ReturnType<typeof onTapGesture> | ReturnType<typeof onLongPressGesture> | ReturnType<typeof onAppear> | ReturnType<typeof luminanceToAlpha> | ReturnType<typeof onDisappear> | ReturnType<typeof opacity> | ReturnType<typeof clipShape> | ReturnType<typeof border> | ReturnType<typeof scaleEffect> | ReturnType<typeof rotationEffect> | ReturnType<typeof rotation3DEffect> | ReturnType<typeof offset> | ReturnType<typeof foregroundColor> | ReturnType<typeof foregroundStyle> | ReturnType<typeof bold> | ReturnType<typeof italic> | ReturnType<typeof monospacedDigit> | ReturnType<typeof tint> | ReturnType<typeof hidden> | ReturnType<typeof disabled> | ReturnType<typeof zIndex> | ReturnType<typeof blur> | ReturnType<typeof brightness> | ReturnType<typeof contrast> | ReturnType<typeof saturation> | ReturnType<typeof hueRotation> | ReturnType<typeof colorInvert> | ReturnType<typeof grayscale> | ReturnType<typeof buttonStyle> | ReturnType<typeof toggleStyle> | ReturnType<typeof controlSize> | ReturnType<typeof labelStyle> | ReturnType<typeof labelsHidden> | ReturnType<typeof textFieldStyle> | ReturnType<typeof menuActionDismissBehavior> | ReturnType<typeof accessibilityLabel> | ReturnType<typeof accessibilityHint> | ReturnType<typeof accessibilityValue> | ReturnType<typeof layoutPriority> | ReturnType<typeof mask> | ReturnType<typeof overlay> | ReturnType<typeof backgroundOverlay> | ReturnType<typeof aspectRatio> | ReturnType<typeof clipped> | ReturnType<typeof glassEffect> | ReturnType<typeof glassEffectId> | ReturnType<typeof animation> | ReturnType<typeof containerShape> | ReturnType<typeof contentShape> | ReturnType<typeof containerRelativeFrame> | ReturnType<typeof scrollContentBackground> | ReturnType<typeof scrollDisabled> | ReturnType<typeof moveDisabled> | ReturnType<typeof deleteDisabled> | ReturnType<typeof environment> | ReturnType<typeof listRowBackground> | ReturnType<typeof listRowSeparator> | ReturnType<typeof truncationMode> | ReturnType<typeof allowsTightening> | ReturnType<typeof kerning> | ReturnType<typeof textCase> | ReturnType<typeof underline> | ReturnType<typeof strikethrough> | ReturnType<typeof multilineTextAlignment> | ReturnType<typeof textSelection> | ReturnType<typeof lineSpacing> | ReturnType<typeof lineLimit> | ReturnType<typeof headerProminence> | ReturnType<typeof listRowInsets> | ReturnType<typeof badgeProminence> | ReturnType<typeof badge> | ReturnType<typeof listSectionMargins> | ReturnType<typeof font> | ReturnType<typeof gridCellUnsizedAxes> | ReturnType<typeof gridCellColumns> | ReturnType<typeof gridColumnAlignment> | ReturnType<typeof gridCellAnchor> | ReturnType<typeof submitLabel> | ReturnType<typeof datePickerStyle> | ReturnType<typeof progressViewStyle> | ReturnType<typeof gaugeStyle> | ReturnType<typeof listStyle> | ReturnType<typeof contentTransition>;
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
  * 3rd party modifiers should return ModifierConfig objects with their own type strings.

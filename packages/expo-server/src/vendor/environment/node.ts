@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { createEnvironment } from './common';
+import { type CommonEnvironment, createEnvironment } from './common';
 import { assertRuntimeFetchAPISupport } from '../../ImmutableRequest';
 import { createRequestScope } from '../../runtime';
 import type { ScopeDefinition } from '../../runtime/scope';
@@ -12,7 +12,7 @@ interface NodeEnvParams {
   isDevelopment?: boolean;
 }
 
-export function createNodeEnv(params: NodeEnvParams) {
+export function createNodeEnv(params: NodeEnvParams): CommonEnvironment {
   assertRuntimeFetchAPISupport();
 
   async function readText(request: string) {
@@ -51,10 +51,19 @@ export function createNodeEnv(params: NodeEnvParams) {
   });
 }
 
+const getRequestURLOrigin = (request: Request) => {
+  try {
+    // NOTE: We don't trust any headers on incoming requests in "raw" environments
+    return new URL(request.url).origin || null;
+  } catch {
+    return null;
+  }
+};
+
 export function createNodeRequestScope(scopeDefinition: ScopeDefinition, params: NodeEnvParams) {
   return createRequestScope(scopeDefinition, (request: Request) => ({
     requestHeaders: request.headers,
-    origin: request.headers.get('Origin') || 'null',
+    origin: getRequestURLOrigin(request),
     environment: params.environment ?? process.env.NODE_ENV,
   }));
 }

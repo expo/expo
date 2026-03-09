@@ -4,13 +4,71 @@
 
 ### 🛠 Breaking changes
 
+- [ios] rename option from 'usePrebuiltReactNative' to 'buildReactNativeFromSource' ([#43574](https://github.com/expo/expo/pull/43574) by [@pmleczek](https://github.com/pmleczek))
+
 ### 🎉 New features
+
+- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
+- [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
+- [ios] enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
+- align using custom components between the platforms ([#43633](https://github.com/expo/expo/pull/43633) by [@pmleczek](https://github.com/pmleczek))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- [test] add maestro e2e tests for dev menu ([#43421](https://github.com/expo/expo/pull/43421) by [@pmleczek](https://github.com/pmleczek))
+- [android] set react native version for all published artfacts ([#43693](https://github.com/expo/expo/pull/43693) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.11 — 2026-02-25
+
+### 💡 Others
+
+- [test] run brownfield e2e tests (cli + plugin) in sdk/check-packages workflow ([#43391](https://github.com/expo/expo/pull/43391) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.10 — 2026-02-25
+
+### 🎉 New features
+
+- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
+
+### 💡 Others
+
+- [test] setup maestro e2e tests for expo-brownfield on ios ([#43028](https://github.com/expo/expo/pull/43028) by [@pmleczek](https://github.com/pmleczek))
+- [state] add ios implementation & improvements ([#43236](https://github.com/expo/expo/pull/43236) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.9 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Android] improve security of env injection in publishing in [#43059](https://github.com/expo/expo/pull/43059) by [@pmleczek](https://github.com/pmleczek)
+- [ios] pass additional settings to generate CFBundleShortVersionString ([#43289](https://github.com/expo/expo/pull/43289) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.8 — 2026-02-16
+
+### 🛠 Breaking changes
+
+- [cli] update copied hermes framework name to hermesvm.xcframework ([#43138](https://github.com/expo/expo/pull/43138) by [@pmleczek](https://github.com/pmleczek))
+
+### 🐛 Bug fixes
+
+- [iOS] fix framework search paths settings ([#43106](https://github.com/expo/expo/pull/43106) by [@pmleczek](https://github.com/pmleczek))
+
+### 💡 Others
+
+- [test] add compilation verification and optimize brownfield workflow in [#42894](https://github.com/expo/expo/pull/42894) by [@pmleczek](https://github.com/pmleczek)
+- [cli] cli refactor ([#42921](https://github.com/expo/expo/pull/42921) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.7 — 2026-02-08
 
 ### 🐛 Bug fixes
 
 - [Android] fix dev menu in isolated brownfield ([#42637](https://github.com/expo/expo/pull/42637) by [@pmleczek](https://github.com/pmleczek))
+- [cli] handle build:android called with no args ([#42914](https://github.com/expo/expo/pull/42914) by [@pmleczek](https://github.com/pmleczek))
 
 ### 💡 Others
+
+- [test] setup maestro e2e tests for expo-brownfield on android in [#42864](https://github.com/expo/expo/pull/42864) by [@pmleczek](https://github.com/pmleczek)
 
 ## 55.0.6 — 2026-02-03
 

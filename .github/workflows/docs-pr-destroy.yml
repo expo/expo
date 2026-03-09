@@ -1,0 +1,32 @@
+name: Docs Website PR Destroy Preview
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  pull_request:
+    types: [closed, unlabeled]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-pr-destroy:
+    if: (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
+        (github.event.action == 'unlabeled' && github.event.label.name == 'preview')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v6
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: 🧹 Delete preview deployments
+        working-directory: docs
+        env:
+          CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/prune-cloudflare-deployments.mjs --project=expo-docs --branch=pr-${{ github.event.pull_request.number }} --keep=0

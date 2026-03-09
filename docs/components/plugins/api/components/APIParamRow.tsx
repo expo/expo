@@ -30,7 +30,7 @@ export function APIParamRow({
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <DEMI>
+        <DEMI data-md="api-param-name">
           {flags?.isRest ? '...' : ''}
           {parseParamName(name)}
         </DEMI>
@@ -40,7 +40,7 @@ export function APIParamRow({
         <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
       </Cell>
       {showDescription && (
-        <Cell className="[&>*]:last:!mb-0">
+        <Cell className="[&>*]:last:mb-0!">
           <APICommentTextBlock
             comment={comment}
             afterContent={renderDefaultValue(initValue)}

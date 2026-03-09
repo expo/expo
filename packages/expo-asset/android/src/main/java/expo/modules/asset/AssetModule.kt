@@ -3,13 +3,13 @@ package expo.modules.asset
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.services.FilePermissionService
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
@@ -50,7 +50,9 @@ class AssetModule : Module() {
       localUrl.mkdirs()
     }
 
-    if (!appContext.filePermission.getPathPermissions(context, requireNotNull(localUrl.parent)).contains(Permission.WRITE)) {
+    if (!appContext.filePermission.getPathPermissions(context, requireNotNull(localUrl.parent))
+        .contains(FilePermissionService.Permission.WRITE)
+    ) {
       throw UnableToDownloadAssetException(uri.toString())
     }
 

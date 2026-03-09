@@ -2,7 +2,15 @@ import { CodedError, TypedArray } from 'expo-modules-core';
 
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions } from './Crypto.types';
 
-const getCrypto = (): Crypto => window.crypto ?? (window as any).msCrypto;
+const getCrypto = (): Crypto => {
+  if (typeof globalThis.crypto !== 'undefined') {
+    return globalThis.crypto;
+  } else if (typeof window !== 'undefined') {
+    return window.crypto ?? (window as any).msCrypto;
+  } else {
+    return crypto;
+  }
+};
 
 export default {
   async digestStringAsync(
@@ -10,6 +18,7 @@ export default {
     data: string,
     options: CryptoDigestOptions
   ): Promise<string> {
+    const crypto = getCrypto();
     if (!crypto.subtle) {
       throw new CodedError(
         'ERR_CRYPTO_UNAVAILABLE',

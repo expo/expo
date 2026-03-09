@@ -671,7 +671,7 @@ export const useRemindersPermissions = createPermissionHook({
 });
 // @docsMissing
 /**
- * platform ios
+ * @platform ios
  */
 export var EntityTypes;
 (function (EntityTypes) {

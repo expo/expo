@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.1.2 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.1.1 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.1.0 — 2026-02-20
+
+### 🎉 New features
+
+- [iOS] Added `accuracy` field to `PermissionDetailsLocationIOS` exposing iOS 14+ precise/reduced location authorization. ([#42931](https://github.com/expo/expo/pull/42931) by [@sbs44](https://github.com/sbs44))
+
+## 55.0.7 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.5 — 2026-02-03
 
 _This version does not introduce any user-facing changes._

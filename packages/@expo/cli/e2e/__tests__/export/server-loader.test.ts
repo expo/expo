@@ -68,6 +68,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/second.js');
     expect(files).toContain('_expo/loaders/nullish/[value].js');
     expect(files).toContain('_expo/loaders/posts/[postId].js');
+    expect(files).toContain('_expo/loaders/(group)/index.js');
   });
 
   (server.isExpoStart ? it.skip : it)('routes.json has loader paths', async () => {
@@ -112,6 +113,17 @@ describe.each(
 
       const data = await getData(response);
       expect(data).toEqual({ data: 'root-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)'))(
+    'can access data for group index route $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'grouped-index' });
     }
   );
 

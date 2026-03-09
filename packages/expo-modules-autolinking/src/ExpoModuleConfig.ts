@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { memoize } from './memoize';
 import {
   AndroidGradleAarProjectDescriptor,
   AndroidGradlePluginDescriptor,
@@ -9,7 +10,6 @@ import {
   RawModuleConfigApple,
   SupportedPlatform,
 } from './types';
-import { memoize } from './utils';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {

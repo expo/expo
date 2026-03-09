@@ -1,5 +1,6 @@
 package expo.modules.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
@@ -7,7 +8,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import expo.modules.kotlin.AppContext
@@ -53,6 +53,7 @@ private fun String.autoCapitalize(): KeyboardCapitalization {
   }
 }
 
+@SuppressLint("ViewConstructor")
 class TextInputView(context: Context, appContext: AppContext) :
   ExpoComposeView<TextInputProps>(context, appContext) {
   override val props = TextInputProps()
@@ -70,7 +71,7 @@ class TextInputView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     TextField(
-      value = requireNotNull(textState.value),
+      value = textState.value ?: props.defaultValue.value,
       onValueChange = {
         textState.value = it
         onValueChanged(mapOf("value" to it))
@@ -83,7 +84,7 @@ class TextInputView(context: Context, appContext: AppContext) :
         autoCorrectEnabled = props.autocorrection.value,
         capitalization = props.autoCapitalize.value.autoCapitalize()
       ),
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content)
+      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
     )
   }
 }

@@ -39,6 +39,8 @@ On iOS, when an image (usually of a [higher resolution](http://www.openradar.me/
 
 You can configure `expo-image-picker` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
+By default `expo-image-picker` will add `RECORD_AUDIO` permission on Android. You can remove it by setting the `microphonePermission` to false in the config below.
+
 <ConfigPluginExample>
 
 ```json app.json
@@ -76,14 +78,16 @@ You can configure `expo-image-picker` using its built-in [config plugin](/config
     },
     {
       name: 'cameraPermission',
-      platform: 'ios',
-      description: 'A string to set the `NSCameraUsageDescription` permission message.',
+      platform: 'android' | 'ios',
+      description:
+        'A string to set the `NSCameraUsageDescription` permission message. If value `false` is provided then `CAMERA` permission will be blocked on Android.',
       default: '"Allow $(PRODUCT_NAME) to access your camera"',
     },
     {
       name: 'microphonePermission',
-      platform: 'ios',
-      description: 'A string to set the `NSMicrophoneUsageDescription` permission message.',
+      platform: 'android' | 'ios',
+      description:
+        'A string to set the `NSMicrophoneUsageDescription` permission message. If value `false` is provided then `RECORD_AUDIO` permission will be blocked on Android.',
       default: '"Allow $(PRODUCT_NAME) to access your microphone"',
     },
     {

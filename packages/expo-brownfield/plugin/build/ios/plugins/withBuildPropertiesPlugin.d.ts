@@ -1,3 +1,4 @@
 import type { ConfigPlugin } from 'expo/config-plugins';
-declare const withBuildPropertiesPlugin: ConfigPlugin;
+import type { PluginConfig } from '../types';
+declare const withBuildPropertiesPlugin: ConfigPlugin<PluginConfig>;
 export default withBuildPropertiesPlugin;

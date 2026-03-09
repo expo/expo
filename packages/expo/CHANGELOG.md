@@ -10,6 +10,40 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.2 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-02-25
+
+### 💡 Others
+
+- [Android] Remove legacy autolinking integration. ([#43303](https://github.com/expo/expo/pull/43303) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.0-preview.12 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Add missing `Request`-like input handling, `method` normalization, and URL argument support to `fetch` ([#43194](https://github.com/expo/expo/pull/43194) by [@kitten](https://github.com/kitten))
+
+## 55.0.0-preview.11 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-preview.10 — 2026-02-08
+
+### 💡 Others
+
+- [iOS] Optimized `response.arrayBuffer` implementation. ([#42643](https://github.com/expo/expo/pull/42643) by [@barthap](https://github.com/barthap))
+
 ## 55.0.0-preview.9 — 2026-02-03
 
 ### 🐛 Bug fixes

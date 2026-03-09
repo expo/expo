@@ -9,7 +9,7 @@ import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
 import { contentShape } from './contentShape';
-import { createModifier, ModifierConfig } from './createModifier';
+import { createModifier, createModifierWithEventListener, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
@@ -17,17 +17,6 @@ import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
-
-/**
- * Creates a modifier with an event listener.
- */
-function createModifierWithEventListener(
-  type: string,
-  eventListener: (args: any) => void,
-  params: Record<string, any> = {}
-): ModifierConfig {
-  return { $type: type, ...params, eventListener };
-}
 
 // =============================================================================
 // Built-in Modifier Functions
@@ -222,7 +211,7 @@ export const opacity = (value: number) => createModifier('opacity', { value });
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/clipshape(_:style:)).
  */
 export const clipShape = (
-  shape: 'rectangle' | 'circle' | 'roundedRectangle',
+  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
   cornerRadius?: number
 ) => createModifier('clipShape', { shape, cornerRadius });
 
@@ -236,10 +225,11 @@ export const border = (params: { color: Color; width?: number }) =>
 
 /**
  * Applies scaling transformation.
- * @param scale - Scale factor (1.0 = normal size).
+ * @param scale - Uniform scale factor (1.0 = normal size), or an object with separate `x` and `y` scale factors.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scaleeffect(_:anchor:)).
  */
-export const scaleEffect = (scale: number) => createModifier('scaleEffect', { scale });
+export const scaleEffect = (scale: number | { x: number; y: number }) =>
+  createModifier('scaleEffect', typeof scale === 'number' ? { x: scale, y: scale } : scale);
 
 /**
  * Applies rotation transformation.
@@ -247,6 +237,24 @@ export const scaleEffect = (scale: number) => createModifier('scaleEffect', { sc
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotationeffect(_:anchor:)).
  */
 export const rotationEffect = (angle: number) => createModifier('rotationEffect', { angle });
+
+/**
+ * Applies a 3D rotation transformation.
+ * @param params - The rotation parameters: `angle` (in degrees), `axis` (x, y, z), and `perspective`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotation3deffect(_:axis:anchor:anchorz:perspective:)).
+ */
+export const rotation3DEffect = (params: {
+  angle: number;
+  axis?: { x?: number; y?: number; z?: number };
+  perspective?: number;
+}) =>
+  createModifier('rotation3DEffect', {
+    angle: params.angle,
+    axisX: params.axis?.x ?? 0,
+    axisY: params.axis?.y ?? 0,
+    axisZ: params.axis?.z ?? 0,
+    perspective: params.perspective ?? 1,
+  });
 
 /**
  * Applies an offset (translation) to a view.
@@ -375,7 +383,14 @@ export const foregroundStyle = (
   if (typeof style === 'string') {
     return createModifier('foregroundStyle', { styleType: 'color', color: style });
   }
-  return createModifier('foregroundStyle', { styleType: style.type, ...style });
+  if (style.type === 'hierarchical') {
+    return createModifier('foregroundStyle', {
+      styleType: 'hierarchical',
+      hierarchicalStyle: style.style,
+    });
+  }
+  const { type, ...rest } = style;
+  return createModifier('foregroundStyle', { styleType: type, ...rest });
 };
 
 /**
@@ -391,6 +406,13 @@ export const bold = () => createModifier('bold', {});
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
  */
 export const italic = () => createModifier('italic', {});
+
+/**
+ * Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.
+ * When applied to `Text`, modifies the text view's font to use fixed-width digits, while leaving other characters proportionally spaced.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/monospaceddigit()).
+ */
+export const monospacedDigit = () => createModifier('monospacedDigit', {});
 
 /**
  * Sets the tint color of a view.
@@ -611,8 +633,10 @@ export const layoutPriority = (priority: number) => createModifier('layoutPriori
  * @param cornerRadius - Corner radius for rounded rectangle (default: `8`).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/mask(_:)).
  */
-export const mask = (shape: 'rectangle' | 'circle' | 'roundedRectangle', cornerRadius?: number) =>
-  createModifier('mask', { shape, cornerRadius });
+export const mask = (
+  shape: 'rectangle' | 'circle' | 'capsule' | 'ellipse' | 'roundedRectangle',
+  cornerRadius?: number
+) => createModifier('mask', { shape, cornerRadius });
 
 /**
  * Overlays another view on top.
@@ -935,6 +959,35 @@ export const submitLabel = (
   submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
 ) => createModifier('submitLabel', { submitLabel });
 
+/**
+ * Sets the content transition type for a view.
+ * Useful for animating changes in text content, especially numeric text.
+ * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
+ *
+ * @param transitionType - The type of content transition.
+ * @param params - Optional parameters.
+ * @param params.countsDown - Whether the numeric text counts down.
+ *
+ * @example
+ * ```tsx
+ * <Text modifiers={[contentTransition('numericText'), animation(Animation.default, count)]}>
+ *   {count.toString()}
+ * </Text>
+ * ```
+ *
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
+ */
+export const contentTransition = (
+  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate',
+  params?: { countsDown?: boolean }
+) =>
+  createModifier('contentTransition', {
+    transitionType,
+    countsDown: params?.countsDown,
+  });
+
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
 /**
  * Sets the style for a List view.
@@ -942,6 +995,12 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/liststyle(_:)).
  */
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
+
+/**
+ * Adds a luminance to alpha effect to this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
+ */
+export const luminanceToAlpha = () => createModifier('luminanceToAlpha', {});
 
 // =============================================================================
 // Type Definitions
@@ -964,17 +1023,20 @@ export type BuiltInModifier =
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
   | ReturnType<typeof onAppear>
+  | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
   | ReturnType<typeof scaleEffect>
   | ReturnType<typeof rotationEffect>
+  | ReturnType<typeof rotation3DEffect>
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
   | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof bold>
   | ReturnType<typeof italic>
+  | ReturnType<typeof monospacedDigit>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
@@ -1039,7 +1101,8 @@ export type BuiltInModifier =
   | ReturnType<typeof datePickerStyle>
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>
-  | ReturnType<typeof listStyle>;
+  | ReturnType<typeof listStyle>
+  | ReturnType<typeof contentTransition>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

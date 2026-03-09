@@ -1,3 +1,4 @@
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
@@ -7,6 +8,11 @@ import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
+
+type HeaderTitleFunction = Extract<
+  NativeStackNavigationOptions['headerTitle'],
+  (...args: any) => any
+>;
 
 it('prefetch a sibling route', () => {
   renderRouter({
@@ -747,7 +753,7 @@ it('can still use <Screen /> while prefetching in stack', () => {
 });
 
 it('can still use <Screen /> while prefetching in tabs', () => {
-  const headerTitle = jest.fn(() => null);
+  const headerTitle = jest.fn((...args: Parameters<HeaderTitleFunction>) => null);
   renderRouter({
     _layout: () => (
       <Tabs screenOptions={{ headerTitle }}>

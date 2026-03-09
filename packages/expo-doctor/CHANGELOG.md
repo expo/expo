@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+- Include `@react-navigation/native` and `@react-navigation/core` in duplicates check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
+
+## 1.18.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.5 — 2026-02-08
+
+### 💡 Others
+
 - Add Xcode 26.0.0 requirement for SDK 55 ([#42852](https://github.com/expo/expo/pull/42852) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 1.18.4 — 2026-02-03

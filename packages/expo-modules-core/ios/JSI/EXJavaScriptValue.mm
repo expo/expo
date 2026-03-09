@@ -78,6 +78,15 @@
   return false;
 }
 
+- (BOOL)isArray
+{
+  if (_value.isObject()) {
+    jsi::Runtime *runtime = [_runtime get];
+    return _value.getObject(*runtime).isArray(*runtime);
+  }
+  return false;
+}
+
 - (BOOL)isTypedArray
 {
   if (_value.isObject()) {

@@ -10,7 +10,7 @@ const expo = createExpoStart({
 
 beforeAll(async () => {
   expo.options.cwd = await setupTestProjectWithOptionsAsync('metro-server', 'with-assets', {
-    linkExpoPackages: ['expo', '@expo/log-box', '@expo/local-build-cache-provider'],
+    linkExpoPackages: ['expo', '@expo/log-box', '@expo/local-build-cache-provider', '@expo/require-utils'],
   });
   await expo.startAsync();
 });

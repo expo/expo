@@ -165,7 +165,7 @@ jobs:
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
         # NOTE(@kitten): --ignore-engines is needed due to Node 18 being required (see above)
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000 --ignore-engines
+        run: yarn install --prefer-offline --network-timeout 1000000 --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -227,7 +227,7 @@ jobs:
         id: playwright-info
         shell: bash
         run: |
-          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
+          echo version="$(yarn --silent playwright --version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
@@ -235,7 +235,7 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
       - name: 🎭 Install Playwright Browsers
-        run: bun playwright install --with-deps chromium
+        run: yarn playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 
@@ -325,8 +325,8 @@ jobs:
         id: playwright-info
         shell: bash
         run: |
-          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
-          echo "dir=$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
+          echo version="$(yarn --silent playwright --version)" >> $GITHUB_OUTPUT
+          echo dir="$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
@@ -334,7 +334,7 @@ jobs:
           path: ${{ steps.playwright-info.outputs.dir }}
           key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
       - name: 🎭 Install Playwright Browsers
-        run: bun playwright install --with-deps chromium
+        run: yarn playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 

@@ -8,6 +8,7 @@ export declare function convertIconColorPropToObject(iconColor: NativeTabsProps[
 };
 type AwaitedIcon = {
     sf?: SFSymbol;
+    xcasset?: string;
     drawable?: string;
 } | {
     src?: ImageSourcePropType;
@@ -15,6 +16,7 @@ type AwaitedIcon = {
 };
 export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
     sf?: SFSymbol;
+    xcasset?: string;
     drawable?: string;
 } | {
     src?: ImageSourcePropType;

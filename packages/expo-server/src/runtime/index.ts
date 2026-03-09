@@ -3,7 +3,7 @@ import { type ScopeDefinition, type RequestAPI, scopeRef, UpdateResponseHeaders 
 import { importMetaRegistry } from '../utils/importMetaRegistry';
 
 export interface RequestAPISetup extends RequestAPI {
-  origin?: string;
+  origin?: string | null;
   environment?: string | null;
   requestHeaders?: Headers;
   waitUntil?(promise: Promise<unknown>): void;
@@ -15,7 +15,9 @@ function setupRuntime() {
       enumerable: true,
       configurable: true,
       get() {
-        return scopeRef.current?.getStore()?.origin || 'null';
+        // NOTE(@kitten): By convention, this property must be a string, and runtimes typically
+        // choose to stringify "null" when the value is not available
+        return scopeRef.current?.getStore()?.origin ?? 'null';
       },
     });
   } catch {}
@@ -93,6 +95,18 @@ export function createRequestScope<F extends RequestContextFactory>(
         throw error;
       }
     }
+
+    // Recreate the response with mutable headers, since the original response
+    // may have an immutable headers guard (like from `Response.redirect()`)
+    result = new Response(result.body, {
+      ...result,
+      status: result.status,
+      statusText: result.statusText,
+      headers: result.headers,
+      // Cloudflare-specific response properties
+      cf: (result as any).cf,
+      webSocket: (result as any).webSocket,
+    } as ResponseInit);
 
     deferredTasks.forEach((fn) => {
       const maybePromise = fn();

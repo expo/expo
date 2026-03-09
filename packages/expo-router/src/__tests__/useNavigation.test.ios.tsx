@@ -39,6 +39,8 @@ it('can resolve the parent of a nested navigator', () => {
   });
 
   expect(navigation).toBeDefined();
+  // Narrows type for TypeScript
+  if (!navigation) throw new Error('Expected navigation to be defined');
   expect(navigation.getId()).toBe('/(app)');
 });
 

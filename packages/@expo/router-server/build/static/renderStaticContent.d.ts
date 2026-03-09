@@ -8,6 +8,8 @@ import '@expo/metro-runtime';
 export type GetStaticContentOptions = {
     loader?: {
         data?: any;
+        /** Unique key for the route. Derived from the route's contextKey */
+        key: string;
     };
     request?: Request;
     /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */

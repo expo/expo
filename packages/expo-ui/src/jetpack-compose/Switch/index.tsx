@@ -2,6 +2,8 @@ import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent, type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
+import { ExpoUIModule } from '../ExpoUIModule';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 // @docsMissing
 /**
@@ -58,6 +60,12 @@ export type SwitchProps = {
    * Modifiers for the component.
    */
   modifiers?: ExpoModifier[];
+
+  /**
+   * Children containing ThumbContent slot.
+   * @platform android
+   */
+  children?: React.ReactNode;
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 
 export type SwitchSwitchVariantProps = {
@@ -87,10 +95,32 @@ type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
   onValueChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
 };
 
+type NativeSlotViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
+
+type ThumbContentProps = {
+  children: React.ReactNode;
+};
+
 const SwitchNativeView: React.ComponentType<NativeSwitchProps> = requireNativeView(
   'ExpoUI',
   'SwitchView'
 );
+
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
+
+/**
+ * Custom content to be displayed inside the switch thumb.
+ * @platform android
+ */
+export function SwitchThumbContent(props: ThumbContentProps) {
+  return <SlotNativeView slotName="thumbContent">{props.children}</SlotNativeView>;
+}
 
 function getElementColors(props: SwitchProps) {
   if (props.variant === 'button') {
@@ -110,21 +140,26 @@ function getElementColors(props: SwitchProps) {
   return props.elementColors;
 }
 
-/**
- * @hidden
- */
-export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
+function transformSwitchProps(props: SwitchProps): Omit<NativeSwitchProps, 'children'> {
+  const { modifiers, children, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     variant: props.variant ?? 'switch',
     elementColors: getElementColors(props),
     color: props.color,
     onValueChange: ({ nativeEvent: { value } }) => {
       props?.onValueChange?.(value);
     },
-  } as NativeSwitchProps;
+  } as Omit<NativeSwitchProps, 'children'>;
 }
 
-export function Switch(props: SwitchProps) {
-  return <SwitchNativeView {...transformSwitchProps(props)} />;
+function SwitchComponent(props: SwitchProps) {
+  return <SwitchNativeView {...transformSwitchProps(props)}>{props.children}</SwitchNativeView>;
 }
+
+SwitchComponent.ThumbContent = SwitchThumbContent;
+SwitchComponent.DefaultIconSize = ExpoUIModule.SwitchDefaultIconSize;
+
+export { SwitchComponent as Switch };

@@ -55,6 +55,11 @@ class RecordTypeConverter<T : Record>(
       return convertFromReadableMap(value, context, forceConversion)
     }
 
+    if (value is Map<*, *>) {
+      @Suppress("UNCHECKED_CAST")
+      return convertFromMap(value as Map<String, Any?>, context, forceConversion)
+    }
+
     @Suppress("UNCHECKED_CAST")
     return value as T
   }

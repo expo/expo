@@ -22,35 +22,35 @@ inline fun <reified T> toReturnType(): ReturnType {
 class ReturnType(
   private val klass: KClass<*>
 ) {
-  private val converter: ExperimentalJSTypeConverter<*> = run {
+  private val converter: JSTypeConverter<*> = run {
     val directConverter = when (klass) {
-      Unit::class -> ExperimentalJSTypeConverter.PassThroughConverter()
-      Bundle::class -> ExperimentalJSTypeConverter.BundleConverter()
-      IntArray::class -> ExperimentalJSTypeConverter.IntArrayConverter()
-      FloatArray::class -> ExperimentalJSTypeConverter.FloatArrayConverter()
-      DoubleArray::class -> ExperimentalJSTypeConverter.DoubleArrayConverter()
-      BooleanArray::class -> ExperimentalJSTypeConverter.BooleanArrayConverter()
-      ByteArray::class -> ExperimentalJSTypeConverter.ByteArrayConverter()
-      java.net.URI::class -> ExperimentalJSTypeConverter.URIConverter()
-      java.net.URL::class -> ExperimentalJSTypeConverter.URLConverter()
-      android.net.Uri::class -> ExperimentalJSTypeConverter.AndroidUriConverter()
-      java.io.File::class -> ExperimentalJSTypeConverter.FileConverter()
-      Pair::class -> ExperimentalJSTypeConverter.PairConverter()
-      Long::class -> ExperimentalJSTypeConverter.LongConverter()
-      Duration::class -> ExperimentalJSTypeConverter.DurationConverter()
-      Any::class -> ExperimentalJSTypeConverter.AnyConverter()
+      Unit::class -> JSTypeConverter.PassThroughConverter()
+      Bundle::class -> JSTypeConverter.BundleConverter()
+      IntArray::class -> JSTypeConverter.IntArrayConverter()
+      FloatArray::class -> JSTypeConverter.FloatArrayConverter()
+      DoubleArray::class -> JSTypeConverter.DoubleArrayConverter()
+      BooleanArray::class -> JSTypeConverter.BooleanArrayConverter()
+      ByteArray::class -> JSTypeConverter.ByteArrayConverter()
+      java.net.URI::class -> JSTypeConverter.URIConverter()
+      java.net.URL::class -> JSTypeConverter.URLConverter()
+      android.net.Uri::class -> JSTypeConverter.AndroidUriConverter()
+      java.io.File::class -> JSTypeConverter.FileConverter()
+      Pair::class -> JSTypeConverter.PairConverter()
+      Long::class -> JSTypeConverter.LongConverter()
+      Duration::class -> JSTypeConverter.DurationConverter()
+      Any::class -> JSTypeConverter.AnyConverter()
       else -> null
     }
 
     directConverter ?: when {
-      inheritFrom<Map<*, *>>() -> ExperimentalJSTypeConverter.MapConverter()
-      inheritFrom<Enum<*>>() -> ExperimentalJSTypeConverter.EnumConverter()
-      inheritFrom<expo.modules.kotlin.records.Record>() -> ExperimentalJSTypeConverter.RecordConverter()
-      inheritFrom<FormattedRecord<*>>() -> ExperimentalJSTypeConverter.FormattedRecordConverter()
-      inheritFrom<expo.modules.kotlin.typedarray.RawTypedArrayHolder>() -> ExperimentalJSTypeConverter.RawTypedArrayHolderConverter()
-      inheritFrom<Array<*>>() -> ExperimentalJSTypeConverter.ArrayConverter()
-      inheritFrom<Collection<*>>() -> ExperimentalJSTypeConverter.CollectionConverter()
-      else -> ExperimentalJSTypeConverter.PassThroughConverter()
+      inheritFrom<Map<*, *>>() -> JSTypeConverter.MapConverter()
+      inheritFrom<Enum<*>>() -> JSTypeConverter.EnumConverter()
+      inheritFrom<expo.modules.kotlin.records.Record>() -> JSTypeConverter.RecordConverter()
+      inheritFrom<FormattedRecord<*>>() -> JSTypeConverter.FormattedRecordConverter()
+      inheritFrom<expo.modules.kotlin.typedarray.RawTypedArrayHolder>() -> JSTypeConverter.RawTypedArrayHolderConverter()
+      inheritFrom<Array<*>>() -> JSTypeConverter.ArrayConverter()
+      inheritFrom<Collection<*>>() -> JSTypeConverter.CollectionConverter()
+      else -> JSTypeConverter.PassThroughConverter()
     }
   }
 

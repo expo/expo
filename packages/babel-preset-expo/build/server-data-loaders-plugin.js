@@ -7,7 +7,6 @@ const LOADER_EXPORT_NAME = 'loader';
 function serverDataLoadersPlugin(api) {
     const { types: t } = api;
     const routerAbsoluteRoot = api.caller(common_1.getExpoRouterAbsoluteAppRoot);
-    const isServer = api.caller(common_1.getIsServer);
     const isLoaderBundle = api.caller(common_1.getIsLoaderBundle);
     return {
         name: 'expo-server-data-loaders',
@@ -26,11 +25,6 @@ function serverDataLoadersPlugin(api) {
                 path.remove();
             },
             ExportNamedDeclaration(path, state) {
-                // NOTE(@hassankhan): Server bundles currently preserve loaders for SSG, a followup is
-                // required to remove them.
-                if (isServer && !isLoaderBundle) {
-                    return;
-                }
                 // Early exit if file is not within the `app/` directory
                 if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
                     debug('Skipping file outside app directory:', state.file.opts.filename);

@@ -12,6 +12,7 @@ const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
 const server_data_loaders_plugin_1 = require("./server-data-loaders-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
+const widgets_plugin_1 = require("./widgets-plugin");
 function getOptions(options, platform) {
     const tag = platform === 'web' ? 'web' : 'native';
     return {
@@ -80,6 +81,19 @@ function babelPresetExpo(api, options = {}) {
         !isServerEnv &&
         // Give users the ability to opt-out of the feature, per-platform.
         platformOptions['react-compiler'] !== false) {
+        const reactCompilerOptions = platformOptions['react-compiler'];
+        const reactCompilerOptOutDirectives = new Set([
+            // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
+            'widget',
+            // We need to manually include the default opt-out directives, since they get overridden
+            // See:
+            // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L48C1-L48C77
+            // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L69-L86
+            'use no memo',
+            'use no forget',
+            // Add the user's override but preserve defaults above to avoid the pitfall of them being removed
+            ...(reactCompilerOptions?.customOptOutDirectives ?? []),
+        ]);
         extraPlugins.push([
             require('babel-plugin-react-compiler'),
             {
@@ -89,7 +103,9 @@ function babelPresetExpo(api, options = {}) {
                     ...(platformOptions['react-compiler']?.environment ?? {}),
                 },
                 panicThreshold: isDev ? undefined : 'NONE',
-                ...platformOptions['react-compiler'],
+                ...reactCompilerOptions,
+                // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
+                customOptOutDirectives: [...reactCompilerOptOutDirectives],
             },
         ]);
     }
@@ -184,6 +200,11 @@ function babelPresetExpo(api, options = {}) {
     }
     // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
     extraPlugins.push(environment_restricted_imports_1.environmentRestrictedImportsPlugin);
+    // Transform widget component JSX expressions to capture widget components for native-side evaluation.
+    // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
+    if ((0, common_1.hasModule)('expo-widgets')) {
+        extraPlugins.push(widgets_plugin_1.widgetsPlugin);
+    }
     if (platformOptions.enableReactFastRefresh ||
         (isFastRefreshEnabled && platformOptions.enableReactFastRefresh !== false)) {
         extraPlugins.push([

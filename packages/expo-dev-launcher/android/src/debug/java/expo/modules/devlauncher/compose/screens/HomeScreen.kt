@@ -101,12 +101,11 @@ fun HomeScreen(
       val runningPackagers = state.runningPackagers
       if (runningPackagers.isNotEmpty()) {
         LocalPackagers(
-          state.isFetchingPackagers,
           runningPackagers,
           onAction
         )
       } else {
-        DevelopmentSessionSection(state.isFetchingPackagers, onAction)
+        DevelopmentSessionSection(onAction)
       }
 
       Spacer(NewAppTheme.spacing.`6`)
@@ -121,7 +120,6 @@ fun HomeScreen(
 
 @Composable
 private fun LocalPackagers(
-  isFetchingPackagers: Boolean,
   runningPackagers: Set<PackagerInfo>,
   onAction: (HomeAction) -> Unit
 ) {
@@ -147,7 +145,7 @@ private fun LocalPackagers(
       modifier = Modifier
         .fillMaxWidth()
     ) {
-      DevelopmentSessionActions(isFetchingPackagers, onAction)
+      DevelopmentSessionActions(onAction)
     }
   }
 }
@@ -197,13 +195,11 @@ fun HomeScreenPreview() {
         runningPackagers = setOf(
           PackagerInfo(
             description = "BareExpo",
-            url = "http://localhost:8081",
-            isDevelopmentSession = true
+            url = "http://localhost:8081"
           ),
           PackagerInfo(
             description = "Another App",
-            url = "http://localhost:8081",
-            isDevelopmentSession = true
+            url = "http://localhost:8081"
           )
         ),
         recentlyOpenedApps = listOf(

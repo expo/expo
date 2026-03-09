@@ -2,7 +2,7 @@ import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useMemo } from 'react';
 import type { SearchBarProps } from 'react-native-screens';
 
-import { Screen } from '../../views/Screen';
+import { useCompositionOption } from '../../fork/native-stack/composition-options';
 
 // TODO: Discuss adding SearchBarSlot to react-native-screens header items
 // and exposing it as Stack.Header.SearchBarPreferredSlot
@@ -35,9 +35,96 @@ export interface StackSearchBarProps extends SearchBarProps {}
  * }
  * ```
  */
-export function StackSearchBar(props: StackSearchBarProps) {
-  const updatedOptions = useMemo(() => appendStackSearchBarPropsToOptions({}, props), [props]);
-  return <Screen options={updatedOptions} />;
+export function StackSearchBar({
+  ref,
+  autoCapitalize,
+  autoFocus,
+  barTintColor,
+  tintColor,
+  cancelButtonText,
+  disableBackButtonOverride,
+  hideNavigationBar,
+  hideWhenScrolling,
+  inputType,
+  obscureBackground,
+  onBlur,
+  onCancelButtonPress,
+  onChangeText,
+  onClose,
+  onFocus,
+  onOpen,
+  onSearchButtonPress,
+  placeholder,
+  placement,
+  allowToolbarIntegration,
+  textColor,
+  hintTextColor,
+  headerIconColor,
+  shouldShowHintSearchIcon,
+}: StackSearchBarProps) {
+  const options = useMemo(
+    () =>
+      appendStackSearchBarPropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        {
+          ref,
+          autoCapitalize,
+          autoFocus,
+          barTintColor,
+          tintColor,
+          cancelButtonText,
+          disableBackButtonOverride,
+          hideNavigationBar,
+          hideWhenScrolling,
+          inputType,
+          obscureBackground,
+          onBlur,
+          onCancelButtonPress,
+          onChangeText,
+          onClose,
+          onFocus,
+          onOpen,
+          onSearchButtonPress,
+          placeholder,
+          placement,
+          allowToolbarIntegration,
+          textColor,
+          hintTextColor,
+          headerIconColor,
+          shouldShowHintSearchIcon,
+        } satisfies Record<keyof StackSearchBarProps, unknown>
+      ),
+    [
+      ref,
+      autoCapitalize,
+      autoFocus,
+      barTintColor,
+      tintColor,
+      cancelButtonText,
+      disableBackButtonOverride,
+      hideNavigationBar,
+      hideWhenScrolling,
+      inputType,
+      obscureBackground,
+      onBlur,
+      onCancelButtonPress,
+      onChangeText,
+      onClose,
+      onFocus,
+      onOpen,
+      onSearchButtonPress,
+      placeholder,
+      placement,
+      allowToolbarIntegration,
+      textColor,
+      hintTextColor,
+      headerIconColor,
+      shouldShowHintSearchIcon,
+    ]
+  );
+  useCompositionOption(options);
+  return null;
 }
 
 export function appendStackSearchBarPropsToOptions(
