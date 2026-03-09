@@ -4,38 +4,107 @@ import { type ColorValue } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-/**
- * The size of the `FloatingActionButton`. Only applicable when `label` is not set.
- * - `'small'` - Renders a `SmallFloatingActionButton`.
- * - `'medium'` - Renders a standard `FloatingActionButton`.
- * - `'large'` - Renders a `LargeFloatingActionButton`.
- */
-export type FloatingActionButtonSize = 'small' | 'medium' | 'large';
+type SlotChildProps = {
+  children: React.ReactNode;
+};
 
+type NativeSlotViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
+
+/**
+ * Props for the `SmallFloatingActionButton` component.
+ */
+export type SmallFloatingActionButtonProps = {
+  /**
+   * Slot-based children (use `.Icon` sub-component).
+   */
+  children?: React.ReactNode;
+
+  /**
+   * The background color of the button container.
+   * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
+   */
+  containerColor?: ColorValue;
+
+  /**
+   * Callback invoked when the button is pressed.
+   */
+  onPress?: () => void;
+
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ExpoModifier[];
+};
+
+/**
+ * Props for the `FloatingActionButton` component.
+ */
 export type FloatingActionButtonProps = {
   /**
-   * The icon content to display inside the button. Pass an `Icon` component as a child.
+   * Slot-based children (use `.Icon` sub-component).
    */
-  children?: React.JSX.Element;
+  children?: React.ReactNode;
 
   /**
-   * Optional text label. When provided, renders an `ExtendedFloatingActionButton`
-   * with the label shown next to the icon.
+   * The background color of the button container.
+   * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
    */
-  label?: string;
+  containerColor?: ColorValue;
+
+  /**
+   * Callback invoked when the button is pressed.
+   */
+  onPress?: () => void;
+
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ExpoModifier[];
+};
+
+/**
+ * Props for the `LargeFloatingActionButton` component.
+ */
+export type LargeFloatingActionButtonProps = {
+  /**
+   * Slot-based children (use `.Icon` sub-component).
+   */
+  children?: React.ReactNode;
+
+  /**
+   * The background color of the button container.
+   * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
+   */
+  containerColor?: ColorValue;
+
+  /**
+   * Callback invoked when the button is pressed.
+   */
+  onPress?: () => void;
+
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ExpoModifier[];
+};
+
+/**
+ * Props for the `ExtendedFloatingActionButton` component.
+ */
+export type ExtendedFloatingActionButtonProps = {
+  /**
+   * Slot-based children (use `.Icon` and `.Text` sub-components).
+   */
+  children?: React.ReactNode;
 
   /**
    * Controls whether the label is shown (expanded) or hidden (collapsed).
-   * Only relevant when `label` is set.
    * @default true
    */
   expanded?: boolean;
-
-  /**
-   * The size of the button. Only applicable when `label` is not set.
-   * @default 'medium'
-   */
-  size?: FloatingActionButtonSize;
 
   /**
    * The background color of the button container.
@@ -57,14 +126,30 @@ export type FloatingActionButtonProps = {
 /**
  * @hidden
  */
-export type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onPress'> &
-  ViewEvent<'onPress', void>;
+type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onPress'> &
+  ViewEvent<'onPress', void> & {
+    variant: string;
+    expanded?: boolean;
+  };
 
 const FloatingActionButtonNativeView: React.ComponentType<NativeFloatingActionButtonProps> =
   requireNativeView('ExpoUI', 'FloatingActionButtonView');
 
-function transformFloatingActionButtonProps(
-  props: FloatingActionButtonProps
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
+
+function FABIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="icon">{props.children}</SlotNativeView>;
+}
+
+function FABText(props: SlotChildProps) {
+  return <SlotNativeView slotName="text">{props.children}</SlotNativeView>;
+}
+
+function transformProps(
+  props: FloatingActionButtonProps & { variant: string; expanded?: boolean }
 ): NativeFloatingActionButtonProps {
   const { children, onPress, modifiers, ...restProps } = props;
 
@@ -78,33 +163,101 @@ function transformFloatingActionButtonProps(
 }
 
 /**
- * Renders a Material Design 3 Floating Action Button.
+ * Renders a Material Design 3 small `FloatingActionButton`.
  *
- * When `label` is absent, renders a standard `FloatingActionButton` (or `SmallFloatingActionButton`
- * / `LargeFloatingActionButton` depending on `size`).
- * When `label` is present, renders an `ExtendedFloatingActionButton` with animated label expansion.
+ * Wraps [`SmallFloatingActionButton`](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#SmallFloatingActionButton(kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.material3.FloatingActionButtonElevation,androidx.compose.foundation.interaction.MutableInteractionSource,kotlin.Function0)).
  *
  * @example
- * Standard FAB:
  * ```tsx
- * import { FloatingActionButton, Icon } from '@expo/ui/jetpack-compose';
+ * import { SmallFloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
  *
- * <FloatingActionButton onPress={() => console.log('pressed')}>
- *   <Icon source={require('./assets/add.xml')} />
- * </FloatingActionButton>
- * ```
- *
- * @example
- * Extended FAB with label:
- * ```tsx
- * <FloatingActionButton
- *   label="New Item"
- *   expanded={true}
- *   onPress={() => console.log('pressed')}>
- *   <Icon source={require('./assets/add.xml')} />
- * </FloatingActionButton>
+ * <Host matchContents>
+ *   <SmallFloatingActionButton onPress={() => console.log('pressed')}>
+ *     <SmallFloatingActionButton.Icon>
+ *       <Icon source={require('./assets/add.xml')} />
+ *     </SmallFloatingActionButton.Icon>
+ *   </SmallFloatingActionButton>
+ * </Host>
  * ```
  */
-export function FloatingActionButton(props: FloatingActionButtonProps) {
-  return <FloatingActionButtonNativeView {...transformFloatingActionButtonProps(props)} />;
+function SmallFloatingActionButtonComponent(props: SmallFloatingActionButtonProps) {
+  return <FloatingActionButtonNativeView {...transformProps({ ...props, variant: 'small' })} />;
 }
+SmallFloatingActionButtonComponent.Icon = FABIcon;
+export { SmallFloatingActionButtonComponent as SmallFloatingActionButton };
+
+/**
+ * Renders a Material Design 3 standard `FloatingActionButton`.
+ *
+ * Wraps [`FloatingActionButton`](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#FloatingActionButton(kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.material3.FloatingActionButtonElevation,androidx.compose.foundation.interaction.MutableInteractionSource,kotlin.Function0)).
+ *
+ * @example
+ * ```tsx
+ * import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
+ *
+ * <Host matchContents>
+ *   <FloatingActionButton onPress={() => console.log('pressed')}>
+ *     <FloatingActionButton.Icon>
+ *       <Icon source={require('./assets/add.xml')} />
+ *     </FloatingActionButton.Icon>
+ *   </FloatingActionButton>
+ * </Host>
+ * ```
+ */
+function FloatingActionButtonComponent(props: FloatingActionButtonProps) {
+  return <FloatingActionButtonNativeView {...transformProps({ ...props, variant: 'medium' })} />;
+}
+FloatingActionButtonComponent.Icon = FABIcon;
+export { FloatingActionButtonComponent as FloatingActionButton };
+
+/**
+ * Renders a Material Design 3 large `FloatingActionButton`.
+ *
+ * Wraps [`LargeFloatingActionButton`](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#LargeFloatingActionButton(kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.material3.FloatingActionButtonElevation,androidx.compose.foundation.interaction.MutableInteractionSource,kotlin.Function0)).
+ *
+ * @example
+ * ```tsx
+ * import { LargeFloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
+ *
+ * <Host matchContents>
+ *   <LargeFloatingActionButton onPress={() => console.log('pressed')}>
+ *     <LargeFloatingActionButton.Icon>
+ *       <Icon source={require('./assets/add.xml')} />
+ *     </LargeFloatingActionButton.Icon>
+ *   </LargeFloatingActionButton>
+ * </Host>
+ * ```
+ */
+function LargeFloatingActionButtonComponent(props: LargeFloatingActionButtonProps) {
+  return <FloatingActionButtonNativeView {...transformProps({ ...props, variant: 'large' })} />;
+}
+LargeFloatingActionButtonComponent.Icon = FABIcon;
+export { LargeFloatingActionButtonComponent as LargeFloatingActionButton };
+
+/**
+ * Renders a Material Design 3 `ExtendedFloatingActionButton` with animated label expansion.
+ *
+ * Wraps [`ExtendedFloatingActionButton`](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ExtendedFloatingActionButton(kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.material3.FloatingActionButtonElevation,androidx.compose.foundation.interaction.MutableInteractionSource,kotlin.Function0)).
+ *
+ * @example
+ * ```tsx
+ * import { ExtendedFloatingActionButton, Host, Icon, Text } from '@expo/ui/jetpack-compose';
+ *
+ * <Host matchContents>
+ *   <ExtendedFloatingActionButton expanded={true} onPress={() => console.log('pressed')}>
+ *     <ExtendedFloatingActionButton.Icon>
+ *       <Icon source={require('./assets/edit.xml')} />
+ *     </ExtendedFloatingActionButton.Icon>
+ *     <ExtendedFloatingActionButton.Text>
+ *       <Text>Edit</Text>
+ *     </ExtendedFloatingActionButton.Text>
+ *   </ExtendedFloatingActionButton>
+ * </Host>
+ * ```
+ */
+function ExtendedFloatingActionButtonComponent(props: ExtendedFloatingActionButtonProps) {
+  return <FloatingActionButtonNativeView {...transformProps({ ...props, variant: 'extended' })} />;
+}
+ExtendedFloatingActionButtonComponent.Icon = FABIcon;
+ExtendedFloatingActionButtonComponent.Text = FABText;
+export { ExtendedFloatingActionButtonComponent as ExtendedFloatingActionButton };

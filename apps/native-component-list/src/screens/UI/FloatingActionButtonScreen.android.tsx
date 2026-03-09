@@ -1,4 +1,12 @@
-import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
+import {
+  ExtendedFloatingActionButton,
+  FloatingActionButton,
+  Host,
+  Icon,
+  LargeFloatingActionButton,
+  SmallFloatingActionButton,
+  Text as ComposeText,
+} from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -16,32 +24,36 @@ export default function FloatingActionButtonScreen() {
 
         {/* Standard FAB sizes */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Standard FAB sizes</Text>
+          <Text style={styles.sectionTitle}>FAB variants</Text>
           <View style={styles.row}>
             <View style={styles.fabWrapper}>
               <Text style={styles.label}>small</Text>
               <Host matchContents>
-                <FloatingActionButton size="small" onPress={() => Alert.alert('Small FAB pressed')}>
-                  <Icon source={addIcon} />
-                </FloatingActionButton>
+                <SmallFloatingActionButton onPress={() => Alert.alert('Small FAB pressed')}>
+                  <SmallFloatingActionButton.Icon>
+                    <Icon source={addIcon} />
+                  </SmallFloatingActionButton.Icon>
+                </SmallFloatingActionButton>
               </Host>
             </View>
             <View style={styles.fabWrapper}>
               <Text style={styles.label}>medium</Text>
               <Host matchContents>
-                <FloatingActionButton
-                  size="medium"
-                  onPress={() => Alert.alert('Medium FAB pressed')}>
-                  <Icon source={addIcon} />
+                <FloatingActionButton onPress={() => Alert.alert('Medium FAB pressed')}>
+                  <FloatingActionButton.Icon>
+                    <Icon source={addIcon} />
+                  </FloatingActionButton.Icon>
                 </FloatingActionButton>
               </Host>
             </View>
             <View style={styles.fabWrapper}>
               <Text style={styles.label}>large</Text>
               <Host matchContents>
-                <FloatingActionButton size="large" onPress={() => Alert.alert('Large FAB pressed')}>
-                  <Icon source={addIcon} />
-                </FloatingActionButton>
+                <LargeFloatingActionButton onPress={() => Alert.alert('Large FAB pressed')}>
+                  <LargeFloatingActionButton.Icon>
+                    <Icon source={addIcon} />
+                  </LargeFloatingActionButton.Icon>
+                </LargeFloatingActionButton>
               </Host>
             </View>
           </View>
@@ -55,7 +67,9 @@ export default function FloatingActionButtonScreen() {
               <Text style={styles.label}>default</Text>
               <Host matchContents>
                 <FloatingActionButton onPress={() => Alert.alert('Default FAB pressed')}>
-                  <Icon source={addIcon} />
+                  <FloatingActionButton.Icon>
+                    <Icon source={addIcon} />
+                  </FloatingActionButton.Icon>
                 </FloatingActionButton>
               </Host>
             </View>
@@ -65,7 +79,9 @@ export default function FloatingActionButtonScreen() {
                 <FloatingActionButton
                   containerColor="#E8DEF8"
                   onPress={() => Alert.alert('Custom color FAB pressed')}>
-                  <Icon source={addIcon} />
+                  <FloatingActionButton.Icon>
+                    <Icon source={addIcon} />
+                  </FloatingActionButton.Icon>
                 </FloatingActionButton>
               </Host>
             </View>
@@ -75,7 +91,9 @@ export default function FloatingActionButtonScreen() {
                 <FloatingActionButton
                   containerColor="#FFD8E4"
                   onPress={() => Alert.alert('Custom color FAB pressed')}>
-                  <Icon source={addIcon} />
+                  <FloatingActionButton.Icon>
+                    <Icon source={addIcon} />
+                  </FloatingActionButton.Icon>
                 </FloatingActionButton>
               </Host>
             </View>
@@ -86,17 +104,21 @@ export default function FloatingActionButtonScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Extended FAB</Text>
           <Text style={styles.description}>
-            When a label is provided, an ExtendedFloatingActionButton is rendered. Toggle the
-            expanded state below.
+            An ExtendedFloatingActionButton with icon and text slots. Toggle the expanded state
+            below.
           </Text>
           <View style={styles.row}>
             <Host matchContents>
-              <FloatingActionButton
-                label="Edit"
+              <ExtendedFloatingActionButton
                 expanded={extended}
                 onPress={() => Alert.alert('Extended FAB pressed')}>
-                <Icon source={editIcon} />
-              </FloatingActionButton>
+                <ExtendedFloatingActionButton.Icon>
+                  <Icon source={editIcon} />
+                </ExtendedFloatingActionButton.Icon>
+                <ExtendedFloatingActionButton.Text>
+                  <ComposeText>Edit</ComposeText>
+                </ExtendedFloatingActionButton.Text>
+              </ExtendedFloatingActionButton>
             </Host>
           </View>
           <View style={styles.row}>
@@ -112,22 +134,30 @@ export default function FloatingActionButtonScreen() {
           <View style={styles.column}>
             <View style={[styles.row, { marginBottom: 12 }]}>
               <Host matchContents>
-                <FloatingActionButton
-                  label="New item"
+                <ExtendedFloatingActionButton
                   containerColor="#E8DEF8"
                   onPress={() => Alert.alert('Extended FAB pressed')}>
-                  <Icon source={addIcon} />
-                </FloatingActionButton>
+                  <ExtendedFloatingActionButton.Icon>
+                    <Icon source={addIcon} />
+                  </ExtendedFloatingActionButton.Icon>
+                  <ExtendedFloatingActionButton.Text>
+                    <ComposeText>New item</ComposeText>
+                  </ExtendedFloatingActionButton.Text>
+                </ExtendedFloatingActionButton>
               </Host>
             </View>
             <View style={styles.row}>
               <Host matchContents>
-                <FloatingActionButton
-                  label="Edit"
+                <ExtendedFloatingActionButton
                   containerColor="#FFD8E4"
                   onPress={() => Alert.alert('Extended FAB pressed')}>
-                  <Icon source={editIcon} />
-                </FloatingActionButton>
+                  <ExtendedFloatingActionButton.Icon>
+                    <Icon source={editIcon} />
+                  </ExtendedFloatingActionButton.Icon>
+                  <ExtendedFloatingActionButton.Text>
+                    <ComposeText>Edit</ComposeText>
+                  </ExtendedFloatingActionButton.Text>
+                </ExtendedFloatingActionButton>
               </Host>
             </View>
           </View>
@@ -138,7 +168,9 @@ export default function FloatingActionButtonScreen() {
       <View style={styles.floatingFab}>
         <Host matchContents>
           <FloatingActionButton onPress={() => Alert.alert('Floating FAB pressed')}>
-            <Icon source={addIcon} />
+            <FloatingActionButton.Icon>
+              <Icon source={addIcon} />
+            </FloatingActionButton.Icon>
           </FloatingActionButton>
         </Host>
       </View>

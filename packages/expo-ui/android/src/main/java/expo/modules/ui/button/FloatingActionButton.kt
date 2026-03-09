@@ -6,7 +6,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
@@ -15,17 +14,18 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
+import expo.modules.ui.findChildSlotView
 
-enum class FloatingActionButtonSize(val value: String) : Enumerable {
+enum class FloatingActionButtonVariant(val value: String) : Enumerable {
   SMALL("small"),
   MEDIUM("medium"),
-  LARGE("large")
+  LARGE("large"),
+  EXTENDED("extended")
 }
 
 data class FloatingActionButtonProps(
-  val label: String? = null,
+  val variant: FloatingActionButtonVariant = FloatingActionButtonVariant.MEDIUM,
   val expanded: Boolean = true,
-  val size: FloatingActionButtonSize = FloatingActionButtonSize.MEDIUM,
   val containerColor: Color? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -35,42 +35,58 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
   props: FloatingActionButtonProps,
   onPress: () -> Unit
 ) {
-  val label = props.label
-  val expanded = props.expanded
-  val size = props.size
   val containerColor = props.containerColor?.compose ?: FloatingActionButtonDefaults.containerColor
-
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
-  if (label != null) {
-    ExtendedFloatingActionButton(
+  val iconSlotView = findChildSlotView(view, "icon")
+  val iconContent: (@Composable () -> Unit)? = iconSlotView?.let {
+    {
+      with(ComposableScope()) {
+        with(it) {
+          Content()
+        }
+      }
+    }
+  }
+
+  when (props.variant) {
+    FloatingActionButtonVariant.SMALL -> SmallFloatingActionButton(
       onClick = onPress,
-      expanded = expanded,
-      icon = { Children(ComposableScope()) },
-      text = { Text(label) },
       containerColor = containerColor,
-      modifier = modifier
+      modifier = modifier,
+      content = iconContent ?: {}
     )
-  } else {
-    when (size) {
-      FloatingActionButtonSize.SMALL -> SmallFloatingActionButton(
+    FloatingActionButtonVariant.LARGE -> LargeFloatingActionButton(
+      onClick = onPress,
+      containerColor = containerColor,
+      modifier = modifier,
+      content = iconContent ?: {}
+    )
+    FloatingActionButtonVariant.EXTENDED -> {
+      val textSlotView = findChildSlotView(view, "text")
+      val textContent: (@Composable () -> Unit)? = textSlotView?.let {
+        {
+          with(ComposableScope()) {
+            with(it) {
+              Content()
+            }
+          }
+        }
+      }
+      ExtendedFloatingActionButton(
         onClick = onPress,
+        expanded = props.expanded,
+        icon = iconContent ?: {},
+        text = textContent ?: {},
         containerColor = containerColor,
-        modifier = modifier,
-        content = { Children(ComposableScope()) }
-      )
-      FloatingActionButtonSize.LARGE -> LargeFloatingActionButton(
-        onClick = onPress,
-        containerColor = containerColor,
-        modifier = modifier,
-        content = { Children(ComposableScope()) }
-      )
-      FloatingActionButtonSize.MEDIUM -> FloatingActionButton(
-        onClick = onPress,
-        containerColor = containerColor,
-        modifier = modifier,
-        content = { Children(ComposableScope()) }
+        modifier = modifier
       )
     }
+    FloatingActionButtonVariant.MEDIUM -> FloatingActionButton(
+      onClick = onPress,
+      containerColor = containerColor,
+      modifier = modifier,
+      content = iconContent ?: {}
+    )
   }
 }
