@@ -221,6 +221,8 @@ public final class GlassView: ExpoView {
   func setInteractive(_ interactive: Bool) {
     if interactive != glassIsInteractive {
       glassIsInteractive = interactive
+      // Changing isInteractive requires a new UIGlassEffect
+//      glassEffectView.effect = UIVisualEffect()
       updateEffect()
     }
   }
