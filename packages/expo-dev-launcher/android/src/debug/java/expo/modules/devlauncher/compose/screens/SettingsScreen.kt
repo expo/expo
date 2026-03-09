@@ -178,7 +178,7 @@ private fun MenuGesturesSection(state: SettingsState, onAction: (SettingsAction)
           },
           content = {
             NewText(
-              text = "Action button"
+              text = "Tools button"
             )
           },
           rightComponent = {

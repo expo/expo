@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#include <fbjni/ByteBuffer.h>
 #include "NativeStatementBinding.h"
 
 #include <android/log.h>
@@ -87,7 +88,11 @@ int NativeStatementBinding::bindStatementParam(
     auto byteArray = jni::static_ref_cast<jni::JArrayByte>(param);
     auto data = byteArray->getRegion(0, byteArray->size());
     ret = exsqlite3_bind_blob(stmt, index, data.get(), byteArray->size(),
-                            SQLITE_TRANSIENT);
+                              SQLITE_TRANSIENT);
+  } else if (param->isInstanceOf(jni::JByteBuffer::javaClassStatic())) {
+    auto byteBuffer = jni::static_ref_cast<jni::JByteBuffer>(param);
+    ret = exsqlite3_bind_blob(stmt, index, byteBuffer->getDirectAddress(), byteBuffer->getDirectSize(),
+                              SQLITE_TRANSIENT);
   } else {
     std::string stringArg;
     if (param->isInstanceOf(jni::JString::javaClassStatic())) {
@@ -144,11 +149,13 @@ jni::local_ref<jni::JObject> NativeStatementBinding::getColumnValue(int index) {
   }
   case SQLITE_BLOB: {
     size_t length = static_cast<size_t>(exsqlite3_column_bytes(stmt, index));
-    auto byteArray = jni::JArrayByte::newArray(length);
-    byteArray->setRegion(
-        0, length,
-        static_cast<const signed char *>(exsqlite3_column_blob(stmt, index)));
-    return byteArray;
+    auto byteBuffer = jni::JByteBuffer::allocateDirect(length);
+    memcpy(
+      byteBuffer->getDirectAddress(),
+      exsqlite3_column_blob(stmt, index),
+      length
+    );
+    return byteBuffer;
   }
   case SQLITE_NULL: {
     return nullptr;

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LinkAppleZoom = LinkAppleZoom;
 const react_1 = require("react");
-const ZoomTransitionEnabler_ios_1 = require("./ZoomTransitionEnabler.ios");
+const ZoomTransitionEnabler_1 = require("./ZoomTransitionEnabler");
 const zoom_transition_context_1 = require("./zoom-transition-context");
 const Slot_1 = require("../../ui/Slot");
 const native_1 = require("../preview/native");
@@ -14,7 +14,7 @@ const native_1 = require("../preview/native");
  * @platform ios 18+
  */
 function LinkAppleZoom(props) {
-    if (!(0, ZoomTransitionEnabler_ios_1.isZoomTransitionEnabled)()) {
+    if (!(0, ZoomTransitionEnabler_1.isZoomTransitionEnabled)()) {
         return <Slot_1.Slot {...props}/>;
     }
     return <LinkAppleZoomImpl {...props}/>;

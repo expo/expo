@@ -5,6 +5,7 @@ sidebar_title: Continuous Native Generation
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
 A single native project on its own is complicated to maintain, scale, and update. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies.
@@ -130,6 +131,8 @@ Prebuild is optional and works seamlessly with all Expo tools and services. For 
 Everything offered by Expo including [EAS](/eas/), Expo CLI, and the libraries in the Expo SDK are built to **fully support** bare React Native projects as this is a minimum requirement for supporting projects using `npx expo prebuild`. The only exception is the [Expo Go](https://expo.dev/go) app, which can load arbitrary React Native projects only if they include JavaScript fallbacks for native code absent in the Expo Go runtime.
 
 ## Common questions
+
+<FAQ>
 
 ### CNG
 
@@ -272,3 +275,5 @@ Other packages, such as [`react-native-ble-plx`](https://github.com/Polidea/reac
 Alternatively, we also have a repo for [out-of-tree config plugins](https://github.com/expo/config-plugins) which provides plugins for popular packages that haven't adopted the system yet. Think of this like [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) for TypeScript. We prefer packages ship their own config plugin, but if they haven't adopted the system yet, the community can use the packages listed in the repo.
 
 </Collapsible>
+
+</FAQ>

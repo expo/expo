@@ -40,6 +40,7 @@ class AppLauncherWithDatabaseMock: AppLauncherWithDatabase {
 }
 
 @Suite("AppLauncherWithDatabase", .serialized)
+@MainActor
 class AppLauncherWithDatabaseTests {
   var testDatabaseDir: URL
   var db: UpdatesDatabase

@@ -36,10 +36,16 @@ Pod::Spec.new do |s|
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{compiler_flags}",
   }
 
+  s.exclude_files = 'Tests/**/*'
+
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
     s.source_files = "**/*.{h,m,swift,mm,cpp}"
+  end
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*.{m,swift}'
   end
 end

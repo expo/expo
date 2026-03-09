@@ -96,18 +96,19 @@ export default function ToolbarScreen() {
 
   return (
     <>
+      <Stack.Screen
+        options={{
+          headerLargeTitle: false,
+        }}
+      />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         contentInsetAdjustmentBehavior="automatic">
         <Text style={styles.title}>Toolbar E2E Test Screen</Text>
-        <Stack.SearchBar
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setIsSearchFocused(false)}
-          onChangeText={(e) => setSearchText(e.nativeEvent.text)}
-          placement="integratedButton"
-          placeholder="This is toolbar searchbar"
-        />
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Button icon="safari" />
+        </Stack.Toolbar>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>

@@ -8,12 +8,10 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Expo UI ContextMenu matches the official Jetpack Compose [Menu API](https://developer.android.com/develop/ui/compose/components/menu) and displays a context menu when a trigger element is long-pressed or clicked.
 
 > **Note:** Also known as **DropdownMenu**.
-
-A context menu component that displays a menu when triggered, commonly used for actions and options.
 
 ## Installation
 
@@ -21,51 +19,31 @@ A context menu component that displays a menu when triggered, commonly used for 
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="ContextMenu component on Android."
-      src="/static/images/expo-ui/contextMenu/android.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { ContextMenu } from '@expo/ui/jetpack-compose';
+### Basic context menu
 
-    <ContextMenu style={{ width: 150, height: 50 }}>
-      <ContextMenu.Items>
-        <Button
-          elementColors={{ containerColor: '#0000ff', contentColor: '#00ff00' }}
-          onPress={() => console.log('Pressed1')}>
-          Hello
-        </Button>
-        <Button
-          variant="bordered"
-          color="#ff0000"
-          onPress={() => console.log('Pressed2')}>
-          Love it
-        </Button>
-        <Picker
-          label="Doggos"
-          options={['very', 'veery', 'veeery', 'much']}
-          variant="menu"
-          selectedIndex={selectedIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
-        />
-      </ContextMenu.Items>
-      <ContextMenu.Trigger>
-        <Button variant="bordered" style={{ width: 150, height: 50 }}>
-          Show Menu
-        </Button>
-      </ContextMenu.Trigger>
-    </ContextMenu>
-    ```
+```tsx BasicContextMenuExample.tsx
+import { Host, ContextMenu, Button } from '@expo/ui/jetpack-compose';
 
-  </Tab>
-</Tabs>
-
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/menu) for more information.
+export default function BasicContextMenuExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu style={{ width: 150, height: 50 }}>
+        <ContextMenu.Items>
+          <Button onPress={() => console.log('Pressed Hello')}>Hello</Button>
+          <Button variant="bordered" color="#ff0000" onPress={() => console.log('Pressed Love it')}>
+            Love it
+          </Button>
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Button variant="bordered" onPress={() => {}}>
+            Show Menu
+          </Button>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
 
 ## API
 

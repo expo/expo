@@ -239,6 +239,24 @@ export const scaleEffect = (scale: number | { x: number; y: number }) =>
 export const rotationEffect = (angle: number) => createModifier('rotationEffect', { angle });
 
 /**
+ * Applies a 3D rotation transformation.
+ * @param params - The rotation parameters: `angle` (in degrees), `axis` (x, y, z), and `perspective`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotation3deffect(_:axis:anchor:anchorz:perspective:)).
+ */
+export const rotation3DEffect = (params: {
+  angle: number;
+  axis?: { x?: number; y?: number; z?: number };
+  perspective?: number;
+}) =>
+  createModifier('rotation3DEffect', {
+    angle: params.angle,
+    axisX: params.axis?.x ?? 0,
+    axisY: params.axis?.y ?? 0,
+    axisZ: params.axis?.z ?? 0,
+    perspective: params.perspective ?? 1,
+  });
+
+/**
  * Applies an offset (translation) to a view.
  * @param params - The offset parameters: `x` and `y`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/offset(x:y:)).
@@ -388,6 +406,13 @@ export const bold = () => createModifier('bold', {});
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
  */
 export const italic = () => createModifier('italic', {});
+
+/**
+ * Modifies the fonts of all child views to use fixed-width digits, if possible, while leaving other characters proportionally spaced.
+ * When applied to `Text`, modifies the text view's font to use fixed-width digits, while leaving other characters proportionally spaced.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/monospaceddigit()).
+ */
+export const monospacedDigit = () => createModifier('monospacedDigit', {});
 
 /**
  * Sets the tint color of a view.
@@ -971,6 +996,12 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
  */
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
 
+/**
+ * Adds a luminance to alpha effect to this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
+ */
+export const luminanceToAlpha = () => createModifier('luminanceToAlpha', {});
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -992,17 +1023,20 @@ export type BuiltInModifier =
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
   | ReturnType<typeof onAppear>
+  | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
   | ReturnType<typeof scaleEffect>
   | ReturnType<typeof rotationEffect>
+  | ReturnType<typeof rotation3DEffect>
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
   | ReturnType<typeof foregroundStyle>
   | ReturnType<typeof bold>
   | ReturnType<typeof italic>
+  | ReturnType<typeof monospacedDigit>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>

@@ -1,0 +1,81 @@
+---
+title: TextButton
+description: A Jetpack Compose TextButton component for text-styled buttons.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI TextButton matches the official Jetpack Compose [Text Button](https://developer.android.com/develop/ui/compose/components/button#text) API and displays a button without a background container, using only text as the visual element.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic text button
+
+```tsx BasicTextButtonExample.tsx
+import { Host, TextButton } from '@expo/ui/jetpack-compose';
+
+export default function BasicTextButtonExample() {
+  return (
+    <Host matchContents>
+      <TextButton onPress={() => console.log('Pressed')}>Click me</TextButton>
+    </Host>
+  );
+}
+```
+
+### Disabled text button
+
+Set the `disabled` prop to prevent user interaction.
+
+```tsx DisabledTextButtonExample.tsx
+import { Host, TextButton } from '@expo/ui/jetpack-compose';
+
+export default function DisabledTextButtonExample() {
+  return (
+    <Host matchContents>
+      <TextButton disabled onPress={() => console.log('Pressed')}>
+        Disabled
+      </TextButton>
+    </Host>
+  );
+}
+```
+
+### Text button with custom color
+
+Use the `color` prop to change the button text color.
+
+```tsx CustomColorTextButtonExample.tsx
+import { Host, TextButton, Column } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorTextButtonExample() {
+  return (
+    <Host matchContents>
+      <Column>
+        <TextButton color="#E91E63" onPress={() => console.log('Pink')}>
+          Pink button
+        </TextButton>
+        <TextButton color="#4CAF50" onPress={() => console.log('Green')}>
+          Green button
+        </TextButton>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { TextButton } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/textbutton" apiName="TextButton" />

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/jetpack-compose/AnimatedVisibility/index.tsx"],"names":[],"mappings":"AAEA,OAAO,EAAE,kBAAkB,EAAkB,MAAM,iBAAiB,CAAC;AAIrE,MAAM,MAAM,uBAAuB,GAAG;IACpC,QAAQ,CAAC,EAAE,KAAK,CAAC,SAAS,CAAC;IAC3B;;;OAGG;IACH,OAAO,EAAE,OAAO,CAAC;CAClB,GAAG,kBAAkB,CAAC;AAKvB,wBAAgB,kBAAkB,CAAC,KAAK,EAAE,uBAAuB,+BAEhE"}

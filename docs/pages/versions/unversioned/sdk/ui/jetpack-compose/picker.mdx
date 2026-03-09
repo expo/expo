@@ -8,72 +8,93 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A picker component that allows users to select from a list of options with different display styles.
+Expo UI Picker matches the official Jetpack Compose [Segmented Button](https://developer.android.com/develop/ui/compose/components/segmented-button) and [Radio Button](https://developer.android.com/develop/ui/compose/components/radio-button) APIs and supports segmented and radio picker variants.
 
 ## Installation
 
 <APIInstallSection />
 
-## Radio picker
+## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Picker component (radio) on Android."
-      src="/static/images/expo-ui/radioPicker/android.png"
-      className="max-w-[480px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Picker } from '@expo/ui/jetpack-compose';
+### Segmented picker
 
-    <Picker
-      options={['$', '$$', '$$$', '$$$$']}
-      selectedIndex={selectedIndex}
-      onOptionSelected={({ nativeEvent: { index } }) => {
-        setSelectedIndex(index);
-      }}
-      variant="radio"
-    />
-    ```
+Use the `variant="segmented"` prop to display a segmented button group.
 
-  </Tab>
-</Tabs>
+```tsx SegmentedPickerExample.tsx
+import { useState } from 'react';
+import { Host, Picker } from '@expo/ui/jetpack-compose';
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/radio-button) for more information.
+export default function SegmentedPickerExample() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-## Segmented picker
+  return (
+    <Host matchContents>
+      <Picker
+        options={['$', '$$', '$$$', '$$$$']}
+        selectedIndex={selectedIndex}
+        onOptionSelected={({ nativeEvent: { index } }) => {
+          setSelectedIndex(index);
+        }}
+        variant="segmented"
+      />
+    </Host>
+  );
+}
+```
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Picker component on Android."
-      src="/static/images/expo-ui/segmentedPicker/android.png"
-      className="max-w-[480px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Picker } from '@expo/ui/jetpack-compose';
+### Radio picker
 
-    <Picker
-      options={['$', '$$', '$$$', '$$$$']}
-      selectedIndex={selectedIndex}
-      onOptionSelected={({ nativeEvent: { index } }) => {
-        setSelectedIndex(index);
-      }}
-      variant="segmented"
-    />
-    ```
+Use the `variant="radio"` prop to display a list of radio buttons.
 
-  </Tab>
-</Tabs>
+```tsx RadioPickerExample.tsx
+import { useState } from 'react';
+import { Host, Picker } from '@expo/ui/jetpack-compose';
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/segmented-button) for more information.
+export default function RadioPickerExample() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  return (
+    <Host matchContents>
+      <Picker
+        options={['Small', 'Medium', 'Large']}
+        selectedIndex={selectedIndex}
+        onOptionSelected={({ nativeEvent: { index } }) => {
+          setSelectedIndex(index);
+        }}
+        variant="radio"
+      />
+    </Host>
+  );
+}
+```
+
+### Picker with custom color
+
+Use the `color` prop to customize the picker's accent color.
+
+```tsx CustomColorPickerExample.tsx
+import { useState } from 'react';
+import { Host, Picker } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorPickerExample() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  return (
+    <Host matchContents>
+      <Picker
+        options={['Option A', 'Option B', 'Option C']}
+        selectedIndex={selectedIndex}
+        onOptionSelected={({ nativeEvent: { index } }) => {
+          setSelectedIndex(index);
+        }}
+        variant="segmented"
+        color="#6200EE"
+      />
+    </Host>
+  );
+}
+```
 
 ## API
 

@@ -5,7 +5,6 @@ export type {
   XcassetIcon,
   DrawableIcon,
   MaterialIcon,
-  BaseNativeTabsTriggerIconProps,
   NativeTabsTriggerIconProps,
   NativeTabsTriggerBadgeProps,
   NativeTabsBottomAccessoryProps,

@@ -11,6 +11,7 @@ interface InitMetadata {
   version: string;
 }
 
+let logPath = process.cwd();
 let logStream: LogStream | undefined;
 
 function parseLogTarget(env: string | undefined) {
@@ -23,6 +24,7 @@ function parseLogTarget(env: string | undefined) {
       try {
         const parsedPath = path.parse(env);
         logDestination = path.format(parsedPath);
+        logPath = parsedPath.dir;
       } catch {
         logDestination = undefined;
       }
@@ -110,6 +112,17 @@ export const events: EventLoggerBuilder = ((
     }
   }
   log.category = category;
+
+  log.path = function relativePath(target: string | undefined | null): string | null {
+    try {
+      return target != null && path.isAbsolute(target)
+        ? path.relative(logPath, target).replace(/\\/, '/') || '.'
+        : (target ?? null);
+    } catch {
+      return target || null;
+    }
+  };
+
   return log;
 }) as EventLoggerBuilder;
 

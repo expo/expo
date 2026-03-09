@@ -292,7 +292,8 @@
 /regulatory-compliance/privacy-shield /regulatory-compliance/data-and-privacy-protection 301
 
 # After changing brownfield docs
-/brownfield/installing-expo-modules /brownfield/get-started 301
+/brownfield/installing-expo-modules /brownfield/overview 301
+/brownfield/get-started /brownfield/isolated-approach 301
 
 # After removing Navigation section from Home and adding a Navigation page
 /develop/file-based-routing /develop/app-navigation 301
@@ -313,3 +314,8 @@
 
 # After creating EAS environment variables section
 /eas/hosting/environment-variables /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
+
+# After separating expo-router reference into multiple subsections
+/versions/unversioned/sdk/router-ui /versions/unversioned/sdk/router/ui 301
+/versions/unversioned/sdk/router-native-tabs /versions/unversioned/sdk/router/native-tabs 301
+/versions/unversioned/sdk/router-split-view /versions/unversioned/sdk/router/split-view 301

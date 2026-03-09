@@ -8,7 +8,7 @@ class ReactNativeActivity : BrownfieldTestActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
-    showReactNativeFragment()
+    showReactNativeFragment("main")
     setupBrownfieldTests()
   }
 }

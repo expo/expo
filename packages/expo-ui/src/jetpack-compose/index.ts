@@ -34,5 +34,9 @@ export * from './RadioButton';
 export * from './Surface';
 export * from './Text';
 
-export * from './layout';
+export * from './AnimatedVisibility';
+export * from './Box';
+export * from './Row';
+export * from './Column';
+export * from './FlowRow';
 export { ViewEvent } from '../types';

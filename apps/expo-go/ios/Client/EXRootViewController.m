@@ -351,7 +351,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentViewController = viewController;
 
     if (isShowingApp && appRecord.appManager.reactHost) {
-      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
       [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
 
       DevMenuConfiguration *config = [DevMenuManager shared].configuration;

@@ -1,6 +1,6 @@
 ---
-title: BottomSheet
-description: A Jetpack Compose BottomSheet component that presents content from the bottom of the screen.
+title: ModalBottomSheet
+description: A Jetpack Compose ModalBottomSheet component that presents content from the bottom of the screen.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android']
@@ -8,10 +8,8 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A bottom sheet component that slides up from the bottom of the screen to present content using native Android bottom sheet behavior.
+Expo UI ModalBottomSheet matches the official Jetpack Compose [Bottom Sheet API](https://developer.android.com/develop/ui/compose/components/bottom-sheets) and displays content in a modal sheet that slides up from the bottom.
 
 ## Installation
 
@@ -19,35 +17,64 @@ A bottom sheet component that slides up from the bottom of the screen to present
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="BottomSheet component on Android."
-      src="/static/images/expo-ui/bottomsheet/android.png"
-      className="max-w-[240px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { BottomSheet } from '@expo/ui/jetpack-compose';
+### Basic bottom sheet
 
-    <BottomSheet
-      isOpened={isOpened}
-      onIsOpenedChange={setIsOpened}
-      style={{ minHeight: 200 }}>
-      <Text>Hello from bottom sheet!</Text>
-    </BottomSheet>
-    ```
+```tsx BasicBottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
-  </Tab>
-</Tabs>
+export default function BasicBottomSheetExample() {
+  const [visible, setVisible] = useState(false);
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/bottom-sheets) for more information.
+  return (
+    <Host matchContents>
+      <Button onPress={() => setVisible(true)}>Open Sheet</Button>
+      {visible && (
+        <ModalBottomSheet onDismissRequest={() => setVisible(false)}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+            <Text>Hello from bottom sheet!</Text>
+            <Text>You can add more content here.</Text>
+            <Button onPress={() => setVisible(false)}>Close</Button>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
+### Full-screen bottom sheet
+
+```tsx FullScreenBottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function FullScreenBottomSheetExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onPress={() => setVisible(true)}>Open Full Sheet</Button>
+      {visible && (
+        <ModalBottomSheet skipPartiallyExpanded={true} onDismissRequest={() => setVisible(false)}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+            <Text>This sheet expands to full screen.</Text>
+            <Text>Add as much content as you need.</Text>
+            <Button onPress={() => setVisible(false)}>Close</Button>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
 
 ## API
 
 ```tsx
-import { BottomSheet } from '@expo/ui/jetpack-compose';
+import { ModalBottomSheet } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/bottomsheet" apiName="BottomSheet" />

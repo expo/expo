@@ -180,10 +180,7 @@ class DevMenuFragment(
               DevMenuBottomSheet(viewModel.state, viewModel::onAction)
               MovableFloatingActionButton(
                 state = viewModel.state,
-                onRefreshPress = {
-                  viewModel.onAction(DevMenuAction.Reload)
-                },
-                onOpenMenuPress = {
+                onPress = {
                   viewModel.onAction(DevMenuAction.Open)
                 }
               )

@@ -148,14 +148,14 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
 
 ### Widgets
 
-#### Prerequisite: Registering widget layout
+#### Prerequisite: Creating widget
 
-Widget components must be registered once using `registerWidgetLayout` and marked with the `'widget'` directive.
+Start by creating a Widget using the `createWidget` function and pass the widget component marked with the `'widget'` directive.
 
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
 import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
-import { registerWidgetLayout, WidgetBase } from 'expo-widgets';
+import { createWidget, WidgetBase } from 'expo-widgets';
 
 type MyWidgetProps = {
   count: number;
@@ -172,34 +172,34 @@ const MyWidget = (props: WidgetBase<MyWidgetProps>) => {
   );
 };
 
-registerWidgetLayout('MyWidget', MyWidget);
+export default createWidget('MyWidget', MyWidget);
 ```
 
 The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
 
 #### Basic widget
 
-The simplest way to create a widget is to update it using `updateWidgetSnapshot`. This creates a widget with a single timeline entry that displays immediately.
+An effective way to update a widget is to use the `updateSnapshot` method. This creates a widget timeline with a single entry that displays immediately.
 
-The example below continues from [Registering widget layout](#registering-widget-layout).
+The example below continues from [Creating widget](#prerequisite-creating-widget).
 
 ```tsx
-import { updateWidgetSnapshot } from 'expo-widgets';
+import MyWidget from './MyWidget';
 
 // Update the widget
-updateWidgetSnapshot('MyWidget', { count: 5 });
+MyWidget.updateSnapshot({ count: 5 });
 ```
 
 #### Timeline widget
 
-Use `updateWidgetTimeline` to schedule widget updates at specific time. System will automatically update the widget based on the timeline.
+Use `updateTimeline` method to schedule widget updates at specific time. System will automatically update the widget based on the timeline.
 
-The example below continues from [Registering widget layout](#registering-widget-layout).
+The example below continues from [Creating widget](#prerequisite-creating-widget).
 
 ```tsx
-import { updateWidgetTimeline } from 'expo-widgets';
+import MyWidget from './MyWidget';
 
-updateWidgetTimeline('MyWidget', [
+MyWidget.updateTimeline([
   { date: new Date(), props: { count: 1 } },
   { date: new Date(Date.now() + 3600000), props: { count: 2 } }, // 1 hour from now
   { date: new Date(Date.now() + 7200000), props: { count: 3 } }, // 2 hours from now
@@ -213,7 +213,7 @@ Widget component receives a `family` prop indicating which size is being rendere
 
 ```tsx
 import { HStack, Text, VStack } from '@expo/ui/swift-ui';
-import { registerWidgetLayout, updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
+import { createWidget, WidgetBase } from 'expo-widgets';
 
 type WeatherWidgetProps = {
   temperature: number;
@@ -250,9 +250,10 @@ const WeatherWidget = (props: WidgetBase<WeatherWidgetProps>) => {
   );
 };
 
-registerWidgetLayout('WeatherWidget', WeatherWidget);
+const Widget = createWidget('WeatherWidget', WeatherWidget);
+export default Widget;
 
-updateWidgetSnapshot('WeatherWidget', {
+Widget.updateSnapshot({
   temperature: 72,
   condition: 'Sunny',
 });
@@ -262,14 +263,14 @@ updateWidgetSnapshot('WeatherWidget', {
 
 Live Activities display real-time information on the Lock Screen and in the Dynamic Island on supported devices.
 
-#### Prerequisite: Registering Live Activity layout
+#### Prerequisite: Creating Live Activity
 
-Live Activity layouts must be registered once using `registerLiveActivityLayout` and marked with the `'widget'` directive.
+Live Activity layouts must be created once using `createLiveActivity` and marked with the `'widget'` directive.
 
 ```tsx
 import { Image, Text, VStack } from '@expo/ui/swift-ui';
 import { font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
-import { registerLiveActivityLayout } from 'expo-widgets';
+import { createLiveActivity } from 'expo-widgets';
 
 type DeliveryActivityProps = {
   etaMinutes: number;
@@ -311,29 +312,27 @@ const DeliveryActivity = (props: DeliveryActivityProps) => {
   };
 };
 
-registerLiveActivityLayout('DeliveryActivity', DeliveryActivity);
+export default createLiveActivity('DeliveryActivity', DeliveryActivity);
 ```
 
 #### Starting a Live Activity
 
-The example below continues from [Registering Live Activity layout](#registering-live-activity-layout).
+The example below continues from [Creating Live Activity](#prerequisite-creating-live-activity).
 
 ```tsx
 import { Image, Text, VStack } from '@expo/ui/swift-ui';
 import { font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
-import { startLiveActivity } from 'expo-widgets';
 import { Button, View } from 'react-native';
+import DeliveryActivity from './DeliveryActivity';
 
 function App() {
   const startDeliveryTracking = () => {
     // Start the Live Activity
-    const activityId = startLiveActivity('DeliveryActivity', {
+    const instance = DeliveryActivity.start({
       etaMinutes: 15,
       status: 'Your delivery is on the way',
     });
-    console.log('Started Live Activity:', activityId);
-
-    // Store activityId for later updates
+    // Store instance
   };
 
   return (
@@ -350,10 +349,10 @@ export default App;
 The example below continues from [Starting a Live Activity](#starting-a-live-activity).
 
 ```tsx
-import { updateLiveActivity } from 'expo-widgets';
+import { LiveActivity } from 'expo-widgets';
 
-function updateDelivery(activityId: string) {
-  updateLiveActivity(activityId, 'DeliveryActivity', {
+function updateDelivery(instance: LiveActivity<DeliveryActivityProps>) {
+  instance.update({
     etaMinutes: 2,
     status: 'Delivery arriving soon!',
   });
@@ -364,7 +363,7 @@ function updateDelivery(activityId: string) {
 
 {/* prettier-ignore */}
 ```tsx
-import * as ExpoWidgets from 'expo-widgets';
+import { createWidget, createLiveActivity } from 'expo-widgets';
 ```
 
 <APISection packageName="expo-widgets" />

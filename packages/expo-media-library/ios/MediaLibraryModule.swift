@@ -356,6 +356,28 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       changeDelegate = nil
       allAssetsFetchResult = nil
     }
+      
+    AsyncFunction("setAssetFavoriteAsync") { (assetId: String, isFavorite: Bool, promise: Promise) in
+      if !checkPermissions(promise: promise) {
+        return
+      }
+ 
+      guard let asset = getAssetBy(id: assetId) else {
+        promise.resolve(false)
+        return
+      }
+
+      PHPhotoLibrary.shared().performChanges {          
+        let request = PHAssetChangeRequest(for: asset)
+        request.isFavorite = isFavorite
+      } completionHandler: { success, error in
+        if success {
+          promise.resolve(success)
+        } else {
+          promise.reject(SetAssetFavoriteFailedException(error))
+        }
+      }
+    }
   }
 
   private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {

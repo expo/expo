@@ -28,7 +28,7 @@ class FormDelegate: OnContactPickingResultHandler {
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
 
-  func presentEditForm(for contact: ContactNext, options: FormOptions?, promise: Promise) throws {
+  func editWithForm(for contact: ContactNext, options: FormOptions?, promise: Promise) throws {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
     }

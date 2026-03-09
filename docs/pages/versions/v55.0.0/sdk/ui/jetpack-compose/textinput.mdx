@@ -8,10 +8,8 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A text input component that allows users to enter and edit text using native Android text fields.
+Expo UI TextInput matches the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input) and supports single-line and multiline text input with various keyboard types.
 
 ## Installation
 
@@ -19,25 +17,56 @@ A text input component that allows users to enter and edit text using native And
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="TextInput component on Android."
-      src="/static/images/expo-ui/textinput/android.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { TextInput } from '@expo/ui/jetpack-compose';
+### Basic text input
 
-    <TextInput autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
-    ```
+```tsx BasicTextInputExample.tsx
+import { useState } from 'react';
+import { Host, TextInput } from '@expo/ui/jetpack-compose';
 
-  </Tab>
-</Tabs>
+export default function BasicTextInputExample() {
+  const [value, setValue] = useState('Hello, world!');
 
-> See [Official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/text/user-input) for more information.
+  return (
+    <Host matchContents>
+      <TextInput defaultValue={value} onChangeText={setValue} autocorrection={false} />
+    </Host>
+  );
+}
+```
+
+### Multiline text input
+
+```tsx MultilineTextInputExample.tsx
+import { useState } from 'react';
+import { Host, TextInput } from '@expo/ui/jetpack-compose';
+
+export default function MultilineTextInputExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextInput defaultValue={value} onChangeText={setValue} multiline={true} numberOfLines={4} />
+    </Host>
+  );
+}
+```
+
+### Numeric keyboard
+
+```tsx NumericTextInputExample.tsx
+import { useState } from 'react';
+import { Host, TextInput } from '@expo/ui/jetpack-compose';
+
+export default function NumericTextInputExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextInput defaultValue={value} onChangeText={setValue} keyboardType="numeric" />
+    </Host>
+  );
+}
+```
 
 ## API
 

@@ -54,9 +54,11 @@ function getServerManifest(route, options) {
         ];
     }
     // Remove duplicates from the runtime manifest which expands array syntax.
-    const flat = getFlatNodes(route)
-        .sort(({ route: a }, { route: b }) => (0, routing_1.sortRoutes)(b, a))
-        .reverse();
+    const flat = route
+        ? getFlatNodes(route)
+            .sort(({ route: a }, { route: b }) => (0, routing_1.sortRoutes)(b, a))
+            .reverse()
+        : [];
     const apiRoutes = uniqueBy(flat.filter(({ route }) => route.type === 'api'), ({ normalizedContextKey }) => normalizedContextKey);
     const otherRoutes = uniqueBy(flat.filter(({ route }) => route.type === 'route' ||
         (route.type === 'rewrite' && (route.methods === undefined || route.methods.includes('GET')))), ({ normalizedContextKey }) => normalizedContextKey);
@@ -92,7 +94,7 @@ function getServerManifest(route, options) {
         redirects: getMatchableManifestForPaths(redirects),
         rewrites: getMatchableManifestForPaths(rewrites),
     };
-    if (route.middleware) {
+    if (route?.middleware) {
         manifest.middleware = {
             file: route.middleware.contextKey,
         };

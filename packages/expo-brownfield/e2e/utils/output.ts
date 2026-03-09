@@ -54,7 +54,7 @@ export const BUILD_IOS = {
     `- Verbose: false`,
     `- Artifacts path: ${projectRoot}/artifacts`,
   ],
-  HERMES_COPYING: `Copying hermes XCFramework from Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework to`,
+  HERMES_COPYING: (projectRoot: string) => `Copying XCFrameworks to: ${projectRoot}/artifacts`,
   PACKAGE_COMMAND: (projectRoot: string, workspace: string, configuration: 'Debug' | 'Release') => [
     `xcodebuild`,
     `-create-xcframework`,
@@ -62,6 +62,9 @@ export const BUILD_IOS = {
     `-framework ${projectRoot}/ios/build/Build/Products/${configuration.toLowerCase()}-iphonesimulator/testapp${workspace}brownfield.framework`,
     `-output ${projectRoot}/artifacts/testapp${workspace}brownfield.xcframework`,
   ],
+  PACKAGE_CONFIGURATION: (packageName: string) => `- Package name: ${packageName}`,
+  PACKAGE_CREATION: (packageName: string) =>
+    `Creating Swift package with name: ${packageName} at path:`,
 };
 
 /**

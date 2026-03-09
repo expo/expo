@@ -2,6 +2,7 @@ package dev.expo.brownfieldintegratedtester
 
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import expo.modules.brownfield.BrownfieldMessage
 import expo.modules.brownfield.BrownfieldMessaging
@@ -14,7 +15,7 @@ import kotlin.concurrent.timerTask
 open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
   // Listeners
   private var messagingListenerId: String? = null
-  private var stateListener: Removable? = null
+  private var stateListeners: MutableList<Removable?> = mutableListOf()
 
   // Other test utils
   private var messageTimer: Timer? = null
@@ -26,21 +27,10 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
         BrownfieldMessaging.addListener { message ->
           Log.i("BrownfieldTestActivity", "Message from React Native received:")
           Log.i("BrownfieldTestActivity", message.toString())
-          showToast(message)
+          showDialog(message)
         }
 
-    // Shared state
-    stateListener =
-        BrownfieldState.subscribe("counter") { state: Any? ->
-          val count = state as? Double
-          if (count == null) {
-            Log.i("BrownfieldTestActivity", "Failed to parse state update as a double")
-            return@subscribe
-          }
-          // Return (synchronize) duplicated value to JS
-          BrownfieldState.set("counter-duplicated", count * 2)
-        }
-
+    setupStateListeners()
     startMessageTimer()
   }
 
@@ -50,7 +40,7 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
     messagingListenerId?.let { BrownfieldMessaging.removeListener(it) }
     stopMessageTimer()
     // Clean up state tests
-    stateListener?.remove()
+    stateListeners.forEach { it?.remove() }
   }
 
   private fun startMessageTimer() {
@@ -67,17 +57,61 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
         }
   }
 
+  private fun setupStateListeners() {
+    stateListeners +=
+        mutableListOf<Removable?>(
+            BrownfieldState.subscribe("number") { number ->
+              val cast = number as? Double
+              if (cast != null) {
+                Log.i("BrownfieldState", cast.toString())
+              }
+            },
+            BrownfieldState.subscribe("string") { string ->
+              val cast = string as? String
+              if (cast != null) {
+                Log.i("BrownfieldState", cast)
+              }
+            },
+            BrownfieldState.subscribe("boolean") { bool ->
+              val cast = bool as? Boolean
+              if (cast != null) {
+                Log.i("BrownfieldState", cast.toString())
+              }
+            },
+            BrownfieldState.subscribe("array") { array ->
+              val cast = array as? MutableList<*>
+              if (cast != null) {
+                Log.i("BrownfieldState", cast.toString())
+              }
+            },
+            BrownfieldState.subscribe("object") { obj ->
+              val cast = obj as? MutableMap<*, *>
+              if (cast != null) {
+                Log.i("BrownfieldState", cast.toString())
+              }
+            },
+        )
+  }
+
   private fun stopMessageTimer() {
     messageTimer?.cancel()
     messageTimer = null
   }
 
-  private fun showToast(message: BrownfieldMessage) {
+  private fun showDialog(message: BrownfieldMessage) {
     val sender = message["sender"] as? String
     val nested = message["source"] as? Map<*, *>
     val platform = nested?.get("platform") as? String
     if (sender != null && platform != null) {
-      Toast.makeText(this, "$platform($sender)", Toast.LENGTH_LONG).show()
+      runOnUiThread {
+        AlertDialog.Builder(this)
+            .setTitle("Message Received") // Optional: give it a title
+            .setMessage("$platform($sender)")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss() // Closes the dialog when clicked
+            }
+            .show()
+      }
     }
   }
 
@@ -97,7 +131,7 @@ open class BrownfieldTestActivity : BrownfieldActivity(), DefaultHardwareBackBtn
     val timeString =
         java.time.LocalDateTime.now()
             .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"))
-    BrownfieldState.set("time", mapOf("time" to timeString))
+    BrownfieldState.set("time", timeString)
   }
 
   override fun invokeDefaultOnBackPressed() {

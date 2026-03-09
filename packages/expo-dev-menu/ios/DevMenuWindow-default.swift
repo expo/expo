@@ -103,12 +103,11 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
       self.backgroundColor = .clear
     }
 
-    DevMenuManager.shared.updateFABVisibility(menuDismissing: true)
-
     devMenuViewController.dismiss(animated: true) {
       self.isDismissing = false
       self.isHidden = true
       self.backgroundColor = UIColor(white: 0, alpha: 0.4)
+      DevMenuManager.shared.updateFABVisibility()
       completion?()
     }
   }

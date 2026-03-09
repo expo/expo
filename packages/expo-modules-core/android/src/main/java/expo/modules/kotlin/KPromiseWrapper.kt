@@ -12,7 +12,7 @@ class KPromiseWrapper(
     )
   }
 
-  override fun reject(code: String, message: String?, cause: Throwable?) {
+  override fun reject(code: String?, message: String?, cause: Throwable?) {
     bridgePromise.reject(code, message, cause)
   }
 }

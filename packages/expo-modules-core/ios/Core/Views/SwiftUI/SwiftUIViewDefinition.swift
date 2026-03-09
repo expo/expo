@@ -100,14 +100,14 @@ extension ExpoSwiftUI {
           let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)
           // Set up events to call view's `dispatchEvent` method.
           // This is supported only on the new architecture, `dispatchEvent` exists only there.
-          props.setUpEvents(view.dispatchEvent(_:payload:))
+          props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
           return AppleView.from(view)
         }
 
         let view = SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
         // Set up events to call view's `dispatchEvent` method.
         // This is supported only on the new architecture, `dispatchEvent` exists only there.
-        props.setUpEvents(view.dispatchEvent(_:payload:))
+        props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
         return AppleView.from(view)
       }
     }

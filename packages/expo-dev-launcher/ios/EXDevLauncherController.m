@@ -475,7 +475,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 #if RCT_DEV
     // Connect to the websocket, ignore downloaded update bundles
     if (![bundleUrl.scheme isEqualToString:@"file"]) {
-      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      //[[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      RCTLogWarn(@"bundle scheme is file - unable to connect to sharedPackageConnection from EXDevLauncherController.");
     }
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
@@ -625,7 +626,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:self.appBridge];
 
   if (self.manifest != nil) {
     [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
@@ -637,8 +637,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (void)invalidateDevMenuApp
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:nil];
   [manager updateCurrentManifest:nil manifestURL:nil];
+  [manager setAppContext:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants

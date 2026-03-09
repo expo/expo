@@ -8,6 +8,7 @@ import path from 'node:path';
 import prompts from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
+import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
 import {
   installDependencies,
@@ -497,8 +498,18 @@ async function askForSubstitutionDataAsync(
     filteredPrompts.length > 0 ? await prompts(filteredPrompts, { onCancel }) : {};
 
   // Merge CLI-provided values with prompted values
-  const name = options.name ?? promptedValues.name ?? slugToModuleName(slug);
+  const rawName = options.name ?? promptedValues.name ?? slugToModuleName(slug);
+  const { name, wasRenamed } = ensureSafeModuleName(rawName);
   const projectPackage = options.package ?? promptedValues.package ?? slugToAndroidPackage(slug);
+
+  if (wasRenamed) {
+    console.log();
+    console.log(
+      chalk.yellow(
+        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
+      )
+    );
+  }
 
   if (isLocal) {
     return {
@@ -572,8 +583,18 @@ async function getSubstitutionDataFromOptions(
   isLocal: boolean,
   options: CommandOptions
 ): Promise<SubstitutionData | LocalSubstitutionData> {
-  const name = options.name ?? slugToModuleName(slug);
+  const rawName = options.name ?? slugToModuleName(slug);
+  const { name, wasRenamed } = ensureSafeModuleName(rawName);
   const projectPackage = options.package ?? slugToAndroidPackage(slug);
+
+  if (wasRenamed) {
+    console.log();
+    console.log(
+      chalk.yellow(
+        `⚠️  Module name "${rawName}" conflicts with an Apple framework. Renamed to "${name}" to avoid build errors.`
+      )
+    );
+  }
 
   debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
 

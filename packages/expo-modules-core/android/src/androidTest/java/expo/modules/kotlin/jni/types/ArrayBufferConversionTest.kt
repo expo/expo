@@ -25,6 +25,42 @@ class ArrayBufferConversionTest {
   )
 
   @Test
+  fun js_array_buffer_accepts_full_typed_array() = conversionTest<JavaScriptArrayBuffer, _>(
+    jsValue = "new Uint8Array([0x00, 0xff])",
+    nativeAssertion = { arrayBuffer ->
+      Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
+      Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(0x00.toByte())
+      Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(0xff.toByte())
+    },
+    map = {},
+    jsAssertion = {}
+  )
+
+  @Test
+  fun js_array_buffer_accepts_partial_typed_array_view() = conversionTest<JavaScriptArrayBuffer, _>(
+    jsValue = "new Uint8Array(new Uint8Array([1,2,3,4,5]).buffer, 1, 2)",
+    nativeAssertion = { arrayBuffer ->
+      Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
+      Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(2.toByte())
+      Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(3.toByte())
+    },
+    map = {},
+    jsAssertion = {}
+  )
+
+  @Test
+  fun native_array_buffer_accepts_partial_typed_array_view() = conversionTest<NativeArrayBuffer, _>(
+    jsValue = "new Uint8Array(new Uint8Array([1,2,3,4,5]).buffer, 1, 2)",
+    nativeAssertion = { arrayBuffer ->
+      Truth.assertThat(arrayBuffer.size()).isEqualTo(2)
+      Truth.assertThat(arrayBuffer.readByte(0)).isEqualTo(2.toByte())
+      Truth.assertThat(arrayBuffer.readByte(1)).isEqualTo(3.toByte())
+    },
+    map = {},
+    jsAssertion = {}
+  )
+
+  @Test
   fun js_array_buffer_should_be_returned() = conversionTest<JavaScriptArrayBuffer, _>(
     jsValue = "new Uint8Array([0x00, 0xff]).buffer",
     nativeAssertion = { arrayBuffer ->

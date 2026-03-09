@@ -29,7 +29,7 @@
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
 
-- (void)viewDidUpdateProps;
+- (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
 - (void)setShadowNodeSize:(float)width height:(float)height;
 

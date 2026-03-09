@@ -118,6 +118,15 @@ function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = f
     }
     return item;
 }
+// Custom menu action icons are not supported in react-navigation yet
+// But they are supported in react-native-screens
+// TODO(@ubax): Remove this workaround once react-navigation supports custom icons for menu actions.
+// https://linear.app/expo/issue/ENG-19853/remove-custom-conversion-logic-for-icon-from-packagesexpo
+function convertImageIconToPlatformIcon(icon) {
+    return icon.tinted
+        ? { type: 'templateSource', templateSource: icon.source }
+        : { type: 'imageSource', imageSource: icon.source };
+}
 function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     if (props.hidden) {
         return undefined;
@@ -148,13 +157,11 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     }
     // TODO: Add elementSize to react-native-screens
     if (sharedProps.icon) {
-        // Only SF Symbols are supported in submenu icons
-        // TODO(@ubax): Add support for other images in react-native-screens
         if (sharedProps.icon.type === 'sfSymbol') {
             item.icon = sharedProps.icon;
         }
         else {
-            console.warn('When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.');
+            item.icon = convertImageIconToPlatformIcon(sharedProps.icon);
         }
     }
     return item;
@@ -209,13 +216,11 @@ function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
         item.keepsMenuPresented = unstable_keepPresented;
     }
     if (sharedProps.icon) {
-        // Only SF Symbols are supported in submenu icons
-        // TODO(@ubax): Add support for other images in react-native-screens
         if (sharedProps.icon.type === 'sfSymbol') {
             item.icon = sharedProps.icon;
         }
         else {
-            console.warn('When Icon is used inside Stack.Toolbar.MenuAction, only sfSymbol icons are supported. This is a limitation of React Native Screens.');
+            item.icon = convertImageIconToPlatformIcon(sharedProps.icon);
         }
     }
     return item;

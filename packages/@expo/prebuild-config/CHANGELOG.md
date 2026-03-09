@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `STATUS_BAR_PLUGIN` deprecation warning shown on prebuild for default `create-expo-app` template by no longer auto-populating `androidStatusBar.backgroundColor` from the splash background color. ([#43444](https://github.com/expo/expo/issues/43444)) ([#43453](https://github.com/expo/expo/pull/43453) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+- Removed unused `withAndroidSplashLegacyMainActivity` file. ([#43516](https://github.com/expo/expo/pull/43516) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.7 — 2026-02-25
+
+### 🛠 Breaking changes
+
+- Remove the `androidNavigationBar.enforceContrast` and `androidNavigationBar.visible` properties handling (moved to the `expo-navigation-bar` plugin config). ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+- Deprecated and turned into no-op the `androidNavigationBar.backgroundColor` app config property. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.6 — 2026-02-20
 

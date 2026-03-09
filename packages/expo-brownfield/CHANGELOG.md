@@ -4,13 +4,38 @@
 
 ### 🛠 Breaking changes
 
+- [ios] rename option from 'usePrebuiltReactNative' to 'buildReactNativeFromSource' ([#43574](https://github.com/expo/expo/pull/43574) by [@pmleczek](https://github.com/pmleczek))
+
 ### 🎉 New features
 
 - [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
+- [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
+- [ios] enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
+- align using custom components between the platforms ([#43633](https://github.com/expo/expo/pull/43633) by [@pmleczek](https://github.com/pmleczek))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [test] add maestro e2e tests for dev menu ([#43421](https://github.com/expo/expo/pull/43421) by [@pmleczek](https://github.com/pmleczek))
+- [android] set react native version for all published artfacts ([#43693](https://github.com/expo/expo/pull/43693) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.11 — 2026-02-25
+
+### 💡 Others
+
+- [test] run brownfield e2e tests (cli + plugin) in sdk/check-packages workflow ([#43391](https://github.com/expo/expo/pull/43391) by [@pmleczek](https://github.com/pmleczek))
+
+## 55.0.10 — 2026-02-25
+
+### 🎉 New features
+
+- [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
+
+### 💡 Others
+
+- [test] setup maestro e2e tests for expo-brownfield on ios ([#43028](https://github.com/expo/expo/pull/43028) by [@pmleczek](https://github.com/pmleczek))
+- [state] add ios implementation & improvements ([#43236](https://github.com/expo/expo/pull/43236) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.9 — 2026-02-20
 

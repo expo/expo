@@ -4,7 +4,7 @@
  Specialized class for the view prop. Specifies the prop name and its setter.
  */
 public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: AnyViewProp, @unchecked Sendable {
-  public typealias SetterType = (ViewType, PropType) -> Void
+  public typealias SetterType = @MainActor (ViewType, PropType) -> Void
 
   /**
    Name of the view prop that JavaScript refers to.
@@ -46,23 +46,27 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
   public func set(value: Any, onView view: UIView, appContext: AppContext) throws {
     // Method's signature must be type-erased to conform to `AnyViewProp` protocol.
     // Given view must be castable to the generic `ViewType` type.
-    guard let view = view as? ViewType else {
-      throw IncompatibleViewException((propName: name, viewType: ViewType.self))
+    nonisolated(unsafe) let value = value
+
+    try MainActor.assumeIsolated {
+      guard let view = view as? ViewType else {
+        throw IncompatibleViewException((propName: name, viewType: ViewType.self))
+      }
+      if Optional.isNil(value), let defaultValue {
+        return setter(view, defaultValue)
+      }
+      guard let value = try propType.cast(value, appContext: appContext) as? PropType else {
+        throw Conversions.CastingException<PropType>(value)
+      }
+      setter(view, value)
     }
-    if Optional.isNil(value), let defaultValue {
-      return setter(view, defaultValue)
-    }
-    guard let value = try propType.cast(value, appContext: appContext) as? PropType else {
-      throw Conversions.CastingException<PropType>(value)
-    }
-    setter(view, value)
   }
 }
 
 /**
  An exception that is thrown when the view passed to prop's setter doesn't match the type in setter's definition.
  */
-internal class IncompatibleViewException: GenericException<(propName: String, viewType: UIView.Type)> {
+internal class IncompatibleViewException: GenericException<(propName: String, viewType: UIView.Type)>, @unchecked Sendable {
   override var reason: String {
     "Tried to set prop '\(param.propName)' on the view that isn't \(param.viewType)"
   }

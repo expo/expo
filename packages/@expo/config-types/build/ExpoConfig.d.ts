@@ -78,6 +78,7 @@ export interface ExpoConfig {
         barStyle?: 'light-content' | 'dark-content';
         /**
          * Specifies the background color of the status bar. Defaults to `#00000000` (transparent) for `dark-content` bar style and `#00000088` (semi-transparent black) for `light-content` bar style
+         * @deprecated Due to Android edge-to-edge enforcement, setting the status bar background color is deprecated and has no effect. This will be removed in a future release.
          */
         backgroundColor?: string;
         /**
@@ -86,11 +87,13 @@ export interface ExpoConfig {
         hidden?: boolean;
         /**
          * When false, the system status bar pushes the content of your app down (similar to `position: relative`). When true, the status bar floats above the content in your app (similar to `position: absolute`). Defaults to `true` to match the iOS status bar behavior (which can only float above content). Explicitly setting this property to `true` will add `android:windowTranslucentStatus` to `styles.xml` and may cause unexpected keyboard behavior on Android when using the `softwareKeyboardLayoutMode` set to `resize`. In this case you will have to use `KeyboardAvoidingView` to manage the keyboard layout.
+         * @deprecated Due to Android edge-to-edge enforcement, setting the status bar as translucent is deprecated and has no effect. This will be removed in a future release.
          */
         translucent?: boolean;
     };
     /**
      * Configuration for the bottom navigation bar on Android. Can be used to configure the `expo-navigation-bar` module in EAS Build.
+     * @deprecated Use the `expo-navigation-bar` plugin configuration instead
      */
     androidNavigationBar?: {
         /**

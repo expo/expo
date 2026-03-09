@@ -31,7 +31,7 @@ class AttendeeRepository(context: Context) {
     }
   }
 
-  suspend fun saveAttendeeForEvent(attendee: Attendee, eventID: String?): Int {
+  suspend fun saveAttendeeForEvent(attendee: Attendee, eventID: String?): Long {
     return if (attendee.isNewAttendeePayload) {
       contentResolver.insertAttendee(attendee, eventID)
     } else {
@@ -40,7 +40,7 @@ class AttendeeRepository(context: Context) {
   }
 
   suspend fun deleteAttendee(attendeeId: String): Boolean {
-    val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeId.toInt().toLong())
+    val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeId.toLong())
     val rows = withContext(Dispatchers.IO) {
       contentResolver.delete(uri, null, null)
     }
@@ -59,9 +59,9 @@ class AttendeeRepository(context: Context) {
   }
 }
 
-private suspend fun ContentResolver.insertAttendee(attendee: Attendee, eventID: String?): Int {
+private suspend fun ContentResolver.insertAttendee(attendee: Attendee, eventID: String?): Long {
   val contentValues = attendee.toContentValues().apply {
-    put(CalendarContract.Attendees.EVENT_ID, eventID?.toInt())
+    put(CalendarContract.Attendees.EVENT_ID, eventID?.toLong())
   }
 
   val attendeesUri = CalendarContract.Attendees.CONTENT_URI
@@ -69,13 +69,13 @@ private suspend fun ContentResolver.insertAttendee(attendee: Attendee, eventID: 
   val attendeeId = requireNotNull(attendeeUri?.lastPathSegment) {
     "Couldn't decode attendee ID from inserted content URI"
   }
-  return attendeeId.toInt()
+  return attendeeId.toLong()
 }
 
-private suspend fun ContentResolver.updateAttendee(attendee: Attendee): Int {
-  val attendeeId = requireNotNull(attendee.id?.toInt()) { "Attendee ID must be present when updating" }
+private suspend fun ContentResolver.updateAttendee(attendee: Attendee): Long {
+  val attendeeId = requireNotNull(attendee.id?.toLong()) { "Attendee ID must be present when updating" }
 
-  val updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeId.toLong())
+  val updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeId)
 
   withContext(Dispatchers.IO) {
     update(updateUri, attendee.toContentValues(), null, null)

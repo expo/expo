@@ -95,21 +95,15 @@ internal struct SectionView: ExpoSwiftUI.View {
     }
   }
   
-  private var contentChildren: SectionContent? {
-    props.children?
-      .compactMap({ $0.childView as? SectionContent })
-      .first
+  private var contentChildren: SlotView? {
+    props.children?.slot("content")
   }
 
-  private var headerView: SectionHeader? {
-    props.children?
-      .compactMap({ $0.childView as? SectionHeader })
-      .first
+  private var headerView: SlotView? {
+    props.children?.slot("header")
   }
 
-  private var footerView: SectionFooter? {
-    props.children?
-      .compactMap({ $0.childView as? SectionFooter })
-      .first
+  private var footerView: SlotView? {
+    props.children?.slot("footer")
   }
 }

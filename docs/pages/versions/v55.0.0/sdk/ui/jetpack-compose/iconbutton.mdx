@@ -1,0 +1,84 @@
+---
+title: IconButton
+description: A Jetpack Compose IconButton component for displaying tappable icon buttons.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+An icon button component that wraps an icon in a tappable container with different visual variants. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/button#icon) for more information.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic icon button
+
+```tsx BasicIconButton.tsx
+import { Host, IconButton, Icon } from '@expo/ui/jetpack-compose';
+
+export default function BasicIconButton() {
+  return (
+    <Host matchContents>
+      <IconButton onPress={() => console.log('Pressed')}>
+        <Icon source={require('./assets/favorite.xml')} contentDescription="Favorite" />
+      </IconButton>
+    </Host>
+  );
+}
+```
+
+### Variants
+
+Use the `variant` prop to change the visual style of the button. Available variants are `'default'`, `'bordered'`, and `'outlined'`.
+
+```tsx IconButtonVariants.tsx
+import { Host, IconButton, Icon } from '@expo/ui/jetpack-compose';
+
+export default function IconButtonVariants() {
+  return (
+    <Host matchContents>
+      <IconButton variant="default" onPress={() => console.log('Default')}>
+        <Icon source={require('./assets/favorite.xml')} contentDescription="Default" />
+      </IconButton>
+      <IconButton variant="bordered" onPress={() => console.log('Bordered')}>
+        <Icon source={require('./assets/favorite.xml')} contentDescription="Bordered" />
+      </IconButton>
+      <IconButton variant="outlined" onPress={() => console.log('Outlined')}>
+        <Icon source={require('./assets/favorite.xml')} contentDescription="Outlined" />
+      </IconButton>
+    </Host>
+  );
+}
+```
+
+### Disabled
+
+Set the `disabled` prop to prevent interaction.
+
+```tsx DisabledIconButton.tsx
+import { Host, IconButton, Icon } from '@expo/ui/jetpack-compose';
+
+export default function DisabledIconButton() {
+  return (
+    <Host matchContents>
+      <IconButton disabled onPress={() => console.log('Pressed')}>
+        <Icon source={require('./assets/favorite.xml')} contentDescription="Favorite" />
+      </IconButton>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { IconButton } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/iconbutton" apiName="IconButton" />

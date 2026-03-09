@@ -52,6 +52,7 @@ export type NavigationRoute = {
   isDeprecated?: boolean;
   inExpoGo?: boolean;
   hasVideoLink?: boolean;
+  isIndex?: boolean;
   children?: NavigationRouteWithSection[];
 };
 

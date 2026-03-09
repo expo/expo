@@ -75,6 +75,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ConfirmationDialog component',
+    route: 'ui/confirmation-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ConfirmationDialogScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},

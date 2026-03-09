@@ -5,7 +5,7 @@ description: Learn how to adopt Expo Prebuild in a project that was bootstrapped
 
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 
-There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][prebuild] to [continuously generate your native projects](/workflow/continuous-native-generation). This guide will show you how to adopt Expo Prebuild in a project that was bootstrapped with `npx @react-native-community/cli@latest init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your Android and iOS native projects. This may take a minute or two on a brand new project, and on a large project, it will be much longer.
+There are [many advantages](/workflow/continuous-native-generation) of using [Expo Prebuild][prebuild] to [continuously generate your native projects](/workflow/continuous-native-generation). This guide will show you how to adopt Expo Prebuild in a project that was bootstrapped with `npx @react-native-community/cli@latest init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your Android and iOS native projects. This may take a minute or two on a brand new project, and on a large project, it will be much longer.
 
 Adopting prebuild will automatically add support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from [Expo CLI][cli] in your project.
 
@@ -13,7 +13,7 @@ Adopting prebuild will automatically add support for developing modules with the
 
 ## Install the `expo` package
 
-The `expo` package contains the [`npx expo prebuild`](/more/expo-cli/#prebuild) command and indicates which [prebuild template](/workflow/prebuild#templates) to use:
+The `expo` package contains the [`npx expo prebuild`](/more/expo-cli/#prebuild) command and indicates which [prebuild template](/workflow/continuous-native-generation#templates) to use:
 
 <Terminal cmd={['$ npm install expo']} />
 
@@ -140,5 +140,5 @@ Prebuild is the tip of the automation iceberg, here are some features you can ad
 [expo-modules-core]: /modules/module-api/
 [dev-client]: /develop/development-builds/introduction/
 [config-plugins]: /config-plugins/introduction/
-[prebuild]: /workflow/prebuild
+[prebuild]: /workflow/continuous-native-generation
 [cli]: /more/expo-cli/

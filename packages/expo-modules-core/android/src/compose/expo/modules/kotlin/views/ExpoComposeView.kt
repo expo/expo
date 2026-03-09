@@ -149,6 +149,8 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   init {
     if (withHostingView) {
+      clipChildren = false
+      clipToPadding = false
       addComposeView()
     } else {
       this.visibility = GONE

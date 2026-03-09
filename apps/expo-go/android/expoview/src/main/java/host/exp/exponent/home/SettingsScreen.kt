@@ -306,7 +306,7 @@ fun DeveloperMenuSection(
       HorizontalDivider()
 
       SwitchRow(
-        text = "Action button",
+        text = "Tools button",
         checked = showFab,
         onCheckedChange = { newValue ->
           showFab = newValue

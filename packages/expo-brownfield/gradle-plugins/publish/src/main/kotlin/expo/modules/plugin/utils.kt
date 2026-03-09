@@ -8,7 +8,11 @@ import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.XmlProvider
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.json.JSONObject
+
+private const val EXPO_BROWNFIELD_RN_VERSION_KEY = "expoBrownfieldRnVersion"
+private const val EXPO_BROWNFIELD_HERMES_VERSION_KEY = "expoBrownfieldHermesVersion"
 
 /**
  * Find the app project in the root project.
@@ -105,13 +109,31 @@ internal fun getConfigExtension(project: Project): ExpoPublishExtension {
 }
 
 /**
- * Get the React Native version for the project.
+ * Return cached React Native version for the project.
+ *
+ * @param project The project to get the React Native version for.
+ * @return The cached React Native version for the project.
+ */
+internal fun getReactNativeVersion(project: Project): String {
+  val rootProject = project.rootProject
+  val ext = rootProject.extensions.getByType(ExtraPropertiesExtension::class.java)
+  if (!ext.has(EXPO_BROWNFIELD_RN_VERSION_KEY)) {
+    val version = getReactNativeVersionInternal(project)
+    ext.set(EXPO_BROWNFIELD_RN_VERSION_KEY, version)
+    return version
+  }
+
+  return ext.get(EXPO_BROWNFIELD_RN_VERSION_KEY) as String
+}
+
+/**
+ * Get the React Native version from the project.
  *
  * @param project The project to get the React Native version for.
  * @return The React Native version for the project.
  * @throws IllegalStateException if the React Native version cannot be inferred.
  */
-internal fun getReactNativeVersion(project: Project): String {
+internal fun getReactNativeVersionInternal(project: Project): String {
   return try {
     val process =
       ProcessBuilder("node", "--print", "require('react-native/package.json').version")
@@ -134,29 +156,47 @@ internal fun getReactNativeVersion(project: Project): String {
   }
 }
 
-  /**
-   * Get the Hermes version for the project.
-   *
-   * @param project The project to get the Hermes version for.
-   * @return The Hermes version for the project.
-   * @throws IllegalStateException if the Hermes version cannot be inferred.
-   */
-  internal fun getHermesVersion(project: Project): String {
-    val process =
-      ProcessBuilder("node", "--print", "require('hermes-compiler/package.json').version")
-        .directory(project.rootProject.projectDir)
-        .redirectErrorStream(true)
-        .start()
-
-    val version = process.inputStream.bufferedReader().readText().trim()
-    process.waitFor()
-
-    if (process.exitValue() == 0 && version.isNotEmpty()) {
-      return version
-    }
-
-    throw IllegalStateException("Failed to infer Hermes version via Node")
+/**
+ * Return cached Hermes version for the project.
+ *
+ * @param project The project to get the Hermes version for.
+ * @return The cached Hermes version for the project.
+ */
+internal fun getHermesVersion(project: Project): String {
+  val rootProject = project.rootProject
+  val ext = rootProject.extensions.getByType(ExtraPropertiesExtension::class.java)
+  if (!ext.has(EXPO_BROWNFIELD_HERMES_VERSION_KEY)) {
+    val version = getHermesVersionInternal(project)
+    ext.set(EXPO_BROWNFIELD_HERMES_VERSION_KEY, version)
+    return version
   }
+
+  return ext.get(EXPO_BROWNFIELD_HERMES_VERSION_KEY) as String
+}
+
+/**
+ * Get the Hermes version for the project.
+ *
+ * @param project The project to get the Hermes version for.
+ * @return The Hermes version for the project.
+ * @throws IllegalStateException if the Hermes version cannot be inferred.
+ */
+internal fun getHermesVersionInternal(project: Project): String {
+  val process =
+    ProcessBuilder("node", "--print", "require('hermes-compiler/package.json').version")
+      .directory(project.rootProject.projectDir)
+      .redirectErrorStream(true)
+      .start()
+
+  val version = process.inputStream.bufferedReader().readText().trim()
+  process.waitFor()
+
+  if (process.exitValue() == 0 && version.isNotEmpty()) {
+    return version
+  }
+
+  throw IllegalStateException("Failed to infer Hermes version via Node")
+}
 
 /**
  * Get the React Native version from the package.json file.
@@ -217,6 +257,9 @@ internal fun removeReactNativeDependencyPom(xml: XmlProvider) {
 
   dependencyNodes.forEach { dependency ->
     if (dependency.groupId() == "com.facebook.react" && dependency.artifactId() == "react-native") {
+      toRemove.add(dependency)
+    }
+    if (dependency.groupId() == "com.facebook.react" && dependency.artifactId() == "hermes-android") {
       toRemove.add(dependency)
     }
   }

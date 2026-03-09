@@ -17,7 +17,7 @@ const withWidgets = (config, props) => {
     let plugins = [];
     const deploymentTarget = '16.2';
     const targetName = 'ExpoWidgetsTarget';
-    let bundleIdentifier = props.bundleIdentifier;
+    let bundleIdentifier = props?.bundleIdentifier;
     if (!bundleIdentifier) {
         bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
         plugins.push([
@@ -28,7 +28,7 @@ const withWidgets = (config, props) => {
             },
         ]);
     }
-    let groupIdentifier = props.groupIdentifier;
+    let groupIdentifier = props?.groupIdentifier;
     if (!groupIdentifier) {
         if (!config.ios?.bundleIdentifier) {
             throw new Error('iOS bundle identifier is required. Please set `ios.bundleIdentifier` in `app.json` or `app.config.js`');
@@ -42,9 +42,9 @@ const withWidgets = (config, props) => {
             },
         ]);
     }
-    const widgets = props.widgets ?? [];
-    const enablePushNotifications = props.enablePushNotifications ?? false;
-    const frequentUpdates = props.frequentUpdates ?? false;
+    const widgets = props?.widgets ?? [];
+    const enablePushNotifications = props?.enablePushNotifications ?? false;
+    const frequentUpdates = props?.frequentUpdates ?? false;
     let sharedFiles = [];
     const setFiles = (files) => {
         sharedFiles = [...sharedFiles, ...files];

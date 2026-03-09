@@ -1,0 +1,70 @@
+---
+title: Card
+description: A Jetpack Compose Card component for displaying content in a styled container.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Card matches the official Jetpack Compose [Card API](https://developer.android.com/develop/ui/compose/components/card) and displays content inside a styled surface container with optional elevation and outline.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic card
+
+```tsx BasicCardExample.tsx
+import { Host, Card, Text } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicCardExample() {
+  return (
+    <Host matchContents>
+      <Card>
+        <Text modifiers={[paddingAll(16)]}>This is a basic card with default styling.</Text>
+      </Card>
+    </Host>
+  );
+}
+```
+
+### Card variants
+
+Use the `variant` prop to switch between `'default'`, `'elevated'`, and `'outlined'` styles.
+
+```tsx CardVariantsExample.tsx
+import { Host, Card, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function CardVariantsExample() {
+  return (
+    <Host matchContents>
+      <Column verticalArrangement={{ spacedBy: 12 }}>
+        <Card variant="default">
+          <Text modifiers={[paddingAll(16)]}>Default card</Text>
+        </Card>
+        <Card variant="elevated">
+          <Text modifiers={[paddingAll(16)]}>Elevated card</Text>
+        </Card>
+        <Card variant="outlined">
+          <Text modifiers={[paddingAll(16)]}>Outlined card</Text>
+        </Card>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Card } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/card" apiName="Card" />

@@ -6,9 +6,18 @@
 
 ### 🎉 New features
 
+- [Android] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add programmatic selection support for annotations via `selectAnnotation()` ref method. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add `onAnnotationClick` event callback for annotation tap handling. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-20
 

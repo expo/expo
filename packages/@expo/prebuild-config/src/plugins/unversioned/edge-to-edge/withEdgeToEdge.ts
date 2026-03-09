@@ -6,7 +6,6 @@ import {
 } from '@expo/config-plugins';
 import { type ExpoConfig } from '@expo/config-types';
 
-import { withEnforceNavigationBarContrast } from './withEnforceNavigationBarContrast';
 import { withRestoreDefaultTheme } from './withRestoreDefaultTheme';
 
 const TAG = 'EDGE_TO_EDGE_PLUGIN';
@@ -24,11 +23,6 @@ export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
       '`edgeToEdgeEnabled` customization is no longer available - Android 16 makes edge-to-edge mandatory. Remove the `edgeToEdgeEnabled` entry from your app.json/app.config.js.'
     );
   }
-
-  config = withEnforceNavigationBarContrast(
-    config,
-    config.androidNavigationBar?.enforceContrast !== false
-  );
 
   // We always restore the default theme in case the project has a leftover react-native-edge-to-edge theme from SDK 53.
   // If they are using react-native-edge-to-edge config plugin it'll be reapplied later.

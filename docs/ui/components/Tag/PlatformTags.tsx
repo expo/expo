@@ -19,7 +19,7 @@ export const PlatformTags = ({ prefix, platforms }: PlatformTagsProps) => {
   return (
     <CALLOUT tag="span" className="inline-flex items-center">
       {prefix && (
-        <span className={mergeClasses(STYLES_SECONDARY, '[table_&]:!text-2xs')}>
+        <span className={mergeClasses(STYLES_SECONDARY, '[table_&]:text-2xs!')}>
           {prefix}&ensp;
         </span>
       )}

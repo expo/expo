@@ -15,11 +15,11 @@ import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.services.FilePermissionService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -125,7 +125,7 @@ open class FileSystemLegacyModule : Module() {
         uriStr = parseFileUri(uriStr as String)
         absoluteUri = Uri.parse(uriStr)
       }
-      ensurePermission(absoluteUri, Permission.READ)
+      ensurePermission(absoluteUri, FilePermissionService.Permission.READ)
 
       if (uri.scheme == "file") {
         val file = absoluteUri.toFile()
@@ -177,7 +177,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("readAsStringAsync") { uriStr: String, options: ReadingOptions ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.READ)
+      ensurePermission(uri, FilePermissionService.Permission.READ)
 
       // TODO:Bacon: Add more encoding types to match iOS
       val encoding = options.encoding
@@ -208,7 +208,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("writeAsStringAsync") { uriStr: String, contents: String, options: WritingOptions ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.WRITE)
+      ensurePermission(uri, FilePermissionService.Permission.WRITE)
       val encoding = options.encoding
       val append = options.append
       getOutputStream(uri, append).use { out ->
@@ -224,7 +224,7 @@ open class FileSystemLegacyModule : Module() {
     AsyncFunction("deleteAsync") { uriStr: String, options: DeletingOptions ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
       val appendedUri = Uri.withAppendedPath(uri, "..")
-      ensurePermission(appendedUri, Permission.WRITE, "Location '$uri' isn't deletable.")
+      ensurePermission(appendedUri, FilePermissionService.Permission.WRITE, "Location '$uri' isn't deletable.")
 
       if (uri.scheme == "file") {
         val file = uri.toFile()
@@ -262,9 +262,13 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("moveAsync") { options: RelocatingOptions ->
       val fromUri = Uri.parse(slashifyFilePath(options.from))
-      ensurePermission(Uri.withAppendedPath(fromUri, ".."), Permission.WRITE, "Location '$fromUri' isn't movable.")
+      ensurePermission(
+        Uri.withAppendedPath(fromUri, ".."),
+        FilePermissionService.Permission.WRITE,
+        "Location '$fromUri' isn't movable."
+      )
       val toUri = Uri.parse(slashifyFilePath(options.to))
-      ensurePermission(toUri, Permission.WRITE)
+      ensurePermission(toUri, FilePermissionService.Permission.WRITE)
 
       if (fromUri.scheme == "file") {
         val from = fromUri.toFile()
@@ -289,9 +293,9 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("copyAsync") { options: RelocatingOptions ->
       val fromUri = Uri.parse(slashifyFilePath(options.from))
-      ensurePermission(fromUri, Permission.READ, "Location '$fromUri' isn't readable.")
+      ensurePermission(fromUri, FilePermissionService.Permission.READ, "Location '$fromUri' isn't readable.")
       val toUri = Uri.parse(slashifyFilePath(options.to))
-      ensurePermission(toUri, Permission.WRITE)
+      ensurePermission(toUri, FilePermissionService.Permission.WRITE)
 
       when {
         fromUri.scheme == "file" -> {
@@ -350,7 +354,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("makeDirectoryAsync") { uriStr: String, options: MakeDirectoryOptions ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.WRITE)
+      ensurePermission(uri, FilePermissionService.Permission.WRITE)
       if (uri.scheme == "file") {
         val file = uri.toFile()
         val previouslyCreated = file.isDirectory
@@ -368,7 +372,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("readDirectoryAsync") { uriStr: String? ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.READ)
+      ensurePermission(uri, FilePermissionService.Permission.READ)
 
       if (uri.scheme == "file") {
         val file = uri.toFile()
@@ -403,8 +407,8 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("getContentUriAsync") { uri: String ->
       val fileUri = Uri.parse(slashifyFilePath(uri))
-      ensurePermission(fileUri, Permission.WRITE)
-      ensurePermission(fileUri, Permission.READ)
+      ensurePermission(fileUri, FilePermissionService.Permission.WRITE)
+      ensurePermission(fileUri, FilePermissionService.Permission.READ)
       fileUri.checkIfFileDirExists()
 
       if (fileUri.scheme == "file") {
@@ -417,7 +421,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("readSAFDirectoryAsync") { uriStr: String ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.READ)
+      ensurePermission(uri, FilePermissionService.Permission.READ)
 
       if (uri.isSAFUri) {
         val file = DocumentFile.fromTreeUri(context, uri)
@@ -433,7 +437,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("makeSAFDirectoryAsync") { uriStr: String, dirName: String ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.WRITE)
+      ensurePermission(uri, FilePermissionService.Permission.WRITE)
 
       if (!uri.isSAFUri) {
         throw IOException("The URI '$uri' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.")
@@ -452,7 +456,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("createSAFFileAsync") { uriStr: String, fileName: String, mimeType: String ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.WRITE)
+      ensurePermission(uri, FilePermissionService.Permission.WRITE)
       if (uri.isSAFUri) {
         val dir = getNearestSAFFile(uri)
         if (dir == null || !dir.isDirectory) {
@@ -565,7 +569,7 @@ open class FileSystemLegacyModule : Module() {
 
     AsyncFunction("downloadAsync") { url: String, uriStr: String?, options: DownloadOptionsLegacy, promise: Promise ->
       val uri = Uri.parse(slashifyFilePath(uriStr))
-      ensurePermission(uri, Permission.WRITE)
+      ensurePermission(uri, FilePermissionService.Permission.WRITE)
       uri.checkIfFileDirExists()
 
       when {
@@ -767,7 +771,7 @@ open class FileSystemLegacyModule : Module() {
     }
   }
 
-  private fun permissionsForPath(path: String?): EnumSet<Permission>? {
+  private fun permissionsForPath(path: String?): EnumSet<FilePermissionService.Permission>? {
     if (path == null) {
       return null
     }
@@ -776,22 +780,22 @@ open class FileSystemLegacyModule : Module() {
 
   private fun permissionsForUri(uri: Uri) = when {
     uri.isSAFUri -> permissionsForSAFUri(uri)
-    uri.scheme == "content" -> EnumSet.of(Permission.READ)
-    uri.scheme == "asset" -> EnumSet.of(Permission.READ)
+    uri.scheme == "content" -> EnumSet.of(FilePermissionService.Permission.READ)
+    uri.scheme == "asset" -> EnumSet.of(FilePermissionService.Permission.READ)
     uri.scheme == "file" -> permissionsForPath(uri.path)
-    uri.scheme == null -> EnumSet.of(Permission.READ)
-    else -> EnumSet.noneOf(Permission::class.java)
+    uri.scheme == null -> EnumSet.of(FilePermissionService.Permission.READ)
+    else -> EnumSet.noneOf(FilePermissionService.Permission::class.java)
   }
 
-  private fun permissionsForSAFUri(uri: Uri): EnumSet<Permission> {
+  private fun permissionsForSAFUri(uri: Uri): EnumSet<FilePermissionService.Permission> {
     val documentFile = getNearestSAFFile(uri)
-    return EnumSet.noneOf(Permission::class.java).apply {
+    return EnumSet.noneOf(FilePermissionService.Permission::class.java).apply {
       if (documentFile != null) {
         if (documentFile.canRead()) {
-          add(Permission.READ)
+          add(FilePermissionService.Permission.READ)
         }
         if (documentFile.canWrite()) {
-          add(Permission.WRITE)
+          add(FilePermissionService.Permission.WRITE)
         }
       }
     }
@@ -800,18 +804,18 @@ open class FileSystemLegacyModule : Module() {
   // For now we only need to ensure one permission at a time, this allows easier error message strings,
   // we can generalize this when needed later
   @Throws(IOException::class)
-  private fun ensurePermission(uri: Uri, permission: Permission, errorMsg: String) {
+  private fun ensurePermission(uri: Uri, permission: FilePermissionService.Permission, errorMsg: String) {
     if (permissionsForUri(uri)?.contains(permission) != true) {
       throw IOException(errorMsg)
     }
   }
 
   @Throws(IOException::class)
-  private fun ensurePermission(uri: Uri, permission: Permission) {
-    if (permission == Permission.READ) {
+  private fun ensurePermission(uri: Uri, permission: FilePermissionService.Permission) {
+    if (permission == FilePermissionService.Permission.READ) {
       ensurePermission(uri, permission, "Location '$uri' isn't readable.")
     }
-    if (permission == Permission.WRITE) {
+    if (permission == FilePermissionService.Permission.WRITE) {
       ensurePermission(uri, permission, "Location '$uri' isn't writable.")
     }
     ensurePermission(uri, permission, "Location '$uri' doesn't have permission '${permission.name}'.")
@@ -888,7 +892,7 @@ open class FileSystemLegacyModule : Module() {
   @Throws(IOException::class)
   private fun createUploadRequest(url: String, fileUriString: String, options: FileSystemUploadOptions, decorator: RequestBodyDecorator): Request {
     val fileUri = Uri.parse(slashifyFilePath(fileUriString))
-    ensurePermission(fileUri, Permission.READ)
+    ensurePermission(fileUri, FilePermissionService.Permission.READ)
     fileUri.checkIfFileExists()
 
     val requestBuilder = Request.Builder().url(url)

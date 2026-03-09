@@ -14,6 +14,8 @@ Options:
   -a, --artifacts <artifacts>      path to the artifacts directory
   --dry-run                        only print the commands without executing
                                    them
+  -p, --package [package]          package artifacts as a Swift Package (with an
+                                   optionally specified name)
   -h, --help                       display help for command"
 `;
 
@@ -31,6 +33,8 @@ Options:
   -a, --artifacts <artifacts>      path to the artifacts directory
   --dry-run                        only print the commands without executing
                                    them
+  -p, --package [package]          package artifacts as a Swift Package (with an
+                                   optionally specified name)
   -h, --help                       display help for command"
 `;
 
@@ -48,5 +52,7 @@ Options:
   -a, --artifacts <artifacts>      path to the artifacts directory
   --dry-run                        only print the commands without executing
                                    them
+  -p, --package [package]          package artifacts as a Swift Package (with an
+                                   optionally specified name)
   -h, --help                       display help for command"
 `;

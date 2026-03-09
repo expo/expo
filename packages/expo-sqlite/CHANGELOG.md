@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+- Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))
+- Statement bind params now use native `ArrayBuffer`s for blob columns. ([#42639](https://github.com/expo/expo/pull/42639) by [@barthap](https://github.com/barthap))
+- [Android] Returned blob columns now use native `ArrayBuffer`s. ([#42640](https://github.com/expo/expo/pull/42640) by [@barthap](https://github.com/barthap))
+- [iOS] Returned blob columns now use native `ArrayBuffer`s. ([#42642](https://github.com/expo/expo/pull/42642) by [@barthap](https://github.com/barthap))
+
+## 55.0.10 — 2026-02-25
+
+### 💡 Others
+
+- Bumped dev-plugin-webui to SDK 55. ([#43412](https://github.com/expo/expo/pull/43412) by [@kudo](https://github.com/kudo))
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.8 — 2026-02-20
 
 _This version does not introduce any user-facing changes._

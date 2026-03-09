@@ -207,7 +207,14 @@ jobject NativeArrayBufferFrontendConverter::convert(
   const jsi::Value &value
 ) const {
   JSIContext *jsiContext = getJSIContext(rt);
-  auto arrayBuffer = value.asObject(rt).getArrayBuffer(rt);
+  auto object = value.asObject(rt);
+
+  if (isTypedArray(rt, object)) {
+    auto typedArray = TypedArray(rt, object);
+    return NativeArrayBuffer::newInstance(jsiContext, rt, typedArray).release();
+  }
+
+  auto arrayBuffer = object.getArrayBuffer(rt);
   return NativeArrayBuffer::newInstance(
     jsiContext,
     rt,
@@ -221,7 +228,7 @@ bool NativeArrayBufferFrontendConverter::canConvert(
 ) const {
   if (value.isObject()) {
     auto object = value.getObject(rt);
-    return object.isArrayBuffer(rt);
+    return object.isArrayBuffer(rt) || isTypedArray(rt, object);
   }
   return false;
 }
@@ -270,10 +277,14 @@ jobject JavaScriptArrayBufferFrontendConverter::convert(
   const jsi::Value &value
 ) const {
   JSIContext *jsiContext = getJSIContext(rt);
+  auto object = value.asObject(rt);
+  auto arrayBuffer = isTypedArray(rt, object) ?
+    TypedArray(rt, object).getViewedBufferSlice(rt) :
+    object.getArrayBuffer(rt);
   return JavaScriptArrayBuffer::newInstance(
     jsiContext,
     jsiContext->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::ArrayBuffer>(value.asObject(rt).getArrayBuffer(rt))
+    std::make_shared<jsi::ArrayBuffer>(std::move(arrayBuffer))
   ).release();
 }
 
@@ -281,7 +292,11 @@ bool JavaScriptArrayBufferFrontendConverter::canConvert(
   jsi::Runtime &rt,
   const jsi::Value &value
 ) const {
-  return value.isObject() && value.getObject(rt).isArrayBuffer(rt);
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt) || isTypedArray(rt, object);
+  }
+  return false;
 }
 
 jobject JavaScriptFunctionFrontendConverter::convert(

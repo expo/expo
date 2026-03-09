@@ -114,6 +114,7 @@ class ExpoRouterModule : Module() {
       "onerrorcontainer" to com.google.android.material.R.attr.colorOnErrorContainer,
       "outline" to com.google.android.material.R.attr.colorOutline,
       "outlinevariant" to com.google.android.material.R.attr.colorOutlineVariant,
+      "background" to android.R.attr.colorBackground,
       "onbackground" to com.google.android.material.R.attr.colorOnBackground,
       "surface" to com.google.android.material.R.attr.colorSurface,
       "onsurface" to com.google.android.material.R.attr.colorOnSurface,

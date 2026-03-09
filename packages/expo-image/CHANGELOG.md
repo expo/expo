@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Added `tintColor` option to `ImageLoadOptions`. This resolves [#42007](https://github.com/expo/expo/issues/42007). ([#42821](https://github.com/expo/expo/pull/42821)) by [@HubertBer](https://github.com/HubertBer).
+
 ### 💡 Others
+
+## 55.0.5 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed compilation errors in Xcode 26.4 Beta 1 ([#43346](https://github.com/expo/expo/pull/43346) by [@tsapeta](https://github.com/tsapeta))
 
 ## 55.0.4 — 2026-02-20
 

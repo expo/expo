@@ -8,10 +8,8 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A slider component that allows users to select a value from a continuous range by dragging a thumb along a track.
+Expo UI Slider matches the official Jetpack Compose [Slider API](https://developer.android.com/develop/ui/compose/components/slider) and allows selecting values from a bounded range.
 
 ## Installation
 
@@ -19,31 +17,60 @@ A slider component that allows users to select a value from a continuous range b
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Slider component on Android."
-      src="/static/images/expo-ui/slider/android.png"
-      className="max-w-[480px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Slider } from '@expo/ui/jetpack-compose';
+### Basic slider
 
-    <Slider
-      style={{ minHeight: 60 }}
-      value={value}
-      onValueChange={(value) => {
-        setValue(value);
-      }}
-    />
-    ```
+```tsx BasicSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
 
-  </Tab>
-</Tabs>
+export default function BasicSliderExample() {
+  const [value, setValue] = useState(0.5);
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/slider) for more information.
+  return (
+    <Host matchContents>
+      <Slider value={value} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Slider with custom range
+
+Use the `min` and `max` props to define the slider's value range.
+
+```tsx CustomRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
+
+export default function CustomRangeSliderExample() {
+  const [value, setValue] = useState(50);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} min={0} max={100} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Slider with steps
+
+Use the `steps` prop to define discrete increments. Set `steps` to `0` for continuous values.
+
+```tsx SteppedSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
+
+export default function SteppedSliderExample() {
+  const [value, setValue] = useState(0);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} min={0} max={100} steps={10} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
 
 ## API
 

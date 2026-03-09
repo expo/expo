@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Add version mapping for SDK 55 and react native 0.83 ([#43682](https://github.com/expo/expo/pull/43682) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+## 0.14.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 0.14.8 — 2026-02-20
 

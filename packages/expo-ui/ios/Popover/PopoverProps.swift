@@ -8,10 +8,6 @@ internal class PopoverViewProps: UIBaseViewProps {
   @Field var arrowEdge: PopoverArrowEdgeOption?
 }
 
-internal final class PopoverViewContentPorps: ExpoSwiftUI.ViewProps {}
-
-internal final class PopoverViewPopContentPorps: ExpoSwiftUI.ViewProps {}
-
 internal enum PopoverAttachmentAnchorOption: String, Enumerable {
   case top
   case center

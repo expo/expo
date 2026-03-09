@@ -82,6 +82,7 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
     return eventNames
   }
 
+  @MainActor
   public func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: AppleView) {
     for method in lifecycleMethods where method.type == type {
       method(view)

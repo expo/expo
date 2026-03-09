@@ -149,7 +149,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   private fun configureBlurView() {
     if (blurTarget == null || blurMethod == BlurMethod.NONE) {
       blurView.setBlurEnabled(false)
-      blurConfiguration == BlurViewConfiguration.NONE
+      blurConfiguration = BlurViewConfiguration.NONE
       return
     }
 

@@ -45,7 +45,7 @@ For other tab layouts see:
 
 You can use file-based routing to create a tabs layout. Here's an example file structure:
 
-<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/settings.tsx']} />
+<FileTree files={['src/app/_layout.tsx', 'src/app/index.tsx', 'src/app/settings.tsx']} />
 
 The above file structure produces a layout with a tab bar at the bottom of the screen. The tab bar will have two tabs: **Home** and **Settings**.
 
@@ -55,7 +55,7 @@ The above file structure produces a layout with a tab bar at the bottom of the s
   className="max-w-[540px]"
 />
 
-You can use the **app/\_layout.tsx** file to define your app's root layout using tabs. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab item look and behave.
+You can use the **src/app/\_layout.tsx** file to define your app's root layout using tabs. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab item look and behave.
 
 <TabsGroup>
 
@@ -63,7 +63,7 @@ You can use the **app/\_layout.tsx** file to define your app's root layout using
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -109,9 +109,9 @@ export default function TabLayout() {
 
 </Tabs>
 
-Finally, you have the two tab files that make up the content of the tabs: **app/index.tsx** and **app/settings.tsx**.
+Finally, you have the two tab files that make up the content of the tabs: **src/app/index.tsx** and **src/app/settings.tsx**.
 
-```tsx app/index.tsx and app/settings.tsx
+```tsx src/app/index.tsx and src/app/settings.tsx
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function Tab() {
@@ -155,7 +155,7 @@ Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` o
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -203,7 +203,7 @@ Liquid glass on iOS automatically changes colors based on if the background colo
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { DynamicColorIOS } from 'react-native';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
@@ -294,7 +294,7 @@ When using the `src` or `xcasset` prop for custom images on iOS, you can control
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -403,7 +403,7 @@ If you don't want to display a label, you can use the `hidden` prop to hide the 
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -453,7 +453,7 @@ You can use the `Badge` component to customize the badge displayed for the tab b
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -513,7 +513,7 @@ Since the native tab layout's appearance varies by platform, the customization o
 
 You can hide the tab bar using `hidden` prop on the `NativeTabs` component. To hide tab bar for specific screens, you can use context API to set the `hidden` prop dynamically.
 
-```tsx context/TabBarContext.tsx
+```tsx src/context/TabBarContext.tsx
 import { createContext } from 'react';
 
 export const TabBarContext = createContext<{
@@ -523,11 +523,11 @@ export const TabBarContext = createContext<{
 });
 ```
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 
-import { TabBarContext } from '../context/TabBarContext';
+import { TabBarContext } from '@/context/TabBarContext';
 
 export default function TabLayout() {
   const [isTabBarHidden, setIsTabBarHidden] = useState(false);
@@ -546,11 +546,11 @@ export default function TabLayout() {
 }
 ```
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { useFocusEffect } from 'expo-router';
 import { use } from 'react';
 
-import { TabBarContext } from '../context/TabBarContext';
+import { TabBarContext } from '@/context/TabBarContext';
 
 export default function HomeScreen() {
   const { setIsTabBarHidden } = use(TabBarContext);
@@ -572,7 +572,7 @@ export default function HomeScreen() {
 
 If you want to hide a tab based on a condition, you can either remove the trigger or pass the `hidden` prop to the `NativeTabs.Trigger` component.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -597,7 +597,7 @@ By default, tapping a tab that is already active closes all screens in that tab'
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -649,7 +649,7 @@ By default, tapping a tab that is already active and showing its root screen scr
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -709,7 +709,7 @@ To add a separate search tab, assign the `role` with its value set to `search` t
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -762,10 +762,15 @@ export default function TabLayout() {
 To add a search field to the tab bar, wrap the screen in a Stack navigator and configure `headerSearchBarOptions`.
 
 <FileTree
-  files={['app/_layout.tsx', 'app/index.tsx', 'app/search/_layout.tsx', 'app/search/index.tsx']}
+  files={[
+    'src/app/_layout.tsx',
+    'src/app/index.tsx',
+    'src/app/search/_layout.tsx',
+    'src/app/search/index.tsx',
+  ]}
 />
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -782,7 +787,7 @@ export default function TabLayout() {
 }
 ```
 
-```tsx app/search/_layout.tsx
+```tsx src/app/search/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function SearchLayout() {
@@ -790,7 +795,7 @@ export default function SearchLayout() {
 }
 ```
 
-```tsx app/search/index.tsx
+```tsx src/app/search/index.tsx
 import { ScrollView } from 'react-native';
 import { Stack } from 'expo-router';
 
@@ -820,7 +825,7 @@ To implement the minimized behavior on the tab bar, you can use
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -878,7 +883,7 @@ The bottom accessory can appear in two placements: `'regular'` (standard positio
 
 The following example demonstrates a mini player with state lifted to the parent component:
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
@@ -969,7 +974,7 @@ If you need full control over safe area handling, you can disable automatic cont
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
@@ -1007,7 +1012,7 @@ export default function TabLayout() {
 
 When `disableAutomaticContentInsets` is set to `true`, you must manage safe area insets manually. You can use `SafeAreaView` from `react-native-screens/experimental`:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { SafeAreaView } from 'react-native-screens/experimental';
 
 export default function HomeScreen() {
@@ -1254,7 +1259,7 @@ On iOS 18 and earlier, the native tab bar becomes transparent when scrolling to 
 
 You can use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router-native-tabs/#disabletransparentonscrolledge) prop to disable this behavior.
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 function TabLayout() {
@@ -1270,7 +1275,7 @@ function TabLayout() {
 
 When you are using a `ScrollView` and the tab bar is transparent from the start, ensure that the `ScrollView` is a first child of the screen component. If you wrap it with another component make sure to set `collapsable` to `false` on the wrapper component.
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { ScrollView, View } from 'react-native';
 
 export default function HomeScreen() {
@@ -1290,7 +1295,7 @@ This happens because React Navigation's default theme uses a white background co
 
 **For apps supporting both light and dark modes:**
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useColorScheme } from 'react-native';
@@ -1315,7 +1320,7 @@ export default function TabLayout() {
 
 **For dark-mode-only apps:**
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
@@ -1344,7 +1349,7 @@ Tapping an active tab should scroll the content to the top, but this may not wor
 
 Ensure that the `ScrollView` is a direct first child of the screen component. If you wrap it with another component, make sure to set `collapsable` to `false` on the wrapper component.
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { ScrollView, View } from 'react-native';
 
 export default function HomeScreen() {
@@ -1434,7 +1439,7 @@ Native tabs cannot be nested inside other native tabs. You can still nest [JavaS
 
 <Tab label="SDK 55 and later">
 
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {

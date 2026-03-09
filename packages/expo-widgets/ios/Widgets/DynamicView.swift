@@ -112,7 +112,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         if let rawProps = node["props"] as? [String: Any] {
           let props = try propsType.init(rawProps: rawProps, context: WidgetsContext.shared.context)
           try updateProps?(props)
-          return AnyView(UIBaseView<P, V>(props: props))
+          // TODO(@jakex7): Prevent unwanted transition when view is updated with new props - we want to have the same view instance recreated with new props instead of creating a new view instance and transitioning to it
+          return AnyView(UIBaseView<P, V>(props: props).transition(.identity))
         }
         return AnyView(EmptyView())
       } catch {

@@ -6,9 +6,30 @@
 
 ### 🎉 New features
 
+- [Android] Add NDS service discovery.
+
 ### 🐛 Bug fixes
 
+- [iOS] Fix issue when using `fullScreenModal` with `expo-router`. ([#43520](https://github.com/expo/expo/pull/43520) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix missing navigation bar padding ([#43672](https://github.com/expo/expo/pull/43672) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+- Enforce transparent status bar and navigation bar on Android, remove unused `backgroundColor` / `translucent` options handling. ([#43518](https://github.com/expo/expo/pull/43518) by [@zoontek](https://github.com/zoontek))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.10 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [ios] Fix truncated text labels in `LocalNetworkPermissionView` ([#43353](https://github.com/expo/expo/pull/43353) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.8 — 2026-02-20
 

@@ -11,31 +11,35 @@ Before diving into how to construct your app's navigation tree with Expo Router,
 
 ## The rules of Expo Router
 
-### 1. All screens/pages are files inside of app directory
+### 1. All screens/pages are files inside the src/app directory
 
-All navigation routes in your app are defined by the files and sub-directories inside the **app** directory. Every file inside the **app** directory has a default export that defines a distinct page in your app (except for the special **\_layout** files).
+All navigation routes in your app are defined by the files and sub-directories inside the [**src/app**](/router/reference/src-directory/) directory. Every file inside the **src/app** directory has a default export that defines a distinct page in your app (except for the special **\_layout** files).
 
-Accordingly, directories inside **app** define groups of related screens together as stacks, tabs, or in other arrangements.
+Accordingly, directories inside **src/app** define groups of related screens together.
 
 ### 2. All pages have a URL
 
-All pages have a URL path that matches the file's location in the **app** directory, which can be used to navigate to that page in the address bar on the web, or as an app-specific deep link in a native mobile app. This is what is meant by Expo Router supporting "universal deep-linking". All pages in your app can be navigated to with a URL, regardless of the platform.
+All pages have a URL path that matches the file's location in the **src/app** directory, which can be used to navigate to that page in the address bar on the web, or as an app-specific deep link in a native mobile app. This is what is meant by Expo Router supporting [universal deep-linking](/linking/overview/). All pages in your app can be navigated to with a URL, regardless of the platform.
 
 ### 3. First index.tsx is the initial route
 
-With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. This could be an **app/index.tsx** file, but it doesn't have to be. If the user should start by default in a deeper part of your navigation tree, you can use a [route group](/router/basics/notation/#parentheses) (a directory where the name is surrounded in parenthesis), and that will not count as part of the URL. If you want your first screen to be a group of tabs, you might put all of the tab pages inside the **app/(tabs)** directory and define the default tab as **index.tsx**. With this arrangement, the `/` URL will take the user directly to **app/(tabs)/index.tsx** file.
+With Expo Router, you do not define an initial route or first screen in code. Rather, when you open your app, Expo Router will look for the first **index.tsx** file matching the `/` URL. In the [default template](/router/installation/#quick-start), this is **src/app/index.tsx**. If the app user should start by default in a deeper part of your navigation tree, you can use a [route group](/router/basics/notation/#parentheses) (a directory where the name is surrounded in parentheses), and that will not count as part of the URL. If you want your first screen to be a group of tabs, you might put all of the tab pages inside the **src/app/(tabs)** directory and define the default tab as **index.tsx**. With this arrangement, the `/` URL will take the user directly to **src/app/(tabs)/index.tsx** file.
 
 ### 4. Root \_layout.tsx replaces App.jsx/tsx
 
-Every project should have a **\_layout.tsx** file directly inside the **app** directory. This file is rendered before any other route in your app and is where you would put the initialization code that may have previously gone inside an **App.jsx** file, such as loading fonts or interacting with the splash screen.
+Every project should have a **\_layout.tsx** file directly inside the **src/app** directory. This file is rendered before any other route in your app and is where you would put the initialization code that may have previously gone inside an **App.jsx** file, such as loading fonts, setting up theme providers, or interacting with the splash screen. For example, the default template wraps the app with a `ThemeProvider` for dark and light mode support and renders the `AppTabs` component from this file.
 
-### 5. Non-navigation components live outside of app directory
+### 5. Default template uses platform-specific tabs
 
-In Expo Router, the **app** directory is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other top-level directories. If you put a non-route inside of the **app** directory, Expo Router will attempt to treat it like a route.
+The default template uses two different tab implementations depending on the platform. On Android and iOS, tabs are rendered using [native tabs](/router/advanced/native-tabs/), which use the platform's built-in tab bar for a native look and feel. On web, tabs are rendered using [custom tabs](/router/advanced/custom-tabs/) from `expo-router/ui`, which are unstyled and flexible components that allow full control over the tab bar's appearance.
 
-Alternatively, you can create a [top-level **src** directory](/router/reference/src-directory/) and put your routes inside the **src/app** directory, with non-route components going in folders like **src/components**, **src/utils**, and so on. This is the only other directory structure that Expo Router will recognize.
+This is achieved through [platform-specific file extensions](/router/advanced/platform-specific-modules/). The tab component is defined in two files: **src/components/app-tabs.native.tsx** for Android and iOS, and **src/components/app-tabs.tsx** for web. Expo's module resolution automatically picks the correct file based on the platform. This pattern is used because native platforms have a system tab bar that provides expected behaviors like scroll-to-top on tap and native animations, while web requires a custom-styled tab bar that fits typical website navigation patterns.
 
-### 6. It's still React Navigation under the hood
+### 6. Non-navigation components live outside the src/app directory
+
+In Expo Router, the **src/app** directory is exclusively for defining your app's routes. Other parts of your app, like components, hooks, utilities, and so on, should be placed in other directories such as **src/components**, **src/hooks**, and **src/constants**. If you put a non-route inside the **src/app** directory, Expo Router will attempt to treat it like a route.
+
+### 7. It's still React Navigation under the hood
 
 While this may sound quite a bit different from React Navigation, Expo Router is actually built on top of React Navigation. You can think of Expo Router as an Expo CLI optimization that translates your file structure into React Navigation components that you previously defined in your own code.
 
@@ -47,17 +51,20 @@ Let's apply these foundational rules of Expo Router to quickly identify key elem
 
 <FileTree
   files={[
-    ['app/index.tsx'],
-    ['app/home.tsx'],
-    ['app/\_layout.tsx'],
-    ['app/profile/friends.tsx'],
-    ['components/TextField.tsx'],
-    ['components/Toolbar.tsx'],
+    ['src/app/index.tsx'],
+    ['src/app/home.tsx'],
+    ['src/app/\_layout.tsx'],
+    ['src/app/profile/friends.tsx'],
+    ['src/components/app-tabs.native.tsx'],
+    ['src/components/app-tabs.tsx'],
+    ['src/components/text-field.tsx'],
+    ['src/components/toolbar.tsx'],
   ]}
 />
 
-- **app/index.tsx** is the initial route, and will appear first when you open the app or navigate to your web app's root URL.
-- **app/home.tsx** is a page with the route `/home`, so you can navigate to it with a URL like `yourapp.com/home` in the browser, or `myapp://home` in a native app.
-- **app/\_layout.tsx** is the root layout. Any initialization code you may have previously put in **App.jsx** should go here.
-- **app/profile/friends.tsx** is a page with the route `/profile/friends`.
-- **TextField.tsx** and **Toolbar.tsx** are not in the **app** directory, so they will not be considered pages. They will not have a URL, and they cannot be the target of a navigation action. However, they can be used as components in the pages inside of the **app** directory.
+- **src/app/index.tsx** is the initial route, and will appear first when you open the app or navigate to your web app's root URL.
+- **src/app/home.tsx** is a page with the route `/home`, so you can navigate to it with a URL like `yourapp.com/home` in the browser, or `yourapp://home` in a native app.
+- **src/app/\_layout.tsx** is the root layout. Any initialization code you may have previously put in **App.jsx** should go here.
+- **src/app/profile/friends.tsx** is a page with the route `/profile/friends`.
+- **src/components/app-tabs.native.tsx** and **src/components/app-tabs.tsx** are [platform-specific](/router/advanced/platform-specific-modules/) tab components. The **.native.tsx** file is used on Android and iOS, while the **.tsx** file is used on web. The root layout imports these to render the tab navigator.
+- **src/components/text-field.tsx** and **src/components/toolbar.tsx** are not in the **src/app** directory, so they will not be considered pages. They will not have a URL, and they cannot be the target of a navigation action. However, they can be used as components in the pages inside the **src/app** directory.

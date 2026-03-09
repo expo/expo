@@ -7,6 +7,7 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const PreviewRouteContext_1 = require("./PreviewRouteContext");
 const constants_1 = require("../../constants");
+const composition_options_1 = require("../../fork/native-stack/composition-options");
 const router_store_1 = require("../../global-state/router-store");
 const utils_1 = require("../../global-state/utils");
 const hooks_1 = require("../../hooks");
@@ -65,10 +66,12 @@ function PreviewForRootHrefState({ hrefState, href }) {
     }
     const Component = (0, useScreens_1.getQualifiedRouteComponent)(routeNode);
     return (<PreviewRouteContext_1.PreviewRouteContext value={value}>
-      {/* Using NavigationContext to override useNavigation */}
-      <native_1.NavigationContext value={navigationPropWithWarnings}>
-        <Component navigation={navigation}/>
-      </native_1.NavigationContext>
+      <composition_options_1.CompositionContext value={{ set: () => { }, unset: () => { } }}>
+        {/* Using NavigationContext to override useNavigation */}
+        <native_1.NavigationContext value={navigationPropWithWarnings}>
+          <Component navigation={navigation}/>
+        </native_1.NavigationContext>
+      </composition_options_1.CompositionContext>
     </PreviewRouteContext_1.PreviewRouteContext>);
 }
 function PreviewForInternalRoutes() {

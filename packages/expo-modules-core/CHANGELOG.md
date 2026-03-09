@@ -6,9 +6,31 @@
 
 ### 🎉 New features
 
+- `NativeArrayBuffer` and `JavaScriptArrayBuffer` arguments now also accept typed arrays. ([#43082](https://github.com/expo/expo/pull/43082) by [@barthap](https://github.com/barthap))
+- [Android] Use the `RuntimeScheduler` to schedule tasks on the JS thread. ([#43481](https://github.com/expo/expo/pull/43481) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add `nativeModule` look up function and `bundleURL` to AppContext. ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
+- [Android] Fixed Compose view clipping that caused Material ripple effects to be cut off (e.g., Switch thumb ripple). ([#43656](https://github.com/expo/expo/pull/43656) by [@vonovak](https://github.com/vonovak))
+- [iOS] Fix memory leak due to retain cycle in SwiftUI views. ([#43468](https://github.com/expo/expo/pull/43468) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed compilation issues due to missing fallthrough case in `EXJavaScriptSerializable`. ([#43634](https://github.com/expo/expo/pull/43634) by [@tjzel](https://github.com/tjzel))
+
 ### 💡 Others
+
+- [iOS] Improved conversions of returned arrays and dictionaries with mixed element types. ([#42641](https://github.com/expo/expo/pull/42641) by [@barthap](https://github.com/barthap))
+- [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 55.0.12 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `field.options.insert()` silently failing in `fieldsOf()` due to mutation on protocol existential. ([#43341](https://github.com/expo/expo/pull/43341) by [@just1and0](https://github.com/just1and0))
+- [iOS] Fixed warnings in `Prop` definition component by isolating its setter to the main actor. ([#43348](https://github.com/expo/expo/pull/43348) by [@tsapeta](https://github.com/tsapeta))
 
 ## 55.0.10 — 2026-02-20
 
@@ -32,6 +54,10 @@
 
 - Removed needless warning when `NativeModulesProxy` is absent. ([#43020](https://github.com/expo/expo/pull/43020) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Removed some unused code. ([#42949](https://github.com/expo/expo/pull/42949) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.8 — 2026-02-08
 

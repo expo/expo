@@ -69,7 +69,7 @@ describe('exports static with bundle splitting', () => {
     const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
 
     expect(staticParamsPage).toEqual(
-      ['__expo-metro-runtime', '__common', 'entry', '[post]', '_layout'].map(
+      ['__expo-metro-runtime', '__common', 'entry', '_layout', '[post]'].map(
         expectChunkPathMatching
       )
     );
