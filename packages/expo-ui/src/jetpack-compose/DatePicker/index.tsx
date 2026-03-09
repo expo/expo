@@ -176,16 +176,7 @@ function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePic
       props?.onDateSelected?.(new Date(date));
     },
     variant,
-    elementColors: elementColors
-      ? elementColors
-      : color
-        ? {
-            titleContentColor: color,
-            selectedDayContainerColor: color,
-            todayDateBorderColor: color,
-            headlineContentColor: color,
-          }
-        : undefined,
+    ...(elementColors != null ? { elementColors } : {}),
   };
 }
 
