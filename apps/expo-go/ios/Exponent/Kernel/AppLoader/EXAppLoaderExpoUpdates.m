@@ -223,6 +223,18 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
     }
   }
 
+  // Block anonymous projects when the user is not signed in to Expo Go
+  if ([EXAppLoaderExpoUpdates _isAnonymousExperience:update.manifest] &&
+      ![[ExpoGoHomeBridge shared] isAuthenticated]) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1026
+                             userInfo:@{NSLocalizedDescriptionKey: @"You will need to sign in to open projects in Expo Go"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
   [self _setShouldShowRemoteUpdateStatus:update.manifest];
   EXManifestsManifest *processedManifest = [self _processManifest:update.manifest];
