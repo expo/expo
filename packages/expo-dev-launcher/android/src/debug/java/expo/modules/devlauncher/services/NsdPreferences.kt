@@ -35,7 +35,7 @@ class NsdPreferences(application: Application) {
    * the current app's package name will be shown.
    */
   var filterByPackageName: Boolean
-    by preferences(sharedPreferences, false)
+    by preferences(sharedPreferences, true)
 
   /**
    * When non-empty, only NSD services whose `slug` TXT record matches
