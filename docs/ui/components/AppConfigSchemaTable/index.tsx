@@ -6,7 +6,7 @@ import { CodeBlock } from '~/components/base/code';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { StatusTag } from '~/ui/components/Tag/StatusTag';
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import {
   CALLOUT,
   CODE,
@@ -92,10 +92,12 @@ function AppConfigProperty({
         '[&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b!',
         'px-4 py-3'
       )}>
-      <div className="flex items-center justify-between">
-        <PropertyName name={name} nestingLevel={nestingLevel} />
-        {deprecated && <StatusTag status="deprecated" />}
-      </div>
+      <PropertyName name={name} nestingLevel={nestingLevel} />
+      {deprecated && (
+        <InlineHelp size="sm" type="warning" className="border-palette-yellow5 mt-2">
+          <span className="font-bold">Deprecated</span>
+        </InlineHelp>
+      )}
       <div className="my-3" data-text="true">
         {canHaveMultipleValues ? (
           <div className="mb-2 grid grid-cols-1">

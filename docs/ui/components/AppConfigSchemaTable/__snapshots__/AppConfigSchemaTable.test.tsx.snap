@@ -6,54 +6,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div
       class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
-      <div
-        class="flex items-center justify-between"
+      <h3
+        class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="name"
       >
-        <h3
-          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-          data-heading="true"
-          id="name"
+        <code
+          class="font-medium"
         >
-          <code
-            class="font-medium"
+          name
+        </code>
+        <a
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#name"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
           >
-            name
-          </code>
-          <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-            href="#name"
-          >
-            <span
-              class="flex self-center text-inherit leading-none select-none"
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="shrink-0 icon-xs"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h3>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
       <div
         class="my-3"
         data-text="true"
@@ -163,54 +159,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div
       class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
-      <div
-        class="flex items-center justify-between"
+      <h3
+        class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="androidnavigationbar"
       >
-        <h3
-          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-          data-heading="true"
-          id="androidnavigationbar"
+        <code
+          class="font-medium"
         >
-          <code
-            class="font-medium"
+          androidNavigationBar
+        </code>
+        <a
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#androidnavigationbar"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
           >
-            androidNavigationBar
-          </code>
-          <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-            href="#androidnavigationbar"
-          >
-            <span
-              class="flex self-center text-inherit leading-none select-none"
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="shrink-0 icon-xs"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h3>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
       <div
         class="my-3"
         data-text="true"
@@ -319,54 +311,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
-        <div
-          class="flex items-center justify-between"
+        <h4
+          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          data-heading="true"
+          id="visible"
         >
-          <h4
-            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-            data-heading="true"
-            id="visible"
+          <code
+            class="font-medium"
           >
-            <code
-              class="font-medium"
+            visible
+          </code>
+          <a
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            href="#visible"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
             >
-              visible
-            </code>
-            <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-              href="#visible"
-            >
-              <span
-                class="flex self-center text-inherit leading-none select-none"
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <svg
-                  aria-label="permalink"
-                  class="shrink-0 icon-xs"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </h4>
-        </div>
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -435,54 +423,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div
           class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
-          <div
-            class="flex items-center justify-between"
+          <h5
+            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+            data-heading="true"
+            id="always"
           >
-            <h5
-              class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-              data-heading="true"
-              id="always"
+            <code
+              class="font-medium"
             >
-              <code
-                class="font-medium"
+              always
+            </code>
+            <a
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              href="#always"
+            >
+              <span
+                class="flex self-center text-inherit leading-none select-none"
               >
-                always
-              </code>
-              <a
-                class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-                href="#always"
-              >
-                <span
-                  class="flex self-center text-inherit leading-none select-none"
+                <svg
+                  aria-label="permalink"
+                  class="shrink-0 icon-xs"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    aria-label="permalink"
-                    class="shrink-0 icon-xs"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </h5>
-          </div>
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
+          </h5>
           <div
             class="my-3"
             data-text="true"
@@ -525,54 +509,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
-        <div
-          class="flex items-center justify-between"
+        <h4
+          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          data-heading="true"
+          id="backgroundcolor"
         >
-          <h4
-            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-            data-heading="true"
-            id="backgroundcolor"
+          <code
+            class="font-medium"
           >
-            <code
-              class="font-medium"
+            backgroundColor
+          </code>
+          <a
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            href="#backgroundcolor"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
             >
-              backgroundColor
-            </code>
-            <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-              href="#backgroundcolor"
-            >
-              <span
-                class="flex self-center text-inherit leading-none select-none"
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <svg
-                  aria-label="permalink"
-                  class="shrink-0 icon-xs"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </h4>
-        </div>
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -629,54 +609,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div
       class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
-      <div
-        class="flex items-center justify-between"
+      <h3
+        class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+        data-heading="true"
+        id="intentfilters"
       >
-        <h3
-          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-          data-heading="true"
-          id="intentfilters"
+        <code
+          class="font-medium"
         >
-          <code
-            class="font-medium"
+          intentFilters
+        </code>
+        <a
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          href="#intentfilters"
+        >
+          <span
+            class="flex self-center text-inherit leading-none select-none"
           >
-            intentFilters
-          </code>
-          <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-            href="#intentfilters"
-          >
-            <span
-              class="flex self-center text-inherit leading-none select-none"
+            <svg
+              aria-label="permalink"
+              class="shrink-0 icon-xs"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="shrink-0 icon-xs"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h3>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h3>
       <div
         class="my-3"
         data-text="true"
@@ -813,54 +789,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
-        <div
-          class="flex items-center justify-between"
+        <h4
+          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          data-heading="true"
+          id="autoverify"
         >
-          <h4
-            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-            data-heading="true"
-            id="autoverify"
+          <code
+            class="font-medium"
           >
-            <code
-              class="font-medium"
+            autoVerify
+          </code>
+          <a
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            href="#autoverify"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
             >
-              autoVerify
-            </code>
-            <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-              href="#autoverify"
-            >
-              <span
-                class="flex self-center text-inherit leading-none select-none"
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <svg
-                  aria-label="permalink"
-                  class="shrink-0 icon-xs"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </h4>
-        </div>
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -902,54 +874,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
-        <div
-          class="flex items-center justify-between"
+        <h4
+          class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+          data-heading="true"
+          id="data"
         >
-          <h4
-            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-            data-heading="true"
-            id="data"
+          <code
+            class="font-medium"
           >
-            <code
-              class="font-medium"
+            data
+          </code>
+          <a
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            href="#data"
+          >
+            <span
+              class="flex self-center text-inherit leading-none select-none"
             >
-              data
-            </code>
-            <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-              href="#data"
-            >
-              <span
-                class="flex self-center text-inherit leading-none select-none"
+              <svg
+                aria-label="permalink"
+                class="shrink-0 icon-xs"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <svg
-                  aria-label="permalink"
-                  class="shrink-0 icon-xs"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </h4>
-        </div>
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -984,54 +952,50 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div
           class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
-          <div
-            class="flex items-center justify-between"
+          <h5
+            class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
+            data-heading="true"
+            id="host"
           >
-            <h5
-              class="text-inherit font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-              data-heading="true"
-              id="host"
+            <code
+              class="font-medium"
             >
-              <code
-                class="font-medium"
+              host
+            </code>
+            <a
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              href="#host"
+            >
+              <span
+                class="flex self-center text-inherit leading-none select-none"
               >
-                host
-              </code>
-              <a
-                class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
-                href="#host"
-              >
-                <span
-                  class="flex self-center text-inherit leading-none select-none"
+                <svg
+                  aria-label="permalink"
+                  class="shrink-0 icon-xs"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    aria-label="permalink"
-                    class="shrink-0 icon-xs"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </h5>
-          </div>
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
+          </h5>
           <div
             class="my-3"
             data-text="true"
