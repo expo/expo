@@ -25,14 +25,14 @@ export function getRedirectPath(redirectPath: string): string {
 
   // A list of pages we know are renamed and can redirect
   if (RENAMED_PAGES[redirectPath]) {
-    redirectPath = RENAMED_PAGES[redirectPath];
+    return RENAMED_PAGES[redirectPath];
   }
 
   // Catch any unversioned paths which are also renamed
   if (isVersionedPath(redirectPath)) {
     const unversionedPath = removeVersionFromPath(redirectPath);
     if (RENAMED_PAGES[unversionedPath]) {
-      redirectPath = RENAMED_PAGES[unversionedPath];
+      return RENAMED_PAGES[unversionedPath];
     }
   }
 
