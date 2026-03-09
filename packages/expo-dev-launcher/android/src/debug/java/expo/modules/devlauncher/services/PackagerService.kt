@@ -6,7 +6,9 @@ import okhttp3.OkHttpClient
 
 data class PackagerInfo(
   val url: String,
-  val description: String
+  val description: String,
+  val slug: String? = null,
+  val androidPackage: String? = null
 )
 
 class PackagerService(

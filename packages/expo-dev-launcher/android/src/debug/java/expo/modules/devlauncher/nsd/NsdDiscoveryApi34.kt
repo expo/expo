@@ -21,14 +21,22 @@ internal class NsdDiscoveryApi34(
       .collectLatest { resolved ->
         val url = resolved.getUrl()
         val name = resolved.getAttribute("name")
+        val slug = resolved.getAttribute("slug")
+        val androidPackage = resolved.getAttribute("androidPackage")
 
         if (url != null && name != null) {
-          healthCheckLoop(serviceName, url, name)
+          healthCheckLoop(serviceName, url, name, slug, androidPackage)
         }
       }
   }
 
-  private suspend fun healthCheckLoop(serviceName: String, url: String, name: String) {
+  private suspend fun healthCheckLoop(
+    serviceName: String,
+    url: String,
+    name: String,
+    slug: String?,
+    androidPackage: String?
+  ) {
     while (coroutineScope.isActive) {
       awaitHealthCheckActive()
 
@@ -36,7 +44,7 @@ internal class NsdDiscoveryApi34(
       coroutineScope.ensureActive()
 
       if (isAlive) {
-        addDiscoveredPackager(serviceName, url, name)
+        addDiscoveredPackager(serviceName, url, name, slug, androidPackage)
       } else {
         removeDiscoveredPackager(serviceName)
       }

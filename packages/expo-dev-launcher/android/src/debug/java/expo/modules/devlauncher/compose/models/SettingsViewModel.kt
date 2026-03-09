@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.ApplicationInfo
+import expo.modules.devlauncher.services.NsdPreferences
 import expo.modules.devlauncher.services.inject
 import expo.modules.devmenu.DevMenuPreferences
 
@@ -14,7 +15,9 @@ data class SettingsState(
   val isKeyCommandEnabled: Boolean = true,
   val applicationInfo: ApplicationInfo? = null,
   // TODO @behenate - make true the default for VR
-  val showFabAtLaunch: Boolean = false
+  val showFabAtLaunch: Boolean = false,
+  val filterByPackageName: Boolean = false,
+  val filterBySlug: String = ""
 )
 
 sealed interface SettingsAction {
@@ -23,10 +26,13 @@ sealed interface SettingsAction {
   data class ToggleThreeFingerLongPressEnable(val newValue: Boolean) : SettingsAction
   data class ToggleKeyCommandEnable(val newValue: Boolean) : SettingsAction
   data class ToggleShowFabAtLaunch(val newValue: Boolean) : SettingsAction
+  data class ToggleFilterByPackageName(val newValue: Boolean) : SettingsAction
+  data class UpdateFilterBySlug(val newValue: String) : SettingsAction
 }
 
-class SettingsViewModel() : ViewModel() {
+class SettingsViewModel : ViewModel() {
   private val menuPreferences = inject<DevMenuPreferences>()
+  private val nsdPreferences = inject<NsdPreferences>()
   private val appService = inject<AppService>()
 
   private val _state = mutableStateOf(
@@ -36,15 +42,17 @@ class SettingsViewModel() : ViewModel() {
       isThreeFingerLongPressEnable = menuPreferences.touchGestureEnabled,
       isKeyCommandEnabled = menuPreferences.keyCommandsEnabled,
       applicationInfo = appService.applicationInfo,
-      showFabAtLaunch = menuPreferences.showFab
+      showFabAtLaunch = menuPreferences.showFab,
+      filterByPackageName = nsdPreferences.filterByPackageName,
+      filterBySlug = nsdPreferences.filterBySlug
     )
   )
 
   val state
     get() = _state.value
 
-  private val listener = {
-    _state.value = SettingsState(
+  private val menuListener = {
+    _state.value = _state.value.copy(
       showMenuAtLaunch = menuPreferences.showsAtLaunch,
       isShakeEnable = menuPreferences.motionGestureEnabled,
       isThreeFingerLongPressEnable = menuPreferences.touchGestureEnabled,
@@ -53,36 +61,33 @@ class SettingsViewModel() : ViewModel() {
     )
   }
 
+  private val nsdListener = {
+    _state.value = _state.value.copy(
+      filterByPackageName = nsdPreferences.filterByPackageName,
+      filterBySlug = nsdPreferences.filterBySlug
+    )
+  }
+
   init {
-    menuPreferences.addOnChangeListener(listener)
+    menuPreferences.addOnChangeListener(menuListener)
+    nsdPreferences.addOnChangeListener(nsdListener)
   }
 
   override fun onCleared() {
     super.onCleared()
-    menuPreferences.removeOnChangeListener(listener)
+    menuPreferences.removeOnChangeListener(menuListener)
+    nsdPreferences.removeOnChangeListener(nsdListener)
   }
 
   fun onAction(action: SettingsAction) {
     when (action) {
-      is SettingsAction.ToggleShowMenuAtLaunch -> {
-        menuPreferences.showsAtLaunch = action.newValue
-      }
-
-      is SettingsAction.ToggleShakeEnable -> {
-        menuPreferences.motionGestureEnabled = action.newValue
-      }
-
-      is SettingsAction.ToggleThreeFingerLongPressEnable -> {
-        menuPreferences.touchGestureEnabled = action.newValue
-      }
-
-      is SettingsAction.ToggleKeyCommandEnable -> {
-        menuPreferences.keyCommandsEnabled = action.newValue
-      }
-
-      is SettingsAction.ToggleShowFabAtLaunch -> {
-        menuPreferences.showFab = action.newValue
-      }
+      is SettingsAction.ToggleShowMenuAtLaunch -> menuPreferences.showsAtLaunch = action.newValue
+      is SettingsAction.ToggleShakeEnable -> menuPreferences.motionGestureEnabled = action.newValue
+      is SettingsAction.ToggleThreeFingerLongPressEnable -> menuPreferences.touchGestureEnabled = action.newValue
+      is SettingsAction.ToggleKeyCommandEnable -> menuPreferences.keyCommandsEnabled = action.newValue
+      is SettingsAction.ToggleShowFabAtLaunch -> menuPreferences.showFab = action.newValue
+      is SettingsAction.ToggleFilterByPackageName -> nsdPreferences.filterByPackageName = action.newValue
+      is SettingsAction.UpdateFilterBySlug -> nsdPreferences.filterBySlug = action.newValue
     }
   }
 }
