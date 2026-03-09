@@ -546,4 +546,9 @@ const RENAMED_PAGES: Record<string, string> = {
   // After creating EAS environment variables section
   '/eas/hosting/environment-variables/':
     '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
+
+  // After separating expo-router reference into multiple subsections
+  '/versions/unversioned/sdk/router-ui/': '/versions/unversioned/sdk/router/ui/',
+  '/versions/unversioned/sdk/router-native-tabs/': '/versions/unversioned/sdk/router/native-tabs/',
+  '/versions/unversioned/sdk/router-split-view/': '/versions/unversioned/sdk/router/split-view/',
 };
