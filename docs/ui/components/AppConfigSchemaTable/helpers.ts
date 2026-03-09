@@ -1,4 +1,4 @@
-import { FormattedProperty, Property } from './types.js';
+import { FormattedProperty, Property } from './types';
 
 export function formatSchema(rawSchema: [string, Property][]) {
   const formattedSchema: FormattedProperty[] = [];
@@ -47,6 +47,8 @@ export function formatProperty(property: [string, Property], parent?: string): F
     type: _getType(propertyValue),
     example: propertyValue.example,
     bareWorkflow: propertyValue?.meta?.bareWorkflow,
+    deprecated: isDeprecatedDescription(propertyValue),
+    enum: propertyValue.enum,
     subproperties,
     parent,
   };
@@ -69,11 +71,15 @@ export function createDescription(propertyEntry: [string, Property]) {
 
   let propertyDescription = ``;
   if (description) {
-    propertyDescription += description;
+    propertyDescription += description.replace(/^@deprecated\s*/, '');
   }
   if (meta?.regexHuman) {
     propertyDescription += `\n\n` + meta.regexHuman;
   }
 
   return propertyDescription;
+}
+
+export function isDeprecatedDescription(property: Property): boolean {
+  return property.description?.startsWith('@deprecated') ?? false;
 }

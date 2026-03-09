@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/WorkletExecutor.h>
+#import <ExpoModulesWorklets/WorkletExecutor.h>
 
 #if WORKLETS_ENABLED
 
@@ -99,7 +99,7 @@
 
 #else
 
-#import <ExpoModulesCore/EXJavaScriptSerializable.h>
+#import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
 
 @implementation EXWorkletExecutor
 

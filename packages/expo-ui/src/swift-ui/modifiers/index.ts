@@ -1002,6 +1002,31 @@ export const listStyle = (style: ListStyle) => createModifier('listStyle', { sty
  */
 export const luminanceToAlpha = () => createModifier('luminanceToAlpha', {});
 
+/**
+ * Sets the mode by which SwiftUI resizes an image to fit its space.
+ * @param capInsets - Inset values that indicate a portion of the image that SwiftUI doesn’t resize.
+ * @param resizingMode - The mode by which SwiftUI resizes the image.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/resizable(capinsets:resizingmode:)).
+ */
+export const resizable = (
+  capInsets?: {
+    top?: number;
+    bottom?: number;
+    leading?: number;
+    trailing?: number;
+  },
+  resizingMode?: 'stretch' | 'tile'
+) => createModifier('resizable', { ...capInsets, resizingMode });
+
+/**
+ * Specifies the how to render an Image when using the WidgetKit/WidgetRenderingMode/accented mode.
+ * @param renderingMode - A constant describing how the Image should be rendered.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/widgetaccentedrenderingmode(_:)).
+ */
+export const widgetAccentedRenderingMode = (
+  renderingMode: 'fullColor' | 'accented' | 'desaturated' | 'accentedDesaturated'
+) => createModifier('widgetAccentedRenderingMode', { renderingMode });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -1102,7 +1127,9 @@ export type BuiltInModifier =
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>
   | ReturnType<typeof listStyle>
-  | ReturnType<typeof contentTransition>;
+  | ReturnType<typeof contentTransition>
+  | ReturnType<typeof resizable>
+  | ReturnType<typeof widgetAccentedRenderingMode>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

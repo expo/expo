@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix glass effect not rendering correctly after appearance change while view is off-screen. ([#43771](https://github.com/expo/expo/pull/43771) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix `isInteractive` prop not being dynamically changeable after mount. ([#43771](https://github.com/expo/expo/pull/43771) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-25
