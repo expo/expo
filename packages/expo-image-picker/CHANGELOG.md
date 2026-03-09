@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 17.0.10 — 2025-12-11
