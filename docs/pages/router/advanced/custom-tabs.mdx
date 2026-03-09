@@ -8,6 +8,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { FileTree } from '~/ui/components/FileTree';
 import { DiffBlock } from '~/ui/components/Snippet';
 
@@ -274,6 +275,8 @@ The `TabSlot` accepts a `renderFn` property. This function can be used to overri
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="How do I create multiple tabs for the same route?">
 
 <FileTree
@@ -312,3 +315,5 @@ You can provide a custom renderer to `TabSlot` to customize how it renders a scr
 A `TabTrigger` with a relative href is relative to the local path name `Tabs` was rendered on. This is different from normal relative hrefs which are relative to the current displayed route. For example, the `<TabTrigger href="./profile" />` will resolve to `/directory/profile`, even when the `/directory/page` route is showing. Expo recommends against using relative hrefs.
 
 </Collapsible>
+
+</FAQ>

@@ -205,12 +205,12 @@ class FileSystemModule : Module() {
         file.creationTime
       }
 
-      Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
-        file.copy(destination)
+      Function("copy") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { file: FileSystemFile, destination: FileSystemPath ->
-        file.move(destination)
+      Function("move") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { file: FileSystemFile, newName: String ->
@@ -245,14 +245,14 @@ class FileSystemModule : Module() {
         file.type
       }
 
-      Function("open") { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+      Function("open") { file: FileSystemFile, mode: FileMode? ->
+        file.openHandle(mode)
       }
     }
 
     Class(FileSystemFileHandle::class) {
-      Constructor { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+      Constructor { file: FileSystemFile, mode: FileMode? ->
+        file.openHandle(mode)
       }
       Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
@@ -306,12 +306,12 @@ class FileSystemModule : Module() {
         directory.validatePath()
       }
 
-      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.copy(destination)
+      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.move(destination)
+      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { directory: FileSystemDirectory, newName: String ->

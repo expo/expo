@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Removed unused `withAndroidSplashLegacyMainActivity` file. ([#43516](https://github.com/expo/expo/pull/43516) by [@zoontek](https://github.com/zoontek))
+
 ## 55.0.7 — 2026-02-25
 
 ### 🛠 Breaking changes

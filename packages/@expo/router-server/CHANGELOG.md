@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
+
 ## 55.0.8 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

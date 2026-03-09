@@ -93,9 +93,7 @@ export function useWebBarcodeScanner(
         onScanned({ nativeEvent });
       }
     } catch (error: any) {
-      if (onError) {
-        onError({ nativeEvent: error });
-      }
+      onError?.({ nativeEvent: error });
     } finally {
       if (interval === 0) {
         stop();
@@ -119,10 +117,6 @@ export function useWebBarcodeScanner(
       scanAsync();
     }
 
-    return () => {
-      if (isEnabled) {
-        stop();
-      }
-    };
+    return stop;
   }, [isEnabled]);
 }

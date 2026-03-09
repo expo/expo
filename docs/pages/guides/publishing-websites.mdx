@@ -57,7 +57,7 @@ Run the universal export command to compile the project for web:
 
 The resulting project files are located in the **dist** directory. Any files inside the **public** directory are also copied to the **dist** directory.
 
-> **warning** Avoid creating the directory `/public/assets/`. The path `/assets` is reserved by Metro and will cause file access errors during development.
+> **warning** Some paths such as `/assets` are reserved by Metro. Avoid placing files in **public/assets/** or other reserved paths. See [Reserved paths](/router/reference/reserved-paths/) for the complete list.
 
 ## Serve locally
 

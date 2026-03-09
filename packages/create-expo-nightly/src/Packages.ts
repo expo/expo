@@ -10,7 +10,6 @@ const EXCLUDE_PACKAGES = [
   '@expo/fingerprint',
   'create-expo',
   'eslint-config-universe',
-  'expo-dev-client-components',
   'expo-doctor',
   'expo-env-info',
   'expo-module-scripts',

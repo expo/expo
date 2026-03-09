@@ -6,66 +6,25 @@ import React
 
 private class DevLauncherWrapperView: UIView {
   weak var devLauncherViewController: UIViewController?
-  private var devLauncherConstraints: [NSLayoutConstraint] = []
 
-  #if os(iOS)
-  @objc
-  func orientationDidChange() {
-    if let controller = devLauncherViewController {
-      setDevLauncherViewControllerConstraints(controller)
-    }
-  }
-  #endif
-
-  func setDevLauncherViewControllerConstraints(_ viewController: UIViewController) {
-    viewController.view.translatesAutoresizingMaskIntoConstraints = false
-    if !devLauncherConstraints.isEmpty {
-      NSLayoutConstraint.deactivate(devLauncherConstraints)
-    }
-    devLauncherConstraints = [
-      viewController.view.topAnchor.constraint(equalTo: self.topAnchor),
-      viewController.view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-      viewController.view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-      viewController.view.bottomAnchor.constraint(equalTo: self.bottomAnchor)
-    ]
-    NSLayoutConstraint.activate(devLauncherConstraints)
+  func setupDevLauncherView(_ viewController: UIViewController) {
+#if os(macOS)
+    viewController.view.autoresizingMask = [.width, .height]
+#else
+    viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+#endif
+    viewController.view.frame = bounds
   }
 
 #if !os(macOS)
-  override func didMoveToWindow() {
-    super.didMoveToWindow()
-    #if os(iOS)
-    if window != nil {
-      NotificationCenter.default.addObserver(self, selector: #selector(orientationDidChange), name: UIDevice.orientationDidChangeNotification, object: nil)
-    }
-    #endif
-
-    guard let devLauncherViewController,
-      let window,
-      let rootViewController = window.rootViewController else {
-      return
-    }
-
-    let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
-    // TODO(pmleczek): Revisit this for a more reliable solution
-    let isBrownfield = NSStringFromClass(type(of: rootViewController)).contains("UINavigationController")
-    if !isSwiftUIController && !isBrownfield && devLauncherViewController.parent != rootViewController {
-      rootViewController.addChild(devLauncherViewController)
-      devLauncherViewController.didMove(toParent: rootViewController)
-      devLauncherViewController.view.setNeedsLayout()
-      devLauncherViewController.view.layoutIfNeeded()
-    }
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    devLauncherViewController?.view.frame = bounds
   }
 
-  override func willMove(toWindow newWindow: UIWindow?) {
-    super.willMove(toWindow: newWindow)
-    if newWindow == nil {
-      devLauncherViewController?.willMove(toParent: nil)
-      devLauncherViewController?.removeFromParent()
-      #if os(iOS)
-      NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
-      #endif
-    }
+  override func safeAreaInsetsDidChange() {
+    super.safeAreaInsetsDidChange()
+    devLauncherViewController?.view.layoutIfNeeded()
   }
 #endif
 }
@@ -110,7 +69,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     let wrapperView = DevLauncherWrapperView()
     wrapperView.devLauncherViewController = viewController
     wrapperView.addSubview(viewController.view)
-    wrapperView.setDevLauncherViewControllerConstraints(viewController)
+    wrapperView.setupDevLauncherView(viewController)
     return wrapperView
   }
 
@@ -158,26 +117,49 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     )
     developmentClientController.appBridge = RCTBridge.current()
 
-    guard let rootViewController = rootViewController ?? self.reactDelegate?.createRootViewController() else {
+    let targetVC: UIViewController
+#if !os(macOS)
+    let windowRootVC = rootViewController?.view?.window?.rootViewController
+    if let windowRootVC, windowRootVC.view is DevLauncherWrapperView {
+      // Greenfield: set root view on the window's root VC so react-native-screens parents its
+      // UINavigationController to a VC in the containment hierarchy with correct layout margins.
+      targetVC = windowRootVC
+    } else if let rootViewController {
+      // Brownfield: the wrapper is embedded in a custom hierarchy, fall back to
+      // DevLauncherViewController to avoid replacing the host app's root view.
+      targetVC = rootViewController
+    } else if let fallbackVC = self.reactDelegate?.createRootViewController() {
+      targetVC = fallbackVC
+    } else {
       fatalError("Invalid rootViewController returned from ExpoReactDelegate")
     }
+#else
+    // macOS: NSWindow has no rootViewController, fall back to DevLauncherViewController.
+    if let rootViewController {
+      targetVC = rootViewController
+    } else if let fallbackVC = self.reactDelegate?.createRootViewController() {
+      targetVC = fallbackVC
+    } else {
+      fatalError("Invalid rootViewController returned from ExpoReactDelegate")
+    }
+#endif
 #if os(macOS)
     let newViewController = UIViewController()
     newViewController.view = rootView
 
-    rootViewController.view.subviews.forEach { $0.removeFromSuperview() }
-    rootViewController.addChild(newViewController)
-    rootViewController.view.addSubview(newViewController.view)
+    targetVC.view.subviews.forEach { $0.removeFromSuperview() }
+    targetVC.addChild(newViewController)
+    targetVC.view.addSubview(newViewController.view)
 
     newViewController.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
-      newViewController.view.topAnchor.constraint(equalTo: rootViewController.view.topAnchor),
-      newViewController.view.leadingAnchor.constraint(equalTo: rootViewController.view.leadingAnchor),
-      newViewController.view.trailingAnchor.constraint(equalTo: rootViewController.view.trailingAnchor),
-      newViewController.view.bottomAnchor.constraint(equalTo: rootViewController.view.bottomAnchor)
+      newViewController.view.topAnchor.constraint(equalTo: targetVC.view.topAnchor),
+      newViewController.view.leadingAnchor.constraint(equalTo: targetVC.view.leadingAnchor),
+      newViewController.view.trailingAnchor.constraint(equalTo: targetVC.view.trailingAnchor),
+      newViewController.view.bottomAnchor.constraint(equalTo: targetVC.view.bottomAnchor)
     ])
 #else
-    rootViewController.view = rootView
+    targetVC.view = rootView
 #endif
     // it is purposeful that we don't clean up saved properties here, because we may initialize
     // several React instances over a single app lifetime and we want them all to have the same

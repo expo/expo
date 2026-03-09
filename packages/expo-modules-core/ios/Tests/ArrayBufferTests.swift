@@ -199,6 +199,40 @@ struct ArrayBufferTests {
     }
 
     @Test
+    func `ArrayBuffer argument accepts full typed arrays`() throws {
+      let result = try runtime.eval([
+        "typedArray = new Uint8Array([42, 84])",
+        "expo.modules.ArrayBufferTests.readBytesAsArray(typedArray, 2)"
+      ]).asArray()
+
+      #expect(try result[0]?.asInt() == 42)
+      #expect(try result[1]?.asInt() == 84)
+    }
+
+    @Test
+    func `JavaScriptArrayBuffer accepts partial typed array view`() throws {
+      let result = try runtime.eval([
+        "arrayBuffer = new Uint8Array([1,2,3,4,5]).buffer",
+        "view = new Uint8Array(arrayBuffer, 1, 2)",
+        "expo.modules.ArrayBufferTests.readBytesAsArray(view, 2)"
+      ]).asArray()
+
+      #expect(try result[0]?.asInt() == 2)
+      #expect(try result[1]?.asInt() == 3)
+    }
+
+    @Test
+    func `NativeArrayBuffer accepts partial typed array view`() throws {
+      let result = try runtime.eval([
+        "view = new Uint8Array(new Uint8Array([1,2,3,4,5]).buffer, 1, 2)",
+        "expo.modules.ArrayBufferTests.readNativeBufferBytesAsArray(view, 2)"
+      ]).asArray()
+
+      #expect(try result[0]?.asInt() == 2)
+      #expect(try result[1]?.asInt() == 3)
+    }
+
+    @Test
     func `returns ArrayBuffer to JavaScript`() throws {
       let buffer = try runtime.eval("expo.modules.ArrayBufferTests.createNative(32)").asArrayBuffer()
 
@@ -360,6 +394,11 @@ private final class ArrayBufferTestModule: Module {
     }
 
     Function("readBytesAsArray") { (buffer: JavaScriptArrayBuffer, count: Int) -> [UInt8] in
+      let data = Data(bytes: buffer.rawPointer, count: min(count, buffer.byteLength))
+      return Array(data)
+    }
+    
+    Function("readNativeBufferBytesAsArray") { (buffer: NativeArrayBuffer, count: Int) -> [UInt8] in
       let data = Data(bytes: buffer.rawPointer, count: min(count, buffer.byteLength))
       return Array(data)
     }

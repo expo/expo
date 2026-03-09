@@ -23,6 +23,8 @@ export type CommandOptions = {
   templatesOnly: boolean;
   /** Include expo-module-scripts in publishing (excluded by default) */
   includeExpoModuleScripts: boolean;
+  /** Bypass the non-cascading package filter and cascade dependents for all packages */
+  cascadeAll: boolean;
   skipAndroidArtifacts: boolean;
   /**
    * When true, automatically selects packages whose current package.json version

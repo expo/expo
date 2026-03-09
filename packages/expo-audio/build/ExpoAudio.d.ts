@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecorderState, RecordingOptions, RecordingStatus } from './Audio.types';
+import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
 import { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
 /**
@@ -143,35 +143,7 @@ export declare function useAudioSampleListener(player: AudioPlayer, listener: (d
  * ```
  */
 export declare function useAudioRecorder(options: RecordingOptions, statusListener?: (status: RecordingStatus) => void): AudioRecorder;
-/**
- * Hook that provides real-time recording state updates for an `AudioRecorder`.
- *
- * This hook polls the recorder's status at regular intervals and returns the current recording state.
- * Use this when you need to monitor the recording status without setting up a status listener.
- *
- * @param recorder The `AudioRecorder` instance to monitor.
- * @param interval How often (in milliseconds) to poll the recorder's status. Defaults to 500ms.
- * @returns The current `RecorderState` containing recording information.
- *
- * @example
- * ```tsx
- * import { useAudioRecorder, useAudioRecorderState, RecordingPresets } from 'expo-audio';
- *
- * function RecorderStatusComponent() {
- *   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
- *   const state = useAudioRecorderState(recorder);
- *
- *   return (
- *     <View>
- *       <Text>Recording: {state.isRecording ? 'Yes' : 'No'}</Text>
- *       <Text>Duration: {Math.round(state.durationMillis / 1000)}s</Text>
- *       <Text>Can Record: {state.canRecord ? 'Yes' : 'No'}</Text>
- *     </View>
- *   );
- * }
- * ```
- */
-export declare function useAudioRecorderState(recorder: AudioRecorder, interval?: number): RecorderState;
+export { useAudioRecorderState } from './utils/useAudioRecorderState';
 /**
  * Creates an `AudioPlaylist` instance that automatically releases when the component unmounts.
  *
@@ -330,25 +302,24 @@ export declare function setAudioModeAsync(mode: Partial<AudioMode>): Promise<voi
  */
 export declare function requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
 /**
- * Requests permission to record audio from the microphone.
+ * Requests permission to post notifications on Android.
  *
- * This function prompts the user for microphone access permission, which is required
- * for audio recording functionality. On iOS, this will show the system permission dialog.
- * On Android, this requests the `RECORD_AUDIO` permission.
+ * This is required for showing media playback controls in the notification shade.
+ * This function is only available on Android and will throw on other platforms.
  *
  * @returns A Promise that resolves to a `PermissionResponse` object containing the permission status.
  *
  * @example
  * ```tsx
- * import { requestRecordingPermissionsAsync } from 'expo-audio';
+ * import { requestNotificationPermissionsAsync } from 'expo-audio';
  *
  * const checkPermissions = async () => {
- *   const { status, granted } = await requestRecordingPermissionsAsync();
+ *   const { status, granted } = await requestNotificationPermissionsAsync();
  *
  *   if (granted) {
- *     console.log('Recording permission granted');
+ *     console.log('Notification permission granted');
  *   } else {
- *     console.log('Recording permission denied:', status);
+ *     console.log('Notification permission denied:', status);
  *   }
  * };
  * ```

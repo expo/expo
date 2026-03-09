@@ -86,8 +86,8 @@ public final class WidgetsModule: Module {
         try await instance.update(props: props)
       }
 
-      AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: String?) in
-        try await instance.end(dismissalPolicy: dismissalPolicy)
+      AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) in
+        try await instance.end(dismissalPolicy: dismissalPolicy, afterDate: afterDate, props: props, contentDate: contentDate)
       }
 
       AsyncFunction("getPushToken") { (instance: LiveActivity) in

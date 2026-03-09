@@ -80,9 +80,30 @@ export class LiveActivity<T extends object = object> {
   /**
    * Ends the Live Activity.
    * @param dismissalPolicy Controls when the Live Activity is removed from the Lock Screen after ending.
+   * Can be `'default'`, `'immediate'`, or `after(date)`.
+   * @param props Final content properties to update after the activity ends.
+   * @param contentDate The time the data in the payload was generated. If this is older than a previous update or push payload, the system ignores this update.
    */
-  end(dismissalPolicy?: LiveActivityDismissalPolicy): Promise<void> {
-    return this.nativeLiveActivity.end(dismissalPolicy);
+  end(dismissalPolicy?: LiveActivityDismissalPolicy, props?: T, contentDate?: Date): Promise<void> {
+    const serializedProps = props ? JSON.stringify(props) : undefined;
+    if (
+      typeof dismissalPolicy === 'object' &&
+      dismissalPolicy !== null &&
+      'after' in dismissalPolicy
+    ) {
+      return this.nativeLiveActivity.end(
+        'after',
+        dismissalPolicy.after?.getTime(),
+        serializedProps,
+        contentDate?.getTime()
+      );
+    }
+    return this.nativeLiveActivity.end(
+      dismissalPolicy,
+      undefined,
+      serializedProps,
+      contentDate?.getTime()
+    );
   }
 
   /**
@@ -135,6 +156,15 @@ export class LiveActivityFactory<T extends object = object> {
       .getInstances()
       .map((instance) => new LiveActivity<T>(instance));
   }
+}
+
+/**
+ * Creates a dismissal policy that removes the Live Activity at the specified time within a four-hour window.
+ * @param date The date after which the Live Activity should be removed from the Lock Screen.
+ * @hidden
+ */
+export function after(date: Date): { after: Date } {
+  return { after: date };
 }
 
 /**

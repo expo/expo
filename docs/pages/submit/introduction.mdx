@@ -11,6 +11,7 @@ import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
 **EAS Submit** is a hosted service from EAS (Expo Application Services) for submitting Android and iOS binaries directly to the Google Play Store and Apple App Store without opening the [Google Play Console](https://play.google.com/console), or downloading the [Transporter app](https://apps.apple.com/us/app/transporter/id1450874784).
@@ -69,6 +70,8 @@ Build and submit in one step:
 | Do not have a store listing configured yet for Google Play Store                                                                                           | <NoIcon />     |
 
 ## Frequently asked questions (FAQ)
+
+<FAQ>
 
 <Collapsible summary="Can I submit builds that were not built with EAS Build?">
 
@@ -148,6 +151,8 @@ To understand why your EAS Submit submission failed, open the submission details
 - Look for ["Build Annotations" bubble](https://expo.dev/changelog/2023-12-01-build-annotations) if there is one. These highlight common failure reasons and suggested fixes directly in the logs.
 
 </Collapsible>
+
+</FAQ>
 
 ## Get started
 

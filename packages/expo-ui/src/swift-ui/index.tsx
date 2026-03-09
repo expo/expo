@@ -4,6 +4,7 @@ export * from './Chart';
 export * from './ColorPicker';
 export * from './ContentUnavailableView';
 export * from './ConfirmationDialog';
+export * from './ControlGroup';
 export * from './ContextMenu';
 export * from './DatePicker';
 export * from './Divider';

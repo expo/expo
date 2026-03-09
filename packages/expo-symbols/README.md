@@ -7,7 +7,7 @@
   </a>
 </p>
 
-Provides access to the SF Symbols library on iOS for React Native and Expo apps.
+Provides access to native symbol libraries across platforms for React Native and Expo apps. Uses [SF Symbols](https://developer.apple.com/sf-symbols/) on iOS/tvOS and [Material Symbols](https://fonts.google.com/icons) on Android and web.
 
 # API documentation
 

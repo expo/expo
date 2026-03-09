@@ -106,10 +106,25 @@ export default function HostingRNViewsScreen() {
                 />
               </RNHostView>
             </HStack>
+          </VStack>
+        </Section>
+        <Section title="RN components with flex: 1 children">
+          <VStack spacing={12} modifiers={[frame({ width: 100, height: 100 })]}>
+            <RNHostView>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: '#9B59B6',
+                  borderRadius: 10,
+                }}
+              />
+            </RNHostView>
+          </VStack>
+        </Section>
+        <Section title="RN Text inside SwiftUI">
+          <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
             <RNHostView matchContents>
-              <RNText style={{ textAlign: 'center' }}>
-                RN component boxes separated by SwiftUI HStack
-              </RNText>
+              <RNText style={{ textAlign: 'center' }}>RN Text inside SwiftUI</RNText>
             </RNHostView>
           </VStack>
         </Section>

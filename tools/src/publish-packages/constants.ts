@@ -34,3 +34,20 @@ export const BACKUPABLE_OPTIONS_FIELDS = [
  * An array of release types in the order from patch to major.
  */
 export const RELEASE_TYPES_ASC_ORDER = [ReleaseType.PATCH, ReleaseType.MINOR, ReleaseType.MAJOR];
+
+/**
+ * Shared tooling packages that should not trigger the "publish dependents?" cascade.
+ * These packages are depended on by nearly every package in the monorepo, so any change
+ * to them would otherwise prompt to republish dozens of packages unnecessarily.
+ *
+ * They are still published normally when they have changes — they just don't cascade.
+ * Use `--cascade-all` to override this filter.
+ */
+export const NON_CASCADING_PACKAGES = new Set([
+  'expo-module-scripts',
+  'babel-preset-expo',
+  'eslint-config-universe',
+  'jest-expo',
+  '@expo/config',
+  '@expo/json-file',
+]);

@@ -174,6 +174,19 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platformOptions['react-compiler'] !== false
   ) {
     const reactCompilerOptions = platformOptions['react-compiler'];
+    const reactCompilerOptOutDirectives = new Set([
+      // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
+      'widget',
+      // We need to manually include the default opt-out directives, since they get overridden
+      // See:
+      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L48C1-L48C77
+      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L69-L86
+      'use no memo',
+      'use no forget',
+      // Add the user's override but preserve defaults above to avoid the pitfall of them being removed
+      ...(reactCompilerOptions?.customOptOutDirectives ?? []),
+    ]);
+
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
@@ -185,8 +198,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         panicThreshold: isDev ? undefined : 'NONE',
         ...reactCompilerOptions,
         // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
-        // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
-        customOptOutDirectives: [...(reactCompilerOptions?.customOptOutDirectives ?? []), 'widget'],
+        customOptOutDirectives: [...reactCompilerOptOutDirectives],
       },
     ]);
   }

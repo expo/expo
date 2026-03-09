@@ -12,6 +12,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
@@ -461,6 +462,8 @@ Use `VStack` with `alignment="leading"` for list items with title and subtitle.
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="Can I use flexbox or other styles in SwiftUI components?">
 
 Flexbox styles can be applied to the `Host` component itself. Once you're inside the SwiftUI context, however, [`Yoga`](https://www.yogalayout.dev/) is not available &mdash; layouts should be defined using `<HStack>` and `<VStack>` instead.
@@ -503,6 +506,8 @@ We recommend keeping SwiftUI layouts self-contained. Interop is possible, but it
 Because React's promise of _"learn once, write anywhere"_, it now extends to SwiftUI and Jetpack Compose. With Expo UI, you can apply your SwiftUI knowledge to build apps that run in the React Native ecosystem, extend to the Web through [DOM components](/guides/dom-components/), and even integrate [2D](https://shopify.github.io/react-native-skia/) and [3D](https://github.com/wcandillon/react-native-webgpu) rendering. The system is flexible enough that different parts of your app can use different approaches &mdash; giving you seamless integration at the component level.
 
 </Collapsible>
+
+</FAQ>
 
 ## Additional resources
 

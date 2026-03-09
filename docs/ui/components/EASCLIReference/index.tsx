@@ -73,22 +73,22 @@ const CommandSection = ({ command }: { command: CommandData }) => {
   const flagsList = sections.flags ? parseListEntries(sections.flags) : [];
 
   return (
-    <section className="border-b border-secondary pb-8 last:border-0 last:pb-0">
+    <section className="border-secondary border-b pb-8 last:border-0 last:pb-0">
       <H3 id={slug} className="translate-y-[2px] self-center">
         <CODE className="font-mono text-[inherit]">{command.command}</CODE>
       </H3>
-      <P className="mb-5 mt-2">{renderInlineContent(description)}</P>
+      <P className="mt-2 mb-5">{renderInlineContent(description)}</P>
 
       {sections.usage && (
         <div className="mb-6">
-          <H4 className="mb-2 mt-0 translate-y-[2px] self-center">Usage</H4>
+          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">Usage</H4>
           <Terminal cmd={toTerminalLines(sections.usage)} />
         </div>
       )}
 
       {argumentsList.length > 0 && (
         <div className="mb-6">
-          <H4 className="mb-2 mt-0 translate-y-[2px] self-center">
+          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">
             {argumentsList.length === 1 ? 'Argument' : 'Arguments'}
           </H4>
           <ListSection entries={argumentsList} />
@@ -97,7 +97,7 @@ const CommandSection = ({ command }: { command: CommandData }) => {
 
       {flagsList.length > 0 && (
         <div className="mb-6">
-          <H4 className="mb-2 mt-0 translate-y-[2px] self-center">
+          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">
             {flagsList.length === 1 ? 'Flag' : 'Flags'}
           </H4>
           <ListSection entries={flagsList} />
@@ -106,7 +106,7 @@ const CommandSection = ({ command }: { command: CommandData }) => {
 
       {sections.aliases && (
         <div className="mb-6">
-          <H4 className="mb-2 mt-0 translate-y-[2px] self-center">
+          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">
             {countNonEmptyLines(sections.aliases) === 1 ? 'Alias' : 'Aliases'}
           </H4>
           <Terminal cmd={toTerminalLines(sections.aliases)} />
@@ -115,7 +115,7 @@ const CommandSection = ({ command }: { command: CommandData }) => {
 
       {sections.examples && (
         <div className="mb-4">
-          <H4 className="mb-2 mt-0 translate-y-[2px] self-center">Examples</H4>
+          <H4 className="mt-0 mb-2 translate-y-[2px] self-center">Examples</H4>
           <Terminal cmd={toTerminalLines(sections.examples)} />
         </div>
       )}

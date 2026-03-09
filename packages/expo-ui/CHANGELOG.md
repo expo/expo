@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
+- [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] detect FAB in HorizontalFloatingToolbar ([#43601](https://github.com/expo/expo/pull/43601) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix `RNHostView` child parent related crash. ([#43691](https://github.com/expo/expo/pull/43691) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `RNHostView` to improve RN component layout inside Compose views. ([#43495](https://github.com/expo/expo/pull/43495) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] fix modifiers export ([#43639](https://github.com/expo/expo/pull/43639) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
+
+- [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.1 — 2026-02-25
 

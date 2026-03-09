@@ -26,9 +26,6 @@ function ensurePictureOptions(options) {
     return options;
 }
 function ensureRecordingOptions(options = {}) {
-    if (!options || typeof options !== 'object') {
-        return {};
-    }
     if (options.mirror) {
         console.warn('The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.');
     }
@@ -118,7 +115,6 @@ export default class CameraView extends Component {
         mode: 'picture',
         flash: 'off',
     };
-    _cameraHandle;
     _cameraRef = createRef();
     _lastEvents = {};
     _lastEventsTimes = {};
@@ -135,10 +131,7 @@ export default class CameraView extends Component {
      * @platform android
      * @platform ios
      */
-    static async launchScanner(options) {
-        if (!options) {
-            options = { barcodeTypes: [] };
-        }
+    static async launchScanner(options = { barcodeTypes: [] }) {
         if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
             await CameraManager.launchScanner(options);
         }
@@ -204,24 +197,16 @@ export default class CameraView extends Component {
         this._cameraRef.current?.stopRecording();
     }
     _onCameraReady = () => {
-        if (this.props.onCameraReady) {
-            this.props.onCameraReady();
-        }
+        this.props.onCameraReady?.();
     };
     _onAvailableLensesChanged = ({ nativeEvent }) => {
-        if (this.props.onAvailableLensesChanged) {
-            this.props.onAvailableLensesChanged(nativeEvent);
-        }
+        this.props.onAvailableLensesChanged?.(nativeEvent);
     };
     _onMountError = ({ nativeEvent }) => {
-        if (this.props.onMountError) {
-            this.props.onMountError(nativeEvent);
-        }
+        this.props.onMountError?.(nativeEvent);
     };
     _onResponsiveOrientationChanged = ({ nativeEvent, }) => {
-        if (this.props.onResponsiveOrientationChanged) {
-            this.props.onResponsiveOrientationChanged(nativeEvent);
-        }
+        this.props.onResponsiveOrientationChanged?.(nativeEvent);
     };
     _onObjectDetected = (callback) => ({ nativeEvent }) => {
         const { type } = nativeEvent;
@@ -235,14 +220,6 @@ export default class CameraView extends Component {
             callback(nativeEvent);
             this._lastEventsTimes[type] = new Date();
             this._lastEvents[type] = JSON.stringify(nativeEvent);
-        }
-    };
-    _setReference = (ref) => {
-        if (ref) {
-            // TODO(Bacon): Unify these - perhaps with hooks?
-            if (Platform.OS === 'web') {
-                this._cameraHandle = ref;
-            }
         }
     };
     render() {

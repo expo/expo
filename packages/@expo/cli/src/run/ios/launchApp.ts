@@ -17,11 +17,15 @@ type BinaryLaunchInfo = {
   schemes: string[];
 };
 
-/** Install and launch the app binary on a device. */
+/** Install and launch the app binary on a device. Requires a device to be specified. */
 export async function launchAppAsync(
   binaryPath: string,
   manager: DevServerManager,
-  props: Pick<BuildProps, 'isSimulator' | 'device' | 'shouldStartBundler'>,
+  props: {
+    isSimulator: boolean;
+    device: NonNullable<BuildProps['device']>;
+    shouldStartBundler: boolean;
+  },
   appId?: string
 ) {
   appId ??= (await profile(getLaunchInfoForBinaryAsync)(binaryPath)).bundleId;

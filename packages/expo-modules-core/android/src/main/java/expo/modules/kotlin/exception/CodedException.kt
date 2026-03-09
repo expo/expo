@@ -31,7 +31,7 @@ open class CodedException(
   val code
     get() = providedCode ?: inferCode(javaClass)
 
-  constructor(code: String, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
+  constructor(code: String?, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
     providedCode = code
   }
 
