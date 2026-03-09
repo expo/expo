@@ -106,7 +106,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesJSI'
   s.dependency 'ExpoModulesCore'
-  s.dependency 'React-runtimescheduler'
 
   if shouldEnableWorkletsIntegration
     s.dependency 'RNWorklets'
