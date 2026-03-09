@@ -521,5 +521,4 @@ describe('routes without /index suffix', () => {
       expect(screen).toHavePathname('/otp/signin');
     });
   });
-
 });
