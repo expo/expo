@@ -381,66 +381,145 @@ it('works with tabs', () => {
 });
 
 describe('routes without /index suffix', () => {
-  it('should protect dynamic routes without explicit /index suffix', () => {
-    let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
+  describe('Protected', () => {
+    it('should protect dynamic routes without explicit /index suffix', () => {
+      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
-    renderRouter(
-      {
-        _layout: function Layout() {
-          useStateResult = useState(false);
-          return (
-            <Stack id={undefined}>
-              <Stack.Protected guard={useStateResult[0]}>
-                <Stack.Screen name="otp/[flow]" />
-              </Stack.Protected>
-            </Stack>
-          );
+      renderRouter(
+        {
+          _layout: function Layout() {
+            useStateResult = useState(false);
+            return (
+              <Stack id={undefined}>
+                <Stack.Protected guard={useStateResult[0]}>
+                  <Stack.Screen name="otp/[flow]" />
+                </Stack.Protected>
+              </Stack>
+            );
+          },
+          index: () => <Text testID="index">index</Text>,
+          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
         },
-        index: () => <Text testID="index">index</Text>,
-        'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
-      },
-      { initialUrl: '/otp/signin' }
-    );
+        { initialUrl: '/otp/signin' }
+      );
 
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(screen).toHavePathname('/');
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen).toHavePathname('/');
 
-    act(() => {
-      useStateResult[1](true);
+      act(() => {
+        useStateResult[1](true);
+      });
+
+      act(() => router.replace('/otp/signin'));
+
+      expect(screen.getByTestId('otp')).toBeVisible();
+      expect(screen).toHavePathname('/otp/signin');
     });
 
-    act(() => router.replace('/otp/signin'));
+    it('should protect routes when _layout exists alongside index', () => {
+      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
-    expect(screen.getByTestId('otp')).toBeVisible();
-    expect(screen).toHavePathname('/otp/signin');
+      renderRouter(
+        {
+          _layout: function Layout() {
+            useStateResult = useState(false);
+            return (
+              <Stack id={undefined}>
+                <Stack.Protected guard={useStateResult[0]}>
+                  <Stack.Screen name="otp/[flow]" />
+                </Stack.Protected>
+              </Stack>
+            );
+          },
+          index: () => <Text testID="index">index</Text>,
+          'otp/[flow]/_layout': () => <Stack />,
+          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+        },
+        { initialUrl: '/otp/signin' }
+      );
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen).toHavePathname('/');
+
+      act(() => {
+        useStateResult[1](true);
+      });
+
+      act(() => router.replace('/otp/signin'));
+
+      expect(screen.getByTestId('otp')).toBeVisible();
+      expect(screen).toHavePathname('/otp/signin');
+    });
+
+    it('should protect routes when _layout exists without index', () => {
+      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
+
+      renderRouter(
+        {
+          _layout: function Layout() {
+            useStateResult = useState(false);
+            return (
+              <Stack id={undefined}>
+                <Stack.Protected guard={useStateResult[0]}>
+                  <Stack.Screen name="otp/[flow]" />
+                </Stack.Protected>
+              </Stack>
+            );
+          },
+          index: () => <Text testID="index">index</Text>,
+          'otp/[flow]/_layout': () => <Stack />,
+          'otp/[flow]/step1': () => <Text testID="step1">Step 1</Text>,
+        },
+        { initialUrl: '/otp/signin/step1' }
+      );
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen).toHavePathname('/');
+
+      act(() => {
+        useStateResult[1](true);
+      });
+
+      act(() => router.replace('/otp/signin/step1'));
+
+      expect(screen.getByTestId('step1')).toBeVisible();
+      expect(screen).toHavePathname('/otp/signin/step1');
+    });
+
+    it('should handle both name="otp/[flow]" and name="otp/[flow]/index"', () => {
+      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
+
+      renderRouter(
+        {
+          _layout: function Layout() {
+            useStateResult = useState(false);
+            return (
+              <Stack id={undefined}>
+                <Stack.Protected guard={useStateResult[0]}>
+                  <Stack.Screen name="otp/[flow]" />
+                  <Stack.Screen name="otp/[flow]/index" />
+                </Stack.Protected>
+              </Stack>
+            );
+          },
+          index: () => <Text testID="index">index</Text>,
+          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+        },
+        { initialUrl: '/otp/signin' }
+      );
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screen).toHavePathname('/');
+
+      act(() => {
+        useStateResult[1](true);
+      });
+
+      act(() => router.replace('/otp/signin'));
+
+      expect(screen.getByTestId('otp')).toBeVisible();
+      expect(screen).toHavePathname('/otp/signin');
+    });
   });
 
-  it('should apply Screen options when name omits /index suffix', () => {
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    renderRouter(
-      {
-        _layout: () => (
-          <Stack id={undefined}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="settings/general" options={{ title: 'General Settings' }} />
-          </Stack>
-        ),
-        index: () => <Text testID="index">Index</Text>,
-        'settings/general/index': () => <Text testID="settings">Settings</Text>,
-      },
-      { initialUrl: '/settings/general' }
-    );
-
-    expect(screen.getByTestId('settings')).toBeVisible();
-    expect(screen).toHavePathname('/settings/general');
-
-    // No warning should be printed about missing route name
-    expect(spy).not.toHaveBeenCalledWith(
-      expect.stringContaining('[Layout children]'),
-      expect.anything()
-    );
-
-    spy.mockRestore();
-  });
 });

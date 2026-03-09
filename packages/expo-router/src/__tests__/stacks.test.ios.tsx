@@ -830,3 +830,120 @@ describe('function-form options', () => {
     spy.mockRestore();
   });
 });
+
+describe('Screen options with /index suffix normalization', () => {
+  it('should apply Screen options when name omits /index suffix', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack id={undefined}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="settings/general" options={{ title: 'General Settings' }} />
+          </Stack>
+        ),
+        index: () => <Text testID="index">Index</Text>,
+        'settings/general/index': () => <Text testID="settings">Settings</Text>,
+      },
+      { initialUrl: '/settings/general' }
+    );
+
+    expect(screen.getByTestId('settings')).toBeVisible();
+    expect(screen).toHavePathname('/settings/general');
+
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('[Layout children]'),
+      expect.anything()
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should apply options when _layout exists alongside index', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack id={undefined}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Flow' }} />
+          </Stack>
+        ),
+        index: () => <Text testID="index">Index</Text>,
+        'otp/[flow]/_layout': () => <Stack />,
+        'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+      },
+      { initialUrl: '/otp/signin' }
+    );
+
+    expect(screen.getByTestId('otp')).toBeVisible();
+    expect(screen).toHavePathname('/otp/signin');
+
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('[Layout children]'),
+      expect.anything()
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should apply options when _layout exists without index', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack id={undefined}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Flow' }} />
+          </Stack>
+        ),
+        index: () => <Text testID="index">Index</Text>,
+        'otp/[flow]/_layout': () => <Stack />,
+        'otp/[flow]/step1': () => <Text testID="step1">Step 1</Text>,
+      },
+      { initialUrl: '/otp/signin/step1' }
+    );
+
+    expect(screen.getByTestId('step1')).toBeVisible();
+    expect(screen).toHavePathname('/otp/signin/step1');
+
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('[Layout children]'),
+      expect.anything()
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should handle both name="otp/[flow]" and name="otp/[flow]/index"', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack id={undefined}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Short' }} />
+            <Stack.Screen name="otp/[flow]/index" options={{ title: 'OTP Full' }} />
+          </Stack>
+        ),
+        index: () => <Text testID="index">Index</Text>,
+        'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+      },
+      { initialUrl: '/otp/signin' }
+    );
+
+    expect(screen.getByTestId('otp')).toBeVisible();
+    expect(screen).toHavePathname('/otp/signin');
+
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('[Layout children]'),
+      expect.anything()
+    );
+
+    spy.mockRestore();
+  });
+});

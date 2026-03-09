@@ -1795,3 +1795,4 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(screen.queryByTestId('e')).toBeNull();
   expect(screen).toHavePathname('/a/c');
 });
+
