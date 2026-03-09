@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
 - [android] fix cropper default colors in light mode ([#42437](https://github.com/expo/expo/pull/42437) by [@fobos531](https://github.com/fobos531))
 
 ### 💡 Others
