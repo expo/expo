@@ -6,6 +6,7 @@ import ExpoModulesCore
 struct SliderView: ExpoSwiftUI.View {
   @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
+  @State var isEditing: Bool = false
 
   init(props: SliderProps) {
     self.props = props
@@ -23,8 +24,8 @@ struct SliderView: ExpoSwiftUI.View {
         }
       }
       .onReceive(props.value.publisher, perform: { newValue in
-        var sliderValue = newValue
-        value = sliderValue
+        guard !isEditing else { return }
+        value = newValue
       })
 #else
     Text("Slider is not supported on tvOS")
@@ -47,6 +48,7 @@ struct SliderView: ExpoSwiftUI.View {
         minimumValueLabel: { minimumValueLabel },
         maximumValueLabel: { maximumValueLabel }
       ) { isEditing in
+        self.isEditing = isEditing
         props.onEditingChanged(["isEditing": isEditing])
       }
     } else if let min = props.min, let max = props.max {
@@ -57,6 +59,7 @@ struct SliderView: ExpoSwiftUI.View {
         minimumValueLabel: { minimumValueLabel },
         maximumValueLabel: { maximumValueLabel }
       ) { isEditing in
+        self.isEditing = isEditing
         props.onEditingChanged(["isEditing": isEditing])
       }
     } else if let step = props.step {
@@ -68,6 +71,7 @@ struct SliderView: ExpoSwiftUI.View {
         minimumValueLabel: { minimumValueLabel },
         maximumValueLabel: { maximumValueLabel }
       ) { isEditing in
+        self.isEditing = isEditing
         props.onEditingChanged(["isEditing": isEditing])
       }
     } else {
@@ -77,6 +81,7 @@ struct SliderView: ExpoSwiftUI.View {
         minimumValueLabel: { minimumValueLabel },
         maximumValueLabel: { maximumValueLabel }
       ) { isEditing in
+        self.isEditing = isEditing
         props.onEditingChanged(["isEditing": isEditing])
       }
     }

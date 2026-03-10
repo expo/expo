@@ -359,10 +359,10 @@ describe('convertHtmlToMarkdown', () => {
 
   it('returns redirect pointer for meta refresh pages', () => {
     const html =
-      '<html><head><meta http-equiv="refresh" content="0; url=/get-started/introduction/"></head><body><div id="__next"></div></body></html>';
+      '<html><head><meta http-equiv="refresh" content="0; url=/get-started/create-a-project/"></head><body><div id="__next"></div></body></html>';
     const result = convertHtmlToMarkdown(html);
-    expect(result).toContain('/get-started/introduction/');
-    expect(result).toContain('https://docs.expo.dev/get-started/introduction/');
+    expect(result).toContain('/get-started/create-a-project/');
+    expect(result).toContain('https://docs.expo.dev/get-started/create-a-project/');
     expect(result).toContain('redirects to');
   });
 

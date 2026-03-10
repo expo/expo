@@ -174,7 +174,7 @@
 /guides/customizing-webpack /archive/customizing-webpack 301
 
 # May 2024 home / get started section
-/overview /get-started/introduction 301
+/overview /get-started/create-a-project 301
 /get-started/installation /get-started/create-a-project 301
 /get-started/expo-go /get-started/set-up-your-environment 301
 
@@ -319,3 +319,6 @@
 /versions/unversioned/sdk/router-ui /versions/unversioned/sdk/router/ui 301
 /versions/unversioned/sdk/router-native-tabs /versions/unversioned/sdk/router/native-tabs 301
 /versions/unversioned/sdk/router-split-view /versions/unversioned/sdk/router/split-view 301
+
+# After merging get-started/introduction into get-started/create-a-project
+/get-started/introduction /get-started/create-a-project 301

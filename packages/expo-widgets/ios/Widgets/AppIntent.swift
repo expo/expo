@@ -34,12 +34,15 @@ struct WidgetUserInteraction: AppIntent {
           let entryIndex,
           let entry = timeline[entryIndex] as? [String: Any],
           let props = entry["props"] as? [String: Any],
-          let context = createWidgetContext(layout: layout, props: props) else {
+          let context = createWidgetContext(layout: layout) else {
       return .result()
     }
-    let familyKey: String? = "systemSmall"
+    let pressEnvironment: [String: Any] = [
+      "timestamp": Int(Date.now.timeIntervalSince1970 * 1000),
+      "target": target as Any
+    ]
     let result = context.objectForKeyedSubscript("__expoWidgetHandlePress")?.call(
-      withArguments: [Int(Date.now.timeIntervalSince1970 * 1000), familyKey as Any, target as Any]
+      withArguments: [props, pressEnvironment]
     )
     if let newProps = result?.toObject() as? [String: Any] {
       var newEntry = entry

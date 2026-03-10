@@ -15,11 +15,11 @@ import expo.modules.ui.button.ButtonProps
 import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.IconButtonProps
 import expo.modules.ui.icon.IconView
-import expo.modules.ui.menu.ContextMenuButtonPressedEvent
 import expo.modules.ui.menu.ContextMenuContent
 import expo.modules.ui.menu.ContextMenuProps
-import expo.modules.ui.menu.ContextMenuSwitchValueChangeEvent
-import expo.modules.ui.menu.ExpandedChangedEvent
+import expo.modules.ui.menu.DropdownMenuItemContent
+import expo.modules.ui.menu.DropdownMenuItemProps
+import expo.modules.ui.menu.ItemPressedEvent
 import okhttp3.OkHttpClient
 
 class ExpoUIModule : Module() {
@@ -150,21 +150,17 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("ContextMenuView", events = {
-      Events(
-        "onContextMenuButtonPressed",
-        "onContextMenuSwitchValueChanged",
-        "onExpandedChanged"
-      )
+      Events("onDismissRequest")
     }) { props: ContextMenuProps ->
-      val onContextMenuButtonPressed by remember { EventDispatcher<ContextMenuButtonPressedEvent>() }
-      val onContextMenuSwitchValueChanged by remember { EventDispatcher<ContextMenuSwitchValueChangeEvent>() }
-      val onExpandedChanged by remember { EventDispatcher<ExpandedChangedEvent>() }
-      ContextMenuContent(
-        props,
-        { onContextMenuButtonPressed(it) },
-        { onContextMenuSwitchValueChanged(it) },
-        { onExpandedChanged(it) }
-      )
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ContextMenuContent(props) { onDismissRequest(Unit) }
+    }
+
+    ExpoUIView("DropdownMenuItemView", events = {
+      Events("onItemPressed")
+    }) { props: DropdownMenuItemProps ->
+      val onItemPressed by remember { EventDispatcher<ItemPressedEvent>() }
+      DropdownMenuItemContent(props) { onItemPressed(it) }
     }
 
     ExpoUIView("ProgressView") { props: ProgressProps ->
