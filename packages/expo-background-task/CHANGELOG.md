@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed JS timers hanging during background task execution on Android by registering with `HeadlessJsTaskContext`. ([#XXXX](https://github.com/expo/expo/pull/XXXX) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25

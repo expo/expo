@@ -13,6 +13,10 @@ import androidx.work.Operation
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.facebook.react.ReactApplication
+import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.jstasks.HeadlessJsTaskConfig
+import com.facebook.react.jstasks.HeadlessJsTaskContext
 import com.google.common.util.concurrent.ListenableFuture
 import expo.modules.interfaces.taskManager.TaskServiceProviderHelper
 import kotlinx.coroutines.CancellationException
@@ -215,22 +219,61 @@ object BackgroundTaskScheduler {
       return
     }
 
-    val tasks = consumers.filterIsInstance<BackgroundTaskConsumer>()
-      .map { bgTaskConsumer ->
-        Log.d(TAG, "runTasks: executing tasks for consumer of type ${bgTaskConsumer.taskType()}")
-        val taskCompletion = CompletableDeferred<Unit>()
-        try {
-          bgTaskConsumer.executeTask {
-            Log.d(TAG, "Task successfully finished")
-            taskCompletion.complete(Unit)
-          }
-        } catch (e: Exception) {
-          Log.e(TAG, "Task failed: ${e.message}")
+    // Register with HeadlessJsTaskContext to keep JS timers alive while backgrounded.
+    // Without this, JavaTimerManager pauses all timers when the Activity is paused
+    // (isPaused=true && isRunningTasks=false), causing all async JS operations
+    // (promises, setTimeout) to hang indefinitely.
+    var headlessTaskId = -1
+    var headlessContext: HeadlessJsTaskContext? = null
+    try {
+      val app = context.applicationContext as? ReactApplication
+      val reactContext = app?.reactNativeHost?.reactInstanceManager?.currentReactContext
+      if (reactContext != null) {
+        headlessContext = HeadlessJsTaskContext.getInstance(reactContext)
+        val taskConfig = HeadlessJsTaskConfig(
+          "expo-background-task",
+          WritableNativeMap(),
+          0, // no timeout
+          true // allowedInForeground
+        )
+        headlessTaskId = withContext(Dispatchers.Main) {
+          headlessContext!!.startTask(taskConfig)
         }
-        taskCompletion
+        Log.d(TAG, "Registered headless task $headlessTaskId to keep timers alive")
+      } else {
+        Log.w(TAG, "Could not get ReactContext to register headless task")
       }
-    // Await all tasks to complete
-    tasks.awaitAll()
+    } catch (e: Exception) {
+      Log.w(TAG, "Failed to register headless task: ${e.message}")
+    }
+
+    try {
+      val tasks = consumers.filterIsInstance<BackgroundTaskConsumer>()
+        .map { bgTaskConsumer ->
+          Log.d(TAG, "runTasks: executing tasks for consumer of type ${bgTaskConsumer.taskType()}")
+          val taskCompletion = CompletableDeferred<Unit>()
+          try {
+            bgTaskConsumer.executeTask {
+              Log.d(TAG, "Task successfully finished")
+              taskCompletion.complete(Unit)
+            }
+          } catch (e: Exception) {
+            Log.e(TAG, "Task failed: ${e.message}")
+          }
+          taskCompletion
+        }
+      // Await all tasks to complete
+      tasks.awaitAll()
+    } finally {
+      if (headlessTaskId >= 0 && headlessContext != null) {
+        try {
+          headlessContext.finishTask(headlessTaskId)
+          Log.d(TAG, "Unregistered headless task $headlessTaskId")
+        } catch (e: Exception) {
+          Log.w(TAG, "Failed to unregister headless task: ${e.message}")
+        }
+      }
+    }
 
     // Schedule next task
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
