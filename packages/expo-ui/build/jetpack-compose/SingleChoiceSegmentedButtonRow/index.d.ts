@@ -1,4 +1,4 @@
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 export type SingleChoiceSegmentedButtonRowProps = {
     /**
      * SegmentedButton children.
@@ -7,7 +7,7 @@ export type SingleChoiceSegmentedButtonRowProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * A row container for single-choice `SegmentedButton` children.

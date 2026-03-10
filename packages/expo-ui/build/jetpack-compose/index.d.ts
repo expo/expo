@@ -14,8 +14,6 @@ export * from './LazyColumn';
 export * from './ListItem';
 export * from './RNHostView';
 export * from './DatePicker';
-export * from './SingleChoiceSegmentedButtonRow';
-export * from './MultiChoiceSegmentedButtonRow';
 export * from './SegmentedButton';
 export * from './Progress';
 export * from './Slider';

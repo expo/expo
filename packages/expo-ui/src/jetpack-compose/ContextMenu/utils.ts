@@ -22,10 +22,7 @@ type SubmenuElement = {
   };
 } & ContextMenuElementBase;
 
-export type MenuElement =
-  | ButtonMenuElement
-  | SwitchMenuElement
-  | SubmenuElement;
+export type MenuElement = ButtonMenuElement | SwitchMenuElement | SubmenuElement;
 
 // Maps the react children to NativeMenuElement[] which is used to render out the native menu
 // TODO: Ideally we want to pass the children directly to the native side without having to do this

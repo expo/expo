@@ -12,8 +12,6 @@ import { ScrollView, Text } from 'react-native';
 import { Page, Section } from '../../components/Page';
 
 export default function RadioButtonScreen() {
-  const [selected, setSelected] = React.useState(false);
-
   const [selectedOption, setSelectedOption] = React.useState('Calls');
   const groupOptions = ['Calls', 'Missed', 'Friends'];
 
