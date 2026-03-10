@@ -27,7 +27,6 @@ import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.getImageVector
-import expo.modules.ui.menu.LocalContextMenuExpanded
 import expo.modules.ui.shapeFromShapeRecord
 import java.io.Serializable
 
@@ -161,17 +160,11 @@ fun FunctionalComposableScope.ButtonContent(
   val trailingIcon = props.trailingIcon
   val disabled = props.disabled
 
-  // Check if this Button is inside a ContextMenu
-  val contextMenuExpanded = LocalContextMenuExpanded.current
-
   StyledButton(
     variant ?: ButtonVariant.DEFAULT,
     colors,
     disabled ?: false,
     onPress = {
-      // If inside ContextMenu, expand the menu
-      contextMenuExpanded?.let { it.value = true }
-      // Also fire the button pressed event
       onButtonPressed(ButtonPressedEvent())
     },
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),

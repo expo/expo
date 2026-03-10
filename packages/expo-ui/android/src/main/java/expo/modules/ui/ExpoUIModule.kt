@@ -19,7 +19,6 @@ import expo.modules.ui.menu.ContextMenuContent
 import expo.modules.ui.menu.ContextMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
-import expo.modules.ui.menu.ExpandedChangedEvent
 import expo.modules.ui.menu.ItemPressedEvent
 import okhttp3.OkHttpClient
 
@@ -143,10 +142,10 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("ContextMenuView", events = {
-      Events("onExpandedChanged")
+      Events("onDismissRequest")
     }) { props: ContextMenuProps ->
-      val onExpandedChanged by remember { EventDispatcher<ExpandedChangedEvent>() }
-      ContextMenuContent(props) { onExpandedChanged(it) }
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ContextMenuContent(props) { onDismissRequest(Unit) }
     }
 
     ExpoUIView("DropdownMenuItemView", events = {
