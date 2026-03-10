@@ -6,8 +6,20 @@ import { ExpoModifier } from '../../types';
 type SwitchElementColors = {
     checkedThumbColor?: ColorValue;
     checkedTrackColor?: ColorValue;
+    checkedBorderColor?: ColorValue;
+    checkedIconColor?: ColorValue;
     uncheckedThumbColor?: ColorValue;
     uncheckedTrackColor?: ColorValue;
+    uncheckedBorderColor?: ColorValue;
+    uncheckedIconColor?: ColorValue;
+    disabledCheckedThumbColor?: ColorValue;
+    disabledCheckedTrackColor?: ColorValue;
+    disabledCheckedBorderColor?: ColorValue;
+    disabledCheckedIconColor?: ColorValue;
+    disabledUncheckedThumbColor?: ColorValue;
+    disabledUncheckedTrackColor?: ColorValue;
+    disabledUncheckedBorderColor?: ColorValue;
+    disabledUncheckedIconColor?: ColorValue;
 };
 /**
  * Only for checkbox.
@@ -36,6 +48,12 @@ export type SwitchProps = {
      * @default 'switch'
      */
     variant?: 'checkbox' | 'switch' | 'button';
+    /**
+     * Whether the switch is enabled.
+     * @default true
+     * @platform android
+     */
+    enabled?: boolean;
     /**
      * Callback function that is called when the checked state changes.
      */
