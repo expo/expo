@@ -34,7 +34,7 @@ import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
 export default function StandardFABExample() {
   return (
     <Host matchContents>
-      <FloatingActionButton onPress={() => console.log('FAB pressed')}>
+      <FloatingActionButton onClick={() => console.log('FAB pressed')}>
         <FloatingActionButton.Icon>
           <Icon source={require('./assets/add.xml')} />
         </FloatingActionButton.Icon>
@@ -60,21 +60,21 @@ export default function FABVariantsExample() {
   return (
     <View style={{ flexDirection: 'row', gap: 16 }}>
       <Host matchContents>
-        <SmallFloatingActionButton onPress={() => {}}>
+        <SmallFloatingActionButton onClick={() => {}}>
           <SmallFloatingActionButton.Icon>
             <Icon source={require('./assets/add.xml')} />
           </SmallFloatingActionButton.Icon>
         </SmallFloatingActionButton>
       </Host>
       <Host matchContents>
-        <FloatingActionButton onPress={() => {}}>
+        <FloatingActionButton onClick={() => {}}>
           <FloatingActionButton.Icon>
             <Icon source={require('./assets/add.xml')} />
           </FloatingActionButton.Icon>
         </FloatingActionButton>
       </Host>
       <Host matchContents>
-        <LargeFloatingActionButton onPress={() => {}}>
+        <LargeFloatingActionButton onClick={() => {}}>
           <LargeFloatingActionButton.Icon>
             <Icon source={require('./assets/add.xml')} />
           </LargeFloatingActionButton.Icon>
@@ -96,7 +96,7 @@ export default function ExtendedFABExample() {
 
   return (
     <Host matchContents>
-      <ExtendedFloatingActionButton expanded={expanded} onPress={() => setExpanded(v => !v)}>
+      <ExtendedFloatingActionButton expanded={expanded} onClick={() => setExpanded(v => !v)}>
         <ExtendedFloatingActionButton.Icon>
           <Icon source={require('./assets/edit.xml')} />
         </ExtendedFloatingActionButton.Icon>
@@ -132,7 +132,7 @@ export default function FloatingFABExample() {
 
         <FloatingActionButton
           modifiers={[align('bottomEnd'), offset(-16, -16)]}
-          onPress={() => console.log('pressed')}>
+          onClick={() => console.log('pressed')}>
           <FloatingActionButton.Icon>
             <Icon source={require('./assets/add.xml')} />
           </FloatingActionButton.Icon>
@@ -151,7 +151,7 @@ import { ExtendedFloatingActionButton, Host, Icon, Text } from '@expo/ui/jetpack
 export default function FABCustomColorExample() {
   return (
     <Host matchContents>
-      <ExtendedFloatingActionButton containerColor="#E8DEF8" onPress={() => console.log('pressed')}>
+      <ExtendedFloatingActionButton containerColor="#E8DEF8" onClick={() => console.log('pressed')}>
         <ExtendedFloatingActionButton.Icon>
           <Icon source={require('./assets/add.xml')} />
         </ExtendedFloatingActionButton.Icon>

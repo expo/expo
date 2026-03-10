@@ -29,9 +29,9 @@ export type SmallFloatingActionButtonProps = {
   containerColor?: ColorValue;
 
   /**
-   * Callback invoked when the button is pressed.
+   * Callback invoked when the button is clicked.
    */
-  onPress?: () => void;
+  onClick?: () => void;
 
   /**
    * Modifiers for the component.
@@ -55,9 +55,9 @@ export type FloatingActionButtonProps = {
   containerColor?: ColorValue;
 
   /**
-   * Callback invoked when the button is pressed.
+   * Callback invoked when the button is clicked.
    */
-  onPress?: () => void;
+  onClick?: () => void;
 
   /**
    * Modifiers for the component.
@@ -81,9 +81,9 @@ export type LargeFloatingActionButtonProps = {
   containerColor?: ColorValue;
 
   /**
-   * Callback invoked when the button is pressed.
+   * Callback invoked when the button is clicked.
    */
-  onPress?: () => void;
+  onClick?: () => void;
 
   /**
    * Modifiers for the component.
@@ -113,9 +113,9 @@ export type ExtendedFloatingActionButtonProps = {
   containerColor?: ColorValue;
 
   /**
-   * Callback invoked when the button is pressed.
+   * Callback invoked when the button is clicked.
    */
-  onPress?: () => void;
+  onClick?: () => void;
 
   /**
    * Modifiers for the component.
@@ -126,8 +126,8 @@ export type ExtendedFloatingActionButtonProps = {
 /**
  * @hidden
  */
-type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onPress'> &
-  ViewEvent<'onPress', void> & {
+type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onClick'> &
+  ViewEvent<'onClick', void> & {
     variant: string;
     expanded?: boolean;
   };
@@ -151,14 +151,14 @@ function FABText(props: SlotChildProps) {
 function transformProps(
   props: FloatingActionButtonProps & { variant: string; expanded?: boolean }
 ): NativeFloatingActionButtonProps {
-  const { children, onPress, modifiers, ...restProps } = props;
+  const { children, onClick, modifiers, ...restProps } = props;
 
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     children,
-    onPress,
+    onClick,
   };
 }
 
@@ -172,7 +172,7 @@ function transformProps(
  * import { SmallFloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <SmallFloatingActionButton onPress={() => console.log('pressed')}>
+ *   <SmallFloatingActionButton onClick={() => console.log('pressed')}>
  *     <SmallFloatingActionButton.Icon>
  *       <Icon source={require('./assets/add.xml')} />
  *     </SmallFloatingActionButton.Icon>
@@ -196,7 +196,7 @@ export { SmallFloatingActionButtonComponent as SmallFloatingActionButton };
  * import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <FloatingActionButton onPress={() => console.log('pressed')}>
+ *   <FloatingActionButton onClick={() => console.log('pressed')}>
  *     <FloatingActionButton.Icon>
  *       <Icon source={require('./assets/add.xml')} />
  *     </FloatingActionButton.Icon>
@@ -220,7 +220,7 @@ export { FloatingActionButtonComponent as FloatingActionButton };
  * import { LargeFloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <LargeFloatingActionButton onPress={() => console.log('pressed')}>
+ *   <LargeFloatingActionButton onClick={() => console.log('pressed')}>
  *     <LargeFloatingActionButton.Icon>
  *       <Icon source={require('./assets/add.xml')} />
  *     </LargeFloatingActionButton.Icon>
@@ -244,7 +244,7 @@ export { LargeFloatingActionButtonComponent as LargeFloatingActionButton };
  * import { ExtendedFloatingActionButton, Host, Icon, Text } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <ExtendedFloatingActionButton expanded={true} onPress={() => console.log('pressed')}>
+ *   <ExtendedFloatingActionButton expanded={true} onClick={() => console.log('pressed')}>
  *     <ExtendedFloatingActionButton.Icon>
  *       <Icon source={require('./assets/edit.xml')} />
  *     </ExtendedFloatingActionButton.Icon>

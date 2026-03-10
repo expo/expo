@@ -33,7 +33,7 @@ data class FloatingActionButtonProps(
 @Composable
 fun FunctionalComposableScope.FloatingActionButtonContent(
   props: FloatingActionButtonProps,
-  onPress: () -> Unit
+  onClick: () -> Unit
 ) {
   val containerColor = props.containerColor?.compose ?: FloatingActionButtonDefaults.containerColor
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
@@ -51,13 +51,13 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
 
   when (props.variant) {
     FloatingActionButtonVariant.SMALL -> SmallFloatingActionButton(
-      onClick = onPress,
+      onClick = onClick,
       containerColor = containerColor,
       modifier = modifier,
       content = iconContent ?: {}
     )
     FloatingActionButtonVariant.LARGE -> LargeFloatingActionButton(
-      onClick = onPress,
+      onClick = onClick,
       containerColor = containerColor,
       modifier = modifier,
       content = iconContent ?: {}
@@ -74,7 +74,7 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
         }
       }
       ExtendedFloatingActionButton(
-        onClick = onPress,
+        onClick = onClick,
         expanded = props.expanded,
         icon = iconContent ?: {},
         text = textContent ?: {},
@@ -83,7 +83,7 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
       )
     }
     FloatingActionButtonVariant.MEDIUM -> FloatingActionButton(
-      onClick = onPress,
+      onClick = onClick,
       containerColor = containerColor,
       modifier = modifier,
       content = iconContent ?: {}

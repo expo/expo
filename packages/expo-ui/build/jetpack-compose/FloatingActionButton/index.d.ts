@@ -17,9 +17,9 @@ export type SmallFloatingActionButtonProps = {
      */
     containerColor?: ColorValue;
     /**
-     * Callback invoked when the button is pressed.
+     * Callback invoked when the button is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
      * Modifiers for the component.
      */
@@ -39,9 +39,9 @@ export type FloatingActionButtonProps = {
      */
     containerColor?: ColorValue;
     /**
-     * Callback invoked when the button is pressed.
+     * Callback invoked when the button is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
      * Modifiers for the component.
      */
@@ -61,9 +61,9 @@ export type LargeFloatingActionButtonProps = {
      */
     containerColor?: ColorValue;
     /**
-     * Callback invoked when the button is pressed.
+     * Callback invoked when the button is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
      * Modifiers for the component.
      */
@@ -88,9 +88,9 @@ export type ExtendedFloatingActionButtonProps = {
      */
     containerColor?: ColorValue;
     /**
-     * Callback invoked when the button is pressed.
+     * Callback invoked when the button is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
      * Modifiers for the component.
      */
@@ -108,7 +108,7 @@ declare function FABText(props: SlotChildProps): import("react").JSX.Element;
  * import { SmallFloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <SmallFloatingActionButton onPress={() => console.log('pressed')}>
+ *   <SmallFloatingActionButton onClick={() => console.log('pressed')}>
  *     <SmallFloatingActionButton.Icon>
  *       <Icon source={require('./assets/add.xml')} />
  *     </SmallFloatingActionButton.Icon>
@@ -131,7 +131,7 @@ export { SmallFloatingActionButtonComponent as SmallFloatingActionButton };
  * import { FloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <FloatingActionButton onPress={() => console.log('pressed')}>
+ *   <FloatingActionButton onClick={() => console.log('pressed')}>
  *     <FloatingActionButton.Icon>
  *       <Icon source={require('./assets/add.xml')} />
  *     </FloatingActionButton.Icon>
@@ -154,7 +154,7 @@ export { FloatingActionButtonComponent as FloatingActionButton };
  * import { LargeFloatingActionButton, Host, Icon } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <LargeFloatingActionButton onPress={() => console.log('pressed')}>
+ *   <LargeFloatingActionButton onClick={() => console.log('pressed')}>
  *     <LargeFloatingActionButton.Icon>
  *       <Icon source={require('./assets/add.xml')} />
  *     </LargeFloatingActionButton.Icon>
@@ -177,7 +177,7 @@ export { LargeFloatingActionButtonComponent as LargeFloatingActionButton };
  * import { ExtendedFloatingActionButton, Host, Icon, Text } from '@expo/ui/jetpack-compose';
  *
  * <Host matchContents>
- *   <ExtendedFloatingActionButton expanded={true} onPress={() => console.log('pressed')}>
+ *   <ExtendedFloatingActionButton expanded={true} onClick={() => console.log('pressed')}>
  *     <ExtendedFloatingActionButton.Icon>
  *       <Icon source={require('./assets/edit.xml')} />
  *     </ExtendedFloatingActionButton.Icon>
