@@ -4,7 +4,6 @@ import { findModulesAsync } from './findModules';
 import { resolveExtraBuildDependenciesAsync, resolveModulesAsync } from './resolveModules';
 
 export { getConfiguration } from './getConfiguration';
-export { generateModulesProviderAsync } from './generatePackageList';
 
 /** @deprecated */
 export interface SearchOptions extends Partial<AutolinkingOptions> {
