@@ -42,10 +42,13 @@ export function getSwiftModuleNames(
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
-  extraOutput: { flags?: Record<string, any> }
+  extraOutput: { flags?: Record<string, any>; isLocal?: boolean }
 ): Promise<ModuleDescriptorIos | null> {
   const podspecFiles = await findPodspecFiles(revision);
-  if (!podspecFiles.length) {
+  const isLocal = extraOutput.isLocal ?? false;
+
+  if (!podspecFiles.length && !isLocal) {
+    // External modules without a podspec cannot be integrated.
     return null;
   }
 
@@ -70,6 +73,8 @@ export async function resolveModuleAsync(
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
+    type: isLocal ? 'local' : 'external',
+    path: revision.path,
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
   };
 }

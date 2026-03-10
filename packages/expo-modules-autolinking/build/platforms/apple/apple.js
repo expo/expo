@@ -35,7 +35,9 @@ function getSwiftModuleNames(pods, swiftModuleNames) {
 /** Resolves module search result with additional details required for iOS platform. */
 async function resolveModuleAsync(packageName, revision, extraOutput) {
     const podspecFiles = await findPodspecFiles(revision);
-    if (!podspecFiles.length) {
+    const isLocal = extraOutput.isLocal ?? false;
+    if (!podspecFiles.length && !isLocal) {
+        // External modules without a podspec cannot be integrated.
         return null;
     }
     const pods = podspecFiles.map((podspecFile) => ({
@@ -56,6 +58,8 @@ async function resolveModuleAsync(packageName, revision, extraOutput) {
         appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
         reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
         debugOnly: revision.config?.appleDebugOnly() ?? false,
+        type: isLocal ? 'local' : 'external',
+        path: revision.path,
         ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
     };
 }

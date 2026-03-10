@@ -49,6 +49,13 @@ module Expo
 
       UI.section 'Using Expo modules' do
         @packages.each { |package|
+          # Local modules without a podspec are integrated directly in the app project.
+          # Skip pod registration — their sources will be added to the app target.
+          if package.in_project?
+            UI.message "— #{package.name.green} (integrated)"
+            next
+          end
+
           package.pods.each { |pod|
             # The module can already be added to the target, in which case we can just skip it.
             # This allows us to add a pod before `use_expo_modules` to provide custom flags.
@@ -139,10 +146,20 @@ module Expo
       platform = @target_definition.platform
 
       @packages.select do |package|
-        # Check whether the package has any module to autolink
-        # and if there is any pod that supports target's platform.
-        package.has_something_to_link? && package.pods.any? { |pod| pod.supports_platform?(platform) }
+        next false unless package.has_something_to_link?
+
+        # In-project local modules (no podspec) are always included — their classes
+        # are compiled directly in the app target.
+        next true if package.in_project?
+
+        # Pod-based modules need at least one pod that supports the target platform.
+        package.pods.any? { |pod| pod.supports_platform?(platform) }
       end
+    end
+
+    # Returns local packages that are integrated directly in the app project (no podspec).
+    public def in_project_packages
+      @packages.select(&:in_project?)
     end
 
     # Returns the provider name which is also a name of the generated file

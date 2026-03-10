@@ -64,6 +64,7 @@ describe('monorepo', () => {
       const { modules } = JSON.parse(resolveResult.stdout);
       const parsedModules = modules.map((module) => ({
         ...module,
+        path: removeProjectPath(module.path),
         projects: module.projects?.map((project) => ({
           ...project,
           sourceDir: removeProjectPath(project.sourceDir),

@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'colored2'
+require_relative 'xcodeproj/PBXFileSystemSynchronizedRootGroup'
 
 module Expo
   module ProjectIntegrator
@@ -85,6 +86,70 @@ module Expo
 
         group.remove_from_project
         group.project.mark_dirty!
+      end
+    end
+
+    # Integrates local modules (no podspec) into the app project by adding
+    # their iOS source directories as file system synchronized root groups.
+    def self.integrate_local_modules(project, targets)
+      in_project_packages = targets.flat_map do |target|
+        manager = target.target_definition.autolinking_manager
+        manager.present? ? manager.in_project_packages : []
+      end.uniq(&:path)
+
+      return if in_project_packages.empty?
+
+      # Find or create the "Local Modules" group in the project
+      local_modules_group = project.main_group.find_subpath('Local Modules', true)
+
+      # Find the main app native target (first non-test application target)
+      native_targets = project.native_targets.select do |t|
+        t.product_type == 'com.apple.product-type.application'
+      end
+
+      if native_targets.empty?
+        Pod::UI.warn '[Expo] Could not find an application target to integrate local modules'
+        return
+      end
+
+      in_project_packages.each do |package|
+        # Prefer `ios/` (platform-specific) over `apple/` (cross-platform)
+        source_dir = ['ios', 'apple']
+          .map { |dir| File.join(package.path, dir) }
+          .find { |dir| Dir.exist?(dir) }
+
+        unless source_dir
+          Pod::UI.warn "[Expo] Local module #{package.name} has no `ios` or `apple` directory, skipping"
+          next
+        end
+
+        # Compute relative path from the project directory to the module source directory
+        relative_path = Pathname.new(source_dir).relative_path_from(Pathname.new(project.project_dir)).to_s
+
+        # Check if already integrated
+        existing = local_modules_group.children.find { |c| c.path == relative_path }
+
+        if existing
+          next
+        end
+
+        # Create synchronized root group
+        sync_group = project.new(Xcodeproj::Project::Object::PBXFileSystemSynchronizedRootGroup)
+        sync_group.path = relative_path
+        sync_group.source_tree = '<group>'
+        sync_group.name = package.name
+
+        # Add to the Local Modules group
+        local_modules_group.children << sync_group
+
+        native_targets.each do |native_target|
+          # Register with the app target
+          native_target.file_system_synchronized_groups ||= []
+          native_target.file_system_synchronized_groups << sync_group
+        end
+
+        Pod::UI.puts "[Expo] ".blue + "Integrated local module #{package.name} in app project"
+        project.mark_dirty!
       end
     end
 

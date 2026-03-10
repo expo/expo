@@ -110,6 +110,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -124,6 +125,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -138,6 +140,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -152,6 +155,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -166,6 +170,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -180,6 +185,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -194,6 +200,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -208,6 +215,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -222,6 +230,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -236,6 +245,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -250,6 +260,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -264,6 +275,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -278,6 +290,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -292,6 +305,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -306,6 +320,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -320,6 +335,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
   {
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -342,6 +358,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
+    "path": "monorepo/node_modules/@unimodules/core",
     "pods": [
       {
         "podName": "UMCore",
@@ -353,6 +370,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -360,6 +378,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "@unimodules/react-native-adapter",
     "packageVersion": "6.3.1",
+    "path": "monorepo/node_modules/@unimodules/react-native-adapter",
     "pods": [
       {
         "podName": "UMReactNativeAdapter",
@@ -371,6 +390,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -378,6 +398,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
+    "path": "monorepo/node_modules/expo-application",
     "pods": [
       {
         "podName": "EXApplication",
@@ -389,6 +410,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXApplication",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -396,6 +418,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
+    "path": "monorepo/node_modules/expo-constants",
     "pods": [
       {
         "podName": "EXConstants",
@@ -407,6 +430,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXConstants",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -414,6 +438,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/expo-error-recovery",
     "pods": [
       {
         "podName": "EXErrorRecovery",
@@ -425,6 +450,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -432,6 +458,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
+    "path": "monorepo/node_modules/expo-file-system",
     "pods": [
       {
         "podName": "EXFileSystem",
@@ -443,6 +470,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFileSystem",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -450,6 +478,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
+    "path": "monorepo/node_modules/expo-font",
     "pods": [
       {
         "podName": "EXFont",
@@ -461,6 +490,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFont",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -468,6 +498,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/expo-image-loader",
     "pods": [
       {
         "podName": "EXImageLoader",
@@ -479,6 +510,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXImageLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -486,6 +518,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
+    "path": "monorepo/node_modules/expo-keep-awake",
     "pods": [
       {
         "podName": "EXKeepAwake",
@@ -497,6 +530,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -504,6 +538,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
+    "path": "monorepo/node_modules/expo-modules-core",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -515,6 +550,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -522,6 +558,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
+    "path": "monorepo/node_modules/expo-permissions",
     "pods": [
       {
         "podName": "EXPermissions",
@@ -533,6 +570,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXPermissions",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -540,6 +578,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
+    "path": "monorepo/node_modules/expo-splash-screen",
     "pods": [
       {
         "podName": "EXSplashScreen",
@@ -551,6 +590,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -558,6 +598,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
+    "path": "monorepo/node_modules/expo-structured-headers",
     "pods": [
       {
         "podName": "EXStructuredHeaders",
@@ -569,6 +610,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -576,6 +618,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
+    "path": "monorepo/node_modules/expo-updates",
     "pods": [
       {
         "podName": "EXUpdates",
@@ -587,6 +630,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdates",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -594,6 +638,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
+    "path": "monorepo/node_modules/expo-updates-interface",
     "pods": [
       {
         "podName": "EXUpdatesInterface",
@@ -605,6 +650,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -612,6 +658,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/unimodules-app-loader",
     "pods": [
       {
         "podName": "UMAppLoader",
@@ -623,6 +670,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMAppLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -630,6 +678,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
+    "path": "monorepo/node_modules/unimodules-task-manager-interface",
     "pods": [
       {
         "podName": "UMTaskManagerInterface",
@@ -641,6 +690,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
+    "type": "external",
   },
 ]
 `;
@@ -650,6 +700,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -664,6 +715,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -678,6 +730,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -692,6 +745,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -706,6 +760,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -720,6 +775,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -734,6 +790,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -748,6 +805,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -762,6 +820,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -776,6 +835,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -790,6 +850,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -804,6 +865,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -818,6 +880,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -832,6 +895,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -846,6 +910,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -860,6 +925,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
   {
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -882,6 +948,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
+    "path": "monorepo/node_modules/@unimodules/core",
     "pods": [
       {
         "podName": "UMCore",
@@ -893,6 +960,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -900,6 +968,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "@unimodules/react-native-adapter",
     "packageVersion": "6.3.1",
+    "path": "monorepo/node_modules/@unimodules/react-native-adapter",
     "pods": [
       {
         "podName": "UMReactNativeAdapter",
@@ -911,6 +980,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -918,6 +988,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
+    "path": "monorepo/node_modules/expo-application",
     "pods": [
       {
         "podName": "EXApplication",
@@ -929,6 +1000,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXApplication",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -936,6 +1008,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
+    "path": "monorepo/node_modules/expo-constants",
     "pods": [
       {
         "podName": "EXConstants",
@@ -947,6 +1020,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXConstants",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -954,6 +1028,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/expo-error-recovery",
     "pods": [
       {
         "podName": "EXErrorRecovery",
@@ -965,6 +1040,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -972,6 +1048,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
+    "path": "monorepo/node_modules/expo-file-system",
     "pods": [
       {
         "podName": "EXFileSystem",
@@ -983,6 +1060,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFileSystem",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -990,6 +1068,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
+    "path": "monorepo/node_modules/expo-font",
     "pods": [
       {
         "podName": "EXFont",
@@ -1001,6 +1080,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFont",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1008,6 +1088,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/expo-image-loader",
     "pods": [
       {
         "podName": "EXImageLoader",
@@ -1019,6 +1100,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXImageLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1026,6 +1108,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
+    "path": "monorepo/node_modules/expo-keep-awake",
     "pods": [
       {
         "podName": "EXKeepAwake",
@@ -1037,6 +1120,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1044,6 +1128,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
+    "path": "monorepo/node_modules/expo-modules-core",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -1055,6 +1140,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1062,6 +1148,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
+    "path": "monorepo/node_modules/expo-permissions",
     "pods": [
       {
         "podName": "EXPermissions",
@@ -1073,6 +1160,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXPermissions",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1080,6 +1168,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
+    "path": "monorepo/node_modules/expo-splash-screen",
     "pods": [
       {
         "podName": "EXSplashScreen",
@@ -1091,6 +1180,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1098,6 +1188,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
+    "path": "monorepo/node_modules/expo-structured-headers",
     "pods": [
       {
         "podName": "EXStructuredHeaders",
@@ -1109,6 +1200,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1116,6 +1208,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
+    "path": "monorepo/node_modules/expo-updates",
     "pods": [
       {
         "podName": "EXUpdates",
@@ -1127,6 +1220,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdates",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1134,6 +1228,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
+    "path": "monorepo/node_modules/expo-updates-interface",
     "pods": [
       {
         "podName": "EXUpdatesInterface",
@@ -1145,6 +1240,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1152,6 +1248,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/unimodules-app-loader",
     "pods": [
       {
         "podName": "UMAppLoader",
@@ -1163,6 +1260,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMAppLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1170,6 +1268,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
+    "path": "monorepo/node_modules/unimodules-task-manager-interface",
     "pods": [
       {
         "podName": "UMTaskManagerInterface",
@@ -1181,6 +1280,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
+    "type": "external",
   },
 ]
 `;
@@ -1190,6 +1290,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1204,6 +1305,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1218,6 +1320,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1232,6 +1335,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-device",
     "packageVersion": "3.3.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1246,6 +1350,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1260,6 +1365,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1274,6 +1380,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1288,6 +1395,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1302,6 +1410,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1316,6 +1425,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1330,6 +1440,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1344,6 +1455,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1358,6 +1470,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1372,6 +1485,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-updates",
     "packageVersion": "0.8.2",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1386,6 +1500,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.2",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1400,6 +1515,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1414,6 +1530,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
   {
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
+    "path": undefined,
     "pods": undefined,
     "projects": [
       {
@@ -1436,6 +1553,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
+    "path": "monorepo/node_modules/@unimodules/core",
     "pods": [
       {
         "podName": "UMCore",
@@ -1447,6 +1565,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1454,6 +1573,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "@unimodules/react-native-adapter",
     "packageVersion": "6.3.1",
+    "path": "monorepo/node_modules/@unimodules/react-native-adapter",
     "pods": [
       {
         "podName": "UMReactNativeAdapter",
@@ -1465,6 +1585,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1472,6 +1593,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
+    "path": "monorepo/node_modules/expo-application",
     "pods": [
       {
         "podName": "EXApplication",
@@ -1483,6 +1605,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXApplication",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1490,6 +1613,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
+    "path": "monorepo/node_modules/expo-constants",
     "pods": [
       {
         "podName": "EXConstants",
@@ -1501,6 +1625,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXConstants",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1508,6 +1633,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-device",
     "packageVersion": "3.3.0",
+    "path": "monorepo/node_modules/expo-device",
     "pods": [
       {
         "podName": "EXDevice",
@@ -1519,6 +1645,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXDevice",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1526,6 +1653,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/expo-error-recovery",
     "pods": [
       {
         "podName": "EXErrorRecovery",
@@ -1537,6 +1665,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXErrorRecovery",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1544,6 +1673,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
+    "path": "monorepo/node_modules/expo-file-system",
     "pods": [
       {
         "podName": "EXFileSystem",
@@ -1555,6 +1685,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFileSystem",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1562,6 +1693,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
+    "path": "monorepo/node_modules/expo-font",
     "pods": [
       {
         "podName": "EXFont",
@@ -1573,6 +1705,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXFont",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1580,6 +1713,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/expo-image-loader",
     "pods": [
       {
         "podName": "EXImageLoader",
@@ -1591,6 +1725,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXImageLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1598,6 +1733,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
+    "path": "monorepo/node_modules/expo-keep-awake",
     "pods": [
       {
         "podName": "EXKeepAwake",
@@ -1609,6 +1745,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXKeepAwake",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1616,6 +1753,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
+    "path": "monorepo/node_modules/expo-modules-core",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -1627,6 +1765,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "ExpoModulesCore",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1634,6 +1773,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
+    "path": "monorepo/node_modules/expo-permissions",
     "pods": [
       {
         "podName": "EXPermissions",
@@ -1645,6 +1785,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXPermissions",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1652,6 +1793,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
+    "path": "monorepo/node_modules/expo-splash-screen",
     "pods": [
       {
         "podName": "EXSplashScreen",
@@ -1663,6 +1805,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXSplashScreen",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1670,6 +1813,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
+    "path": "monorepo/node_modules/expo-structured-headers",
     "pods": [
       {
         "podName": "EXStructuredHeaders",
@@ -1681,6 +1825,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1688,6 +1833,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.2",
+    "path": "monorepo/apps/with-sentry/node_modules/expo-updates",
     "pods": [
       {
         "podName": "EXUpdates",
@@ -1699,6 +1845,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdates",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1706,6 +1853,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.2",
+    "path": "monorepo/apps/with-sentry/node_modules/expo-updates-interface",
     "pods": [
       {
         "podName": "EXUpdatesInterface",
@@ -1717,6 +1865,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1724,6 +1873,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
+    "path": "monorepo/node_modules/unimodules-app-loader",
     "pods": [
       {
         "podName": "UMAppLoader",
@@ -1735,6 +1885,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMAppLoader",
     ],
+    "type": "external",
   },
   {
     "appDelegateSubscribers": [],
@@ -1742,6 +1893,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
+    "path": "monorepo/node_modules/unimodules-task-manager-interface",
     "pods": [
       {
         "podName": "UMTaskManagerInterface",
@@ -1753,6 +1905,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
+    "type": "external",
   },
 ]
 `;
