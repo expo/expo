@@ -46,12 +46,6 @@ export type SwitchProps = {
    * Indicates whether the switch is checked.
    */
   value: boolean;
-  /**
-   * Label for the switch.
-   *
-   * > On Android, the label has an effect only when the `Switch` is used inside a `ContextMenu`.
-   */
-  label?: string;
 
   /**
    * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
