@@ -1,4 +1,4 @@
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 export type MultiChoiceSegmentedButtonRowProps = {
     /**
      * SegmentedButton children.
@@ -7,7 +7,7 @@ export type MultiChoiceSegmentedButtonRowProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * A row container for multi-choice `SegmentedButton` children.

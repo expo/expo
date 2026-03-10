@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type MultiChoiceSegmentedButtonRowProps = {
@@ -11,7 +11,7 @@ export type MultiChoiceSegmentedButtonRowProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 const MultiChoiceSegmentedButtonRowNativeView: React.ComponentType<MultiChoiceSegmentedButtonRowProps> =

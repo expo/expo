@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { type ExpoModifier, type ViewEvent } from '../../types';
+import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
@@ -51,9 +51,9 @@ export type SegmentedButtonProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
   /**
-   * Children containing a Label slot.
+   * Children containing a `Label` slot.
    */
   children?: React.ReactNode;
 };
@@ -76,7 +76,7 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
 );
 
 /**
- * Label slot for SegmentedButton.
+ * Label slot for `SegmentedButton`.
  */
 function SegmentedButtonLabel(props: { children: React.ReactNode }) {
   return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;

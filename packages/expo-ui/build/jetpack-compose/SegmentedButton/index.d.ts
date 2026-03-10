@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 /**
  * Colors for the segmented button in different states.
  */
@@ -46,14 +46,14 @@ export type SegmentedButtonProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
     /**
-     * Children containing a Label slot.
+     * Children containing a `Label` slot.
      */
     children?: React.ReactNode;
 };
 /**
- * Label slot for SegmentedButton.
+ * Label slot for `SegmentedButton`.
  */
 declare function SegmentedButtonLabel(props: {
     children: React.ReactNode;
