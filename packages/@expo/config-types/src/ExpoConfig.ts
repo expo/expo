@@ -355,6 +355,10 @@ export interface IOS {
    */
   buildNumber?: string;
   /**
+   * Sets the iOS deployment target (minimum iOS version). The value should be a string in the format `MAJOR.MINOR` (e.g., `"15.1"`). This sets the minimum iOS version your app will support.
+   */
+  deploymentTarget?: string;
+  /**
    * The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present. Requires `expo-system-ui` be installed in your project to work on iOS.
    */
   backgroundColor?: string;
