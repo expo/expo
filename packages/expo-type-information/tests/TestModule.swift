@@ -99,11 +99,23 @@ public class TestModule: Module {
     View(ExpoWebView.self) {
       Events("onEvent1", "onEvent2")
 
-      Prop("testProp") { (view, testProp: URL) in
-        if view.webView.url != testProp {
-          let urlRequest = URLRequest(url: testProp)
+      Prop("url") { (view, url: URL) in
+        if view.webView.url != url {
+          let urlRequest = URLRequest(url: url)
           view.webView.load(urlRequest)
         }
+      }
+
+      Prop("testRecord") { (view, testRecord: TestRecord) in 
+      }
+
+      Prop("testRecord2") { (view, testRecord2: TestRecord2) in 
+      }
+
+      Prop("testRecordClass") { (view, testRecordClass: TestRecordClass) in 
+      }
+
+      Prop("testEnum") { (view, testEnum: TestEnum) in 
       }
     }
   }
