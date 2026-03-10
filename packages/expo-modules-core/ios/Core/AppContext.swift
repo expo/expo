@@ -95,8 +95,14 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  /** 
+   Hook for ExpoModulesWorklets to register the UI runtime installer.
+   When set, the `installOnUIRuntime` function in CoreModule will use this to create the worklet runtime.
+  */
+  nonisolated(unsafe) public static var uiRuntimeFactory: ((_ appContext: AppContext, _ pointerValue: JavaScriptValue, _ runtime: JavaScriptRuntime) throws -> JavaScriptRuntime)?
+
   @objc
-  public var _uiRuntime: WorkletRuntime? {
+  public var _uiRuntime: JavaScriptRuntime? {
     didSet {
       if _uiRuntime != oldValue {
         MainActor.assumeIsolated {
@@ -106,7 +112,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
-  public var uiRuntime: WorkletRuntime {
+  public var uiRuntime: JavaScriptRuntime {
     get throws {
       if let uiRuntime = _uiRuntime {
         return uiRuntime
@@ -255,6 +261,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
       return nil
     }
     return ImageLoader(rctImageLoader: loader)
+  }
+
+  /**
+   Provides access to a native React Native module by name.
+   In new arch the lookup goes through the host wrapper; in old arch through the bridge.
+   */
+  public func nativeModule<T>(named name: String) -> T? {
+    guard let module = hostWrapper?.findModule(withName: name, lazilyLoadIfNecessary: true) as? T else {
+      log.warn("Unable to get the \(name) module.")
+      return nil
+    }
+    return module
+  }
+
+  /**
+   The bundle URL of the running React Native app.
+   Resolved from RCTBundleManager via RCTHost.
+   */
+  public var bundleURL: URL? {
+    return hostWrapper?.bundleURL()
   }
 
   /**

@@ -736,6 +736,7 @@ module.exports = {
           { name: 'reload', argumentsCount: 0, key: 'reload' },
           { name: 'setExtraParamAsync', argumentsCount: 2, key: 'setExtraParamAsync' },
         ],
+        ExpoUI: [],
         ExpoVideo: [
           { name: 'clearVideoCacheAsync', argumentsCount: 0, key: 'clearVideoCacheAsync' },
           { name: 'getCurrentVideoCacheSize', argumentsCount: 0, key: 'getCurrentVideoCacheSize' },

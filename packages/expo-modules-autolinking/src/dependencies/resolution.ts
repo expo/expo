@@ -15,7 +15,7 @@ declare module 'node:module' {
 
 // NOTE(@kitten): There's no need to search very deep for modules
 // We don't expect native modules to be excessively nested in the dependency tree
-const MAX_DEPTH = 8;
+const MAX_DEPTH = 9;
 
 const createNodeModulePathsCreator = () => {
   const _nodeModulePathCache = new Map<string, string | null>();
@@ -125,13 +125,10 @@ export async function scanDependenciesRecursively(
     depth = 0
   ): Promise<ResolutionResult> => {
     const searchResults: ResolutionResult = Object.create(null);
-    if (_visitedPackagePaths.has(resolution.path)) {
-      return searchResults;
-    } else {
-      _visitedPackagePaths.add(resolution.path);
-    }
+    const hasVisitedPath = _visitedPackagePaths.has(resolution.path);
+    _visitedPackagePaths.add(resolution.path);
     const [nodeModulePaths, packageJson] = await Promise.all([
-      getNodeModulePaths(resolution.path),
+      !hasVisitedPath ? getNodeModulePaths(resolution.path) : [],
       loadPackageJson(fastJoin(resolution.path, 'package.json')),
     ]);
     if (!packageJson) {
@@ -140,17 +137,16 @@ export async function scanDependenciesRecursively(
       resolution.version = packageJson.version || '';
     }
 
-    const modules = await resolveDependencies(
-      packageJson,
-      nodeModulePaths,
-      depth,
-      shouldIncludeDependency
-    );
-    for (let idx = 0; idx < modules.length; idx++) {
-      searchResults[modules[idx].name] = modules[idx];
-    }
-
-    if (depth + 1 < maxDepth) {
+    if (!hasVisitedPath && depth < maxDepth) {
+      const modules = await resolveDependencies(
+        packageJson,
+        nodeModulePaths,
+        depth,
+        shouldIncludeDependency
+      );
+      for (let idx = 0; idx < modules.length; idx++) {
+        searchResults[modules[idx].name] = modules[idx];
+      }
       const childResults = await taskAll(modules, (resolution) => recurse(resolution, depth + 1));
       return mergeResolutionResults(childResults, searchResults);
     } else {

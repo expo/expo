@@ -11,10 +11,14 @@
 - [android] add basic implementation of shared state for android ([#43097](https://github.com/expo/expo/pull/43097) by [@pmleczek](https://github.com/pmleczek))
 - [cli] allow shipping ios artifacts as swift package ([#43369](https://github.com/expo/expo/pull/43369) by [@pmleczek](https://github.com/pmleczek))
 - [ios] enable optional usage of prebuilt RN frameworks ([#43356](https://github.com/expo/expo/pull/43356) by [@pmleczek](https://github.com/pmleczek))
+- align using custom components between the platforms ([#43633](https://github.com/expo/expo/pull/43633) by [@pmleczek](https://github.com/pmleczek))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [test] add maestro e2e tests for dev menu ([#43421](https://github.com/expo/expo/pull/43421) by [@pmleczek](https://github.com/pmleczek))
+- [android] set react native version for all published artfacts ([#43693](https://github.com/expo/expo/pull/43693) by [@pmleczek](https://github.com/pmleczek))
 
 ## 55.0.11 — 2026-02-25
 

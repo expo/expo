@@ -26,7 +26,7 @@ In this guide, we'll describe a simple but powerful release process that uses **
 
 The most simple way to use EAS Update is to ignore the concept of "branches" and focus on "channels". Branches will still exist, but you will not have to interact with them directly to manage deployments. You can keep your channels pointed at a branch with the same name as the channel and think of them as a singular concept.
 
-EAS Update branches were meant to map to Git branches and enable teams to publish changes from a Git branch directly to an EAS Update branch of the same name. This can be helpful for [previewing updates](/eas-update/develop-faster/), but for many apps, this level of integration with Git is not required. Often, developers are only interested in being able to release hotfixes to a staging or production version of their app manually, and can run `eas update --channel staging` or `eas update --channel production`, when needed rather than managing branches to accomplish the same result.
+EAS Update branches were meant to map to Git branches and enable teams to publish changes from a Git branch directly to an EAS Update branch of the same name. This can be helpful for [previewing updates](/eas-update/preview/), but for many apps, this level of integration with Git is not required. Often, developers are only interested in being able to release hotfixes to a staging or production version of their app manually, and can run `eas update --channel staging` or `eas update --channel production`, when needed rather than managing branches to accomplish the same result.
 
 </Collapsible>
 
@@ -99,7 +99,7 @@ As explained above, preview builds will point to the "preview" channel. If you w
 
 ### Preview in development builds
 
-Development builds can load updates from any channel, provided the runtime version is compatible. Learn more about this in [Previewing updates](/eas-update/develop-faster/).
+Development builds can load updates from any channel, provided the runtime version is compatible. Learn more about this in [Previewing updates](/eas-update/preview/).
 
 ## Deploying to staging
 
@@ -144,4 +144,4 @@ Learn more in [Rollbacks](/eas-update/rollbacks/).
 ## Next steps
 
 - [Learn more about the Persistent staging release process](/eas-update/deployment-patterns/#persistent-staging-flow), which is very similar to what is described here.
-- [Explore using preview updates in development builds](/eas-update/develop-faster/).
+- [Explore using preview updates in development builds](/eas-update/preview/).

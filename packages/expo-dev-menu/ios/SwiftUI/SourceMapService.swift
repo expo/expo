@@ -14,8 +14,12 @@ class SourceMapService {
   /// Constructs the source map URL from the bundle URL
   /// Bundle: http://localhost:8081/index.bundle?platform=ios&dev=true
   /// SourceMap: http://localhost:8081/index.map?platform=ios&dev=true
+  private var bundleURL: URL? {
+    return devMenuManager.currentAppContext?.bundleURL
+  }
+
   func getSourceMapURL() -> URL? {
-    guard let bundleURL = devMenuManager.currentBridge?.bundleURL else {
+    guard let bundleURL else {
       return nil
     }
 
@@ -125,7 +129,7 @@ class SourceMapService {
 
   /// Fetches and parses the source map, trying multiple strategies
   func fetchSourceMap() async throws -> SourceMap {
-    let bundleURL = devMenuManager.currentBridge?.bundleURL
+    let bundleURL = self.bundleURL
 
     // Strategy 1: If the bundle is from Metro dev server, try to fetch external .map file
     if let bundleURL = bundleURL,

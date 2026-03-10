@@ -19,7 +19,7 @@ type FileObject = {
 export function FileTree({ files = [], ...rest }: FileTreeProps) {
   return (
     <div
-      className="mb-4 overflow-x-auto whitespace-nowrap rounded-md border border-default bg-default p-2 pb-4 pr-4 text-xs"
+      className="border-default bg-default mb-4 overflow-x-auto rounded-md border p-2 pr-4 pb-4 text-xs whitespace-nowrap"
       {...rest}>
       {renderStructure(generateStructure(files))}
     </div>
@@ -72,10 +72,10 @@ function renderStructure(structure: FileObject[], level = 0): ReactNode {
 
     if (files.length > 0) {
       return (
-        <div key={name + '_' + index} className="mt-1 flex flex-col rounded-sm pl-2 pt-1">
+        <div key={name + '_' + index} className="mt-1 flex flex-col rounded-sm pt-1 pl-2">
           <div className="flex items-center">
             {' '.repeat(level)}
-            <FolderIcon className="mr-2 min-w-[20px] text-icon-tertiary opacity-60" />
+            <FolderIcon className="text-icon-tertiary mr-2 min-w-[20px] opacity-60" />
             <TextWithNote name={name} note={note} className="text-secondary" />
           </div>
           {renderStructure(files, level + 1)}
@@ -85,9 +85,9 @@ function renderStructure(structure: FileObject[], level = 0): ReactNode {
 
     if (name.length > 0) {
       return (
-        <div key={name + '_' + index} className="mt-1 flex items-center rounded-sm pl-2 pt-1">
+        <div key={name + '_' + index} className="mt-1 flex items-center rounded-sm pt-1 pl-2">
           {' '.repeat(Math.max(level, 0))}
-          <FileIcon className="mr-2 min-w-[20px] text-icon-tertiary" />
+          <FileIcon className="text-icon-tertiary mr-2 min-w-[20px]" />
           <TextWithNote name={name} note={note} className="text-default" />
         </div>
       );
