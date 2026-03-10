@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fixed unhandled promise rejection from `getRegistrationInfoAsync` when Keychain is unavailable during background launch with locked device. Also changed registration info Keychain accessibility from `WhenUnlockedThisDeviceOnly` to `AfterFirstUnlockThisDeviceOnly` to match installation ID and allow background access. by [@jmalmo](https://github.com/jmalmo))
 - [ios] Fixed `requestPermissionsAsync` returning raw permission result without several documented fields ([#43555](https://github.com/expo/expo/pull/43555) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others

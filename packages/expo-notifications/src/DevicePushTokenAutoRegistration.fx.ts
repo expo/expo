@@ -112,7 +112,15 @@ if (ServerRegistrationModule.getRegistrationInfoAsync) {
   // Verify if persisted registration
   // has successfully uploaded last known
   // device push token. If not, retry.
-  ServerRegistrationModule.getRegistrationInfoAsync().then(__handlePersistedRegistrationInfoAsync);
+  ServerRegistrationModule.getRegistrationInfoAsync().then(
+    __handlePersistedRegistrationInfoAsync,
+    (e) => {
+      console.warn(
+        '[expo-notifications] Error encountered while fetching persisted server registration info (e.g. Keychain unavailable during background launch).',
+        e
+      );
+    }
+  );
 } else {
   console.warn(
     `[expo-notifications] Error encountered while fetching auto-registration state, new tokens will not be automatically registered on server.`,
