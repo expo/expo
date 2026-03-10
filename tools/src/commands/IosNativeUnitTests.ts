@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import { XcodeProject, PBXNativeTarget } from '@bacons/xcode';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -8,7 +9,7 @@ import * as Packages from '../Packages';
 const NATIVE_TESTS_IOS_DIR = 'apps/native-tests/ios';
 
 /**
- * Parses Pods.xcodeproj/project.pbxproj to find all PBXNativeTarget entries
+ * Parses Pods.xcodeproj using @bacons/xcode to find all PBXNativeTarget entries
  * that are unit test bundles (productType = com.apple.product-type.bundle.unit-test).
  * Returns a map of target name -> UUID (BlueprintIdentifier).
  */
@@ -18,14 +19,16 @@ function getPodsTestTargets(repoRoot: string): Map<string, string> {
     NATIVE_TESTS_IOS_DIR,
     'Pods/Pods.xcodeproj/project.pbxproj'
   );
-  const content = fs.readFileSync(pbxprojPath, 'utf8');
+  const project = XcodeProject.open(pbxprojPath);
 
   const targets = new Map<string, string>();
-  const regex =
-    /(\w+)\s*\/\*\s*([\w-]+)\s*\*\/\s*=\s*\{[^}]*isa\s*=\s*PBXNativeTarget[^}]*productType\s*=\s*"com\.apple\.product-type\.bundle\.unit-test"[^}]*\}/gs;
-  let match: RegExpExecArray | null;
-  while ((match = regex.exec(content)) !== null) {
-    targets.set(match[2], match[1]);
+  for (const [uuid, object] of project) {
+    if (
+      PBXNativeTarget.is(object) &&
+      object.props.productType === 'com.apple.product-type.bundle.unit-test'
+    ) {
+      targets.set(object.props.name, uuid);
+    }
   }
   return targets;
 }
