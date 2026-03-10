@@ -127,7 +127,7 @@ export type ExtendedFloatingActionButtonProps = {
  * @hidden
  */
 type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onClick'> &
-  ViewEvent<'onClick', void> & {
+  ViewEvent<'onButtonPressed', void> & {
     variant: string;
     expanded?: boolean;
   };
@@ -158,7 +158,7 @@ function transformProps(
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     children,
-    onClick,
+    onButtonPressed: () => onClick?.(),
   };
 }
 

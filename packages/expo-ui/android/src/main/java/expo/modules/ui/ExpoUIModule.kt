@@ -292,10 +292,10 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("FloatingActionButtonView", events = {
-      Events("onClick")
+      Events("onButtonPressed")
     }) { props: FloatingActionButtonProps ->
-      val onClick by remember { EventDispatcher<Unit>() }
-      FloatingActionButtonContent(props) { onClick(Unit) }
+      val onButtonPressed by remember { EventDispatcher<Unit>() }
+      FloatingActionButtonContent(props) { onButtonPressed(Unit) }
     }
 
     //endregion Expo UI views
