@@ -12,6 +12,7 @@ enum class ActivationMethod(val value: String) : Enumerable {
 
 data class ContextMenuProps(
   val activationMethod: ActivationMethod = ActivationMethod.SINGLE_PRESS,
+  val expanded: Boolean = false,
   val color: Color? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
