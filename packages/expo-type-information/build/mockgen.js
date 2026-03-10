@@ -156,7 +156,7 @@ function getMockedFunctionDeclaration(functionDeclaration, fileTypeInformation, 
     return (0, typescriptGeneration_1.getTsFunction)(functionDeclaration, async, false, exported, false, maybeWrapWithReturnStatement(functionDeclaration.returnType, fileTypeInformation));
 }
 function getMockedClass(classDeclaration, fileTypeInformation) {
-    return (0, typescriptGeneration_1.getTsClass)(classDeclaration, fileTypeInformation, true, false, getFunctionReturnBlock);
+    return (0, typescriptGeneration_1.getTsClassDeclaration)(classDeclaration, fileTypeInformation, true, false, getFunctionReturnBlock);
 }
 function getMockedView(viewDeclaration) {
     const propsTypeName = (0, typescriptGeneration_1.getViewPropsTypeName)(viewDeclaration);
@@ -169,8 +169,10 @@ function getMockForModule(module, fileTypeInformation) {
     const undeclaredTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers
         .difference(fileTypeInformation.declaredTypeIdentifiers)
         .difference((0, typescriptGeneration_1.basicTypesIdentifiers)());
+    const recordDeclarationMap = (record) => (0, typescriptGeneration_1.getRecordDeclaration)(record, true);
+    const enumDeclarationMap = (e) => (0, typescriptGeneration_1.getEnumDeclaration)(e, true, false);
     return []
-        .concat(getPrefix(), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => (0, typescriptGeneration_1.getIdentifierUnknownDeclaration)(identifier, true, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, fileTypeInformation.records.flatMap(typescriptGeneration_1.getRecordDeclaration), newlineIdentifier, fileTypeInformation.enums.flatMap(typescriptGeneration_1.getEnumDeclaration), newlineIdentifier, module.functions.map((f) => getMockedFunctionDeclaration(f, fileTypeInformation, false, true)), module.asyncFunctions.map((f) => getMockedFunctionDeclaration(f, fileTypeInformation, true, true)), module.classes.map((c) => getMockedClass(c, fileTypeInformation)), module.views.map((v) => getMockedView(v)).flat())
+        .concat(getPrefix(), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => (0, typescriptGeneration_1.getIdentifierUnknownDeclaration)(identifier, true, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, fileTypeInformation.records.flatMap(recordDeclarationMap), newlineIdentifier, fileTypeInformation.enums.flatMap(enumDeclarationMap), newlineIdentifier, module.functions.map((f) => getMockedFunctionDeclaration(f, fileTypeInformation, false, true)), module.asyncFunctions.map((f) => getMockedFunctionDeclaration(f, fileTypeInformation, true, true)), module.classes.map((c) => getMockedClass(c, fileTypeInformation)), module.views.map((v) => getMockedView(v)).flat())
         .flat();
 }
 function generateTSMockForModule(module, fileTypeInformation, includeTypes) {

@@ -5,6 +5,7 @@ import fs from 'fs';
 import { generateMocks } from './mockgen';
 import { getFileTypeInformation, serializeTypeInformation } from './typeInformation';
 import {
+  getGeneratedJSXIntrinsicsViewDeclaration,
   getGeneratedModuleTypesFileContent,
   getGeneratedViewTypesFileContent,
 } from './typescriptGeneration';
@@ -18,6 +19,7 @@ async function main(args: string[]) {
   generateModuleTypesCommand(cli);
   generateViewTypesCommand(cli);
   generateMocksForFileCommand(cli);
+  generateJsxIntrinsics(cli);
 
   await cli.parseAsync(args, { from: 'user' });
 }
@@ -65,6 +67,17 @@ function generateMocksForFileCommand(cli: commander.CommanderStatic) {
       generateMocks([typeInfo], 'typescript');
     } else {
       console.log(chalk.red(`Provided file: ${filePath} couldn't be parsed for type infromation!`));
+    }
+  });
+}
+
+function generateJsxIntrinsics(cli: commander.CommanderStatic) {
+  return cli.command('generate-jsx-intrinsics <filePath>').action((filePath: string) => {
+    const typeInfo = getFileTypeInformation(filePath, true);
+    if (typeInfo) {
+      getGeneratedJSXIntrinsicsViewDeclaration(filePath, typeInfo).then(console.log);
+    } else {
+      console.log(chalk.red(`Provided file: ${filePath} couldn't be parse for type information!`));
     }
   });
 }

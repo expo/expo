@@ -17,6 +17,7 @@ async function main(args) {
     generateModuleTypesCommand(cli);
     generateViewTypesCommand(cli);
     generateMocksForFileCommand(cli);
+    generateJsxIntrinsics(cli);
     await cli.parseAsync(args, { from: 'user' });
 }
 main(process.argv.slice(2));
@@ -62,6 +63,17 @@ function generateMocksForFileCommand(cli) {
         }
         else {
             console.log(chalk_1.default.red(`Provided file: ${filePath} couldn't be parsed for type infromation!`));
+        }
+    });
+}
+function generateJsxIntrinsics(cli) {
+    return cli.command('generate-jsx-intrinsics <filePath>').action((filePath) => {
+        const typeInfo = (0, typeInformation_1.getFileTypeInformation)(filePath, true);
+        if (typeInfo) {
+            (0, typescriptGeneration_1.getGeneratedJSXIntrinsicsViewDeclaration)(filePath, typeInfo).then(console.log);
+        }
+        else {
+            console.log(chalk_1.default.red(`Provided file: ${filePath} couldn't be parse for type information!`));
         }
     });
 }

@@ -27,7 +27,7 @@ import {
   getIdentifierUnknownDeclaration,
   getPropsTypeDeclaration,
   getRecordDeclaration,
-  getTsClass,
+  getTsClassDeclaration,
   getTsFunction,
   getViewPropsTypeName,
   prettifyCode,
@@ -198,7 +198,13 @@ function getMockedClass(
   classDeclaration: ClassDeclaration,
   fileTypeInformation: FileTypeInformation
 ): ts.ClassDeclaration {
-  return getTsClass(classDeclaration, fileTypeInformation, true, false, getFunctionReturnBlock);
+  return getTsClassDeclaration(
+    classDeclaration,
+    fileTypeInformation,
+    true,
+    false,
+    getFunctionReturnBlock
+  );
 }
 
 function getMockedView(viewDeclaration: ViewDeclaration): ts.Node[] {
@@ -235,6 +241,8 @@ function getMockForModule(
   const undeclaredTypeIdentifiers: Set<string> = fileTypeInformation.usedTypeIdentifiers
     .difference(fileTypeInformation.declaredTypeIdentifiers)
     .difference(basicTypesIdentifiers());
+  const recordDeclarationMap = (record: RecordType) => getRecordDeclaration(record, true);
+  const enumDeclarationMap = (e: EnumType) => getEnumDeclaration(e, true, false);
   return ([] as ts.Node[])
     .concat(
       getPrefix(),
@@ -247,9 +255,9 @@ function getMockForModule(
         )
       ),
       newlineIdentifier,
-      fileTypeInformation.records.flatMap(getRecordDeclaration),
+      fileTypeInformation.records.flatMap(recordDeclarationMap),
       newlineIdentifier,
-      fileTypeInformation.enums.flatMap(getEnumDeclaration),
+      fileTypeInformation.enums.flatMap(enumDeclarationMap),
       newlineIdentifier,
       module.functions.map((f) =>
         getMockedFunctionDeclaration(f, fileTypeInformation, false, true)

@@ -75,7 +75,11 @@ export class TestBasicClass {
 export class TestEmptyClass {
 }
 export type ExpoWebViewProps = {
-    testProp: URL;
+    url: URL;
+    testRecord: TestRecord;
+    testRecord2: TestRecord2;
+    testRecordClass: TestRecordClass;
+    testEnum: TestEnum;
     onEvent1: (event: any) => void;
     onEvent2: (event: any) => void;
 };
@@ -246,7 +250,11 @@ export type BarcodeType = unknown;
 export type SomeParametrizedType<T0, T1> = unknown;
 
 type ExpoWebViewProps = {
-  testProp: URL;
+  url: URL;
+  testRecord: TestRecord;
+  testRecord2: TestRecord2;
+  testRecordClass: TestRecordClass;
+  testEnum: TestEnum;
   onEvent1: (event: any) => void;
   onEvent2: (event: any) => void;
 };
@@ -818,14 +826,90 @@ exports[`Same type information 1`] = `
                   },
                 },
                 {
-                  "name": "testProp",
+                  "name": "url",
                   "type": {
                     "kind": 1,
                     "type": "URL",
                   },
                 },
               ],
-              "name": "testProp",
+              "name": "url",
+            },
+            {
+              "arguments": [
+                {
+                  "name": "view",
+                  "type": {
+                    "kind": 0,
+                    "type": 6,
+                  },
+                },
+                {
+                  "name": "testRecord",
+                  "type": {
+                    "kind": 1,
+                    "type": "TestRecord",
+                  },
+                },
+              ],
+              "name": "testRecord",
+            },
+            {
+              "arguments": [
+                {
+                  "name": "view",
+                  "type": {
+                    "kind": 0,
+                    "type": 6,
+                  },
+                },
+                {
+                  "name": "testRecord2",
+                  "type": {
+                    "kind": 1,
+                    "type": "TestRecord2",
+                  },
+                },
+              ],
+              "name": "testRecord2",
+            },
+            {
+              "arguments": [
+                {
+                  "name": "view",
+                  "type": {
+                    "kind": 0,
+                    "type": 6,
+                  },
+                },
+                {
+                  "name": "testRecordClass",
+                  "type": {
+                    "kind": 1,
+                    "type": "TestRecordClass",
+                  },
+                },
+              ],
+              "name": "testRecordClass",
+            },
+            {
+              "arguments": [
+                {
+                  "name": "view",
+                  "type": {
+                    "kind": 0,
+                    "type": 6,
+                  },
+                },
+                {
+                  "name": "testEnum",
+                  "type": {
+                    "kind": 1,
+                    "type": "TestEnum",
+                  },
+                },
+              ],
+              "name": "testEnum",
             },
           ],
           "views": [],
@@ -1111,6 +1195,7 @@ exports[`Same type information 1`] = `
     "TestEnum",
     "TestRecord",
     "TestRecord2",
+    "TestRecordClass",
     "URL",
   ],
 }
