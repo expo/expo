@@ -67,6 +67,36 @@ import EXDevMenu
       return
     }
 
+    // Require authentication for all snack opens, and verify ownership when possible.
+    // Embedded snacks (lessons, playground, demo) have a "code" dict and are exempt.
+    #if !targetEnvironment(simulator)
+    if params["code"] == nil {
+      // Not an embedded snack — require login at minimum
+      guard let currentUser = authenticatedUsername() else {
+        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+        DispatchQueue.main.async { [weak self] in
+          self?.homeViewModel?.showError("Sign in to Expo Go to open your Snack playgrounds.")
+        }
+        completion(false, nil)
+        return
+      }
+
+      // If snackId has @username prefix, verify it matches the signed-in user
+      if let snackId = params["snackId"] as? String,
+         let owner = ownerUsername(fromSnackId: snackId),
+         owner != currentUser {
+        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+        DispatchQueue.main.async { [weak self] in
+          self?.homeViewModel?.showError(
+            "This playground belongs to @\(owner). Sign in as @\(owner) to open it, or open one of your own."
+          )
+        }
+        completion(false, nil)
+        return
+      }
+    }
+    #endif
+
     // Snack app: need async for session setup
     Task { @MainActor in
       // 1. Clear session before any setup.
@@ -159,6 +189,14 @@ import EXDevMenu
         symbol.draw(at: symbolOrigin)
       }
     }
+  }
+
+  private func ownerUsername(fromSnackId snackId: String) -> String? {
+    guard snackId.hasPrefix("@"),
+          let slashIndex = snackId.firstIndex(of: "/") else {
+      return nil
+    }
+    return String(snackId[snackId.index(after: snackId.startIndex)..<slashIndex])
   }
 
   @objc public func isAuthenticated() -> Bool {
