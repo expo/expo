@@ -13,6 +13,8 @@ export interface CreateURLOptions {
   hostType?: 'localhost' | 'lan' | 'tunnel';
   /** Requested hostname. */
   hostname?: string | null;
+  /** Requested port. */
+  port?: string | null;
 }
 
 interface UrlComponents {
@@ -117,7 +119,7 @@ export class UrlCreator {
 
     return {
       hostname: getDefaultHostname(options),
-      port: this.bundlerInfo.port.toString(),
+      port: options.port ?? this.bundlerInfo.port.toString(),
       protocol: options.scheme ?? 'http',
     };
   }
