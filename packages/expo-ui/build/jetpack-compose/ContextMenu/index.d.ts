@@ -1,24 +1,6 @@
-import { ReactElement, ReactNode } from 'react';
-import { NativeSyntheticEvent, StyleProp, ViewStyle, type ColorValue } from 'react-native';
-import { SubmenuProps } from './Submenu';
+import { ReactNode } from 'react';
+import { StyleProp, ViewStyle, type ColorValue } from 'react-native';
 import { ModifierConfig } from '../../types';
-import { ButtonProps } from '../Button';
-import { PickerProps } from '../Picker';
-import { SwitchProps } from '../Switch';
-type SubmenuElement = ReactElement<ButtonProps> | ReactElement<SwitchProps> | ReactElement<PickerProps> | ReactElement<SubmenuProps>;
-export type ContextMenuContentProps = {
-    children: SubmenuElement | SubmenuElement[];
-};
-/**
- * @hidden
- */
-export type EventHandlers = Record<string, Record<string, (event: NativeSyntheticEvent<any>) => void>>;
-/**
- * @hidden
- */
-export type ContextMenuElementBase = {
-    contextMenuElementID: string;
-};
 /**
  * Props of the `ContextMenu` component.
  */
@@ -41,18 +23,30 @@ export type ContextMenuProps = {
      */
     modifiers?: ModifierConfig[];
 };
-export declare function Items(props: ContextMenuContentProps): import("react").JSX.Element;
+/**
+ * Container for items displayed in the context menu dropdown.
+ * Children should be `DropdownMenuItem` components or other native views.
+ */
+export declare function Items(props: {
+    children: ReactNode;
+}): import("react").JSX.Element;
 export declare namespace Items {
     var tag: string;
 }
+/**
+ * Container for the trigger element that opens the context menu.
+ */
 export declare function Trigger(props: {
-    children: React.ReactNode;
+    children: ReactNode;
 }): import("react").JSX.Element;
 export declare namespace Trigger {
     var tag: string;
 }
+/**
+ * Preview content shown during long press (iOS only).
+ */
 export declare function Preview(props: {
-    children: React.ReactNode;
+    children: ReactNode;
 }): import("react").JSX.Element;
 declare function ContextMenu(props: ContextMenuProps): import("react").JSX.Element;
 declare namespace ContextMenu {
@@ -61,5 +55,5 @@ declare namespace ContextMenu {
     var Items: typeof import(".").Items;
 }
 export { ContextMenu };
-export { Submenu } from './Submenu';
+export { DropdownMenuItem } from './DropdownMenuItem';
 //# sourceMappingURL=index.d.ts.map
