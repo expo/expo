@@ -223,17 +223,27 @@ static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d9807
     }
   }
 
-  // Block anonymous projects when the user is not signed in to Expo Go
-  if ([EXAppLoaderExpoUpdates _isAnonymousExperience:update.manifest] &&
-      ![[ExpoGoHomeBridge shared] isAuthenticated]) {
+  // Require the CLI user to be signed in and match the Expo Go user (physical devices only)
+#if !TARGET_OS_SIMULATOR
+  NSString *manifestUsername = [update.manifest expoGoUsername];
+  NSString *expoGoUsername = [[ExpoGoHomeBridge shared] authenticatedUsername];
+  if (manifestUsername == nil || [manifestUsername length] == 0) {
     _error = [NSError errorWithDomain:@"EXAppLoader"
                                  code:1026
-                             userInfo:@{NSLocalizedDescriptionKey: @"You will need to sign in to open projects in Expo Go"}];
-    if (self.delegate) {
-      [self.delegate appLoader:self didFailWithError:_error];
-    }
+                             userInfo:@{NSLocalizedDescriptionKey:
+      @"Sign in to Expo to load your projects in development. Run `npx expo login` in your terminal."}];
+    if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
     return;
   }
+  if (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername]) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1027
+                             userInfo:@{NSLocalizedDescriptionKey:
+      @"Sign in to the same Expo account in Expo Go and Expo CLI to load your projects."}];
+    if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
+    return;
+  }
+#endif
 
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
   [self _setShouldShowRemoteUpdateStatus:update.manifest];

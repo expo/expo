@@ -165,6 +165,13 @@ import EXDevMenu
     return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
   }
 
+  @objc public func authenticatedUsername() -> String? {
+    guard UserDefaults.standard.string(forKey: "expo-session-secret") != nil else {
+      return nil
+    }
+    return UserDefaults.standard.string(forKey: "expo-username")
+  }
+
   @objc public func addHistoryItem(withUrl url: String, name: String, iconUrl: String?) {
     DispatchQueue.main.async { [weak self] in
       self?.homeViewModel?.addToRecentlyOpened(url: url, name: name, iconUrl: iconUrl)

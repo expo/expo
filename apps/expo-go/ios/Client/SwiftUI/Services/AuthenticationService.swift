@@ -12,6 +12,7 @@ class AuthenticationService: ObservableObject {
   @Published var isAuthenticated = false
 
   private let sessionKey = "expo-session-secret"
+  private let usernameKey = "expo-username"
   private let selectedAccountKey = "expo-selected-account-id"
   private let presentationContext = AuthPresentationContextProvider()
 
@@ -63,6 +64,10 @@ class AuthenticationService: ObservableObject {
       let response: MeUserActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
       user = response.data.meUserActor
 
+      if let username = user?.username {
+        UserDefaults.standard.set(username, forKey: usernameKey)
+      }
+
       if selectedAccountId == nil, let firstAccount = user?.accounts.first {
         selectAccount(accountId: firstAccount.id)
       }
@@ -109,6 +114,7 @@ class AuthenticationService: ObservableObject {
 
   func signOut() {
     UserDefaults.standard.removeObject(forKey: sessionKey)
+    UserDefaults.standard.removeObject(forKey: usernameKey)
     UserDefaults.standard.removeObject(forKey: selectedAccountKey)
     Task {
       await APIClient.shared.setSession(nil)
