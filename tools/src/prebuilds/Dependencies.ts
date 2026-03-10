@@ -245,11 +245,11 @@ export const Dependencies = {
 
     // Generate VFS overlay and stage missing headers for stock Maven xcframework.
     // The xcframework itself is never modified (preserves Meta's code signature).
-    // Skipped if already generated (has React-VFS-template.yaml next to xcframework).
+    // Skipped if already generated and RN source version hasn't changed.
+    const reactNativeSourcePath = path.join(__dirname, '../../../node_modules/react-native');
     const xcframeworkPath = path.join(reactNativePath, 'React.xcframework');
-    if (fs.existsSync(xcframeworkPath) && !isVFSGenerated(reactNativePath)) {
+    if (fs.existsSync(xcframeworkPath) && !isVFSGenerated(reactNativePath, reactNativeSourcePath)) {
       logger.info('🔄 Generating VFS overlay for stock React.xcframework...');
-      const reactNativeSourcePath = path.join(__dirname, '../../../node_modules/react-native');
       await transformReactXCFrameworkAsync({
         outputPath: reactNativePath,
         reactNativePath: reactNativeSourcePath,

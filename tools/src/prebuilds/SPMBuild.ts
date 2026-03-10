@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -7,6 +7,7 @@ import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { BuildPlatform, ProductPlatform, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
+import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 import { getExpoRepositoryRootDir } from '../Directories';
 import logger from '../Logger';
@@ -39,7 +40,7 @@ export const SPMBuild = {
 
     // Resolve SPM dependencies and apply patches to known problematic packages
     if (product.spmPackages && product.spmPackages.length > 0) {
-      resolveSPMDependenciesAndPatch(path.dirname(packageSwiftPath));
+      await resolveSPMDependenciesAndPatch(path.dirname(packageSwiftPath));
     }
 
     // Collect all build platforms, filtering if a specific platform is requested
@@ -312,14 +313,61 @@ const buildForPlatformAsync = async (
 };
 
 /**
+ * Resolves SPM package dependencies using spawn with a spinner for progress feedback.
+ * Shows which packages are being fetched/resolved in real time.
+ */
+async function resolveSPMDependenciesAsync(packageDir: string): Promise<void> {
+  const spinner = createAsyncSpinner('📦 Resolving SPM package dependencies...');
+
+  return new Promise<void>((resolve, reject) => {
+    const proc = spawn('swift', ['package', 'resolve'], {
+      cwd: packageDir,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let stderr = '';
+
+    proc.stdout.on('data', (data: Buffer) => {
+      for (const line of data.toString().split('\n')) {
+        const trimmed = line.trim();
+        if (trimmed) {
+          spinner.info(`📦 ${trimmed}`);
+        }
+      }
+    });
+
+    proc.stderr.on('data', (data: Buffer) => {
+      const text = data.toString();
+      stderr += text;
+      // SPM writes progress to stderr (Fetching, Computing, Resolving, etc.)
+      for (const line of text.split('\n')) {
+        const trimmed = line.trim();
+        if (trimmed) {
+          spinner.info(`📦 ${trimmed}`);
+        }
+      }
+    });
+
+    proc.on('close', (code) => {
+      if (code === 0) {
+        spinner.succeed('📦 SPM package dependencies resolved.');
+        resolve();
+      } else {
+        spinner.fail('📦 Failed to resolve SPM package dependencies.');
+        reject(new Error(`swift package resolve failed with code ${code}:\n${stderr}`));
+      }
+    });
+  });
+}
+
+/**
  * Resolves SPM package dependencies (swift package resolve) and applies
  * source patches to known problematic packages that break under
  * BUILD_LIBRARY_FOR_DISTRIBUTION=YES (library evolution).
  */
-function resolveSPMDependenciesAndPatch(packageDir: string): void {
+async function resolveSPMDependenciesAndPatch(packageDir: string): Promise<void> {
   // Resolve SPM dependencies first
-  logger.info('📦 Resolving SPM package dependencies...');
-  execSync('swift package resolve', { cwd: packageDir, stdio: 'pipe' });
+  await resolveSPMDependenciesAsync(packageDir);
 
   // Patch Reachability.swift: module/class name collision breaks .swiftinterface generation.
   // The typealiases `(Reachability) -> ()` expand to `(Reachability.Reachability) -> ()`

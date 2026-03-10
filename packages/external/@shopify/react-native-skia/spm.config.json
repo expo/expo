@@ -17,42 +17,42 @@
                 {
                     "type": "framework",
                     "name": "libskia",
-                    "path": "libs/apple/libskia.xcframework"
+                    "path": "libs/apple/ios/libskia.xcframework"
                 },
                 {
                     "type": "framework",
                     "name": "libsvg",
-                    "path": "libs/apple/libsvg.xcframework"
+                    "path": "libs/apple/ios/libsvg.xcframework"
                 },
                 {
                     "type": "framework",
                     "name": "libskshaper",
-                    "path": "libs/apple/libskshaper.xcframework"
+                    "path": "libs/apple/ios/libskshaper.xcframework"
                 },
                 {
                     "type": "framework",
                     "name": "libskparagraph",
-                    "path": "libs/apple/libskparagraph.xcframework"
+                    "path": "libs/apple/ios/libskparagraph.xcframework"
                 },
                 {
                     "type": "framework",
                     "name": "libskunicode_core",
-                    "path": "libs/apple/libskunicode_core.xcframework"
+                    "path": "libs/apple/ios/libskunicode_core.xcframework"
                 },
                 {
                     "type": "framework",
                     "name": "libskunicode_libgrapheme",
-                    "path": "libs/apple/libskunicode_libgrapheme.xcframework"
+                    "path": "libs/apple/ios/libskunicode_libgrapheme.xcframework"
                 },
                 {
                     "type": "framework",
                     "name": "libskottie",
-                    "path": "libs/apple/libskottie.xcframework"
+                    "path": "libs/apple/ios/libskottie.xcframework"
                 },
                 {
                     "type": "framework",
                     "name": "libsksg",
-                    "path": "libs/apple/libsksg.xcframework"
+                    "path": "libs/apple/ios/libsksg.xcframework"
                 },
                 {
                     "type": "objc",
@@ -98,6 +98,7 @@
                         "rnskia/RNDawnWindowContext.h",
                         "rnskia/RNDawnWindowContext.cpp",
                         "rnskia/RNImageProvider.h",
+                        "rnwgpu/**",
                         "skia/include/**",
                         "skia/modules/skottie/**",
                         "skia/modules/skparagraph/**",

@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm b/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm
-index 43033a2..9fb0376 100644
+index 60ca396..49f1482 100644
 --- a/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm
 +++ b/node_modules/react-native-keyboard-controller/ios/KeyboardControllerModule.mm
 @@ -18,8 +18,10 @@
@@ -50,7 +50,7 @@ index 7bdd04c..77d509b 100644
      #else
        return superview?.reactTag ?? -1
 diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm
-index 0b83b4c..8b7e085 100644
+index d407214..6de598b 100644
 --- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm
 +++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardBackgroundViewManager.mm
 @@ -9,8 +9,10 @@
@@ -66,8 +66,8 @@ index 0b83b4c..8b7e085 100644
  
  #ifdef RCT_NEW_ARCH_ENABLED
 @@ -19,7 +21,7 @@
- #import <react/renderer/components/keyboardcontroller/RCTComponentViewHelpers.h>
- #import <react/renderer/components/keyboardcontroller/RNKCKeyboardBackgroundViewComponentDescriptor.h>
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCKeyboardBackgroundViewComponentDescriptor.h>
  
 -#import "RCTFabricComponentsPlugins.h"
 +#import <React/RCTFabricComponentsPlugins.h>
@@ -75,7 +75,7 @@ index 0b83b4c..8b7e085 100644
  
  #import <React/RCTView.h>
 diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm
-index 110dee8..45d05a3 100644
+index 51b3e32..7582aad 100644
 --- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm
 +++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardControllerView.mm
 @@ -16,8 +16,10 @@
@@ -89,9 +89,9 @@ index 110dee8..45d05a3 100644
 +@import KeyboardController_swift;
  #endif
  
- #import <react/renderer/components/keyboardcontroller/EventEmitters.h>
+ #import <react/renderer/components/RNKC/EventEmitters.h>
 @@ -26,7 +28,7 @@
- #import <react/renderer/components/keyboardcontroller/RNKCKeyboardControllerViewComponentDescriptor.h>
+ #import <react/renderer/components/RNKC/RNKCKeyboardControllerViewComponentDescriptor.h>
  
  #import "KeyboardControllerModule-Header.h"
 -#import "RCTFabricComponentsPlugins.h"
@@ -100,7 +100,7 @@ index 110dee8..45d05a3 100644
  using namespace facebook::react;
  
 diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm
-index 69e61e0..d10b3a6 100644
+index 18a504c..2c8c233 100644
 --- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm
 +++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardExtenderManager.mm
 @@ -9,8 +9,10 @@
@@ -116,8 +116,8 @@ index 69e61e0..d10b3a6 100644
  
  #ifdef RCT_NEW_ARCH_ENABLED
 @@ -21,7 +23,7 @@
- #import <react/renderer/components/keyboardcontroller/RCTComponentViewHelpers.h>
- #import <react/renderer/components/keyboardcontroller/RNKCKeyboardExtenderComponentDescriptor.h>
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCKeyboardExtenderComponentDescriptor.h>
  
 -#import "RCTFabricComponentsPlugins.h"
 +#import <React/RCTFabricComponentsPlugins.h>
@@ -125,7 +125,7 @@ index 69e61e0..d10b3a6 100644
  
  #import <React/RCTTouchHandler.h>
 diff --git a/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm b/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm
-index e095eb0..5a25922 100644
+index e582d3c..92bd2f6 100644
 --- a/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm
 +++ b/node_modules/react-native-keyboard-controller/ios/views/KeyboardGestureAreaManager.mm
 @@ -9,8 +9,10 @@
@@ -141,8 +141,8 @@ index e095eb0..5a25922 100644
  
  #ifdef RCT_NEW_ARCH_ENABLED
 @@ -19,7 +21,7 @@
- #import <react/renderer/components/keyboardcontroller/RCTComponentViewHelpers.h>
- #import <react/renderer/components/keyboardcontroller/RNKCKeyboardGestureAreaComponentDescriptor.h>
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCKeyboardGestureAreaComponentDescriptor.h>
  
 -#import "RCTFabricComponentsPlugins.h"
 +#import <React/RCTFabricComponentsPlugins.h>
@@ -150,7 +150,7 @@ index e095eb0..5a25922 100644
  
  #import <UIKit/UIKit.h>
 diff --git a/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm b/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
-index 4d29b34..e855e0f 100644
+index 7388dee..ca22b8d 100644
 --- a/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
 +++ b/node_modules/react-native-keyboard-controller/ios/views/OverKeyboardViewManager.mm
 @@ -9,8 +9,10 @@
@@ -166,8 +166,8 @@ index 4d29b34..e855e0f 100644
  
  #ifdef RCT_NEW_ARCH_ENABLED
 @@ -21,7 +23,7 @@
- #import <react/renderer/components/keyboardcontroller/RCTComponentViewHelpers.h>
- #import <react/renderer/components/keyboardcontroller/RNKCOverKeyboardViewComponentDescriptor.h>
+ #import <react/renderer/components/RNKC/RCTComponentViewHelpers.h>
+ #import <react/renderer/components/RNKC/RNKCOverKeyboardViewComponentDescriptor.h>
  
 -#import "RCTFabricComponentsPlugins.h"
 +#import <React/RCTFabricComponentsPlugins.h>

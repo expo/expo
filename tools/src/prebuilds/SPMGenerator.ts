@@ -235,20 +235,24 @@ export const SPMGenerator = {
             }
 
             const sourceFilePath = path.join(targetSourcePath, file);
-            // Flatten destination and copy the file - we don't want a symlink here, since these files will be used
-            // when composing the XCFrameworks later - and then we need the actual files present
+            // Flatten destination using hardlinks so that:
+            // 1. XCFramework composition sees real files (not dangling symlinks)
+            // 2. #pragma once works across include paths (same inode = same file)
             const destinationFilePath = path.join(
               SPMGenerator.getHeaderFilesPath(pkg, product, target),
               path.basename(file)
             );
 
-            // Only copy if content changed (preserves mtime for Xcode incremental builds)
             await fs.ensureDir(path.dirname(destinationFilePath));
             if (hasFileContentChanged(sourceFilePath, destinationFilePath)) {
               spinner.info(
-                `Copying header file for target ${chalk.green(target.name)} ${path.basename(file)}...`
+                `Linking header file for target ${chalk.green(target.name)} ${path.basename(file)}...`
               );
-              await fs.copy(sourceFilePath, destinationFilePath, { overwrite: true });
+              // Remove existing file before creating hardlink
+              if (await fs.pathExists(destinationFilePath)) {
+                await fs.remove(destinationFilePath);
+              }
+              await fs.link(sourceFilePath, destinationFilePath);
             }
           }
         }

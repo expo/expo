@@ -11,6 +11,7 @@ import path from 'path';
 
 import { getNodeModulesDir } from '../Directories';
 import type { SPMPackageSource } from './ExternalPackage';
+import { VersionStamp } from './VersionStamp';
 
 /**
  * Codegen configuration from package.json
@@ -91,8 +92,33 @@ export function getCodegenModulesPath(pkg: SPMPackageSource): string {
   );
 }
 
+const CODEGEN_STAMP_FILENAME = '.codegen-version-stamp';
+
+/**
+ * Reads the version of a package from its package.json.
+ */
+function getPackageVersion(pkg: SPMPackageSource): string {
+  const packageJsonPath = path.join(pkg.path, 'package.json');
+  return JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8')).version;
+}
+
+/**
+ * Returns the expected stamp entries for a package's codegen output.
+ */
+function getCodegenStampEntries(pkg: SPMPackageSource): Record<string, string> {
+  const codegenPkgPath = path.join(getNodeModulesDir(), '@react-native', 'codegen', 'package.json');
+  const codegenVersion = fs.existsSync(codegenPkgPath)
+    ? JSON.parse(fs.readFileSync(codegenPkgPath, 'utf-8')).version
+    : 'unknown';
+  return {
+    packageVersion: getPackageVersion(pkg),
+    codegenVersion,
+  };
+}
+
 /**
  * Checks if codegen has already been generated for a package
+ * and the output is up-to-date with the current package + codegen versions.
  */
 export function isCodegenGenerated(pkg: SPMPackageSource): boolean {
   const config = getCodegenConfig(pkg);
@@ -122,6 +148,11 @@ export function isCodegenGenerated(pkg: SPMPackageSource): boolean {
     if (!fs.existsSync(moduleHeaderPath)) {
       return false;
     }
+  }
+
+  // Check version stamp — detects stale codegen after package or codegen tool upgrades
+  if (!VersionStamp.isUpToDate(outputPath, getCodegenStampEntries(pkg), CODEGEN_STAMP_FILENAME)) {
+    return false;
   }
 
   return true;
@@ -187,6 +218,8 @@ export async function runCodegenAsync(
       encoding: 'utf-8',
       cwd: reactNativePath,
     });
+    // Write version stamp so we can detect staleness on next run
+    VersionStamp.write(outputPath, getCodegenStampEntries(pkg), CODEGEN_STAMP_FILENAME);
     return true;
   } catch (error: any) {
     // Extract useful error message
@@ -215,9 +248,9 @@ export async function ensureCodegenAsync(
     return false;
   }
 
-  onStatus?.(`Generating codegen for ${pkg.packageName}...`);
+  onStatus?.(`🔧 Generating codegen for ${pkg.packageName}...`);
   await runCodegenAsync(pkg, false);
-  onStatus?.(`Codegen generated for ${pkg.packageName}`);
+  onStatus?.(`🔧 Codegen generated for ${pkg.packageName}`);
   return true;
 }
 

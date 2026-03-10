@@ -62,16 +62,6 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
 - (nullable EXJavaScriptObject *)getNativeModuleObjectUnsafe:(nonnull NSString *)moduleName;
 
 /**
- Returns an array of event names supported by all Swift modules.
- */
-- (nonnull NSArray<NSString *> *)getSupportedEvents;
-
-/**
- Modifies listeners count for module with given name.
- */
-- (void)modifyEventListenersCount:(nonnull NSString *)moduleName count:(NSInteger)count;
-
-/**
  Asynchronously calls module's function with given arguments.
  */
 - (void)callFunction:(nonnull NSString *)functionName

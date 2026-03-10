@@ -13,6 +13,7 @@ import path from 'path';
 import logger from '../Logger';
 import { getHeaderFilesFromPodspecs, PodspecHeaderMappings } from './ReactHeaderMappings';
 import { createVFSOverlay } from './ReactVFSOverlay';
+import { VersionStamp } from './VersionStamp';
 
 interface TransformOptions {
   /** Path to the directory containing React.xcframework */
@@ -62,6 +63,12 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
   logger.info('  Generating VFS overlay template...');
   const vfsYaml = createVFSOverlay(reactNativePath, stockHeaders, duplicateBasenames);
   fs.writeFileSync(path.join(outputPath, 'React-VFS-template.yaml'), vfsYaml);
+
+  // Write a version stamp so we can detect when RN source changes and regenerate
+  const rnVersion = JSON.parse(
+    fs.readFileSync(path.join(reactNativePath, 'package.json'), 'utf8')
+  ).version;
+  VersionStamp.write(outputPath, { reactNativeVersion: rnVersion }, VFS_STAMP_FILENAME);
 
   logger.info('  VFS overlay generation complete (xcframework untouched).');
 }
@@ -184,10 +191,29 @@ async function stageMissingHeadersAsync(
   logger.info(`  Staged ${stagedCount} missing headers to React-extra-headers/`);
 }
 
+const VFS_STAMP_FILENAME = '.vfs-version-stamp';
+
 /**
- * Checks if VFS overlay has already been generated for this output directory.
- * A generated setup will have a React-VFS-template.yaml file next to the xcframework.
+ * Checks if VFS overlay has already been generated for this output directory
+ * and matches the current react-native source version.
+ *
+ * When reactNativeSourcePath is provided, also verifies the stored version stamp
+ * matches the current RN package version — preventing stale VFS after RN upgrades.
  */
-export function isVFSGenerated(outputPath: string): boolean {
-  return fs.existsSync(path.join(outputPath, 'React-VFS-template.yaml'));
+export function isVFSGenerated(outputPath: string, reactNativeSourcePath?: string): boolean {
+  const templateExists = fs.existsSync(path.join(outputPath, 'React-VFS-template.yaml'));
+  if (!templateExists) return false;
+
+  // If no source path provided, just check file existence (backwards compat)
+  if (!reactNativeSourcePath) return true;
+
+  const currentVersion = JSON.parse(
+    fs.readFileSync(path.join(reactNativeSourcePath, 'package.json'), 'utf8')
+  ).version;
+
+  return VersionStamp.isUpToDate(
+    outputPath,
+    { reactNativeVersion: currentVersion },
+    VFS_STAMP_FILENAME
+  );
 }

@@ -45,7 +45,7 @@
                     "type": "cpp",
                     "name": "KeyboardController_common_cpp",
                     "moduleName": "keyboardcontroller",
-                    "path": "common/cpp/react/renderer/components/keyboardcontroller",
+                    "path": "common/cpp/react/renderer/components/RNKC",
                     "pattern": "**/*.cpp",
                     "headerPattern": "**/*.h",
                     "dependencies": [
