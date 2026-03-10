@@ -22,6 +22,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
+import com.facebook.react.ReactApplication;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.jstasks.HeadlessJsTaskConfig;
+import com.facebook.react.jstasks.HeadlessJsTaskContext;
 import expo.modules.apploader.AppLoaderProvider;
 import expo.modules.apploader.HeadlessAppLoader;
 import expo.modules.core.interfaces.SingletonModule;
@@ -66,6 +72,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   // Map of callbacks for task execution events. Schema: { "<eventId>": TaskExecutionCallback }
   private static final Map<String, TaskExecutionCallback> sTaskCallbacks = new HashMap<>();
+
+  // Tracks headless JS task IDs per appScopeKey, used to keep JS timers alive
+  // during background task execution. See maybeStartHeadlessTask().
+  private static final Map<String, Integer> sHeadlessTaskIds = new HashMap<>();
 
   public TaskService(Context context) {
     super();
@@ -204,6 +214,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
       if (appEvents.isEmpty()) {
         sEvents.remove(appScopeKey);
+        maybeFinishHeadlessTask(appScopeKey);
 
         // Invalidate app record but after 2 seconds delay so we can still take batched events.
         Handler handler = new Handler();
@@ -378,14 +389,23 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       sTaskCallbacks.put(eventId, callback);
     }
 
+    boolean isFirstEvent = sEvents.get(appScopeKey) == null;
     final List<String> appEvents;
-    if (sEvents.get(appScopeKey) == null) {
+    if (isFirstEvent) {
       appEvents = new ArrayList<>();
       appEvents.add(eventId);
       sEvents.put(appScopeKey, appEvents);
     } else {
-      appEvents = new ArrayList<>();
+      appEvents = sEvents.get(appScopeKey);
       appEvents.add(eventId);
+    }
+
+    // Register with HeadlessJsTaskContext to keep JS timers alive while
+    // the app is backgrounded. Without this, JavaTimerManager pauses all
+    // timers when the Activity is paused (isPaused=true && isRunningTasks=false),
+    // causing all async JS operations (promises, setTimeout) to hang.
+    if (isFirstEvent) {
+      maybeStartHeadlessTask(appScopeKey);
     }
 
     if (taskManager != null) {
@@ -597,5 +617,68 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private void finishJobAfterTimeout(final JobService jobService, final JobParameters params, long timeout) {
     Handler handler = new Handler();
     handler.postDelayed(() -> jobService.jobFinished(params, false), timeout);
+  }
+
+  /**
+   * Registers a headless JS task with React Native's HeadlessJsTaskContext to signal that
+   * background work is in progress. This prevents JavaTimerManager from pausing JS timers
+   * when the Activity is backgrounded (isPaused=true), which would cause all async JS
+   * operations (promises, setTimeout, etc.) to hang indefinitely.
+   *
+   * @see <a href="https://github.com/facebook/react-native/blob/main/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.kt#L291">JavaTimerManager timer guard</a>
+   */
+  private void maybeStartHeadlessTask(String appScopeKey) {
+    try {
+      Context context = mContextRef.get();
+      if (context == null) return;
+
+      ReactApplication app = (ReactApplication) context.getApplicationContext();
+      ReactContext reactContext = app.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
+      if (reactContext == null) return;
+
+      HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
+      HeadlessJsTaskConfig taskConfig = new HeadlessJsTaskConfig(
+        "expo-task-manager",
+        new WritableNativeMap(),
+        0, // no timeout, managed by the task consumer
+        true // allow in foreground to avoid exceptions if app returns
+      );
+
+      UiThreadUtil.runOnUiThread(() -> {
+        try {
+          int taskId = headlessContext.startTask(taskConfig);
+          sHeadlessTaskIds.put(appScopeKey, taskId);
+          Log.i(TAG, "Started headless task " + taskId + " to keep JS timers alive for '" + appScopeKey + "'");
+        } catch (Exception e) {
+          Log.w(TAG, "Failed to start headless task: " + e.getMessage());
+        }
+      });
+    } catch (Exception e) {
+      Log.w(TAG, "Failed to start headless task: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Finishes the headless JS task for the given appScopeKey, allowing JavaTimerManager
+   * to pause timers again when all background tasks are complete.
+   */
+  private void maybeFinishHeadlessTask(String appScopeKey) {
+    Integer taskId = sHeadlessTaskIds.remove(appScopeKey);
+    if (taskId == null) return;
+
+    try {
+      Context context = mContextRef.get();
+      if (context == null) return;
+
+      ReactApplication app = (ReactApplication) context.getApplicationContext();
+      ReactContext reactContext = app.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
+      if (reactContext == null) return;
+
+      HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
+      headlessContext.finishTask(taskId);
+      Log.i(TAG, "Finished headless task " + taskId + " for '" + appScopeKey + "'");
+    } catch (Exception e) {
+      Log.w(TAG, "Failed to finish headless task: " + e.getMessage());
+    }
   }
 }

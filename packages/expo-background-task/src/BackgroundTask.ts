@@ -1,17 +1,9 @@
 import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
-import { AppRegistry } from 'react-native';
 import * as TaskManager from 'expo-task-manager';
 
 import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
-
-// Register an empty headless task so that HeadlessJsTaskContext.startTask()
-// doesn't log a warning. On Android, we register a headless task in native code
-// to keep JS timers alive during background task execution.
-if (Platform.OS === 'android') {
-  AppRegistry.registerHeadlessTask('expo-background-task', () => async () => {});
-}
 
 // Flag to warn about running on Apple simulator
 let warnAboutRunningOniOSSimulator = false;
