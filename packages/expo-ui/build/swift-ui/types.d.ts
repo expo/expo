@@ -61,6 +61,13 @@ export interface PaddingProps {
     trailing?: number;
 }
 /**
+ * A closed date range with lower and upper bounds.
+ */
+export type ClosedRangeDate = {
+    lower: Date;
+    upper: Date;
+};
+/**
  * Common props that can be applied to any view.
  */
 export interface CommonViewModifierProps {
