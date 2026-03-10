@@ -13,6 +13,8 @@ on:
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
       - secrets/**
+      - fastlane/**
+      - Gemfile.lock
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
@@ -25,6 +27,8 @@ on:
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
       - secrets/**
+      - fastlane/**
+      - Gemfile.lock
       - '!packages/@expo/cli/**'
 
 concurrency:
@@ -44,6 +48,11 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
       - name: 🧹 Cleanup unused simulator runtimes
         run: |
           xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
