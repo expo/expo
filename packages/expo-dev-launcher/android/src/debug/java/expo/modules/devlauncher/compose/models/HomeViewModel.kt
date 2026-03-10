@@ -3,6 +3,9 @@ package expo.modules.devlauncher.compose.models
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -12,6 +15,7 @@ import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
 import expo.modules.devlauncher.services.ErrorRegistryService
+import expo.modules.devlauncher.services.NsdPreferences
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
 import expo.modules.devlauncher.services.inject
@@ -34,14 +38,19 @@ data class HomeState(
   val loadingError: String? = null
 )
 
-class HomeViewModel() : ViewModel() {
+class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
   val devLauncherController = inject<DevLauncherController>()
   val packagerService = inject<PackagerService>()
   val errorRegistryService = inject<ErrorRegistryService>()
+  private val nsdPreferences = inject<NsdPreferences>()
+
+  private val appPackageName: String = devLauncherController.context.packageName
+
+  private var allPackagers: Set<PackagerInfo> = packagerService.runningPackagers.value
 
   private var _state = mutableStateOf(
     HomeState(
-      runningPackagers = packagerService.runningPackagers.value,
+      runningPackagers = filterPackagers(packagerService.runningPackagers.value),
       recentlyOpenedApps = devLauncherController.getRecentlyOpenedApps(),
       crashReport = errorRegistryService.consumeException()
     )
@@ -50,21 +59,55 @@ class HomeViewModel() : ViewModel() {
   val state
     get() = _state.value
 
+  private val nsdListener = {
+    _state.value = _state.value.copy(
+      runningPackagers = filterPackagers(allPackagers)
+    )
+  }
+
   init {
     packagerService
       .runningPackagers
       .onEach { newPackagers ->
+        allPackagers = newPackagers
         _state.value = _state.value.copy(
-          runningPackagers = newPackagers
+          runningPackagers = filterPackagers(newPackagers)
         )
       }
       .launchIn(viewModelScope)
 
     packagerService.resumeHealthCheck()
+    ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+    nsdPreferences.addOnChangeListener(nsdListener)
+  }
+
+  override fun onResume(owner: LifecycleOwner) {
+    packagerService.resumeHealthCheck()
+  }
+
+  override fun onPause(owner: LifecycleOwner) {
+    packagerService.pauseHealthCheck()
   }
 
   override fun onCleared() {
     packagerService.pauseHealthCheck()
+    ProcessLifecycleOwner.get().lifecycle.removeObserver(this)
+    nsdPreferences.removeOnChangeListener(nsdListener)
+  }
+
+  private fun filterPackagers(packagers: Set<PackagerInfo>): Set<PackagerInfo> {
+    var filtered = packagers
+
+    if (nsdPreferences.filterByPackageName) {
+      filtered = filtered.filter { it.androidPackage == appPackageName }.toSet()
+    }
+
+    val slugFilter = nsdPreferences.filterBySlug
+    if (slugFilter.isNotBlank()) {
+      filtered = filtered.filter { it.slug == slugFilter }.toSet()
+    }
+
+    return filtered
   }
 
   fun onAction(action: HomeAction) {
@@ -87,9 +130,9 @@ class HomeViewModel() : ViewModel() {
 
       is HomeAction.ClearLoadingError -> _state.value = _state.value.copy(loadingError = null)
 
-      is HomeAction.NavigateToCrashReport -> IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
+      is HomeAction.NavigateToCrashReport -> throw IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
 
-      is HomeAction.ScanQRCode -> IllegalStateException("QR code scanning should be handled by the UI layer, not the ViewModel.")
+      is HomeAction.ScanQRCode -> throw IllegalStateException("QR code scanning should be handled by the UI layer, not the ViewModel.")
     }
   }
 

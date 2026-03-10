@@ -8,6 +8,7 @@ private fun NsdServiceInfo.getHostIpv4(): Inet4Address? {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
     hostAddresses.filterIsInstance<Inet4Address>().firstOrNull()
   } else {
+    @Suppress("DEPRECATION")
     host as? Inet4Address
   }
 }

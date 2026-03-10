@@ -14,11 +14,7 @@ export class Bonjour {
     private port: number | undefined
   ) {}
 
-  public async announceAsync({
-    exp = getConfig(this.projectRoot).exp,
-  }: {
-    exp?: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
-  }) {
+  public async announceAsync({ exp = getConfig(this.projectRoot).exp }: { exp?: ExpoConfig }) {
     if (env.CI || !env.EXPO_UNSTABLE_BONJOUR) {
       return;
     } else if (!this.port) {
@@ -41,6 +37,8 @@ export class Bonjour {
       txt: {
         name: exp.name?.slice(0, 255),
         slug: exp.slug?.slice(0, 255),
+        androidPackage: exp.android?.package?.slice(0, 255),
+        iosBundleIdentifier: exp.ios?.bundleIdentifier?.slice(0, 255),
       },
     });
   }
