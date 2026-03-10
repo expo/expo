@@ -122,7 +122,7 @@ export default function FloatingActionButtonScreen() {
             </Host>
           </View>
           <View style={styles.row}>
-            <Text style={styles.toggleButton} onClick={() => setExtended((v) => !v)}>
+            <Text style={styles.toggleButton} onPress={() => setExtended((v) => !v)}>
               {extended ? 'Collapse label' : 'Expand label'}
             </Text>
           </View>
