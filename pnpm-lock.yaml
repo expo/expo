@@ -5759,8 +5759,8 @@ importers:
   tools:
     dependencies:
       '@bacons/xcode':
-        specifier: 1.0.0-alpha.29
-        version: 1.0.0-alpha.29
+        specifier: 1.0.0-alpha.33
+        version: 1.0.0-alpha.33
       '@expo/commander':
         specifier: 2.21.1
         version: 2.21.1
@@ -6689,6 +6689,9 @@ packages:
 
   '@bacons/xcode@1.0.0-alpha.29':
     resolution: {integrity: sha512-b2P+Y6ovdlie3A8Tx6QBFlbfQPhXe0vDS83W0DVob6732e3TukgVMbVcE9umn36BaeGzmJVjMFtqEyhWetjRWg==}
+
+  '@bacons/xcode@1.0.0-alpha.33':
+    resolution: {integrity: sha512-+vwXK3mLnW8NOYSHNpCa7sAYR7qWmIHM3xBbBkLailN81F1CdSVsJBH1TAnTMHb+rDEh5ehsZ8AQRNVxvhWR/Q==}
 
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
@@ -16547,6 +16550,14 @@ snapshots:
       - supports-color
 
   '@bacons/xcode@1.0.0-alpha.29':
+    dependencies:
+      '@expo/plist': 0.0.18
+      debug: 4.4.3
+      uuid: 8.3.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@bacons/xcode@1.0.0-alpha.33':
     dependencies:
       '@expo/plist': 0.0.18
       debug: 4.4.3
