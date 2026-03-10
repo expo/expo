@@ -7,10 +7,7 @@
 public extension ExpoRuntime {
   @JavaScriptActor
   internal func initializeCoreObject(_ coreObject: JavaScriptObject) throws {
-    // Initialize `global.expo` if it hasn't been set yet.
-    if !global().hasProperty(EXGlobalCoreObjectPropertyName) {
-      global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
-    }
+    global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: [.enumerable, .configurable])
   }
 
   @JavaScriptActor

@@ -63,11 +63,7 @@ export default function VideoFullscreenScreen() {
         style={styles.video}
       />
       <ScrollView style={styles.controlsContainer}>
-        <Button
-          style={styles.button}
-          title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-          onPress={toggleFullscreen}
-        />
+        <Button style={styles.button} title="Enter Fullscreen" onPress={toggleFullscreen} />
         <View style={styles.row}>
           <TitledSwitch
             title="Allow Fullscreen"

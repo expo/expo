@@ -530,10 +530,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
     let uiRuntime = try uiRuntime
     let coreObject = uiRuntime.createObject()
 
-    // Initialize `global.expo` if it hasn't been set yet.
-    if !uiRuntime.global().hasProperty(EXGlobalCoreObjectPropertyName) {
-      uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
-    }
+    // Initialize `global.expo`.
+    uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: [.enumerable, .configurable])
 
     // Install `global.expo.EventEmitter`.
     EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
