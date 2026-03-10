@@ -51,10 +51,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu (55.0.11):
+  - expo-dev-menu (55.0.12):
     - boost
     - DoubleConversion
-    - expo-dev-menu/Main (= 55.0.11)
+    - expo-dev-menu/Main (= 55.0.12)
     - fast_float
     - fmt
     - glog
@@ -81,7 +81,7 @@ PODS:
     - SocketRocket
     - Yoga
   - expo-dev-menu-interface (55.0.1)
-  - expo-dev-menu/Main (55.0.11):
+  - expo-dev-menu/Main (55.0.12):
     - boost
     - DoubleConversion
     - EXManifests
@@ -4682,7 +4682,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 22ec6b0abf4e9b54ea22624aa955cf68d6c90590
   Expo: 562bfea5a4d67ff310a8796820308e5eb640ccd5
-  expo-dev-menu: 806b5ca2693dd9321c972f8d43c03ce81242f607
+  expo-dev-menu: b1e9b864f15db74d037d93bf0faaa868dc7ac4dc
   expo-dev-menu-interface: bf6f816d29b45bec038080790963c635e8d588c2
   ExpoAgeRange: 8cfb7c54d33bbe9887b7c2df6377e2e54e727259
   ExpoAppleAuthentication: b1ca252ee1d79888720df7af6bbb559b3ca57a77
@@ -4763,7 +4763,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: d59202edb9173c808259b0945bb161d1e24963f0
+  hermes-engine: ca6495d9d859ae100566305c4d0afe7a0c777a46
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
