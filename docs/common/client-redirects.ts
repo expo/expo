@@ -385,7 +385,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/customizing-webpack': '/archive/customizing-webpack',
 
   // May 2024 home / get started section
-  '/overview/': '/get-started/introduction/',
+  '/overview/': '/get-started/create-a-project/',
   '/get-started/installation/': '/get-started/create-a-project/',
   '/get-started/expo-go/': '/get-started/set-up-your-environment/',
 
@@ -551,4 +551,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/unversioned/sdk/router-ui/': '/versions/unversioned/sdk/router/ui/',
   '/versions/unversioned/sdk/router-native-tabs/': '/versions/unversioned/sdk/router/native-tabs/',
   '/versions/unversioned/sdk/router-split-view/': '/versions/unversioned/sdk/router/split-view/',
+
+  // After merging get-started/introduction into get-started/create-a-project
+  '/get-started/introduction/': '/get-started/create-a-project/',
 };
