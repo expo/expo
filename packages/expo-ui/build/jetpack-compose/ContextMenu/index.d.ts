@@ -3,9 +3,8 @@ import { NativeSyntheticEvent, StyleProp, ViewStyle, type ColorValue } from 'rea
 import { SubmenuProps } from './Submenu';
 import { ModifierConfig } from '../../types';
 import { ButtonProps } from '../Button';
-import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
-type SubmenuElement = ReactElement<ButtonProps> | ReactElement<SwitchProps> | ReactElement<PickerProps> | ReactElement<SubmenuProps>;
+type SubmenuElement = ReactElement<ButtonProps> | ReactElement<SwitchProps> | ReactElement<SubmenuProps>;
 export type ContextMenuContentProps = {
     children: SubmenuElement | SubmenuElement[];
 };

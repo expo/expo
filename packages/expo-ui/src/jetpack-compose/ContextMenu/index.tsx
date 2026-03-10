@@ -6,7 +6,6 @@ import { SubmenuProps } from './Submenu';
 import { MenuElement, transformChildrenToElementArray } from './utils';
 import { ModifierConfig } from '../../types';
 import { ButtonProps } from '../Button';
-import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -18,7 +17,6 @@ const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(
 type SubmenuElement =
   | ReactElement<ButtonProps>
   | ReactElement<SwitchProps>
-  | ReactElement<PickerProps>
   | ReactElement<SubmenuProps>;
 
 export type ContextMenuContentProps = {

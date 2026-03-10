@@ -91,12 +91,20 @@ class ExpoUIModule : Module() {
       ModalBottomSheetContent(props) { onDismissRequest(Unit) }
     }
 
-    // Defines a single view for now – a single choice segmented control
-    ExpoUIView("PickerView", events = {
-      Events("onOptionSelected")
-    }) { props: PickerProps ->
-      val onOptionSelected by remember { EventDispatcher<PickerOptionSelectedEvent>() }
-      PickerContent(props) { onOptionSelected(it) }
+    ExpoUIView("SingleChoiceSegmentedButtonRowView") { props: SingleChoiceSegmentedButtonRowProps ->
+      SingleChoiceSegmentedButtonRowContent(props)
+    }
+
+    ExpoUIView("MultiChoiceSegmentedButtonRowView") { props: MultiChoiceSegmentedButtonRowProps ->
+      MultiChoiceSegmentedButtonRowContent(props)
+    }
+
+    ExpoUIView("SegmentedButtonView", events = {
+      Events("onButtonPressed", "onCheckedChange")
+    }) { props: SegmentedButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<Unit>() }
+      val onCheckedChange by remember { EventDispatcher<CheckedChangeEvent>() }
+      SegmentedButtonContent(props, { onButtonPressed(Unit) }, { onCheckedChange(it) })
     }
 
     ExpoUIView("SwitchView", events = {
@@ -287,10 +295,10 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("RadioButtonView", events = {
-      Events("onNativeClick")
+      Events("onButtonPressed")
     }) { props: RadioButtonProps ->
-      val onNativeClick by remember { EventDispatcher<Unit>() }
-      RadioButtonContent(props) { onNativeClick(Unit) }
+      val onButtonPressed by remember { EventDispatcher<Unit>() }
+      RadioButtonContent(props) { onButtonPressed(Unit) }
     }
 
     //endregion Expo UI views

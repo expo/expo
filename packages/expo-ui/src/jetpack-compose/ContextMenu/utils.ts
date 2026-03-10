@@ -4,7 +4,6 @@ import { NativeSyntheticEvent } from 'react-native';
 import { Submenu, SubmenuProps } from './Submenu';
 import { ContextMenuElementBase, EventHandlers } from './index';
 import { Button, ButtonProps, NativeButtonProps, transformButtonProps } from '../Button';
-import { Picker, PickerProps } from '../Picker';
 import { Switch, SwitchProps } from '../Switch';
 
 // We use this slightly odd typing for the elements to make unpacking the elements easier on the native side
@@ -14,10 +13,6 @@ type ButtonMenuElement = {
 
 type SwitchMenuElement = {
   switch: SwitchProps;
-} & ContextMenuElementBase;
-
-type PickerMenuElement = {
-  picker: PickerProps;
 } & ContextMenuElementBase;
 
 type SubmenuElement = {
@@ -30,7 +25,6 @@ type SubmenuElement = {
 export type MenuElement =
   | ButtonMenuElement
   | SwitchMenuElement
-  | PickerMenuElement
   | SubmenuElement;
 
 // Maps the react children to NativeMenuElement[] which is used to render out the native menu
@@ -60,11 +54,6 @@ function processChildElement(
   if (child.type === Switch) {
     // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
     return createSwitchElement(uuid, child.props, eventHandlersMap);
-  }
-
-  if (child.type === Picker) {
-    // @ts-expect-error TODO TS2345: Argument of type unknown is not assignable to parameter of type SubmenuProps
-    return createPickerElement(uuid, child.props, eventHandlersMap);
   }
 
   if (isSubmenuComponent(child)) {
@@ -107,21 +96,6 @@ function createSwitchElement(
   return {
     contextMenuElementID: uuid,
     switch: props,
-  };
-}
-
-function createPickerElement(
-  uuid: string,
-  props: PickerProps,
-  handlers: EventHandlers
-): MenuElement {
-  if (props.onOptionSelected) {
-    handlers[uuid] = { onOptionSelected: props.onOptionSelected };
-  }
-
-  return {
-    contextMenuElementID: uuid,
-    picker: props,
   };
 }
 

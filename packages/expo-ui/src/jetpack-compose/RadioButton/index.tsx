@@ -18,9 +18,8 @@ export type RadioButtonProps = {
   modifiers?: ExpoModifier[];
 };
 
-type NativeRadioButtonProps = Omit<RadioButtonProps, 'onClick'> & {
-  nativeClickable: boolean;
-} & ViewEvent<'onNativeClick', void>;
+type NativeRadioButtonProps = Omit<RadioButtonProps, 'onClick'> &
+  ViewEvent<'onButtonPressed', void>;
 
 const RadioButtonNativeView: React.ComponentType<NativeRadioButtonProps> = requireNativeView(
   'ExpoUI',
@@ -33,10 +32,7 @@ function transformProps(props: RadioButtonProps): NativeRadioButtonProps {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    nativeClickable: onClick != null,
-    onNativeClick: () => {
-      onClick?.();
-    },
+    onButtonPressed: () => onClick?.(),
   };
 }
 
