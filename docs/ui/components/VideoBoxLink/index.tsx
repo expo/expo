@@ -13,10 +13,11 @@ type VideoBoxLinkProps = {
   videoId: string;
   time?: number;
   className?: string;
+  uploadDate?: string;
 };
 
-export function VideoBoxLink({ title, description, videoId, time, className }: VideoBoxLinkProps) {
-  const uploadDate = getVideoUploadDate(videoId);
+export function VideoBoxLink({ title, description, videoId, time, className, uploadDate }: VideoBoxLinkProps) {
+  const resolvedUploadDate = uploadDate ?? getVideoUploadDate(videoId);
   const videoStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
@@ -25,7 +26,7 @@ export function VideoBoxLink({ title, description, videoId, time, className }: V
     thumbnailUrl: `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`,
     embedUrl: `https://www.youtube.com/embed/${videoId}`,
     contentUrl: `https://www.youtube.com/watch?v=${videoId}`,
-    ...(uploadDate && { uploadDate: `${uploadDate}T00:00:00Z` }),
+    ...(resolvedUploadDate && { uploadDate: `${resolvedUploadDate}T00:00:00Z` }),
   };
 
   return (
