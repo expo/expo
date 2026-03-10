@@ -25,7 +25,18 @@ module.exports = {
             key: 'getPushNotificationServiceEnvironmentAsync',
           },
         ],
-        ExpoAsset: [{ name: 'downloadAsync', argumentsCount: 3, key: 'downloadAsync' }],
+        ExpoAsset: [
+          {
+            name: 'downloadAsync',
+            argumentsCount: 3,
+            key: 'downloadAsync',
+          },
+          {
+            name: 'bytes',
+            argumentsCount: 1,
+            key: 'bytes',
+          },
+        ],
         ExpoAudio: [
           {
             name: 'getRecordingPermissionsAsync',

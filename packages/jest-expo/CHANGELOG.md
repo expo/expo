@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android][web][expo-asset] Added methods `bytes`, `arrayBuffer`, `content` and `contentArrayBuffer` to read contents of `Asset`s. ([#41567](https://github.com/expo/expo/pull/41567) by [@psnet](https://github.com/psnet))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
