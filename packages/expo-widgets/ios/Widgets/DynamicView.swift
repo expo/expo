@@ -127,8 +127,9 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   private func updateChildren<P>(_ initialProps: P) throws
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
-      if let children = props["children"] as? [[String: Any]] {
-        initialProps.children = children.map { WidgetsDynamicView(source: source, kind: kind, node: $0, entryIndex: entryIndex) }
+      if let children = props["children"] as? [Any] {
+        let validChildren = children.compactMap { $0 as? [String: Any] }
+        initialProps.children = validChildren.map { WidgetsDynamicView(source: source, kind: kind, node: $0, entryIndex: entryIndex) }
       } else if let child = props["children"] as? [String: Any] {
         initialProps.children = [WidgetsDynamicView(source: source, kind: kind, node: child, entryIndex: entryIndex)]
       }

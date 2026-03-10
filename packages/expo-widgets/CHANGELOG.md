@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Filter out invalid children. ([#43720](https://github.com/expo/expo/pull/43720) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-03-05
