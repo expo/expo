@@ -32,7 +32,7 @@ export const APIDataType = ({ typeDefinition, sdkVersion, inline = true }: APIDa
       {resolveTypeName(typeDefinition, sdkVersion)}
     </CodeBlock>
   ) : (
-    <CODE key={typeDefinition.name} className="[&>span]:!text-inherit">
+    <CODE key={typeDefinition.name} className="[&>span]:text-inherit!">
       {resolveTypeName(typeDefinition, sdkVersion)}
     </CODE>
   );

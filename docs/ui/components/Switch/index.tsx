@@ -22,10 +22,10 @@ export function Switch({ value = false, size = 'md', onChange, disabled }: Props
     <ButtonBase
       role="switch"
       className={mergeClasses(
-        'flex justify-start rounded-full border border-default bg-palette-gray4 outline-offset-2',
+        'border-default bg-palette-gray4 flex justify-start rounded-full border outline-offset-2',
         size === 'md' && 'h-6 min-w-[44px]',
         size === 'sm' && 'h-5 min-w-[36px]',
-        value && 'justify-end border-palette-blue10 bg-palette-blue10',
+        value && 'border-palette-blue10 bg-palette-blue10 justify-end',
         disabled && 'opacity-50',
         !shouldReduceMotion && 'transition-colors'
       )}
@@ -37,7 +37,7 @@ export function Switch({ value = false, size = 'md', onChange, disabled }: Props
       }}>
       <motion.div
         className={mergeClasses(
-          'm-px rounded-full bg-palette-white shadow-xs dark:bg-palette-gray11',
+          'bg-palette-white dark:bg-palette-gray11 m-px rounded-full shadow-xs',
           size === 'md' && 'h-5 min-w-[20px]',
           size === 'sm' && 'h-4 min-w-[16px]',
           value && 'dark:bg-palette-white',

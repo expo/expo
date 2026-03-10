@@ -41,7 +41,7 @@ function getExpoDependencyChunks({
     ['expo-modules-core'],
     ['unimodules-app-loader'],
     ['expo-task-manager'],
-    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
+    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking', '@expo/inline-modules'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
     ['@expo/image-utils'],

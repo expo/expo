@@ -7,12 +7,20 @@
 ### 🎉 New features
 
 - [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [Android] Added border color customization for `Switch` and `Checkbox` components. ([#43770](https://github.com/expo/expo/pull/43770) by [@liestig](https://github.com/liestig))
 - [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] detect FAB in HorizontalFloatingToolbar ([#43601](https://github.com/expo/expo/pull/43601) by [@Ubax](https://github.com/Ubax))
+- [android] Add `elementColors` prop to the `DateTimePicker` component ([#43787](https://github.com/expo/expo/pull/43787) by [@iankberry](https://github.com/iankberry))
+- [iOS] Added `AccessoryWidgetBackground` component ([#43729](https://github.com/expo/expo/pull/43729) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add support for local image uri ([#43707](https://github.com/expo/expo/pull/43707) by [@jakex7](https://github.com/jakex7))
+- [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
+- [android] control ContextMenu expanded state from JS ([#43793](https://github.com/expo/expo/pull/43793) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))
+- [Android] Fix touch events for RN views inside Compose BottomSheet. ([#43716](https://github.com/expo/expo/pull/43716) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `RNHostView` child parent related crash. ([#43691](https://github.com/expo/expo/pull/43691) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added `RNHostView` to improve RN component layout inside Compose views. ([#43495](https://github.com/expo/expo/pull/43495) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))

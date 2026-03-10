@@ -510,7 +510,7 @@ OnNewIntent { intent ->
 </PaddedAPIBox>
 <PaddedAPIBox header="OnUserLeavesActivity" platforms={["android"]} headerNestingLevel={4}>
 
-Defines the activity lifecycle listener called during the activity lifecycle when an activity is about to go into the background as a result of user choice. For example, when the user presses the Home key, `OnUserLeavesActivity` will be called, but when an incoming phone call causes the in-call Activity to be automatically brought to the foreground, `OnUserLeavesActivity` will not be called on the activity being interrupted.
+Defines the activity lifecycle listener called during the activity lifecycle when an activity is about to go into the background because of user choice. For example, when the user presses the Home key, `OnUserLeavesActivity` will be called, but when an incoming phone call causes the in-call Activity to be automatically brought to the foreground, `OnUserLeavesActivity` will not be called on the activity being interrupted.
 
 ```kotlin Kotlin
 OnUserLeavesActivity {

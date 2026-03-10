@@ -5,7 +5,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type SpacerProps = {
   /**
-   * Modifiers for the component. Use weight() modifier to make the spacer flexible.
+   * Modifiers for the component. Use `weight()` modifier to make the spacer flexible.
    */
   modifiers?: ExpoModifier[];
 };
@@ -27,7 +27,7 @@ function transformProps(props: SpacerProps): NativeSpacerProps {
 
 /**
  * A spacer component that fills available space.
- * Use with the weight() modifier to create flexible spacing in Row or Column layouts.
+ * Use with the `weight()` modifier to create flexible spacing in `Row` or `Column` layouts.
  *
  * @example
  * ```tsx

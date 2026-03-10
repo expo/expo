@@ -26,9 +26,9 @@ export function StateOfRNBanner() {
         'max-md-gutters:flex-wrap'
       )}>
       <div className="flex items-center gap-4">
-        <div className="relative z-10 p-2 max-sm-gutters:hidden">
+        <div className="max-sm-gutters:hidden relative z-10 p-2">
           <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#001a72] dark:bg-[#b1dfd0]" />
-          <ReactLogo className="icon-lg relative z-10 text-palette-white dark:text-[#001a72]" />
+          <ReactLogo className="icon-lg text-palette-white relative z-10 dark:text-[#001a72]" />
         </div>
         <div className="relative grid grid-cols-1 gap-1">
           <HEADLINE className="text-[#001a72] dark:text-[#b1dfd0]">
@@ -48,7 +48,7 @@ export function StateOfRNBanner() {
             <ArrowUpRightIcon className="icon-xs text-palette-white opacity-75 dark:text-[#001a72]" />
           }
           className={mergeClasses(
-            'gap-1.5 border-[#001a72] bg-[#001a72] text-palette-white',
+            'text-palette-white gap-1.5 border-[#001a72] bg-[#001a72]',
             'dark:border-[#b1dfd0] dark:bg-[#b1dfd0] dark:text-[#001a72]',
             'hocus:border-[#0026a3] hocus:bg-[#0026a3]',
             'dark:hocus:border-[#8bd0b9] dark:hocus:bg-[#8bd0b9]'

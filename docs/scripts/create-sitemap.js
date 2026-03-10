@@ -11,7 +11,14 @@ const IGNORED_PAGES = new Set([
  * Create a sitemap for crawlers like Algolia Docsearch.
  * This allows crawlers to index _all_ pages, without a full page-link-chain.
  */
-export default function createSitemap({ pathMap, domain, output, pathsPriority, pathsHidden }) {
+export default function createSitemap({
+  pathMap,
+  domain,
+  output,
+  pathsPriority,
+  pathsHidden,
+  modificationDates = {},
+}) {
   if (!pathMap) {
     throw new Error(`⚠️ Couldn't generate sitemap, no 'pathMap' provided`);
   }
@@ -44,7 +51,11 @@ export default function createSitemap({ pathMap, domain, output, pathsPriority, 
   });
 
   sitemap.pipe(target);
-  urls.forEach(url => sitemap.write({ url }));
+  urls.forEach(url => {
+    const key = url.endsWith('/') ? url.slice(0, -1) : url;
+    const lastmod = modificationDates[key];
+    sitemap.write(lastmod ? { url, lastmod } : { url });
+  });
   sitemap.end();
 
   return urls;

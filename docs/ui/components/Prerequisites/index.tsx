@@ -60,7 +60,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
       <details
         id={heading.current.slug}
         className={mergeClasses(
-          'mb-3 scroll-m-4 rounded-md border border-default p-0',
+          'border-default mb-3 scroll-m-4 rounded-md border p-0',
           '[&[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
@@ -77,7 +77,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             'hocus:bg-subtle'
           )}>
           <div className="flex items-center">
-            <div className="ml-1.5 mr-2 mt-[5px] self-baseline">
+            <div className="mt-[5px] mr-2 ml-1.5 self-baseline">
               <TriangleDownIcon
                 className={mergeClasses(
                   'icon-sm text-icon-default',
@@ -102,13 +102,13 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               onClick={() => {
                 setIsOpen(true);
               }}
-              className="ml-1 inline rounded-md p-1 hocus:bg-element"
+              className="hocus:bg-element ml-1 inline rounded-md p-1"
               aria-label="Permalink">
               <PermalinkIcon className="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible" />
             </LinkBase>
           </div>
           <div>
-            <p className="text-xs text-secondary">
+            <p className="text-secondary text-xs">
               {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
             </p>
           </div>

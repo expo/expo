@@ -68,12 +68,12 @@ const generalDirectories = fs
 
 export const home = [
   makeSection('Get started', [
-    makePage('get-started/introduction.mdx'),
     makePage('get-started/create-a-project.mdx'),
     makePage('get-started/set-up-your-environment.mdx'),
     makePage('get-started/start-developing.mdx'),
     makePage('get-started/next-steps.mdx'),
   ]),
+  makeSection('AI', [makePage('skills.mdx'), makePage('llms.mdx')]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
     makePage('develop/app-navigation.mdx'),
@@ -146,8 +146,7 @@ export const home = [
     makePage('deploy/web.mdx'),
   ]),
   makeSection('Monitor', [makePage('monitoring/services.mdx')]),
-  makeSection('AI', [makePage('skills.mdx')]),
-  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx'), makePage('llms.mdx')]),
+  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
 export const general = [
