@@ -22,13 +22,21 @@ internal class NsdDiscoveryLegacy(
       if (resolved != null) {
         val url = resolved.getUrl()
         val name = resolved.getAttribute("name")
+        val slug = resolved.getAttribute("slug")
+        val androidPackage = resolved.getAttribute("androidPackage")
 
         if (url != null && name != null) {
           val isAlive = checkPackagerStatus(url)
           coroutineScope.ensureActive()
 
           if (isAlive) {
-            addDiscoveredPackager(serviceName, url, name)
+            addDiscoveredPackager(
+              serviceName,
+              url,
+              name,
+              slug,
+              androidPackage
+            )
           } else {
             removeDiscoveredPackager(serviceName)
           }

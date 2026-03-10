@@ -135,8 +135,19 @@ internal abstract class NsdDiscoveryBase(
     serviceInfo: NsdServiceInfo
   )
 
-  protected fun addDiscoveredPackager(serviceName: String, url: String, name: String) {
-    alivePackagers[serviceName] = PackagerInfo(url = url, description = name)
+  protected fun addDiscoveredPackager(
+    serviceName: String,
+    url: String,
+    name: String,
+    slug: String?,
+    androidPackage: String?
+  ) {
+    alivePackagers[serviceName] = PackagerInfo(
+      url = url,
+      description = name,
+      slug = slug,
+      androidPackage = androidPackage
+    )
     publishDiscoveredPackagers()
   }
 
