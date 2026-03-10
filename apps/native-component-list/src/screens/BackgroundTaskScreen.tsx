@@ -152,12 +152,19 @@ console.log('App: Defining background task');
 
 // Register / create the task so that it is available also when the background task screen is not open
 TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
-  console.log('TASK RUNNING', BACKGROUND_TASK_IDENTIFIER, 'setting', {
-    key: LAST_TASK_DATE_KEY,
-    value: Date.now().toString(),
-  });
+  console.log('TASK RUNNING', BACKGROUND_TASK_IDENTIFIER);
   try {
+    // Log every 2 seconds to verify JS timers work while backgrounded.
+    // Without the HeadlessJsTaskContext fix, these logs stop appearing
+    // after the app is backgrounded because JavaTimerManager pauses all timers.
+    for (let i = 1; i <= 5; i++) {
+      console.log(`[BackgroundTask] tick ${i}/5`);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+    console.log('[BackgroundTask] all ticks completed, saving timestamp');
+
     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
+
     // Now let's try to get the expiry handler to trigger
     // Let's try to loop 1000 times waiting 30 seconds each loop iteration
     const shouldTryTriggerExpiry = await AsyncStorage.getItem(TRY_TRIGGER_TASK_EXPIRY);
