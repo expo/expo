@@ -7,7 +7,7 @@
 public extension ExpoRuntime {
   @JavaScriptActor
   internal func initializeCoreObject(_ coreObject: JavaScriptObject) throws {
-    global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+    global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: [.enumerable, .configurable])
   }
 
   @JavaScriptActor

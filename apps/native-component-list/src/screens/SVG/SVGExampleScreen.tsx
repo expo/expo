@@ -42,7 +42,7 @@ export default function SVGExampleScreen(props: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   contentContainer: {
     alignItems: 'center',
