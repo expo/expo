@@ -1,7 +1,7 @@
 import Foundation
 import JavaScriptCore
 
-func createWidgetContext(layout: String, props: [String: Any]) -> JSContext? {
+func createWidgetContext(layout: String) -> JSContext? {
   guard let context = JSContext() else {
     return nil
   }
@@ -22,9 +22,8 @@ func createWidgetContext(layout: String, props: [String: Any]) -> JSContext? {
   }
   context.evaluateScript(bundleJS)
 
-  // Inject layout and props
+  // Inject layout
   let layoutValue = context.evaluateScript("(\(layout))")
   context.setObject(layoutValue, forKeyedSubscript: "__expoWidgetLayout" as NSString)
-  context.setObject(props, forKeyedSubscript: "__expoWidgetProps" as NSString)
   return context
 }
