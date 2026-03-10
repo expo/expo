@@ -1,29 +1,181 @@
 import { XcodeProject, XCScheme, PBXNativeTarget, createBuildableReference } from '@bacons/xcode';
-import spawnAsync from '@expo/spawn-async';
+import { Formatter } from '@expo/xcpretty';
+import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import fs from 'fs-extra';
+import os from 'os';
 import path from 'path';
 
-import * as Directories from '../Directories';
+import { EXPO_DIR } from '../Constants';
 import * as Packages from '../Packages';
 
 const NATIVE_TESTS_IOS_DIR = 'apps/native-tests/ios';
+const NATIVE_TESTS_PROJECT_ROOT = 'apps/native-tests';
+
+function spawnXcodeBuild(
+  args: string[],
+  options: SpawnOptionsWithoutStdio,
+  { onData }: { onData: (data: string) => void }
+): Promise<{ code: number | null; stdout: string; stderr: string }> {
+  const buildProcess = spawn('xcodebuild', args, options);
+
+  let stdout = '';
+  let stderr = '';
+
+  buildProcess.stdout.on('data', (data: Buffer) => {
+    const stringData = data.toString();
+    stdout += stringData;
+    onData(stringData);
+  });
+
+  buildProcess.stderr.on('data', (data: Buffer) => {
+    const stringData = data instanceof Buffer ? data.toString() : data;
+    stderr += stringData;
+  });
+
+  return new Promise(async (resolve, reject) => {
+    buildProcess.on('close', (code: number) => {
+      resolve({ code, stdout, stderr });
+    });
+  });
+}
+
+async function spawnXcodeBuildWithFlush(
+  args: string[],
+  options: SpawnOptionsWithoutStdio,
+  { onFlush }: { onFlush: (data: string) => void }
+): Promise<{ code: number | null; stdout: string; stderr: string }> {
+  let currentBuffer = '';
+
+  // Data can be sent in chunks that would have no relevance to our regex
+  // this can cause massive slowdowns, so we need to ensure the data is complete before attempting to parse it.
+  function flushBuffer() {
+    if (!currentBuffer) {
+      return;
+    }
+
+    const data = currentBuffer;
+    // Reset buffer.
+    currentBuffer = '';
+    // Process data.
+    onFlush(data);
+  }
+
+  const data = await spawnXcodeBuild(args, options, {
+    onData(stringData) {
+      currentBuffer += stringData;
+      // Only flush the data if we have a full line.
+      if (currentBuffer.endsWith(os.EOL)) {
+        flushBuffer();
+      }
+    },
+  });
+
+  // Flush log data at the end just in case we missed something.
+  flushBuffer();
+  return data;
+}
+
+async function spawnXcodeBuildWithFormat(
+  args: string[],
+  options: SpawnOptionsWithoutStdio,
+  { projectRoot }: { projectRoot: string }
+): Promise<{ code: number | null; stdout: string; stderr: string; formatter: Formatter }> {
+  console.debug(`Command to be executed:\n  xcodebuild ${args.join(' ')}`);
+
+  console.log(`Starting build`);
+
+  const formatter = new TestSuiteFormatter({ projectRoot });
+
+  const results = await spawnXcodeBuildWithFlush(args, options, {
+    onFlush(data) {
+      // Process data through formatter for display
+      for (const line of formatter.pipe(data)) {
+        console.log(line);
+      }
+    },
+  });
+
+  console.debug(`xcodebuild exited with code: ${results.code}`);
+
+  if (
+    // User cancelled with ctrl-c
+    results.code === null ||
+    // Build interrupted
+    results.code === 75
+  ) {
+    throw new Error('Xcodebuild process interrupted');
+  }
+
+  console.log(formatter.getBuildSummary());
+
+  // Determine if the logger found any errors;
+  const hasAnyErrors = !!formatter.errors.length || !!formatter.failed;
+  if (results.code !== 0 && hasAnyErrors) {
+    const err = new Error(`"xcodebuild" exited with error code ${results.code}.`);
+    // @ts-expect-error
+    err.stderr = results.stderr;
+    throw err;
+  }
+
+  return { ...results, formatter };
+}
+
+class TestSuiteFormatter extends Formatter {
+  public testSuites: number = 0;
+  public total: number = 0;
+  public failed: number = 0;
+  public get passed(): number {
+    return this.total - this.failed;
+  }
+
+  override formatPassingTest(suite: string, test: string, time: string): string {
+    this.total += 1;
+    return super.formatPassingTest(suite, test, time);
+  }
+
+  override formatFailingTest(
+    suite: string,
+    test: string,
+    reason: string,
+    filePath: string
+  ): string {
+    this.total += 1;
+    this.failed += 1;
+    return super.formatFailingTest(suite, test, reason, filePath);
+  }
+
+  override formatTestRunFinished(name: string, time: string): string {
+    this.testSuites += 1;
+    return super.formatTestRunFinished(name, time);
+  }
+
+  override formatTestSuiteStarted(_name: string): string {
+    // All of these are named 'All tests' and only spam
+    return '';
+  }
+
+  override getBuildSummary(): string {
+    const buildResult = super.getBuildSummary();
+    const testResult = `\u203A Ran ${this.total} tests in ${this.testSuites} suites, ${this.failed} tests failed\n`;
+    return `${buildResult}${testResult}`;
+  }
+}
 
 /**
  * Generates a temporary xcscheme containing only the requested test targets,
  * then runs xcodebuild test with that scheme.
  */
 async function runTests(testTargets: string[]) {
-  const repoRoot = Directories.getExpoRepositoryRootDir();
-  const workspace = path.join(repoRoot, NATIVE_TESTS_IOS_DIR, 'NativeTests.xcworkspace');
+  const workspace = path.join(EXPO_DIR, NATIVE_TESTS_IOS_DIR, 'NativeTests.xcworkspace');
 
   // Open both projects
   const mainProjectPath = path.join(
-    repoRoot,
+    EXPO_DIR,
     NATIVE_TESTS_IOS_DIR,
     'NativeTests.xcodeproj/project.pbxproj'
   );
   const podsProjectPath = path.join(
-    repoRoot,
+    EXPO_DIR,
     NATIVE_TESTS_IOS_DIR,
     'Pods/Pods.xcodeproj/project.pbxproj'
   );
@@ -88,10 +240,15 @@ async function runTests(testTargets: string[]) {
       'CODE_SIGNING_REQUIRED=NO',
     ];
 
-    await spawnAsync('xcodebuild', args, {
-      cwd: repoRoot,
-      stdio: 'inherit',
-    });
+    await spawnXcodeBuildWithFormat(
+      args,
+      {
+        cwd: EXPO_DIR,
+      },
+      {
+        projectRoot: path.join(EXPO_DIR, NATIVE_TESTS_PROJECT_ROOT),
+      }
+    );
   } finally {
     // Clean up the generated scheme
     if (generatedScheme.filePath) {
