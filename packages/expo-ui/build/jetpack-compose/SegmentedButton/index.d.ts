@@ -67,4 +67,8 @@ declare namespace SegmentedButtonComponent {
     var Label: typeof SegmentedButtonLabel;
 }
 export { SegmentedButtonComponent as SegmentedButton };
+export { SingleChoiceSegmentedButtonRow } from '../SingleChoiceSegmentedButtonRow';
+export type { SingleChoiceSegmentedButtonRowProps } from '../SingleChoiceSegmentedButtonRow';
+export { MultiChoiceSegmentedButtonRow } from '../MultiChoiceSegmentedButtonRow';
+export type { MultiChoiceSegmentedButtonRowProps } from '../MultiChoiceSegmentedButtonRow';
 //# sourceMappingURL=index.d.ts.map

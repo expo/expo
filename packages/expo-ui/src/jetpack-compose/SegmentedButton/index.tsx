@@ -103,3 +103,7 @@ function SegmentedButtonComponent(props: SegmentedButtonProps) {
 SegmentedButtonComponent.Label = SegmentedButtonLabel;
 
 export { SegmentedButtonComponent as SegmentedButton };
+export { SingleChoiceSegmentedButtonRow } from '../SingleChoiceSegmentedButtonRow';
+export type { SingleChoiceSegmentedButtonRowProps } from '../SingleChoiceSegmentedButtonRow';
+export { MultiChoiceSegmentedButtonRow } from '../MultiChoiceSegmentedButtonRow';
+export type { MultiChoiceSegmentedButtonRowProps } from '../MultiChoiceSegmentedButtonRow';
