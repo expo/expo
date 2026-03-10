@@ -1,13 +1,13 @@
 import { ExpoModifier } from '../../types';
 export type SpacerProps = {
     /**
-     * Modifiers for the component. Use weight() modifier to make the spacer flexible.
+     * Modifiers for the component. Use `weight()` modifier to make the spacer flexible.
      */
     modifiers?: ExpoModifier[];
 };
 /**
  * A spacer component that fills available space.
- * Use with the weight() modifier to create flexible spacing in Row or Column layouts.
+ * Use with the `weight()` modifier to create flexible spacing in `Row` or `Column` layouts.
  *
  * @example
  * ```tsx

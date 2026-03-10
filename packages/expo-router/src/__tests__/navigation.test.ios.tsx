@@ -8,14 +8,13 @@ import {
   useGlobalSearchParams,
   router,
   useLocalSearchParams,
-  Redirect,
   Slot,
   usePathname,
-  Link,
 } from '../exports';
 import { store } from '../global-state/router-store';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
+import { Link, Redirect } from '../link';
 import { renderRouter, screen } from '../testing-library';
 
 it('should respect `unstable_settings', () => {
