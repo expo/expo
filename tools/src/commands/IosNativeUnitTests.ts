@@ -30,6 +30,23 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   const targetsToTest: string[] = [];
   const packagesToTest: string[] = [];
   for (const pkg of allPackages) {
+    if (pkg.packageName === 'expo-modules-core') {
+      if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
+        continue;
+      }
+      // @tsapeta: `expo-modules-core` has two podspecs – for the core and for the JSI. This is supported by autolinking,
+      // but not by expotools and as a result only `ExpoModulesJSI` tests are being included. Here we make sure the tests
+      // for the core are included. Long-term plan is to move JSI pod to a separate package, then this can be removed.
+      //
+      // @barthap: expo-modules-core has three podspecs - the two above and for Worklets. The worklets one is detected
+      // as primary `pkg.podspecPath` and `hasNativeTestsAsync` does not find any tests in it, so the whole
+      // expo-modules-core is skipped in the below check.
+      targetsToTest.push(`ExpoModulesCore-Unit-Tests`);
+      targetsToTest.push(`ExpoModulesJSI-Unit-Tests`);
+      packagesToTest.push(pkg.packageName);
+      continue;
+    }
+
     if (!pkg.podspecName || !pkg.podspecPath || !(await pkg.hasNativeTestsAsync('ios'))) {
       if (packageNamesFilter.includes(pkg.packageName)) {
         throw new Error(`The package ${pkg.packageName} does not include iOS unit tests.`);
@@ -52,13 +69,6 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       targetsToTest.push(`${pkg.podspecName}-Unit-${testSpecName}`);
     }
     packagesToTest.push(pkg.packageName);
-  }
-
-  // @tsapeta: `expo-modules-core` has two podspecs – for the core and for the JSI. This is supported by autolinking,
-  // but not by expotools and as a result only `ExpoModulesJSI` tests are being included. Here we make sure the tests
-  // for the core are included. Long-term plan is to move JSI pod to a separate package, then this can be removed.
-  if (packagesToTest.includes('expo-modules-core')) {
-    targetsToTest.unshift(`ExpoModulesCore-Unit-Tests`);
   }
 
   if (packageNamesFilter.length && !targetsToTest.length) {
