@@ -1,5 +1,5 @@
-import spawnAsync from '@expo/spawn-async';
 import { XcodeProject, XCScheme, PBXNativeTarget, createBuildableReference } from '@bacons/xcode';
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -68,9 +68,7 @@ async function runTests(testTargets: string[]) {
 
   // Save the scheme as a shared scheme in the main project
   mainProject.saveScheme(generatedScheme);
-  console.log(
-    `Generated scheme "${generatedSchemeName}" with ${testTargets.length} test targets`
-  );
+  console.log(`Generated scheme "${generatedSchemeName}" with ${testTargets.length} test targets`);
 
   try {
     const args = [
