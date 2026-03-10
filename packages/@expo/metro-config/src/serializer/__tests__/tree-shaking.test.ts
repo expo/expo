@@ -1202,6 +1202,227 @@ it(`removes unused exports`, async () => {
   `);
 });
 
+it(`removes unused default exports`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+        import {other as foo} from './foo';
+        import {other as bar} from './bar';
+        foo();
+        bar();
+        `,
+    'foo.js': `
+        export default function foo() {};
+        export function other() {};
+        `,
+    'bar.js': `
+        export default function() {}
+        export function other() {};
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/foo.js' }),
+    expect.objectContaining({ absolutePath: '/app/bar.js' }),
+  ]);
+
+  expect(artifacts[0].source).not.toMatch('function foo()');
+  expect(artifacts[0].source).not.toMatch('function()');
+
+  expect(artifacts).toMatchInlineSnapshot(`
+    [
+      {
+        "filename": "_expo/static/js/web/index-c06e9cfcf6e40df96a8fd9514ead3380.js",
+        "metadata": {
+          "expoDomComponentReferences": [],
+          "isAsync": false,
+          "loaderReferences": [],
+          "modulePaths": [
+            "/app/index.js",
+            "/app/foo.js",
+            "/app/bar.js",
+          ],
+          "paths": {},
+          "reactClientReferences": [],
+          "reactServerReferences": [],
+          "requires": [],
+        },
+        "originFilename": "index.js",
+        "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      (0, _$$_REQUIRE(_dependencyMap[0]).other)();
+      (0, _$$_REQUIRE(_dependencyMap[1]).other)();
+    },"/app/index.js",["/app/foo.js","/app/bar.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.other = other;
+      ;
+      function other() {}
+      ;
+    },"/app/foo.js",[]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.other = other;
+      function other() {}
+      ;
+    },"/app/bar.js",[]);
+    TEST_RUN_MODULE("/app/index.js");",
+        "type": "js",
+      },
+    ]
+  `);
+});
+
+it(`removes unused exports when shadowed`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import { bar } from './a';
+          bar();
+        `,
+    'a.js': `
+          export function foo() {
+            return "module scope";
+          }
+
+          export function bar() {
+            function foo() {
+              return "function scope";
+            }
+            foo();
+          }
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/a.js' }),
+  ]);
+
+  expect(artifacts[0].source).not.toMatch('module scope');
+
+  expect(artifacts).toMatchInlineSnapshot(`
+    [
+      {
+        "filename": "_expo/static/js/web/index-a55206f80f2ea835753530bd2be412fe.js",
+        "metadata": {
+          "expoDomComponentReferences": [],
+          "isAsync": false,
+          "loaderReferences": [],
+          "modulePaths": [
+            "/app/index.js",
+            "/app/a.js",
+          ],
+          "paths": {},
+          "reactClientReferences": [],
+          "reactServerReferences": [],
+          "requires": [],
+        },
+        "originFilename": "index.js",
+        "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      (0, _$$_REQUIRE(_dependencyMap[0]).bar)();
+    },"/app/index.js",["/app/a.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.bar = bar;
+      function bar() {
+        function foo() {
+          return "function scope";
+        }
+        foo();
+      }
+    },"/app/a.js",[]);
+    TEST_RUN_MODULE("/app/index.js");",
+        "type": "js",
+      },
+    ]
+  `);
+});
+
+it(`removes unused exports with separate declarations`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import { add } from './math';
+          console.log('keep', add(1, 2));
+        `,
+    'math.js': `
+          const PI = 3.14;
+
+          function add(a, b) {
+            return a + b;
+          }
+
+          function subtract(a, b) {
+            return a - b;
+          }
+
+          export { PI }
+          export { add, subtract };
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
+  ]);
+  expect(artifacts[0].source).not.toMatch('subtract');
+  expect(artifacts).toMatchInlineSnapshot(`
+    [
+      {
+        "filename": "_expo/static/js/web/index-88473bf92165059b6bcde24da7c7da0b.js",
+        "metadata": {
+          "expoDomComponentReferences": [],
+          "isAsync": false,
+          "loaderReferences": [],
+          "modulePaths": [
+            "/app/index.js",
+            "/app/math.js",
+          ],
+          "paths": {},
+          "reactClientReferences": [],
+          "reactServerReferences": [],
+          "requires": [],
+        },
+        "originFilename": "index.js",
+        "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log('keep', (0, _$$_REQUIRE(_dependencyMap[0]).add)(1, 2));
+    },"/app/index.js",["/app/math.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      Object.defineProperty(exports, "add", {
+        enumerable: true,
+        get: function () {
+          return add;
+        }
+      });
+      function add(a, b) {
+        return a + b;
+      }
+    },"/app/math.js",[]);
+    TEST_RUN_MODULE("/app/index.js");",
+        "type": "js",
+      },
+    ]
+  `);
+});
+
 // This test accounts for removing an unused export that references another unused export.
 it(`removes deeply nested unused exports`, async () => {
   const [, [artifact]] = await serializeShakingAsync(
@@ -1342,6 +1563,89 @@ it(`removes deeply nested unused exports until max depth`, async () => {
   expect(artifact.source).not.toMatch('x2');
   // The last export that couldn't be reached should still be there.
   expect(artifact.source).toMatch('x1');
+});
+
+it(`preserves exports with constant violations`, async () => {
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import {setFoo} from "./lib";
+        setFoo('baz');
+        `,
+
+    'lib.js': `
+        export let foo = 'bar';
+        export function setFoo(val) {
+          foo = val;
+        }
+        `,
+  });
+
+  expect(artifact.source).toMatch('foo = ');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      (0, _$$_REQUIRE(_dependencyMap[0]).setFoo)('baz');
+    },"/app/index.js",["/app/lib.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      Object.defineProperty(exports, "foo", {
+        enumerable: true,
+        get: function () {
+          return foo;
+        }
+      });
+      exports.setFoo = setFoo;
+      let foo = 'bar';
+      function setFoo(val) {
+        foo = val;
+      }
+    },"/app/lib.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
+});
+
+it(`preserves exports when a remapped export of the same name is removed`, async () => {
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import {feature} from "./lib";
+        console.log(feature);
+        `,
+
+    'lib.js': `
+        export function feature() {
+          return;
+        }
+
+        export { feature as unstable_feature };
+        `,
+  });
+
+  expect(artifact.source).toMatch('function feature');
+  expect(artifact.source).not.toMatch('unstable_feature');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log(_$$_REQUIRE(_dependencyMap[0]).feature);
+    },"/app/index.js",["/app/lib.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.feature = feature;
+      function feature() {
+        return;
+      }
+    },"/app/lib.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
 });
 
 it(`preserves remapped imports when an import with the same name is removed`, async () => {
@@ -1539,7 +1843,7 @@ it(`removes all overlapping exports (export-all and default)`, async () => {
   `);
 });
 
-it(`TODO: removes default export with overlapping exports (export-all and default)`, async () => {
+it(`removes default export with overlapping exports (export-all and default)`, async () => {
   // We should be able to expand the unused default from the overlapping export-all and remove it.
   const [, [artifact]] = await serializeShakingAsync({
     'index.js': `
@@ -1570,37 +1874,18 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
-      function _interopDefault(e) {
-        return e && e.__esModule ? e : {
-          default: e
-        };
-      }
       Object.defineProperty(exports, "z1", {
         enumerable: true,
         get: function () {
           return _$$_REQUIRE(_dependencyMap[0]).z1;
         }
       });
-      Object.defineProperty(exports, "default", {
-        enumerable: true,
-        get: function () {
-          return _default;
-        }
-      });
-      var X = _interopDefault(_$$_REQUIRE(_dependencyMap[0]));
-      var _default = X.default;
     },"/app/x0.js",["/app/x1.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
         value: true
-      });
-      Object.defineProperty(exports, "default", {
-        enumerable: true,
-        get: function () {
-          return _default;
-        }
       });
       Object.defineProperty(exports, "z1", {
         enumerable: true,
@@ -1609,7 +1894,6 @@ it(`TODO: removes default export with overlapping exports (export-all and defaul
         }
       });
       const z1 = 0;
-      var _default = {};
     },"/app/x1.js",[]);
     TEST_RUN_MODULE("/app/index.js");"
   `);
@@ -1913,25 +2197,12 @@ it(`recursively expands export all statements while omitting existing and defaul
           return _$$_REQUIRE(_dependencyMap[0]).z3;
         }
       });
-      Object.defineProperty(exports, "default", {
-        enumerable: true,
-        get: function () {
-          return _default;
-        }
-      });
-      var _default = 0;
     },"/app/x1.js",["/app/x2.js"]);
     __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
       Object.defineProperty(exports, '__esModule', {
         value: true
-      });
-      Object.defineProperty(exports, "default", {
-        enumerable: true,
-        get: function () {
-          return _default;
-        }
       });
       Object.defineProperty(exports, "z2", {
         enumerable: true,
@@ -1947,7 +2218,6 @@ it(`recursively expands export all statements while omitting existing and defaul
       });
       const z2 = 0;
       const z3 = 0;
-      var _default = 0;
     },"/app/x2.js",[]);
     TEST_RUN_MODULE("/app/index.js");"
   `);
