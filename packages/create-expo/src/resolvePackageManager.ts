@@ -109,7 +109,15 @@ export async function configurePackageManager(
       await manager.runAsync(['config', '--location', 'project', 'set', 'node-linker', 'hoisted']);
 
       // Avoid build warnings / errors from pnpm v10+
-      await manager.runAsync(['config', '--location', 'project', '--json', 'set', 'ignoredBuiltDependencies', '["unrs-resolver"]']);
+      await manager.runAsync([
+        'config',
+        '--location',
+        'project',
+        '--json',
+        'set',
+        'ignoredBuiltDependencies',
+        '["unrs-resolver"]'
+      ]);
       break;
     }
 
