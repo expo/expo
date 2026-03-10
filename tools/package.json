@@ -32,6 +32,7 @@
     "@expo/plist": "^0.3.4",
     "@expo/spawn-async": "^1.7.2",
     "@expo/swiftlint": "^0.57.1",
+    "@expo/xcpretty": "^4.4.0",
     "@linear/sdk": "^2.6.0",
     "@octokit/rest": "^19.0.7",
     "chalk": "^4.1.2",
