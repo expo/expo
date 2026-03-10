@@ -21,15 +21,9 @@ extension ExpoSwiftUI {
 
   /**
    Protocol for wrapper views (e.g., UIBaseView) that wrap an inner view.
+   Used by DynamicSwiftUIViewType to resolve the underlying view through wrapper layers.
    */
   public protocol ViewWrapper {
     func getWrappedView() -> Any
   }
-}
-
-/**
- Internal protocol for type-erased access to a SwiftUI virtual view's content view.
- */
-internal protocol AnyContentViewProvider {
-  func getAnyContentView() -> Any
 }

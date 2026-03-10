@@ -41,9 +41,8 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
     }
     // For wrapper types
     // e.g. ExpoUIView(SecureFieldView.self)
-    if let provider = appContext.findView(withTag: viewTag, ofType: AnyContentViewProvider.self),
-       let wrapper = provider.getAnyContentView() as? ExpoSwiftUI.ViewWrapper,
-       let innerView = wrapper.getWrappedView() as? ViewType {
+    if let provider = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.ViewWrapper.self),
+       let innerView = provider.getWrappedView() as? ViewType {
       return innerView
     }
     // For views using WithHostingView protocol.
