@@ -161,6 +161,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
+  // Picker replaced by SegmentedButton
+  '/versions/latest/sdk/ui/jetpack-compose/picker/':
+    '/versions/latest/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/picker/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton/',
+
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
