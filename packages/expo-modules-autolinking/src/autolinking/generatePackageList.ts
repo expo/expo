@@ -5,6 +5,8 @@ interface GenerateModulesProviderParams {
   platform: SupportedPlatform;
   targetPath: string;
   entitlementPath: string | null;
+  watchedDirectories: string[];
+  appRoot: string;
 }
 
 /** Generates ExpoModulesProvider file listing all packages to link (Apple-only)
@@ -22,6 +24,7 @@ export async function generateModulesProviderAsync(
   await platformLinking.generateModulesProviderAsync(
     modules as ModuleDescriptorIos[],
     params.targetPath,
-    params.entitlementPath
+    params.entitlementPath,
+    params
   );
 }

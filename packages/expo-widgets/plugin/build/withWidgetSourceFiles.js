@@ -117,7 +117,7 @@ struct ${widget.name}: Widget {
     }
     .configurationDisplayName("${widget.displayName}")
     .description("${widget.description}")
-    .supportedFamilies([.${widget.supportedFamilies.join(', .')}])
+    .supportedFamilies([.${widget.supportedFamilies.join(', .')}])${widget.contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
 const infoPlist = (groupIdentifier) => `<?xml version="1.0" encoding="UTF-8"?>

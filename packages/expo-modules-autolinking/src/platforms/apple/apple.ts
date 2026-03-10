@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
+import { getIosInlineModulesClassNames } from '../../inlineModules/iosInlineModules';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -90,20 +91,26 @@ export async function resolveExtraBuildDependenciesAsync(
   return null;
 }
 
+interface GenerateModulesProviderParams {
+  watchedDirectories: string[];
+  appRoot: string;
+}
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
 export async function generateModulesProviderAsync(
   modules: ModuleDescriptorIos[],
   targetPath: string,
-  entitlementPath: string | null
+  entitlementPath: string | null,
+  params: GenerateModulesProviderParams
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
   const generatedFileContent = await generatePackageListFileContentAsync(
     modules,
     className,
-    entitlements
+    entitlements,
+    params
   );
   const parentPath = path.dirname(targetPath);
   await fs.promises.mkdir(parentPath, { recursive: true });
@@ -119,13 +126,19 @@ export async function generateModulesProviderAsync(
   await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
 
+interface GeneratePackageListFileContentParams {
+  watchedDirectories: string[];
+  appRoot: string;
+}
+
 /**
  * Generates the string to put into the generated package list.
  */
 async function generatePackageListFileContentAsync(
   modules: ModuleDescriptorIos[],
   className: string,
-  entitlements: AppleCodeSignEntitlements
+  entitlements: AppleCodeSignEntitlements,
+  params: GenerateModulesProviderParams
 ): Promise<string> {
   const iosModules = modules.filter(
     (module) =>
@@ -145,9 +158,13 @@ async function generatePackageListFileContentAsync(
     .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
     .filter(Boolean);
 
-  const modulesClassNames = ([] as ModuleIosConfig[])
+  let modulesClassNames = ([] as ModuleIosConfig[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
+
+  modulesClassNames = modulesClassNames.concat(
+    await getIosInlineModulesClassNames(params.watchedDirectories, params.appRoot)
+  );
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))

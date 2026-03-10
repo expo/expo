@@ -1,11 +1,11 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/WorkletRuntimeFactory.h>
+#import <ExpoModulesWorklets/WorkletRuntimeFactory.h>
 
 #if WORKLETS_ENABLED
 
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
-#include <ExpoModulesCore/WorkletJSCallInvoker.h>
+#include <ExpoModulesWorklets/WorkletJSCallInvoker.h>
 
 #endif
 

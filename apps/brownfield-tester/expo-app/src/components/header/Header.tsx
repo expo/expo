@@ -15,7 +15,9 @@ const Header = ({ title, testID }: HeaderProps) => {
         testID="header-back-button">
         <Feather name="arrow-left" size={24} color="black" />
       </Pressable>
-      <Text style={styles.title} testID={testID}>{title}</Text>
+      <Text style={styles.title} testID={testID}>
+        {title}
+      </Text>
     </View>
   );
 };

@@ -9,7 +9,7 @@ import type {
   NativeLiveActivityFactory,
   NativeWidgetObject,
   PushTokenEvent,
-  WidgetBase,
+  WidgetEnvironment,
   WidgetTimelineEntry,
 } from './Widgets.types';
 
@@ -19,7 +19,10 @@ import type {
 export class Widget<T extends object = object> {
   /** @hidden */
   private nativeWidgetObject: NativeWidgetObject;
-  constructor(name: string, layout: (p: WidgetBase<T>) => React.JSX.Element) {
+  constructor(
+    name: string,
+    layout: (props: T, environment: WidgetEnvironment) => React.JSX.Element
+  ) {
     this.nativeWidgetObject = new ExpoWidgetsModule.Widget(name, layout as unknown as string);
   }
 
@@ -174,7 +177,7 @@ export function after(date: Date): { after: Date } {
  */
 export function createWidget<T extends object = object>(
   name: string,
-  widget: (props: WidgetBase<T>) => React.JSX.Element
+  widget: (props: T, context: WidgetEnvironment) => React.JSX.Element
 ): Widget<T> {
   return new Widget<T>(name, widget);
 }

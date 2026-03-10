@@ -1,3 +1,3 @@
 export * from './Widgets';
-export { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, LiveActivityEvents, LiveActivityLayout, PushTokenEvent, PushToStartTokenEvent, UserInteractionEvent, WidgetBase, WidgetFamily, WidgetTimelineEntry, } from './Widgets.types';
+export { ExpoWidgetsEvents, LevelOfDetail, LiveActivityComponent, LiveActivityDismissalPolicy, LiveActivityEvents, LiveActivityLayout, PushTokenEvent, PushToStartTokenEvent, UserInteractionEvent, WidgetEnvironment, WidgetFamily, WidgetRenderingMode, WidgetTimelineEntry, } from './Widgets.types';
 //# sourceMappingURL=index.d.ts.map
