@@ -13,6 +13,9 @@
 - Add missing project root to `watchFolders` in `metro.config.js` ([#43449](https://github.com/expo/expo/pull/43449) by [@kitten](https://github.com/kitten))
 - [plugin] Fix reading undefined when config is not provided. ([#43568](https://github.com/expo/expo/pull/43568) by [@jakex7](https://github.com/jakex7))
 - Skip server bundling in `export:embed` call for `expo-widgets` bundle ([#43602](https://github.com/expo/expo/pull/43602) by [@kitten](https://github.com/kitten))
+- Fix JS runtime bundle not copied into widget extension — copy destination targeted the framework instead of the resource bundle directory. ([#43654](https://github.com/expo/expo/pull/43654) by [@MarianoFacundoArch](https://github.com/MarianoFacundoArch))
+- Fix build script skipping JS bundle generation for local `npx expo run:ios` builds. ([#43654](https://github.com/expo/expo/pull/43654) by [@MarianoFacundoArch](https://github.com/MarianoFacundoArch))
+- Fix `containerBackground(.clear)` causing white borders on iOS 17+ — now dynamically extracts background color from root node modifiers. ([#43654](https://github.com/expo/expo/pull/43654) by [@MarianoFacundoArch](https://github.com/MarianoFacundoArch))
 
 ### 💡 Others
 
