@@ -16,7 +16,14 @@ type VideoBoxLinkProps = {
   uploadDate?: string;
 };
 
-export function VideoBoxLink({ title, description, videoId, time, className, uploadDate }: VideoBoxLinkProps) {
+export function VideoBoxLink({
+  title,
+  description,
+  videoId,
+  time,
+  className,
+  uploadDate,
+}: VideoBoxLinkProps) {
   const resolvedUploadDate = uploadDate ?? getVideoUploadDate(videoId);
   const videoStructuredData = {
     '@context': 'https://schema.org',
