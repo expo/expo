@@ -188,7 +188,7 @@ abstract class Loader protected constructor(
   }
 
   private suspend fun downloadAllAssets(update: Update): LoaderResult {
-    val assetList = update.assetEntityList
+    val assetList = update.assetEntityList.distinctBy { it.key }
     assetTotal = assetList.size
 
     val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)
