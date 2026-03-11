@@ -15,6 +15,10 @@
       "swiftLanguageVersions": [
         "6.0"
       ],
+      "excludeFromUmbrella": [
+        "EXModuleRegistryAdapter.h",
+        "EXModuleRegistryHolderReactModule.h"
+      ],
       "targets": [
         {
           "type": "cpp",
@@ -82,7 +86,8 @@
           "headerPattern": "**/*.h",
           "exclude": [
             "JSI/**",
-            "Tests/**"
+            "Tests/**",
+            "Worklets/**"
           ],
           "dependencies": [
             "Hermes",
@@ -116,7 +121,8 @@
             "JSI/**",
             "Tests/**",
             "BridgeModule/**",
-            "Views/**"
+            "Views/**",
+            "Worklets/**"
           ],
           "dependencies": [
             "Hermes",
