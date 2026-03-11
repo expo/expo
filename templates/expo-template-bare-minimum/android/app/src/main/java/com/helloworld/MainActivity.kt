@@ -1,11 +1,18 @@
 package com.helloworld
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.MaterialTheme
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-    setTheme(R.style.AppTheme)
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
+    setContent {
+      MaterialTheme {
+      }
+    }
   }
 }
