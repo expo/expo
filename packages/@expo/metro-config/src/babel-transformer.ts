@@ -15,7 +15,8 @@ import resolveFrom from 'resolve-from';
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
-import { getPkgVersion } from './utils/getPkgVersion';
+import { getPkgVersionFromPath } from './utils/getPkgVersion';
+import { transitiveResolveFrom } from './utils/transitiveResolveFrom';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
   babelRuntimeVersion?: string;
@@ -63,11 +64,17 @@ const memoizeWarning = memoize((message: string) => {
 });
 
 function getIsHermesV1(projectRoot: string): boolean {
-  const reactNativePath = resolveFrom.silent(projectRoot, 'react-native/package.json');
-  if (!reactNativePath) return false;
-
-  const hermesVersion = getPkgVersion(path.dirname(reactNativePath), 'hermes-compiler');
-  return typeof hermesVersion === 'string' && hermesVersion.startsWith('250829098');
+  const hermesCompilerPackageJsonPath = transitiveResolveFrom(projectRoot, [
+    'react-native/package.json',
+    'hermes-compiler/package.json',
+  ]);
+  if (!hermesCompilerPackageJsonPath) {
+    return true;
+  }
+  const hermesVersion = getPkgVersionFromPath(hermesCompilerPackageJsonPath);
+  // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
+  const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
+  return !isLegacyHermes;
 }
 
 function getBabelCaller({
