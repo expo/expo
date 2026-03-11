@@ -96,6 +96,7 @@ exceptions:
   - '.*Flipper.*'
   - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
+  - '.*FAB.*'
   - '.*FAQ.*'
   - '.*FCM.*'
   - '.*FYI.*'

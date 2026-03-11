@@ -29,6 +29,7 @@ export * from './Carousel';
 export * from './SearchBar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
+export * from './FloatingActionButton';
 export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
