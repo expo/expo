@@ -8,6 +8,10 @@ import {
   EnterTransition,
   ExitTransition,
   RNHostView,
+  DropdownMenu,
+  DropdownMenuItem,
+  Divider,
+  Text,
 } from '@expo/ui/jetpack-compose';
 import {
   fillMaxWidth,
@@ -16,11 +20,21 @@ import {
   imePadding,
   padding,
 } from '@expo/ui/jetpack-compose/modifiers';
-import { Children, useMemo, type ReactNode } from 'react';
+import { Children, createContext, use, useMemo, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
+import type {
+  RouterToolbarHostProps,
+  RouterToolbarItemProps,
+  RouterToolbarMenuProps,
+  RouterToolbarMenuItemProps,
+} from './native.types';
+import { Color } from '../color';
+import { useMaterialIconSource } from '../utils/materialIcon';
+
+const arrowRightIcon = require('expo-router/assets/arrow_right.xml');
+const checkIcon = require('expo-router/assets/check.xml');
 
 export function RouterToolbarHost(props: RouterToolbarHostProps) {
   const insets = useSafeAreaInsets();
@@ -115,4 +129,145 @@ function AnimatedWrapper({ visible, children }: { visible: boolean; children: Re
 function hasChildren(children: ReactNode | undefined): boolean {
   if (children == null) return false;
   return Children.count(children) > 0;
+}
+
+const MenuDismissContext = createContext<(() => void) | undefined>(undefined);
+
+export function RouterToolbarMenu(props: RouterToolbarMenuProps) {
+  const parentDismiss = use(MenuDismissContext);
+  const isNested = parentDismiss !== undefined;
+
+  if (isNested) {
+    return <NestedRouterToolbarMenu {...props} parentDismiss={parentDismiss} />;
+  }
+
+  return <RootRouterToolbarMenu {...props} />;
+}
+
+function RootRouterToolbarMenu(props: RouterToolbarMenuProps) {
+  const [expanded, setExpanded] = useState(false);
+  const dismiss = () => setExpanded(false);
+  const materialSource = useMaterialIconSource(props.mdIconName);
+  const resolvedSource = props.source ?? materialSource;
+
+  const computedHidden = props.hidden || !resolvedSource;
+
+  if (!resolvedSource) {
+    if (process.env.NODE_ENV !== 'production' && !props.mdIconName) {
+      console.warn('Stack.Toolbar.Menu on Android requires an icon. Use the `icon` or `md` prop.');
+    }
+  }
+
+  return (
+    <AnimatedWrapper visible={!computedHidden}>
+      <DropdownMenu
+        expanded={expanded}
+        onDismissRequest={dismiss}
+        color={Color.android.dynamic.surface}>
+        <DropdownMenu.Trigger>
+          <IconButton onPress={() => setExpanded((prev) => !prev)} disabled={props.disabled}>
+            {resolvedSource ? (
+              <Icon source={resolvedSource} tintColor={props.tintColor} size={24} />
+            ) : undefined}
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <MenuDismissContext value={dismiss}>{props.children}</MenuDismissContext>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </AnimatedWrapper>
+  );
+}
+
+function NestedRouterToolbarMenu(props: RouterToolbarMenuProps & { parentDismiss: () => void }) {
+  const { parentDismiss, ...menuProps } = props;
+
+  if (menuProps.hidden) {
+    return null;
+  }
+
+  if (menuProps.inline) {
+    return (
+      <MenuDismissContext value={parentDismiss}>
+        <Divider />
+        {menuProps.children}
+        <Divider />
+      </MenuDismissContext>
+    );
+  }
+
+  return <NestedSubmenuDropdown {...menuProps} parentDismiss={parentDismiss} />;
+}
+
+function NestedSubmenuDropdown(props: RouterToolbarMenuProps & { parentDismiss: () => void }) {
+  const [expanded, setExpanded] = useState(false);
+  const arrowSource = arrowRightIcon;
+
+  const dismiss = () => {
+    setExpanded(false);
+    props.parentDismiss();
+  };
+
+  const trailingIcon = arrowSource ? (
+    <DropdownMenuItem.TrailingIcon>
+      <Icon source={arrowSource} size={24} tintColor={Color.android.dynamic.onSurface} />
+    </DropdownMenuItem.TrailingIcon>
+  ) : null;
+
+  return (
+    <DropdownMenu
+      expanded={expanded}
+      onDismissRequest={() => setExpanded(false)}
+      color={Color.android.dynamic.surface}>
+      <DropdownMenu.Trigger>
+        <DropdownMenuItem onClick={() => setExpanded(true)}>
+          <DropdownMenuItem.Text>
+            <Text>{props.label ?? ''}</Text>
+          </DropdownMenuItem.Text>
+          {trailingIcon}
+        </DropdownMenuItem>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Items>
+        <MenuDismissContext value={dismiss}>{props.children}</MenuDismissContext>
+      </DropdownMenu.Items>
+    </DropdownMenu>
+  );
+}
+
+export function RouterToolbarMenuItem(props: RouterToolbarMenuItemProps) {
+  const onDismiss = use(MenuDismissContext);
+  const materialSource = useMaterialIconSource(props.leadingMdIconName);
+  const iconSource = props.leadingIconSource ?? materialSource;
+  const checkSource = props.isOn ? checkIcon : undefined;
+
+  if (props.hidden) {
+    return null;
+  }
+
+  const leadingIcon = iconSource ? (
+    <DropdownMenuItem.LeadingIcon>
+      <Icon source={iconSource} size={24} tintColor={Color.android.dynamic.onSurface} />
+    </DropdownMenuItem.LeadingIcon>
+  ) : null;
+
+  const trailingIcon = checkSource ? (
+    <DropdownMenuItem.TrailingIcon>
+      <Icon source={checkSource} size={24} tintColor={Color.android.dynamic.onSurface} />
+    </DropdownMenuItem.TrailingIcon>
+  ) : null;
+
+  return (
+    <DropdownMenuItem
+      enabled={props.enabled !== false}
+      onClick={() => {
+        props.onPress?.();
+        onDismiss?.();
+      }}>
+      <DropdownMenuItem.Text>
+        <Text>{props.label}</Text>
+      </DropdownMenuItem.Text>
+      {leadingIcon}
+      {trailingIcon}
+    </DropdownMenuItem>
+  );
 }

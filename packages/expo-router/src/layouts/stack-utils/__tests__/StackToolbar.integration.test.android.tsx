@@ -15,14 +15,21 @@ jest.mock('../../../toolbar/native', () => {
       <View testID="RouterToolbarHost">{children}</View>
     )),
     RouterToolbarItem: jest.fn((props) => <View testID="RouterToolbarItem" {...props} />),
+    RouterToolbarMenu: jest.fn(({ children, ...props }) => (
+      <View testID="RouterToolbarMenu" {...props}>
+        {children}
+      </View>
+    )),
+    RouterToolbarMenuItem: jest.fn((props) => <View testID="RouterToolbarMenuItem" {...props} />),
   };
 });
 
-const { RouterToolbarHost, RouterToolbarItem } = jest.requireMock(
+const { RouterToolbarHost, RouterToolbarItem, RouterToolbarMenu } = jest.requireMock(
   '../../../toolbar/native'
 ) as typeof import('../../../toolbar/native');
 const MockedRouterToolbarHost = RouterToolbarHost as jest.MockedFunction<typeof RouterToolbarHost>;
 const MockedRouterToolbarItem = RouterToolbarItem as jest.MockedFunction<typeof RouterToolbarItem>;
+const MockedRouterToolbarMenu = RouterToolbarMenu as jest.MockedFunction<typeof RouterToolbarMenu>;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -173,7 +180,7 @@ describe('Stack.Toolbar integration tests (Android)', () => {
       // Here RouterToolbarItem is mocked, so the warning is tested in native.test.android.tsx instead.
     });
 
-    it('Menu produces dev warnings on Android', () => {
+    it('Menu renders RouterToolbarMenu on Android', () => {
       renderRouter({
         index: () => (
           <>
@@ -187,8 +194,30 @@ describe('Stack.Toolbar integration tests (Android)', () => {
         ),
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Stack.Toolbar.Menu is not supported on Android')
+      expect(MockedRouterToolbarMenu).toHaveBeenCalled();
+      expect(screen.getByTestId('RouterToolbarMenu')).toBeTruthy();
+    });
+
+    it('Menu passes md icon through integration', () => {
+      renderRouter({
+        index: () => (
+          <>
+            <Stack.Toolbar placement="bottom">
+              <Stack.Toolbar.Menu>
+                <Stack.Toolbar.Icon md="more_vert" />
+                <Stack.Toolbar.MenuAction onPress={() => {}}>Action</Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
+            </Stack.Toolbar>
+            <View testID="index" />
+          </>
+        ),
+      });
+
+      expect(MockedRouterToolbarMenu).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mdIconName: 'more_vert',
+        }),
+        undefined
       );
     });
   });

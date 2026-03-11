@@ -11,6 +11,7 @@ const shared_1 = require("./shared");
 const toolbar_primitives_1 = require("./toolbar-primitives");
 const elements_1 = require("../../../link/elements");
 const native_1 = require("../../../link/preview/native");
+const native_2 = require("../../../toolbar/native");
 const children_1 = require("../../../utils/children");
 /**
  * Computes the label and menu title from children and title prop.
@@ -56,6 +57,7 @@ function computeMenuLabelAndTitle(children, title) {
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarMenu = (props) => {
@@ -68,10 +70,7 @@ const StackToolbarMenu = (props) => {
     }
     const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
     if (react_native_1.Platform.OS === 'android') {
-        if (process.env.NODE_ENV !== 'production') {
-            console.warn('Stack.Toolbar.Menu is not supported on Android. The menu will not render. Use Stack.Toolbar.Button with ImageSourcePropType icons instead.');
-        }
-        return null;
+        return <AndroidToolbarMenu {...props} children={validChildren}/>;
     }
     const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
     const computedLabel = sharedProps?.label;
@@ -195,12 +194,22 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarMenuAction = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
     if (placement !== 'bottom') {
         throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
+    }
+    if (react_native_1.Platform.OS === 'android') {
+        const labelChild = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarLabel);
+        const stringChildren = react_1.Children.toArray(props.children)
+            .filter((child) => typeof child === 'string')
+            .join('');
+        const label = labelChild?.props.children ?? stringChildren;
+        const iconSource = props.icon && typeof props.icon !== 'string' ? props.icon : undefined;
+        return (<native_2.RouterToolbarMenuItem label={label} onPress={props.onPress} enabled={!props.disabled} hidden={props.hidden} leadingIconSource={iconSource} leadingMdIconName={props.md} isOn={props.isOn}/>);
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = typeof props.icon === 'string' ? props.icon : undefined;
@@ -249,6 +258,18 @@ const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBack
  * Native toolbar menu action - reuses LinkMenuAction.
  */
 const NativeToolbarMenuAction = elements_1.LinkMenuAction;
+// #endregion
+// #region Android menu support
+/**
+ * Internal component that renders the Android toolbar menu.
+ */
+function AndroidToolbarMenu(props) {
+    const mdIconName = (0, shared_1.extractMdIconName)(props);
+    const source = (0, shared_1.extractImageSource)(props);
+    return (<native_2.RouterToolbarMenu source={source} mdIconName={mdIconName ?? props.md} tintColor={props.tintColor} disabled={props.disabled} hidden={props.hidden} inline={props.inline} label={props.title}>
+      {props.children}
+    </native_2.RouterToolbarMenu>);
+}
 // #endregion
 const ALLOWED_CHILDREN = [
     exports.StackToolbarMenu,
