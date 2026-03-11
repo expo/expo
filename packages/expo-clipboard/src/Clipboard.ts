@@ -2,28 +2,15 @@ import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modu
 
 import type {
   ClipboardImage,
-  ContentType,
+  ClipboardEvent,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
-import ExpoClipboard from './ExpoClipboard';
+import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 
-const onClipboardEventName = 'onClipboardChanged';
-
-type ClipboardEvent = {
-  /**
-   * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
-   */
-  content: string;
-  /**
-   * An array of content types that are available on the clipboard.
-   */
-  contentTypes: ContentType[];
-};
-
-export { EventSubscription as Subscription, ClipboardEvent };
+export { EventSubscription as Subscription };
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -58,23 +45,6 @@ export async function setStringAsync(
     throw new UnavailabilityError('Clipboard', 'setStringAsync');
   }
   return ExpoClipboard.setStringAsync(text, options);
-}
-
-/**
- * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
- *
- * @returns On web, this returns a boolean value indicating whether or not the string was saved to
- * the user's clipboard. On iOS and Android, nothing is returned.
- */
-export function setString(text: string): void {
-  if (Platform.OS === 'web') {
-    // on web, we need to return legacy method,
-    // because of different return type
-    return ExpoClipboard.setString(text);
-  } else {
-    setStringAsync(text);
-  }
 }
 
 /**
@@ -220,34 +190,12 @@ export async function hasImageAsync(): Promise<boolean> {
  * ```
  */
 export function addClipboardListener(listener: (event: ClipboardEvent) => void): EventSubscription {
-  // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
-  const listenerWrapper = (event: ClipboardEvent) => {
-    const wrappedEvent: ClipboardEvent = {
-      ...event,
-      get content(): string {
-        console.warn(
-          "The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content"
-        );
-        return '';
-      },
-    };
-    listener(wrappedEvent);
-  };
-  return ExpoClipboard.addListener(onClipboardEventName, listenerWrapper);
+  return ExpoClipboard.addListener(clipboardEventName, listener);
 }
 
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
- *
- * @param subscription The subscription to remove (created by addClipboardListener).
- *
- * @example
- * ```typescript
- * const subscription = addClipboardListener(() => {
- *   alert('Copy pasta!');
- * });
- * removeClipboardListener(subscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export function removeClipboardListener(subscription: EventSubscription) {
   subscription.remove();

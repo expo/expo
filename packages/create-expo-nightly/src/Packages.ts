@@ -10,7 +10,6 @@ const EXCLUDE_PACKAGES = [
   '@expo/fingerprint',
   'create-expo',
   'eslint-config-universe',
-  'expo-dev-client-components',
   'expo-doctor',
   'expo-env-info',
   'expo-module-scripts',
@@ -87,6 +86,7 @@ export async function getExpoPackagesAsync(expoRepoPath: string): Promise<Packag
         '**/__fixtures__/**',
         '**/e2e/**',
         '**/build/**',
+        '@expo/cli/local-template/**',
       ],
     })
   );

@@ -3,6 +3,7 @@
 #include "JSDecoratorsBridgingObject.h"
 
 #include "JSClassesDecorator.h"
+#include "../types/ReturnType.h"
 
 namespace expo {
 
@@ -36,13 +37,21 @@ void JSDecoratorsBridgingObject::registerSyncFunction(
   jboolean takesOwner,
   jboolean enumerable,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+  jint cppReturnType,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   if (!functionDecorator) {
     functionDecorator = std::make_unique<JSFunctionsDecorator>();
   }
 
-  functionDecorator->registerSyncFunction(name, takesOwner, enumerable, expectedArgTypes, body);
+  functionDecorator->registerSyncFunction(
+    name,
+    takesOwner,
+    enumerable,
+    expectedArgTypes,
+    (ReturnType)cppReturnType,
+    body
+  );
 }
 
 void JSDecoratorsBridgingObject::registerAsyncFunction(
@@ -94,7 +103,8 @@ void JSDecoratorsBridgingObject::registerConstant(
   constantsDecorator->registerConstant(name, getter);
 }
 
-void JSDecoratorsBridgingObject::registerConstants(jni::alias_ref<react::NativeMap::javaobject> constants) {
+void JSDecoratorsBridgingObject::registerConstants(
+  jni::alias_ref<react::NativeMap::javaobject> constants) {
   if (!constantsDecorator) {
     constantsDecorator = std::make_unique<JSConstantsDecorator>();
   }

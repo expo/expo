@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config';
 import fs from 'fs';
-import { minimatch } from 'minimatch';
 import path from 'path';
+import picomatch from 'picomatch';
 
 import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
 import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
@@ -71,10 +71,10 @@ function setOfAssetsToBeBundled(
   );
 
   logPatterns(fullPatterns);
-
+  const matches = picomatch(fullPatterns);
   const allBundledAssets = assets
     .map((asset) => {
-      const shouldBundle = shouldBundleAsset(asset, fullPatterns);
+      const shouldBundle = shouldBundleAsset(asset, matches);
       if (shouldBundle) {
         debug(`${shouldBundle ? 'Include' : 'Exclude'} asset ${asset.files?.[0]}`);
         return asset.fileHashes.map((hash) => mapAssetHashToAssetString(asset, hash));
@@ -116,14 +116,9 @@ function logPatterns(patterns: string[]) {
   patterns.forEach((p) => Log.log('- ' + p));
 }
 
-function shouldBundleAsset(asset: Asset, patterns: string[]) {
+function shouldBundleAsset(asset: Asset, matcher: picomatch.Matcher) {
   const file = asset.files?.[0];
-  return !!(
-    '__packager_asset' in asset &&
-    asset.__packager_asset &&
-    file &&
-    patterns.some((pattern) => minimatch(file, pattern))
-  );
+  return !!('__packager_asset' in asset && asset.__packager_asset && file && matcher(file));
 }
 
 export async function exportAssetsAsync(

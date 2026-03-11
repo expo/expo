@@ -1,6 +1,6 @@
 {
   "name": "create-expo-nightly",
-  "version": "0.2.7",
+  "version": "0.3.2",
   "license": "MIT",
   "description": "A tool to create an Expo app for react-native nightlies testing",
   "keywords": [
@@ -41,6 +41,6 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.3",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   }
 }

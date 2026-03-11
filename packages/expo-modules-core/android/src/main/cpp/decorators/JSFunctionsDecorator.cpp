@@ -30,6 +30,7 @@ void JSFunctionsDecorator::registerFunction(
   bool enumerable,
   bool isAsync,
   std::vector<std::unique_ptr<AnyType>> &&argTypes,
+  ReturnType returnType,
   jni::global_ref<jobject> body
 ) {
   MethodMetadata::Info info{
@@ -51,6 +52,7 @@ void JSFunctionsDecorator::registerSyncFunction(
   jboolean takesOwner,
   jboolean enumerable,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+  ReturnType returnType,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   registerFunction(
@@ -61,6 +63,7 @@ void JSFunctionsDecorator::registerSyncFunction(
     enumerable,
     /*isAsync=*/false,
     mapConverters(expectedArgTypes),
+    returnType,
     jni::make_global(body)
   );
 }
@@ -80,6 +83,7 @@ void JSFunctionsDecorator::registerAsyncFunction(
     enumerable,
     /*isAsync=*/true,
     mapConverters(expectedArgTypes),
+    ReturnType::UNKNOWN,
     jni::make_global(body)
   );
 }

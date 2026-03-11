@@ -17,23 +17,26 @@ NativeVideoModule.VideoPlayer.prototype.replaceAsync = function (source) {
  * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
  *
  * > **info** For most use cases you should use the [`useVideoPlayer`](#usevideoplayer) hook instead. See the [Using the VideoPlayer Directly](#using-the-videoplayer-directly) section for more details.
- * @param source
+ * @param source -  A video source that is used to initialize the player.
+ * @param playerBuilderOptions - Options to apply to the Android player builder before the native constructor is invoked.
  */
-export function createVideoPlayer(source) {
-    return new NativeVideoModule.VideoPlayer(parseSource(source));
+export function createVideoPlayer(source, playerBuilderOptions) {
+    const parsedSource = parseSource(source);
+    return new NativeVideoModule.VideoPlayer(parsedSource, false, playerBuilderOptions);
 }
 /**
  * Creates a `VideoPlayer`, which will be automatically cleaned up when the component is unmounted.
  * @param source - A video source that is used to initialize the player.
  * @param setup - A function that allows setting up the player. It will run after the player is created.
+ * @param playerBuilderOptions - Options to apply to the Android player builder before the native constructor is invoked.
  */
-export function useVideoPlayer(source, setup) {
+export function useVideoPlayer(source, setup, playerBuilderOptions) {
     const parsedSource = parseSource(source);
     return useReleasingSharedObject(() => {
-        const player = new NativeVideoModule.VideoPlayer(parsedSource);
+        const player = new NativeVideoModule.VideoPlayer(parsedSource, false, playerBuilderOptions);
         setup?.(player);
         return player;
-    }, [JSON.stringify(parsedSource)]);
+    }, [JSON.stringify(parsedSource), JSON.stringify(playerBuilderOptions)]);
 }
 function parseSource(source) {
     if (typeof source === 'number') {

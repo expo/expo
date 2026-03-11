@@ -32,7 +32,7 @@ export async function setLocalesAsync(
   if (!locales) {
     return config;
   }
-  const localesMap = await getResolvedLocalesAsync(projectRoot, locales, 'android');
+  const { localesMap } = await getResolvedLocalesAsync(projectRoot, locales, 'android');
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     const stringsFilePath = path.join(
       await AndroidConfig.Paths.getResourceFolderAsync(projectRoot),

@@ -11,17 +11,9 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const androidQueryUtils_1 = require("./androidQueryUtils");
 const fileContentsUtils_1 = require("./fileContentsUtils");
+const pluginConfig_1 = require("./pluginConfig");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
-    {
-        propName: 'newArchEnabled',
-        propValueGetter: (config) => {
-            if (config.android?.newArchEnabled !== undefined) {
-                config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidBuildProperties', 'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.', 'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
-            }
-            return config.android?.newArchEnabled?.toString();
-        },
-    },
     {
         propName: 'android.minSdkVersion',
         propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
@@ -76,7 +68,7 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     },
     {
         propName: 'reactNativeReleaseLevel',
-        propValueGetter: (config) => config.android?.reactNativeReleaseLevel,
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'android', 'reactNativeReleaseLevel'),
     },
     {
         propName: 'expo.useLegacyPackaging',
@@ -109,6 +101,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
         propName: 'exclusiveEnterpriseRepository',
         propValueGetter: (config) => config.android?.exclusiveMavenMirror,
+    },
+    {
+        propName: 'hermesV1Enabled',
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'android', 'useHermesV1')?.toString(),
     },
 ], 'withAndroidBuildProperties');
 /**
@@ -262,9 +258,12 @@ const withAndroidDayNightTheme = (config, props) => {
 exports.withAndroidDayNightTheme = withAndroidDayNightTheme;
 const withAndroidSettingsGradle = (config, props) => {
     return (0, config_plugins_1.withSettingsGradle)(config, (config) => {
+        // Resolution order: android.buildReactNativeFromSource > top-level > deprecated android.buildFromSource
+        const buildFromSource = (0, pluginConfig_1.resolveConfigValue)(props, 'android', 'buildReactNativeFromSource') ??
+            props.android?.buildFromSource; // Deprecated fallback (last resort)
         config.modResults.contents = updateAndroidSettingsGradle({
             contents: config.modResults.contents,
-            buildFromSource: props.android?.buildReactNativeFromSource ?? props.android?.buildFromSource,
+            buildFromSource,
         });
         return config;
     });

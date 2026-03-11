@@ -14,7 +14,7 @@ internal struct Geocoder {
         return [
           "latitude": location?.coordinate.latitude,
           "longitude": location?.coordinate.longitude,
-          "altitude": location?.altitude,
+          "altitude": location?.ellipsoidalAltitude,
           "accuracy": location?.horizontalAccuracy
         ]
       }

@@ -1,7 +1,7 @@
 // This needs to run before the renderer initializes.
 
 const ReactRefreshRuntime = require('react-refresh/runtime');
-ReactRefreshRuntime.injectIntoGlobalHook(global);
+ReactRefreshRuntime.injectIntoGlobalHook(globalThis);
 
 const Refresh = {
   performFullRefresh() {
@@ -27,4 +27,5 @@ const Refresh = {
 
 // The metro require polyfill can not have dependencies (applies for all polyfills).
 // Expose `Refresh` by assigning it to global to make it available in the polyfill.
-global[(global.__METRO_GLOBAL_PREFIX__ || '') + '__ReactRefresh'] = Refresh;
+// @ts-ignore: ignore the global which may not always be defined in jest environments.
+globalThis[(globalThis.__METRO_GLOBAL_PREFIX__ ?? '') + '__ReactRefresh'] = Refresh;

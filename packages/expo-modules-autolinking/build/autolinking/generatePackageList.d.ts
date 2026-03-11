@@ -3,6 +3,8 @@ interface GenerateModulesProviderParams {
     platform: SupportedPlatform;
     targetPath: string;
     entitlementPath: string | null;
+    watchedDirectories: string[];
+    appRoot: string;
 }
 /** Generates ExpoModulesProvider file listing all packages to link (Apple-only)
  */

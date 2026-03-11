@@ -10,8 +10,8 @@ type Props = {
 
 export function Header({ title, description, className }: Props) {
   return (
-    <div className={mergeClasses('mb-1.5 mt-5 flex flex-col gap-1', className)}>
-      <h3 className="font-semibold heading-lg max-md-gutters:heading-xl">{title}</h3>
+    <div className={mergeClasses('mt-5 mb-1.5 flex flex-col gap-1', className)}>
+      <h3 className="heading-lg max-md-gutters:heading-xl font-semibold">{title}</h3>
       <P className="text-secondary">{description}</P>
     </div>
   );

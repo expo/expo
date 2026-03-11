@@ -85,14 +85,6 @@ internal enum class MediaTypes(val value: String) : Enumerable {
   VIDEOS("Videos"),
   ALL("All");
 
-  fun toMimeType(): String {
-    return when (this) {
-      IMAGES -> ImageAllMimeType
-      VIDEOS -> VideoAllMimeType
-      ALL -> AllMimeType
-    }
-  }
-
   fun toFileExtension(): String {
     return when (this) {
       VIDEOS -> ".mp4"
@@ -111,10 +103,6 @@ internal enum class MediaTypes(val value: String) : Enumerable {
   }
 
   companion object {
-    private const val ImageAllMimeType = "image/*"
-    private const val VideoAllMimeType = "video/*"
-    private const val AllMimeType = "*/*"
-
     fun fromJSMediaTypesArray(mediaTypes: Array<JSMediaTypes>): MediaTypes {
       return if (!mediaTypes.contains(JSMediaTypes.VIDEOS)) {
         IMAGES

@@ -44,7 +44,10 @@ JNIFunctionBody::invoke(
       "([Ljava/lang/Object;)Ljava/lang/Object;"
     );
 
-  auto result = jni::Environment::current()->CallObjectMethod(self, method.getId(), args);
+  jvalue jValue{
+    .l = args
+  };
+  auto result = jni::Environment::current()->CallObjectMethodA(self, method.getId(), &jValue);
   throwPendingJniExceptionAsCppException();
   return jni::adopt_local(static_cast<jni::JniType<jni::JObject>>(result));
 }
@@ -61,12 +64,13 @@ void JNIAsyncFunctionBody::invoke(
   // The only cacheable method id can be obtain from the base class.
   static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNIAsyncFunctionBody")
     ->getMethod<
-      void(jobjectArray , jobject)
+      void(jobjectArray, jobject)
     >(
       "invoke",
       "([Ljava/lang/Object;Lexpo/modules/kotlin/jni/PromiseImpl;)V"
     );
 
+  // TODO(@lukmccall): consider using CallVoidMethodV
   jni::Environment::current()->CallVoidMethod(self, method.getId(), args, promise);
   throwPendingJniExceptionAsCppException();
 }

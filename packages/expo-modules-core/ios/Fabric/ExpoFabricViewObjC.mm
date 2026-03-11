@@ -1,7 +1,5 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #import <objc/runtime.h>
 #import <string.h>
 
@@ -11,6 +9,7 @@
 
 #import <ExpoModulesJSI/EXJSIConversions.h>
 
+#import <React/RCTComponentViewFactory.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 using namespace expo;
@@ -77,10 +76,10 @@ static NSString *normalizeEventName(NSString *eventName)
  Cache for component flavors, where the key is a view class name and value is the flavor.
  Flavors must be cached in order to keep using the same component handle after app reloads.
  */
-static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _componentFlavorsCache;
+static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _componentFlavorsCache;
 
 @implementation ExpoFabricViewObjC {
-  ExpoViewShadowNode::ConcreteState::Shared _state;
+  ExpoViewShadowNode<>::ConcreteState::Shared _state;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -100,7 +99,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 
   // We're caching the flavor pointer so that the component handle stay the same for the same class name.
   // Otherwise, the component handle would change after reload which may cause memory leaks and unexpected view recycling behavior.
-  ExpoViewComponentDescriptor::Flavor flavor = _componentFlavorsCache[className];
+  ExpoViewComponentDescriptor<>::Flavor flavor = _componentFlavorsCache[className];
 
   if (flavor == nullptr) {
     flavor = _componentFlavorsCache[className] = std::make_shared<std::string const>(className);
@@ -113,7 +112,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
     componentHandle,
     componentName,
     flavor,
-    &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor>
+    &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor<>>
   };
 }
 
@@ -143,6 +142,9 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
 {
+  if (!_eventEmitter) {
+    return;
+  }
   const auto &eventEmitter = static_cast<const ExpoViewEventEmitter &>(*_eventEmitter);
 
   eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
@@ -159,7 +161,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 
 - (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
 {
-  _state = std::static_pointer_cast<const ExpoViewShadowNode::ConcreteState>(state);
+  _state = std::static_pointer_cast<const ExpoViewShadowNode<>::ConcreteState>(state);
 }
 
 - (void)viewDidUpdateProps
@@ -170,7 +172,11 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)setShadowNodeSize:(float)width height:(float)height
 {
   if (_state) {
+#if REACT_NATIVE_TARGET_VERSION >= 82
+    _state->updateState(ExpoViewState(width,height), EventQueue::UpdateMode::unstable_Immediate);
+#else
     _state->updateState(ExpoViewState(width,height));
+#endif
   }
 }
 
@@ -194,6 +200,17 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   }
 }
 
-@end
+#pragma mark - Component registration
 
-#endif // RCT_NEW_ARCH_ENABLED
++ (void)registerComponent:(nonnull EXViewModuleWrapper *)viewModule appContext:(nonnull EXAppContext *)appContext
+{
+  Class wrappedViewModuleClass = [EXViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appContext.appIdentifier];
+  Class viewClass = [ExpoFabricView makeViewClassForAppContext:appContext
+                                                    moduleName:[viewModule moduleName]
+                                                      viewName:[viewModule viewName]
+                                                     className:NSStringFromClass(wrappedViewModuleClass)];
+
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+}
+
+@end

@@ -58,18 +58,19 @@ extension ExpoSwiftUI {
     /**
      View controller that embeds the content view into the UIKit view hierarchy.
      */
-    private let hostingController: UIViewController
+    private let hostingController: UIHostingController<AnyView>
+
+    /**
+     Tracks whether safe area has been configured (can only be set once on mount)
+     */
+    private var hasSafeAreaBeenConfigured = false
 
     /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
       self.contentView = ContentView(props: props)
-      let rootView = AnyView(
-        contentView
-          .environmentObject(shadowNodeProxy)
-          .environment(\.appContext, appContext)
-      )
+      let rootView = AnyView(contentView)
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -80,18 +81,16 @@ extension ExpoSwiftUI {
 
       super.init(appContext: appContext)
 
-      shadowNodeProxy.setViewSize = { size in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setViewSize(size)
-        #endif
+      shadowNodeProxy.setViewSize = { [weak self] size in
+        self?.setViewSize(size)
       }
-      
-      shadowNodeProxy.setStyleSize = { width, height in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setStyleSize(width, height: height)
-        #endif
+
+      shadowNodeProxy.setStyleSize = { [weak self] width, height in
+        self?.setStyleSize(width, height: height)
       }
-      
+
+      props.shadowNodeProxy = shadowNodeProxy
+
       shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
@@ -120,6 +119,13 @@ extension ExpoSwiftUI {
         try props.updateRawProps(rawProps, appContext: appContext)
       } catch let error {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
+      }
+
+      if !hasSafeAreaBeenConfigured,
+         let safeAreaProps = props as? SafeAreaControllable,
+         let ignoreSafeArea = safeAreaProps.ignoreSafeArea {
+        hostingController.disableSafeArea(ignoreSafeArea)
+        hasSafeAreaBeenConfigured = true
       }
     }
 
@@ -153,7 +159,6 @@ extension ExpoSwiftUI {
       setupHostingViewConstraints()
     }
 
-#if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
      */
@@ -194,7 +199,6 @@ extension ExpoSwiftUI {
         props.objectWillChange.send()
       }
     }
-#endif // RCT_NEW_ARCH_ENABLED
 
     /**
      Setups layout constraints of the hosting controller view to match the layout set by React.
@@ -204,8 +208,8 @@ extension ExpoSwiftUI {
       guard let view = hostingController.view as UIView? else {
         return
       }
-      let frame = self.bounds;
-      view.frame = frame;
+      let frame = self.bounds
+      view.frame = frame
         #if os(iOS) || os(tvOS)
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #elseif os(macOS)
@@ -252,4 +256,48 @@ extension ExpoSwiftUI {
     }
 #endif
   }
+}
+
+extension UIHostingController {
+  func disableSafeArea(_ mode: ExpoSwiftUI.IgnoreSafeArea) {
+    if #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) {
+      switch mode {
+      case .all:
+        self.safeAreaRegions.remove(.all)
+      case .keyboard:
+        self.safeAreaRegions.remove(.keyboard)
+      }
+    } else {
+      // For older versions
+      // https://gist.github.com/steipete/da72299613dcc91e8d729e48b4bb582c
+      // https://developer.apple.com/forums/thread/658432
+      guard let viewClass = object_getClass(view) else { return }
+
+      let suffix = mode == .all ? "_IgnoresSafeArea" : "_IgnoresKeyboard"
+      let viewSubclassName = String(cString: class_getName(viewClass)).appending(suffix)
+      if let viewSubclass = NSClassFromString(viewSubclassName) {
+          object_setClass(view, viewSubclass)
+      } else {
+          guard let viewClassNameUtf8 = (viewSubclassName as NSString).utf8String else { return }
+          guard let viewSubclass = objc_allocateClassPair(viewClass, viewClassNameUtf8, 0) else { return }
+
+          if mode == .all,
+             let method = class_getInstanceMethod(UIView.self, #selector(getter: UIView.safeAreaInsets)) {
+              let safeAreaInsets: @convention(block) (AnyObject) -> UIEdgeInsets = { _ in
+                  return .zero
+              }
+              class_addMethod(viewSubclass, #selector(getter: UIView.safeAreaInsets),
+                              imp_implementationWithBlock(safeAreaInsets), method_getTypeEncoding(method))
+          }
+
+          if let method = class_getInstanceMethod(viewClass, NSSelectorFromString("keyboardWillShowWithNotification:")) {
+              let keyboardWillShow: @convention(block) (AnyObject, AnyObject) -> Void = { _, _ in }
+              class_addMethod(viewSubclass, NSSelectorFromString("keyboardWillShowWithNotification:"),
+                              imp_implementationWithBlock(keyboardWillShow), method_getTypeEncoding(method))
+          }
+          objc_registerClassPair(viewSubclass)
+          object_setClass(view, viewSubclass)
+        }
+      }
+    }
 }

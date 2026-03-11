@@ -1,0 +1,41 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
+import ExpoModulesCore
+
+internal struct DynamicWorkletType: AnyDynamicType {
+  let serializableDynamicType = DynamicSerializableType(innerType: Worklet.self)
+
+  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+    return Worklet.self == InnerType.self
+  }
+
+  func equals(_ type: AnyDynamicType) -> Bool {
+    return type is Self
+  }
+
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    guard let serializable = try serializableDynamicType.cast(jsValue: jsValue, appContext: appContext) as? Serializable else {
+      throw NotSerializableException(Worklet.self)
+    }
+    return try Worklet(serializable)
+  }
+
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    guard let worklet = value as? Worklet else {
+      throw Conversions.ConvertingException<Worklet>(value)
+    }
+    return worklet
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try JavaScriptValue.from(value, runtime: appContext.runtime)
+  }
+
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    return result
+  }
+
+  var description: String {
+    return String(describing: Worklet.self)
+  }
+}

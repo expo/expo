@@ -1,6 +1,6 @@
-import { useIsFocused } from '@react-navigation/native';
 import React, { JSX } from 'react';
 
+import { useIsFocused } from '../useIsFocused';
 import { ExpoHead, UserActivity } from './ExpoHeadModule';
 import { getStaticUrlFromExpoRouter } from './url';
 import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';

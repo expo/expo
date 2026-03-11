@@ -24,9 +24,16 @@ const buildClientReferenceRequire = template.statement(
 
 const buildStringRef = template.statement(`module.exports = FILE_PATH;`);
 
+// The React Server Component version cannot have a function otherwise we'd be passing a function to the client component <Image />.
+// TODO: Make react-native Image and expo-image server components that can simplify the asset before passing to the client component.
 const buildStaticObjectRef = template.statement(
   // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
   `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT };`
+);
+
+const buildStaticObjectClientRef = template.statement(
+  // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
+  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`
 );
 
 export async function transform(
@@ -75,6 +82,7 @@ export async function transform(
   ) {
     return {
       ast: {
+        comments: null,
         ...t.file(
           t.program([
             buildClientReferenceRequire({
@@ -116,18 +124,17 @@ export async function transform(
 
     // If size data is known then it should be passed back to ensure the correct dimensions are used.
     if (data.width != null || data.height != null) {
+      const options: Parameters<typeof buildStaticObjectRef>[0] = {
+        FILE_PATH: JSON.stringify(assetPath),
+        WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
+        HEIGHT: data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
+      };
+      const creatorFunction = isReactServer ? buildStaticObjectRef : buildStaticObjectClientRef;
+
       return {
         ast: {
-          ...t.file(
-            t.program([
-              buildStaticObjectRef({
-                FILE_PATH: JSON.stringify(assetPath),
-                WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
-                HEIGHT:
-                  data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
-              }),
-            ])
-          ),
+          comments: null,
+          ...t.file(t.program([creatorFunction(options)])),
           errors: [],
         },
         reactClientReference: getClientReference(),
@@ -138,6 +145,7 @@ export async function transform(
     // module.exports = "/foo/bar.png";
     return {
       ast: {
+        comments: null,
         ...t.file(t.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
         errors: [],
       },
@@ -147,6 +155,7 @@ export async function transform(
 
   return {
     ast: {
+      comments: null,
       ...generateAssetCodeFileAst(assetRegistryPath, data),
       errors: [],
     },

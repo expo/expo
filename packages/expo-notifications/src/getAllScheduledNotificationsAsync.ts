@@ -9,7 +9,7 @@ import { mapNotificationRequest } from './utils/mapNotificationResponse';
  * @return Returns a Promise resolving to an array of objects conforming to the [`Notification`](#notification) interface.
  * @header schedule
  */
-export default async function getAllScheduledNotificationsAsync(): Promise<NotificationRequest[]> {
+export async function getAllScheduledNotificationsAsync(): Promise<NotificationRequest[]> {
   if (!NotificationScheduler.getAllScheduledNotificationsAsync) {
     throw new UnavailabilityError('Notifications', 'getAllScheduledNotificationsAsync');
   }

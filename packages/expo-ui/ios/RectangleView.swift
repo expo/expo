@@ -3,13 +3,16 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class RectangleViewProps: UIBaseViewProps {
-}
+public final class RectangleViewProps: UIBaseViewProps {}
 
-internal struct RectangleView: ExpoSwiftUI.View {
-  @ObservedObject var props: RectangleViewProps
+public struct RectangleView: ExpoSwiftUI.View {
+  @ObservedObject public var props: RectangleViewProps
 
-  var body: some View {
+  public init(props: RectangleViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     Rectangle()
   }
 }

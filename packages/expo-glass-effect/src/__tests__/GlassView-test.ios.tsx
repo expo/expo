@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react-native';
 
 import { GlassView } from '..';
 
-it(`renders a native blur view`, async () => {
-  render(<GlassView glassEffectStyle="regular" testID="blur" />);
-  const view = await screen.findByTestId('blur');
-  expect(view).toBeDefined();
+it.each(['regular', 'clear'] as const)('renders a %s liquid glass view', (style) => {
+  render(<GlassView glassEffectStyle={style} testID="glass-view" />);
+
+  expect(screen.getByTestId('glass-view')).toBeVisible();
   expect(screen.toJSON()).toMatchSnapshot();
 });

@@ -18,14 +18,10 @@ import expo.modules.notifications.notifications.enums.NotificationVisibility;
 
 public class ExpoNotificationsChannelSerializer implements NotificationsChannelSerializer {
 
+  @NonNull
   @Override
-  @Nullable
   @RequiresApi(api = Build.VERSION_CODES.O)
-  public Bundle toBundle(@Nullable NotificationChannel channel) {
-    if (channel == null) {
-      return null;
-    }
-
+  public Bundle toBundle(@NonNull NotificationChannel channel) {
     Bundle result = new Bundle();
     result.putString(ID_KEY, getChannelId(channel));
     result.putString(NAME_KEY, channel.getName().toString());

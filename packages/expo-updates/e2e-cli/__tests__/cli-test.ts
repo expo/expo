@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
+import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import runCLIAsync from './utils/CLIUtils';
 
@@ -11,7 +11,7 @@ describe('CLI', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
     await spawnAsync('yarn', ['create', 'expo-app', '-t', 'bare-minimum', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
@@ -24,7 +24,7 @@ describe('CLI', () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   test('fingerprint:generate basic case', async () => {

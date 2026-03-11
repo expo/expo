@@ -2,8 +2,20 @@ import path from 'node:path';
 import type { Answers, PromptObject } from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
+import { ensureSafeModuleName } from './appleFrameworks';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
+
+/**
+ * Converts a slug to a native module name (PascalCase), ensuring it doesn't conflict with Apple frameworks.
+ */
+function slugToSafeModuleName(slug: string): string {
+  const rawName = slug
+    .replace(/^@/, '')
+    .replace(/^./, (match) => match.toUpperCase())
+    .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
+  return ensureSafeModuleName(rawName).name;
+}
 
 function getInitialName(customTargetPath?: string | null): string {
   const targetBasename = customTargetPath && path.basename(customTargetPath);
@@ -43,12 +55,7 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       type: 'text',
       name: 'name',
       message: 'What is the native module name?',
-      initial: () => {
-        return slug
-          .replace(/^@/, '')
-          .replace(/^./, (match) => match.toUpperCase())
-          .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-      },
+      initial: () => slugToSafeModuleName(slug),
       validate: (input) => !!input || 'The native module name cannot be empty',
     },
     {
@@ -109,12 +116,7 @@ export async function getLocalSubstitutionDataPrompts(
       type: 'text',
       name: 'name',
       message: 'What is the native module name?',
-      initial: () => {
-        return slug
-          .replace(/^@/, '')
-          .replace(/^./, (match) => match.toUpperCase())
-          .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-      },
+      initial: () => slugToSafeModuleName(slug),
       validate: (input) => !!input || 'The native module name cannot be empty',
     },
     {

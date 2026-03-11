@@ -11,7 +11,7 @@ export type ColorPickerProps = {
     /**
      * Callback function that is called when a new color is selected.
      */
-    onValueChanged?: (value: string) => void;
+    onSelectionChange?: (value: string) => void;
     /**
      * Whether the color picker should support opacity.
      */
@@ -21,5 +21,5 @@ export type ColorPickerProps = {
  * Renders a `ColorPicker` component using SwiftUI.
  * @platform ios
  */
-export declare function ColorPicker({ selection, onValueChanged, modifiers, ...restProps }: ColorPickerProps): import("react").JSX.Element;
+export declare function ColorPicker({ selection, onSelectionChange, modifiers, ...restProps }: ColorPickerProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

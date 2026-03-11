@@ -1,0 +1,131 @@
+---
+title: Carousel
+description: A Jetpack Compose Carousel component for displaying scrollable collections of items.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Carousel matches the official Jetpack Compose [Carousel API](https://developer.android.com/develop/ui/compose/layouts/pager) and displays a horizontally scrollable collection of items with configurable sizing and fling behavior.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic carousel
+
+```tsx BasicCarouselExample.tsx
+import { Host, Carousel, Box, Text } from '@expo/ui/jetpack-compose';
+import { size, background } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicCarouselExample() {
+  const items = [
+    { label: 'Item 1', color: '#6200EE' },
+    { label: 'Item 2', color: '#03DAC5' },
+    { label: 'Item 3', color: '#FF5722' },
+    { label: 'Item 4', color: '#4CAF50' },
+    { label: 'Item 5', color: '#2196F3' },
+  ];
+
+  return (
+    <Host style={{ height: 200 }}>
+      <Carousel>
+        {items.map(item => (
+          <Box
+            key={item.label}
+            contentAlignment="center"
+            modifiers={[size(200, 180), background(item.color)]}>
+            <Text color="#FFFFFF" style={{ fontSize: 18 }}>
+              {item.label}
+            </Text>
+          </Box>
+        ))}
+      </Carousel>
+    </Host>
+  );
+}
+```
+
+### MultiBrowse variant
+
+The `multiBrowse` variant shows a large item alongside smaller peek items, letting users see what comes next.
+
+```tsx MultiBrowseCarouselExample.tsx
+import { Host, Carousel, Box, Text } from '@expo/ui/jetpack-compose';
+import { size, background } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function MultiBrowseCarouselExample() {
+  const colors = ['#6200EE', '#03DAC5', '#FF5722', '#4CAF50', '#2196F3'];
+
+  return (
+    <Host style={{ height: 200 }}>
+      <Carousel
+        variant="multiBrowse"
+        preferredItemWidth={280}
+        minSmallItemWidth={40}
+        maxSmallItemWidth={80}
+        itemSpacing={8}
+        flingBehavior="singleAdvance">
+        {colors.map((color, index) => (
+          <Box
+            key={index}
+            contentAlignment="center"
+            modifiers={[size(200, 180), background(color)]}>
+            <Text color="#FFFFFF" style={{ fontSize: 18 }}>
+              Card {index + 1}
+            </Text>
+          </Box>
+        ))}
+      </Carousel>
+    </Host>
+  );
+}
+```
+
+### Unconstrained variant
+
+The `unconstrained` variant gives each item a fixed width without snapping behavior, allowing free-form scrolling.
+
+```tsx UnconstrainedCarouselExample.tsx
+import { Host, Carousel, Box, Text } from '@expo/ui/jetpack-compose';
+import { size, background } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function UnconstrainedCarouselExample() {
+  const items = ['Photo 1', 'Photo 2', 'Photo 3', 'Photo 4', 'Photo 5'];
+
+  return (
+    <Host style={{ height: 200 }}>
+      <Carousel
+        variant="unconstrained"
+        itemWidth={160}
+        itemSpacing={12}
+        contentPadding={{ start: 16, top: 0, end: 16, bottom: 0 }}
+        flingBehavior="noSnap">
+        {items.map(item => (
+          <Box
+            key={item}
+            contentAlignment="center"
+            modifiers={[size(160, 180), background('#3F51B5')]}>
+            <Text color="#FFFFFF" style={{ fontSize: 16 }}>
+              {item}
+            </Text>
+          </Box>
+        ))}
+      </Carousel>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Carousel } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/carousel" apiName="Carousel" />

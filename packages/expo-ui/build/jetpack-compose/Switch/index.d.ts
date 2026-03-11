@@ -1,24 +1,36 @@
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { type ColorValue } from 'react-native';
 import { ExpoModifier } from '../../types';
 /**
  * Only for switch.
  */
 type SwitchElementColors = {
-    checkedThumbColor?: string;
-    checkedTrackColor?: string;
-    uncheckedThumbColor?: string;
-    uncheckedTrackColor?: string;
+    checkedThumbColor?: ColorValue;
+    checkedTrackColor?: ColorValue;
+    checkedBorderColor?: ColorValue;
+    checkedIconColor?: ColorValue;
+    uncheckedThumbColor?: ColorValue;
+    uncheckedTrackColor?: ColorValue;
+    uncheckedBorderColor?: ColorValue;
+    uncheckedIconColor?: ColorValue;
+    disabledCheckedThumbColor?: ColorValue;
+    disabledCheckedTrackColor?: ColorValue;
+    disabledCheckedBorderColor?: ColorValue;
+    disabledCheckedIconColor?: ColorValue;
+    disabledUncheckedThumbColor?: ColorValue;
+    disabledUncheckedTrackColor?: ColorValue;
+    disabledUncheckedBorderColor?: ColorValue;
+    disabledUncheckedIconColor?: ColorValue;
 };
 /**
  * Only for checkbox.
  */
 type CheckboxElementColors = {
-    checkedColor?: string;
-    disabledCheckedColor?: string;
-    uncheckedColor?: string;
-    disabledUncheckedColor?: string;
-    checkmarkColor?: string;
-    disabledIndeterminateColor?: string;
+    checkedColor?: ColorValue;
+    disabledCheckedColor?: ColorValue;
+    uncheckedColor?: ColorValue;
+    disabledUncheckedColor?: ColorValue;
+    checkmarkColor?: ColorValue;
+    disabledIndeterminateColor?: ColorValue;
 };
 export type SwitchProps = {
     /**
@@ -26,32 +38,33 @@ export type SwitchProps = {
      */
     value: boolean;
     /**
-     * Label for the switch.
-     *
-     * > On Android, the label has an effect only when the `Switch` is used inside a `ContextMenu`.
-     */
-    label?: string;
-    /**
      * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
      * @default 'switch'
      */
     variant?: 'checkbox' | 'switch' | 'button';
     /**
+     * Whether the switch is enabled.
+     * @default true
+     * @platform android
+     */
+    enabled?: boolean;
+    /**
      * Callback function that is called when the checked state changes.
      */
     onValueChange?: (value: boolean) => void;
     /**
-     * Optional style for the switch component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * Picker color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Modifiers for the component.
      */
     modifiers?: ExpoModifier[];
+    /**
+     * Children containing ThumbContent slot.
+     * @platform android
+     */
+    children?: React.ReactNode;
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 export type SwitchSwitchVariantProps = {
     variant?: 'switch';
@@ -73,15 +86,18 @@ export type SwitchButtonVariantProps = {
     variant: 'button';
     elementColors?: undefined;
 };
-type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
-    onValueChange: (event: NativeSyntheticEvent<{
-        value: boolean;
-    }>) => void;
+type ThumbContentProps = {
+    children: React.ReactNode;
 };
 /**
- * @hidden
+ * Custom content to be displayed inside the switch thumb.
+ * @platform android
  */
-export declare function transformSwitchProps(props: SwitchProps): NativeSwitchProps;
-export declare function Switch(props: SwitchProps): import("react").JSX.Element;
-export {};
+export declare function SwitchThumbContent(props: ThumbContentProps): import("react").JSX.Element;
+declare function SwitchComponent(props: SwitchProps): import("react").JSX.Element;
+declare namespace SwitchComponent {
+    var ThumbContent: typeof SwitchThumbContent;
+    var DefaultIconSize: any;
+}
+export { SwitchComponent as Switch };
 //# sourceMappingURL=index.d.ts.map

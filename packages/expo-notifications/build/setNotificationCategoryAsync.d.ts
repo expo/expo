@@ -11,5 +11,5 @@ import { NotificationCategory, NotificationAction, NotificationCategoryOptions }
  * @platform ios
  * @header categories
  */
-export default function setNotificationCategoryAsync(identifier: string, actions: NotificationAction[], options?: NotificationCategoryOptions): Promise<NotificationCategory>;
+export declare function setNotificationCategoryAsync(identifier: string, actions: NotificationAction[], options?: NotificationCategoryOptions): Promise<NotificationCategory>;
 //# sourceMappingURL=setNotificationCategoryAsync.d.ts.map

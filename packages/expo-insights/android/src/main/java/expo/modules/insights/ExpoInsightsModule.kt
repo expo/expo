@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import expo.modules.easclient.EASClientID
+import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ class ExpoInsightsModule : Module() {
    * Sends the [APP_LAUNCH_EVENT] event.
    */
   private suspend fun dispatchLaunchEvent() {
-    val manifestString = appContext.constants?.constants?.get("manifest") as? String
+    val manifestString = appContext.service<ConstantsInterface>()?.constants?.get("manifest") as? String
     if (manifestString.isNullOrEmpty()) {
       Log.w("ExpoInsights", "Unable to read the manifest")
       return
@@ -123,7 +124,7 @@ class ExpoInsightsModule : Module() {
     return try {
       val pInfo: PackageInfo = reactContext.packageManager.getPackageInfoCompat(reactContext.packageName, 0)
       pInfo.versionName
-    } catch (e: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
       null
     }
   }

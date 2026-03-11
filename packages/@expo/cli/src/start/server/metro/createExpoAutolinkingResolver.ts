@@ -30,6 +30,9 @@ const KNOWN_STICKY_DEPENDENCIES = [
   // Peer dependencies from expo-router
   'react-native-gesture-handler',
   'react-native-reanimated',
+  // Has a context that needs to be deduplicated
+  '@react-navigation/core',
+  '@react-navigation/native',
 ];
 
 const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
@@ -141,7 +144,7 @@ export function createAutolinkingModuleResolver(
       // We instead resolve as if it was a dependency from within the module (self-require/import)
       const context: ResolutionContext = {
         ...immutableContext,
-        nodeModulesPaths: [resolvedModulePath],
+        nodeModulesPaths: [],
         originModulePath: resolvedModulePath,
       };
       const res = getStrictResolver(context, platform)(moduleName);

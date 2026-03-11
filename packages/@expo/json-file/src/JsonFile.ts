@@ -1,4 +1,3 @@
-import { codeFrameColumns } from '@babel/code-frame';
 import JSON5 from 'json5';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -215,6 +214,9 @@ function parseJsonString<TJSONObject extends JSONObject>(
     if (defaultValue === undefined) {
       const location = locationFromSyntaxError(e, json);
       if (location) {
+        const {
+          codeFrameColumns,
+        }: typeof import('@babel/code-frame') = require('@babel/code-frame');
         const codeFrame = codeFrameColumns(json, { start: location });
         e.codeFrame = codeFrame;
         e.message += `\n${codeFrame}`;

@@ -12,6 +12,7 @@ const ERROR_PREFIX = 'Error: ';
 export class CommandError extends Error {
   name = 'CommandError';
   readonly isCommandError = true;
+  [prop: string]: unknown;
 
   constructor(
     public code: string,

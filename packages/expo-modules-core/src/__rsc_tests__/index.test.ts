@@ -3,21 +3,23 @@
 //
 // Other tests like expo-linking will accidentally break and CI won't catch it otherwise.
 
-const originalError = console.error;
-const originalWarn = console.warn;
+let errorSpy: jest.SpyInstance;
+let warnSpy: jest.SpyInstance;
+
 beforeAll(() => {
-  console.error = jest.fn(originalError);
-  console.warn = jest.fn(originalWarn);
+  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
+
 afterAll(() => {
-  console.error = originalError;
-  console.warn = originalWarn;
+  errorSpy.mockRestore();
+  warnSpy.mockRestore();
 });
 
 it('has platform defined', () => {
   const { Platform } = require('expo-modules-core');
   expect(Platform.OS).toBeDefined();
 
-  expect(console.error).not.toHaveBeenCalled();
-  expect(console.warn).not.toHaveBeenCalled();
+  expect(errorSpy).not.toHaveBeenCalled();
+  expect(warnSpy).not.toHaveBeenCalled();
 });

@@ -51,7 +51,7 @@ declare class WebView<P = {}> extends Component<WebViewProps & P> {
      /**
      * Clears the resource cache. Note that the cache is per-application, so this will clear the cache for all WebViews used.
      */
-    clearCache?: (includeDiskFiles: boolean) => void;
+    clearCache: (includeDiskFiles: boolean) => void;
 
      /**
      * (Android only)

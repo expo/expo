@@ -5,6 +5,7 @@ description: Learn how to integrate EAS Update into your existing native Android
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -22,7 +23,7 @@ You should have a brownfield native project with React Native installed and conf
 
 - Your app must be using the [latest Expo SDK version and its supported React Native version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
 - Remove any other update library integration from your app, such as react-native-code-push, and ensure that your app compiles and runs successfully in both debug and release on your supported platforms.
-- Support for Expo modules (through the `expo` package) must be installed and configured in your project. [Learn more](/brownfield/installing-expo-modules/).
+- Support for Expo modules (through the `expo` package) must be installed and configured in your project. [Learn more](/brownfield/overview/).
 - Your **metro.config.js** [must extend `expo/metro-config`](/guides/customizing-metro/#customizing) .
 - Your **babel.config.js** [must extend `babel-preset-expo`](/versions/latest/config/babel/).
 - The command `npx expo export -p android` must run successfully in your project if it supports Android, and `npx expo export -p ios` if it supports iOS.
@@ -496,6 +497,8 @@ public class CustomViewController: UIViewController, AppControllerDelegate {
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="How long will this take to add to my app?">
 
 Assuming you are using the latest version of React Native supported by the Expo SDK, and you are comfortable with the React Native integration in your native projects, then you can likely integrate EAS Update in a similar amount of time as it would take you to integrate with a tool like CodePush or Sentry.
@@ -509,3 +512,5 @@ The most important factor is the React Native version that your app uses. If you
 To learn more, see [Migrating from CodePush](/eas-update/codepush/) guide.
 
 </Collapsible>
+
+</FAQ>

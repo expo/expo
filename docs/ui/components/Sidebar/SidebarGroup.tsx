@@ -16,6 +16,7 @@ import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/Notification
 import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
 import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
 import { PlaySquareIcon } from '@expo/styleguide-icons/outline/PlaySquareIcon';
+import { PuzzlePiece01Icon } from '@expo/styleguide-icons/outline/PuzzlePiece01Icon';
 import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
@@ -71,7 +72,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-xs text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
+              <p className="text-tertiary ml-2 text-xs">{`${completedChaptersCount} of ${totalChapters}`}</p>
             </div>
           </div>
         )}
@@ -89,9 +90,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="icon-xs ml-1 inline text-icon-secondary" />
+                    <PlaySquareIcon className="icon-xs text-icon-secondary ml-1 inline" />
                   ) : (
-                    <PlaySquareDuotoneIcon className="icon-xs ml-1 inline text-palette-blue11" />
+                    <PlaySquareDuotoneIcon className="icon-xs text-palette-blue11 ml-1 inline" />
                   ))}
               </span>
               {completed && <CheckIcon className="icon-sm ml-auto" />}
@@ -143,7 +144,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
-              <p className="ml-2 text-xs text-tertiary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
+              <p className="text-tertiary ml-2 text-xs">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
             </div>
           </div>
         )}
@@ -161,9 +162,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
                 {child.sidebarTitle ?? child.name}
                 {child.hasVideoLink &&
                   (!isSelected ? (
-                    <PlaySquareIcon className="icon-xs ml-1 inline text-icon-secondary" />
+                    <PlaySquareIcon className="icon-xs text-icon-secondary ml-1 inline" />
                   ) : (
-                    <PlaySquareDuotoneIcon className="icon-xs ml-1 inline text-palette-blue11" />
+                    <PlaySquareDuotoneIcon className="icon-xs text-palette-blue11 ml-1 inline" />
                   ))}
               </span>
               {completed && <CheckIcon className="icon-sm ml-auto" />}
@@ -259,6 +260,8 @@ function getIconElement(iconName?: string) {
       return RouterLogo;
     case 'Push notifications':
       return NotificationBoxIcon;
+    case 'Integrations':
+      return PuzzlePiece01Icon;
     case 'Distribution':
       return Phone01Icon;
     case 'UI programming':

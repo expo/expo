@@ -1,7 +1,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeDelegate.h>
 
-#import <UIKit/UIKit.h>
+#import <ExpoModulesCore/Platform.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
-@property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
+@property (nonatomic, strong) id<EXUpdatesDevLauncherInterface> updatesInterface;
 
 + (instancetype)sharedInstance;
 

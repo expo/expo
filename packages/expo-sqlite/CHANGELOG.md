@@ -6,19 +6,84 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))
+- Statement bind params now use native `ArrayBuffer`s for blob columns. ([#42639](https://github.com/expo/expo/pull/42639) by [@barthap](https://github.com/barthap))
+- [Android] Returned blob columns now use native `ArrayBuffer`s. ([#42640](https://github.com/expo/expo/pull/42640) by [@barthap](https://github.com/barthap))
+- [iOS] Returned blob columns now use native `ArrayBuffer`s. ([#42642](https://github.com/expo/expo/pull/42642) by [@barthap](https://github.com/barthap))
+
+## 55.0.10 — 2026-02-25
+
+### 💡 Others
+
+- Bumped dev-plugin-webui to SDK 55. ([#43412](https://github.com/expo/expo/pull/43412) by [@kudo](https://github.com/kudo))
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Added SQLite inspector devtools plugin. ([#40872](https://github.com/expo/expo/pull/40872), [#40900](https://github.com/expo/expo/pull/40900) by [@kudo](https://github.com/kudo))
 - Added tagged template literals support. ([#40972](https://github.com/expo/expo/pull/40972) by [@kudo](https://github.com/kudo))
+- Added `SQLITE_ENABLE_MATH_FUNCTIONS` support by default. ([#41333](https://github.com/expo/expo/pull/41333) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed `serializeAsync` / `serializeSync` errors from memory database on web. ([#40899](https://github.com/expo/expo/pull/40899) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+
+## 16.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.9 - 2025-11-03
 
 ### 🐛 Bug fixes
 
 - Throwing error when `ExpoSQLite.defaultDatabaseDirectory` returns undefined. ([#40680](https://github.com/expo/expo/pull/40680) by [@kudo](https://github.com/kudo))
 - Fixed node runtime bundling error on web. ([#40739](https://github.com/expo/expo/pull/40739) by [@kudo](https://github.com/kudo))
 - Fixed Android 16kb page size issue when enabling `useSQLCipher`. ([#40781](https://github.com/expo/expo/pull/40781) by [@ronickg](https://github.com/ronickg))
-- Fixed `serializeAsync` / `serializeSync` errors from memory database on web. ([#40899](https://github.com/expo/expo/pull/40899) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
-
-- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 
 ## 16.0.8 — 2025-09-10
 

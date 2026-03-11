@@ -1,11 +1,20 @@
-// Based on https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/webpack-env/index.d.ts
-// Adds support for the runtime `require.context` method.
-// https://github.com/facebook/metro/pull/822/
+/* eslint-disable */
 
-declare var module: NodeModule;
+// NOTE: This module is named `metro-require.d.ts` for backwards compatibility, since it's accessible to users
+// However, it's supposed to be understood more as a "Metro environment" typings file that provides types for `require` and `module`,
+// regardless of if `@types/node` is present, and/or, to enhance `@types/node` if it's present
 
 declare namespace __MetroModuleApi {
-  interface RequireContext {
+  export interface ProcessEnv {
+    readonly NODE_ENV: 'development' | 'production' | 'test';
+    [key: string]: string | undefined;
+  }
+
+  export interface Process {
+    env: ProcessEnv;
+  }
+
+  export interface RequireContext {
     /** Return the keys that can be resolved. */
     keys(): string[];
     (id: string): any;
@@ -16,7 +25,8 @@ declare namespace __MetroModuleApi {
     id: string;
   }
 
-  interface RequireFunction {
+  // Adds support for the runtime `require.context` method.
+  export interface RequireFunction {
     /**
      * Returns the exports from a dependency. The call is sync. No request to the server is fired. The compiler ensures that the dependency is available.
      */
@@ -40,13 +50,19 @@ declare namespace __MetroModuleApi {
       mode?: 'sync' | 'eager' | 'weak' | 'lazy' | 'lazy-once'
     ): RequireContext;
   }
+
+  export interface Module {
+    exports: any;
+  }
 }
 
-/**
- * Declare process variable
- */
 declare namespace NodeJS {
-  interface Require extends __MetroModuleApi.RequireFunction {}
+  export interface Require extends __MetroModuleApi.RequireFunction {}
+  export interface Module extends __MetroModuleApi.Module {}
+  export interface ProcessEnv extends __MetroModuleApi.ProcessEnv {}
+  export interface Process extends __MetroModuleApi.Process {}
 }
 
-declare var require: NodeRequire;
+declare var require: NodeJS.Require;
+declare var module: NodeJS.Module;
+declare var process: NodeJS.Process;

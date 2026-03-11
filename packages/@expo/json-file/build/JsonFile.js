@@ -36,7 +36,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const code_frame_1 = require("@babel/code-frame");
 const json5_1 = __importDefault(require("json5"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -191,7 +190,8 @@ function parseJsonString(json, options, fileName) {
         if (defaultValue === undefined) {
             const location = locationFromSyntaxError(e, json);
             if (location) {
-                const codeFrame = (0, code_frame_1.codeFrameColumns)(json, { start: location });
+                const { codeFrameColumns, } = require('@babel/code-frame');
+                const codeFrame = codeFrameColumns(json, { start: location });
                 e.codeFrame = codeFrame;
                 e.message += `\n${codeFrame}`;
             }

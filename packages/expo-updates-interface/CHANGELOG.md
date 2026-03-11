@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 55.1.3 — 2026-02-25
+
+### ⚠️ Notices
+
+- Documentation for new native interface. ([#43230](https://github.com/expo/expo/pull/43230) by [@douglowder](https://github.com/douglowder))
+
+## 55.1.2 — 2026-02-16
+
+### 🎉 New features
+
+- Full native interface for updates. ([#42981](https://github.com/expo/expo/pull/42981) by [@douglowder](https://github.com/douglowder))
+
+## 55.1.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.1.0 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.0 — 2025-08-13
 
 ### 🎉 New features

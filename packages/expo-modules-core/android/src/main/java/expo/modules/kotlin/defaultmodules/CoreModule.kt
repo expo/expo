@@ -11,6 +11,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.uuidv5.InvalidNamespaceException
 import expo.modules.kotlin.uuidv5.uuidv5
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class CoreModule : Module() {
@@ -90,6 +93,33 @@ class CoreModule : Module() {
       val reactActivity = appContext.throwingActivity as? ReactActivity ?: return@AsyncFunction
       val reactDelegate = reactActivity.reactDelegate ?: return@AsyncFunction
       reactDelegate.reload()
+    }
+
+    Function("installOnUIRuntime") {
+      val uiRuntimePointerHolder = appContext.runtime.jsiContext.global()["_WORKLET_RUNTIME"]
+        ?: throw IllegalStateException("UI Runtime is not available. Make sure you have Reanimated installed and imported in your project.")
+
+      assert(uiRuntimePointerHolder.isObject()) {
+        "Expected _WORKLET_RUNTIME to be an ArrayBuffer, got: ${uiRuntimePointerHolder.kind()}."
+      }
+
+      val uiRuntimePointerHolderObj = uiRuntimePointerHolder.getObject()
+      assert(uiRuntimePointerHolderObj.isArrayBuffer()) {
+        "Expected _WORKLET_RUNTIME to be an ArrayBuffer, got: ${uiRuntimePointerHolder.kind()}."
+      }
+
+      val arayBuffer = uiRuntimePointerHolderObj.getArrayBuffer()
+      assert(arayBuffer.size() == 8) {
+        "Expected _WORKLET_RUNTIME to be an ArrayBuffer with a size of 8 bytes (a pointer size), got: ${arayBuffer.size()}."
+      }
+
+      val runtimePointer = arayBuffer.read8Byte(0)
+
+      runBlocking {
+        withContext(Dispatchers.Main) {
+          appContext.uiRuntime.install(runtimePointer)
+        }
+      }
     }
   }
 }

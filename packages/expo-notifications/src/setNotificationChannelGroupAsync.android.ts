@@ -6,7 +6,7 @@ import {
   NotificationChannelGroupInput,
 } from './NotificationChannelGroupManager.types';
 
-export default async function setNotificationChannelGroupAsync(
+export async function setNotificationChannelGroupAsync(
   groupId: string,
   group: NotificationChannelGroupInput
 ): Promise<NotificationChannelGroup | null> {

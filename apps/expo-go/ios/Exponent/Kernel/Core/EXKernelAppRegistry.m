@@ -2,7 +2,6 @@
 
 #import "EXKernelAppRegistry.h"
 #import "EXAbstractLoader.h"
-#import "EXEnvironment.h"
 #import "EXReactAppManager.h"
 #import "EXKernel.h"
 
@@ -11,7 +10,6 @@
 @interface EXKernelAppRegistry ()
 
 @property (nonatomic, strong) NSMutableDictionary *appRegistry;
-@property (nonatomic, strong) EXKernelAppRecord *homeAppRecord;
 
 @end
 
@@ -51,21 +49,6 @@
   if (recordIds.count > 0) {
     [self unregisterAppWithRecordId:recordIds[0]];
   }
-}
-
-- (void)registerHomeAppRecord:(EXKernelAppRecord *)homeRecord
-{
-  _homeAppRecord = homeRecord;
-}
-
-- (void)unregisterHomeAppRecord
-{
-  _homeAppRecord = nil;
-}
-
-- (EXKernelAppRecord *)homeAppRecord
-{
-  return _homeAppRecord;
 }
 
 - (EXKernelAppRecord *)recordForId:(NSString *)recordId

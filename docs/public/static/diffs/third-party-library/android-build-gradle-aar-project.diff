@@ -1,0 +1,10 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index 0000000..1111111 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -1,4 +1,5 @@
+  dependencies {
+   implementation project(':expo-modules-core')
+   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
++  implementation project(":${project.name}$test-aar")
+  }

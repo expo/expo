@@ -1,0 +1,160 @@
+diff --git a/packages/expo-location/android/src/main/java/expo/modules/location/LocationHelpers.kt b/packages/expo-location/android/src/main/java/expo/modules/location/LocationHelpers.kt
+index 62caaba6db7..2a8f0f13819 100644
+--- a/packages/expo-location/android/src/main/java/expo/modules/location/LocationHelpers.kt
++++ b/packages/expo-location/android/src/main/java/expo/modules/location/LocationHelpers.kt
+@@ -159,7 +159,7 @@ class LocationHelpers {
+               continuation.resume(PermissionRequestResponse(result))
+             }
+
+-            override fun reject(code: String, message: String?, cause: Throwable?) {
++            override fun reject(code: String?, message: String?, cause: Throwable?) {
+               continuation.resumeWithException(CodedException(code, message, cause))
+             }
+           },
+@@ -181,7 +181,7 @@ class LocationHelpers {
+               )
+             }
+
+-            override fun reject(code: String, message: String?, cause: Throwable?) {
++            override fun reject(code: String?, message: String?, cause: Throwable?) {
+               it.resumeWithException(CodedException(code, message, cause))
+             }
+           },
+diff --git a/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/MediaLibraryPermissionPromiseWrapper.kt b/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/MediaLibraryPermissionPromiseWrapper.kt
+index 8130eab136e..9173d3b443e 100644
+--- a/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/MediaLibraryPermissionPromiseWrapper.kt
++++ b/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/MediaLibraryPermissionPromiseWrapper.kt
+@@ -25,7 +25,7 @@ class MediaLibraryPermissionPromiseWrapper(
+     promise.resolve(addOnlySelectedInfoToPermissionsBundle(value, granularPermissions))
+   }
+
+-  override fun reject(code: String, message: String?, cause: Throwable?) {
++  override fun reject(code: String?, message: String?, cause: Throwable?) {
+     promise.reject(code, message, cause)
+   }
+
+diff --git a/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/next/permissions/MediaLibraryPermissionPromiseWrapper.kt b/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/next/permissions/MediaLibraryPermissionPromiseWrapper.kt
+index 71495193c5f..cfbbcf31c83 100644
+--- a/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/next/permissions/MediaLibraryPermissionPromiseWrapper.kt
++++ b/packages/expo-media-library/android/src/main/java/expo/modules/medialibrary/next/permissions/MediaLibraryPermissionPromiseWrapper.kt
+@@ -27,7 +27,7 @@ class MediaLibraryPermissionPromiseWrapper(
+     promise.resolve(addOnlySelectedInfoToPermissionsBundle(value, granularPermissions))
+   }
+
+-  override fun reject(code: String, message: String?, cause: Throwable?) {
++  override fun reject(code: String?, message: String?, cause: Throwable?) {
+     promise.reject(code, message, cause)
+   }
+
+diff --git a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt
+index 8de08b792e1..05af06c699e 100644
+--- a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt
++++ b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/KPromiseWrapper.kt
+@@ -12,7 +12,7 @@ class KPromiseWrapper(
+     )
+   }
+
+-  override fun reject(code: String, message: String?, cause: Throwable?) {
++  override fun reject(code: String?, message: String?, cause: Throwable?) {
+     bridgePromise.reject(code, message, cause)
+   }
+ }
+diff --git a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
+index cc342ff8295..287735e737a 100644
+--- a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
++++ b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/Promise.kt
+@@ -25,7 +25,7 @@ interface Promise {
+
+   fun resolve(result: Map<String, Any?>) = resolve(result as Any?)
+
+-  fun reject(code: String, message: String?, cause: Throwable?)
++  fun reject(code: String?, message: String?, cause: Throwable?)
+
+   fun reject(exception: CodedException) {
+     reject(exception.code, exception.localizedMessage, exception.cause)
+@@ -45,15 +45,15 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
+       resolveMethod(value)
+     }
+
+-    override fun reject(code: String, message: String?) {
++    override fun reject(code: String?, message: String?) {
+       expoPromise.reject(code, message, null)
+     }
+
+-    override fun reject(code: String, throwable: Throwable?) {
++    override fun reject(code: String?, throwable: Throwable?) {
+       expoPromise.reject(code, null, throwable)
+     }
+
+-    override fun reject(code: String, message: String?, throwable: Throwable?) {
++    override fun reject(code: String?, message: String?, throwable: Throwable?) {
+       expoPromise.reject(code, message, throwable)
+     }
+
+@@ -65,15 +65,15 @@ fun Promise.toBridgePromise(): com.facebook.react.bridge.Promise {
+       expoPromise.reject(unknownCode, null, throwable)
+     }
+
+-    override fun reject(code: String, userInfo: WritableMap) {
++    override fun reject(code: String?, userInfo: WritableMap) {
+       expoPromise.reject(code, null, null)
+     }
+
+-    override fun reject(code: String, throwable: Throwable?, userInfo: WritableMap) {
++    override fun reject(code: String?, throwable: Throwable?, userInfo: WritableMap) {
+       expoPromise.reject(code, null, throwable)
+     }
+
+-    override fun reject(code: String, message: String?, userInfo: WritableMap) {
++    override fun reject(code: String?, message: String?, userInfo: WritableMap) {
+       expoPromise.reject(code, message, null)
+     }
+
+diff --git a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/exception/CodedException.kt b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/exception/CodedException.kt
+index 6a68ddc088a..9f193a5e31b 100644
+--- a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/exception/CodedException.kt
++++ b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/exception/CodedException.kt
+@@ -31,7 +31,7 @@ open class CodedException(
+   val code
+     get() = providedCode ?: inferCode(javaClass)
+
+-  constructor(code: String, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
++  constructor(code: String?, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
+     providedCode = code
+   }
+
+diff --git a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt
+index 165c238254c..88565959a8f 100644
+--- a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt
++++ b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/JavaCallback.kt
+@@ -75,7 +75,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
+     invokeNative(result.toJSValueExperimental())
+   }
+
+-  operator fun invoke(code: String, errorMessage: String) = checkIfValid {
++  operator fun invoke(code: String?, errorMessage: String) = checkIfValid {
+     invokeNative(code, errorMessage)
+   }
+
+@@ -92,7 +92,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
+   private external fun invokeNative(result: SharedObject)
+   private external fun invokeNative(result: JavaScriptArrayBuffer)
+   private external fun invokeNative(result: NativeArrayBuffer)
+-  private external fun invokeNative(code: String, errorMessage: String)
++  private external fun invokeNative(code: String?, errorMessage: String)
+
+   private external fun invokeIntArray(result: IntArray)
+   private external fun invokeLongArray(result: LongArray)
+diff --git a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt
+index d2e13efa5df..096eb09d502 100644
+--- a/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt
++++ b/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/jni/PromiseImpl.kt
+@@ -54,7 +54,7 @@ class PromiseImpl @DoNotStrip internal constructor(
+   }
+
+   // Copy of the reject method from [com.facebook.react.bridge.PromiseImpl]
+-  override fun reject(code: String, message: String?, cause: Throwable?) = checkIfWasSettled {
++  override fun reject(code: String?, message: String?, cause: Throwable?) = checkIfWasSettled {
+     // TODO(@lukmccall): Add information about the stack trace to the error message
+     callback.invoke(code, message ?: cause?.message ?: "unknown")
+   }

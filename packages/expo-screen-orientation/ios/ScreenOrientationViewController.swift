@@ -9,7 +9,13 @@ class ScreenOrientationViewController: UIViewController {
   private var defaultOrientationMask: UIInterfaceOrientationMask
   private var previousInterfaceOrientation: UIInterfaceOrientation = .unknown
   private var windowInterfaceOrientation: UIInterfaceOrientation? {
-    return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation
+    let keyWindow = UIApplication
+      .shared
+      .connectedScenes
+      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+      .last { $0.isKeyWindow }
+
+    return keyWindow?.windowScene?.interfaceOrientation
   }
 
   init(defaultOrientationMask: UIInterfaceOrientationMask = doesDeviceHaveNotch ? .allButUpsideDown : .all) {

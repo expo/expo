@@ -2,7 +2,6 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import { createFingerprintAsync } from '../../src/Fingerprint';
 
@@ -22,7 +21,7 @@ describe('default template ignore paths', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
     await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
@@ -35,7 +34,7 @@ describe('default template ignore paths', () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should not contain non-native node modules', async () => {
@@ -89,7 +88,7 @@ macosDescribe('CocoaPods generated files', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
     await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
@@ -114,7 +113,7 @@ ios/**/*
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should ignore pod install generated files', async () => {

@@ -14,9 +14,23 @@ enum ChartType: String, Enumerable {
 }
 
 struct ChartDataPoint: Record {
-  @Field var x: String
+  @Field var x: Either<String, Double>?
   @Field var y: Double
   @Field var color: Color?
+
+  var xValue: String {
+    if let s: String = x?.get() {
+      return s
+    }
+    if let n: Double = x?.get() {
+      return String(n)
+    }
+    return ""
+  }
+
+  var xNumericValue: Double? {
+    return x?.get()
+  }
 }
 
 enum PointStyle: String, Enumerable {
@@ -84,9 +98,15 @@ struct ChartView: ExpoSwiftUI.View {
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func createBaseBarMark(for dataPoint: ChartDataPoint) -> BarMark {
-    props.barStyle?.width != nil ?
-      BarMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y), width: .fixed(CGFloat(props.barStyle?.width ?? 0))) :
-      BarMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
+    if let numericX = dataPoint.xNumericValue {
+      return props.barStyle?.width != nil ?
+        BarMark(x: .value("X", numericX), y: .value("Y", dataPoint.y), width: .fixed(CGFloat(props.barStyle?.width ?? 0))) :
+        BarMark(x: .value("X", numericX), y: .value("Y", dataPoint.y))
+    } else {
+      return props.barStyle?.width != nil ?
+        BarMark(x: .value("X", dataPoint.xValue), y: .value("Y", dataPoint.y), width: .fixed(CGFloat(props.barStyle?.width ?? 0))) :
+        BarMark(x: .value("X", dataPoint.xValue), y: .value("Y", dataPoint.y))
+    }
   }
 
   @available(iOS 17.0, tvOS 17.0, *)
@@ -97,33 +117,60 @@ struct ChartView: ExpoSwiftUI.View {
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func createAreaMark(for dataPoint: ChartDataPoint) -> some ChartContent {
-    AreaMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
-      .foregroundStyle(props.areaStyle?.color ?? .blue)
+    if let numericX = dataPoint.xNumericValue {
+      AreaMark(x: .value("X", numericX), y: .value("Y", dataPoint.y))
+        .foregroundStyle(props.areaStyle?.color ?? .blue)
+    } else {
+      AreaMark(x: .value("X", dataPoint.xValue), y: .value("Y", dataPoint.y))
+        .foregroundStyle(props.areaStyle?.color ?? .blue)
+    }
   }
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func createLineMark(for dataPoint: ChartDataPoint) -> some ChartContent {
-    LineMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
-      .foregroundStyle(props.lineStyle?.color ?? .blue)
-      .symbol(getSymbol(props.lineStyle?.pointStyle ?? .circle))
-      .symbolSize(CGFloat(props.lineStyle?.pointSize ?? 6.0))
-      .lineStyle(getLineStyle(props.lineStyle?.dashArray ?? []))
-      .lineStyle(.init(lineWidth: CGFloat(props.lineStyle?.width ?? 2.0)))
+    if let numericX = dataPoint.xNumericValue {
+      LineMark(x: .value("X", numericX), y: .value("Y", dataPoint.y))
+        .foregroundStyle(props.lineStyle?.color ?? .blue)
+        .symbol(getSymbol(props.lineStyle?.pointStyle ?? .circle))
+        .symbolSize(CGFloat(props.lineStyle?.pointSize ?? 6.0))
+        .lineStyle(getLineStyle(props.lineStyle?.dashArray ?? []))
+        .lineStyle(.init(lineWidth: CGFloat(props.lineStyle?.width ?? 2.0)))
+    } else {
+      LineMark(x: .value("X", dataPoint.xValue), y: .value("Y", dataPoint.y))
+        .foregroundStyle(props.lineStyle?.color ?? .blue)
+        .symbol(getSymbol(props.lineStyle?.pointStyle ?? .circle))
+        .symbolSize(CGFloat(props.lineStyle?.pointSize ?? 6.0))
+        .lineStyle(getLineStyle(props.lineStyle?.dashArray ?? []))
+        .lineStyle(.init(lineWidth: CGFloat(props.lineStyle?.width ?? 2.0)))
+    }
   }
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func createPointMark(for dataPoint: ChartDataPoint) -> some ChartContent {
-    PointMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
-      .foregroundStyle(dataPoint.color ?? .blue)
-      .symbol(getSymbol(props.pointStyle?.pointStyle ?? .circle))
-      .symbolSize(CGFloat(props.pointStyle?.pointSize ?? 6.0))
+    if let numericX = dataPoint.xNumericValue {
+      PointMark(x: .value("X", numericX), y: .value("Y", dataPoint.y))
+        .foregroundStyle(dataPoint.color ?? .blue)
+        .symbol(getSymbol(props.pointStyle?.pointStyle ?? .circle))
+        .symbolSize(CGFloat(props.pointStyle?.pointSize ?? 6.0))
+    } else {
+      PointMark(x: .value("X", dataPoint.xValue), y: .value("Y", dataPoint.y))
+        .foregroundStyle(dataPoint.color ?? .blue)
+        .symbol(getSymbol(props.pointStyle?.pointStyle ?? .circle))
+        .symbolSize(CGFloat(props.pointStyle?.pointSize ?? 6.0))
+    }
   }
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func createRectangleMark(for dataPoint: ChartDataPoint) -> some ChartContent {
-    RectangleMark(x: .value("X", dataPoint.x), y: .value("Y", dataPoint.y))
-      .foregroundStyle(dataPoint.color ?? props.rectangleStyle?.color ?? .blue)
-      .cornerRadius(CGFloat(props.rectangleStyle?.cornerRadius ?? 0.0))
+    if let numericX = dataPoint.xNumericValue {
+      RectangleMark(x: .value("X", numericX), y: .value("Y", dataPoint.y))
+        .foregroundStyle(dataPoint.color ?? props.rectangleStyle?.color ?? .blue)
+        .cornerRadius(CGFloat(props.rectangleStyle?.cornerRadius ?? 0.0))
+    } else {
+      RectangleMark(x: .value("X", dataPoint.xValue), y: .value("Y", dataPoint.y))
+        .foregroundStyle(dataPoint.color ?? props.rectangleStyle?.color ?? .blue)
+        .cornerRadius(CGFloat(props.rectangleStyle?.cornerRadius ?? 0.0))
+    }
   }
 
   @available(iOS 16.0, tvOS 16.0, *)
@@ -146,7 +193,7 @@ struct ChartView: ExpoSwiftUI.View {
       let hasIndividualColors = props.data.contains { $0.color != nil }
 
       Chart {
-        ForEach(props.data, id: \.x) { dataPoint in
+        ForEach(Array(props.data.enumerated()), id: \.offset) { index, dataPoint in
           switch props.type {
           case .line:
             createLineMark(for: dataPoint)
@@ -156,7 +203,7 @@ struct ChartView: ExpoSwiftUI.View {
             if hasIndividualColors {
               createBaseBarMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).cornerRadius(CGFloat(props.barStyle?.cornerRadius ?? 0.0))
             } else {
-              createBaseBarMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.x)).cornerRadius(CGFloat(props.barStyle?.cornerRadius ?? 0.0))
+              createBaseBarMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.xValue)).cornerRadius(CGFloat(props.barStyle?.cornerRadius ?? 0.0))
             }
           case .area:
             createAreaMark(for: dataPoint)
@@ -165,7 +212,7 @@ struct ChartView: ExpoSwiftUI.View {
               if hasIndividualColors {
                 createBasePieMark(for: dataPoint).foregroundStyle(dataPoint.color ?? .blue).opacity(0.8)
               } else {
-                createBasePieMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.x)).opacity(0.8)
+                createBasePieMark(for: dataPoint).foregroundStyle(by: .value("Category", dataPoint.xValue)).opacity(0.8)
               }
             }
           case .rectangle:
@@ -173,7 +220,7 @@ struct ChartView: ExpoSwiftUI.View {
           }
         }
 
-        ForEach(props.referenceLines, id: \.x) { referenceLine in
+        ForEach(props.referenceLines, id: \.xValue) { referenceLine in
           createRuleMark(for: referenceLine)
         }
       }

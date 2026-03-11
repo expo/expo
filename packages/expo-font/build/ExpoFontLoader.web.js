@@ -139,7 +139,7 @@ const ExpoFontLoader = {
         return new FontObserver(fontFamilyName, {
             // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
             display: resource.display,
-        }).load(null, 6000);
+        }).load(resource.testString ?? null, 12000);
     },
 };
 const isServer = process.env.EXPO_OS === 'web' && typeof window === 'undefined';
@@ -192,8 +192,6 @@ function isFontLoadingListenerSupported() {
     const isEdge = userAgent.includes('Edge');
     // Internet Explorer
     const isIE = userAgent.includes('Trident');
-    // Firefox
-    const isFirefox = userAgent.includes('Firefox');
-    return !isSafari && !isIOS && !isEdge && !isIE && !isFirefox;
+    return !isSafari && !isIOS && !isEdge && !isIE;
 }
 //# sourceMappingURL=ExpoFontLoader.web.js.map

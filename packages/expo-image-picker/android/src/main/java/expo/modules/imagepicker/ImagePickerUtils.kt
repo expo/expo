@@ -20,6 +20,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.io.use
 
 internal fun createOutputFile(cacheDir: File, extension: String): File {
   val filePath = FileUtilities.generateOutputPath(cacheDir, ImagePickerConstants.CACHE_DIR_NAME, extension)
@@ -30,10 +31,30 @@ internal fun createOutputFile(cacheDir: File, extension: String): File {
   }
 }
 
-internal fun getType(contentResolver: ContentResolver, uri: Uri): String =
-  contentResolver.getType(uri)
+internal fun getType(contentResolver: ContentResolver, uri: Uri): String? {
+  val mimeFromCursor: () -> String? = {
+    contentResolver
+      .query(
+        uri,
+        listOf(DocumentsContract.Document.COLUMN_MIME_TYPE).toTypedArray(),
+        null,
+        null,
+        null
+      )?.use { cursor ->
+        if (cursor.moveToFirst()) {
+          val columnIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
+          if (columnIndex != -1 && !cursor.isNull(columnIndex)) {
+            return@use cursor.getString(columnIndex)
+          }
+        }
+        return@use null
+      }
+  }
+
+  return contentResolver.getType(uri)
+    ?: mimeFromCursor()
     ?: getTypeFromFileUrl(uri.toString())
-    ?: throw FailedToDeduceTypeException()
+}
 
 private fun getTypeFromFileUrl(url: String): String? {
   val extension = MimeTypeMap.getFileExtensionFromUrl(url)
@@ -41,11 +62,18 @@ private fun getTypeFromFileUrl(url: String): String? {
 }
 
 /**
+ * Convert this [File] to [Uri] that might be accessed by 3rd party Activities but don't mask the exception
+ */
+internal fun File.getContentUri(context: Context): Uri {
+  return FileProvider.getUriForFile(context, context.packageName + ".ImagePickerFileProvider", this)
+}
+
+/**
  * Convert this [File] to [Uri] that might be accessed by 3rd party Activities, eg. by camera application
  */
 internal fun File.toContentUri(context: Context): Uri {
   return try {
-    FileProvider.getUriForFile(context, context.packageName + ".ImagePickerFileProvider", this)
+    this.getContentUri(context)
   } catch (e: Exception) {
     Uri.fromFile(this)
   }
@@ -76,12 +104,12 @@ internal fun String.toImageFileExtension(): String = when {
   else -> ".jpeg"
 }
 
-internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType {
+internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType? {
   val type = getType(contentResolver, this)
   return when {
-    type.contains("image/") -> MediaType.IMAGE
-    type.contains("video/") -> MediaType.VIDEO
-    else -> throw FailedToDeduceTypeException()
+    type?.contains("image/") == true -> MediaType.IMAGE
+    type?.contains("video/") == true -> MediaType.VIDEO
+    else -> null
   }
 }
 

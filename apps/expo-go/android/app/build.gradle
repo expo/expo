@@ -1,5 +1,10 @@
 import java.nio.file.Files
 import java.nio.file.Paths
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.CacheableTask
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -19,18 +24,11 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'com.google.firebase.crashlytics'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useDefaultAndroidSdkVersions()
-
 apply plugin: 'com.facebook.react'
 
 react {
   def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
-  entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
   reactNativeDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native")
   codegenDir = new File(projectRoot, "../../react-native-lab/react-native/packages/react-native-codegen")
 
@@ -45,6 +43,11 @@ react {
 }
 
 android {
+  ndkVersion rootProject.ext.ndkVersion
+
+  buildToolsVersion rootProject.ext.buildToolsVersion
+  compileSdk rootProject.ext.compileSdkVersion
+
   namespace "host.exp.exponent"
 
   buildFeatures {
@@ -53,8 +56,10 @@ android {
 
   defaultConfig {
     applicationId 'host.exp.exponent'
-    versionCode 227
-    versionName '54.0.4'
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    versionCode 229
+    versionName '55.0.2'
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
@@ -277,12 +282,33 @@ dependencies {
 // This has to be down here for some reason
 apply plugin: 'com.google.gms.google-services'
 
-def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir') {
-  doLast {
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/mobileRelease/mergeMobileReleaseNativeLibs/out/lib"))
-    Files.createDirectories(Paths.get("${buildDir}/intermediates/merged_native_libs/questRelease/mergeQuestReleaseNativeLibs/out/lib"))
+@CacheableTask
+abstract class EnsureCrashlyticsDirTask extends DefaultTask {
+  @OutputDirectories
+  abstract ConfigurableFileCollection getTargetDirectories()
+
+  @TaskAction
+  void execute() {
+    getTargetDirectories().files.each { dir ->
+      if (!dir.exists()) {
+        if (!dir.mkdirs()) {
+          throw new RuntimeException("Failed to create directory: ${dir.absolutePath}")
+        }
+      }
+    }
   }
 }
+
+def ensureCrashlyticsDir = tasks.register('ensureCrashlyticsDir', EnsureCrashlyticsDirTask) {
+  targetDirectories.from(
+    layout.buildDirectory.dir('intermediates/merged_native_libs/mobileRelease/mergeMobileReleaseNativeLibs/out/lib'),
+    layout.buildDirectory.dir('intermediates/merged_native_libs/questRelease/mergeQuestReleaseNativeLibs/out/lib')
+  )
+
+  group = 'crashlytics'
+  description = 'Creates missing native lib directories to prevent Crashlytics build errors'
+}
+
 preBuild.dependsOn(ensureCrashlyticsDir)
 
 afterEvaluate {

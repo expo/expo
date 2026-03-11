@@ -8,5 +8,5 @@ import { NotificationChannelGroup, NotificationChannelGroupInput } from './Notif
  * @platform android
  * @header channels
  */
-export default function setNotificationChannelGroupAsync(groupId: string, group: NotificationChannelGroupInput): Promise<NotificationChannelGroup | null>;
+export declare function setNotificationChannelGroupAsync(groupId: string, group: NotificationChannelGroupInput): Promise<NotificationChannelGroup | null>;
 //# sourceMappingURL=setNotificationChannelGroupAsync.d.ts.map

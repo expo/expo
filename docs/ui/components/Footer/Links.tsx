@@ -1,6 +1,7 @@
 import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
+import { File02Icon } from '@expo/styleguide-icons/outline/File02Icon';
 import { MessageTextSquare02Icon } from '@expo/styleguide-icons/outline/MessageTextSquare02Icon';
 import * as Dialog from '@radix-ui/react-dialog';
 
@@ -54,6 +55,27 @@ export const EditPageLink = ({ pathname }: { pathname: string }) => (
       <Edit05Icon className={ICON_CLASSES} />
       <CALLOUT theme="secondary">Edit this page</CALLOUT>
     </A>
+  </LI>
+);
+
+type LlmsTxtLinkProps = {
+  fullVersionHref: string;
+  fullVersionLabel: string;
+};
+
+export const LlmsTxtLink = ({ fullVersionHref, fullVersionLabel }: LlmsTxtLinkProps) => (
+  <LI className="flex items-center">
+    <File02Icon className={ICON_CLASSES} />
+    <CALLOUT theme="secondary" tag="span">
+      View{' '}
+      <A openInNewTab href="/llms.txt" className="focus-visible:outline-offset-4">
+        llms.txt
+      </A>{' '}
+      and{' '}
+      <A openInNewTab href={fullVersionHref} className="focus-visible:outline-offset-4">
+        {fullVersionLabel}
+      </A>
+    </CALLOUT>
   </LI>
 );
 

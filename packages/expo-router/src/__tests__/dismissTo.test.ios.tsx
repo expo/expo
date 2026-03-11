@@ -216,10 +216,6 @@ it('should go back to a previous route in different stacks', () => {
                         {
                           key: expect.any(String),
                           name: '3',
-                          params: {
-                            params: {},
-                            screen: 'e',
-                          },
                           path: undefined,
                           state: {
                             index: 0,
@@ -385,10 +381,6 @@ it('will replace the route if the provided href is not in the history', () => {
                         {
                           key: expect.any(String),
                           name: '3',
-                          params: {
-                            params: {},
-                            screen: 'e',
-                          },
                           state: {
                             index: 0,
                             key: expect.any(String),

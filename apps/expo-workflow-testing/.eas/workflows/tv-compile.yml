@@ -9,6 +9,9 @@ on:
       - packages/expo-updates/e2e/setup/project.ts
       - templates/expo-template-bare-minimum/**
       - packages/expo-application/ios/**
+      - packages/expo-dev-client/ios/**
+      - packages/expo-dev-launcher/ios/**
+      - packages/expo-dev-menu/ios/**
       - packages/expo-device/ios/**
       - packages/expo-eas-client/ios/**
       - packages/expo-file-system/ios/**
@@ -19,7 +22,6 @@ on:
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
       - packages/expo-audio/ios/**
-      - packages/expo-av/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
       - packages/expo-image/ios/**
@@ -51,7 +53,6 @@ on:
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
       - packages/expo-audio/ios/**
-      - packages/expo-av/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
       - packages/expo-image/ios/**

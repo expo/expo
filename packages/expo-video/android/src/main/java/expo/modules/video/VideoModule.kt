@@ -1,5 +1,3 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.video
 
 import android.net.Uri
@@ -8,7 +6,6 @@ import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -19,6 +16,8 @@ import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.BufferOptions
+import expo.modules.video.records.PlayerBuilderOptions
+import expo.modules.video.records.ButtonOptions
 import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.AudioTrack
@@ -27,6 +26,7 @@ import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
+import expo.modules.video.managers.VideoManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -41,6 +41,10 @@ class VideoModule : Module() {
 
     OnCreate {
       VideoManager.onModuleCreated(appContext)
+    }
+
+    OnDestroy {
+      VideoManager.onModuleDestroyed(appContext)
     }
 
     Function("isPictureInPictureSupported") {
@@ -67,8 +71,8 @@ class VideoModule : Module() {
     }
 
     Class(VideoPlayer::class) {
-      Constructor { source: VideoSource? ->
-        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source)
+      Constructor { source: VideoSource?, /* useSynchronousReplace - iOS-only */ _: Boolean?, playerBuilderOptions: PlayerBuilderOptions? ->
+        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source, playerBuilderOptions)
         appContext.mainQueue.launch {
           player.prepare()
         }
@@ -85,9 +89,7 @@ class VideoModule : Module() {
           ref.muted
         }
         .set { ref: VideoPlayer, muted: Boolean ->
-          appContext.mainQueue.launch {
-            ref.muted = muted
-          }
+          ref.muted = muted
         }
 
       Property("volume")
@@ -95,10 +97,8 @@ class VideoModule : Module() {
           ref.volume
         }
         .set { ref: VideoPlayer, volume: Float ->
-          appContext.mainQueue.launch {
-            ref.userVolume = volume
-            ref.volume = volume
-          }
+          ref.userVolume = volume
+          ref.volume = volume
         }
 
       Property("currentTime")
@@ -180,10 +180,8 @@ class VideoModule : Module() {
           ref.playbackParameters.speed
         }
         .set { ref: VideoPlayer, playbackRate: Float ->
-          appContext.mainQueue.launch {
-            val pitch = if (ref.preservesPitch) 1f else playbackRate
-            ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
-          }
+          val pitch = if (ref.preservesPitch) 1f else playbackRate
+          ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
         }
 
       Property("isLive")
@@ -196,9 +194,7 @@ class VideoModule : Module() {
           ref.preservesPitch
         }
         .set { ref: VideoPlayer, preservesPitch: Boolean ->
-          appContext.mainQueue.launch {
-            ref.preservesPitch = preservesPitch
-          }
+          ref.preservesPitch = preservesPitch
         }
 
       Property("showNowPlayingNotification")
@@ -206,9 +202,7 @@ class VideoModule : Module() {
           ref.showNowPlayingNotification
         }
         .set { ref: VideoPlayer, showNotification: Boolean ->
-          appContext.mainQueue.launch {
-            ref.showNowPlayingNotification = showNotification
-          }
+          ref.showNowPlayingNotification = showNotification
         }
 
       Property("status")
@@ -287,9 +281,7 @@ class VideoModule : Module() {
           ref.audioMixingMode
         }
         .set { ref: VideoPlayer, audioMixingMode: AudioMixingMode ->
-          appContext.mainQueue.launch {
-            ref.audioMixingMode = audioMixingMode
-          }
+          ref.audioMixingMode = audioMixingMode
         }
 
       Property("keepScreenOnWhilePlaying")
@@ -408,11 +400,8 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
   Prop("contentFit") { view: T, contentFit: ContentFit ->
     view.contentFit = contentFit
   }
-  Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean ->
-    view.autoEnterPiP = autoEnterPiP
-  }
-  Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
-    view.allowsFullscreen = allowsFullscreen ?: true
+  Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean? ->
+    view.autoEnterPiP = autoEnterPiP ?: false
   }
   Prop("fullscreenOptions") { view: T, fullscreenOptions: FullscreenOptions? ->
     if (fullscreenOptions != null) {
@@ -420,9 +409,10 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
     }
   }
   Prop("requiresLinearPlayback") { view: T, requiresLinearPlayback: Boolean? ->
-    val linearPlayback = requiresLinearPlayback ?: false
-    view.playerView.applyRequiresLinearPlayback(linearPlayback)
-    view.videoPlayer?.requiresLinearPlayback = linearPlayback
+    view.requiresLinearPlayback = requiresLinearPlayback ?: false
+  }
+  Prop("buttonOptions") { view: T, buttonOptions: ButtonOptions? ->
+    view.buttonOptions = buttonOptions ?: ButtonOptions()
   }
   Prop("useExoShutter") { view: T, useExoShutter: Boolean? ->
     view.useExoShutter = useExoShutter

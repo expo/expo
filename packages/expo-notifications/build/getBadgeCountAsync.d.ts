@@ -4,5 +4,5 @@
  * @return Returns a Promise resolving to a number that represents the current badge of the app icon.
  * @header badge
  */
-export default function getBadgeCountAsync(): Promise<number>;
+export declare function getBadgeCountAsync(): Promise<number>;
 //# sourceMappingURL=getBadgeCountAsync.d.ts.map

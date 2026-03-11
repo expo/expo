@@ -63,7 +63,9 @@ data class DownloadOptionsLegacy(
 
 data class WritingOptions(
   @Field
-  val encoding: EncodingType = EncodingType.UTF8
+  val encoding: EncodingType = EncodingType.UTF8,
+  @Field
+  val append: Boolean = false
 ) : Record
 
 data class FileSystemUploadOptions(

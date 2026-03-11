@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { shouldReduceLogs } from '../events';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
@@ -16,6 +17,7 @@ import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { maybeCreateMCPServerAsync } from './server/MCP';
+import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -66,7 +68,9 @@ export async function startAsync(
   options: Options,
   settings: { webOnly?: boolean }
 ) {
-  Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+  if (!shouldReduceLogs()) {
+    Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+  }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
@@ -107,27 +111,30 @@ export async function startAsync(
   }
 
   if (!env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly && !options.devClient) {
-    await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+    try {
+      await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+    } catch {
+      // We don't show the dependency validation error, since it's non-essential
+      // for the user to know it ran or failed
+    }
   }
 
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);
 
   const defaultServerUrl = devServerManager.getDefaultDevServer()?.getDevServerUrl() ?? '';
+  const mcpServer =
+    (await profile(maybeCreateMCPServerAsync)({
+      projectRoot,
+      devServerUrl: defaultServerUrl,
+    })) ?? undefined;
+
   // Present the Terminal UI.
   if (isInteractive()) {
-    const mcpServer =
-      (await profile(maybeCreateMCPServerAsync)({
-        projectRoot,
-        devServerUrl: defaultServerUrl,
-      })) ?? undefined;
-
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       mcpServer,
     });
-
-    mcpServer?.start();
   } else {
     // Display the server location in CI...
     if (defaultServerUrl) {
@@ -137,6 +144,11 @@ export async function startAsync(
       }
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
+  }
+
+  if (mcpServer) {
+    addMcpCapabilities(mcpServer, devServerManager);
+    mcpServer.start();
   }
 
   // Final note about closing the server.

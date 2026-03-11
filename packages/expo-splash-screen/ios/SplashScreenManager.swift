@@ -58,6 +58,11 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
 
   private func showSplashScreen() {
     let splashScreenFilename = Bundle.main.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "SplashScreen"
+    // Prevents crashes in brownfield apps where the splash screen storyboard may not be present.
+    guard Bundle.main.path(forResource: splashScreenFilename, ofType: "storyboardc") != nil else {
+      return
+    }
+
     if let vc = UIStoryboard(name: splashScreenFilename, bundle: nil).instantiateInitialViewController() {
       loadingView = vc.view
       loadingView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -67,16 +72,10 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
         loadingView?.center = CGPoint(x: bounds.midX, y: bounds.midY)
       }
       loadingView?.isHidden = false
-#if RCT_NEW_ARCH_ENABLED
       if let hostView = rootView as? RCTSurfaceHostingProxyRootView, let loadingView {
         hostView.disableActivityIndicatorAutoHide(true)
         hostView.loadingView = loadingView
       }
-#else
-      if let loadingView {
-        self.rootView?.addSubview(loadingView)
-      }
-#endif
     }
   }
 

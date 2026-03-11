@@ -2,6 +2,7 @@ import type {
   McpServerProxy,
   TunnelMcpServerProxy as TunnelMcpServerProxyType,
 } from '@expo/mcp-tunnel' with { 'resolution-mode': 'import' };
+import path from 'node:path';
 import resolveFrom from 'resolve-from';
 
 import { getAccessToken, getSession } from '../../api/user/UserSettings';
@@ -44,6 +45,11 @@ export async function maybeCreateMCPServerAsync({
     );
     return null;
   }
+  const mcpTunnelPackagePath = resolveFrom.silent(path.dirname(mcpPackagePath), '@expo/mcp-tunnel');
+  if (!mcpTunnelPackagePath) {
+    Log.error('Unable to resolve the `@expo/mcp-tunnel` package');
+    return null;
+  }
 
   const normalizedServer = /^([a-zA-Z][a-zA-Z\d+\-.]*):\/\//.test(mcpServer)
     ? mcpServer
@@ -59,7 +65,7 @@ export async function maybeCreateMCPServerAsync({
     }>(mcpPackagePath);
     const { TunnelMcpServerProxy } = await importESM<{
       TunnelMcpServerProxy: typeof TunnelMcpServerProxyType;
-    }>('@expo/mcp-tunnel');
+    }>(mcpTunnelPackagePath);
 
     const logger = {
       ...Log,

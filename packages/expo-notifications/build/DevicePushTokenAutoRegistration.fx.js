@@ -2,7 +2,7 @@ import 'abort-controller/polyfill';
 import { UnavailabilityError } from 'expo-modules-core';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
-import getDevicePushTokenAsync from './getDevicePushTokenAsync';
+import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
 let lastAbortController = null;
 async function updatePushTokenAsync(token) {

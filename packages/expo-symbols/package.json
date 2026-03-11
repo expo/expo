@@ -1,7 +1,7 @@
 {
   "name": "expo-symbols",
-  "version": "1.0.7",
-  "description": "Provides access to the SF Symbols library on iOS for React Native and Expo apps.",
+  "version": "55.0.4",
+  "description": "Provides access to the SF Symbols library on iOS, and Material Symbols on Android and web, for Expo and React Native apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -37,18 +37,17 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/symbols/",
   "dependencies": {
-    "sf-symbols-typescript": "^2.0.0"
+    "sf-symbols-typescript": "^2.0.0",
+    "@expo-google-fonts/material-symbols": "^0.4.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
-    "@expo-google-fonts/material-symbols": "^0.4.1",
-    "expo-font": "^14.0.7"
+    "expo-module-scripts": "^55.0.2",
+    "expo-font": "^55.0.4"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
     "react-native": "*",
-    "@expo-google-fonts/material-symbols": "^0.4.1",
     "expo-font": "*"
   }
 }

@@ -186,7 +186,8 @@ function getPathDataFromState(state, options) {
                         : Object.keys(screens)[0]
                     : undefined;
                 if (screen && screens && currentOptions[route.name].screens?.[screen]) {
-                    route = { ...screens[screen], name: screen, key: screen };
+                    const nestedParams = route.params?.params;
+                    route = { ...screens[screen], name: screen, key: screen, params: nestedParams };
                     currentOptions = screens;
                 }
                 else {

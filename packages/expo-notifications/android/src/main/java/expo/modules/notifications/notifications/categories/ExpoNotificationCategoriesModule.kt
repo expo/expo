@@ -10,10 +10,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.Required
-import expo.modules.notifications.ModuleNotFoundException
 import expo.modules.notifications.ResultReceiverBody
 import expo.modules.notifications.createDefaultResultReceiver
-import expo.modules.notifications.notifications.categories.serializers.NotificationsCategoriesSerializer
+import expo.modules.notifications.notifications.categories.serializers.ExpoNotificationsCategoriesSerializer
 import expo.modules.notifications.notifications.model.NotificationAction
 import expo.modules.notifications.notifications.model.NotificationCategory
 import expo.modules.notifications.notifications.model.TextInputNotificationAction
@@ -51,10 +50,7 @@ class NotificationActionRecord : Record {
 
 open class ExpoNotificationCategoriesModule : Module() {
 
-  protected val serializer by lazy {
-    appContext.legacyModule<NotificationsCategoriesSerializer>()
-      ?: throw ModuleNotFoundException(NotificationsCategoriesSerializer::class)
-  }
+  protected val serializer = ExpoNotificationsCategoriesSerializer()
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()

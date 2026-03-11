@@ -15,6 +15,7 @@ jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../AsyncWsTunnel');
 jest.mock('../DevelopmentSession');
+jest.mock('../Bonjour');
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
   class ApplePlatformManager {
     openAsync = jest.fn(async () => ({ url: 'mock-apple-url' }));
@@ -337,7 +338,7 @@ describe('getExpoGoUrl', () => {
       '/',
       getPlatformBundlers('/', { web: { bundler: 'metro' } })
     );
-    expect(() => server['getExpoGoUrl']()).toThrow('Dev server instance not found');
+    expect(() => server['getExpoGoUrl']()).toThrow('Dev server is uninitialized');
   });
 
   it(`gets the native Expo Go URL`, async () => {
@@ -398,7 +399,7 @@ describe('getManifestMiddlewareAsync', () => {
   );
   it(`asserts server is not running`, async () => {
     await expect(server['getManifestMiddlewareAsync']()).rejects.toThrow(
-      /Dev server instance not found/
+      /Dev server is uninitialized/
     );
   });
 });

@@ -92,7 +92,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: |
+          yarn install --prefer-offline --frozen-lockfile
+          yarn patch-package
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -126,9 +128,7 @@ jobs:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
-          # NOTE(cedric): Node 20+ crashes on Windows when rendering async components through `expo export:embed` with RSC enabled
-          # We need to keep this on Node 18 in order for our tests to pass
-          node-version: 18
+          node-version: 20
 
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -167,7 +167,9 @@ jobs:
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
         # NOTE(@kitten): --ignore-engines is needed due to Node 18 being required (see above)
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000 --ignore-engines
+        run: |
+          yarn install --prefer-offline --network-timeout 1000000 --ignore-engines
+          yarn patch-package
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -218,7 +220,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: 🧶 Install node modules in root dir
-        run: yarn install --prefer-offline --frozen-lockfile
+        run: |
+          yarn install --prefer-offline --frozen-lockfile
+          yarn patch-package
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -229,7 +233,7 @@ jobs:
         id: playwright-info
         shell: bash
         run: |
-          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
+          echo version="$(yarn --silent playwright --version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
@@ -237,7 +241,7 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
       - name: 🎭 Install Playwright Browsers
-        run: bun playwright install --with-deps chromium
+        run: yarn playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 
@@ -274,9 +278,7 @@ jobs:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
-          # NOTE(cedric): Node 20+ crashes on Windows when rendering async components through `expo export:embed` with RSC enabled
-          # We need to keep this on Node 18 in order for our tests to pass
-          node-version: 18
+          node-version: 20
 
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -319,6 +321,7 @@ jobs:
         run: |
           Set-Content -Path ".yarnrc" -Value "ignore-engines true"
           yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
+          yarn patch-package
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -329,8 +332,8 @@ jobs:
         id: playwright-info
         shell: bash
         run: |
-          echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
-          echo "dir=$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
+          echo version="$(yarn --silent playwright --version)" >> $GITHUB_OUTPUT
+          echo dir="$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
         uses: actions/cache@v4
         id: playwright-browser-cache
@@ -338,7 +341,7 @@ jobs:
           path: ${{ steps.playwright-info.outputs.dir }}
           key: ${{ runner.os }}-playwright-${{ steps.playwright-info.outputs.version }}
       - name: 🎭 Install Playwright Browsers
-        run: bun playwright install --with-deps chromium
+        run: yarn playwright install --with-deps chromium
         working-directory: packages/@expo/cli
         if: steps.playwright-browser-cache.outputs.cache-hit != 'true'
 

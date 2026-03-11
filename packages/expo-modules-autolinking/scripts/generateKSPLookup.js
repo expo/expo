@@ -1,8 +1,9 @@
 #!/usr/bin/env node
+const { execSync } = require('child_process');
 const fs = require('fs');
 
 const minKotlinVersion = '2.0.0';
-const maxKotlinVersion = '2.2.20';
+const maxKotlinVersion = '2.3.10';
 
 const groupId = 'com.google.devtools.ksp';
 const artifactId = 'symbol-processing-gradle-plugin';
@@ -12,22 +13,16 @@ const path = require('path').resolve(
 );
 
 const numberPerPage = 30;
-const githubReleaseUrl = 'https://api.github.com/repos/google/ksp/releases';
+const githubApiPath = '/repos/google/ksp/releases';
 
 async function* fetchKSPReleases() {
-  const url = `${githubReleaseUrl}?per_page=${numberPerPage}`;
-
   let currentPage = 1;
   while (true) {
-    const urlWithIndex = `${url}&page=${currentPage}`;
-    console.log(`Fetching versions from: ${urlWithIndex}...`);
-    const response = await fetch(urlWithIndex);
+    const apiPath = `${githubApiPath}?per_page=${numberPerPage}&page=${currentPage}`;
+    console.log(`Fetching versions from: ${apiPath}...`);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error, status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const output = execSync(`gh api "${apiPath}"`, { encoding: 'utf-8' });
+    const data = JSON.parse(output);
     const versions = data
       .map((release) => release.tag_name)
       // Filter out release candidates, beta and milestone versions

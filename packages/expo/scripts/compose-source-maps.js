@@ -12,7 +12,7 @@
 
 'use strict';
 
-const { composeSourceMaps } = require('metro-source-map');
+const { composeSourceMaps } = require('@expo/metro/metro-source-map');
 const fs = require('fs');
 
 const argv = process.argv.slice(2);

@@ -11,7 +11,7 @@
  - Throws: Rethrows various exceptions that could be thrown by the dynamic types.
  */
 internal func cast(_ value: Any, toType type: AnyDynamicType, appContext: AppContext) throws -> Any {
-  if let dynamicJSType = type as? DynamicJavaScriptType, dynamicJSType.equals(~JavaScriptValue.self)  {
+  if let dynamicJSType = type as? DynamicJavaScriptType, dynamicJSType.equals(~JavaScriptValue.self) {
     return value
   }
   if !(type is DynamicTypedArrayType), let value = value as? JavaScriptValue {
@@ -54,9 +54,8 @@ internal func cast(jsValues: [Any], forFunction function: AnyFunctionDefinition,
       // Temporarily some values might already be cast to primitive types, so make sure we cast only `JavaScriptValue` and leave the others as they are.
       if let jsValue = jsValue as? JavaScriptValue {
         return try type.cast(jsValue: jsValue, appContext: appContext)
-      } else {
-        return jsValue
       }
+    return jsValue
     } catch {
       throw ArgumentCastException((index: index, type: type)).causedBy(error)
     }
@@ -113,9 +112,8 @@ internal final class InvalidArgsNumberException: GenericException<(received: Int
   override var reason: String {
     if param.required < param.expected {
       return "Received \(param.received) arguments, but \(param.expected) was expected and at least \(param.required) is required"
-    } else {
-      return "Received \(param.received) arguments, but \(param.expected) was expected"
     }
+  return "Received \(param.received) arguments, but \(param.expected) was expected"
   }
 }
 

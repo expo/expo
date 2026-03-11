@@ -18,6 +18,7 @@ export interface ModuleAndroidProjectInfo {
     name: string;
     sourceDir: string;
     modules: ModuleAndroidModuleInfo[];
+    services: string[];
     packages: string[];
     publication?: AndroidPublication;
     aarProjects?: AndroidGradleAarProjectDescriptor[];
@@ -200,9 +201,13 @@ export type RawAndroidProjectConfig = {
      */
     shouldUsePublicationScriptPath?: string;
     /**
-     * Names of the modules to be linked in the project.
+     * List of modules provided by the package.
      */
     modules?: (string | RawAndroidModuleConfig)[];
+    /**
+     * Full qualified names of Android services (`expo.modules.kotlin.services.Service`) provided by the package.
+     */
+    services?: string[];
     /**
      * Prebuilded AAR projects.
      */

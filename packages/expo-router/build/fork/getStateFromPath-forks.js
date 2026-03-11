@@ -23,6 +23,7 @@ exports.cleanPath = cleanPath;
 exports.routePatternToRegex = routePatternToRegex;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const matchers_1 = require("../matchers");
+const url_1 = require("../utils/url");
 /**
  * In Expo Router, the params are available at all levels of the routing config
  * @param routes
@@ -45,28 +46,24 @@ function safelyDecodeURIComponent(str) {
     }
 }
 function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
-    let parsed;
+    const pathWithoutGroups = (0, matchers_1.stripGroupSegmentsFromPath)(stripBaseUrl(path, baseUrl));
+    let pathname = '';
+    let hash = '';
     try {
-        parsed = new URL(path, 'https://phony.example');
+        const parsed = (0, url_1.parseUrlUsingCustomBase)(path);
+        pathname = parsed.pathname;
+        hash = parsed.hash;
     }
     catch {
         // Do nothing with invalid URLs.
-        return {
-            path,
-            cleanUrl: '',
-            nonstandardPathname: '',
-            url: new URL('https://phony.example'),
-        };
     }
-    const pathname = parsed.pathname;
     const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
-    const pathWithoutGroups = (0, matchers_1.stripGroupSegmentsFromPath)(stripBaseUrl(path, baseUrl));
-    // Make sure there is a trailing slash
     return {
-        // The slashes are at the end, not the beginning
         path,
+        // Make sure there is a trailing slash
+        // The slashes are at the end, not the beginning
         nonstandardPathname: withoutBaseUrl.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
-        url: parsed,
+        hash,
         pathWithoutGroups,
     };
 }
@@ -368,7 +365,7 @@ function getRouteConfigSorter(previousSegments = []) {
     };
 }
 function parseQueryParams(path, route, parseConfig, hash) {
-    const searchParams = new URL(path, 'https://phony.example').searchParams;
+    const searchParams = (0, url_1.parseUrlUsingCustomBase)(path).searchParams;
     const params = Object.create(null);
     if (hash) {
         params['#'] = hash.slice(1);

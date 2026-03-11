@@ -13,6 +13,7 @@ exports.convertPackageWithGradleToProjectName = convertPackageWithGradleToProjec
 exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const concurrency_1 = require("../../concurrency");
 const utils_1 = require("../../utils");
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -51,7 +52,7 @@ async function resolveModuleAsync(packageName, revision) {
             plugins,
         };
     }
-    const projects = await Promise.all(androidProjects.map(async (project) => {
+    const projects = await (0, concurrency_1.taskAll)(androidProjects, async (project) => {
         const projectPath = path_1.default.join(revision.path, project.path);
         const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
             const projectName = `${defaultProjectName}$${aarProject.name}`;
@@ -86,12 +87,13 @@ async function resolveModuleAsync(packageName, revision) {
             name: project.name,
             sourceDir: projectPath,
             modules: project.modules ?? [],
+            services: project.services ?? [],
             packages: [...packages].sort((a, b) => a.localeCompare(b)),
             ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
             ...(publication ? { publication } : {}),
             ...(aarProjects?.length > 0 ? { aarProjects } : {}),
         };
-    }));
+    });
     const coreFeatures = revision.config?.coreFeatures() ?? [];
     return {
         packageName,

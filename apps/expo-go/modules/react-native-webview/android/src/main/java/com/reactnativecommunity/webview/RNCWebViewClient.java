@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
+import com.reactnativecommunity.webview.events.SubResourceErrorEvent;
 import com.reactnativecommunity.webview.events.TopHttpErrorEvent;
 import com.reactnativecommunity.webview.events.TopLoadingErrorEvent;
 import com.reactnativecommunity.webview.events.TopLoadingFinishEvent;
@@ -42,12 +43,7 @@ public class RNCWebViewClient extends WebViewClient {
 
     protected boolean mLastLoadFailed = false;
     protected RNCWebView.ProgressChangedFilter progressChangedFilter = null;
-    protected @Nullable String ignoreErrFailedForThisURL = null;
     protected @Nullable RNCBasicAuthCredential basicAuthCredential = null;
-
-    public void setIgnoreErrFailedForThisURL(@Nullable String url) {
-        ignoreErrFailedForThisURL = url;
-    }
 
     public void setBasicAuthCredential(@Nullable RNCBasicAuthCredential credential) {
         basicAuthCredential = credential;
@@ -173,12 +169,6 @@ public class RNCWebViewClient extends WebViewClient {
         // Undesired behavior: Return value of WebView.getUrl() may be the current URL instead of the failing URL.
         handler.cancel();
 
-        if (!topWindowUrl.equalsIgnoreCase(failingUrl)) {
-            // If error is not due to top-level navigation, then do not call onReceivedError()
-            Log.w(TAG, "Resource blocked from loading due to SSL error. Blocked URL: "+failingUrl);
-            return;
-        }
-
         int code = error.getPrimaryError();
         String description = "";
         String descriptionPrefix = "SSL error: ";
@@ -210,6 +200,18 @@ public class RNCWebViewClient extends WebViewClient {
 
         description = descriptionPrefix + description;
 
+      if (!topWindowUrl.equalsIgnoreCase(failingUrl)) {
+        // If error is not due to top-level navigation, then do not call onReceivedError()
+        Log.w(TAG, "Resource blocked from loading due to SSL error. Blocked URL: "+failingUrl);
+        this.onReceivedSubResourceSslError(
+          webView,
+          code,
+          description,
+          failingUrl
+        );
+        return;
+      }
+
         this.onReceivedError(
                 webView,
                 code,
@@ -218,26 +220,26 @@ public class RNCWebViewClient extends WebViewClient {
         );
     }
 
+    public void onReceivedSubResourceSslError(
+      WebView webView,
+      int errorCode,
+      String description,
+      String failingUrl) {
+
+      WritableMap eventData = createWebViewEvent(webView, failingUrl);
+      eventData.putDouble("code", errorCode);
+      eventData.putString("description", description);
+
+      int reactTag = RNCWebViewWrapper.getReactTagFromWebView(webView);
+      UIManagerHelper.getEventDispatcherForReactTag((ReactContext) webView.getContext(), reactTag).dispatchEvent(new SubResourceErrorEvent(reactTag, eventData));
+    }
+
     @Override
     public void onReceivedError(
             WebView webView,
             int errorCode,
             String description,
             String failingUrl) {
-
-        if (ignoreErrFailedForThisURL != null
-                && failingUrl.equals(ignoreErrFailedForThisURL)
-                && errorCode == -1
-                && description.equals("net::ERR_FAILED")) {
-
-            // This is a workaround for a bug in the WebView.
-            // See these chromium issues for more context:
-            // https://bugs.chromium.org/p/chromium/issues/detail?id=1023678
-            // https://bugs.chromium.org/p/chromium/issues/detail?id=1050635
-            // This entire commit should be reverted once this bug is resolved in chromium.
-            setIgnoreErrFailedForThisURL(null);
-            return;
-        }
 
         super.onReceivedError(webView, errorCode, description, failingUrl);
         mLastLoadFailed = true;

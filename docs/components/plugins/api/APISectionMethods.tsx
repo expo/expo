@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/BracketsEllipsesDuotoneIcon';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
@@ -7,9 +8,14 @@ import { H2 } from '~/ui/components/Text';
 
 import {
   AccessorDefinitionData,
+  CommentContentData,
+  CommentData,
   CommentTagData,
   MethodDefinitionData,
+  MethodParamData,
+  MethodSignatureData,
   PropData,
+  TypeDefinitionData,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { getMethodName, resolveTypeName, getTagData, getAllTagData } from './APISectionUtils';
@@ -35,6 +41,60 @@ export type RenderMethodOptions = {
   parentPlatforms?: CommentTagData[];
 };
 
+const CONFIG_PLUGIN_NAME = 'ConfigPlugin';
+
+const isConfigPluginReference = (type?: TypeDefinitionData) =>
+  type?.type === 'reference' &&
+  type.name === CONFIG_PLUGIN_NAME &&
+  (!type.target?.qualifiedName || type.target?.qualifiedName === CONFIG_PLUGIN_NAME);
+
+const getParamTagContent = (comment: CommentData | undefined, paramName: string) =>
+  comment?.blockTags?.find(tag => tag.tag === '@param' && tag.name === paramName)?.content;
+
+const toParamComment = (content?: CommentContentData[]): CommentData | undefined =>
+  content ? { summary: content } : undefined;
+
+const expoConfigType: TypeDefinitionData = {
+  type: 'reference',
+  name: 'ExpoConfig',
+  package: '@expo/config-types',
+};
+
+const getConfigPluginSignatures = (method: PropData): MethodSignatureData[] => {
+  if (!isConfigPluginReference(method.type)) {
+    return [];
+  }
+
+  const comment = method.comment ?? { summary: [] };
+  const propsType = method.type?.typeArguments?.[0];
+  const propsComment = toParamComment(getParamTagContent(method.comment, 'props'));
+
+  const parameters: MethodParamData[] = [
+    {
+      name: 'config',
+      type: expoConfigType,
+      comment: toParamComment(getParamTagContent(method.comment, 'config')),
+    },
+  ];
+
+  if (propsType || propsComment) {
+    parameters.push({
+      name: 'props',
+      type: propsType ?? { type: 'intrinsic', name: 'void' },
+      comment: propsComment,
+    });
+  }
+
+  return [
+    {
+      name: method.name ?? '',
+      parameters,
+      comment,
+      type: expoConfigType,
+    },
+  ];
+};
+
 function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefinitionData | PropData) {
   if ('signatures' in method) {
     return method.signatures ?? [];
@@ -52,6 +112,7 @@ function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefiniti
       }
       return method.type.declaration.signatures ?? [];
     }
+    return getConfigPluginSignatures(method);
   }
   return [];
 }
@@ -69,8 +130,9 @@ export const renderMethod = (
 ) => {
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
+  const hasOverloads = signatures.length > 1;
 
-  return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
+  return signatures.map(({ name, parameters, comment, type, typeParameter }, overloadIndex) => {
     const returnComment = getTagData('returns', comment);
     const platforms = getAllTagData('platform', comment);
     return (
@@ -79,9 +141,9 @@ export const renderMethod = (
         className={mergeClasses(
           !nested && STYLES_APIBOX,
           !nested && STYLES_APIBOX_NESTED,
-          nested && 'border-b border-palette-gray4 last:border-b-0'
+          nested && 'border-palette-gray4 border-b last:border-b-0'
         )}>
-        <APISectionDeprecationNote comment={comment} sticky className="!rounded-t-none" />
+        <APISectionDeprecationNote comment={comment} sticky className="rounded-t-none!" />
         <APIBoxHeader
           name={getMethodName(
             method as MethodDefinitionData,
@@ -90,9 +152,19 @@ export const renderMethod = (
             parameters,
             typeParameter
           )}
+          comment={method?.comment ?? comment}
           platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
+          // only show first overload in sidebar to avoid duplicates
+          hideInSidebar={!exposeInSidebar || overloadIndex > 0}
+          tags={hasOverloads ? ['overload'] : undefined}
         />
+        {hasOverloads && (
+          <div className="text-tertiary px-4 pb-2">
+            <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
+            <span className="text-3xs">Overload #{overloadIndex + 1}</span>
+          </div>
+        )}
         {parameters && parameters.length > 0 && (
           <>
             <APIMethodParamRows parameters={parameters} sdkVersion={sdkVersion} />
@@ -106,18 +178,19 @@ export const renderMethod = (
             type && resolveTypeName(type, sdkVersion) !== 'undefined' ? (
               <>
                 <div
+                  data-md="api-returns"
                   className={mergeClasses(
                     'flex flex-row items-start gap-2',
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
                   <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                    <CornerDownRightIcon className="icon-sm text-icon-tertiary relative -mt-0.5 inline-block" />
                     <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
                   <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
                 </div>
                 {returnComment ? (
-                  <div className="mb-1 mt-1.5 flex flex-col pl-6">
+                  <div className="mt-1.5 mb-1 flex flex-col pl-6">
                     <APICommentTextBlock
                       comment={{ summary: returnComment.content }}
                       includeSpacing={false}
@@ -128,7 +201,6 @@ export const renderMethod = (
             ) : undefined
           }
         />
-        {}
       </div>
     );
   });

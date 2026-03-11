@@ -1,0 +1,16 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "include": ["./__tests__"],
+  "compilerOptions": {
+    "outDir": "./build",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["node", "jest"],
+    "typeRoots": ["../../../node_modules/@types"],
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  }
+}

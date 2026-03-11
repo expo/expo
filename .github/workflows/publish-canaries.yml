@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'schedule' && 'sdk-56' || github.ref }}
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
@@ -37,7 +39,6 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧶 Install modules in tools dir
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'

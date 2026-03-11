@@ -124,11 +124,11 @@ export async function cloneTemplateAndCopyToProjectAsync({
       platforms,
     });
 
-    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
-    await renameTemplateAppNameAsync({
-      cwd: projectRoot,
+    // TODO(@kitten): This duplicates functionality that `cloneTemplateAsync` can already do
+    const files = await getTemplateFilesToRenameAsync(projectRoot);
+    await renameTemplateAppNameAsync(projectRoot, {
       files,
-      name: exp.name,
+      expName: exp.name,
     });
 
     // Says: "Created native directories"

@@ -26,7 +26,7 @@ public class CalendarPermissionsRequester: NSObject, EXPermissionsRequester {
     if Bundle.main.object(forInfoDictionaryKey: description) != nil {
       permissions = EKEventStore.authorizationStatus(for: .event)
     } else {
-      EXFatal(MissingCalendarPListValueException(description))
+      RCTFatal(MissingCalendarPListValueException(description))
       permissions = .denied
     }
 

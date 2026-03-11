@@ -12,6 +12,7 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { PackagesGraphNode } from '../../packages-graph';
+import { NON_CASCADING_PACKAGES } from '../constants';
 import {
   getSuggestedVersions,
   isParcelUnpublished,
@@ -117,10 +118,23 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     // This call mutates `parcelsToPublish` set, adding the selected parcels.
     await selectParcelsToPublish(parcelsToSelect, parcelsToPublish, options);
 
+    // Filter out non-cascading shared packages unless --cascade-all is set.
+    const cascadingParcels = parcels.filter(
+      (parcel) => parcel.state.isRequested && parcelsToPublish.has(parcel)
+    );
+    const skippedFromCascade = cascadingParcels.filter(
+      (p) => !options.cascadeAll && NON_CASCADING_PACKAGES.has(p.pkg.packageName)
+    );
+    if (skippedFromCascade.length > 0) {
+      logger.info(
+        `\n📦 Skipping dependent cascade for shared packages: ${skippedFromCascade.map((p) => green(p.pkg.packageName)).join(', ')}\n   Use ${chalk.bold('--cascade-all')} to include their dependents.`
+      );
+    }
+
     // A set of graph nodes representing the dependents of the selected packages.
     const dependentNodes = new Set<PackagesGraphNode>(
-      parcels
-        .filter((parcel) => parcel.state.isRequested && parcelsToPublish.has(parcel))
+      cascadingParcels
+        .filter((p) => !skippedFromCascade.includes(p))
         .map((parcel) => parcel.graphNode.getAllDependents())
         .flat()
         // If templates-only, do not suggest dependents since we are restricting to templates
@@ -130,7 +144,7 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
     // From the dependents select these that should be published too.
     const selectedDependentNodes = options.templatesOnly
       ? []
-      : await promptForDependentNodes([...dependentNodes]);
+      : await promptForDependentNodes([...dependentNodes], parcelsToPublish);
 
     logger.log();
 
@@ -418,23 +432,37 @@ async function selectParcelsToPublish(
 
 /**
  * Asks whether to publish the dependents of the requested packages.
+ * Shows which dependencies are being updated for each dependent.
  */
-async function promptForDependentNodes(nodes: PackagesGraphNode[]): Promise<PackagesGraphNode[]> {
+async function promptForDependentNodes(
+  nodes: PackagesGraphNode[],
+  parcelsToPublish: Set<Parcel>
+): Promise<PackagesGraphNode[]> {
   if (nodes.length === 0) {
     return [];
   }
+
+  // Get names of packages being published
+  const publishingPackageNames = new Set([...parcelsToPublish].map((p) => p.pkg.packageName));
+
   const { dependents } = await inquirer.prompt([
     {
       type: 'checkbox',
       name: 'dependents',
-      message: `Found some dependents that you may want to publish as well, select which ones:\n`,
+      message: `These packages depend on packages being published.\nPublish them to update their dependency versions on npm:\n`,
       choices: nodes.map((node) => {
+        // Find which dependencies of this node are being published
+        const updatedDeps = node.outgoingEdges
+          .filter((edge) => publishingPackageNames.has(edge.destination.name))
+          .map((edge) => edge.destination.name);
+
+        const depsInfo = updatedDeps.length > 0 ? ` ${cyan(`(${updatedDeps.join(', ')})`)}` : '';
+
         return {
-          name: node.name,
+          name: `${node.name}${depsInfo}`,
           value: node,
-          // `expo` package is the one we often want to publish as a dependent,
-          // so make it checked by default.
-          checked: node.name === 'expo',
+          // Check by default if it has dependencies being published
+          checked: updatedDeps.length > 0,
         };
       }),
     },

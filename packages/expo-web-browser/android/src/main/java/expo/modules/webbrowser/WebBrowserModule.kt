@@ -1,8 +1,5 @@
 package expo.modules.webbrowser
 
-import expo.modules.core.errors.CurrentActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -60,13 +57,12 @@ class WebBrowserModule : Module() {
 
     AsyncFunction("mayInitWithUrlAsync") { url: String, packageName: String? ->
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
-      connectionHelper.mayInitWithUrl(resolvedPackageName, Uri.parse(url))
+      connectionHelper.mayInitWithUrl(resolvedPackageName, url.toUri())
       return@AsyncFunction bundleOf(
         SERVICE_PACKAGE_KEY to resolvedPackageName
       )
     }
 
-    // throws CurrentActivityNotFoundException
     AsyncFunction<Bundle>("getCustomTabsSupportingBrowsersAsync") {
       val activities = customTabsResolver.customTabsResolvingActivities
       val services = customTabsResolver.customTabsResolvingServices
@@ -84,7 +80,6 @@ class WebBrowserModule : Module() {
       }
     }
 
-    // throws CurrentActivityNotFoundException
     AsyncFunction("openBrowserAsync") { url: String, options: OpenBrowserOptions ->
       val tabsIntent = createCustomTabsIntent(options).apply {
         intent.data = url.toUri()
@@ -94,7 +89,7 @@ class WebBrowserModule : Module() {
         throw NoMatchingActivityException()
       }
 
-      customTabsResolver.startCustomTabs(tabsIntent)
+      customTabsResolver.startCustomTabs(tabsIntent, options)
 
       return@AsyncFunction bundleOf(
         "type" to "opened"
@@ -131,23 +126,12 @@ class WebBrowserModule : Module() {
       builder.setShareState(CustomTabsIntent.SHARE_STATE_ON)
     }
 
-    return builder.build().apply {
-      // We cannot use the builder's method enableUrlBarHiding, because there is
-      // no corresponding disable method and some browsers enable it by default.
-      intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, options.enableBarCollapsing)
+    builder.setUrlBarHidingEnabled(options.enableBarCollapsing)
 
+    return builder.build().apply {
       val packageName = options.browserPackage
       if (!TextUtils.isEmpty(packageName)) {
         intent.setPackage(packageName)
-      }
-
-      if (options.shouldCreateTask) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-        if (!options.showInRecents) {
-          intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
-          intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-        }
       }
     }
   }
@@ -160,9 +144,7 @@ class WebBrowserModule : Module() {
       packageName?.takeIf { it.isNotEmpty() }.ifNull {
         customTabsResolver.getPreferredCustomTabsResolvingActivity(null)
       }
-    } catch (ex: CurrentActivityNotFoundException) {
-      throw NoPreferredPackageFound()
-    } catch (ex: PackageManagerNotFoundException) {
+    } catch (_: PackageManagerNotFoundException) {
       throw NoPreferredPackageFound()
     }
 

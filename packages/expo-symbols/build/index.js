@@ -1,3 +1,3 @@
+export { unstable_getMaterialSymbolSourceAsync } from './materialImageSource';
 export { SymbolView } from './SymbolView';
-export * from './SymbolModule.types';
 //# sourceMappingURL=index.js.map

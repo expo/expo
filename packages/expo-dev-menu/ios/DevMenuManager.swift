@@ -1,11 +1,33 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ExpoModulesCore
 import EXDevMenuInterface
 import EXManifests
 import CoreGraphics
 import CoreMedia
 import Combine
+
+/**
+ Configuration options for customizing the dev menu appearance.
+ Host apps (e.g., Expo Go) can set these to tailor the menu for their context.
+ The defaults match the standard dev menu behavior.
+ */
+@objc
+public class DevMenuConfiguration: NSObject {
+  /// Whether to show the debugging tip (e.g., "Debugging not working? Try manually reloading first.")
+  @objc public var showDebuggingTip: Bool = true
+
+  /// Whether to show the "Connected to:" host URL section
+  @objc public var showHostUrl: Bool = true
+
+  /// Whether to show the Fast Refresh toggle
+  @objc public var showFastRefresh: Bool = true
+
+  /// Custom title for the onboarding text. Use to replace "development builds" with e.g. "Expo Go".
+  /// When nil, the default "development builds" text is used.
+  @objc public var onboardingAppName: String?
+}
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -50,8 +72,18 @@ open class DevMenuManager: NSObject {
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
+  @objc public var isReactAppRunning = false
+
+  /**
+   The AppContext for the currently running React app. Set by DevMenuModule.OnCreate.
+   */
+  public private(set) weak var currentAppContext: AppContext?
+
+  @objc public var configuration = DevMenuConfiguration()
 
   static public var wasInitilized = false
+
+  private var contentDidAppearObserver: NSObjectProtocol?
 
   /**
    Shared singleton instance.
@@ -67,7 +99,16 @@ open class DevMenuManager: NSObject {
    */
   var window: DevMenuWindow?
 
+  #if !os(macOS) && !os(tvOS)
+  /**
+   The window that hosts the floating action button.
+   */
+  var fabWindow: DevMenuFABWindow?
+  #endif
+
   var currentScreen: String?
+
+  private var isNavigatingHome = false
 
   weak var hostDelegate: DevMenuHostDelegate?
 
@@ -80,6 +121,27 @@ open class DevMenuManager: NSObject {
         DispatchQueue.main.async {
           self.disableRNDevMenuHoykeys(for: currentBridge)
         }
+        observeContentDidAppear()
+      } else {
+        updateFABVisibility()
+      }
+    }
+  }
+
+  private func observeContentDidAppear() {
+    if let observer = contentDidAppearObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+
+    contentDidAppearObserver = NotificationCenter.default.addObserver(
+      forName: NSNotification.Name.RCTContentDidAppear,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.updateFABVisibility()
+      if let observer = self?.contentDidAppearObserver {
+        NotificationCenter.default.removeObserver(observer)
+        self?.contentDidAppearObserver = nil
       }
     }
   }
@@ -87,6 +149,11 @@ open class DevMenuManager: NSObject {
   private let manifestSubject = PassthroughSubject<Void, Never>()
   public var manifestPublisher: AnyPublisher<Void, Never> {
     manifestSubject.eraseToAnyPublisher()
+  }
+
+  private let menuWillShowSubject = PassthroughSubject<Void, Never>()
+  public var menuWillShowPublisher: AnyPublisher<Void, Never> {
+    menuWillShowSubject.eraseToAnyPublisher()
   }
 
   @objc
@@ -109,8 +176,42 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
-  public func updateCurrentBridge(_ bridge: RCTBridge?) {
-    currentBridge = bridge
+  public func setMotionGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.motionGestureEnabled = enabled
+  }
+
+  @objc
+  public func setTouchGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.touchGestureEnabled = enabled
+  }
+
+  @objc
+  public func getMotionGestureEnabled() -> Bool {
+    return DevMenuPreferences.motionGestureEnabled
+  }
+
+  @objc
+  public func getTouchGestureEnabled() -> Bool {
+    return DevMenuPreferences.touchGestureEnabled
+  }
+
+  @objc
+  public func setShowFloatingActionButton(_ enabled: Bool) {
+    DevMenuPreferences.showFloatingActionButton = enabled
+  }
+
+  @objc
+  public func setAppContext(_ appContext: AppContext?) {
+    currentAppContext = appContext
+    if appContext != nil {
+      isNavigatingHome = false
+      isReactAppRunning = true
+      // Re-run packager connection setup now that the app context (and devSettings) is available.
+      packagerConnectionHandler?.setup()
+      updateFABVisibility()
+    } else {
+      isReactAppRunning = false
+    }
   }
 
   @objc
@@ -136,7 +237,7 @@ open class DevMenuManager: NSObject {
     // swiftlint:enable notification_center_detachment
 
     // swiftlint:disable legacy_objc_type
-    if canLaunchDevMenuOnStart && currentBridge != nil && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
+    if canLaunchDevMenuOnStart && isReactAppRunning && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
       NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
     }
     // swiftlint:enable legacy_objc_type
@@ -161,7 +262,7 @@ open class DevMenuManager: NSObject {
 
   override init() {
     super.init()
-    self.window = DevMenuWindow(manager: self)
+    self.window = Dispatch.mainSync { DevMenuWindow(manager: self) }
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
     DevMenuPreferences.setup()
@@ -177,7 +278,11 @@ open class DevMenuManager: NSObject {
    */
   @objc
   public var isVisible: Bool {
+#if !os(macOS)
     return Dispatch.mainSync { !(window?.isHidden ?? true) }
+#else
+    return window?.isVisible ?? false
+#endif
   }
 
   /**
@@ -242,11 +347,26 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public var shouldShowReactNativeDevMenu: Bool {
+    guard let delegate = hostDelegate,
+      delegate.responds(to: #selector(DevMenuHostDelegate.devMenuShouldShowReactNativeDevMenu)) else {
+      return true
+    }
+    return delegate.devMenuShouldShowReactNativeDevMenu?() ?? true
+  }
+
+  @objc
   public func navigateHome() {
     guard let delegate = hostDelegate,
       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuNavigateHome)) else {
       return
     }
+
+    isNavigatingHome = true
+
+    #if !os(macOS) && !os(tvOS)
+    fabWindow?.setVisible(false, animated: false)
+    #endif
 
     let action: () -> Void = {
       delegate.devMenuNavigateHome?()
@@ -266,11 +386,7 @@ open class DevMenuManager: NSObject {
 
   @objc
   public func sendEventToDelegateBridge(_ eventName: String, data: Any?) {
-    guard let bridge = currentBridge else {
-      return
-    }
-
-    if let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? NSObject {
+    if let eventDispatcher: NSObject = currentAppContext?.nativeModule(named: "EventDispatcher") {
       let selector = NSSelectorFromString("sendDeviceEventWithName:body:")
       if eventDispatcher.responds(to: selector) {
         eventDispatcher.perform(selector, with: eventName, with: data)
@@ -287,9 +403,9 @@ open class DevMenuManager: NSObject {
       return false
     }
 
-    // Don't allow dev menu to open when there's no active React Native bridge
-    // This prevents the menu from appearing when the dev-launcher UI is visible
-    if visible && currentBridge == nil {
+    // Don't allow dev menu to open before the React app is running.
+    // This prevents the menu from appearing when the dev-launcher UI is visible.
+    if visible && !isReactAppRunning {
       return false
     }
 
@@ -323,26 +439,39 @@ open class DevMenuManager: NSObject {
     }
   }
 
+#if !os(macOS)
   var userInterfaceStyle: UIUserInterfaceStyle {
     return UIUserInterfaceStyle.unspecified
   }
+#endif
 
   private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
     if !canChangeVisibility(to: visible) {
       return false
     }
     if visible {
+      menuWillShowSubject.send()
       setCurrentScreen(screen)
       DispatchQueue.main.async {
+#if os(macOS)
+        self.window?.makeKeyAndOrderFront(nil)
+#elseif os(tvOS)
+        self.window?.makeKeyAndVisible()
+#else
+        self.updateFABVisibility()
+
         if self.window?.windowScene == nil {
           let windowScene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
           self.window?.windowScene = windowScene
         }
         self.window?.makeKeyAndVisible()
+#endif
       }
     } else {
-      DispatchQueue.main.async { self.window?.closeBottomSheet(nil) }
+      DispatchQueue.main.async {
+        self.window?.closeBottomSheet(nil)
+      }
     }
     return true
   }
@@ -372,16 +501,14 @@ open class DevMenuManager: NSObject {
   }
 
   func getDevToolsDelegate() -> DevMenuDevOptionsDelegate? {
-    guard let currentBridge else {
-      return nil
+    if let appContext = currentAppContext {
+      let devDelegate = DevMenuDevOptionsDelegate(forAppContext: appContext)
+      guard devDelegate.devSettings != nil else {
+        return nil
+      }
+      return devDelegate
     }
-
-    let devDelegate = DevMenuDevOptionsDelegate(forBridge: currentBridge)
-    guard devDelegate.devSettings != nil else {
-      return nil
-    }
-
-    return devDelegate
+    return nil
   }
 
   func reload() {
@@ -390,11 +517,23 @@ open class DevMenuManager: NSObject {
   }
 
   func togglePerformanceMonitor() {
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuTogglePerformanceMonitor)) {
+      delegate.devMenuTogglePerformanceMonitor?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.togglePerformanceMonitor()
   }
 
   func toggleInspector() {
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuToggleElementInspector)) {
+      delegate.devMenuToggleElementInspector?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleElementInsector()
   }
@@ -408,4 +547,35 @@ open class DevMenuManager: NSObject {
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleFastRefresh()
   }
+
+  #if !os(macOS) && !os(tvOS)
+  private func setupFABWindowIfNeeded(for windowScene: UIWindowScene) {
+    guard fabWindow == nil else { return }
+    fabWindow = DevMenuFABWindow(manager: self, windowScene: windowScene)
+  }
+
+  public func updateFABVisibility() {
+    DispatchQueue.main.async { [weak self] in
+      guard let self else { return }
+
+      if self.fabWindow == nil {
+        if let windowScene = UIApplication.shared.connectedScenes
+          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+          self.setupFABWindowIfNeeded(for: windowScene)
+        }
+      }
+
+      let shouldShow = DevMenuPreferences.showFloatingActionButton
+        && !self.isVisible
+        && self.isReactAppRunning
+        && !self.isNavigatingHome
+        && DevMenuPreferences.isOnboardingFinished
+      self.fabWindow?.setVisible(shouldShow, animated: true)
+    }
+  }
+  #else
+  public func updateFABVisibility() {
+    // FAB not available on macOS/tvOS
+  }
+  #endif
 }

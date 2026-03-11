@@ -88,8 +88,9 @@ function addDefaultReactNativeHostWrapperIfNeeded(
 }
 
 /**
- * Replace `ReactNativeHostWrapper.create()` for `getDefaultReactHost()`.
- * For react-native@>=0.74 and SDK >= 51.0.0
+ * Replace `getDefaultReactHost()` with Expo's wrapper.
+ * For SDK >= 55.0.0: uses `ExpoReactHostFactory.getDefaultReactHost()` (ReactNativeHostWrapper was removed)
+ * For SDK >= 51.0.0: uses `ReactNativeHostWrapper.createReactHost()`
  */
 function addReactHostWrapperIfNeeded(
   sdkVersion: string,
@@ -98,6 +99,19 @@ function addReactHostWrapperIfNeeded(
   isJava: boolean
 ): string {
   if (semver.lt(sdkVersion, '51.0.0')) {
+    return mainApplication;
+  }
+
+  if (semver.gte(sdkVersion, '55.0.0')) {
+    const updated = mainApplication.replace(
+      /(\s+)getDefaultReactHost\(/gm,
+      '$1ExpoReactHostFactory.getDefaultReactHost('
+    );
+
+    if (updated !== mainApplication) {
+      return addImports(updated, ['expo.modules.ExpoReactHostFactory'], isJava);
+    }
+
     return mainApplication;
   }
 
@@ -112,7 +126,7 @@ function addReactNativeHostWrapperIfNeeded(
   language: 'java' | 'kt',
   isJava: boolean
 ): string {
-  if (mainApplication.match(/\s+ReactNativeHostWrapper\(/m)) {
+  if (mainApplication.match(/\s+(ReactNativeHostWrapper|ExpoReactHostFactory)[.(]/m)) {
     return mainApplication;
   }
 

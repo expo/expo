@@ -45,16 +45,16 @@ class PromiseImpl @DoNotStrip internal constructor(
     callback.invoke(result)
   }
 
-  override fun resolve(result: Collection<Any?>) {
+  override fun resolve(result: Collection<Any?>) = checkIfWasSettled {
     callback.invoke(result)
   }
 
-  override fun resolve(result: Map<String, Any?>) {
+  override fun resolve(result: Map<String, Any?>) = checkIfWasSettled {
     callback.invoke(result)
   }
 
   // Copy of the reject method from [com.facebook.react.bridge.PromiseImpl]
-  override fun reject(code: String, message: String?, cause: Throwable?) = checkIfWasSettled {
+  override fun reject(code: String?, message: String?, cause: Throwable?) = checkIfWasSettled {
     // TODO(@lukmccall): Add information about the stack trace to the error message
     callback.invoke(code, message ?: cause?.message ?: "unknown")
   }
@@ -62,11 +62,11 @@ class PromiseImpl @DoNotStrip internal constructor(
   private inline fun checkIfWasSettled(body: () -> Unit) {
     if (wasSettled) {
       val exception = PromiseAlreadySettledException(fullFunctionName ?: "unknown")
-      val errorManager = appContextHolder?.get()?.errorManager
+      val jsLogger = appContextHolder?.get()?.jsLogger
       // We want to report that a promise was settled twice in the development build.
       // However, in production, the app should crash.
-      if (BuildConfig.DEBUG && errorManager != null) {
-        errorManager.reportExceptionToLogBox(exception)
+      if (BuildConfig.DEBUG && jsLogger != null) {
+        jsLogger.error("Trying to resolve promise that was already settled", exception)
         logger.error("Trying to resolve promise that was already settled", exception)
         return
       }

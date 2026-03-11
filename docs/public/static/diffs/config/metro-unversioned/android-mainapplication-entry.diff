@@ -1,0 +1,10 @@
+diff --git a/android/app/src/main/java/<Project>/MainApplication.java b/android/app/src/main/java/<Project>/MainApplication.java
+index 0000000..1111111 100644
+--- a/android/app/src/main/java/<Project>/MainApplication.java
++++ b/android/app/src/main/java/<Project>/MainApplication.java
+@@ -1,4 +1,4 @@
+ @Override
+ protected String getJSMainModuleName() {
+-  return "index";
++  return ".expo/.virtual-metro-entry";
+ }

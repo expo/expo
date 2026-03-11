@@ -1,13 +1,13 @@
 import { createHash, randomFill } from 'crypto';
 import { vol } from 'memfs';
 import { promisify } from 'node:util';
-import pLimit from 'p-limit';
 import path from 'path';
 
 import { createFingerprintAsync } from '../Fingerprint';
 import type { FileHookTransformSource, FileHookTransformFunction } from '../Fingerprint.types';
 import { normalizeOptionsAsync } from '../Options';
 import { createContentsHashResultsAsync, createFileHashResultsAsync } from '../hash/Hash';
+import { createLimiter } from '../utils/Concurrency';
 
 jest.mock('fs');
 jest.mock('fs/promises');
@@ -35,7 +35,7 @@ describe('FileHookTransform', () => {
   it('should call hook function from createFileHashResultsAsync', async () => {
     const filePath = 'assets/icon.png';
     const contents = 'PNG';
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     vol.mkdirSync('/app/assets', { recursive: true });
     vol.writeFileSync(path.join('/app', filePath), contents);
 
@@ -43,13 +43,13 @@ describe('FileHookTransform', () => {
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
     expect(mockHook).toHaveBeenCalledTimes(2);
     expect(mockHook.mock.calls[0][0]).toEqual({ type: 'file', filePath });
-    expect(mockHook.mock.calls[0][1].toString()).toEqual(contents);
+    expect(mockHook.mock.calls[0][1]?.toString()).toEqual(contents);
     expect(mockHook.mock.calls[0][2]).toBe(false);
     expect(mockHook.mock.calls[1][0]).toEqual({ type: 'file', filePath });
     expect(mockHook.mock.calls[1][1]).toBe(null);
     expect(mockHook.mock.calls[1][2]).toBe(true);
     const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
-    expect(result.hex).toBe(expectHex);
+    expect(result?.hex).toBe(expectHex);
   });
 
   it('should allow chunk buffering in the file hook', async () => {
@@ -80,18 +80,18 @@ describe('FileHookTransform', () => {
     // Creating a large file to simulate multiple chunks in the stream
     const fileSize = 1024 * 1024;
     const contents = await createRandomBufferAsync(fileSize);
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     vol.mkdirSync('/app/assets', { recursive: true });
     vol.writeFileSync(path.join('/app', filePath), contents);
 
     const options = await normalizeOptionsAsync('/app', { fileHookTransform: mockChunkBufferHook });
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
     const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
-    expect(result.hex).toBe(expectHex);
+    expect(result?.hex).toBe(expectHex);
 
     expect(recvBuffer.byteLength).toBe(fileSize);
     const expectHex2 = createHash(options.hashAlgorithm).update(recvBuffer).digest('hex');
-    expect(result.hex).toBe(expectHex2);
+    expect(result?.hex).toBe(expectHex2);
   });
 
   it('should call hook function from createFingerprintAsync', async () => {
@@ -158,7 +158,7 @@ describe('FileHookTransform - debugInfo.isTransformed', () => {
   it('should contain `isTransformed` value in debugInfo from createFileHashResultsAsync in debug mode', async () => {
     const filePath = 'assets/icon.png';
     const contents = await createRandomBufferAsync(4096);
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     vol.mkdirSync('/app/assets', { recursive: true });
     vol.writeFileSync(path.join('/app', filePath), contents);
 
@@ -167,8 +167,8 @@ describe('FileHookTransform - debugInfo.isTransformed', () => {
       debug: true,
     });
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
-    expect(result.debugInfo?.path).toBe(filePath);
-    expect(result.debugInfo?.isTransformed).toBe(true);
+    expect(result?.debugInfo?.path).toBe(filePath);
+    expect(result?.debugInfo?.isTransformed).toBe(true);
   });
 
   it('should contain `isTransformed` value in debugInfo from createContentsHashResultsAsync in debug mode', async () => {

@@ -15,7 +15,13 @@ import type { DefineFn, RequireFn } from '../require';
 jest.unmock('fs');
 jest.unmock('resolve-from');
 
-type RuntimeGlobal = object;
+type RuntimeGlobal = object & {
+  __REACT_DEVTOOLS_GLOBAL_HOOK__?: any;
+};
+
+declare const global: {
+  __REACT_DEVTOOLS_GLOBAL_HOOK__?: any;
+};
 
 /**
  * A runtime that combines Metro's module system, a React renderer
@@ -90,7 +96,6 @@ export class Runtime {
 
       // Associate the renderer instance with this runtime's global object.
       // NOTE: Strictly speaking, this is an implementation detail of React.
-      // @ts-expect-error
       global.__REACT_DEVTOOLS_GLOBAL_HOOK__ = this.#global.__REACT_DEVTOOLS_GLOBAL_HOOK__;
       this.renderer = require('react-test-renderer');
       delete global.__REACT_DEVTOOLS_GLOBAL_HOOK__;

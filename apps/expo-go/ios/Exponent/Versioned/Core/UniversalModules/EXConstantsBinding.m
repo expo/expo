@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXConstantsBinding.h"
-#import "EXUnversioned.h"
 
 @interface EXConstantsBinding ()
 
@@ -44,7 +43,7 @@
 
 - (NSString *)expoClientVersion
 {
-  NSString *expoClientVersion = _unversionedConstants[EX_UNVERSIONED(@"expoRuntimeVersion")];
+  NSString *expoClientVersion = _unversionedConstants[@"expoRuntimeVersion"];
   if (expoClientVersion) {
     return expoClientVersion;
   } else {

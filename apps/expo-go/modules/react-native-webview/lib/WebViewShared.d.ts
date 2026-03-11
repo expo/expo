@@ -5,7 +5,7 @@ declare const createOnShouldStartLoadWithRequest: (loadRequest: (shouldStart: bo
 declare const defaultRenderLoading: () => React.JSX.Element;
 declare const defaultRenderError: (errorDomain: string | undefined, errorCode: number, errorDesc: string) => React.JSX.Element;
 export { defaultOriginWhitelist, createOnShouldStartLoadWithRequest, defaultRenderLoading, defaultRenderError, };
-export declare const useWebViewLogic: ({ startInLoadingState, onNavigationStateChange, onLoadStart, onLoad, onLoadProgress, onLoadEnd, onError, onHttpErrorProp, onMessageProp, onOpenWindowProp, onRenderProcessGoneProp, onContentProcessDidTerminateProp, originWhitelist, onShouldStartLoadWithRequestProp, onShouldStartLoadWithRequestCallback, }: {
+export declare const useWebViewLogic: ({ startInLoadingState, onNavigationStateChange, onLoadStart, onLoad, onLoadProgress, onLoadEnd, onError, onLoadSubResourceError, onHttpErrorProp, onMessageProp, onOpenWindowProp, onRenderProcessGoneProp, onContentProcessDidTerminateProp, originWhitelist, onShouldStartLoadWithRequestProp, onShouldStartLoadWithRequestCallback, }: {
     startInLoadingState?: boolean | undefined;
     onNavigationStateChange?: ((event: WebViewNavigation) => void) | undefined;
     onLoadStart?: ((event: WebViewNavigationEvent) => void) | undefined;
@@ -13,6 +13,7 @@ export declare const useWebViewLogic: ({ startInLoadingState, onNavigationStateC
     onLoadProgress?: ((event: WebViewProgressEvent) => void) | undefined;
     onLoadEnd?: ((event: WebViewNavigationEvent | WebViewErrorEvent) => void) | undefined;
     onError?: ((event: WebViewErrorEvent) => void) | undefined;
+    onLoadSubResourceError?: ((event: WebViewErrorEvent) => void) | undefined;
     onHttpErrorProp?: ((event: WebViewHttpErrorEvent) => void) | undefined;
     onMessageProp?: ((event: WebViewMessageEvent) => void) | undefined;
     onOpenWindowProp?: ((event: WebViewOpenWindowEvent) => void) | undefined;
@@ -26,6 +27,7 @@ export declare const useWebViewLogic: ({ startInLoadingState, onNavigationStateC
     onLoadingStart: (event: WebViewNavigationEvent) => void;
     onLoadingProgress: (event: WebViewProgressEvent) => void;
     onLoadingError: (event: WebViewErrorEvent) => void;
+    onLoadingSubResourceError: (event: WebViewErrorEvent) => void;
     onLoadingFinish: (event: WebViewNavigationEvent) => void;
     onHttpError: (event: WebViewHttpErrorEvent) => void;
     onRenderProcessGone: (event: WebViewRenderProcessGoneEvent) => void;

@@ -75,13 +75,16 @@ export default function VideoAudioTracksScreen() {
           handleAudioTrackChange(value);
         }}>
         {availableAudioTracks &&
-          availableAudioTracks.map((source, index) => (
-            <Picker.Item
-              key={index}
-              label={availableAudioTracks[index]?.label ?? 'Off'}
-              value={index}
-            />
-          ))}
+          availableAudioTracks.map((source, index) => {
+            let label = availableAudioTracks[index]?.label ?? 'Off';
+            const name = availableAudioTracks[index]?.name;
+            // Apple uses a weird algorithm to determine whether to add the name tag to the track label
+            // This way we will get the same results on Android and iOS in the picker
+            if (name && !label.includes(name)) {
+              label = `${name} - ${label}`;
+            }
+            return <Picker.Item key={index} label={label} value={index} />;
+          })}
       </Picker>
       <Text>Current audio track: {audioTrack?.label ?? availableAudioTracks[0]?.label}</Text>
     </View>

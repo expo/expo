@@ -98,7 +98,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       }
 
       // Go back to the JS thread to execute the callback
-      appContext.executeOnJavaScriptThread {
+      try appContext.runtime.schedule {
         callback(result)
       }
     }
@@ -106,6 +106,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
   // MARK: - JavaScriptObjectBuilder
 
+  @JavaScriptActor
   func build(appContext: AppContext) throws -> JavaScriptObject {
     return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak appContext, self] this, args, resolve, reject in
       guard let appContext else {

@@ -6,11 +6,65 @@
 
 ### 🎉 New features
 
+- Added react-native 0.83 support. ([#43855](https://github.com/expo/expo/pull/43855) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
+
+- Add version mapping for SDK 55 and react native 0.83 ([#43682](https://github.com/expo/expo/pull/43682) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+## 0.14.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.5 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- Allow React Native TV projects. ([#42791](https://github.com/expo/expo/pull/42791) by [@douglowder](https://github.com/douglowder))
+
+## 0.14.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.13 - 2025-12-04
 
 ### 💡 Others
 
 - Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 0.13.12 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
 
 ## 0.13.11 - 2025-09-18
 

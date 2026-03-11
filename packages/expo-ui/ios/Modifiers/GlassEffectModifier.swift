@@ -31,7 +31,7 @@ internal struct GlassEffectModifier: ViewModifier, Record {
   @ViewBuilder
   func body(content: Content) -> some View {
     if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
       let interactive = glass?.interactive ?? false
       let tint = glass?.tint
       let glass = parseGlassVariant(glass?.variant ?? .regular)
@@ -47,15 +47,15 @@ internal struct GlassEffectModifier: ViewModifier, Record {
       case .roundedRectangle:
         content.glassEffect(glass.interactive(interactive).tint(tint), in: RoundedRectangle(cornerRadius: cornerRadius))
       }
-      #else
+#else
       content
-      #endif
+#endif
     } else {
       content
     }
   }
 
-  #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
   private func parseGlassVariant(_ variant: GlassEffectVariant) -> Glass {
     switch variant {
@@ -67,7 +67,7 @@ internal struct GlassEffectModifier: ViewModifier, Record {
       return .identity
     }
   }
-  #endif
+#endif
 }
 
 internal struct GlassEffectIdModifier: ViewModifier, Record {
@@ -76,15 +76,15 @@ internal struct GlassEffectIdModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
       if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
         content.glassEffectID(id, in: namespace)
       } else {
         content
       }
-      #else
+#else
       content
-      #endif
+#endif
     } else {
       content
     }

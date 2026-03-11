@@ -8,10 +8,12 @@ const STORE = new AsyncLocalStorage();
  */
 export function createRequestHandler(params, setup) {
     const run = createWorkerdRequestScope(STORE, params);
-    const onRequest = createExpoHandler({
-        ...createWorkerdEnv(params),
-        ...setup,
-    });
-    return (request, env, ctx) => run(onRequest, request, env, ctx);
+    const common = createWorkerdEnv(params);
+    const onRequest = createExpoHandler({ ...common, ...setup });
+    function handler(request, env, ctx) {
+        return run(onRequest, request, env, ctx);
+    }
+    handler.preload = common.preload;
+    return handler;
 }
 //# sourceMappingURL=workerd.js.map

@@ -20,7 +20,7 @@ class JavaScriptModuleObject;
 
 class JSDecoratorsBridgingObject;
 
-class JavaScriptRuntime;
+class MainRuntimeInstaller;
 
 /**
  * A CPP part of the module.
@@ -54,7 +54,7 @@ public:
 
 private:
   friend HybridBase;
-  friend JavaScriptRuntime;
+  friend MainRuntimeInstaller;
 
   /**
    * A reference to the `jsi::Object`.

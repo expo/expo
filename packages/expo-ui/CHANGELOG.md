@@ -4,21 +4,189 @@
 
 ### 🛠 Breaking changes
 
+- [android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
+- [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
+- [android] control ContextMenu expanded state from JS ([#43793](https://github.com/expo/expo/pull/43793) by [@Ubax](https://github.com/Ubax))
+
+### 🎉 New features
+
+- [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [android] Added `enabled`, `onValueChangeFinished`, and `Slider.Thumb`/`Slider.Track` slot support to `Slider` component. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `graphicsLayer` modifier and animation helpers for per-value animation in it. Added `indication` option to `clickable` modifier to control ripple effects. ([#43655](https://github.com/expo/expo/pull/43655) by [@vonovak](https://github.com/vonovak))
+- [Android] Added border color customization for `Switch` and `Checkbox` components. ([#43770](https://github.com/expo/expo/pull/43770) by [@liestig](https://github.com/liestig))
+- [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] detect FAB in HorizontalFloatingToolbar ([#43601](https://github.com/expo/expo/pull/43601) by [@Ubax](https://github.com/Ubax))
+- [android] Add `elementColors` prop to the `DateTimePicker` component ([#43787](https://github.com/expo/expo/pull/43787) by [@iankberry](https://github.com/iankberry))
+- [iOS] Added `AccessoryWidgetBackground` component ([#43729](https://github.com/expo/expo/pull/43729) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add support for local image uri ([#43707](https://github.com/expo/expo/pull/43707) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))
+- [Android] Fix touch events for RN views inside Compose BottomSheet. ([#43716](https://github.com/expo/expo/pull/43716) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix `RNHostView` child parent related crash. ([#43691](https://github.com/expo/expo/pull/43691) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `RNHostView` to improve RN component layout inside Compose views. ([#43495](https://github.com/expo/expo/pull/43495) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] fix modifiers export ([#43639](https://github.com/expo/expo/pull/43639) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- [iOS] Add `AsyncFunction` support in `ExpoUIView` definition function. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 55.0.1 — 2026-02-25
+
+### 🎉 New features
+
+- [iOS] Added `luminanceToAlpha` modifier. ([#43417](https://github.com/expo/expo/pull/43417) by [@jakex7](https://github.com/jakex7))
+
+## 55.0.0 — 2026-02-25
+
+### 🎉 New features
+
+- [iOS] Added `ConfirmationDialog` component. ([#43366](https://github.com/expo/expo/pull/43366) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `monospacedDigit` modifier. ([#43328](https://github.com/expo/expo/pull/43328) by [@axeelz](https://github.com/axeelz))
+
+## 55.0.0-preview.7 — 2026-02-20
+
+### 🎉 New features
+
+- [iOS] Added per-axis `scaleEffect` support (`{ x, y }`) to view modifiers. ([#43228](https://github.com/expo/expo/pull/43228) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 💡 Others
+
+- [jetpack-compose] Added more views and modifiers. ([#42734](https://github.com/expo/expo/pull/42734) by [@kudo](https://github.com/kudo))
+
+## 55.0.0-preview.6 — 2026-02-16
+
+### 🎉 New features
+
+- [iOS] - Support `Section` `footer` prop with `title` prop. ([#42966](https://github.com/expo/expo/pull/42966) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `contentTransition` modifier. ([#42980](https://github.com/expo/expo/pull/42980) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `ScrollView` component. ([#43162](https://github.com/expo/expo/pull/43162) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `selection` and `onSelectionChange` to `presentationDetents` modifier for programmatic control of bottom sheet detents. ([#42910](https://github.com/expo/expo/pull/42910) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `ColorPicker` `onSelectionChange` callback never firing due to native event name mismatch. ([#43180](https://github.com/expo/expo/pull/43180) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `clipShape` and `mask` modifiers silently falling through to `Rectangle()` for `capsule` and `ellipse` shapes. ([#43158](https://github.com/expo/expo/pull/43158) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Fix rendering `0` in SwiftUI Text. ([#43036](https://github.com/expo/expo/pull/43036) by [@jakex7](https://github.com/jakex7))
+- [iOS] Set initial state in `init` instead of `onAppear` in `DatePicker`, `Section`, `DisclosureGroup`, `Popover`, and `ColorPicker` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `foregroundStyle` hierarchical style not being applied correctly. ([#43233](https://github.com/expo/expo/pull/43233) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 55.0.0-preview.5 — 2026-02-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed missing dependency on RCTFabric in ExpoUI podspec. ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix initial state not being set in `Picker`, `Slider`, `Toggle`, and `List` components. ([#42933](https://github.com/expo/expo/pull/42933) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 55.0.0-preview.4 — 2026-02-03
+
+### 🛠 Breaking changes
+
+- [iOS] Renamed `ignoreSafeAreaKeyboardInsets` to `ignoreSafeArea` on `Host` component. It now accepts `'all'` or `'keyboard'` instead of a boolean. ([#42598](https://github.com/expo/expo/pull/42598) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+- [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571) by [@shubh73](https://github.com/shubh73))
+- Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
+- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
+
+## 55.0.0-beta.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-beta.2 — 2026-01-26
+
+### 🎉 New features
+
+- [iOS] Add Markdown support to the Text component. ([#42448](https://github.com/expo/expo/pull/42448) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
+
+## 55.0.0-beta.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-beta.0 — 2026-01-21
+
+- [ios] - Fix modifiers import path in the example ([#41811](https://github.com/expo/expo/pull/41811) by [@pchalupa](https://github.com/pchalupa))
+
+### 🛠 Breaking changes
+
+- [iOS] - Match `DatePicker` API with SwiftUI API. Remove `DateTimePicker` component ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Merge Circular/Linear progress components into one ([#41596](https://github.com/expo/expo/pull/41596) by [@jakex7](https://github.com/jakex7))
+- [iOS] - Remove `nativeEvent` from `onSelectionChange` and `onDateChange` events in `Picker` and `DatePicker` ([#41611](https://github.com/expo/expo/pull/41611) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] - Add `label` support in `Slider` and match API with SwiftUI ([#41616](https://github.com/expo/expo/pull/41616) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Match `Button` API with SwiftUI's API ([#41617](https://github.com/expo/expo/pull/41617) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `Switch` component and add `Toggle` component. ([#41675](https://github.com/expo/expo/pull/41675) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] - Replace `onStateChange` callback with `onIsPresentedChange` in `Popover` ([#41628](https://github.com/expo/expo/pull/41628) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Replace `onStateChange` event with `onIsExpandedChange` in `DisclosureGroup` ([#41726](https://github.com/expo/expo/pull/41726) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Replace `onValueChange` event with `onSelectionChange` in `ColorPicker`. ([#41725](https://github.com/expo/expo/pull/41725) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Use constructor for `title` prop instead of a custom `Text` in `Section`. Replace `collapsible` prop with `isExpanded` prop ([#41722](https://github.com/expo/expo/pull/41722) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `scrollEnabled` prop from Form. Use `scrollDisabled` modifier instead. ([#41728](https://github.com/expo/expo/pull/41728) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] - Replace `Progress` with `ProgressView` ([#42019](https://github.com/expo/expo/pull/42019) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `Menu` specific APIs from `ContextMenu` ([#42027](https://github.com/expo/expo/pull/42027) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `color` prop and replace `min`, `max`, `label` prop with `minimumValueLabel`, `maximumValueLabel` and `currentValueLabel` in `Guage` ([#42022](https://github.com/expo/expo/pull/42022) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `onPress` and `backgroundColor` from `HStack`, `VStack` and `Group`. Use modifiers instead ([#42055](https://github.com/expo/expo/pull/42055) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `editModeEnabled` prop from `List`. Use `environment` modifier instead. Add `ForEach` component with `onDelete` and `onMove` support. Add `selection` prop to `List`. Add `environment`, `moveDisabled` and `deleteDisabled` modifiers ([#42011](https://github.com/expo/expo/pull/42011) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 🎉 New features
+
+- [iOS] - Add range and custom label support in `DatePicker` ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Added `matchContents` support to `Host`. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
+- [iOS] Add `timerInterval` to `Progress` component. ([#41598](https://github.com/expo/expo/pull/41598) by [@jakex7](https://github.com/jakex7))
+- [iOS] Make some views public.
+- [iOS] - Add `Menu` component ([#41664](https://github.com/expo/expo/pull/41664) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove presentation props from `BottomSheet` and add equivalent modifiers ([#42029](https://github.com/expo/expo/pull/42029) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] - Nested `Text` support ([#41707](https://github.com/expo/expo/pull/41707) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Add containerRelativeFrame modifier. ([#42237](https://github.com/expo/expo/pull/42237) by [@jakex7](https://github.com/jakex7))
+- [iOS] Expose `ViewModifierRegistry.register` and `ViewModifierRegistry.unregister` for custom modifiers. ([#42350](https://github.com/expo/expo/pull/42350) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- [jetpack-compose] Fixed `DatePicker` and `Picker` crash when used inside `Host` with `matchContents`. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+- [jetpack-compose] Fixed `Picker` crash when selecting an option. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+- [jetpack-compose] Fixed `Carousel` not displaying items. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+- [jetpack-compose] Fixed modifiers not being applied correctly. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+- [iOS] Skip rendering `label` as `Menu` item.
+
+### 💡 Others
+
+- [jetpack-compose] Replaced `DynamicTheme` as `Host.colorScheme` prop. ([#41413](https://github.com/expo/expo/pull/41413) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] Removed coupled `AutoSizingComposable`. ([#41595](https://github.com/expo/expo/pull/41595) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] Refactored leaf components to DSL pattern. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+
+## 0.2.0-beta.10 — 2025-12-09
+
+### 🛠 Breaking changes
+
 - [iOS] - Match `Picker` API with SwiftUI API ([#40982](https://github.com/expo/expo/pull/40982) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Remove `frame`, `fixedSize`, `padding` from common props and remove `color` prop from `Label` ([#41213](https://github.com/expo/expo/pull/41213) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 
+- [iOS] Add numeric x-axis support to Chart component ([#41236](https://github.com/expo/expo/pull/41236) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [iOS] Add `listRowSeparator` modifier. ([#41372](https://github.com/expo/expo/pull/41372) by [@kfirfitousi](https://github.com/kfirfitousi))
+- [android] Add new modifiers. ([#41234](https://github.com/expo/expo/pull/41234) by [@aleqsio](https://github.com/aleqsio))
+- [android] Add IconButton. ([#41232](https://github.com/expo/expo/pull/41232) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add `presentationBackgroundInteraction` support to `BottomSheet`. ([#00000](https://github.com/expo/expo/pull/40932) by [@chollier](https://github.com/chollier))
 - [iOS] Add `menuActionDismissBehavior` modifier. ([#41087](https://github.com/expo/expo/pull/41087) by [@starsky-nev](https://github.com/starsky-nev))
 - [iOS] Added `submitLabel` modifier to change the label of the keyboard submit button ([#40975](https://github.com/expo/expo/pull/40975) by [@tmallet](https://github.com/tmallet))
 - [iOS] Added `textFieldStyle` modifier to set the style for text field ([#41038](https://github.com/expo/expo/pull/41038) by [@isaiah-hamilton](https://github.com/isaiah-hamilton))
+- [jetpack-compose] Added `CircularWavyProgress` and `LinearWavyProgress` components. ([#40988](https://github.com/expo/expo/pull/40988) by [@kudo](https://github.com/kudo))
+- [iOS] Added `RNHost` to improve RN component layout inside SwiftUI views ([#40938](https://github.com/expo/expo/pull/40938) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `ignoreSafeAreaKeyboardInsets` to `Host` component. ([#41302](https://github.com/expo/expo/pull/41302) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
+- [android] Fix events for functional view definitions. ([#41374](https://github.com/expo/expo/pull/41374) by [@aleqsio](https://github.com/aleqsio))
+- [android] Remove style prop from components. ([#41233](https://github.com/expo/expo/pull/41233) by [@aleqsio](https://github.com/aleqsio))
+- [android] Add missing scopes to modifiers. ([#41231](https://github.com/expo/expo/pull/41231) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix `ContextMenu` item with subtitle buttons ([#40926](https://github.com/expo/expo/pull/40926) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `TextField` causing crash when reload and unmounting. ([#40960](https://github.com/expo/expo/pull/40960) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 0.2.0-beta.8 — 2025-11-06
 
@@ -55,6 +223,7 @@
 - [iOS] Add `labelView` to LabeledContent component ([#40798](https://github.com/expo/expo/pull/40798) by [@focux](https://github.com/focux))
 - [iOS] - Add shape in `background` modifier and fix `foregroundStyle` modifer in `Label` ([#40748](https://github.com/expo/expo/pull/40748) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Add `systemImage` property to `Switch` component ([#40838](https://github.com/expo/expo/pull/40838) by [@focux](https://github.com/focux))
+- [iOS] Add `icon` property to Label component ([#41178](https://github.com/expo/expo/pull/41178) by [@focux](https://github.com/focux))
 
 ### 🐛 Bug fixes
 

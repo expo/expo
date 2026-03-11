@@ -60,10 +60,10 @@ internal func getResourceValues(from directory: URL?, forKeys: Set<URLResourceKe
 }
 
 internal func ensurePathPermission(_ appContext: AppContext?, path: String, flag: EXFileSystemPermissionFlags) throws {
-  guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
+  guard let fileSystemManager = appContext?.fileSystem else {
     throw Exceptions.PermissionsModuleNotFound()
   }
-  guard permissionsManager.getPathPermissions(path).contains(flag) else {
+  guard fileSystemManager.getPathPermissions(path).contains(flag) else {
     throw flag == .read ? FileNotReadableException(path) : FileNotWritableException(path)
   }
 }

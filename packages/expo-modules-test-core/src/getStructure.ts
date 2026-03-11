@@ -257,6 +257,7 @@ function parseModuleDefinition(
       findNamedDefinitionsOfType('Prop', preparedModuleDefinition, file),
       ['view']
     ),
+    constants: findNamedDefinitionsOfType('Constant', preparedModuleDefinition, file),
     views: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'View'),
     classes: findAndParseNestedClassesOfType(preparedModuleDefinition, file, 'Class'),
   };

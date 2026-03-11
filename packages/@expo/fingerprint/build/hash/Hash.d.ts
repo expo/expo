@@ -1,5 +1,5 @@
-import pLimit from 'p-limit';
 import type { Fingerprint, FingerprintSource, HashResultContents, HashResultDir, HashResultFile, HashSource, HashSourceContents, NormalizedOptions } from '../Fingerprint.types';
+import { type Limiter } from '../utils/Concurrency';
 /**
  * Create a `Fingerprint` from `HashSources` array
  */
@@ -8,16 +8,16 @@ export declare function createFingerprintFromSourcesAsync(sources: HashSource[],
  * Create a `FingerprintSource` from a `HashSource`
  * This function will get a hash value and merge back to original source
  */
-export declare function createFingerprintSourceAsync(source: HashSource, limiter: pLimit.Limit, projectRoot: string, options: NormalizedOptions): Promise<FingerprintSource>;
+export declare function createFingerprintSourceAsync(source: HashSource, limiter: Limiter, projectRoot: string, options: NormalizedOptions): Promise<FingerprintSource>;
 /**
  * Create a `HashResult` from a file
  */
-export declare function createFileHashResultsAsync(filePath: string, limiter: pLimit.Limit, projectRoot: string, options: NormalizedOptions): Promise<HashResultFile | null>;
+export declare function createFileHashResultsAsync(filePath: string, limiter: Limiter, projectRoot: string, options: NormalizedOptions): Promise<HashResultFile | null>;
 /**
  * Create `HashResult` for a dir.
  * If the dir is excluded, returns null rather than a HashResult
  */
-export declare function createDirHashResultsAsync(dirPath: string, limiter: pLimit.Limit, projectRoot: string, options: NormalizedOptions, depth?: number): Promise<HashResultDir | null>;
+export declare function createDirHashResultsAsync(dirPath: string, limiter: Limiter, projectRoot: string, options: NormalizedOptions, depth?: number): Promise<HashResultDir | null>;
 /**
  * Create `HashResult` for a `HashSourceContents`
  */

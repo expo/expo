@@ -12,9 +12,6 @@ import android.os.PersistableBundle;
 import android.util.Log;
 
 import org.json.JSONObject;
-import expo.modules.apploader.AppLoaderProvider;
-import expo.modules.apploader.HeadlessAppLoader;
-import expo.modules.core.interfaces.SingletonModule;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -25,7 +22,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
-
+import expo.modules.apploader.AppLoaderProvider;
+import expo.modules.apploader.HeadlessAppLoader;
+import expo.modules.core.interfaces.SingletonModule;
 import expo.modules.interfaces.taskManager.TaskConsumerInterface;
 import expo.modules.interfaces.taskManager.TaskExecutionCallback;
 import expo.modules.interfaces.taskManager.TaskInterface;
@@ -203,17 +202,14 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     if (appEvents != null) {
       appEvents.remove(eventId);
 
-      if (appEvents.size() == 0) {
+      if (appEvents.isEmpty()) {
         sEvents.remove(appScopeKey);
 
         // Invalidate app record but after 2 seconds delay so we can still take batched events.
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-          @Override
-          public void run() {
-            if (!sEvents.containsKey(appScopeKey)) {
-              invalidateAppRecord(appScopeKey);
-            }
+        handler.postDelayed(() -> {
+          if (!sEvents.containsKey(appScopeKey)) {
+            invalidateAppRecord(appScopeKey);
           }
         }, 2000);
       }
@@ -349,10 +345,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     TaskInterface task = getTask(taskName, appScopeKey);
 
-    // `notifyTaskJobCancelled` notifies TaskManagerUtils about a job for task being cancelled.
-    // It returns `true` if the job has been intentionally cancelled to be rescheduled,
-    // in that case we don't want to inform the consumer about cancellation.
-    if (task != null && !TaskManagerUtils.notifyTaskJobCancelled(task)) {
+    if (task != null) {
       TaskConsumerInterface consumer = task.getConsumer();
 
       if (consumer == null) {
@@ -361,7 +354,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
       Log.i(TAG, "Job for task '" + taskName + "' has been cancelled by the system.");
 
-      // cancels task
       return consumer.didCancelJob(jobService, params);
     }
 
@@ -370,7 +362,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   public void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback) {
-    TaskManagerInterface taskManager = getTaskManager(task.getAppScopeKey());
+    String appScopeKey = task.getAppScopeKey();
+    TaskManagerInterface taskManager = getTaskManager(appScopeKey);
     Bundle body = createExecutionEventBody(task, data, error);
     Bundle executionInfo = body.getBundle("executionInfo");
 
@@ -380,7 +373,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
 
     String eventId = executionInfo.getString("eventId");
-    String appScopeKey = task.getAppScopeKey();
 
     if (callback != null) {
       sTaskCallbacks.put(eventId, callback);
@@ -408,9 +400,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
 
-    try {
-      getAppLoader().loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()), () -> {
-      }, success -> {
+    getAppLoader().loadApp(mContextRef.get(),
+      new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()),
+      () -> {
+      },
+      success -> {
         if (!success) {
           sEvents.remove(appScopeKey);
           mTasksAndEventsRepository.removeEvents(appScopeKey);
@@ -418,17 +412,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
           // Host unreachable? Unregister all tasks for that app.
           unregisterAllTasksForAppScopeKey(appScopeKey);
         }
-      });
-    } catch (HeadlessAppLoader.AppConfigurationError ignored) {
-      try {
-        unregisterTask(task.getName(), appScopeKey, null);
-      } catch (Exception e) {
-        Log.e(TAG, "Error occurred while unregistering invalid task.", e);
       }
-
-      appEvents.remove(eventId);
-      mTasksAndEventsRepository.removeEvents(appScopeKey);
-    }
+    );
   }
 
   //endregion
@@ -523,7 +508,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     SharedPreferences preferences = getSharedPreferences();
     Map<String, Object> appConfig = preferences != null ? jsonToMap(preferences.getString(appScopeKey, "")) : null;
 
-    if (appConfig != null && appConfig.size() > 0) {
+    if (appConfig != null && !appConfig.isEmpty()) {
       String oldAppUrl = (String) appConfig.get("appUrl");
 
       if (oldAppUrl == null || !oldAppUrl.equals(appUrl)) {
@@ -546,7 +531,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       String appUrl = entry.getValue().appUrl;
       Map<String, Object> tasksConfig = entry.getValue().tasks;
 
-      if (appUrl != null && tasksConfig != null && tasksConfig.size() > 0) {
+      if (appUrl != null && tasksConfig != null && !tasksConfig.isEmpty()) {
         for (String taskName : tasksConfig.keySet()) {
           Map<String, Object> taskConfig = (HashMap<String, Object>) tasksConfig.get(taskName);
           String consumerClassString = (String) taskConfig.get("consumerClass");
@@ -611,12 +596,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   private void finishJobAfterTimeout(final JobService jobService, final JobParameters params, long timeout) {
     Handler handler = new Handler();
-    handler.postDelayed(new Runnable() {
-      @Override
-      public void run() {
-        jobService.jobFinished(params, false);
-      }
-    }, timeout);
+    handler.postDelayed(() -> jobService.jobFinished(params, false), timeout);
   }
-
 }

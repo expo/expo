@@ -174,12 +174,12 @@ exports[`lints with the default config: fixtures/all-01.ts 1`] = `
   "messages": [
     {
       "column": 3,
-      "endColumn": 18,
+      "endColumn": 4,
       "endLine": 18,
       "line": 18,
       "message": "Duplicate name 'm'.",
       "messageId": "unexpected",
-      "nodeType": "PropertyDefinition",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-dupe-class-members",
       "severity": 1,
     },

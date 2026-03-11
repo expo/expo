@@ -2,21 +2,27 @@
 
 import {
   createNavigatorFactory,
-  NavigationState,
   ParamListBase,
   TabNavigationState,
   TabRouterOptions,
   useNavigationBuilder,
-  type EventMapBase,
 } from '@react-navigation/native';
 import React, { use, useCallback, useMemo } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
+import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
-import type { NativeTabOptions, NativeTabsProps, NativeTabsViewTabItem } from './types';
+import type {
+  InternalNativeTabsProps,
+  NativeTabNavigationEventMap,
+  NativeTabOptions,
+  NativeTabsProps,
+  NativeTabsViewTabItem,
+} from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
+import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
@@ -32,8 +38,10 @@ export function NativeTabsNavigator({
   badgeBackgroundColor,
   indicatorColor,
   badgeTextColor,
+  shadowColor,
+  screenListeners,
   ...rest
-}: NativeTabsProps) {
+}: InternalNativeTabsProps) {
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
@@ -55,12 +63,13 @@ export function NativeTabsNavigator({
   const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
-    Record<string, (...args: any) => void>,
+    Record<string, (...args: unknown[]) => void>,
     NativeTabOptions,
-    Record<string, any>
+    NativeTabNavigationEventMap
   >(NativeBottomTabsRouter, {
     children,
     backBehavior,
+    screenListeners,
     screenOptions: {
       disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
       labelStyle: processedLabelStyle.default,
@@ -72,6 +81,7 @@ export function NativeTabsNavigator({
       badgeBackgroundColor,
       indicatorColor,
       badgeTextColor,
+      shadowColor,
     },
   });
 
@@ -97,6 +107,10 @@ export function NativeTabsNavigator({
     () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key),
     [visibleTabs, routes, state.index]
   );
+  const visibleTabsKeys = useMemo(
+    () => visibleTabs.map((tab) => tab.routeKey).join(';'),
+    [visibleTabs]
+  );
 
   if (visibleFocusedTabIndex < 0) {
     if (process.env.NODE_ENV !== 'production') {
@@ -111,6 +125,13 @@ export function NativeTabsNavigator({
     (tabKey: string) => {
       const descriptor = descriptors[tabKey];
       const route = descriptor.route;
+      navigation.emit({
+        type: 'tabPress',
+        target: tabKey,
+        data: {
+          __internalTabsType: 'native',
+        },
+      });
       navigation.dispatch({
         type: 'JUMP_TO',
         target: state.key,
@@ -127,6 +148,7 @@ export function NativeTabsNavigator({
       <NativeTabsContext value>
         <NativeTabsView
           {...rest}
+          key={visibleTabsKeys}
           focusedIndex={focusedIndex}
           tabs={visibleTabs}
           onTabChange={onTabChange}
@@ -138,9 +160,28 @@ export function NativeTabsNavigator({
 
 const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
 
-export const NativeTabsNavigatorWithContext = withLayoutContext<
+const NativeTabsNavigatorWithContext = withLayoutContext<
   NativeTabOptions,
   typeof NativeTabsNavigator,
-  NavigationState,
-  EventMapBase
+  TabNavigationState<ParamListBase>,
+  NativeTabNavigationEventMap
 >(createNativeTabNavigator().Navigator, undefined, true);
+
+export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
+  const triggerChildren = useMemo(
+    () => getAllChildrenOfType(props.children, NativeTabTrigger),
+    [props.children]
+  );
+  const nonTriggerChildren = useMemo(
+    () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
+    [props.children]
+  );
+
+  return (
+    <NativeTabsNavigatorWithContext
+      {...props}
+      children={triggerChildren}
+      nonTriggerChildren={nonTriggerChildren}
+    />
+  );
+}

@@ -23,9 +23,14 @@ const filePath_1 = require("../utils/filePath");
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = core_1.template.statement(`module.exports = require('react-server-dom-webpack/server').createClientModuleProxy(FILE_PATH);`);
 const buildStringRef = core_1.template.statement(`module.exports = FILE_PATH;`);
+// The React Server Component version cannot have a function otherwise we'd be passing a function to the client component <Image />.
+// TODO: Make react-native Image and expo-image server components that can simplify the asset before passing to the client component.
 const buildStaticObjectRef = core_1.template.statement(
 // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
 `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT };`);
+const buildStaticObjectClientRef = core_1.template.statement(
+// Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
+`module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`);
 async function transform({ filename, options, }, assetRegistryPath, assetDataPlugins) {
     options ??= options || {
         platform: '',
@@ -48,6 +53,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         isReactServer) {
         return {
             ast: {
+                comments: null,
                 ...core_1.types.file(core_1.types.program([
                     buildClientReferenceRequire({
                         FILE_PATH: JSON.stringify(`./${(0, filePath_1.toPosixPath)(node_path_1.default.relative(options.projectRoot, absolutePath))}`),
@@ -77,15 +83,16 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         }
         // If size data is known then it should be passed back to ensure the correct dimensions are used.
         if (data.width != null || data.height != null) {
+            const options = {
+                FILE_PATH: JSON.stringify(assetPath),
+                WIDTH: data.width != null ? core_1.types.numericLiteral(data.width) : core_1.types.buildUndefinedNode(),
+                HEIGHT: data.height != null ? core_1.types.numericLiteral(data.height) : core_1.types.buildUndefinedNode(),
+            };
+            const creatorFunction = isReactServer ? buildStaticObjectRef : buildStaticObjectClientRef;
             return {
                 ast: {
-                    ...core_1.types.file(core_1.types.program([
-                        buildStaticObjectRef({
-                            FILE_PATH: JSON.stringify(assetPath),
-                            WIDTH: data.width != null ? core_1.types.numericLiteral(data.width) : core_1.types.buildUndefinedNode(),
-                            HEIGHT: data.height != null ? core_1.types.numericLiteral(data.height) : core_1.types.buildUndefinedNode(),
-                        }),
-                    ])),
+                    comments: null,
+                    ...core_1.types.file(core_1.types.program([creatorFunction(options)])),
                     errors: [],
                 },
                 reactClientReference: getClientReference(),
@@ -95,6 +102,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
         // module.exports = "/foo/bar.png";
         return {
             ast: {
+                comments: null,
                 ...core_1.types.file(core_1.types.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
                 errors: [],
             },
@@ -103,6 +111,7 @@ async function transform({ filename, options, }, assetRegistryPath, assetDataPlu
     }
     return {
         ast: {
+            comments: null,
             ...(0, util_1.generateAssetCodeFileAst)(assetRegistryPath, data),
             errors: [],
         },

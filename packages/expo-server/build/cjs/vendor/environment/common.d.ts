@@ -3,11 +3,15 @@ interface EnvironmentInput {
     readText(request: string): Promise<string | null>;
     readJson(request: string): Promise<unknown>;
     loadModule(request: string): Promise<unknown>;
+    isDevelopment: boolean;
 }
-export declare function createEnvironment(input: EnvironmentInput): {
-    getRoutesManifest(): Promise<Manifest>;
-    getHtml(_request: Request, route: Route): Promise<string | Response | null>;
+export interface CommonEnvironment {
+    getRoutesManifest(): Promise<Manifest | null>;
+    getHtml(request: Request, route: Route): Promise<string | Response | null>;
     getApiRoute(route: Route): Promise<unknown>;
     getMiddleware(middleware: MiddlewareInfo): Promise<any>;
-};
+    getLoaderData(request: Request, route: Route): Promise<Response>;
+    preload(): Promise<void>;
+}
+export declare function createEnvironment(input: EnvironmentInput): CommonEnvironment;
 export {};

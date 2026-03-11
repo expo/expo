@@ -9,8 +9,15 @@ import java.net.URL
 
 class AudioSource(
   @Field val uri: String?,
-  @Field val headers: Map<String, String>?
+  @Field val headers: Map<String, String>?,
+  @Field val name: String? = null
 ) : Record
+
+enum class LoopMode(val value: String) : Enumerable {
+  NONE("none"),
+  SINGLE("single"),
+  ALL("all")
+}
 
 class AudioMode(
   @Field val shouldPlayInBackground: Boolean = false,
@@ -87,11 +94,6 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
   }
 }
 
-enum class LockScreenButtons(val value: Int) : Enumerable {
-  SEEK_FORWARD(0),
-  SEEK_BACKWARD(1)
-}
-
 class AudioLockScreenOptions(
   @Field val showSeekForward: Boolean,
   @Field val showSeekBackward: Boolean
@@ -99,7 +101,8 @@ class AudioLockScreenOptions(
 
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
-  DUCK_OTHERS("duckOthers")
+  DUCK_OTHERS("duckOthers"),
+  MIX_WITH_OTHERS("mixWithOthers")
 }
 
 class RecordOptions(

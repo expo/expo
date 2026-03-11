@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import type { DownloadOptions, PathInfo } from './ExpoFileSystem.types';
+import { FileMode, type DownloadOptions, type PathInfo } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -69,6 +69,14 @@ export class Paths extends PathUtilities {
  * ```
  */
 export class File extends ExpoFileSystem.FileSystemFile implements Blob {
+  static downloadFileAsync: (
+    url: string,
+    destination: Directory | File,
+    options?: DownloadOptions
+  ) => Promise<File>;
+
+  static pickFileAsync: (initialUri?: string, mimeType?: string) => Promise<File | File[]>;
+
   /**
    * Creates an instance of a file. It can be created for any path, and does not need to exist on the filesystem during creation.
    *
@@ -107,11 +115,13 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   readableStream() {
-    return new ReadableStream(new FileSystemReadableStreamSource(super.open()));
+    return new ReadableStream(new FileSystemReadableStreamSource(super.open(FileMode.ReadOnly)));
   }
 
   writableStream() {
-    return new WritableStream<Uint8Array>(new FileSystemWritableSink(super.open()));
+    return new WritableStream<Uint8Array>(
+      new FileSystemWritableSink(super.open(FileMode.WriteOnly))
+    );
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
@@ -155,6 +165,8 @@ File.pickFileAsync = async function (initialUri?: string, mimeType?: string) {
  * ```
  */
 export class Directory extends ExpoFileSystem.FileSystemDirectory {
+  static pickDirectoryAsync: (initialUri?: string) => Promise<Directory>;
+
   /**
    * Creates an instance of a directory. It can be created for any path, and does not need to exist on the filesystem during creation.
    *

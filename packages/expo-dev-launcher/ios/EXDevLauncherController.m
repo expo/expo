@@ -9,7 +9,6 @@
 #import <React/RCTKeyCommands.h>
 
 #import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
@@ -39,9 +38,10 @@
 #define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
 #endif
 
+static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
+
 @interface EXDevLauncherController ()
 
-@property (nonatomic, weak) UIWindow *window;
 @property (nonatomic, weak) ExpoDevLauncherReactDelegateHandler * delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
@@ -52,7 +52,6 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, strong) RCTReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 @property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
@@ -83,7 +82,6 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
-    self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
   }
@@ -102,6 +100,7 @@
   return [_recentlyOpenedAppsRegistry clearRegistry];
 }
 
+#if !TARGET_OS_OSX
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
   NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
@@ -127,6 +126,20 @@
 
   return launchOptions;
 }
+#else
+- (NSDictionary *)getLaunchOptions
+{
+  NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
+  NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
+
+  if (deepLink) {
+    // Passes pending deep link to initialURL if any
+    launchOptions[NSApplicationLaunchUserNotificationKey] = deepLink;
+  }
+
+  return launchOptions;
+}
+#endif
 
 - (EXManifestsManifest *)appManifest
 {
@@ -147,9 +160,18 @@
 }
 
 
-- (EXDevLauncherErrorManager *)errorManage
+- (UIWindow *)currentWindow
 {
-  return _errorManager;
+#if !TARGET_OS_OSX
+  for (UIWindow *window in UIApplication.sharedApplication.windows) {
+    if (window.isKeyWindow) {
+      return window;
+    }
+  }
+  return nil;
+#else
+  return NSApplication.sharedApplication.keyWindow;
+#endif
 }
 
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
@@ -160,7 +182,6 @@
   if (lastOpenedApp != nil) {
     _lastOpenedAppUrl = [NSURL URLWithString:lastOpenedApp[@"url"]];
   }
-  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   void (^navigateToLauncher)(NSError *) = ^(NSError *error) {
@@ -175,19 +196,29 @@
     });
   };
 
+#if TARGET_OS_SIMULATOR
+  BOOL hasGrantedNetworkPermission = YES;
+#else
+  BOOL hasGrantedNetworkPermission = [[NSUserDefaults standardUserDefaults] boolForKey:@"expo.devlauncher.hasGrantedNetworkPermission"];
+#endif
+
   NSURL* initialUrl = [EXDevLauncherController initialUrlFromProcessInfo];
-  if (initialUrl) {
+  if (initialUrl && hasGrantedNetworkPermission) {
     [self loadApp:initialUrl withProjectUrl:nil onSuccess:nil onError:navigateToLauncher];
     return;
   }
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+
+  if (!hasGrantedNetworkPermission) {
+    shouldTryToLaunchLastOpenedBundle = NO;
+  }
+  
+  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
     // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
-    NSTimeInterval requestTimeout = 10.0;
-    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:requestTimeout onSuccess:nil onError:navigateToLauncher];
+    [self loadApp:_lastOpenedAppUrl withProjectUrl:nil withTimeout:EXDevLauncherDefaultRequestTimeout onSuccess:nil onError:navigateToLauncher];
     return;
   }
   [self navigateToLauncher];
@@ -202,11 +233,13 @@
 
   self.networkInterceptor = nil;
 
+#if !TARGET_OS_OSX
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
- 
+#endif
+
   // Reset app react host
   [self.delegate destroyReactInstance];
- 
+
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
   }
@@ -251,19 +284,13 @@
   }
 
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
-
-  // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (_reactNativeFactory.rootViewFactory.reactHost == nil) {
-    [self navigateToLauncher];
-  }
-
   return true;
 }
 
 - (nullable NSURL *)sourceUrl
 {
-  if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && ((id<EXUpdatesExternalInterface>)_updatesInterface).launchAssetURL) {
-    return ((id<EXUpdatesExternalInterface>)_updatesInterface).launchAssetURL;
+  if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && ((id<EXUpdatesDevLauncherInterface>)_updatesInterface).launchAssetURL) {
+    return ((id<EXUpdatesDevLauncherInterface>)_updatesInterface).launchAssetURL;
   }
   return _sourceUrl;
 }
@@ -285,7 +312,7 @@
 {
   [self loadApp:url
  withProjectUrl:projectUrl
-    withTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest
+    withTimeout:EXDevLauncherDefaultRequestTimeout
       onSuccess:onSuccess
         onError:onError];
 }
@@ -398,23 +425,25 @@
       // do nothing for now
     } success:^(NSDictionary * _Nullable manifest) {
       if (manifest) {
-        launchExpoApp(((id<EXUpdatesExternalInterface>)self->_updatesInterface).launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
+        launchExpoApp(((id<EXUpdatesDevLauncherInterface>)self->_updatesInterface).launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
     } error:onError];
   };
 
+  __block BOOL shouldRetry = YES;
   [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:^(NSError * _Nonnull error) {
     // Try to retry if the network connection was rejected because of the lack of the lan network permission.
-    static BOOL shouldRetry = true;
     NSString *host = expoUrl.host;
 
     if (shouldRetry && ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."])) {
-      shouldRetry = false;
+      shouldRetry = NO;
       [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:onError];
       return;
     }
 
-    onError(error);
+    if (onError) {
+      onError(error);
+    }
   }];
 }
 
@@ -439,16 +468,20 @@
     }
     __typeof(self) self = weakSelf;
 
+    UIWindow *window = self.currentWindow;
+
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
     // Connect to the websocket, ignore downloaded update bundles
     if (![bundleUrl.scheme isEqualToString:@"file"]) {
-      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      //[[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+      RCTLogWarn(@"bundle scheme is file - unable to connect to sharedPackageConnection from EXDevLauncherController.");
     }
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
+#if !TARGET_OS_OSX
     UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
     [self _applyUserInterfaceStyle:userInterfaceStyle];
 
@@ -457,16 +490,19 @@
     // So we swap `currentTraitCollection` with one from the root view controller.
     // Note that the root view controller will have the correct value of `userInterfaceStyle`.
     if (userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
-      UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
+      UITraitCollection.currentTraitCollection = [window.rootViewController.traitCollection copy];
     }
+#endif
 
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
 
     [self setDevMenuAppBridge];
 
     if (backgroundColor) {
-      self.window.rootViewController.view.backgroundColor = backgroundColor;
-      self.window.backgroundColor = backgroundColor;
+#if !TARGET_OS_OSX
+      window.rootViewController.view.backgroundColor = backgroundColor;
+#endif
+      window.backgroundColor = backgroundColor;
     }
   });
 }
@@ -480,6 +516,7 @@
   return [_appBridge isValid];
 }
 
+#if !TARGET_OS_OSX
 /**
  * Temporary `expo-splash-screen` fix.
  *
@@ -489,7 +526,7 @@
 - (void)onAppContentDidAppear
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
+    NSArray<UIView *> *views = [self.currentWindow.rootViewController.view subviews];
     for (UIView *view in views) {
       if ([NSStringFromClass([view class]) containsString:@"SplashScreen"]) {
         [view removeFromSuperview];
@@ -510,6 +547,7 @@
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
 }
+#endif
 
 -(NSDictionary *)getBuildInfo
 {
@@ -575,27 +613,11 @@
   return appVersion;
 }
 
--(RCTReleaseLevel)getReactNativeReleaseLevel
-{
-//  @TODO: Read this value from the main react-native factory instance on 0.82
-  NSString *releaseLevelString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
-  RCTReleaseLevel releaseLevel = Stable;
-  if ([releaseLevelString isKindOfClass:[NSString class]]) {
-    NSString *lower = [releaseLevelString lowercaseString];
-    if ([lower isEqualToString:@"canary"]) {
-      releaseLevel = Canary;
-    } else if ([lower isEqualToString:@"experimental"]) {
-      releaseLevel = Experimental;
-    } else if ([lower isEqualToString:@"stable"]) {
-      releaseLevel = Stable;
-    }
-  }
-
-  return releaseLevel;
-}
-
 -(void)copyToClipboard:(NSString *)content {
-#if !TARGET_OS_TV
+#if TARGET_OS_OSX
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard setString:(content ?: @"") forType:NSPasteboardTypeString];
+#elif !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ?: @"");
 #endif
@@ -604,7 +626,6 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:self.appBridge.parentBridge];
 
   if (self.manifest != nil) {
     [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
@@ -616,8 +637,8 @@
 - (void)invalidateDevMenuApp
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:nil];
   [manager updateCurrentManifest:nil manifestURL:nil];
+  [manager setAppContext:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants
@@ -671,7 +692,7 @@
   return updatesConfig;
 }
 
-- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesExternalInterface> _Nonnull)updatesExternalInterface {
+- (void)updatesExternalInterfaceDidRequestRelaunch:(id<EXUpdatesDevLauncherInterface> _Nonnull)updatesExternalInterface {
   NSURL * _Nullable appUrl = self.appManifestURLWithFallback;
   if (!appUrl) {
     return;

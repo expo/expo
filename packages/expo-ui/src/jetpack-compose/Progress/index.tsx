@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type ProgressElementColors = {
   /**
@@ -13,10 +14,6 @@ export type ProgressElementColors = {
 };
 
 export type CircularProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -37,10 +34,6 @@ export type CircularProgressProps = {
 };
 
 export type LinearProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -63,7 +56,7 @@ export type LinearProgressProps = {
 type NativeProgressProps =
   | CircularProgressProps
   | (LinearProgressProps & {
-      variant: 'linear' | 'circular';
+      variant: 'linear' | 'circular' | 'linearWavy' | 'circularWavy';
     });
 
 const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
@@ -71,28 +64,39 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
   'ProgressView'
 );
 
+function transformProps(props: CircularProgressProps | LinearProgressProps): NativeProgressProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
 /**
  * Renders a `CircularProgress` component.
  */
 export function CircularProgress(props: CircularProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="circular"
-    />
-  );
+  return <NativeProgressView {...transformProps(props)} variant="circular" />;
 }
 
 /**
  * Renders a `LinearProgress` component.
  */
 export function LinearProgress(props: LinearProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="linear"
-    />
-  );
+  return <NativeProgressView {...transformProps(props)} variant="linear" />;
+}
+
+/**
+ * Renders a `CircularWavyProgress` component with wavy animation.
+ */
+export function CircularWavyProgress(props: CircularProgressProps) {
+  return <NativeProgressView {...transformProps(props)} variant="circularWavy" />;
+}
+
+/**
+ * Renders a `LinearWavyProgress` component with wavy animation.
+ */
+export function LinearWavyProgress(props: LinearProgressProps) {
+  return <NativeProgressView {...transformProps(props)} variant="linearWavy" />;
 }

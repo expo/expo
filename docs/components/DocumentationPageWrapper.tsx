@@ -37,6 +37,7 @@ export function DocumentationPageWrapper(props: DocumentationElementsProps) {
               hideTOC={props.meta.hideTOC}
               hideFromSearch={props.meta.hideFromSearch}
               packageName={props.meta.packageName}
+              cliVersion={props.meta.cliVersion}
               iconUrl={props.meta.iconUrl}
               modificationDate={props.meta.modificationDate}
               platforms={props.meta.platforms}

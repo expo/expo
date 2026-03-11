@@ -1,21 +1,21 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { type ColorValue } from 'react-native';
 import { ExpoModifier } from '../../types';
 /**
  * Colors for picker's core elements.
  */
 export type PickerElementColors = {
-    activeBorderColor?: string;
-    activeContentColor?: string;
-    inactiveBorderColor?: string;
-    inactiveContentColor?: string;
-    disabledActiveBorderColor?: string;
-    disabledActiveContentColor?: string;
-    disabledInactiveBorderColor?: string;
-    disabledInactiveContentColor?: string;
-    activeContainerColor?: string;
-    inactiveContainerColor?: string;
-    disabledActiveContainerColor?: string;
-    disabledInactiveContainerColor?: string;
+    activeBorderColor?: ColorValue;
+    activeContentColor?: ColorValue;
+    inactiveBorderColor?: ColorValue;
+    inactiveContentColor?: ColorValue;
+    disabledActiveBorderColor?: ColorValue;
+    disabledActiveContentColor?: ColorValue;
+    disabledInactiveBorderColor?: ColorValue;
+    disabledInactiveContentColor?: ColorValue;
+    activeContainerColor?: ColorValue;
+    inactiveContainerColor?: ColorValue;
+    disabledActiveContainerColor?: ColorValue;
+    disabledInactiveContainerColor?: ColorValue;
 };
 export type PickerProps = {
     /**
@@ -41,17 +41,13 @@ export type PickerProps = {
      */
     variant?: 'segmented' | 'radio';
     /**
-     * Optional style to apply to the picker component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
      * Colors for picker's core elements.
      */
     elementColors?: PickerElementColors;
     /**
      * Picker color.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Modifiers for the component.
      */
@@ -59,14 +55,8 @@ export type PickerProps = {
     /** Modifiers for the individual buttons */
     buttonModifiers?: ExpoModifier[];
 };
-type NativePickerProps = PickerProps;
-/**
- * @hidden
- */
-export declare function transformPickerProps(props: PickerProps): NativePickerProps;
 /**
  * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
  */
 export declare function Picker(props: PickerProps): import("react").JSX.Element;
-export {};
 //# sourceMappingURL=index.d.ts.map

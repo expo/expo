@@ -1,11 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXEnvironment.h"
-#import "EXKernel.h"
 #import "EXViewController.h"
-#import "EXAppViewController.h"
 #import "ExpoKit.h"
-#import "EXUtil.h"
 
 @implementation EXViewController
 
@@ -36,22 +32,6 @@
 
 - (void)createRootAppAndMakeVisible
 {
-  NSURL *standaloneAppUrl = [NSURL URLWithString:nil];
-  NSDictionary *initialProps = [[EXKernel sharedInstance] initialAppPropsFromLaunchOptions:[ExpoKit sharedInstance].launchOptions];
-  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance] createNewAppWithUrl:standaloneAppUrl
-                                                                   initialProps:initialProps];
-
-  UIViewController *viewControllerToShow = (UIViewController *)appRecord.viewController;
-
-  [viewControllerToShow willMoveToParentViewController:self];
-  [self.view addSubview:viewControllerToShow.view];
-  [viewControllerToShow didMoveToParentViewController:self];
-
-  _contentViewController = viewControllerToShow;
-  [self.view setNeedsLayout];
-  if (_delegate) {
-    [_delegate viewController:self didNavigateAppToVisible:appRecord];
-  }
 }
 
 - (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^_Nullable)(void))completion

@@ -3,7 +3,6 @@ package expo.modules.medialibrary.next
 import android.net.Uri
 import android.os.Build
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -28,7 +27,6 @@ import expo.modules.medialibrary.next.permissions.enums.GranularPermission
 import expo.modules.medialibrary.next.records.AssetField
 import expo.modules.medialibrary.next.records.SortDescriptor
 
-@OptIn(EitherType::class)
 class MediaLibraryNextModule : Module() {
   private val context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -221,7 +219,6 @@ class MediaLibraryNextModule : Module() {
       return@Coroutine assetFactory.create(filePath, album?.getRelativePath())
     }
 
-    @OptIn(EitherType::class)
     AsyncFunction("createAlbum") Coroutine { name: String, assetRefs: Either<List<Asset>, List<Uri>>, move: Boolean ->
       val assetListKClass = toKClass<List<Asset>>()
       if (assetRefs.`is`(assetListKClass)) {

@@ -76,8 +76,9 @@ function SitemapInner() {
     () => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [],
     [sitemap]
   );
+  const Wrapper = Platform.OS === 'android' ? SafeAreaView : View;
   return (
-    <View style={styles.container} testID="expo-router-sitemap">
+    <Wrapper style={styles.container} testID="expo-router-sitemap">
       {canOverrideStatusBarBehavior && <StatusBar barStyle="light-content" />}
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -90,7 +91,7 @@ function SitemapInner() {
         ))}
         <SystemInfo />
       </ScrollView>
-    </View>
+    </Wrapper>
   );
 }
 

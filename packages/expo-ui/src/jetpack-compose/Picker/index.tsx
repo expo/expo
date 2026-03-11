@@ -1,24 +1,25 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * Colors for picker's core elements.
  */
 export type PickerElementColors = {
-  activeBorderColor?: string;
-  activeContentColor?: string;
-  inactiveBorderColor?: string;
-  inactiveContentColor?: string;
-  disabledActiveBorderColor?: string;
-  disabledActiveContentColor?: string;
-  disabledInactiveBorderColor?: string;
-  disabledInactiveContentColor?: string;
-  activeContainerColor?: string;
-  inactiveContainerColor?: string;
-  disabledActiveContainerColor?: string;
-  disabledInactiveContainerColor?: string;
+  activeBorderColor?: ColorValue;
+  activeContentColor?: ColorValue;
+  inactiveBorderColor?: ColorValue;
+  inactiveContentColor?: ColorValue;
+  disabledActiveBorderColor?: ColorValue;
+  disabledActiveContentColor?: ColorValue;
+  disabledInactiveBorderColor?: ColorValue;
+  disabledInactiveContentColor?: ColorValue;
+  activeContainerColor?: ColorValue;
+  inactiveContainerColor?: ColorValue;
+  disabledActiveContainerColor?: ColorValue;
+  disabledInactiveContainerColor?: ColorValue;
 };
 
 export type PickerProps = {
@@ -39,10 +40,6 @@ export type PickerProps = {
    * @default 'segmented'
    */
   variant?: 'segmented' | 'radio';
-  /**
-   * Optional style to apply to the picker component.
-   */
-  style?: StyleProp<ViewStyle>;
 
   /**
    * Colors for picker's core elements.
@@ -51,7 +48,7 @@ export type PickerProps = {
   /**
    * Picker color.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * Modifiers for the component.
    */
@@ -67,12 +64,12 @@ const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
 
 type NativePickerProps = PickerProps;
 
-/**
- * @hidden
- */
-export function transformPickerProps(props: PickerProps): NativePickerProps {
+function transformPickerProps(props: PickerProps): NativePickerProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     variant: props.variant ?? 'segmented',
     elementColors: props.elementColors
       ? props.elementColors
@@ -82,10 +79,6 @@ export function transformPickerProps(props: PickerProps): NativePickerProps {
           }
         : undefined,
     color: props.color,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
-    // @ts-expect-error
-    buttonModifiers: props.buttonModifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

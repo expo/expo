@@ -185,8 +185,6 @@ abstract class BaseExperienceActivity : ReactNativeActivity() {
   }
 
   companion object {
-    private val TAG = BaseExperienceActivity::class.java.simpleName
-
     // TODO: kill. just use Exponent class's activity
     var visibleActivity: BaseExperienceActivity? = null
       private set

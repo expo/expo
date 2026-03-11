@@ -1,5 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
+import { updateXcodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
 
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
@@ -10,7 +11,7 @@ import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
-import { setNodeEnv } from '../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -63,7 +64,7 @@ export async function prebuildAsync(
   }
 ): Promise<PrebuildResults | null> {
   setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   const { platforms } = getConfig(projectRoot).exp;
   if (platforms?.length) {
@@ -172,6 +173,12 @@ export async function prebuildAsync(
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {
     debug('Skipped pod install');
+  }
+  const inlineModules = exp.experiments?.inlineModules ?? false;
+  if (inlineModules && options.platforms.includes('ios')) {
+    await updateXcodeProject(projectRoot, {
+      watchedDirectories: inlineModules.watchedDirectories ?? [],
+    });
   }
 
   return {

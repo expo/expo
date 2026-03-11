@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform } from 'react-native';
 import { TestStackNavigator } from 'test-suite/TestStackNavigator';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 type NavigationRouteConfigMap = React.ComponentType;
 
@@ -154,21 +155,23 @@ export default function MainNavigator() {
     return null;
   }
   return (
-    <NavigationContainer
-      linking={linking}
-      initialState={initialState}
-      onStateChange={(state) => {
-        AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
-      }}>
-      <Switch.Navigator
-        screenOptions={{ headerShown: false }}
-        initialRouteName="main"
-        id={undefined}>
-        {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-        {Search && <Switch.Screen name="searchNavigator" component={Search} />}
-        <Switch.Screen name="main" component={TabNavigator} />
-      </Switch.Navigator>
-      <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer
+        linking={linking}
+        initialState={initialState}
+        onStateChange={(state) => {
+          AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch(console.error);
+        }}>
+        <Switch.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName="main"
+          id={undefined}>
+          {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+          {Search && <Switch.Screen name="searchNavigator" component={Search} />}
+          <Switch.Screen name="main" component={TabNavigator} />
+        </Switch.Navigator>
+        <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }

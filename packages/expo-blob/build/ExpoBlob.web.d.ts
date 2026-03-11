@@ -1,5 +1,6 @@
-export declare const ExpoBlob: {
+declare const ExpoBlob: {
     new (blobParts?: BlobPart[], options?: BlobPropertyBag): Blob;
     prototype: Blob;
 };
+export { ExpoBlob as Blob };
 //# sourceMappingURL=ExpoBlob.web.d.ts.map

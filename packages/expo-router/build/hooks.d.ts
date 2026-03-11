@@ -1,6 +1,7 @@
+import type { LoaderFunction } from 'expo-server';
 import { useRouteInfo } from './global-state/router-store';
 import { Router } from './imperative-api';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 export { useRouteInfo };
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -199,12 +200,11 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> = T extends LoaderFunct
  * import { useLoaderData } from 'expo-router';
  *
  * export function loader() {
- *   return Promise.resolve({ foo: 'bar' }}
+ *   return Promise.resolve({ foo: 'bar' }};
  * }
  *
  * export default function Route() {
- *  // { foo: 'bar' }
- *  const data = useLoaderData<typeof loader>();
+ *  const data = useLoaderData<typeof loader>(); // { foo: 'bar' }
  *
  *  return <Text>Data: {JSON.stringify(data)}</Text>;
  * }

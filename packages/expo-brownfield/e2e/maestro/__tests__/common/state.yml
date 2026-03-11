@@ -1,0 +1,83 @@
+appId: dev.expo.brownfieldintegratedtester
+---
+- runFlow: ./_nested-flows/launch-brownfield.yml
+
+# Navigate to the state screen
+- tapOn:
+    id: apis-tab
+- tapOn:
+    id: apis-state
+- assertVisible:
+    id: state-header
+
+# Validate operations for the data types
+# Number
+- assertVisible: "0"
+- tapOn:
+    id: number-set-button
+- assertVisible: "2"
+- tapOn:
+    id: number-set-button
+- assertVisible: "3"
+- tapOn:
+    id: number-delete-button
+- assertVisible: "3"
+- tapOn:
+    id: number-set-button
+- assertVisible: "4"
+
+# String
+- assertVisible: "ex"
+- tapOn:
+    id: string-set-button
+- assertVisible: "exexpo"
+
+# Boolean
+- assertVisible: "false"
+- tapOn:
+    id: boolean-set-button
+- assertVisible: "true"   
+- tapOn:
+    id: boolean-set-button 
+- assertVisible: "false"
+
+# Array
+- assertVisible: "[]"
+- tapOn:
+    id: array-set-button
+- assertVisible: "[\"expo\",1,false,{\"a\":\"b\"}]"
+
+# Object
+- assertVisible: "{}"
+- tapOn:
+    id: object-set-button
+- assertVisible: '.*"a":\{"b":"c"\}.*'
+- assertVisible: '.*"d":\[\{"e":"f"\}\].*'
+
+# Validate property wrappers (SwiftUI)
+# and validate JS to native synchronization
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      # Return to initial native view
+      - swipe:
+          direction: RIGHT
+      - swipe:
+          direction: RIGHT
+      # Open Shared State native screen
+      - tapOn:
+          id: openStateView
+      # Assert value from JS is received
+      - assertVisible: 'Time: 2[0-9]{3}.*'
+      # Assert property wrapper works
+      - assertVisible: "0"
+      - tapOn:
+          id: counterIncrement
+      - assertVisible: "1"
+      - tapOn:
+          id: counterDecrement
+      - tapOn:
+          id: counterDecrement
+      - assertVisible: "-1"
+      

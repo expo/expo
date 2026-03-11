@@ -1,0 +1,78 @@
+---
+title: Icon
+description: A Jetpack Compose Icon component for displaying icons.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+An icon component for rendering icons in Jetpack Compose. We recommend downloading icons as XML vector drawables from [Material Symbols](https://fonts.google.com/icons), which is the standard approach for Android development.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic icon
+
+Use `require()` to load an XML vector drawable downloaded from [Material Symbols](https://fonts.google.com/icons).
+
+```tsx BasicIcon.tsx
+import { Host, Icon } from '@expo/ui/jetpack-compose';
+
+export default function BasicIcon() {
+  return (
+    <Host matchContents>
+      <Icon source={require('./assets/home.xml')} contentDescription="Home" />
+    </Host>
+  );
+}
+```
+
+### Icon with tint color
+
+Use the `tintColor` prop to apply a color overlay to the icon.
+
+```tsx TintedIcon.tsx
+import { Host, Icon } from '@expo/ui/jetpack-compose';
+
+export default function TintedIcon() {
+  return (
+    <Host matchContents>
+      <Icon
+        source={require('./assets/favorite.xml')}
+        tintColor="#6200ee"
+        contentDescription="Favorite"
+      />
+    </Host>
+  );
+}
+```
+
+### Icon with size
+
+Specify a custom size in dp using the `size` prop.
+
+```tsx SizedIcon.tsx
+import { Host, Icon } from '@expo/ui/jetpack-compose';
+
+export default function SizedIcon() {
+  return (
+    <Host matchContents>
+      <Icon source={require('./assets/settings.xml')} size={48} contentDescription="Settings" />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Icon } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/icon" apiName="Icon" />

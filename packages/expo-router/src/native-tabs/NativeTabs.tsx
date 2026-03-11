@@ -1,15 +1,20 @@
 // We need this file to re-export the navigator
 // Otherwise rsc would fail
-import { NativeTabsNavigatorWithContext } from './NativeBottomTabsNavigator';
+import { NativeTabsNavigatorWrapper } from './NativeBottomTabsNavigator';
 import { NativeTabTrigger } from './NativeTabTrigger';
+import { NativeTabsBottomAccessory } from './common/elements';
+import { usePlacement } from './hooks';
 import type { NativeTabsProps } from './types';
+
+const BottomAccessory = Object.assign(NativeTabsBottomAccessory, {
+  usePlacement,
+});
 
 /**
  * The component used to create native tabs layout.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -24,7 +29,7 @@ import type { NativeTabsProps } from './types';
  */
 export const NativeTabs = Object.assign(
   (props: NativeTabsProps) => {
-    return <NativeTabsNavigatorWithContext {...props} />;
+    return <NativeTabsNavigatorWrapper {...props} />;
   },
-  { Trigger: NativeTabTrigger }
+  { Trigger: NativeTabTrigger, BottomAccessory }
 );

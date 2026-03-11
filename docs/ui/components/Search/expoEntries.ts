@@ -4,6 +4,8 @@ import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { CredentialIcon } from '@expo/styleguide-icons/custom/CredentialIcon';
 import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { Smartphone01Icon } from '@expo/styleguide-icons/custom/Smartphone01Icon';
+import { Cloud01DuotoneIcon } from '@expo/styleguide-icons/duotone/Cloud01DuotoneIcon';
+import { Fingerprint03DuotoneIcon } from '@expo/styleguide-icons/duotone/Fingerprint03DuotoneIcon';
 import { BracketsXIcon } from '@expo/styleguide-icons/outline/BracketsXIcon';
 import { Cube02Icon } from '@expo/styleguide-icons/outline/Cube02Icon';
 import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
@@ -13,7 +15,6 @@ import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
-import { Tag03Icon } from '@expo/styleguide-icons/outline/Tag03Icon';
 import type { ComponentType, HTMLAttributes } from 'react';
 
 export type ExpoItemType = {
@@ -59,9 +60,9 @@ export const entries: ExpoItemType[] = [
     Icon: DataIcon,
   },
   {
-    label: 'Project Native Deployments',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/deployments',
-    Icon: Tag03Icon,
+    label: 'Project Workflows',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/workflows',
+    Icon: Dataflow03Icon,
   },
   {
     label: 'Project Development Builds',
@@ -89,19 +90,14 @@ export const entries: ExpoItemType[] = [
     Icon: BranchIcon,
   },
   {
-    label: 'Project Updates',
+    label: 'Project Updates Groups',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/updates',
     Icon: LayersTwo02Icon,
   },
   {
-    label: 'Project Credentials',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/credentials',
-    Icon: CredentialIcon,
-  },
-  {
-    label: 'Project Workflows',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/workflows',
-    Icon: Dataflow03Icon,
+    label: 'Project Hosting',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/hosting',
+    Icon: Cloud01DuotoneIcon,
   },
   {
     label: 'Project Push Notifications',
@@ -109,13 +105,23 @@ export const entries: ExpoItemType[] = [
     Icon: NotificationBoxIcon,
   },
   {
-    label: 'Project Environment Variables',
-    url: 'https://expo.dev/accounts/[account]/projects/[project]/environment-variables',
-    Icon: BracketsXIcon,
+    label: 'Project Fingerprints',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/distribution',
+    Icon: Fingerprint03DuotoneIcon,
   },
   {
     label: 'Project Settings',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/settings',
     Icon: Settings01Icon,
+  },
+  {
+    label: 'Project Credentials',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/credentials',
+    Icon: CredentialIcon,
+  },
+  {
+    label: 'Project Environment Variables',
+    url: 'https://expo.dev/accounts/[account]/projects/[project]/environment-variables',
+    Icon: BracketsXIcon,
   },
 ];

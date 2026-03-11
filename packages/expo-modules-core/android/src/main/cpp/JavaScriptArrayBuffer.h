@@ -1,8 +1,9 @@
 #pragma once
 
-#include "WeakRuntimeHolder.h"
 #include "JNIDeallocator.h"
+#include "JavaScriptRuntime.h"
 
+#include <fbjni/ByteBuffer.h>
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
@@ -34,21 +35,21 @@ public:
     std::shared_ptr<jsi::ArrayBuffer> arrayBuffer
   );
 
-  JavaScriptArrayBuffer(
-    WeakRuntimeHolder runtime,
-    std::shared_ptr<jsi::ArrayBuffer> arrayBuffer
-  );
+  [[nodiscard]] int size();
 
-  int size();
+  [[nodiscard]] uint8_t* data();
+
+  [[nodiscard]] jni::local_ref<jni::JByteBuffer> toDirectBuffer();
+
+  [[nodiscard]] std::shared_ptr<jsi::ArrayBuffer> jsiArrayBuffer();
 
   template<class T>
   T read(int position) {
-    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
-    return *reinterpret_cast<T *>(arrayBuffer->data(jsRuntime) + position);
+    return *reinterpret_cast<T *>(this->data() + position);
   }
 
 private:
-  WeakRuntimeHolder runtimeHolder;
+  std::weak_ptr<JavaScriptRuntime> runtimeHolder;
   std::shared_ptr<jsi::ArrayBuffer> arrayBuffer;
 };
 } // namespace expo

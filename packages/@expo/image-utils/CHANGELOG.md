@@ -10,6 +10,29 @@
 
 ### 💡 Others
 
+## 0.8.12 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.11 — 2026-01-26
+
+### 💡 Others
+
+- Drop `unique-string` and `temp-dir` dependencies ([#42480](https://github.com/expo/expo/pull/42480) by [@kitten](https://github.com/kitten))
+- Improve global resolution for `sharp-cli` resolution ([#42513](https://github.com/expo/expo/pull/42513) by [@kitten](https://github.com/kitten))
+
+## 0.8.10 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.9 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 0.8.7 — 2025-09-10
 
 _This version does not introduce any user-facing changes._

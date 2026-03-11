@@ -35,6 +35,7 @@ class SyncFunctionComponent(
       takesOwner,
       isEnumerable,
       getCppRequiredTypes().toTypedArray(),
+      returnType.cppType.value,
       getJNIFunctionBody(moduleName, appContext)
     )
   }

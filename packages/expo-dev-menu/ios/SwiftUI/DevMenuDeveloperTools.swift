@@ -12,6 +12,31 @@ struct DevMenuDeveloperTools: View {
         .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
+        #if !os(tvOS)
+        NavigationLink(destination: SourceMapExplorerView()) {
+          HStack {
+            Image(systemName: "map")
+              .frame(width: 24, height: 24)
+              .foregroundColor(.primary)
+              .opacity(0.6)
+
+            Text("Source code explorer")
+              .foregroundColor(.primary)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
+          .padding()
+          .background(Color.expoSecondarySystemBackground)
+        }
+        .buttonStyle(.plain)
+
+        Divider()
+        #endif
+
         DevMenuActionButton(
           title: "Toggle performance monitor",
           icon: "speedometer",
@@ -32,24 +57,36 @@ struct DevMenuDeveloperTools: View {
           Divider()
 
           DevMenuActionButton(
-            title: "Open JS debugger",
-            icon: "ladybug",
+            title: "Open DevTools",
+            icon: "chevron.left.chevron.right",
             action: viewModel.openJSInspector
           )
         }
 
+        if viewModel.configuration.showFastRefresh {
+          Divider()
+
+          DevMenuToggleButton(
+            title: "Fast refresh",
+            icon: "figure.run",
+            isEnabled: viewModel.devSettings?.isHotLoadingEnabled ?? false,
+            action: viewModel.toggleFastRefresh,
+            disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
+          )
+        }
+
+        #if !os(tvOS) && !os(macOS)
         Divider()
 
         DevMenuToggleButton(
-          title: "Fast refresh",
-          icon: "figure.run",
-          isEnabled: viewModel.devSettings?.isHotLoadingEnabled ?? false,
-          action: viewModel.toggleFastRefresh,
-          disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
+          title: "Tools button",
+          icon: "hand.tap",
+          isEnabled: viewModel.showFloatingActionButton,
+          action: viewModel.toggleFloatingActionButton
         )
+        #endif
       }
-      .background(Color.expoSystemBackground)
-      .cornerRadius(18)
+      .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))
     }
   }
 }

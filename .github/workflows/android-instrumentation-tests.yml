@@ -10,6 +10,7 @@ on:
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
+      - packages/expo-file-system/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
       - packages/expo-notifications/android/**
@@ -18,6 +19,9 @@ on:
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
   pull_request:
     paths:
       - .github/workflows/android-instrumentation-tests.yml
@@ -25,6 +29,7 @@ on:
       - fastlane/**
       # - packages/**/android/**
       - packages/expo-eas-client/android/**
+      - packages/expo-file-system/android/**
       - packages/expo-json-utils/android/**
       - packages/expo-manifests/android/**
       - packages/expo-notifications/android/**
@@ -33,6 +38,9 @@ on:
       - tools/src/commands/AndroidNativeUnitTests.ts
       - yarn.lock
       - '!packages/@expo/cli/**'
+      - '!**.md'
+      - '!**/__tests__/**'
+      - '!**/__mocks__/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -75,7 +83,6 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 📱 Run instrumented unit tests
         timeout-minutes: 80

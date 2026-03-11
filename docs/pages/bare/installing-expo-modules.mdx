@@ -126,7 +126,12 @@ fi
 
 And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.swift**:
 
-```diff AppDelegate.swift
+<DiffBlock
+  raw={`diff --git a/ios/AppDelegate.swift b/ios/AppDelegate.swift
+index 0000000..1111111 100644
+--- a/ios/AppDelegate.swift
++++ b/ios/AppDelegate.swift
+@@ -1,7 +1,7 @@
    override func bundleURL() -> URL? {
  #if DEBUG
 -    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
@@ -134,7 +139,8 @@ And add support the `"main"` field in **package.json** by making the following c
  #else
      Bundle.main.url(forResource: "main", withExtension: "jsbundle")
  #endif
-```
+   }`}
+/>
 
 </Collapsible>
 
