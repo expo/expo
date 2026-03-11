@@ -115,10 +115,7 @@ if (ServerRegistrationModule.getRegistrationInfoAsync) {
   ServerRegistrationModule.getRegistrationInfoAsync().then(
     __handlePersistedRegistrationInfoAsync,
     (e) => {
-      console.error(
-        '[expo-notifications] Error reading persisted server registration info: ',
-        e
-      );
+      console.error('[expo-notifications] Error reading persisted server registration info: ', e);
     }
   );
 } else {
