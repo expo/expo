@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Add support for `React.Fragment`. ([#43833](https://github.com/expo/expo/pull/43833) by [@jakex7](https://github.com/jakex7))
+- Add Button children support. ([#43832](https://github.com/expo/expo/pull/43832) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

@@ -81,11 +81,13 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         switch kind {
         case .widget:
           render(WidgetButtonView.self, ButtonProps.self) { buttonProps in
+            try updateChildren(buttonProps)
             buttonProps.source = source
             buttonProps.entryIndex = entryIndex
           }
         case .liveActivity:
           render(LiveActivityButtonView.self, ButtonProps.self) { buttonProps in
+            try updateChildren(buttonProps)
             buttonProps.source = source
           }
         }
