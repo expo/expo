@@ -14,33 +14,7 @@ type NativeSlotViewProps = {
 };
 
 /**
- * Props for the `SmallFloatingActionButton` component.
- */
-export type SmallFloatingActionButtonProps = {
-  /**
-   * Slot-based children (use `.Icon` sub-component).
-   */
-  children: React.ReactNode;
-
-  /**
-   * The background color of the button container.
-   * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
-   */
-  containerColor?: ColorValue;
-
-  /**
-   * Callback invoked when the button is clicked.
-   */
-  onClick?: () => void;
-
-  /**
-   * Modifiers for the component.
-   */
-  modifiers?: ModifierConfig[];
-};
-
-/**
- * Props for the `FloatingActionButton` component.
+ * Props shared by all `FloatingActionButton` variants.
  */
 export type FloatingActionButtonProps = {
   /**
@@ -66,35 +40,21 @@ export type FloatingActionButtonProps = {
 };
 
 /**
- * Props for the `LargeFloatingActionButton` component.
+ * Props for the `SmallFloatingActionButton` component.
+ * Same as {@link FloatingActionButtonProps}.
  */
-export type LargeFloatingActionButtonProps = {
-  /**
-   * Slot-based children (use `.Icon` sub-component).
-   */
-  children: React.ReactNode;
+export type SmallFloatingActionButtonProps = FloatingActionButtonProps;
 
-  /**
-   * The background color of the button container.
-   * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
-   */
-  containerColor?: ColorValue;
-
-  /**
-   * Callback invoked when the button is clicked.
-   */
-  onClick?: () => void;
-
-  /**
-   * Modifiers for the component.
-   */
-  modifiers?: ModifierConfig[];
-};
+/**
+ * Props for the `LargeFloatingActionButton` component.
+ * Same as {@link FloatingActionButtonProps}.
+ */
+export type LargeFloatingActionButtonProps = FloatingActionButtonProps;
 
 /**
  * Props for the `ExtendedFloatingActionButton` component.
  */
-export type ExtendedFloatingActionButtonProps = {
+export type ExtendedFloatingActionButtonProps = FloatingActionButtonProps & {
   /**
    * Slot-based children (use `.Icon` and `.Text` sub-components).
    */
@@ -105,22 +65,6 @@ export type ExtendedFloatingActionButtonProps = {
    * @default true
    */
   expanded?: boolean;
-
-  /**
-   * The background color of the button container.
-   * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
-   */
-  containerColor?: ColorValue;
-
-  /**
-   * Callback invoked when the button is clicked.
-   */
-  onClick?: () => void;
-
-  /**
-   * Modifiers for the component.
-   */
-  modifiers?: ModifierConfig[];
 };
 
 /**
