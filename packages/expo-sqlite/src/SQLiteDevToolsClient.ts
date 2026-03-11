@@ -46,6 +46,7 @@ export async function registerDatabaseForDevToolsAsync(database: SQLiteDatabase)
     return;
   }
   await maybeInitClientAsync();
+  console.log('Registering database for devtools:', database.databasePath);
   registeredDatabases.set(database.databasePath, new WeakRef(database));
 }
 
@@ -53,6 +54,7 @@ export async function unregisterDatabaseForDevToolsAsync(database: SQLiteDatabas
   if (!__DEV__) {
     return;
   }
+  console.log('Unregistering database for devtools:', database.databasePath);
   registeredDatabases.delete(database.databasePath);
 }
 
@@ -102,10 +104,7 @@ function setupDevToolsListeners(): void {
       client?.sendMessage('response', {
         requestId: params.requestId,
         method: 'error',
-        error:
-          typeof error === 'object' && error !== null && 'message' in error
-            ? error.message
-            : String(error),
+        error: errorMessage(error),
         originalMethod: 'listDatabases',
       } as SQLiteResponse);
     }
@@ -131,10 +130,7 @@ function setupDevToolsListeners(): void {
       } catch (error: unknown) {
         client?.sendMessage(eventName, {
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'getDatabase',
         } as SQLiteResponse);
       }
@@ -185,10 +181,7 @@ function setupDevToolsListeners(): void {
         client?.sendMessage('response', {
           requestId: params.requestId,
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'executeQuery',
         } as SQLiteResponse);
       }
@@ -220,10 +213,7 @@ function setupDevToolsListeners(): void {
         client?.sendMessage('response', {
           requestId: params.requestId,
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'listTables',
         } as SQLiteResponse);
       }
@@ -267,13 +257,16 @@ function setupDevToolsListeners(): void {
         client?.sendMessage('response', {
           requestId: params.requestId,
           method: 'error',
-          error:
-            typeof error === 'object' && error !== null && 'message' in error
-              ? error.message
-              : String(error),
+          error: errorMessage(error),
           originalMethod: 'getTableSchema',
         } as SQLiteResponse);
       }
     }
   );
+}
+
+function errorMessage(error: unknown): string {
+  return typeof error === 'object' && error !== null && 'message' in error
+    ? String(error.message)
+    : String(error);
 }

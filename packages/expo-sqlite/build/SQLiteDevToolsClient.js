@@ -10,12 +10,14 @@ export async function registerDatabaseForDevToolsAsync(database) {
         return;
     }
     await maybeInitClientAsync();
+    console.log('Registering database for devtools:', database.databasePath);
     registeredDatabases.set(database.databasePath, new WeakRef(database));
 }
 export async function unregisterDatabaseForDevToolsAsync(database) {
     if (!__DEV__) {
         return;
     }
+    console.log('Unregistering database for devtools:', database.databasePath);
     registeredDatabases.delete(database.databasePath);
 }
 async function maybeInitClientAsync() {
@@ -63,9 +65,7 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'listDatabases',
             });
         }
@@ -85,9 +85,7 @@ function setupDevToolsListeners() {
         catch (error) {
             client?.sendMessage(eventName, {
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'getDatabase',
             });
         }
@@ -131,9 +129,7 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'executeQuery',
             });
         }
@@ -161,9 +157,7 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'listTables',
             });
         }
@@ -195,12 +189,15 @@ function setupDevToolsListeners() {
             client?.sendMessage('response', {
                 requestId: params.requestId,
                 method: 'error',
-                error: typeof error === 'object' && error !== null && 'message' in error
-                    ? error.message
-                    : String(error),
+                error: errorMessage(error),
                 originalMethod: 'getTableSchema',
             });
         }
     });
+}
+function errorMessage(error) {
+    return typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : String(error);
 }
 //# sourceMappingURL=SQLiteDevToolsClient.js.map

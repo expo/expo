@@ -23,7 +23,7 @@ describe('Database', () => {
 
   afterEach(async () => {
     await db?.closeAsync();
-    await fs.unlink('test.db').catch(() => {});
+    await fs.unlink('SQLiteDatabase-test.db').catch(() => {});
   });
 
   it('openDatabaseAsync should return a database that could be closed', async () => {
@@ -175,7 +175,7 @@ describe('Database', () => {
   });
 
   it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
-    db = await openDatabaseAsync('test.db');
+    db = await openDatabaseAsync('SQLiteDatabase-test.db');
     await db.execAsync(`
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
@@ -213,7 +213,7 @@ INSERT INTO users (name) VALUES ('aaa');
   });
 
   it('withExclusiveTransactionAsync should execute a transaction atomically and abort other write query', async () => {
-    db = await openDatabaseAsync('test.db');
+    db = await openDatabaseAsync('SQLiteDatabase-test.db');
     await db.execAsync(`
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
@@ -259,7 +259,7 @@ describe('Database - Synchronous calls', () => {
 
   afterEach(async () => {
     db?.closeSync();
-    await fs.unlink('test.db').catch(() => {});
+    await fs.unlink('SQLiteDatabase-test.db').catch(() => {});
   });
 
   it('openDatabaseSync should return a database that could be closed', () => {
