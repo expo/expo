@@ -115,8 +115,8 @@ if (ServerRegistrationModule.getRegistrationInfoAsync) {
   ServerRegistrationModule.getRegistrationInfoAsync().then(
     __handlePersistedRegistrationInfoAsync,
     (e) => {
-      console.warn(
-        '[expo-notifications] Error encountered while fetching persisted server registration info (e.g. Keychain unavailable during background launch).',
+      console.error(
+        '[expo-notifications] Error reading persisted server registration info: ',
         e
       );
     }
