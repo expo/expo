@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactHost;
+import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -632,30 +635,50 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       Context context = mContextRef.get();
       if (context == null) return;
 
-      ReactApplication app = (ReactApplication) context.getApplicationContext();
-      ReactContext reactContext = app.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
-      if (reactContext == null) return;
-
-      HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
-      HeadlessJsTaskConfig taskConfig = new HeadlessJsTaskConfig(
-        "expo-task-manager",
-        new WritableNativeMap(),
-        0, // no timeout, managed by the task consumer
-        true // allow in foreground to avoid exceptions if app returns
-      );
-
-      UiThreadUtil.runOnUiThread(() -> {
-        try {
-          int taskId = headlessContext.startTask(taskConfig);
-          sHeadlessTaskIds.put(appScopeKey, taskId);
-          Log.i(TAG, "Started headless task " + taskId + " to keep JS timers alive for '" + appScopeKey + "'");
-        } catch (Exception e) {
-          Log.w(TAG, "Failed to start headless task: " + e.getMessage());
-        }
-      });
+      ReactContext reactContext = getReactContext(context);
+      if (reactContext != null) {
+        invokeStartHeadlessTask(reactContext, appScopeKey);
+      } else {
+        // App was killed — context not ready yet. Listen for creation and start then.
+        waitForReactContextAndStartTask(context, appScopeKey);
+      }
     } catch (Exception e) {
       Log.w(TAG, "Failed to start headless task: " + e.getMessage());
     }
+  }
+
+  private void invokeStartHeadlessTask(ReactContext reactContext, String appScopeKey) {
+    HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
+    HeadlessJsTaskConfig taskConfig = new HeadlessJsTaskConfig(
+      "expo-task-manager",
+      new WritableNativeMap(),
+      0, // no timeout, managed by the task consumer
+      true // allow in foreground to avoid exceptions if app returns
+    );
+
+    UiThreadUtil.runOnUiThread(() -> {
+      try {
+        int taskId = headlessContext.startTask(taskConfig);
+        sHeadlessTaskIds.put(appScopeKey, taskId);
+        Log.i(TAG, "Started headless task " + taskId + " to keep JS timers alive for '" + appScopeKey + "'");
+      } catch (Exception e) {
+        Log.w(TAG, "Failed to start headless task: " + e.getMessage());
+      }
+    });
+  }
+
+  private void waitForReactContextAndStartTask(Context context, String appScopeKey) {
+    ReactApplication app = (ReactApplication) context.getApplicationContext();
+    ReactHost reactHost = app.getReactHost();
+    if (reactHost == null) return;
+
+    reactHost.addReactInstanceEventListener(new ReactInstanceEventListener() {
+      @Override
+      public void onReactContextInitialized(@NonNull ReactContext reactContext) {
+        invokeStartHeadlessTask(reactContext, appScopeKey);
+        reactHost.removeReactInstanceEventListener(this);
+      }
+    });
   }
 
   /**
@@ -670,8 +693,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       Context context = mContextRef.get();
       if (context == null) return;
 
-      ReactApplication app = (ReactApplication) context.getApplicationContext();
-      ReactContext reactContext = app.getReactNativeHost().getReactInstanceManager().getCurrentReactContext();
+      ReactContext reactContext = getReactContext(context);
       if (reactContext == null) return;
 
       HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
@@ -680,5 +702,15 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     } catch (Exception e) {
       Log.w(TAG, "Failed to finish headless task: " + e.getMessage());
     }
+  }
+
+  /**
+   * Gets the current ReactContext via ReactHost.
+   */
+  @Nullable
+  private ReactContext getReactContext(Context context) {
+    ReactApplication app = (ReactApplication) context.getApplicationContext();
+    ReactHost reactHost = app.getReactHost();
+    return reactHost != null ? reactHost.getCurrentReactContext() : null;
   }
 }
