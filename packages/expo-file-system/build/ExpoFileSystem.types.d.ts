@@ -709,18 +709,26 @@ export type DownloadPauseState = {
      */
     fileUri: string;
     /**
-     * The download options.
+     * Custom headers that were used for the download request.
      */
-    options?: DownloadTaskOptions;
+    headers?: Record<string, string>;
     /**
-     * Platform-specific resume data.
+     * Platform-specific resume data (byte offset as string).
      */
     resumeData?: string;
 };
 /**
+ * Represents the current state of an upload or download task.
+ */
+export type TaskState = 'idle' | 'active' | 'paused' | 'completed' | 'cancelled' | 'error';
+/**
  * Represents an upload task with progress tracking and cancellation support.
  */
 export declare class UploadTask {
+    /**
+     * The current state of the upload task.
+     */
+    readonly state: TaskState;
     /**
      * Creates a new upload task.
      * @param file The file to upload.
@@ -749,6 +757,10 @@ export declare class UploadTask {
  */
 export declare class DownloadTask {
     /**
+     * The current state of the download task.
+     */
+    readonly state: TaskState;
+    /**
      * Creates a new download task.
      * @param url The source URL.
      * @param destination The destination file or directory.
@@ -761,10 +773,9 @@ export declare class DownloadTask {
      */
     downloadAsync(): Promise<File | null>;
     /**
-     * Pauses the download operation.
-     * @returns A promise that resolves with the pause state that can be persisted.
+     * Pauses the download operation. The pending downloadAsync() promise resolves with null.
      */
-    pauseAsync(): Promise<DownloadPauseState>;
+    pause(): void;
     /**
      * Resumes a paused download operation.
      * @returns A promise that resolves with the downloaded file, or null if paused again.
@@ -782,9 +793,10 @@ export declare class DownloadTask {
     /**
      * Creates a download task from a saved state.
      * @param state The saved pause state.
+     * @param options Optional new options to attach (e.g. onProgress, signal) since those are not persisted.
      * @returns A new download task.
      */
-    static fromSavable(state: DownloadPauseState): DownloadTask;
+    static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask;
     /**
      * Adds a listener for download progress events.
      */

@@ -187,6 +187,7 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
   private var responseBody = Data()
   private var lastProgressTime: TimeInterval = 0
   private let progressThrottleInterval: TimeInterval = 0.1 // 100ms
+  private var settled = false
 
   init(sharedObject: FileSystemUploadTask, promise: Promise) {
     self.sharedObject = sharedObject
@@ -221,6 +222,12 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
 
   // Completion
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    guard !settled else {
+      session.finishTasksAndInvalidate()
+      return
+    }
+    settled = true
+
     if let error = error {
       let nsError = error as NSError
       if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {

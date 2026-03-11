@@ -377,8 +377,8 @@ public final class FileSystemModule: Module {
         task.start(url: url, to: to, options: options, promise: promise)
       }
 
-      AsyncFunction("pause") { (task: FileSystemDownloadTask) -> [String: String?] in
-        return await task.pause()
+      Function("pause") { (task: FileSystemDownloadTask) -> [String: String?] in
+        return task.pause()
       }
 
       AsyncFunction("resume") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?, promise: Promise) in

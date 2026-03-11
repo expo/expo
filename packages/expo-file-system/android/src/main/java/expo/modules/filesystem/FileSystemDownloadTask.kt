@@ -59,10 +59,10 @@ class FileSystemDownloadTask : SharedObject() {
     return downloadToFile(request, destination, false, 0)
   }
 
-  fun pause(): Map<String, String?> {
+  fun pause(): Map<String, String> {
     isPausing = true
     call?.cancel()
-    val resumeData = destinationFile?.length()?.toString()
+    val resumeData = (destinationFile?.length() ?: 0L).toString()
     return mapOf("resumeData" to resumeData)
   }
 
@@ -136,6 +136,7 @@ class FileSystemDownloadTask : SharedObject() {
         override fun onResponse(call: Call, response: Response) {
           try {
             if (!response.isSuccessful) {
+              response.close()
               safeResumeWithException(UnableToDownloadException("HTTP ${response.code}"))
               return
             }
@@ -156,7 +157,14 @@ class FileSystemDownloadTask : SharedObject() {
 
             val input = BufferedInputStream(responseBody.byteStream())
             destination.parentFile?.mkdirs()
-            // Append only if server actually returned partial content
+
+            // For resume: truncate file to offset to discard any extra bytes
+            // written after pause, then append from there
+            if (isResume && isPartial) {
+              java.io.RandomAccessFile(destination, "rw").use { raf ->
+                raf.setLength(effectiveOffset)
+              }
+            }
             val output = FileOutputStream(destination, isResume && isPartial)
 
             val buffer = ByteArray(8192)

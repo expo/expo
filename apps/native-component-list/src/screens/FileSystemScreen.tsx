@@ -1,7 +1,20 @@
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
-import { File, Directory, Paths, FileMode, UploadType } from 'expo-file-system';
-import type { FileHandle, UploadProgress, DownloadProgress } from 'expo-file-system';
+import {
+  File,
+  Directory,
+  Paths,
+  FileMode,
+  UploadType,
+  DownloadTask,
+} from 'expo-file-system';
+import type {
+  FileHandle,
+  UploadProgress,
+  DownloadProgress,
+  DownloadPauseState,
+  TaskState,
+} from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
 import React, { useEffect, useRef, useState } from 'react';
@@ -928,7 +941,9 @@ function UploadSection({ currentFile }: { currentFile: File | null }) {
   const [progress, setProgress] = useState<string>('');
   const [result, setResult] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  const [taskState, setTaskState] = useState<TaskState | null>(null);
   const taskRef = useRef<ReturnType<File['createUploadTask']> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleUpload = async (uploadType: UploadType) => {
     if (!currentFile) {
@@ -938,6 +953,8 @@ function UploadSection({ currentFile }: { currentFile: File | null }) {
     setUploading(true);
     setProgress('Starting...');
     setResult('');
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
     try {
       const task = currentFile.createUploadTask('https://httpbin.org/post', {
         uploadType,
@@ -947,9 +964,12 @@ function UploadSection({ currentFile }: { currentFile: File | null }) {
         onProgress: ({ bytesSent, totalBytes }: UploadProgress) => {
           setProgress(`${bytesSent} / ${totalBytes} bytes`);
         },
+        signal: abortController.signal,
       });
       taskRef.current = task;
+      setTaskState(task.state);
       const uploadResult = await task.uploadAsync();
+      setTaskState(task.state);
       setResult(
         JSON.stringify(
           { status: uploadResult.status, body: truncate(uploadResult.body, 300) },
@@ -959,11 +979,13 @@ function UploadSection({ currentFile }: { currentFile: File | null }) {
       );
     } catch (e: any) {
       console.log(e);
+      setTaskState(taskRef.current?.state ?? null);
       setResult(`Error: ${e.message}`);
       setProgress('Errored');
     } finally {
       setUploading(false);
       taskRef.current = null;
+      abortControllerRef.current = null;
     }
   };
 
@@ -981,10 +1003,16 @@ function UploadSection({ currentFile }: { currentFile: File | null }) {
         onPress={() => handleUpload(UploadType.MULTIPART)}
       />
       <ListButton
-        title="Cancel upload"
+        title="Cancel upload (task.cancel)"
         disabled={!uploading}
         onPress={() => taskRef.current?.cancel()}
       />
+      <ListButton
+        title="Cancel upload (AbortSignal)"
+        disabled={!uploading}
+        onPress={() => abortControllerRef.current?.abort()}
+      />
+      {taskState ? <MonoText>State: {taskState}</MonoText> : null}
       {progress ? <MonoText>Progress: {progress}</MonoText> : null}
       {result ? <MonoText>{result}</MonoText> : null}
     </>
@@ -995,43 +1023,61 @@ function DownloadTaskSection() {
   const [progress, setProgress] = useState<string>('');
   const [status, setStatus] = useState<'idle' | 'downloading' | 'paused' | 'completed'>('idle');
   const [resultInfo, setResultInfo] = useState<string>('');
+  const [savedState, setSavedState] = useState<DownloadPauseState | null>(null);
+  const [taskState, setTaskState] = useState<TaskState | null>(null);
   const taskRef = useRef<ReturnType<typeof File.createDownloadTask> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const DOWNLOAD_URL = 'https://httpbin.org/drip?numbytes=5000&duration=2&delay=0&code=200';
+
+  const onProgress = ({ bytesWritten, totalBytes }: DownloadProgress) => {
+    const pct = totalBytes > 0 ? Math.round((bytesWritten / totalBytes) * 100) : '?';
+    setProgress(`${bytesWritten} / ${totalBytes} bytes (${pct}%)`);
+  };
 
   const handleStart = async () => {
     setStatus('downloading');
     setProgress('Starting...');
     setResultInfo('');
+    setSavedState(null);
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
     const dest = new File(Paths.cache, 'test_sandbox', 'download_task_test.bin');
     const task = File.createDownloadTask(DOWNLOAD_URL, dest, {
-      onProgress: ({ bytesWritten, totalBytes }: DownloadProgress) => {
-        const pct = totalBytes > 0 ? Math.round((bytesWritten / totalBytes) * 100) : '?';
-        setProgress(`${bytesWritten} / ${totalBytes} bytes (${pct}%)`);
-      },
+      onProgress,
+      signal: abortController.signal,
     });
     taskRef.current = task;
+    setTaskState(task.state);
     try {
       const file = await task.downloadAsync();
+      setTaskState(task.state);
       if (file) {
         setStatus('completed');
         setResultInfo(`Done: ${file.uri}\nSize: ${file.size} bytes`);
       } else {
+        // Paused — downloadAsync resolved with null
         setStatus('paused');
-        setResultInfo('Download paused');
+        try {
+          const state = task.savable();
+          setSavedState(state);
+          setResultInfo(`Paused. Resume data: ${state.resumeData ?? 'none'}`);
+        } catch {
+          setResultInfo('Paused (no savable state yet)');
+        }
       }
     } catch (e: any) {
       console.log(e);
+      setTaskState(task.state);
       setStatus('idle');
       setProgress('Errored');
       setResultInfo(`Error: ${e.message}`);
     }
   };
 
-  const handlePause = async () => {
+  const handlePause = () => {
     try {
-      const state = await taskRef.current?.pauseAsync();
-      setStatus('paused');
-      setResultInfo(`Paused. Resume data: ${state?.resumeData ? 'available' : 'none'}`);
+      taskRef.current?.pause();
+      // downloadAsync() will resolve with null, which is handled in handleStart
     } catch (e: any) {
       console.log(e);
       setResultInfo(`Pause error: ${e.message}`);
@@ -1040,13 +1086,20 @@ function DownloadTaskSection() {
 
   const handleResume = async () => {
     setStatus('downloading');
+    setTaskState(taskRef.current?.state ?? null);
     try {
       const file = await taskRef.current?.resumeAsync();
+      setTaskState(taskRef.current?.state ?? null);
       if (file) {
         setStatus('completed');
+        setSavedState(null);
         setResultInfo(`Done: ${file.uri}\nSize: ${file.size} bytes`);
       } else {
         setStatus('paused');
+        try {
+          const state = taskRef.current!.savable();
+          setSavedState(state);
+        } catch { /* not in paused state yet */ }
         setResultInfo('Paused again');
       }
     } catch (e: any) {
@@ -1056,12 +1109,45 @@ function DownloadTaskSection() {
     }
   };
 
+  const handleRestoreFromSaved = async () => {
+    if (!savedState) return;
+    setStatus('downloading');
+    setProgress('Resuming from saved state...');
+    setResultInfo('');
+    const task = DownloadTask.fromSavable(savedState, { onProgress });
+    taskRef.current = task;
+    setTaskState(task.state);
+    try {
+      const file = await task.resumeAsync();
+      setTaskState(task.state);
+      if (file) {
+        setStatus('completed');
+        setSavedState(null);
+        setResultInfo(`Done (from savable): ${file.uri}\nSize: ${file.size} bytes`);
+      } else {
+        setStatus('paused');
+        setResultInfo('Paused again');
+      }
+    } catch (e: any) {
+      console.log(e);
+      setStatus('idle');
+      setResultInfo(`Resume from saved error: ${e.message}`);
+    }
+  };
+
   const handleCancel = () => {
     taskRef.current?.cancel();
     taskRef.current = null;
+    abortControllerRef.current = null;
     setStatus('idle');
     setProgress('');
+    setSavedState(null);
     setResultInfo('Cancelled');
+  };
+
+  const handleAbort = () => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
   };
 
   return (
@@ -1075,12 +1161,26 @@ function DownloadTaskSection() {
       <ListButton title="Pause" disabled={status !== 'downloading'} onPress={handlePause} />
       <ListButton title="Resume" disabled={status !== 'paused'} onPress={handleResume} />
       <ListButton
+        title="Resume from savable"
+        disabled={!savedState}
+        onPress={handleRestoreFromSaved}
+      />
+      <ListButton
         title="Cancel"
         disabled={status === 'idle' || status === 'completed'}
         onPress={handleCancel}
       />
+      <ListButton
+        title="Abort (AbortSignal)"
+        disabled={status !== 'downloading'}
+        onPress={handleAbort}
+      />
+      {taskState ? <MonoText>State: {taskState}</MonoText> : null}
       {progress ? <MonoText>Progress: {progress}</MonoText> : null}
       {resultInfo ? <MonoText>{resultInfo}</MonoText> : null}
+      {savedState ? (
+        <MonoText>Saved state: {JSON.stringify(savedState, null, 2)}</MonoText>
+      ) : null}
     </>
   );
 }

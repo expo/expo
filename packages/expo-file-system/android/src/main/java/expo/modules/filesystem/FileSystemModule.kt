@@ -373,7 +373,7 @@ class FileSystemModule : Module() {
         task.start(url, to, options)
       }
 
-      AsyncFunction("pause") { task: FileSystemDownloadTask ->
+      Function("pause") { task: FileSystemDownloadTask ->
         task.pause()
       }
 

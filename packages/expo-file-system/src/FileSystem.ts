@@ -457,7 +457,9 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       const result = await super.start(this._url, this._destination, nativeOpts);
       if (result) {
         this._state = 'completed';
-        return new File(result);
+        const file = new File(result);
+        this._emitFinalProgressEvent(file.size);
+        return file;
       }
       // null = paused (native resolved with nil because isPausing was set)
       this._state = 'paused';
@@ -482,6 +484,9 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
 
   async resumeAsync(): Promise<File | null> {
     this._assertState(['paused'], 'resumeAsync');
+    if (!this._resumeData) {
+      throw new Error('No resume data available. Was the download paused before any data was received?');
+    }
     this._state = 'active';
     try {
       this._wireAbortSignal();
@@ -494,13 +499,15 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       const result = await super.resume(
         this._url,
         this._destination,
-        this._resumeData!,
+        this._resumeData,
         nativeOpts
       );
       if (result) {
         this._state = 'completed';
         this._resumeData = undefined;
-        return new File(result);
+        const file = new File(result);
+        this._emitFinalProgressEvent(file.size);
+        return file;
       }
       this._state = 'paused';
       return null;
@@ -574,6 +581,18 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
       this._options.signal.removeEventListener('abort', this._abortHandler);
       this._abortHandler = undefined;
     }
+  }
+
+  private _emitFinalProgressEvent(fileSize: number) {
+    // Emit a synthetic final progress to guarantee 100% is reported.
+    // Native progress events may not fire for small files, and even when they do,
+    // the event can race with promise resolution (listener removed before delivery).
+    if (this._options?.onProgress) {
+      if (fileSize > 0) {
+        this._options.onProgress({ bytesWritten: fileSize, totalBytes: fileSize });
+      }
+    }
+
   }
 }
 
