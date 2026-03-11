@@ -113,11 +113,14 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
         const resourceQualifiers = supportedLocales.map((locale) =>
           convertBcp47ToResourceQualifier(locale)
         );
-        config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
-          config.modResults.contents,
-          'defaultConfig',
-          `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `
-        );
+        const resourceConfigEntry = `resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]`;
+        if (!config.modResults.contents.includes(resourceConfigEntry)) {
+          config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
+            config.modResults.contents,
+            'defaultConfig',
+            `    ${resourceConfigEntry}\n    `
+          );
+        }
       } else {
         WarningAggregator.addWarningAndroid(
           'expo-localization supportedLocales',

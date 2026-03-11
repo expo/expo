@@ -80,7 +80,10 @@ function withExpoLocalizationAndroid(config, data) {
         config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
             if (config.modResults.language === 'groovy') {
                 const resourceQualifiers = supportedLocales.map((locale) => convertBcp47ToResourceQualifier(locale));
-                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `);
+                const resourceConfigEntry = `resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]`;
+                if (!config.modResults.contents.includes(resourceConfigEntry)) {
+                    config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    ${resourceConfigEntry}\n    `);
+                }
             }
             else {
                 config_plugins_1.WarningAggregator.addWarningAndroid('expo-localization supportedLocales', `Cannot automatically configure app build.gradle if it's not groovy`);
