@@ -22,13 +22,16 @@ open class FontLoaderModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
-    // could be a Set, but to be able to pass to JS we keep it as an array
-    var loadedFonts: List<String> = queryCustomNativeFonts()
+    var loadedFonts: List<String>? = null
+
+    fun getLoadedFonts(): List<String> {
+      return loadedFonts ?: queryCustomNativeFonts().also { loadedFonts = it }
+    }
 
     Name("ExpoFontLoader")
 
     Function("getLoadedFonts") {
-      return@Function loadedFonts
+      return@Function getLoadedFonts()
     }
 
     AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->
@@ -54,7 +57,7 @@ open class FontLoaderModule : Module() {
       }
 
       ReactFontManager.getInstance().setTypeface(fontFamilyName, Typeface.NORMAL, typeface)
-      loadedFonts = loadedFonts.toMutableSet().apply { add(fontFamilyName) }.toList()
+      loadedFonts = getLoadedFonts().toMutableSet().apply { add(fontFamilyName) }.toList()
     }
   }
 
@@ -66,12 +69,14 @@ open class FontLoaderModule : Module() {
   private fun queryCustomNativeFonts(): List<String> {
     val assetManager = context.assets
     val fontFileRegex = Regex("^(.+?)(_bold|_italic|_bold_italic)?\\.(ttf|otf)$")
+    val customFontFamilies = ReactFontManager.getInstance().customFontFamilies
 
-    return assetManager.list("fonts/")
+    val assetFonts = assetManager.list("fonts/")
       ?.mapNotNull { fileName ->
         fontFileRegex.find(fileName)?.groupValues?.get(1)
       }
-      ?.filter { it.isNotBlank() }
       .orEmpty()
+
+    return customFontFamilies.union(assetFonts).filter { it.isNotBlank() }
   }
 }

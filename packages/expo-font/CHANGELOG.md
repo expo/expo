@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] include xml-fonts in the `getLoadedFonts()` list
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-16
