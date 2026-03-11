@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix crash in FabState coerceTo ([#43752](https://github.com/expo/expo/pull/43752) by [@kot331107](https://github.com/kot331107))
-
 ### 💡 Others
+
+## 55.0.13 — 2026-03-11
+
+### 🐛 Bug fixes
+
+- [Android] Fix crash in FabState coerceTo ([#43752](https://github.com/expo/expo/pull/43752) by [@kot331107](https://github.com/kot331107))
 
 ## 55.0.12 — 2026-03-09
 

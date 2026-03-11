@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Preserve HEIC orientation when loading local files for image manipulation. ([#43725](https://github.com/expo/expo/pull/43725) by [@maxsz](https://github.com/maxsz))
-
 ### 💡 Others
+
+## 55.0.10 — 2026-03-11
+
+### 🐛 Bug fixes
+
+- [iOS] Preserve HEIC orientation when loading local files for image manipulation. ([#43725](https://github.com/expo/expo/pull/43725) by [@maxsz](https://github.com/maxsz))
 
 ## 55.0.9 — 2026-02-25
 

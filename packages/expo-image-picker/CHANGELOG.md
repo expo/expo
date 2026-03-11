@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 55.0.12 — 2026-03-11
+
+### 🐛 Bug fixes
+
+- fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.11 — 2026-03-05
 

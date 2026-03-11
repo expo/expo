@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `PromiseAlreadySettledException` crash in `getInstallReferrerAsync` when `onInstallReferrerServiceDisconnected` gets called after promise settlement. ([#43419](https://github.com/expo/expo/pull/43419) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 💡 Others
+
+## 55.0.9 — 2026-03-11
+
+### 🐛 Bug fixes
+
+- [Android] Fix `PromiseAlreadySettledException` crash in `getInstallReferrerAsync` when `onInstallReferrerServiceDisconnected` gets called after promise settlement. ([#43419](https://github.com/expo/expo/pull/43419) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.8 — 2026-02-25
 

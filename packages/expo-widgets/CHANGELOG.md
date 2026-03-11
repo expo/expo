@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Pass environment to Widgets and Live Activities. ([#43681](https://github.com/expo/expo/pull/43681) by [@jakex7](https://github.com/jakex7))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Filter out invalid children. ([#43720](https://github.com/expo/expo/pull/43720) by [@jakex7](https://github.com/jakex7))
-
 ### 💡 Others
+
+## 55.0.4 — 2026-03-11
+
+### 🛠 Breaking changes
+
+- Pass environment to Widgets and Live Activities. ([#43681](https://github.com/expo/expo/pull/43681) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- Filter out invalid children. ([#43720](https://github.com/expo/expo/pull/43720) by [@jakex7](https://github.com/jakex7))
 
 ## 55.0.3 — 2026-03-05
 
