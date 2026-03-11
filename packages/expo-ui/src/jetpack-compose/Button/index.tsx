@@ -1,23 +1,15 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { MaterialIcon } from './types';
-import { ExpoModifier, ViewEvent } from '../../types';
-import { getTextFromChildren } from '../../utils';
-import { parseJSXShape, ShapeJSXElement, ShapeRecordProps } from '../Shape';
+import { type ModifierConfig, ViewEvent } from '../../types';
+import { ShapeJSXElement, ShapeRecordProps, parseJSXShape } from '../Shape';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
- * The built-in button styles available on Android.
- * - `outlined` - A button with an outline.
- * - `elevated` - A filled button with a shadow.
+ * Colors for button elements.
+ * @platform android
  */
-export type ButtonVariant = 'default' | 'bordered' | 'borderless' | 'outlined' | 'elevated';
-
-/**
- * Colors for button's core elements.
- */
-export type ButtonElementColors = {
+export type ButtonColors = {
   containerColor?: ColorValue;
   contentColor?: ColorValue;
   disabledContainerColor?: ColorValue;
@@ -26,68 +18,38 @@ export type ButtonElementColors = {
 
 export type ButtonProps = {
   /**
-   * A callback that is called when the button is pressed.
+   * Callback that is called when the button is clicked.
    */
-  onPress?: () => void;
+  onClick?: () => void;
   /**
-   * A string describing the leading icon to display in the button.
-   * Uses Material Icons on Android.
+   * Whether the button is enabled for user interaction.
+   * @default true
    */
-  leadingIcon?: MaterialIcon;
+  enabled?: boolean;
   /**
-   * A string describing the trailing icon to display in the button.
-   * Uses Material Icons on Android.
-   */
-  trailingIcon?: MaterialIcon;
-  /**
-   * A string describing the system image to display in the button.
-   * Uses Material Icons on Android.
-   * @deprecated Use `leadingIcon` instead.
-   */
-  systemImage?: MaterialIcon;
-  /**
-   * The button variant.
-   */
-  variant?: ButtonVariant;
-  /**
-   * The text to display inside the button.
-   */
-  children?: string | string[] | React.JSX.Element;
-  /**
-   * Colors for button's core elements.
+   * Colors for button elements.
    * @platform android
    */
-  elementColors?: ButtonElementColors;
+  colors?: ButtonColors;
   /**
-   * Button color.
+   * The shape of the button.
    */
-  color?: ColorValue;
   shape?: ShapeJSXElement;
-  /**
-   * Disabled state of the button.
-   */
-  disabled?: boolean;
-
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
+  /**
+   * Content to display inside the button.
+   */
+  children?: React.ReactNode;
 };
 
-/**
- * @hidden
- */
-export type NativeButtonProps = Omit<
-  ButtonProps,
-  'role' | 'onPress' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'
-> & {
-  text: string;
-  leadingIcon?: string;
-  trailingIcon?: string;
+type NativeButtonProps = Omit<ButtonProps, 'onClick' | 'shape' | 'children'> & {
   shape?: ShapeRecordProps;
+  children?: React.ReactNode;
 } & ViewEvent<'onButtonPressed', void>;
 
-// We have to work around the `role` and `onPress` props being reserved by React Native.
 const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
   'ExpoUI',
   'Button'
@@ -96,44 +58,95 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 /**
  * @hidden
  */
-export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const {
-    children,
-    onPress,
-    leadingIcon,
-    trailingIcon,
-    systemImage,
-    shape,
-    modifiers,
-    ...restProps
-  } = props;
-
-  // Handle backward compatibility: systemImage maps to leadingIcon
-  const finalLeadingIcon = leadingIcon ?? systemImage;
-
+export function transformButtonProps(props: Omit<ButtonProps, 'children'>): NativeButtonProps {
+  const { onClick, shape, modifiers, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    text: getTextFromChildren(children) ?? '',
-    children: getTextFromChildren(children) !== undefined ? undefined : children,
-    leadingIcon: finalLeadingIcon,
+    enabled: props.enabled ?? true,
     shape: parseJSXShape(shape),
-    trailingIcon,
-    onButtonPressed: onPress,
-    elementColors: props.elementColors
-      ? props.elementColors
-      : props.color
-        ? {
-            containerColor: props.color,
-          }
-        : undefined,
+    onButtonPressed: onClick ? () => onClick() : undefined,
   };
 }
 
+const FilledTonalButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
+  'ExpoUI',
+  'FilledTonalButton'
+);
+
+const OutlinedButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
+  'ExpoUI',
+  'OutlinedButton'
+);
+
+const ElevatedButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
+  'ExpoUI',
+  'ElevatedButton'
+);
+
+const TextButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
+  'ExpoUI',
+  'TextButton'
+);
+
 /**
- * Displays a native button component.
+ * A filled button component.
+ * @platform android
  */
 export function Button(props: ButtonProps) {
-  return <ButtonNativeView {...transformButtonProps(props)} />;
+  const { children, ...restProps } = props;
+  return <ButtonNativeView {...transformButtonProps(restProps)}>{children}</ButtonNativeView>;
+}
+
+/**
+ * A filled tonal button component.
+ * @platform android
+ */
+export function FilledTonalButton(props: ButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <FilledTonalButtonNativeView {...transformButtonProps(restProps)}>
+      {children}
+    </FilledTonalButtonNativeView>
+  );
+}
+
+/**
+ * An outlined button component.
+ * @platform android
+ */
+export function OutlinedButton(props: ButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <OutlinedButtonNativeView {...transformButtonProps(restProps)}>
+      {children}
+    </OutlinedButtonNativeView>
+  );
+}
+
+/**
+ * An elevated button component.
+ * @platform android
+ */
+export function ElevatedButton(props: ButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <ElevatedButtonNativeView {...transformButtonProps(restProps)}>
+      {children}
+    </ElevatedButtonNativeView>
+  );
+}
+
+/**
+ * A text button component.
+ * @platform android
+ */
+export function TextButton(props: ButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <TextButtonNativeView {...transformButtonProps(restProps)}>
+      {children}
+    </TextButtonNativeView>
+  );
 }

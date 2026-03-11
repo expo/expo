@@ -1,17 +1,11 @@
 import { type ColorValue } from 'react-native';
-import { MaterialIcon } from './types';
-import { ExpoModifier, ViewEvent } from '../../types';
+import { type ModifierConfig, ViewEvent } from '../../types';
 import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
 /**
- * The built-in button styles available on Android.
- * - `outlined` - A button with an outline.
- * - `elevated` - A filled button with a shadow.
+ * Colors for button elements.
+ * @platform android
  */
-export type ButtonVariant = 'default' | 'bordered' | 'borderless' | 'outlined' | 'elevated';
-/**
- * Colors for button's core elements.
- */
-export type ButtonElementColors = {
+export type ButtonColors = {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
     disabledContainerColor?: ColorValue;
@@ -19,67 +13,64 @@ export type ButtonElementColors = {
 };
 export type ButtonProps = {
     /**
-     * A callback that is called when the button is pressed.
+     * Callback that is called when the button is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
-     * A string describing the leading icon to display in the button.
-     * Uses Material Icons on Android.
+     * Whether the button is enabled for user interaction.
+     * @default true
      */
-    leadingIcon?: MaterialIcon;
+    enabled?: boolean;
     /**
-     * A string describing the trailing icon to display in the button.
-     * Uses Material Icons on Android.
-     */
-    trailingIcon?: MaterialIcon;
-    /**
-     * A string describing the system image to display in the button.
-     * Uses Material Icons on Android.
-     * @deprecated Use `leadingIcon` instead.
-     */
-    systemImage?: MaterialIcon;
-    /**
-     * The button variant.
-     */
-    variant?: ButtonVariant;
-    /**
-     * The text to display inside the button.
-     */
-    children?: string | string[] | React.JSX.Element;
-    /**
-     * Colors for button's core elements.
+     * Colors for button elements.
      * @platform android
      */
-    elementColors?: ButtonElementColors;
+    colors?: ButtonColors;
     /**
-     * Button color.
+     * The shape of the button.
      */
-    color?: ColorValue;
     shape?: ShapeJSXElement;
-    /**
-     * Disabled state of the button.
-     */
-    disabled?: boolean;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
+    /**
+     * Content to display inside the button.
+     */
+    children?: React.ReactNode;
 };
-/**
- * @hidden
- */
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'leadingIcon' | 'trailingIcon' | 'systemImage' | 'shape'> & {
-    text: string;
-    leadingIcon?: string;
-    trailingIcon?: string;
+type NativeButtonProps = Omit<ButtonProps, 'onClick' | 'shape' | 'children'> & {
     shape?: ShapeRecordProps;
+    children?: React.ReactNode;
 } & ViewEvent<'onButtonPressed', void>;
 /**
  * @hidden
  */
-export declare function transformButtonProps(props: ButtonProps): NativeButtonProps;
+export declare function transformButtonProps(props: Omit<ButtonProps, 'children'>): NativeButtonProps;
 /**
- * Displays a native button component.
+ * A filled button component.
+ * @platform android
  */
 export declare function Button(props: ButtonProps): import("react").JSX.Element;
+/**
+ * A filled tonal button component.
+ * @platform android
+ */
+export declare function FilledTonalButton(props: ButtonProps): import("react").JSX.Element;
+/**
+ * An outlined button component.
+ * @platform android
+ */
+export declare function OutlinedButton(props: ButtonProps): import("react").JSX.Element;
+/**
+ * An elevated button component.
+ * @platform android
+ */
+export declare function ElevatedButton(props: ButtonProps): import("react").JSX.Element;
+/**
+ * A text button component.
+ * @platform android
+ */
+export declare function TextButton(props: ButtonProps): import("react").JSX.Element;
+export {};
 //# sourceMappingURL=index.d.ts.map

@@ -12,6 +12,10 @@ import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.ButtonContent
 import expo.modules.ui.button.ButtonPressedEvent
 import expo.modules.ui.button.ButtonProps
+import expo.modules.ui.button.ElevatedButtonContent
+import expo.modules.ui.button.FilledTonalButtonContent
+import expo.modules.ui.button.OutlinedButtonContent
+import expo.modules.ui.button.TextButtonContent
 import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.IconButtonProps
 import expo.modules.ui.icon.IconView
@@ -111,6 +115,34 @@ class ExpoUIModule : Module() {
     }) { props: ButtonProps ->
       val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
       ButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("FilledTonalButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      FilledTonalButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("OutlinedButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      OutlinedButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("ElevatedButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      ElevatedButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("TextButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      TextButtonContent(props) { onButtonPressed(it) }
     }
 
     ExpoUIView("IconButton", events = {
@@ -239,13 +271,6 @@ class ExpoUIModule : Module() {
     }) { props: FilterChipProps ->
       val onPress by remember { EventDispatcher<FilterChipPressedEvent>() }
       FilterChipContent(props) { onPress(it) }
-    }
-
-    ExpoUIView("TextButtonView", events = {
-      Events("onButtonPressed")
-    }) { props: TextButtonProps ->
-      val onButtonPressed by remember { EventDispatcher<expo.modules.ui.button.ButtonPressedEvent>() }
-      TextButtonContent(props) { onButtonPressed(it) }
     }
 
     ExpoUIView("ToggleButtonView", events = {

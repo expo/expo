@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
-import { ButtonElementColors } from '../Button';
+import { ButtonColors } from '../Button';
 import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
 /**
  * The built-in button styles available on Android.
@@ -25,7 +25,7 @@ export type IconButtonProps = {
      * Colors for button's core elements.
      * @platform android
      */
-    elementColors?: ButtonElementColors;
+    elementColors?: ButtonColors;
     /**
      * Button color.
      */
