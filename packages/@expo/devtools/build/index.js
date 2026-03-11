@@ -12,6 +12,6 @@ export { WebSocketBackingStore as unstable_WebSocketBackingStore } from './WebSo
 export { getConnectionInfo as unstable_getConnectionInfo } from './getConnectionInfo.js';
 // Export CLI extension APIs
 export { runCliExtension } from './runCliExtension.js';
-export { sendCliMessageAsync } from './sendCliMessage.js';
-export { startCliListenerAsync } from './startCliListenerAsync.js';
+export { createCliDevToolsPluginClient } from './createCliDevToolsPluginClient.js';
+export { sendDevToolsRequestAsync } from './sendDevToolsRequestAsync.js';
 //# sourceMappingURL=index.js.map
