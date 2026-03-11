@@ -67,11 +67,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'ContextMenu component',
-    route: 'ui/context-menu',
+    name: 'DropdownMenu component',
+    route: 'ui/dropdown-menu',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./ContextMenuScreen'));
+      return optionalRequire(() => require('./DropdownMenuScreen'));
     },
   },
   {

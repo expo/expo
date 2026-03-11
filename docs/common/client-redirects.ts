@@ -546,4 +546,10 @@ const RENAMED_PAGES: Record<string, string> = {
   // After creating EAS environment variables section
   '/eas/hosting/environment-variables/':
     '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
+
+  // After renaming ContextMenu to DropdownMenu in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu/',
 };
