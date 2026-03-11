@@ -17,6 +17,7 @@
 - [plugin] Fix reading undefined when config is not provided. ([#43568](https://github.com/expo/expo/pull/43568) by [@jakex7](https://github.com/jakex7))
 - Skip server bundling in `export:embed` call for `expo-widgets` bundle ([#43602](https://github.com/expo/expo/pull/43602) by [@kitten](https://github.com/kitten))
 - Filter out invalid children. ([#43720](https://github.com/expo/expo/pull/43720) by [@jakex7](https://github.com/jakex7))
+- Add support for `React.Fragment`.
 
 ### 💡 Others
 
