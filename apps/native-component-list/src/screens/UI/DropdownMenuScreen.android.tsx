@@ -1,6 +1,6 @@
 import {
   Button,
-  ContextMenu,
+  DropdownMenu,
   Divider,
   DropdownMenuItem,
   Host,
@@ -28,7 +28,7 @@ const logoutIcon = require('../../../assets/icons/api/SecureStore.png');
 const settingsIcon = require('../../../assets/icons/api/Sensor.png');
 const starIcon = require('../../../assets/icons/api/StoreReview.png');
 
-export default function ContextMenuScreen() {
+export default function DropdownMenuScreen() {
   const [switchChecked, setSwitchChecked] = React.useState<boolean>(true);
   const [switch2Checked, setSwitch2Checked] = React.useState<boolean>(false);
   const [selectedTheme, setSelectedTheme] = React.useState<'Light' | 'Dark' | 'Auto'>('Auto');
@@ -47,24 +47,24 @@ export default function ContextMenuScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Section title="Theme Context Menu">
+      <Section title="Theme Dropdown Menu">
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Theme</Text>
           <Host matchContents>
-            <ContextMenu
+            <DropdownMenu
               expanded={themeMenuExpanded}
               onDismissRequest={() => setThemeMenuExpanded(false)}
               color={themeBackgroundColor}>
-              <ContextMenu.Trigger>
+              <DropdownMenu.Trigger>
                 <Button
                   elementColors={{ containerColor: 'transparent', contentColor: 'blue' }}
                   trailingIcon="filled.ArrowDropDown"
                   onPress={() => setThemeMenuExpanded(true)}>
                   {selectedTheme}
                 </Button>
-              </ContextMenu.Trigger>
-              <ContextMenu.Items>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Items>
                 <DropdownMenuItem
                   onClick={() => {
                     setThemeMenuExpanded(false);
@@ -116,23 +116,23 @@ export default function ContextMenuScreen() {
                     </DropdownMenuItem.TrailingIcon>
                   )}
                 </DropdownMenuItem>
-              </ContextMenu.Items>
-            </ContextMenu>
+              </DropdownMenu.Items>
+            </DropdownMenu>
           </Host>
         </View>
       </Section>
-      <Section title="Colorful Context Menu">
+      <Section title="Colorful Dropdown Menu">
         <Host matchContents>
-          <ContextMenu
+          <DropdownMenu
             expanded={colorfulMenuExpanded}
             onDismissRequest={() => setColorfulMenuExpanded(false)}
             color="#e3b7ff">
-            <ContextMenu.Trigger>
+            <DropdownMenu.Trigger>
               <Button variant="bordered" onPress={() => setColorfulMenuExpanded(true)}>
                 Show Colorful Menu
               </Button>
-            </ContextMenu.Trigger>
-            <ContextMenu.Items>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
               <DropdownMenuItem
                 onClick={() => setColorfulMenuExpanded(false)}
                 elementColors={{ textColor: '#FFFFFF' }}
@@ -194,21 +194,21 @@ export default function ContextMenuScreen() {
                   </Row>
                 </DropdownMenuItem.Text>
               </DropdownMenuItem>
-            </ContextMenu.Items>
-          </ContextMenu>
+            </DropdownMenu.Items>
+          </DropdownMenu>
         </Host>
       </Section>
-      <Section title="Context Menu with Sections">
+      <Section title="Dropdown Menu with Sections">
         <Host matchContents>
-          <ContextMenu
+          <DropdownMenu
             expanded={sectionsMenuExpanded}
             onDismissRequest={() => setSectionsMenuExpanded(false)}>
-            <ContextMenu.Trigger>
+            <DropdownMenu.Trigger>
               <Button variant="outlined" onPress={() => setSectionsMenuExpanded(true)}>
                 Show Menu with Sections
               </Button>
-            </ContextMenu.Trigger>
-            <ContextMenu.Items>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
               <DropdownMenuItem
                 onClick={() => {
                   setSectionsMenuExpanded(false);
@@ -221,10 +221,11 @@ export default function ContextMenuScreen() {
                   <Icon source={homeIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
               </DropdownMenuItem>
-              <ContextMenu
+              <Divider />
+              <DropdownMenu
                 expanded={submenuExpanded}
                 onDismissRequest={() => setSubmenuExpanded(false)}>
-                <ContextMenu.Trigger>
+                <DropdownMenu.Trigger>
                   <DropdownMenuItem onClick={() => setSubmenuExpanded(true)}>
                     <DropdownMenuItem.Text>
                       <ComposeText>Submenu</ComposeText>
@@ -233,8 +234,8 @@ export default function ContextMenuScreen() {
                       <Icon source={printIcon} size={24} />
                     </DropdownMenuItem.LeadingIcon>
                   </DropdownMenuItem>
-                </ContextMenu.Trigger>
-                <ContextMenu.Items>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Items>
                   <DropdownMenuItem
                     onClick={() => {
                       setSectionsMenuExpanded(false);
@@ -269,8 +270,8 @@ export default function ContextMenuScreen() {
                       <Icon source={darkModeIcon} size={24} />
                     </DropdownMenuItem.LeadingIcon>
                   </DropdownMenuItem>
-                </ContextMenu.Items>
-              </ContextMenu>
+                </DropdownMenu.Items>
+              </DropdownMenu>
               <Divider />
               <DropdownMenuItem
                 onClick={() => {
@@ -284,14 +285,14 @@ export default function ContextMenuScreen() {
                   <Icon source={logoutIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
               </DropdownMenuItem>
-            </ContextMenu.Items>
-          </ContextMenu>
+            </DropdownMenu.Items>
+          </DropdownMenu>
         </Host>
       </Section>
     </View>
   );
 }
 
-ContextMenuScreen.navigationOptions = {
-  title: 'Context Menu',
+DropdownMenuScreen.navigationOptions = {
+  title: 'Dropdown Menu',
 };

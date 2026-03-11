@@ -274,6 +274,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
+  {
+    name: 'rotation3DEffect modifier',
+    route: 'ui/rotation-3d-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./Rotation3DEffectScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {

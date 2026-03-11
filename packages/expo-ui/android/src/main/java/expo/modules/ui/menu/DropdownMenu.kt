@@ -12,8 +12,8 @@ import expo.modules.ui.findChildSlotView
 import expo.modules.ui.isSlotView
 
 @Composable
-fun FunctionalComposableScope.ContextMenuContent(
-  props: ContextMenuProps,
+fun FunctionalComposableScope.DropdownMenuContent(
+  props: DropdownMenuProps,
   onDismissRequest: () -> Unit
 ) {
   val itemsSlotView = findChildSlotView(view, "items")

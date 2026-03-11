@@ -15,8 +15,8 @@ import expo.modules.ui.button.ButtonProps
 import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.IconButtonProps
 import expo.modules.ui.icon.IconView
-import expo.modules.ui.menu.ContextMenuContent
-import expo.modules.ui.menu.ContextMenuProps
+import expo.modules.ui.menu.DropdownMenuContent
+import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.ui.menu.ItemPressedEvent
@@ -141,11 +141,11 @@ class ExpoUIModule : Module() {
       DateTimePickerContent(props) { onDateSelected(it) }
     }
 
-    ExpoUIView("ContextMenuView", events = {
+    ExpoUIView("DropdownMenuView", events = {
       Events("onDismissRequest")
-    }) { props: ContextMenuProps ->
+    }) { props: DropdownMenuProps ->
       val onDismissRequest by remember { EventDispatcher<Unit>() }
-      ContextMenuContent(props) { onDismissRequest(Unit) }
+      DropdownMenuContent(props) { onDismissRequest(Unit) }
     }
 
     ExpoUIView("DropdownMenuItemView", events = {
