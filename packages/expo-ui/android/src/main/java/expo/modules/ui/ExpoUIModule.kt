@@ -12,11 +12,13 @@ import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.ButtonContent
 import expo.modules.ui.button.ButtonPressedEvent
 import expo.modules.ui.button.ButtonProps
+import expo.modules.ui.button.FloatingActionButtonContent
+import expo.modules.ui.button.FloatingActionButtonProps
 import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.IconButtonProps
 import expo.modules.ui.icon.IconView
-import expo.modules.ui.menu.ContextMenuContent
-import expo.modules.ui.menu.ContextMenuProps
+import expo.modules.ui.menu.DropdownMenuContent
+import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
 import expo.modules.ui.menu.ItemPressedEvent
@@ -129,7 +131,7 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("SliderView", events = {
-      Events("onValueChanged")
+      Events("onValueChange", "onValueChangeFinished")
     }) { props: SliderProps ->
       SliderContent(props)
     }
@@ -149,11 +151,11 @@ class ExpoUIModule : Module() {
       DateTimePickerContent(props) { onDateSelected(it) }
     }
 
-    ExpoUIView("ContextMenuView", events = {
+    ExpoUIView("DropdownMenuView", events = {
       Events("onDismissRequest")
-    }) { props: ContextMenuProps ->
+    }) { props: DropdownMenuProps ->
       val onDismissRequest by remember { EventDispatcher<Unit>() }
-      ContextMenuContent(props) { onDismissRequest(Unit) }
+      DropdownMenuContent(props) { onDismissRequest(Unit) }
     }
 
     ExpoUIView("DropdownMenuItemView", events = {
@@ -295,6 +297,13 @@ class ExpoUIModule : Module() {
     }) { props: RadioButtonProps ->
       val onButtonPressed by remember { EventDispatcher<Unit>() }
       RadioButtonContent(props, if (props.clickable) { { onButtonPressed(Unit) } } else null)
+    }
+
+    ExpoUIView("FloatingActionButtonView", events = {
+      Events("onButtonPressed")
+    }) { props: FloatingActionButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<Unit>() }
+      FloatingActionButtonContent(props) { onButtonPressed(Unit) }
     }
 
     //endregion Expo UI views

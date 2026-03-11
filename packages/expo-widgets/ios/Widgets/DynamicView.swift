@@ -81,18 +81,21 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         switch kind {
         case .widget:
           render(WidgetButtonView.self, ButtonProps.self) { buttonProps in
+            try updateChildren(buttonProps)
             buttonProps.source = source
             buttonProps.entryIndex = entryIndex
           }
         case .liveActivity:
           render(LiveActivityButtonView.self, ButtonProps.self) { buttonProps in
+            try updateChildren(buttonProps)
             buttonProps.source = source
           }
         }
       } else {
         render(ExpoUI.Button.self, ExpoUI.ButtonProps.self, updateProps: updateChildren)
       }
-
+    case "react.fragment":
+      render(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
     default:
       ZStack {
         Color.red.opacity(0.5)

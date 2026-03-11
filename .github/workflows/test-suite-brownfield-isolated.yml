@@ -239,10 +239,19 @@ jobs:
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
       - name: 🧪 Run e2e tests (Release)
         run: ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
-      # TODO(pmleczek): Re-enable once all issues are resolved
+      # Tests are unstable on GitHub macOS runner - might be
+      # the best to migrate them to EAS
       # - name: 🍏 Build iOS artifacts (Debug)
       #   run: |
       #     npx expo-brownfield build:ios -d --verbose -a ../../../artifacts -p BrownfieldPackage
+      #   working-directory: apps/brownfield-tester/expo-app
+      # - name: 🔨 Add XCFrameworks to SwiftUI project
+      #   run: ruby packages/expo-brownfield/e2e/scripts/add_xcframeworks.rb
+      # - name: 🚇 Start Metro server
+      #   run: |
+      #     yarn start --clear &
+      #     npx wait-on http://localhost:8081 --timeout 60000
+      #   working-directory: apps/brownfield-tester/expo-app
       # - name: 🧪 Run e2e tests (Debug)
       #   run: CONFIGURATION=Debug ./packages/expo-brownfield/e2e/scripts/run-e2e-ios.sh
       - name: 💾 Save ccache

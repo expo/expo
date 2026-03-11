@@ -10,7 +10,7 @@ enum class ActivationMethod(val value: String) : Enumerable {
   LONG_PRESS("longPress")
 }
 
-data class ContextMenuProps(
+data class DropdownMenuProps(
   val activationMethod: ActivationMethod = ActivationMethod.SINGLE_PRESS,
   val expanded: Boolean = false,
   val color: Color? = null,

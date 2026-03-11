@@ -22,6 +22,7 @@ xcodebuild build \
 
 APP_BINARY_PATH=build/Build/Products/${CONFIGURATION}-iphonesimulator/BrownfieldIntegratedTester.app
 echo " 🔌 Installing UIKit App - deviceId[${DEVICE_ID}] appBinaryPath[${APP_BINARY_PATH}]"
+xcrun simctl uninstall $DEVICE_ID $BUNDLE_ID || true
 xcrun simctl install $DEVICE_ID $APP_BINARY_PATH
 xcrun simctl launch $DEVICE_ID $BUNDLE_ID
 
