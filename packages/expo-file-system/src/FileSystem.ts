@@ -12,6 +12,7 @@ import {
   UploadResult,
   DownloadTaskOptions,
   DownloadPauseState,
+  TaskState,
 } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -334,6 +335,7 @@ Directory.pickDirectoryAsync = async function (initialUri?: string) {
  * Represents an upload task with progress tracking and cancellation support.
  */
 export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
+  private _state: TaskState = 'idle';
   private _file: File;
   private _url: string;
   private _options?: UploadOptions;
@@ -347,24 +349,17 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     this._options = options;
   }
 
+  get state(): TaskState {
+    return this._state;
+  }
+
   async uploadAsync(): Promise<UploadResult> {
+    this._assertState(['idle'], 'uploadAsync');
+    this._state = 'active';
     try {
-      if (this._options?.signal?.aborted) {
-        throw createAbortError();
-      }
+      this._wireAbortSignal();
+      this._wireProgress();
 
-      // Set up progress listener if provided
-      if (this._options?.onProgress) {
-        this._subscription = this.addListener('progress', this._options.onProgress);
-      }
-
-      // Set up abort signal handler if provided
-      if (this._options?.signal) {
-        this._abortHandler = () => this.cancel();
-        this._options.signal.addEventListener('abort', this._abortHandler, { once: true });
-      }
-
-      // Prepare native options (strip onProgress and signal, keep the rest)
       const nativeOpts = {
         httpMethod: this._options?.httpMethod || 'POST',
         uploadType: this._options?.uploadType ?? 0,
@@ -374,14 +369,12 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
         parameters: this._options?.parameters,
       };
 
-      // Call native method
       const result = await super.start(this._url, this._file.uri, nativeOpts);
+      this._state = 'completed';
       return result;
     } catch (error) {
-      // If the signal was aborted, throw an AbortError
-      if (this._options?.signal?.aborted) {
-        throw createAbortError();
-      }
+      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
+      if (this._options?.signal?.aborted) throw createAbortError();
       throw error;
     } finally {
       this._cleanup();
@@ -389,8 +382,30 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
   }
 
   cancel(): void {
+    if (['completed', 'cancelled', 'error'].includes(this._state)) return;
+    this._state = 'cancelled';
     super.cancel();
     this._cleanup();
+  }
+
+  private _assertState(allowed: TaskState[], method: string) {
+    if (!allowed.includes(this._state)) {
+      throw new Error(`Cannot call ${method}() in state "${this._state}"`);
+    }
+  }
+
+  private _wireAbortSignal() {
+    if (this._options?.signal?.aborted) throw createAbortError();
+    if (this._options?.signal) {
+      this._abortHandler = () => this.cancel();
+      this._options.signal.addEventListener('abort', this._abortHandler, { once: true });
+    }
+  }
+
+  private _wireProgress() {
+    if (this._options?.onProgress) {
+      this._subscription = this.addListener('progress', this._options.onProgress);
+    }
   }
 
   private _cleanup() {
@@ -409,6 +424,7 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
  * Represents a download task with pause/resume support and progress tracking.
  */
 export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
+  private _state: TaskState = 'idle';
   private _url: string;
   private _destination: File | Directory;
   private _options?: DownloadTaskOptions;
@@ -423,96 +439,133 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     this._options = options;
   }
 
+  get state(): TaskState {
+    return this._state;
+  }
+
   async downloadAsync(): Promise<File | null> {
+    this._assertState(['idle'], 'downloadAsync');
+    this._state = 'active';
     try {
-      this._setupListeners();
+      this._wireAbortSignal();
+      this._wireProgress();
 
       const nativeOpts = {
         headers: this._options?.headers,
       };
 
       const result = await super.start(this._url, this._destination, nativeOpts);
-      return result ? new File(result) : null; // null = paused
-    } catch (error) {
-      if (this._options?.signal?.aborted) {
-        throw createAbortError();
+      if (result) {
+        this._state = 'completed';
+        return new File(result);
       }
+      // null = paused (native resolved with nil because isPausing was set)
+      this._state = 'paused';
+      return null;
+    } catch (error) {
+      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
+      if (this._options?.signal?.aborted) throw createAbortError();
       throw error;
     } finally {
-      this._cleanupListeners();
+      this._cleanup();
     }
   }
 
-  async pauseAsync(): Promise<DownloadPauseState> {
-    const result = await super.pause();
-    this._resumeData = result.resumeData || undefined;
-    return this.savable();
+  pause(): { resumeData: string } {
+    this._assertState(['active'], 'pause');
+    const result = super.pause();
+    this._resumeData = result.resumeData ?? undefined;
+    // State transition to 'paused' happens in downloadAsync()/resumeAsync()
+    // when the native promise resolves with null
+    return result;
   }
 
   async resumeAsync(): Promise<File | null> {
-    if (!this._resumeData) {
-      throw new Error('No resume data available. Call downloadAsync() or pauseAsync() first.');
-    }
-
+    this._assertState(['paused'], 'resumeAsync');
+    this._state = 'active';
     try {
-      this._setupListeners();
+      this._wireAbortSignal();
+      this._wireProgress();
 
       const nativeOpts = {
         headers: this._options?.headers,
       };
 
-      const result = await super.resume(this._url, this._destination, this._resumeData, nativeOpts);
-
-      // If successful, clear resume data
+      const result = await super.resume(
+        this._url,
+        this._destination,
+        this._resumeData!,
+        nativeOpts
+      );
       if (result) {
+        this._state = 'completed';
         this._resumeData = undefined;
+        return new File(result);
       }
-
-      return result ? new File(result) : null; // null = paused again
+      this._state = 'paused';
+      return null;
     } catch (error) {
-      if (this._options?.signal?.aborted) {
-        throw createAbortError();
-      }
+      this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
+      if (this._options?.signal?.aborted) throw createAbortError();
       throw error;
     } finally {
-      this._cleanupListeners();
+      this._cleanup();
     }
   }
 
   cancel(): void {
+    if (['completed', 'cancelled', 'error'].includes(this._state)) return;
+    this._state = 'cancelled';
     super.cancel();
-    this._cleanupListeners();
+    this._cleanup();
   }
 
   savable(): DownloadPauseState {
+    this._assertState(['paused'], 'savable');
     return {
       url: this._url,
       fileUri: this._destination.uri,
-      options: this._options,
+      headers: this._options?.headers,
       resumeData: this._resumeData,
     };
   }
 
-  static fromSavable(state: DownloadPauseState): DownloadTask {
-    const dest = state.fileUri.endsWith('/')
-      ? new Directory(state.fileUri)
-      : new File(state.fileUri);
-    const task = new DownloadTask(state.url, dest, state.options);
+  static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask {
+    if (!state.resumeData) {
+      throw new Error('Cannot restore task: DownloadPauseState has no resumeData');
+    }
+    const dest = state.fileUri.endsWith('/') ? new Directory(state.fileUri) : new File(state.fileUri);
+    const mergedOptions: DownloadTaskOptions | undefined =
+      options || state.headers
+        ? { ...options, headers: { ...state.headers, ...options?.headers } }
+        : undefined;
+    const task = new DownloadTask(state.url, dest, mergedOptions);
     task._resumeData = state.resumeData;
+    task._state = 'paused';
     return task;
   }
 
-  private _setupListeners() {
-    if (this._options?.onProgress) {
-      this._subscription = this.addListener('progress', this._options.onProgress);
+  private _assertState(allowed: TaskState[], method: string) {
+    if (!allowed.includes(this._state)) {
+      throw new Error(`Cannot call ${method}() in state "${this._state}"`);
     }
+  }
+
+  private _wireAbortSignal() {
+    if (this._options?.signal?.aborted) throw createAbortError();
     if (this._options?.signal) {
       this._abortHandler = () => this.cancel();
       this._options.signal.addEventListener('abort', this._abortHandler, { once: true });
     }
   }
 
-  private _cleanupListeners() {
+  private _wireProgress() {
+    if (this._options?.onProgress) {
+      this._subscription = this.addListener('progress', this._options.onProgress);
+    }
+  }
+
+  private _cleanup() {
     if (this._subscription) {
       this._subscription.remove();
       this._subscription = undefined;
