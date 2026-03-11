@@ -23,6 +23,8 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
             'Messaging.swift',
             // State proxy
             'State.swift',
+            // State wrapper
+            'StateWrapper.swift',
             //SwiftUI brownfield entrypoint
             'ReactNativeView.swift',
             // UIKit brownfield view controller

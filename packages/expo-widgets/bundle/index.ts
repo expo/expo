@@ -6,39 +6,35 @@ import * as modifiers from '@expo/ui/swift-ui/modifiers';
 import * as jsxRuntime from './jsx-runtime-stub';
 import * as React from './react-stub';
 
-type WidgetProps = Record<string, unknown>;
-type WidgetNode = { props?: WidgetProps };
+type Dictionary = Record<string, unknown>;
 
 declare global {
-  var __expoWidgetLayout: (props: WidgetProps) => WidgetNode;
-  var __expoWidgetProps: WidgetProps | undefined;
-  var __expoWidgetRender: (timestamp: number, family?: string) => WidgetProps;
+  var __expoWidgetLayout: (props: Dictionary, environment: Dictionary) => Dictionary;
+  var __expoWidgetRender: (props: Dictionary, environment: Dictionary) => Dictionary;
   var __expoWidgetHandlePress: (
-    timestamp: number,
-    family: string | undefined,
-    target: string | undefined
-  ) => WidgetProps | undefined;
+    environment: Dictionary & { target?: string }
+  ) => Dictionary | undefined;
 }
 
-const __expoWidgetRender = function (timestamp: number, family?: string) {
-  if (family) {
-    return globalThis.__expoWidgetLayout(
-      Object.assign({ date: new Date(timestamp), family }, globalThis.__expoWidgetProps || {})
-    );
+const __expoWidgetRender = function (props: Dictionary, environment: Dictionary) {
+  const { timestamp, ...rest } = environment;
+  const decoratedEnvironment: Dictionary = { ...rest };
+  if (timestamp) {
+    decoratedEnvironment.date = new Date(timestamp as number);
   }
-  return globalThis.__expoWidgetLayout(
-    Object.assign({ date: new Date(timestamp) }, globalThis.__expoWidgetProps || {})
-  );
+
+  return globalThis.__expoWidgetLayout(props, decoratedEnvironment as any);
 };
 
 const __expoWidgetHandlePress = function (
-  timestamp: number,
-  family: string | undefined,
-  target: string | undefined
+  props: Dictionary,
+  environment: Dictionary & { target?: string }
 ) {
-  function findAndCallOnPress(node?: WidgetNode): WidgetProps | undefined {
+  const { target, ...renderEnvironment } = environment;
+
+  function findAndCallOnPress(node?: Dictionary): Dictionary | undefined {
     const props = node?.props as {
-      onButtonPress?: () => WidgetProps;
+      onButtonPress?: () => Dictionary;
       target?: string;
       children?: unknown;
     };
@@ -48,7 +44,7 @@ const __expoWidgetHandlePress = function (
 
     if (props?.children && Array.isArray(props.children)) {
       for (const child of props.children) {
-        const result = findAndCallOnPress(child as WidgetNode);
+        const result = findAndCallOnPress(child as Dictionary);
         if (result) {
           return result;
         }
@@ -56,8 +52,8 @@ const __expoWidgetHandlePress = function (
     }
   }
 
-  const node = globalThis.__expoWidgetRender(timestamp, family);
-  return findAndCallOnPress(node as WidgetNode);
+  const node = globalThis.__expoWidgetRender(props, renderEnvironment);
+  return findAndCallOnPress(node as Dictionary);
 };
 
 Object.assign(globalThis, {
@@ -65,6 +61,7 @@ Object.assign(globalThis, {
   ...modifiers,
   ...jsxRuntime,
   ...React,
+  React,
   __expoWidgetRender,
   __expoWidgetHandlePress,
 });

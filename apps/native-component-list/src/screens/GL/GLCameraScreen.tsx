@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   camera: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   buttons: {
     flex: 1,

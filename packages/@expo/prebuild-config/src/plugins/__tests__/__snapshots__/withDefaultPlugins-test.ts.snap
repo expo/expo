@@ -755,6 +755,11 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
+          {
+            "key": "expo.inlineModules.watchedDirectories",
+            "type": "property",
+            "value": "[]",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -1173,6 +1178,7 @@ exports[`built-in plugins introspects mods 1`] = `
         },
         "podfileProperties": {
           "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+          "expo.inlineModules.watchedDirectories": "[]",
           "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {
@@ -1683,6 +1689,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "type": "property",
             "value": "true",
           },
+          {
+            "key": "expo.inlineModules.watchedDirectories",
+            "type": "property",
+            "value": "[]",
+          },
         ],
         "manifest": {
           "manifest": {
@@ -2099,6 +2110,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "podfileProperties": {
+          "expo.inlineModules.watchedDirectories": "[]",
           "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {

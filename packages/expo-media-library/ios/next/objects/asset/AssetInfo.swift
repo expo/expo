@@ -10,6 +10,7 @@ struct AssetInfo: Record {
   @Field var width: Int
   @Field var mediaType: MediaTypeNext = .UNKNOWN
   @Field var modificationTime: Int?
+  @Field var isFavorite: Bool
 
   init () {}
 
@@ -22,7 +23,8 @@ struct AssetInfo: Record {
     height: Int,
     width: Int,
     mediaType: MediaTypeNext,
-    modificationTime: Int? = nil
+    modificationTime: Int? = nil,
+    isFavorite: Bool
   ) {
     self.id = id
     self.creationTime = creationTime
@@ -33,5 +35,6 @@ struct AssetInfo: Record {
     self.width = width
     self.mediaType = mediaType
     self.modificationTime = modificationTime
+    self.isFavorite = isFavorite
   }
 }

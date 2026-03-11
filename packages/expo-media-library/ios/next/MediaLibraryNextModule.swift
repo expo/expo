@@ -65,6 +65,14 @@ public final class MediaLibraryNextModule: Module {
       AsyncFunction("delete") { (this: Asset) in
         try await this.delete()
       }
+
+      AsyncFunction("getFavorite") { (this: Asset) in
+        try await this.getFavorite()
+      }
+
+      AsyncFunction("setFavorite") { (this: Asset, isFavorite: Bool) in
+        try await this.setFavorite(isFavorite)
+      }
     }
 
     // swiftlint:disable:next closure_body_length

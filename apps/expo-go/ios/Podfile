@@ -114,6 +114,7 @@ target 'Expo Go' do
         target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_V1_ENABLED=1"
         end
       end
       if ['React-jsinspector', 'React-RCTNetwork'].include?(pod_name)
