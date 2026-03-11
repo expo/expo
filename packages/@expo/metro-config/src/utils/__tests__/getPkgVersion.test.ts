@@ -89,9 +89,7 @@ describe(findUpPackageJson, () => {
   });
 
   it('should return package.json path when found in the given directory', () => {
-    jest
-      .mocked(resolveFrom.silent)
-      .mockReturnValueOnce('/project/node_modules/expo/package.json');
+    jest.mocked(resolveFrom.silent).mockReturnValueOnce('/project/node_modules/expo/package.json');
 
     expect(findUpPackageJson('/project/node_modules/expo/src/index.js')).toBe(
       '/project/node_modules/expo/package.json'
