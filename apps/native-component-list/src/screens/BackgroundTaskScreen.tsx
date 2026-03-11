@@ -152,7 +152,10 @@ console.log('App: Defining background task');
 
 // Register / create the task so that it is available also when the background task screen is not open
 TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
-  console.log('TASK RUNNING', BACKGROUND_TASK_IDENTIFIER);
+  console.log('TASK RUNNING', BACKGROUND_TASK_IDENTIFIER, 'setting', {
+    key: LAST_TASK_DATE_KEY,
+    value: Date.now().toString(),
+  });
   try {
     // Log every 2 seconds to verify JS timers work while backgrounded.
     // Without the HeadlessJsTaskContext fix, these logs stop appearing
