@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
-import { type ModifierConfig, ViewEvent } from '../../types';
 import { type ColorValue } from 'react-native';
 
+import { type ModifierConfig, ViewEvent } from '../../types';
 import { transformButtonProps } from '../Button';
 import { type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 

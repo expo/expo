@@ -145,8 +145,6 @@ export function ElevatedButton(props: ButtonProps) {
 export function TextButton(props: ButtonProps) {
   const { children, ...restProps } = props;
   return (
-    <TextButtonNativeView {...transformButtonProps(restProps)}>
-      {children}
-    </TextButtonNativeView>
+    <TextButtonNativeView {...transformButtonProps(restProps)}>{children}</TextButtonNativeView>
   );
 }
