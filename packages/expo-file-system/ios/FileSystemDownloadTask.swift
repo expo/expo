@@ -11,33 +11,39 @@ struct DownloadTaskOptions: Record {
 
 /**
  * A SharedObject that handles file downloads with pause/resume support and progress tracking.
+ * Uses URLSessionDataTask with manual file writing so that pause/resume works via byte-offset
+ * Range headers, independent of server-provided resume data.
  */
 class FileSystemDownloadTask: SharedObject {
   private var session: URLSession?
-  private var downloadTask: URLSessionDownloadTask?
+  private var dataTask: URLSessionDataTask?
   private var delegate: DownloadTaskDelegate?
-  var isPausing = false // Made internal so delegate can access it
-  private var destinationPath: FileSystemPath?
+  var isPausing = false
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
-    destinationPath = to
 
-    // Create the delegate
-    delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
+    let destinationUrl = resolveDestinationUrl(to: to, url: url)
 
-    // Create the session
+    // Remove existing file for a fresh start
+    if FileManager.default.fileExists(atPath: destinationUrl.path) {
+      try? FileManager.default.removeItem(at: destinationUrl)
+    }
+
+    // Create parent directories
+    try? FileManager.default.createDirectory(
+      at: destinationUrl.deletingLastPathComponent(),
+      withIntermediateDirectories: true
+    )
+    FileManager.default.createFile(atPath: destinationUrl.path, contents: nil)
+
+    delegate = DownloadTaskDelegate(sharedObject: self, destinationUrl: destinationUrl, offset: 0, promise: promise)
+
     let configuration = URLSessionConfiguration.default
     configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
     configuration.urlCache = nil
     session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: .main)
 
-    guard let session = session else {
-      promise.reject(UnableToDownloadException("Failed to create URLSession"))
-      return
-    }
-
-    // Build the request
     var request = URLRequest(url: url)
     if let headers = options?.headers {
       for (key, value) in headers {
@@ -45,154 +51,183 @@ class FileSystemDownloadTask: SharedObject {
       }
     }
 
-    // Create and start download task
-    downloadTask = session.downloadTask(with: request)
-    downloadTask?.resume()
+    dataTask = session?.dataTask(with: request)
+    dataTask?.resume()
   }
 
-  func pause() async -> [String: String?] {
+  func pause() -> [String: String?] {
     isPausing = true
-    guard let downloadTask = downloadTask else {
-      return ["resumeData": nil]
-    }
-
-    let resumeData = await downloadTask.cancelByProducingResumeData()
-    return ["resumeData": resumeData?.base64EncodedString()]
+    dataTask?.cancel()
+    let bytesWritten = delegate?.totalBytesWritten ?? 0
+    return ["resumeData": String(bytesWritten)]
   }
 
   func resume(url: URL, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
-    destinationPath = to
 
-    guard let data = Data(base64Encoded: resumeData) else {
+    // Invalidate the old session from the previous start/resume call
+    session?.invalidateAndCancel()
+    session = nil
+    delegate = nil
+
+    guard let offset = Int64(resumeData) else {
       promise.reject(InvalidResumeDataException())
       return
     }
 
-    // Create the delegate
-    delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
+    let destinationUrl = resolveDestinationUrl(to: to, url: url)
 
-    // Create the session
+    delegate = DownloadTaskDelegate(sharedObject: self, destinationUrl: destinationUrl, offset: offset, promise: promise)
+
     let configuration = URLSessionConfiguration.default
     configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
     configuration.urlCache = nil
     session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: .main)
 
-    guard let session = session else {
-      promise.reject(UnableToDownloadException("Failed to create URLSession"))
-      return
+    var request = URLRequest(url: url)
+    request.setValue("bytes=\(offset)-", forHTTPHeaderField: "Range")
+    if let headers = options?.headers {
+      for (key, value) in headers {
+        request.setValue(value, forHTTPHeaderField: key)
+      }
     }
 
-    // Build the request with headers (for the resume attempt)
-    // Note: URLSession handles the Range header automatically with resume data
-
-    // Create and start download task from resume data
-    downloadTask = session.downloadTask(withResumeData: data)
-    downloadTask?.resume()
+    dataTask = session?.dataTask(with: request)
+    dataTask?.resume()
   }
 
   func cancel() {
     isPausing = false
-    downloadTask?.cancel()
+    dataTask?.cancel()
     cleanup()
   }
 
   override func sharedObjectWillRelease() {
-    downloadTask?.cancel()
+    dataTask?.cancel()
     session?.invalidateAndCancel()
     cleanup()
   }
 
   private func cleanup() {
     delegate = nil
-    downloadTask = nil
+    dataTask = nil
     session?.invalidateAndCancel()
     session = nil
+  }
+
+  private func resolveDestinationUrl(to: FileSystemPath, url: URL) -> URL {
+    if let directory = to as? FileSystemDirectory {
+      let filename = url.lastPathComponent.isEmpty ? "download" : url.lastPathComponent
+      return directory.url.appendingPathComponent(filename)
+    }
+    return to.url
   }
 }
 
 // MARK: - Download Task Delegate
 
-class DownloadTaskDelegate: NSObject, URLSessionDownloadDelegate {
+class DownloadTaskDelegate: NSObject, URLSessionDataDelegate {
   private weak var sharedObject: FileSystemDownloadTask?
-  private let destination: FileSystemPath
+  private let destinationUrl: URL
   private let promise: Promise
+  private var fileHandle: FileHandle?
+  private(set) var totalBytesWritten: Int64
+  private let offset: Int64
+  private var expectedTotalBytes: Int64 = -1
   private var lastProgressTime: TimeInterval = 0
   private let progressThrottleInterval: TimeInterval = 0.1 // 100ms
 
-  init(sharedObject: FileSystemDownloadTask, destination: FileSystemPath, promise: Promise) {
+  init(sharedObject: FileSystemDownloadTask, destinationUrl: URL, offset: Int64, promise: Promise) {
     self.sharedObject = sharedObject
-    self.destination = destination
+    self.destinationUrl = destinationUrl
+    self.offset = offset
+    self.totalBytesWritten = offset
     self.promise = promise
     super.init()
   }
 
-  // Progress tracking
+  // Response received — open file handle
   func urlSession(
     _ session: URLSession,
-    downloadTask: URLSessionDownloadTask,
-    didWriteData bytesWritten: Int64,
-    totalBytesWritten: Int64,
-    totalBytesExpectedToWrite: Int64
+    dataTask: URLSessionDataTask,
+    didReceive response: URLResponse,
+    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
   ) {
-    let currentTime = Date().timeIntervalSince1970
-    let shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval || totalBytesWritten == totalBytesExpectedToWrite
+    let httpResponse = response as? HTTPURLResponse
 
-    if shouldEmit {
+    // Validate HTTP status
+    if let httpResponse,
+       !(200...299).contains(httpResponse.statusCode) && httpResponse.statusCode != 206 {
+      completionHandler(.cancel)
+      promise.reject(UnableToDownloadException("server returned HTTP \(httpResponse.statusCode)"))
+      return
+    }
+
+    let isPartial = httpResponse?.statusCode == 206
+
+    if offset > 0 && isPartial {
+      // Server supports Range — append to existing file
+      fileHandle = try? FileHandle(forWritingTo: destinationUrl)
+      fileHandle?.seekToEndOfFile()
+    } else {
+      // Fresh download or server ignored Range header (200 instead of 206) — truncate and restart
+      totalBytesWritten = 0
+      FileManager.default.createFile(atPath: destinationUrl.path, contents: nil)
+      fileHandle = try? FileHandle(forWritingTo: destinationUrl)
+    }
+
+    let contentLength = response.expectedContentLength
+    if isPartial {
+      expectedTotalBytes = contentLength > 0 ? offset + contentLength : -1
+    } else {
+      expectedTotalBytes = contentLength > 0 ? contentLength : -1
+    }
+
+    completionHandler(.allow)
+  }
+
+  // Data chunk received — write to file and emit progress
+  func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    fileHandle?.write(data)
+    totalBytesWritten += Int64(data.count)
+
+    let currentTime = Date().timeIntervalSince1970
+    if currentTime - lastProgressTime >= progressThrottleInterval {
       lastProgressTime = currentTime
       sharedObject?.emit(event: "progress", arguments: [
         "bytesWritten": totalBytesWritten,
-        "totalBytes": totalBytesExpectedToWrite
+        "totalBytes": expectedTotalBytes
       ])
-    }
-  }
-
-  // Download completion
-  func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-    do {
-      let destinationUrl: URL
-      if let directory = destination as? FileSystemDirectory {
-        // If destination is a directory, determine filename from response
-        let httpResponse = downloadTask.response as? HTTPURLResponse
-        let filename = httpResponse?.suggestedFilename ?? downloadTask.originalRequest?.url?.lastPathComponent ?? "download"
-        destinationUrl = directory.url.appendingPathComponent(filename)
-      } else {
-        destinationUrl = destination.url
-      }
-
-      // Remove existing file if it exists
-      if FileManager.default.fileExists(atPath: destinationUrl.path) {
-        try FileManager.default.removeItem(at: destinationUrl)
-      }
-
-      // Move downloaded file to destination
-      try FileManager.default.moveItem(at: location, to: destinationUrl)
-
-      // Resolve promise with the destination URI
-      promise.resolve(destinationUrl.absoluteString)
-    } catch {
-      promise.reject(UnableToDownloadException("Failed to move downloaded file: \(error.localizedDescription)"))
     }
   }
 
   // Task completion with error handling
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    fileHandle?.closeFile()
+    fileHandle = nil
+
     if let error = error {
       let nsError = error as NSError
       if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
-        // Check if this was a pause operation
         if sharedObject?.isPausing == true {
-          // Paused - resolve with nil to indicate pause (not an error)
+          // Paused — resolve with nil
           promise.resolve(nil)
         } else {
-          // Cancelled but not paused - this is an error
           promise.reject(DownloadCancelledException())
         }
       } else {
-        // Other error
         promise.reject(UnableToDownloadException(error.localizedDescription))
       }
+    } else {
+      // Emit final progress
+      sharedObject?.emit(event: "progress", arguments: [
+        "bytesWritten": totalBytesWritten,
+        "totalBytes": totalBytesWritten
+      ])
+      promise.resolve(destinationUrl.absoluteString)
     }
-    // If error is nil, success is handled by didFinishDownloadingTo
+
+    // Invalidate session to break retain cycle
+    session.finishTasksAndInvalidate()
   }
 }
