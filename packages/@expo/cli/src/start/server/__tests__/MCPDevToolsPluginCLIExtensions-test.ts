@@ -83,6 +83,7 @@ describe(addMcpCapabilities, () => {
       { type: 'uri', uri: 'https://example.com/image.png', text: 'Screenshot' },
       { type: 'uri', uri: 'https://example.com/sound.mp3' },
     ] as const;
+
     executeMock.mockResolvedValue(pluginOutput);
 
     await addMcpCapabilities(mcpServer, devServerManager);
@@ -96,7 +97,7 @@ describe(addMcpCapabilities, () => {
     });
 
     expect(MockedExecutor).toHaveBeenCalledTimes(1);
-    expect(MockedExecutor).toHaveBeenLastCalledWith(plugin, PROJECT_ROOT);
+    expect(MockedExecutor).toHaveBeenLastCalledWith(plugin, PROJECT_ROOT, false); // no color for MCP
     expect(executeMock).toHaveBeenCalledWith({
       command: 'run-analysis',
       args: { path: '/tmp/data' },
