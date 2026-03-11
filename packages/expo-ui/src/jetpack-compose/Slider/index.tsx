@@ -76,10 +76,7 @@ export type SliderProps = {
   children?: React.ReactNode;
 };
 
-type NativeSliderProps = Omit<
-  SliderProps,
-  'onValueChange' | 'onValueChangeFinished' | 'children'
-> &
+type NativeSliderProps = Omit<SliderProps, 'onValueChange' | 'onValueChangeFinished' | 'children'> &
   ViewEvent<'onValueChange', { value: number }> &
   ViewEvent<'onValueChangeFinished', void> & { children?: React.ReactNode };
 

@@ -22,7 +22,6 @@ import {
 import * as React from 'react';
 
 export default function SliderScreen() {
-  const [defaultValue, setDefaultValue] = React.useState(0.5);
   const [steppedValue, setSteppedValue] = React.useState(0.5);
   const [rangeValue, setRangeValue] = React.useState(2);
   const [colorsValue, setColorsValue] = React.useState(0.5);
