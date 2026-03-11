@@ -294,7 +294,7 @@ class ExpoUIModule : Module() {
       Events("onButtonPressed")
     }) { props: RadioButtonProps ->
       val onButtonPressed by remember { EventDispatcher<Unit>() }
-      RadioButtonContent(props) { onButtonPressed(Unit) }
+      RadioButtonContent(props, if (props.clickable) { { onButtonPressed(Unit) } } else null)
     }
 
     //endregion Expo UI views

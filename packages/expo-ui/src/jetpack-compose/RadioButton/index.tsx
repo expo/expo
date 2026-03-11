@@ -19,7 +19,9 @@ export type RadioButtonProps = {
 };
 
 type NativeRadioButtonProps = Omit<RadioButtonProps, 'onClick'> &
-  ViewEvent<'onButtonPressed', void>;
+  ViewEvent<'onButtonPressed', void> & {
+    clickable: boolean;
+  };
 
 const RadioButtonNativeView: React.ComponentType<NativeRadioButtonProps> = requireNativeView(
   'ExpoUI',
@@ -32,6 +34,7 @@ function transformProps(props: RadioButtonProps): NativeRadioButtonProps {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    clickable: onClick != null,
     onButtonPressed: () => onClick?.(),
   };
 }

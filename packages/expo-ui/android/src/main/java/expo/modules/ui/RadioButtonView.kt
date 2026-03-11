@@ -7,6 +7,7 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 
 data class RadioButtonProps(
   val selected: Boolean = false,
+  val clickable: Boolean = true,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
