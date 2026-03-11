@@ -22,6 +22,7 @@ import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.net.URLConnection
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -50,6 +51,10 @@ class UploadResultRecord : Record {
  * A SharedObject that handles file uploads with progress tracking.
  */
 class FileSystemUploadTask : SharedObject() {
+  companion object {
+    private val client = OkHttpClient()
+  }
+
   private var call: Call? = null
   private var cancelled = false
   private var lastProgressTime: Long = 0
@@ -61,8 +66,6 @@ class FileSystemUploadTask : SharedObject() {
     if (!file.exists()) {
       throw UnableToUploadException("File does not exist")
     }
-
-    val client = OkHttpClient()
 
     // Build request body
     val requestBody = when (options.uploadType) {
@@ -81,16 +84,28 @@ class FileSystemUploadTask : SharedObject() {
     val request = requestBuilder.method(options.httpMethod, requestBody).build()
 
     return suspendCancellableCoroutine { continuation ->
+      val settled = AtomicBoolean(false)
+
+      fun safeResume(value: UploadResultRecord) {
+        if (settled.compareAndSet(false, true)) {
+          continuation.resume(value)
+        }
+      }
+
+      fun safeResumeWithException(e: Exception) {
+        if (settled.compareAndSet(false, true)) {
+          continuation.resumeWithException(e)
+        }
+      }
+
       call = client.newCall(request)
 
       call?.enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
           if (cancelled) {
-            // Upload was cancelled - resolve with null would be the pattern,
-            // but for now we throw a cancel exception
-            continuation.resumeWithException(UploadCancelledException())
+            safeResumeWithException(UploadCancelledException())
           } else {
-            continuation.resumeWithException(UnableToUploadException(e.message ?: "Upload failed"))
+            safeResumeWithException(UnableToUploadException(e.message ?: "Upload failed"))
           }
         }
 
@@ -104,9 +119,9 @@ class FileSystemUploadTask : SharedObject() {
             result.status = response.code
             result.headers = headers
 
-            continuation.resume(result)
+            safeResume(result)
           } catch (e: Exception) {
-            continuation.resumeWithException(UnableToUploadException(e.message ?: "Failed to read response"))
+            safeResumeWithException(UnableToUploadException(e.message ?: "Failed to read response"))
           }
         }
       })
