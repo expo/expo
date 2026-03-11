@@ -8,7 +8,7 @@ export { createDevToolsPluginClient as unstable_createDevToolsPluginClient } fro
 export { WebSocketBackingStore as unstable_WebSocketBackingStore } from './WebSocketBackingStore.js';
 export { getConnectionInfo as unstable_getConnectionInfo } from './getConnectionInfo.js';
 export { runCliExtension } from './runCliExtension.js';
-export { sendCliMessageAsync } from './sendCliMessage.js';
-export { startCliListenerAsync } from './startCliListenerAsync.js';
+export { createCliDevToolsPluginClient } from './createCliDevToolsPluginClient.js';
+export { sendDevToolsRequestAsync } from './sendDevToolsRequestAsync.js';
 export type * from './CliExtension.types.js';
 //# sourceMappingURL=index.d.ts.map

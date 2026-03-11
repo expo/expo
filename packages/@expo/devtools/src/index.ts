@@ -20,6 +20,6 @@ export { getConnectionInfo as unstable_getConnectionInfo } from './getConnection
 
 // Export CLI extension APIs
 export { runCliExtension } from './runCliExtension.js';
-export { sendCliMessageAsync } from './sendCliMessage.js';
-export { startCliListenerAsync } from './startCliListenerAsync.js';
+export { createCliDevToolsPluginClient } from './createCliDevToolsPluginClient.js';
+export { sendDevToolsRequestAsync } from './sendDevToolsRequestAsync.js';
 export type * from './CliExtension.types.js';
