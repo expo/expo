@@ -1,5 +1,5 @@
-import { type ModifierConfig } from '../../types';
 import { type ColorValue } from 'react-native';
+import { type ModifierConfig } from '../../types';
 import { type ShapeJSXElement } from '../Shape';
 /**
  * Colors for icon button elements.
