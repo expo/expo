@@ -110,6 +110,11 @@ export function getIsLoaderBundle(caller?: any) {
   return caller?.isLoaderBundle ?? false;
 }
 
+export function getIsHermesV1(caller?: any): boolean {
+  assertExpoBabelCaller(caller);
+  return caller?.isHermesV1 ?? false;
+}
+
 export function getMetroSourceType(caller?: any) {
   assertExpoBabelCaller(caller);
   return caller?.metroSourceType;

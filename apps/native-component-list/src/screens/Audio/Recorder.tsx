@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     color: Colors.tintColor,
   },
   errorMessage: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: Colors.errorBackground,
     justifyContent: 'center',
     alignItems: 'center',

@@ -161,7 +161,6 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
       )
     }
     return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
-      .modifier(UIBaseViewModifier(props: props))
       .fixedSize(horizontal: false, vertical: true)
       .keyboardType(getKeyboardType(props.keyboardType))
       .autocorrectionDisabled(!props.autocorrection)
