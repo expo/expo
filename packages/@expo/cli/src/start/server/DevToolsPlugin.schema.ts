@@ -45,17 +45,12 @@ const DevToolsPluginOutputLinesSchema = z.union([
   z.object({
     type: z.literal('text'),
     text: z.string(),
-    url: z.string().optional(),
+    uri: z.string().optional(),
     level: z.enum(['info', 'warning', 'error']),
   }),
   z.object({
-    type: z.literal('audio'),
-    url: z.string().url(),
-    text: z.string().optional(),
-  }),
-  z.object({
-    type: z.literal('image'),
-    url: z.string().url(),
+    type: z.literal('uri'),
+    uri: z.string().url(),
     text: z.string().optional(),
   }),
 ]);

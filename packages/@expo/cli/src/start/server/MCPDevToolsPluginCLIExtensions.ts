@@ -58,13 +58,13 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
                 .map((line) => {
                   const { type } = line;
                   if (type === 'text') {
-                    return { type, text: line.text, level: line.level, url: line.url };
-                  } else if (line.type === 'image' || line.type === 'audio') {
+                    return { type, text: line.text, level: line.level, uri: line.uri };
+                  } else if (line.type === 'uri') {
                     // We could present this as a resource_link, but it seems not to be well supported in MCP clients,
                     // so we'll return a text with the link instead.
                     return {
                       type: 'text',
-                      text: `${type} resource: ${line.url}${line.text ? ' (' + line.text + ')' : ''}`,
+                      text: `Resource: ${line.uri}${line.text ? ' (' + line.text + ')' : ''}`,
                     } as const;
                   }
                   return null;
