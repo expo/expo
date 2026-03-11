@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop, renamed native event from `onValueChanged` to `onValueChange`. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 
