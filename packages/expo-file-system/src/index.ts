@@ -27,6 +27,7 @@ export {
   type UploadResult,
   type DownloadTaskOptions,
   type DownloadPauseState,
+  type TaskState,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';

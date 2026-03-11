@@ -31,7 +31,7 @@ declare class FileSystemUploadTask extends SharedObject<UploadTaskEvents> {
 
 declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEvents> {
   start(url: string, to: File | Directory, options?: Record<string, any>): Promise<string | null>;
-  pause(): Promise<{ resumeData: string }>;
+  pause(): { resumeData: string };
   resume(
     url: string,
     to: File | Directory,
