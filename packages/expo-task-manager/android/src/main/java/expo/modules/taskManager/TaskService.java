@@ -628,7 +628,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
    * when the Activity is backgrounded (isPaused=true), which would cause all async JS
    * operations (promises, setTimeout, etc.) to hang indefinitely.
    *
-   * @see <a href="https://github.com/facebook/react-native/blob/main/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.kt#L291">JavaTimerManager timer guard</a>
+   * @see <a href="https://github.com/facebook/react-native/blob/63800af9438ea9ddaec84b6f17793a4f1bffe342/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/core/JavaTimerManager.kt#L291">JavaTimerManager timer guard</a>
    */
   private void maybeStartHeadlessTask(String appScopeKey) {
     try {
