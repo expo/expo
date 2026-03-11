@@ -176,7 +176,7 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("SliderView", events = {
-      Events("onValueChanged")
+      Events("onValueChange", "onValueChangeFinished")
     }) { props: SliderProps ->
       SliderContent(props)
     }
