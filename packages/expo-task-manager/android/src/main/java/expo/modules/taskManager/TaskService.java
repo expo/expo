@@ -686,22 +686,26 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
    * to pause timers again when all background tasks are complete.
    */
   private void maybeFinishHeadlessTask(String appScopeKey) {
-    Integer taskId = sHeadlessTaskIds.remove(appScopeKey);
-    if (taskId == null) return;
+    // Run on UI thread to match startTask and ensure sHeadlessTaskIds
+    // is only accessed from the UI thread.
+    UiThreadUtil.runOnUiThread(() -> {
+      Integer taskId = sHeadlessTaskIds.remove(appScopeKey);
+      if (taskId == null) return;
 
-    try {
-      Context context = mContextRef.get();
-      if (context == null) return;
+      try {
+        Context context = mContextRef.get();
+        if (context == null) return;
 
-      ReactContext reactContext = getReactContext(context);
-      if (reactContext == null) return;
+        ReactContext reactContext = getReactContext(context);
+        if (reactContext == null) return;
 
-      HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
-      headlessContext.finishTask(taskId);
-      Log.i(TAG, "Finished headless task " + taskId + " for '" + appScopeKey + "'");
-    } catch (Exception e) {
-      Log.w(TAG, "Failed to finish headless task: " + e.getMessage());
-    }
+        HeadlessJsTaskContext headlessContext = HeadlessJsTaskContext.getInstance(reactContext);
+        headlessContext.finishTask(taskId);
+        Log.i(TAG, "Finished headless task " + taskId + " for '" + appScopeKey + "'");
+      } catch (Exception e) {
+        Log.w(TAG, "Failed to finish headless task: " + e.getMessage());
+      }
+    });
   }
 
   /**
