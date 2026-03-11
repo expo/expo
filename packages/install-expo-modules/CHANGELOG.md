@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added react-native 0.83 support. ([#43855](https://github.com/expo/expo/pull/43855) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
