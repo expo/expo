@@ -34,13 +34,10 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
         continue;
       }
-      // @tsapeta: `expo-modules-core` has two podspecs – for the core and for the JSI. This is supported by autolinking,
-      // but not by expotools and as a result only `ExpoModulesJSI` tests are being included. Here we make sure the tests
-      // for the core are included. Long-term plan is to move JSI pod to a separate package, then this can be removed.
-      //
-      // @barthap: expo-modules-core has three podspecs - the two above and for Worklets. The worklets one is detected
-      // as primary `pkg.podspecPath` and `hasNativeTestsAsync` does not find any tests in it, so the whole
-      // expo-modules-core is skipped in the below check.
+      // @tsapeta @barthap: `expo-modules-core` contains multiple podspecs (Core, JSI, Worklets).
+      // This breaks `expotools` test discovery because it often resolves the wrong `podspecPath`.
+      // We manually include the core tests here as a workaround. If new podspecs are added
+      // to this package, they must be manually registered here.
       targetsToTest.push(`ExpoModulesCore-Unit-Tests`);
       targetsToTest.push(`ExpoModulesJSI-Unit-Tests`);
       packagesToTest.push(pkg.packageName);
