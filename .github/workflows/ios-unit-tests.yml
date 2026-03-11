@@ -13,7 +13,6 @@ on:
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
       - secrets/**
-      - fastlane/**
       - Gemfile.lock
       - '!packages/@expo/cli/**'
   push:
@@ -27,7 +26,6 @@ on:
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
       - secrets/**
-      - fastlane/**
       - Gemfile.lock
       - '!packages/@expo/cli/**'
 
