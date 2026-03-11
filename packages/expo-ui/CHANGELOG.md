@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop, renamed native event from `onValueChanged` to `onValueChange`. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
+- [Android] Added `enabled`, `onValueChangeFinished`, and `Slider.Thumb`/`Slider.Track` slot support to `Slider` component. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added border color customization for `Switch` and `Checkbox` components. ([#43770](https://github.com/expo/expo/pull/43770) by [@liestig](https://github.com/liestig))
 - [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
