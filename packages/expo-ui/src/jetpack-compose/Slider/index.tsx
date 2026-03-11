@@ -62,7 +62,7 @@ export type SliderProps = {
    */
   onValueChange?: (value: number) => void;
   /**
-   * Callback triggered when the user finishes changing the value (e.g. lifts finger).
+   * Callback triggered when the user finishes changing the value (for example, lifts a finger).
    * Maps to Material3's `onValueChangeFinished`.
    */
   onValueChangeFinished?: () => void;
