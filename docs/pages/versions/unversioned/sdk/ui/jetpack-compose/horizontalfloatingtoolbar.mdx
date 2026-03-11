@@ -70,13 +70,13 @@ export default function ToolbarWithFABExample() {
     <Host matchContents>
       <HorizontalFloatingToolbar>
         <IconButton onPress={() => console.log('Edit pressed')}>
-          <Icon source={require('./assets/edit.xml')} />
+          <Icon source={require('./assets/edit.xml')} contentDescription="Edit" />
         </IconButton>
         <IconButton onPress={() => console.log('Share pressed')}>
-          <Icon source={require('./assets/share.xml')} />
+          <Icon source={require('./assets/share.xml')} contentDescription="Share" />
         </IconButton>
         <HorizontalFloatingToolbar.FloatingActionButton onPress={() => console.log('Add pressed')}>
-          <Icon source={require('./assets/add.xml')} />
+          <Icon source={require('./assets/add.xml')} contentDescription="Add" />
         </HorizontalFloatingToolbar.FloatingActionButton>
       </HorizontalFloatingToolbar>
     </Host>

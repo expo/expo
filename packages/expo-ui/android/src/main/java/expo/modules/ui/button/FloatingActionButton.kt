@@ -39,7 +39,7 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
   val iconSlotView = findChildSlotView(view, "icon")
-  val iconContent: (@Composable () -> Unit)? = iconSlotView?.let {
+  val iconContent: (@Composable () -> Unit) = iconSlotView?.let {
     {
       with(ComposableScope()) {
         with(it) {
@@ -47,24 +47,24 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
         }
       }
     }
-  }
+  } ?: {}
 
   when (props.variant) {
     FloatingActionButtonVariant.SMALL -> SmallFloatingActionButton(
       onClick = onClick,
       containerColor = containerColor,
       modifier = modifier,
-      content = iconContent ?: {}
+      content = iconContent
     )
     FloatingActionButtonVariant.LARGE -> LargeFloatingActionButton(
       onClick = onClick,
       containerColor = containerColor,
       modifier = modifier,
-      content = iconContent ?: {}
+      content = iconContent
     )
     FloatingActionButtonVariant.EXTENDED -> {
       val textSlotView = findChildSlotView(view, "text")
-      val textContent: (@Composable () -> Unit)? = textSlotView?.let {
+      val textContent: (@Composable () -> Unit) = textSlotView?.let {
         {
           with(ComposableScope()) {
             with(it) {
@@ -72,12 +72,12 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
             }
           }
         }
-      }
+      } ?: {}
       ExtendedFloatingActionButton(
         onClick = onClick,
         expanded = props.expanded,
-        icon = iconContent ?: {},
-        text = textContent ?: {},
+        icon = iconContent,
+        text = textContent,
         containerColor = containerColor,
         modifier = modifier
       )
@@ -86,7 +86,7 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
       onClick = onClick,
       containerColor = containerColor,
       modifier = modifier,
-      content = iconContent ?: {}
+      content = iconContent
     )
   }
 }

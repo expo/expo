@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { ExpoModifier, ViewEvent } from '../../types';
+import { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotChildProps = {
@@ -20,7 +20,7 @@ export type SmallFloatingActionButtonProps = {
   /**
    * Slot-based children (use `.Icon` sub-component).
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 
   /**
    * The background color of the button container.
@@ -36,7 +36,7 @@ export type SmallFloatingActionButtonProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 /**
@@ -46,7 +46,7 @@ export type FloatingActionButtonProps = {
   /**
    * Slot-based children (use `.Icon` sub-component).
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 
   /**
    * The background color of the button container.
@@ -62,7 +62,7 @@ export type FloatingActionButtonProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 /**
@@ -72,7 +72,7 @@ export type LargeFloatingActionButtonProps = {
   /**
    * Slot-based children (use `.Icon` sub-component).
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 
   /**
    * The background color of the button container.
@@ -88,7 +88,7 @@ export type LargeFloatingActionButtonProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 /**
@@ -98,7 +98,7 @@ export type ExtendedFloatingActionButtonProps = {
   /**
    * Slot-based children (use `.Icon` and `.Text` sub-components).
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 
   /**
    * Controls whether the label is shown (expanded) or hidden (collapsed).
@@ -120,7 +120,7 @@ export type ExtendedFloatingActionButtonProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 /**
@@ -158,7 +158,7 @@ function transformProps(
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     children,
-    onButtonPressed: () => onClick?.(),
+    onButtonPressed: onClick,
   };
 }
 

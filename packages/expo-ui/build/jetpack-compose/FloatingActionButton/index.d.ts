@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { ExpoModifier } from '../../types';
+import { ModifierConfig } from '../../types';
 type SlotChildProps = {
     children: React.ReactNode;
 };
@@ -10,7 +10,7 @@ export type SmallFloatingActionButtonProps = {
     /**
      * Slot-based children (use `.Icon` sub-component).
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
     /**
      * The background color of the button container.
      * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
@@ -23,7 +23,7 @@ export type SmallFloatingActionButtonProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * Props for the `FloatingActionButton` component.
@@ -32,7 +32,7 @@ export type FloatingActionButtonProps = {
     /**
      * Slot-based children (use `.Icon` sub-component).
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
     /**
      * The background color of the button container.
      * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
@@ -45,7 +45,7 @@ export type FloatingActionButtonProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * Props for the `LargeFloatingActionButton` component.
@@ -54,7 +54,7 @@ export type LargeFloatingActionButtonProps = {
     /**
      * Slot-based children (use `.Icon` sub-component).
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
     /**
      * The background color of the button container.
      * Defaults to `FloatingActionButtonDefaults.containerColor` (primary container).
@@ -67,7 +67,7 @@ export type LargeFloatingActionButtonProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * Props for the `ExtendedFloatingActionButton` component.
@@ -76,7 +76,7 @@ export type ExtendedFloatingActionButtonProps = {
     /**
      * Slot-based children (use `.Icon` and `.Text` sub-components).
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
     /**
      * Controls whether the label is shown (expanded) or hidden (collapsed).
      * @default true
@@ -94,7 +94,7 @@ export type ExtendedFloatingActionButtonProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 declare function FABIcon(props: SlotChildProps): import("react").JSX.Element;
 declare function FABText(props: SlotChildProps): import("react").JSX.Element;
