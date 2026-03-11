@@ -70,58 +70,75 @@ You can now restart the Expo CLI by running `npx expo start` and test your CLI e
 
 ### Add communication between your CLI extension and your Expo app
 
-To add communication between your CLI extension and your Expo app, you can use the `sendCliMessageAsync` function from the `@expo/devtools` package. This function allows you to send messages from your CLI extension to the running Expo app and receive responses.
+CLI extensions communicate with running apps using the same `DevToolsPluginClient` API that devtools web UIs use. The `createCliDevToolsPluginClient` function creates a client connection from your CLI extension to the app, using the same plugin name as the app-side listener.
 
 The connected app is automatically resolved and passed to your executor as the `app` parameter.
 
 ```ts cli/index.ts
-import { runCliExtension, sendCliMessageAsync } from '@expo/devtools';
+import {
+  runCliExtension,
+  createCliDevToolsPluginClient,
+  sendDevToolsRequestAsync,
+} from '@expo/devtools';
 
 const PLUGIN_NAME = 'expo-background-task';
-const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
 
 const blue = (s: string) => `\x1b[34m${s}\x1b[0m`;
 
 runCliExtension<{
   list: Record<string, never>;
 }>(async ({ command, app }, console) => {
-  if (command === 'list') {
-    try {
-      // Send message to the app and receive a response
-      const response = await sendCliMessageAsync(GET_REGISTERED_TASKS, PLUGIN_NAME, app);
-      console.info(`${blue(app.title)}: ${response}`);
-    } catch (error) {
-      // Catch and rethrow error with more context
-      throw new Error('An error occurred connecting to the app.', { cause: error });
+  const client = await createCliDevToolsPluginClient(PLUGIN_NAME, app);
+
+  try {
+    if (command === 'list') {
+      const response = await sendDevToolsRequestAsync(client, 'getRegisteredBackgroundTasks');
+      if (response.method === 'error') {
+        throw new Error(response.error);
+      }
+      console.info(`${blue(app.title)}: ${response.message}`);
     }
+  } finally {
+    await client.closeAsync();
   }
 });
 ```
 
 ### Handling CLI messages in your app
 
-To receive and respond to messages from your CLI extension, use the `startCliListenerAsync` function in your app code. This will typically be added to your package main module to ensure it runs when your app starts.
+Since CLI extensions now use the same `DevToolsPluginClient` protocol, your app only needs a single set of message handlers using `getDevToolsPluginClientAsync`. These handlers serve both CLI extensions and devtools web UIs.
 
-```ts src/MyPackageMainModule.ts
-import { startCliListenerAsync } from 'expo/devtools';
+```ts src/MyPackageDevClient.ts
+import type { DevToolsPluginClient } from 'expo/devtools';
 
 const PLUGIN_NAME = 'expo-background-task';
-const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
 
-startCliListenerAsync(PLUGIN_NAME)
-  .then(({ addMessageListener }) => {
-    addMessageListener(GET_REGISTERED_TASKS, async ({ sendResponseAsync }) => {
+let devtoolsClient: DevToolsPluginClient | null = null;
+
+export async function maybeInitDevToolsAsync(): Promise<void> {
+  if (!__DEV__ || devtoolsClient) return;
+  const { getDevToolsPluginClientAsync } =
+    require('expo/devtools') as typeof import('expo/devtools');
+  devtoolsClient = await getDevToolsPluginClientAsync(PLUGIN_NAME);
+
+  devtoolsClient.addMessageListener(
+    'getRegisteredBackgroundTasks',
+    async (params: { requestId: string }) => {
       // Perform your logic here
-      const result = 'Your response message';
-      await sendResponseAsync(result);
-    });
-  })
-  .catch(error => {
-    console.error('Failed to start CLI listener:', error);
-  });
+      const message = 'Your response message';
+      devtoolsClient?.sendMessage('response', {
+        requestId: params.requestId,
+        method: 'getRegisteredBackgroundTasks',
+        message,
+      });
+    }
+  );
+}
 ```
 
-> **Note:** The `startCliListenerAsync` function only runs in development mode (`__DEV__ === true`). Make sure the `PLUGIN_NAME` matches between your CLI extension and app-side listener.
+Call `maybeInitDevToolsAsync()` lazily from your package's main API (for example, when a task is registered) to avoid eager initialization at module load time.
+
+> **Note:** The `getDevToolsPluginClientAsync` handlers only run in development mode (`__DEV__ === true`). Make sure the `PLUGIN_NAME` matches between your CLI extension and app-side listener.
 
 ## Testing your CLI extension
 
