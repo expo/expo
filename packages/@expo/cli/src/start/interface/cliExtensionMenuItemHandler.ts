@@ -7,6 +7,10 @@ import { ora } from '../../utils/ora';
 import { promptAsync } from '../../utils/prompts';
 import { DevToolsPlugin } from '../server/DevToolsPlugin';
 import { DevToolsPluginCommand, DevToolsPluginOutput } from '../server/DevToolsPlugin.schema';
+import {
+  promptInspectorAppAsync,
+  queryAllInspectorAppsAsync,
+} from '../server/middleware/inspector/JsInspector';
 
 /**
  * Handles the CLI extension menu item selection and execution of the plugin command for use
@@ -35,6 +39,32 @@ export const cliExtensionMenuItemHandler = async (
     return;
   }
 
+  // Check for applications
+  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+  if (apps.length === 0) {
+    Log.warn(
+      chalk`No apps connected when trying to execute {bold ${command.title} from ${plugin.packageName}} at ${metroServerOrigin}.` +
+        `Make sure your app is running in the simulator or on a phone connected via USB.`
+    );
+    return;
+  }
+
+  let app = apps[0];
+
+  if (apps.length > 1) {
+    try {
+      const selectedApp = await promptInspectorAppAsync(apps);
+      if (!selectedApp) {
+        return;
+      }
+      app = selectedApp;
+    } catch (error) {
+      Log.error('Failed to select an app for the CLI command:', error as any);
+      throw error;
+    }
+  }
+
+  // Get required parameters from the user
   let args: Record<string, string> = {};
   if (command.parameters && command.parameters.length > 0) {
     args = await command.parameters.reduce(
@@ -58,7 +88,7 @@ export const cliExtensionMenuItemHandler = async (
 
   // Confirm execution
   const { value } = await promptAsync({
-    message: chalk`{dim Execute command "${command.title}":} "${plugin.executor.getCommandString({ command: command.name, args })}"`,
+    message: chalk`{dim Execute command "${command.title}":} "${plugin.executor.getCommandString({ command: command.name, args, app })}"`,
     initial: false,
     name: 'value',
     type: 'confirm',
@@ -77,6 +107,7 @@ export const cliExtensionMenuItemHandler = async (
       command: command.name,
       metroServerOrigin,
       args,
+      app,
       onOutput: (output) => handleOutput(output, spinner),
     });
 
