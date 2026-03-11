@@ -106,6 +106,8 @@ Let everyone know your app can be run instantly in the _Expo Go_ app!
 [![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.dev/client)
 ```
 
+![Stack Fingerprint](https://stackfingerprint.vercel.app/api/card?repo=expo/expo&theme=obsidian&layout=classic&size=md&icons=color&pills=round)
+
 ## 👏 Contributing
 
 If you like Expo and want to help make it better then check out our [contributing guide](/CONTRIBUTING.md)! Check out the [CLI package](https://github.com/expo/expo/tree/main/packages/%40expo/cli) to work on the Expo CLI.
