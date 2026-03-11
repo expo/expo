@@ -17,7 +17,9 @@ import expo.modules.ui.button.FilledTonalButtonContent
 import expo.modules.ui.button.OutlinedButtonContent
 import expo.modules.ui.button.TextButtonContent
 import expo.modules.ui.button.IconButtonContent
-import expo.modules.ui.button.IconButtonProps
+import expo.modules.ui.button.FilledIconButtonContent
+import expo.modules.ui.button.FilledTonalIconButtonContent
+import expo.modules.ui.button.OutlinedIconButtonContent
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
@@ -147,9 +149,30 @@ class ExpoUIModule : Module() {
 
     ExpoUIView("IconButton", events = {
       Events("onButtonPressed")
-    }) { props: IconButtonProps ->
+    }) { props: ButtonProps ->
       val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
       IconButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("FilledIconButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      FilledIconButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("FilledTonalIconButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      FilledTonalIconButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("OutlinedIconButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      OutlinedIconButtonContent(props) { onButtonPressed(it) }
     }
 
     ExpoUIView("SliderView", events = {

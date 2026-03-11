@@ -1,53 +1,57 @@
+import { type ModifierConfig } from '../../types';
 import { type ColorValue } from 'react-native';
-import { ExpoModifier, ViewEvent } from '../../types';
-import { ButtonColors } from '../Button';
-import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
+import { type ShapeJSXElement } from '../Shape';
 /**
- * The built-in button styles available on Android.
- * - `outlined` - A button with an outline.
- * - `elevated` - A filled button with a shadow.
+ * Colors for icon button elements.
  */
-export type IconButtonVariant = 'default' | 'bordered' | 'outlined';
+export type IconButtonColors = {
+    containerColor?: ColorValue;
+    contentColor?: ColorValue;
+    disabledContainerColor?: ColorValue;
+    disabledContentColor?: ColorValue;
+};
 export type IconButtonProps = {
     /**
-     * A callback that is called when the button is pressed.
+     * Callback that is called when the icon button is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
-     * The button variant.
+     * Whether the icon button is enabled for user interaction.
+     * @default true
      */
-    variant?: IconButtonVariant;
+    enabled?: boolean;
     /**
-     * The text to display inside the button.
-     */
-    children?: React.JSX.Element;
-    /**
-     * Colors for button's core elements.
+     * Colors for icon button elements.
      * @platform android
      */
-    elementColors?: ButtonColors;
+    colors?: IconButtonColors;
     /**
-     * Button color.
+     * The shape of the icon button.
      */
-    color?: ColorValue;
     shape?: ShapeJSXElement;
-    /**
-     * Disabled state of the button.
-     */
-    disabled?: boolean;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
+    /**
+     * Content to display inside the icon button.
+     */
+    children?: React.ReactNode;
 };
 /**
- * @hidden
- */
-export type NativeIconButtonProps = Omit<IconButtonProps, 'role' | 'onPress' | 'shape'> & {
-    shape?: ShapeRecordProps;
-} & ViewEvent<'onButtonPressed', void>;
-/**
- * Displays a native button component.
+ * A standard icon button with no background.
  */
 export declare function IconButton(props: IconButtonProps): import("react").JSX.Element;
+/**
+ * A filled icon button with a solid background.
+ */
+export declare function FilledIconButton(props: IconButtonProps): import("react").JSX.Element;
+/**
+ * A filled tonal icon button with a muted background.
+ */
+export declare function FilledTonalIconButton(props: IconButtonProps): import("react").JSX.Element;
+/**
+ * An outlined icon button with a border and no fill.
+ */
+export declare function OutlinedIconButton(props: IconButtonProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

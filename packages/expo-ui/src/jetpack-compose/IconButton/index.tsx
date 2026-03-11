@@ -1,88 +1,114 @@
 import { requireNativeView } from 'expo';
+import { type ModifierConfig, ViewEvent } from '../../types';
 import { type ColorValue } from 'react-native';
 
-import { ExpoModifier, ViewEvent } from '../../types';
-import { ButtonColors } from '../Button';
-import { parseJSXShape, ShapeJSXElement, ShapeRecordProps } from '../Shape';
-import { createViewModifierEventListener } from '../modifiers/utils';
+import { transformButtonProps } from '../Button';
+import { type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 
 /**
- * The built-in button styles available on Android.
- * - `outlined` - A button with an outline.
- * - `elevated` - A filled button with a shadow.
+ * Colors for icon button elements.
  */
-export type IconButtonVariant = 'default' | 'bordered' | 'outlined';
+export type IconButtonColors = {
+  containerColor?: ColorValue;
+  contentColor?: ColorValue;
+  disabledContainerColor?: ColorValue;
+  disabledContentColor?: ColorValue;
+};
 
 export type IconButtonProps = {
   /**
-   * A callback that is called when the button is pressed.
+   * Callback that is called when the icon button is clicked.
    */
-  onPress?: () => void;
+  onClick?: () => void;
   /**
-   * The button variant.
+   * Whether the icon button is enabled for user interaction.
+   * @default true
    */
-  variant?: IconButtonVariant;
+  enabled?: boolean;
   /**
-   * The text to display inside the button.
-   */
-  children?: React.JSX.Element;
-  /**
-   * Colors for button's core elements.
+   * Colors for icon button elements.
    * @platform android
    */
-  elementColors?: ButtonColors;
+  colors?: IconButtonColors;
   /**
-   * Button color.
+   * The shape of the icon button.
    */
-  color?: ColorValue;
   shape?: ShapeJSXElement;
-  /**
-   * Disabled state of the button.
-   */
-  disabled?: boolean;
-
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
+  /**
+   * Content to display inside the icon button.
+   */
+  children?: React.ReactNode;
 };
 
-/**
- * @hidden
- */
-export type NativeIconButtonProps = Omit<IconButtonProps, 'role' | 'onPress' | 'shape'> & {
+type NativeIconButtonProps = Omit<IconButtonProps, 'onClick' | 'shape' | 'children'> & {
   shape?: ShapeRecordProps;
+  children?: React.ReactNode;
 } & ViewEvent<'onButtonPressed', void>;
 
-// We have to work around the `role` and `onPress` props being reserved by React Native.
 const IconButtonNativeView: React.ComponentType<NativeIconButtonProps> = requireNativeView(
   'ExpoUI',
   'IconButton'
 );
 
-function transformIconButtonProps(props: IconButtonProps): NativeIconButtonProps {
-  const { children, onPress, shape, modifiers, ...restProps } = props;
+const FilledIconButtonNativeView: React.ComponentType<NativeIconButtonProps> = requireNativeView(
+  'ExpoUI',
+  'FilledIconButton'
+);
 
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-    children,
-    shape: parseJSXShape(shape),
-    onButtonPressed: onPress,
-    elementColors: props.elementColors
-      ? props.elementColors
-      : props.color
-        ? {
-            containerColor: props.color,
-          }
-        : undefined,
-  };
+const FilledTonalIconButtonNativeView: React.ComponentType<NativeIconButtonProps> =
+  requireNativeView('ExpoUI', 'FilledTonalIconButton');
+
+const OutlinedIconButtonNativeView: React.ComponentType<NativeIconButtonProps> = requireNativeView(
+  'ExpoUI',
+  'OutlinedIconButton'
+);
+
+/**
+ * A standard icon button with no background.
+ */
+export function IconButton(props: IconButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <IconButtonNativeView {...transformButtonProps(restProps)}>{children}</IconButtonNativeView>
+  );
 }
 
 /**
- * Displays a native button component.
+ * A filled icon button with a solid background.
  */
-export function IconButton(props: IconButtonProps) {
-  return <IconButtonNativeView {...transformIconButtonProps(props)} />;
+export function FilledIconButton(props: IconButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <FilledIconButtonNativeView {...transformButtonProps(restProps)}>
+      {children}
+    </FilledIconButtonNativeView>
+  );
+}
+
+/**
+ * A filled tonal icon button with a muted background.
+ */
+export function FilledTonalIconButton(props: IconButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <FilledTonalIconButtonNativeView {...transformButtonProps(restProps)}>
+      {children}
+    </FilledTonalIconButtonNativeView>
+  );
+}
+
+/**
+ * An outlined icon button with a border and no fill.
+ */
+export function OutlinedIconButton(props: IconButtonProps) {
+  const { children, ...restProps } = props;
+  return (
+    <OutlinedIconButtonNativeView {...transformButtonProps(restProps)}>
+      {children}
+    </OutlinedIconButtonNativeView>
+  );
 }
