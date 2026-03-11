@@ -1,4 +1,7 @@
 import React from 'react';
 import { LinkProps } from './useLinkHooks';
-export declare function BaseExpoRouterLink({ href, replace, push, dismissTo, relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySingular: singular, prefetch, ...rest }: LinkProps): React.JSX.Element;
+export interface BaseExpoRouterLinkProps extends LinkProps {
+    withZoomTransition: boolean;
+}
+export declare function BaseExpoRouterLink({ href, replace, push, dismissTo, relativeToDirectory, asChild, rel, target, download, withAnchor, withZoomTransition, dangerouslySingular: singular, prefetch, ...rest }: BaseExpoRouterLinkProps): React.JSX.Element;
 //# sourceMappingURL=BaseExpoRouterLink.d.ts.map

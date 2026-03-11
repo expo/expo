@@ -1,4 +1,11 @@
-import { screen, act, waitFor, fireEvent, render } from '@testing-library/react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import {
+  screen,
+  act,
+  waitFor,
+  fireEvent,
+  render as rtlRender,
+} from '@testing-library/react-native';
 import React from 'react';
 import { Button, Platform, Text, View } from 'react-native';
 
@@ -19,8 +26,15 @@ import {
   NativeLinkPreview,
 } from '../preview/native';
 
-// Render and observe the props of the Link component.
+function MockNavigationContainer({ children }: { children: React.ReactNode }) {
+  return <NavigationContainer>{children}</NavigationContainer>;
+}
 
+function render(ui: React.ReactElement, options?: Parameters<typeof rtlRender>[1]) {
+  return rtlRender(ui, { wrapper: MockNavigationContainer, ...options });
+}
+
+// Render and observe the props of the Link component.
 jest.mock('../preview/native', () => {
   const { View } = require('react-native');
   const handlerMap: Record<string, Function | undefined> = {};
