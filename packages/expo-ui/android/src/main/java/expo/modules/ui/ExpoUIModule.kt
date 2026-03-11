@@ -12,6 +12,8 @@ import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.ButtonContent
 import expo.modules.ui.button.ButtonPressedEvent
 import expo.modules.ui.button.ButtonProps
+import expo.modules.ui.button.FloatingActionButtonContent
+import expo.modules.ui.button.FloatingActionButtonProps
 import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.IconButtonProps
 import expo.modules.ui.icon.IconView
@@ -287,6 +289,13 @@ class ExpoUIModule : Module() {
     }) { props: RadioButtonProps ->
       val onNativeClick by remember { EventDispatcher<Unit>() }
       RadioButtonContent(props) { onNativeClick(Unit) }
+    }
+
+    ExpoUIView("FloatingActionButtonView", events = {
+      Events("onButtonPressed")
+    }) { props: FloatingActionButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<Unit>() }
+      FloatingActionButtonContent(props) { onButtonPressed(Unit) }
     }
 
     //endregion Expo UI views
