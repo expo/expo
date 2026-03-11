@@ -206,7 +206,6 @@ it(`supports nested React components in destructured props in Metro + developmen
   const code = babel.transform(sourceCode, options)!.code;
 
   expect(code).toMatch(/"react\/jsx-dev-runtime"/);
-  expect(code).toMatch(/var _ref\$button/);
   expect(code).toMatchInlineSnapshot(`
     "var _jsxDevRuntime = require("react/jsx-dev-runtime");
     var _jsxFileName = "/unknown";

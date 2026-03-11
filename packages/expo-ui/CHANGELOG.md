@@ -4,9 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- [android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
+- [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
+- [android] control ContextMenu expanded state from JS ([#43793](https://github.com/expo/expo/pull/43793) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 - [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [android] Added `enabled`, `onValueChangeFinished`, and `Slider.Thumb`/`Slider.Track` slot support to `Slider` component. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `graphicsLayer` modifier and animation helpers for per-value animation in it. Added `indication` option to `clickable` modifier to control ripple effects. ([#43655](https://github.com/expo/expo/pull/43655) by [@vonovak](https://github.com/vonovak))
 - [Android] Added border color customization for `Switch` and `Checkbox` components. ([#43770](https://github.com/expo/expo/pull/43770) by [@liestig](https://github.com/liestig))
 - [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -14,8 +21,6 @@
 - [android] Add `elementColors` prop to the `DateTimePicker` component ([#43787](https://github.com/expo/expo/pull/43787) by [@iankberry](https://github.com/iankberry))
 - [iOS] Added `AccessoryWidgetBackground` component ([#43729](https://github.com/expo/expo/pull/43729) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add support for local image uri ([#43707](https://github.com/expo/expo/pull/43707) by [@jakex7](https://github.com/jakex7))
-- [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
-- [android] control ContextMenu expanded state from JS ([#43793](https://github.com/expo/expo/pull/43793) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -28,6 +33,7 @@
 
 ### 💡 Others
 
+- [iOS] Add `AsyncFunction` support in `ExpoUIView` definition function. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
 

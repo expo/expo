@@ -330,6 +330,18 @@ export async function test(t) {
       t.expect(width).toBeGreaterThan(0);
     });
 
+    if (Platform.OS === 'ios') {
+      t.it('sets and gets favorite status', async () => {
+        t.expect(await asset.getFavorite()).toBe(false);
+        // mark as favorite
+        await asset.setFavorite(true);
+        t.expect(await asset.getFavorite()).toBe(true);
+        // unmark as favorite
+        await asset.setFavorite(false);
+        t.expect(await asset.getFavorite()).toBe(false);
+      });
+    }
+
     t.it('returns an asset info object', async () => {
       const info = await asset.getInfo();
       t.expect(info).toBeDefined();
@@ -342,6 +354,9 @@ export async function test(t) {
       t.expect(info.duration).toBe(await asset.getDuration());
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
+      if (Platform.OS === 'ios') {
+        t.expect(info.isFavorite).toBe(await asset.getFavorite());
+      }
     });
   });
 

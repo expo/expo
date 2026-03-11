@@ -85,7 +85,7 @@ function TrailingIcon(props: { children: React.ReactNode }) {
 
 /**
  * A dropdown menu item component that wraps Compose's `DropdownMenuItem`.
- * Should be used inside `ContextMenu.Items`.
+ * Should be used inside `DropdownMenu.Items`.
  *
  * @platform android
  */
