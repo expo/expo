@@ -65,7 +65,7 @@ it(`passes the environment as isServer to the babel preset`, () => {
       isDev: true,
       bundler: 'metro',
       engine: undefined,
-      isHermesV1: true,
+      isHermesV1: false,
       name: 'metro',
       platform: 'ios',
       baseUrl: '',
@@ -169,9 +169,22 @@ describe('isHermesV1 detection', () => {
 
   function setupTransformerWithHermesVersion(version: string | null) {
     jest.resetModules();
-    if (version !== null) {
-      jest.doMock('hermes-compiler/package.json', () => ({ version }));
-    }
+    const actualResolveFrom = jest.requireActual('resolve-from');
+    jest.doMock('resolve-from', () => ({
+      ...actualResolveFrom,
+      silent: (root: string, id: string) => {
+        if (id === 'react-native/package.json') {
+          return '/fake/node_modules/react-native/package.json';
+        }
+        return actualResolveFrom.silent(root, id);
+      },
+    }));
+    jest.doMock('../utils/getPkgVersion', () => ({
+      getPkgVersion: (_root: string, pkgName: string) => {
+        if (pkgName === 'hermes-compiler') return version;
+        return null;
+      },
+    }));
     jest.doMock('../babel-core', () => {
       const actual = jest.requireActual('../babel-core');
       return {
