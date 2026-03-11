@@ -2551,7 +2551,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Generated (1.26.20):
+  - react-native-maps/Generated (1.27.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2579,7 +2579,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Maps (1.26.20):
+  - react-native-maps/Maps (1.27.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -4721,11 +4721,11 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 4de4833a80a7b39c6c5d6c725a600e2faa49bc14
+  hermes-engine: 912e24e9d788b04c9f50eaf3721ce9968b2d3bf9
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4737,7 +4737,7 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
-  RCT-Folly: 9e4e1ae78413fb0387567f5dc5d5d5672f23f457
+  RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
   RCTDeprecation: 7e2e4f68ac7b42644697ff2477fd450772c2dd3c
   RCTRequired: 967eb804f6a6e70e1c6a3f9b1c926b187ce719f4
   RCTSwiftUI: 6dea7b613e8930a973b723c121aa8646374ee694
@@ -4775,7 +4775,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 4370b0aebb7e494a08bfe761dd935060d368fff6
   React-microtasksnativemodule: dc94c7937959d8b41fffbf8f6fb70e716507dd62
   react-native-keyboard-controller: dbf568b5d029cdc5b26667a7c2323b160c25dc00
-  react-native-maps: 48cbc77581f2ffc121a296f9abe071fe4a7ea4ee
+  react-native-maps: b5af575a371e57847c6d8490e726c08036f7c80f
   react-native-netinfo: 57447b5a45c98808f8eae292cf641f3d91d13830
   react-native-pager-view: d7d2aa47f54343bf55fdcee3973503dd27c2bd37
   react-native-safe-area-context: c00143b4823773bba23f2f19f85663ae89ceb460
