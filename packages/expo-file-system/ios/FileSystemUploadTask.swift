@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import CoreServices
+import UniformTypeIdentifiers
 
 /**
  * A record type for upload options.
@@ -32,6 +32,7 @@ class FileSystemUploadTask: SharedObject {
   private var uploadTask: URLSessionUploadTask?
   private var delegate: UploadTaskDelegate?
   private var cancelled = false
+  private var tempFileURL: URL?
 
   func start(url: URL, fileUri: String, options: UploadOptionsRecord, promise: Promise) {
     guard let sourceUrl = URL(string: fileUri) else {
@@ -67,17 +68,12 @@ class FileSystemUploadTask: SharedObject {
       // Create upload task based on upload type
       if options.uploadType == 1 { // Multipart
         let boundaryString = UUID().uuidString
-        guard let data = createMultipartBody(boundary: boundaryString, sourceUrl: sourceUrl, options: options) else {
-          promise.reject(FailedToCreateBodyException())
-          return
-        }
+        let bodyFileURL = try createMultipartBody(boundary: boundaryString, sourceUrl: sourceUrl, options: options)
 
         request.setValue("multipart/form-data; boundary=\(boundaryString)", forHTTPHeaderField: "Content-Type")
+        tempFileURL = bodyFileURL
 
-        let localURL = try createLocalUrl(from: sourceUrl)
-        try data.write(to: localURL)
-
-        uploadTask = session.uploadTask(with: request, fromFile: localURL)
+        uploadTask = session.uploadTask(with: request, fromFile: bodyFileURL)
       } else { // Binary content
         uploadTask = session.uploadTask(with: request, fromFile: sourceUrl)
       }
@@ -105,56 +101,81 @@ class FileSystemUploadTask: SharedObject {
     uploadTask = nil
     session?.invalidateAndCancel()
     session = nil
+    if let tempFileURL = tempFileURL {
+      try? FileManager.default.removeItem(at: tempFileURL)
+      self.tempFileURL = nil
+    }
   }
 
   // MARK: - Helper methods
 
-  private func createLocalUrl(from sourceUrl: URL) throws -> URL {
+  private func createLocalUrl(from sourceUrl: URL, uniqueName: String? = nil) throws -> URL {
     guard let cachesDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
       throw FailedToAccessDirectoryException()
     }
     let tempDir = cachesDir.appendingPathComponent("uploads")
     FileSystemUtilities.ensureDirExists(at: tempDir)
-    return tempDir.appendingPathComponent(sourceUrl.lastPathComponent)
+    let filename = uniqueName ?? sourceUrl.lastPathComponent
+    return tempDir.appendingPathComponent(filename)
   }
 
-  private func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadOptionsRecord) -> Data? {
+  private func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadOptionsRecord) throws -> URL {
     let fieldName = options.fieldName ?? sourceUrl.lastPathComponent
     let mimeType = options.mimeType ?? findMimeType(forAttachment: sourceUrl)
-    guard let data = try? Data(contentsOf: sourceUrl) else {
-      return nil
+
+    // Use UUID-based filename to avoid collision on concurrent uploads of same-named files
+    let tempURL = try createLocalUrl(from: sourceUrl, uniqueName: UUID().uuidString)
+
+    guard let output = OutputStream(url: tempURL, append: false) else {
+      throw FailedToAccessDirectoryException()
     }
+    output.open()
+    defer { output.close() }
 
-    var body = Data()
-    headersForMultipartParams(options.parameters, boundary: boundary, body: &body)
-
-    body.append("--\(boundary)\r\n".data)
-    body.append("Content-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(sourceUrl.lastPathComponent)\"\r\n".data)
-    body.append("Content-Type: \(mimeType)\r\n\r\n".data)
-    body.append(data)
-    body.append("\r\n".data)
-    body.append("--\(boundary)--\r\n".data)
-
-    return body
-  }
-
-  private func headersForMultipartParams(_ params: [String: String]?, boundary: String, body: inout Data) {
-    if let params {
+    // Write parameter parts
+    if let params = options.parameters {
       for (key, value) in params {
-        body.append("--\(boundary)\r\n".data)
-        body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data)
-        body.append("\(value)\r\n".data)
+        let part = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(key)\"\r\n\r\n\(value)\r\n"
+        let partData = Array(part.utf8)
+        output.write(partData, maxLength: partData.count)
       }
     }
+
+    // Write file part header
+    let header = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(sourceUrl.lastPathComponent)\"\r\nContent-Type: \(mimeType)\r\n\r\n"
+    let headerData = Array(header.utf8)
+    output.write(headerData, maxLength: headerData.count)
+
+    // Stream file content in 64KB chunks
+    guard let input = InputStream(url: sourceUrl) else {
+      throw FailedToCreateBodyException()
+    }
+    input.open()
+    defer { input.close() }
+
+    let bufferSize = 65536
+    let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+    defer { buffer.deallocate() }
+
+    while input.hasBytesAvailable {
+      let bytesRead = input.read(buffer, maxLength: bufferSize)
+      if bytesRead > 0 {
+        output.write(buffer, maxLength: bytesRead)
+      } else if bytesRead < 0 {
+        throw FailedToCreateBodyException()
+      }
+    }
+
+    // Write closing boundary
+    let closing = "\r\n--\(boundary)--\r\n"
+    let closingData = Array(closing.utf8)
+    output.write(closingData, maxLength: closingData.count)
+
+    return tempURL
   }
 
   private func findMimeType(forAttachment attachment: URL) -> String {
-    if let identifier = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, attachment.pathExtension as CFString, nil)?.takeRetainedValue() {
-      if let type = UTTypeCopyPreferredTagWithClass(identifier, kUTTagClassMIMEType)?.takeRetainedValue() {
-        return type as String
-      }
-    }
-    return "application/octet-stream"
+    return UTType(filenameExtension: attachment.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
   }
 }
 
@@ -203,16 +224,21 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
     if let error = error {
       let nsError = error as NSError
       if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
-        // Task was cancelled - resolve with nil instead of rejecting
-        promise.resolve(nil)
+        promise.reject(UploadCancelledException())
       } else {
         promise.reject(UnableToUploadException(error.localizedDescription))
       }
+
+      // Invalidate session to break retain cycle (delegate → session → delegate)
+      session.finishTasksAndInvalidate()
       return
     }
 
     guard let httpResponse = task.response as? HTTPURLResponse else {
       promise.reject(UnableToUploadException("No HTTP response received"))
+
+      // Invalidate session to break retain cycle (delegate → session → delegate)
+      session.finishTasksAndInvalidate()
       return
     }
 
@@ -230,11 +256,8 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
     ]
 
     promise.resolve(result)
+
+    // Invalidate session to break retain cycle (delegate → session → delegate)
+    session.finishTasksAndInvalidate()
   }
-}
-
-// MARK: - String extension
-
-private extension String {
-  var data: Data { Data(self.utf8) }
 }
