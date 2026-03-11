@@ -39,6 +39,7 @@ export type CommandOptions = {
   checkIntegrity: boolean;
   assignSdkTag: boolean;
   promptOtp?: boolean;
+  skipOtp?: boolean;
 };
 
 /**

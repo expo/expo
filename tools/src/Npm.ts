@@ -238,16 +238,14 @@ export async function getTeamPackagesAsync(
  */
 export async function grantReadWriteAccessAsync(
   packageName: string,
-  teamName: string
+  teamName: string,
+  spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', [
-    'access',
-    'grant',
-    'read-write',
-    teamName,
-    packageName,
-    ...maybeNpmOtpFlag(),
-  ]);
+  await spawnAsync(
+    'npm',
+    ['access', 'grant', 'read-write', teamName, packageName, ...maybeNpmOtpFlag()],
+    spawnOptions
+  );
 }
 
 /**

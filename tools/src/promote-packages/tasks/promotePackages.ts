@@ -29,6 +29,8 @@ export const promotePackages = new Task<TaskArgs>(
       sorted.reverse();
     }
 
+    const inheritStdio = options.skipOtp ? { stdio: 'inherit' as const } : undefined;
+
     // Prompt for OTP up front if requested; sets env var read by Npm.addTagAsync/removeTagAsync.
     if (options.promptOtp) {
       process.env.NPM_OTP = await promptOtp();
@@ -49,7 +51,13 @@ export const promotePackages = new Task<TaskArgs>(
 
       // Tag the local version of the package.
       if (!options.dry) {
-        await withOtpRetry(() => Npm.addTagAsync(pkg.packageName, pkg.packageVersion, options.tag));
+        const tagFn = () =>
+          Npm.addTagAsync(pkg.packageName, pkg.packageVersion, options.tag, inheritStdio);
+        if (options.skipOtp) {
+          await tagFn();
+        } else {
+          await withOtpRetry(tagFn);
+        }
       }
     }
 

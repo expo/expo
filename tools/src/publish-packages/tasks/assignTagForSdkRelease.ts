@@ -59,7 +59,13 @@ export const assignTagForSdkRelease = new Task<TaskArgs>(
           );
 
           if (!options.dry) {
-            await withOtpRetry(() => Npm.addTagAsync(pkgName, pkgVersion, sdkTag));
+            const inheritStdio = options.skipOtp ? { stdio: 'inherit' as const } : undefined;
+            const tagFn = () => Npm.addTagAsync(pkgName, pkgVersion, sdkTag, inheritStdio);
+            if (options.skipOtp) {
+              await tagFn();
+            } else {
+              await withOtpRetry(tagFn);
+            }
           }
         }
       },

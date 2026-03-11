@@ -14,6 +14,7 @@ export type CommandOptions = {
   list: boolean;
   reverse?: boolean;
   promptOtp?: boolean;
+  skipOtp?: boolean;
 };
 
 /**

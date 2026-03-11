@@ -102,6 +102,11 @@ export default (program: Command) => {
       'Prompt for an npm OTP code before publishing. Re-prompts automatically when the code expires.',
       false
     )
+    .option(
+      '--skip-otp',
+      'Skip OTP handling entirely. Use when authenticated with a security key — npm will open the browser for WebAuthn.',
+      false
+    )
     /* debug options */
     .option(
       '-S, --skip-repo-checks',

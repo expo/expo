@@ -31,6 +31,8 @@ export const publishPackages = new Task<TaskArgs>(
 
     const gitHead = await Git.getHeadCommitHashAsync();
 
+    const inheritStdio = options.skipOtp ? { stdio: 'inherit' as const } : undefined;
+
     // Prompt for OTP up front if requested; sets env var read by Npm commands.
     if (options.promptOtp) {
       process.env.NPM_OTP = await promptOtp();
@@ -58,22 +60,34 @@ export const publishPackages = new Task<TaskArgs>(
         await JsonFile.setAsync(packageJsonPath, 'gitHead', gitHead);
       }
 
+      const publishFn = () =>
+        Npm.publishPackageAsync(pkg.path, {
+          source: packageSource,
+          tagName: options.tag,
+          dryRun: options.dry,
+          spawnOptions: inheritStdio,
+        });
+
       // Publish the package.
       try {
-        await withOtpRetry(() =>
-          Npm.publishPackageAsync(pkg.path, {
-            source: packageSource,
-            tagName: options.tag,
-            dryRun: options.dry,
-          })
-        );
+        if (options.skipOtp) {
+          await publishFn();
+        } else {
+          await withOtpRetry(publishFn);
+        }
         // Assign SDK tag when package is a template
         if (pkg.isTemplate() && !options.canary) {
           const sdkTag = `sdk-${semver.major(releaseVersion)}`;
           logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
           if (!options.dry) {
             await sleepAsync(1000); // wait for npm to process the package
-            await withOtpRetry(() => Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag));
+            const tagFn = () =>
+              Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag, inheritStdio);
+            if (options.skipOtp) {
+              await tagFn();
+            } else {
+              await withOtpRetry(tagFn);
+            }
           }
         }
       } catch (error) {

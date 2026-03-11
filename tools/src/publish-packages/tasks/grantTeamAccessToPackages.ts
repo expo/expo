@@ -38,11 +38,20 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
     );
 
     if (!options.dry) {
+      const inheritStdio = options.skipOtp ? { stdio: 'inherit' as const } : undefined;
       for (const packageName of packagesToGrantAccess) {
         try {
-          await withOtpRetry(() =>
-            Npm.grantReadWriteAccessAsync(packageName, Npm.EXPO_DEVELOPERS_TEAM_NAME)
-          );
+          const grantFn = () =>
+            Npm.grantReadWriteAccessAsync(
+              packageName,
+              Npm.EXPO_DEVELOPERS_TEAM_NAME,
+              inheritStdio
+            );
+          if (options.skipOtp) {
+            await grantFn();
+          } else {
+            await withOtpRetry(grantFn);
+          }
         } catch (e) {
           logger.debug(e.stderr || e.stdout);
           logger.error(`🎖  Granting access to ${green(packageName)} failed`);
