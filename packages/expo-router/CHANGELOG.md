@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Allow users to customize route-level `<Suspense>` fallback
+- Allow users to customize route-level `<Suspense>` fallback ([#43885](https://github.com/expo/expo/pull/43885) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
