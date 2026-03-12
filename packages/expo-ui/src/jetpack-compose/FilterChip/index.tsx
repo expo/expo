@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type FilterChipProps = {
@@ -8,10 +8,6 @@ export type FilterChipProps = {
    * Whether the chip is currently selected.
    */
   selected: boolean;
-  /**
-   * The text label to display on the chip.
-   */
-  label: string;
   /**
    * Whether the chip is enabled and can be interacted with.
    */
@@ -23,9 +19,9 @@ export type FilterChipProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
   /**
-   * Children containing LeadingIcon and TrailingIcon slots.
+   * Children containing Label, LeadingIcon, and TrailingIcon slots.
    */
   children?: React.ReactNode;
 };
@@ -52,6 +48,13 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
 );
 
 /**
+ * Label slot for FilterChip.
+ */
+function FilterChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
  * Leading icon slot for FilterChip.
  */
 function FilterChipLeadingIcon(props: SlotChildProps) {
@@ -67,7 +70,7 @@ function FilterChipTrailingIcon(props: SlotChildProps) {
 
 /**
  * A filter chip component following Material 3 design guidelines.
- * Supports slot-based `LeadingIcon` and `TrailingIcon` children.
+ * Supports slot-based `Label`, `LeadingIcon`, and `TrailingIcon` children.
  */
 function FilterChipComponent(props: FilterChipProps) {
   const { children, modifiers, onPress, ...restProps } = props;
@@ -83,6 +86,7 @@ function FilterChipComponent(props: FilterChipProps) {
   );
 }
 
+FilterChipComponent.Label = FilterChipLabel;
 FilterChipComponent.LeadingIcon = FilterChipLeadingIcon;
 FilterChipComponent.TrailingIcon = FilterChipTrailingIcon;
 

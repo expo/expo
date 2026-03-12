@@ -3,42 +3,23 @@ import { requireNativeView } from 'expo';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-/**
- * Available text style variants for chip labels.
- */
-export type ChipTextStyle =
-  | 'labelSmall'
-  | 'labelMedium'
-  | 'labelLarge'
-  | 'bodySmall'
-  | 'bodyMedium'
-  | 'bodyLarge';
+type SlotChildProps = {
+  children: React.ReactNode;
+};
+
+type NativeSlotViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
+
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
 
 // region AssistChip
 
 export type AssistChipProps = {
-  /**
-   * The text label to display on the chip.
-   */
-  label: string;
-  /**
-   * Optional leading icon name (using Material Icons).
-   */
-  leadingIcon?: string;
-  /**
-   * Optional trailing icon name (using Material Icons).
-   */
-  trailingIcon?: string;
-  /**
-   * Size of the icon in density-independent pixels (dp).
-   * @default 18
-   */
-  iconSize?: number;
-  /**
-   * Text style variant for the chip label.
-   * @default 'labelSmall'
-   */
-  textStyle?: ChipTextStyle;
   /**
    * Whether the chip is enabled and can be clicked.
    * @default true
@@ -52,6 +33,10 @@ export type AssistChipProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
+  /**
+   * Children containing Label, LeadingIcon, and TrailingIcon slots.
+   */
+  children?: React.ReactNode;
 };
 
 type NativeAssistChipProps = AssistChipProps;
@@ -61,49 +46,55 @@ const AssistChipNativeView: React.ComponentType<NativeAssistChipProps> = require
   'AssistChipView'
 );
 
-function transformAssistChipProps(props: AssistChipProps): NativeAssistChipProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
+/**
+ * Label slot for AssistChip.
+ */
+function AssistChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Leading icon slot for AssistChip.
+ */
+function AssistChipLeadingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="leadingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Trailing icon slot for AssistChip.
+ */
+function AssistChipTrailingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
 }
 
 /**
  * An assist chip that helps users complete actions and primary tasks.
  */
-export function AssistChip(props: AssistChipProps) {
-  return <AssistChipNativeView {...transformAssistChipProps(props)} />;
+function AssistChipComponent(props: AssistChipProps) {
+  const { children, modifiers, onPress, ...restProps } = props;
+
+  return (
+    <AssistChipNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onPress={onPress}>
+      {children}
+    </AssistChipNativeView>
+  );
 }
+
+AssistChipComponent.Label = AssistChipLabel;
+AssistChipComponent.LeadingIcon = AssistChipLeadingIcon;
+AssistChipComponent.TrailingIcon = AssistChipTrailingIcon;
+
+export { AssistChipComponent as AssistChip };
 
 // endregion
 
 // region InputChip
 
 export type InputChipProps = {
-  /**
-   * The text label to display on the chip.
-   */
-  label: string;
-  /**
-   * Optional leading icon name (using Material Icons), displayed as an avatar.
-   */
-  leadingIcon?: string;
-  /**
-   * Optional trailing icon name (using Material Icons). Defaults to `filled.Close` if not specified.
-   */
-  trailingIcon?: string;
-  /**
-   * Size of the icon in density-independent pixels (dp).
-   * @default 18
-   */
-  iconSize?: number;
-  /**
-   * Text style variant for the chip label.
-   * @default 'labelSmall'
-   */
-  textStyle?: ChipTextStyle;
   /**
    * Whether the chip is enabled and can be interacted with.
    * @default true
@@ -122,6 +113,10 @@ export type InputChipProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
+  /**
+   * Children containing Label, Avatar, and TrailingIcon slots.
+   */
+  children?: React.ReactNode;
 };
 
 type NativeInputChipProps = InputChipProps;
@@ -131,45 +126,55 @@ const InputChipNativeView: React.ComponentType<NativeInputChipProps> = requireNa
   'InputChipView'
 );
 
-function transformInputChipProps(props: InputChipProps): NativeInputChipProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
+/**
+ * Label slot for InputChip.
+ */
+function InputChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Avatar slot for InputChip.
+ */
+function InputChipAvatar(props: SlotChildProps) {
+  return <SlotNativeView slotName="avatar">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Trailing icon slot for InputChip.
+ */
+function InputChipTrailingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
 }
 
 /**
  * An input chip that represents user input and can be dismissed.
  */
-export function InputChip(props: InputChipProps) {
-  return <InputChipNativeView {...transformInputChipProps(props)} />;
+function InputChipComponent(props: InputChipProps) {
+  const { children, modifiers, onPress, ...restProps } = props;
+
+  return (
+    <InputChipNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onPress={onPress}>
+      {children}
+    </InputChipNativeView>
+  );
 }
+
+InputChipComponent.Label = InputChipLabel;
+InputChipComponent.Avatar = InputChipAvatar;
+InputChipComponent.TrailingIcon = InputChipTrailingIcon;
+
+export { InputChipComponent as InputChip };
 
 // endregion
 
 // region SuggestionChip
 
 export type SuggestionChipProps = {
-  /**
-   * The text label to display on the chip.
-   */
-  label: string;
-  /**
-   * Optional icon name (using Material Icons).
-   */
-  leadingIcon?: string;
-  /**
-   * Size of the icon in density-independent pixels (dp).
-   * @default 18
-   */
-  iconSize?: number;
-  /**
-   * Text style variant for the chip label.
-   * @default 'labelSmall'
-   */
-  textStyle?: ChipTextStyle;
   /**
    * Whether the chip is enabled and can be clicked.
    * @default true
@@ -183,6 +188,10 @@ export type SuggestionChipProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
+  /**
+   * Children containing Label and Icon slots.
+   */
+  children?: React.ReactNode;
 };
 
 type NativeSuggestionChipProps = SuggestionChipProps;
@@ -192,20 +201,40 @@ const SuggestionChipNativeView: React.ComponentType<NativeSuggestionChipProps> =
   'SuggestionChipView'
 );
 
-function transformSuggestionChipProps(props: SuggestionChipProps): NativeSuggestionChipProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
+/**
+ * Label slot for SuggestionChip.
+ */
+function SuggestionChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Icon slot for SuggestionChip.
+ */
+function SuggestionChipIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="icon">{props.children}</SlotNativeView>;
 }
 
 /**
  * A suggestion chip that offers contextual suggestions and recommendations.
  */
-export function SuggestionChip(props: SuggestionChipProps) {
-  return <SuggestionChipNativeView {...transformSuggestionChipProps(props)} />;
+function SuggestionChipComponent(props: SuggestionChipProps) {
+  const { children, modifiers, onPress, ...restProps } = props;
+
+  return (
+    <SuggestionChipNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onPress={onPress}>
+      {children}
+    </SuggestionChipNativeView>
+  );
 }
+
+SuggestionChipComponent.Label = SuggestionChipLabel;
+SuggestionChipComponent.Icon = SuggestionChipIcon;
+
+export { SuggestionChipComponent as SuggestionChip };
 
 // endregion
