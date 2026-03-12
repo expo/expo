@@ -110,7 +110,7 @@ export type AssistChipProps = {
   /**
    * Children containing Label, LeadingIcon, and TrailingIcon slots.
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 type NativeAssistChipProps = Omit<AssistChipProps, 'onClick'> & {
@@ -202,7 +202,7 @@ export type FilterChipProps = {
   /**
    * Children containing Label, LeadingIcon, and TrailingIcon slots.
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 type NativeFilterChipProps = Omit<FilterChipProps, 'onClick'> & {
@@ -296,7 +296,7 @@ export type InputChipProps = {
   /**
    * Children containing Label, Avatar, and TrailingIcon slots.
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 type NativeInputChipProps = Omit<InputChipProps, 'onClick'> & {
@@ -385,7 +385,7 @@ export type SuggestionChipProps = {
   /**
    * Children containing Label and Icon slots.
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 type NativeSuggestionChipProps = Omit<SuggestionChipProps, 'onClick'> & {

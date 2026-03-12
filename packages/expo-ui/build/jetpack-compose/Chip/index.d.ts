@@ -88,7 +88,7 @@ export type AssistChipProps = {
     /**
      * Children containing Label, LeadingIcon, and TrailingIcon slots.
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
 };
 /**
  * Label slot for AssistChip.
@@ -144,7 +144,7 @@ export type FilterChipProps = {
     /**
      * Children containing Label, LeadingIcon, and TrailingIcon slots.
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
 };
 /**
  * Label slot for FilterChip.
@@ -202,7 +202,7 @@ export type InputChipProps = {
     /**
      * Children containing Label, Avatar, and TrailingIcon slots.
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
 };
 /**
  * Label slot for InputChip.
@@ -255,7 +255,7 @@ export type SuggestionChipProps = {
     /**
      * Children containing Label and Icon slots.
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
 };
 /**
  * Label slot for SuggestionChip.
