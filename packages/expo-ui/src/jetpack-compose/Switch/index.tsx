@@ -1,15 +1,14 @@
 import { requireNativeView } from 'expo';
 import { NativeSyntheticEvent, type ColorValue } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { ExpoUIModule } from '../ExpoUIModule';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-// @docsMissing
 /**
- * Only for switch.
+ * Colors for switch core elements.
  */
-type SwitchElementColors = {
+export type SwitchColors = {
   checkedThumbColor?: ColorValue;
   checkedTrackColor?: ColorValue;
   checkedBorderColor?: ColorValue;
@@ -28,83 +27,38 @@ type SwitchElementColors = {
   disabledUncheckedIconColor?: ColorValue;
 };
 
-// @docsMissing
-/**
- * Only for checkbox.
- */
-type CheckboxElementColors = {
-  checkedColor?: ColorValue;
-  disabledCheckedColor?: ColorValue;
-  uncheckedColor?: ColorValue;
-  disabledUncheckedColor?: ColorValue;
-  checkmarkColor?: ColorValue;
-  disabledIndeterminateColor?: ColorValue;
-};
-
 export type SwitchProps = {
   /**
    * Indicates whether the switch is checked.
    */
   value: boolean;
-
-  /**
-   * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
-   * @default 'switch'
-   */
-  variant?: 'checkbox' | 'switch' | 'button';
   /**
    * Whether the switch is enabled.
    * @default true
-   * @platform android
    */
   enabled?: boolean;
   /**
    * Callback function that is called when the checked state changes.
    */
-  onValueChange?: (value: boolean) => void;
-
+  onCheckedChange?: (value: boolean) => void;
   /**
-   * Picker color.
+   * Colors for switch core elements.
    */
-  color?: ColorValue;
-
+  colors?: SwitchColors;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
-
+  modifiers?: ModifierConfig[];
   /**
    * Children containing ThumbContent slot.
    * @platform android
    */
   children?: React.ReactNode;
-} & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
-
-export type SwitchSwitchVariantProps = {
-  variant?: 'switch';
-  /**
-   * Colors for switch's core elements.
-   * @platform android
-   */
-  elementColors?: SwitchElementColors;
 };
 
-export type SwitchCheckboxVariantProps = {
-  variant: 'checkbox';
-  /**
-   * Colors for checkbox core elements.
-   * @platform android
-   */
-  elementColors?: CheckboxElementColors;
-};
-
-export type SwitchButtonVariantProps = {
-  variant: 'button';
-  elementColors?: undefined;
-};
-
-type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
-  onValueChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
+type NativeSwitchProps = Omit<SwitchProps, 'onCheckedChange' | 'children'> & {
+  children?: React.ReactNode;
+  onCheckedChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
 };
 
 type NativeSlotViewProps = {
@@ -134,39 +88,21 @@ export function SwitchThumbContent(props: ThumbContentProps) {
   return <SlotNativeView slotName="thumbContent">{props.children}</SlotNativeView>;
 }
 
-function getElementColors(props: SwitchProps) {
-  if (props.variant === 'button') {
-    return undefined;
-  }
-  if (!props.elementColors) {
-    if (props.variant === 'switch') {
-      return {
-        checkedTrackColor: props.color,
-      };
-    } else {
-      return {
-        checkedColor: props.color,
-      };
-    }
-  }
-  return props.elementColors;
-}
-
 function transformSwitchProps(props: SwitchProps): Omit<NativeSwitchProps, 'children'> {
-  const { modifiers, children, ...restProps } = props;
+  const { modifiers, children, onCheckedChange, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    variant: props.variant ?? 'switch',
-    elementColors: getElementColors(props),
-    color: props.color,
-    onValueChange: ({ nativeEvent: { value } }) => {
-      props?.onValueChange?.(value);
+    onCheckedChange: ({ nativeEvent: { value } }) => {
+      onCheckedChange?.(value);
     },
-  } as Omit<NativeSwitchProps, 'children'>;
+  };
 }
 
+/**
+ * A switch component.
+ */
 function SwitchComponent(props: SwitchProps) {
   return <SwitchNativeView {...transformSwitchProps(props)}>{props.children}</SwitchNativeView>;
 }
