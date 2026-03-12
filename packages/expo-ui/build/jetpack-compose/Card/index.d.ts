@@ -1,9 +1,9 @@
 import { type ColorValue } from 'react-native';
-import { type ModifierConfig } from '../../types';
+import { ExpoModifier } from '../../types';
 /**
  * Colors for card's core elements.
  */
-export type CardColors = {
+export type CardElementColors = {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
 };
@@ -13,24 +13,28 @@ export type CardProps = {
      */
     children?: React.ReactNode;
     /**
+     * The variant of the card.
+     * - 'default' - A filled card with no outline.
+     * - 'elevated' - A filled card with elevation/shadow.
+     * - 'outlined' - A card with an outline border.
+     * @default 'default'
+     */
+    variant?: 'default' | 'elevated' | 'outlined';
+    /**
+     * The background color of the card.
+     */
+    color?: ColorValue;
+    /**
      * Colors for card's core elements.
      */
-    colors?: CardColors;
+    elementColors?: CardElementColors;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ModifierConfig[];
+    modifiers?: ExpoModifier[];
 };
 /**
  * A card component that provides a surface for content.
  */
 export declare function Card(props: CardProps): import("react").JSX.Element;
-/**
- * An elevated card component that provides a raised surface for content.
- */
-export declare function ElevatedCard(props: CardProps): import("react").JSX.Element;
-/**
- * An outlined card component that provides a bordered surface for content.
- */
-export declare function OutlinedCard(props: CardProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

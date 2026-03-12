@@ -34,27 +34,27 @@ export default function BasicCardExample() {
 }
 ```
 
-### Card types
+### Card variants
 
-Use `Card`, `ElevatedCard`, or `OutlinedCard` for different styles.
+Use the `variant` prop to switch between `'default'`, `'elevated'`, and `'outlined'` styles.
 
-```tsx CardTypesExample.tsx
-import { Host, Card, ElevatedCard, OutlinedCard, Text, Column } from '@expo/ui/jetpack-compose';
+```tsx CardVariantsExample.tsx
+import { Host, Card, Text, Column } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
-export default function CardTypesExample() {
+export default function CardVariantsExample() {
   return (
     <Host matchContents>
       <Column verticalArrangement={{ spacedBy: 12 }}>
-        <Card>
+        <Card variant="default">
           <Text modifiers={[paddingAll(16)]}>Default card</Text>
         </Card>
-        <ElevatedCard>
+        <Card variant="elevated">
           <Text modifiers={[paddingAll(16)]}>Elevated card</Text>
-        </ElevatedCard>
-        <OutlinedCard>
+        </Card>
+        <Card variant="outlined">
           <Text modifiers={[paddingAll(16)]}>Outlined card</Text>
-        </OutlinedCard>
+        </Card>
       </Column>
     </Host>
   );
@@ -64,7 +64,7 @@ export default function CardTypesExample() {
 ## API
 
 ```tsx
-import { Card, ElevatedCard, OutlinedCard } from '@expo/ui/jetpack-compose';
+import { Card } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/card" apiName="Card" />
