@@ -178,6 +178,16 @@ export const UIScreens = [
       return optionalRequire(() => require('./HorizontalFloatingToolbarScreen'));
     },
   },
+  {
+    name: 'Modifiers (imePadding, safeDrawingPadding)',
+    route: 'ui/modifiers',
+    options: {
+      headerShown: false,
+    },
+    getComponent() {
+      return optionalRequire(() => require('./ModifiersScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
