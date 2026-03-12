@@ -54,12 +54,24 @@ export default function CircularExample() {
 Omit the `progress` prop to animate continuously without indicating a specific completion level.
 
 ```tsx IndeterminateExample.tsx
-import { Host, LinearProgressIndicator } from '@expo/ui/jetpack-compose';
+import {
+  CircularProgressIndicator,
+  CircularWavyProgressIndicator,
+  Column,
+  Host,
+  LinearProgressIndicator,
+  LinearWavyProgressIndicator,
+} from '@expo/ui/jetpack-compose';
 
 export default function IndeterminateExample() {
   return (
     <Host matchContents>
-      <LinearProgressIndicator />
+      <Column verticalArrangement={{ spacedBy: 16 }}>
+        <LinearProgressIndicator />
+        <CircularProgressIndicator />
+        <CircularWavyProgressIndicator />
+        <LinearWavyProgressIndicator />
+      </Column>
     </Host>
   );
 }
@@ -86,13 +98,20 @@ export default function ColorsExample() {
 `LinearWavyProgressIndicator` and `CircularWavyProgressIndicator` add an expressive wave animation from Material 3 Expressive.
 
 ```tsx WavyExample.tsx
-import { Host, LinearWavyProgressIndicator, CircularWavyProgressIndicator } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  LinearWavyProgressIndicator,
+  CircularWavyProgressIndicator,
+  Column,
+} from '@expo/ui/jetpack-compose';
 
 export default function WavyExample() {
   return (
     <Host matchContents>
-      <LinearWavyProgressIndicator progress={0.6} />
-      <CircularWavyProgressIndicator progress={0.6} />
+      <Column verticalArrangement={{ spacedBy: 16 }}>
+        <LinearWavyProgressIndicator progress={0.6} />
+        <CircularWavyProgressIndicator progress={0.6} />
+      </Column>
     </Host>
   );
 }
@@ -112,4 +131,7 @@ import {
 <APISection packageName="expo-ui/jetpack-compose/progress" apiName="LinearProgressIndicator" />
 <APISection packageName="expo-ui/jetpack-compose/progress" apiName="CircularProgressIndicator" />
 <APISection packageName="expo-ui/jetpack-compose/progress" apiName="LinearWavyProgressIndicator" />
-<APISection packageName="expo-ui/jetpack-compose/progress" apiName="CircularWavyProgressIndicator" />
+<APISection
+  packageName="expo-ui/jetpack-compose/progress"
+  apiName="CircularWavyProgressIndicator"
+/>
