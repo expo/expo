@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [android] Refactored Progress Indicators to match native Compose API: split into `LinearProgressIndicator`, `CircularProgressIndicator`, `LinearWavyProgressIndicator`, `CircularWavyProgressIndicator`. Flattened `elementColors.trackColor` to `trackColor`. Added `strokeCap`, `gapSize`, `strokeWidth` props. ([#43907](https://github.com/expo/expo/pull/43907) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
