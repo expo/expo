@@ -560,4 +560,18 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu/',
   '/versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu/':
     '/versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu/',
+
+  // After merging LinearProgress and CircularProgress into Progress in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
 };

@@ -1,65 +1,134 @@
 import { ColorValue } from 'react-native';
-import { ExpoModifier } from '../../types';
-export type ProgressElementColors = {
+import { ModifierConfig } from '../../types';
+/**
+ * Stroke cap style for progress indicators.
+ */
+export type StrokeCap = 'round' | 'butt' | 'square';
+export type LinearProgressIndicatorProps = {
     /**
-     * Track color.
-     *
-     * @platform android
+     * The current progress value between `0` and `1`. Omit for indeterminate.
+     */
+    progress?: number | null;
+    /**
+     * Progress indicator color.
+     */
+    color?: ColorValue;
+    /**
+     * Track (background) color.
      */
     trackColor?: ColorValue;
-};
-export type CircularProgressProps = {
     /**
-     * The current progress value of the slider. This is a number between `0` and `1`.
+     * Stroke cap style for the indicator ends.
+     * @default 'round'
      */
-    progress?: number | null;
+    strokeCap?: StrokeCap;
     /**
-     * Progress color.
+     * Gap size between the indicator and track in dp.
      */
-    color?: ColorValue;
-    /**
-     * Colors for switch's core elements.
-     * @platform android
-     */
-    elementColors?: ProgressElementColors;
+    gapSize?: number;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
-export type LinearProgressProps = {
+/**
+ * A linear progress indicator that displays progress in a horizontal bar.
+ *
+ * Matches the Jetpack Compose `LinearProgressIndicator`.
+ */
+export declare function LinearProgressIndicator(props: LinearProgressIndicatorProps): import("react").JSX.Element;
+export type CircularProgressIndicatorProps = {
     /**
-     * The current progress value of the slider. This is a number between `0` and `1`.
+     * The current progress value between `0` and `1`. Omit for indeterminate.
      */
     progress?: number | null;
     /**
-     * Progress color.
+     * Progress indicator color.
      */
     color?: ColorValue;
     /**
-     * Colors for switch's core elements.
-     * @platform android
+     * Track (background) color.
      */
-    elementColors?: ProgressElementColors;
+    trackColor?: ColorValue;
+    /**
+     * Width of the circular stroke in dp.
+     */
+    strokeWidth?: number;
+    /**
+     * Stroke cap style for the indicator ends.
+     * @default 'round'
+     */
+    strokeCap?: StrokeCap;
+    /**
+     * Gap size between the indicator and track in dp.
+     */
+    gapSize?: number;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
- * Renders a `CircularProgress` component.
+ * A circular progress indicator that displays progress in a circular format.
+ *
+ * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
-export declare function CircularProgress(props: CircularProgressProps): import("react").JSX.Element;
+export declare function CircularProgressIndicator(props: CircularProgressIndicatorProps): import("react").JSX.Element;
+export type LinearWavyProgressIndicatorProps = {
+    /**
+     * The current progress value between `0` and `1`. Omit for indeterminate.
+     */
+    progress?: number | null;
+    /**
+     * Progress indicator color.
+     */
+    color?: ColorValue;
+    /**
+     * Track (background) color.
+     */
+    trackColor?: ColorValue;
+    /**
+     * Stroke cap style for the indicator ends.
+     * @default 'round'
+     */
+    strokeCap?: StrokeCap;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+};
 /**
- * Renders a `LinearProgress` component.
+ * A linear progress indicator with wavy animation style.
+ *
+ * Matches the Jetpack Compose `LinearWavyProgressIndicator`.
  */
-export declare function LinearProgress(props: LinearProgressProps): import("react").JSX.Element;
+export declare function LinearWavyProgressIndicator(props: LinearWavyProgressIndicatorProps): import("react").JSX.Element;
+export type CircularWavyProgressIndicatorProps = {
+    /**
+     * The current progress value between `0` and `1`. Omit for indeterminate.
+     */
+    progress?: number | null;
+    /**
+     * Progress indicator color.
+     */
+    color?: ColorValue;
+    /**
+     * Track (background) color.
+     */
+    trackColor?: ColorValue;
+    /**
+     * Width of the circular stroke in dp.
+     */
+    strokeWidth?: number;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+};
 /**
- * Renders a `CircularWavyProgress` component with wavy animation.
+ * A circular progress indicator with wavy animation style.
+ *
+ * Matches the Jetpack Compose `CircularWavyProgressIndicator`.
  */
-export declare function CircularWavyProgress(props: CircularProgressProps): import("react").JSX.Element;
-/**
- * Renders a `LinearWavyProgress` component with wavy animation.
- */
-export declare function LinearWavyProgress(props: LinearProgressProps): import("react").JSX.Element;
+export declare function CircularWavyProgressIndicator(props: CircularWavyProgressIndicatorProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
