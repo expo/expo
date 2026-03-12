@@ -8,6 +8,7 @@ export * from './Button';
 export * from './Icon';
 export * from './IconButton';
 export * from './DropdownMenu';
+export * from './ExposedDropdownMenuBox';
 export * from './Divider';
 export * from './Host';
 export * from './LazyColumn';

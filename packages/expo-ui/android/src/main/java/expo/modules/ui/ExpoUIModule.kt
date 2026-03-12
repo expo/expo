@@ -298,6 +298,13 @@ class ExpoUIModule : Module() {
       FloatingActionButtonContent(props) { onButtonPressed(Unit) }
     }
 
+    ExpoUIView("ExposedDropdownMenuBoxView", events = {
+      Events("onExpandedChange")
+    }) { props: ExposedDropdownMenuBoxProps ->
+      val onExpandedChange by remember { EventDispatcher<ExposedDropdownMenuBoxExpandedChangeEvent>() }
+      ExposedDropdownMenuBoxContent(props) { onExpandedChange(it) }
+    }
+
     //endregion Expo UI views
   }
 }

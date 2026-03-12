@@ -75,6 +75,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ExposedDropdownMenuBox component',
+    route: 'ui/exposed-dropdown-menu-box',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExposedDropdownMenuBoxScreen'));
+    },
+  },
+  {
     name: 'Color Picker component',
     route: 'ui/color-picker',
     options: {},
