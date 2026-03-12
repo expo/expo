@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -363,6 +364,11 @@ object ModifierRegistry {
       params.alignment?.toVerticalAlignment()?.let { alignment ->
         Modifier.wrapContentHeight(align = alignment)
       } ?: Modifier.wrapContentHeight()
+    }
+
+    // Inset modifiers
+    register("imePadding") { _, _, _, _ ->
+      Modifier.imePadding()
     }
 
     // Position modifiers
