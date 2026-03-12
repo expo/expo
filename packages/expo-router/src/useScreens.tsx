@@ -1,8 +1,15 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { use, useEffect, useMemo } from 'react';
 
-import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import {
+  SuspenseFallbackContext,
+  LoadedRoute,
+  Route,
+  RouteNode,
+  sortRoutesWithInitial,
+  useRouteNode,
+} from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
@@ -30,7 +37,10 @@ import {
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
-import { SuspenseFallback } from './views/SuspenseFallback';
+import {
+  SuspenseFallback as DefaultSuspenseFallback,
+  type SuspenseFallbackProps,
+} from './views/SuspenseFallback';
 import { Try } from './views/Try';
 
 export type ScreenProps<
@@ -195,7 +205,10 @@ export function useSortedScreens(
   );
 }
 
-function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRoute) {
+function fromImport(
+  value: RouteNode,
+  { ErrorBoundary, SuspenseFallback, ...component }: LoadedRoute
+) {
   // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
   if (component?.default && __DEV__) {
     component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
@@ -216,6 +229,7 @@ function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRou
 
     return {
       default: Wrapped,
+      SuspenseFallback,
     };
   }
   if (process.env.NODE_ENV !== 'production') {
@@ -224,11 +238,11 @@ function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRou
       component.default &&
       Object.keys(component.default).length === 0
     ) {
-      return { default: EmptyRoute };
+      return { default: EmptyRoute, SuspenseFallback };
     }
   }
 
-  return { default: component.default };
+  return { default: component.default, SuspenseFallback };
 }
 
 function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
@@ -253,6 +267,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
     | React.ComponentType<{ segment?: string }>;
 
+  let UserSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
+
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy(async () => {
@@ -267,7 +283,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     }
   } else {
     const res = value.loadRoute();
-    ScreenComponent = fromImport(value, res).default!;
+    const result = fromImport(value, res);
+    ScreenComponent = result.default!;
+    UserSuspenseFallback = result.SuspenseFallback;
   }
   const WrappedScreenComponent: typeof ScreenComponent = (props: object) => {
     useColorSchemeChangesIfNeeded();
@@ -300,6 +318,14 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
+    const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+
+    const ResolvedSuspenseFallback =
+      EXPO_ROUTER_IMPORT_MODE === 'lazy'
+        ? undefined
+        : (UserSuspenseFallback ?? InheritedSuspenseFallback);
+    const providedSuspenseFallback =
+      value.type === 'layout' ? ResolvedSuspenseFallback : InheritedSuspenseFallback;
 
     if (isFocused) {
       const state = navigation.getState();
@@ -340,20 +366,29 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     return (
       <Route node={value} params={route?.params}>
-        {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
-          <AnalyticsListeners navigation={navigation} screenId={route.key} />
-        )}
-        <ZoomTransitionTargetContextProvider route={route}>
-          <ZoomTransitionEnabler route={route} />
-          <React.Suspense fallback={<SuspenseFallback route={value} />}>
-            <WrappedScreenComponent
-              {...props}
-              // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-              // the intention is to make it possible to deduce shared routes.
-              segment={value.route}
-            />
-          </React.Suspense>
-        </ZoomTransitionTargetContextProvider>
+        <SuspenseFallbackContext value={providedSuspenseFallback}>
+          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
+            <AnalyticsListeners navigation={navigation} screenId={route.key} />
+          )}
+          <ZoomTransitionTargetContextProvider route={route}>
+            <ZoomTransitionEnabler route={route} />
+            <React.Suspense
+              fallback={
+                ResolvedSuspenseFallback ? (
+                  <ResolvedSuspenseFallback route={value.contextKey} />
+                ) : (
+                  <DefaultSuspenseFallback route={value} />
+                )
+              }>
+              <WrappedScreenComponent
+                {...props}
+                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                // the intention is to make it possible to deduce shared routes.
+                segment={value.route}
+              />
+            </React.Suspense>
+          </ZoomTransitionTargetContextProvider>
+        </SuspenseFallbackContext>
       </Route>
     );
   }

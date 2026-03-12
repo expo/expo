@@ -5,6 +5,7 @@ import { createContext, use, type ComponentType, type PropsWithChildren } from '
 
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { type SuspenseFallbackProps } from './views/SuspenseFallback';
 import { type ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
@@ -13,6 +14,7 @@ type Params = Record<string, string | string[]>;
 
 export type LoadedRoute = {
   ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+  SuspenseFallback?: ComponentType<SuspenseFallbackProps>;
   default?: ComponentType<any>;
   unstable_settings?: Record<string, any>;
   getNavOptions?: (args: any) => any;
@@ -63,6 +65,9 @@ export type RouteNode = {
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
+export const SuspenseFallbackContext = createContext<
+  ComponentType<SuspenseFallbackProps> | undefined
+>(undefined);
 export const LocalRouteParamsContext = createContext<object | undefined>({});
 
 if (process.env.NODE_ENV !== 'production') {
