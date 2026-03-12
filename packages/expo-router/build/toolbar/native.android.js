@@ -6,10 +6,19 @@ const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
 const modifiers_1 = require("@expo/ui/jetpack-compose/modifiers");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 function RouterToolbarHost(props) {
-    return (<react_native_1.View style={[styles.hostContainer]} pointerEvents="box-none">
-      <jetpack_compose_1.Host style={{ width: '100%', height: '100%' }}>
-        <jetpack_compose_1.Box modifiers={[(0, modifiers_1.fillMaxWidth)(), (0, modifiers_1.imePadding)(), (0, modifiers_1.safeDrawingPadding)()]} contentAlignment="bottomCenter">
+    const insets = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
+    const modifiers = (0, react_1.useMemo)(() => {
+        const baseModifiers = [(0, modifiers_1.fillMaxWidth)(), (0, modifiers_1.padding)(0, 0, 0, insets.bottom)];
+        if (props.withImePadding) {
+            baseModifiers.push((0, modifiers_1.imePadding)());
+        }
+        return baseModifiers;
+    }, [insets.bottom, props.withImePadding]);
+    return (<react_native_1.View style={[react_native_1.StyleSheet.absoluteFill]} pointerEvents="box-none">
+      <jetpack_compose_1.Host style={{ width: '100%', height: '100%', paddingHorizontal: 24 }}>
+        <jetpack_compose_1.Box modifiers={modifiers} contentAlignment="bottomCenter">
           <jetpack_compose_1.HorizontalFloatingToolbar modifiers={[(0, modifiers_1.height)(64)]}>
             {props.children}
           </jetpack_compose_1.HorizontalFloatingToolbar>
@@ -68,13 +77,4 @@ function hasChildren(children) {
         return false;
     return react_1.Children.count(children) > 0;
 }
-const styles = react_native_1.StyleSheet.create({
-    hostContainer: {
-        position: 'absolute',
-        inset: 0,
-        paddingHorizontal: 24,
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-    },
-});
 //# sourceMappingURL=native.android.js.map

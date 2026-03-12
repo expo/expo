@@ -14,20 +14,29 @@ import {
   width,
   height,
   imePadding,
-  safeDrawingPadding,
+  padding,
 } from '@expo/ui/jetpack-compose/modifiers';
-import { Children, type ReactNode } from 'react';
+import { Children, useMemo, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
 
 export function RouterToolbarHost(props: RouterToolbarHostProps) {
+  const insets = useSafeAreaInsets();
+
+  const modifiers = useMemo(() => {
+    const baseModifiers = [fillMaxWidth(), padding(0, 0, 0, insets.bottom)];
+    if (props.withImePadding) {
+      baseModifiers.push(imePadding());
+    }
+    return baseModifiers;
+  }, [insets.bottom, props.withImePadding]);
+
   return (
-    <View style={[styles.hostContainer]} pointerEvents="box-none">
-      <Host style={{ width: '100%', height: '100%' }}>
-        <Box
-          modifiers={[fillMaxWidth(), imePadding(), safeDrawingPadding()]}
-          contentAlignment="bottomCenter">
+    <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
+      <Host style={{ width: '100%', height: '100%', paddingHorizontal: 24 }}>
+        <Box modifiers={modifiers} contentAlignment="bottomCenter">
           <HorizontalFloatingToolbar modifiers={[height(64)]}>
             {props.children}
           </HorizontalFloatingToolbar>
@@ -107,13 +116,3 @@ function hasChildren(children: ReactNode | undefined): boolean {
   if (children == null) return false;
   return Children.count(children) > 0;
 }
-
-const styles = StyleSheet.create({
-  hostContainer: {
-    position: 'absolute',
-    inset: 0,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-});

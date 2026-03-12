@@ -281,7 +281,7 @@ export default function ToolbarScreen() {
         </View>
       </ScrollView>
 
-      <Stack.Toolbar>
+      <Stack.Toolbar disableImePadding>
         {/* Flexible spacer at the start */}
         <Stack.Toolbar.Spacer />
 

@@ -30,6 +30,16 @@ export interface StackToolbarProps {
      * @default false
      */
     asChild?: boolean;
+    /**
+     * When `true`, disables automatic addition of `imePadding` to the bottom toolbar on Android.
+     *
+     * > **Note:** This prop is only applicable for bottom placement on Android
+     *
+     * @default false
+     *
+     * @platform android
+     */
+    disableImePadding?: boolean;
 }
 /**
  * The component used to configure the stack toolbar.
