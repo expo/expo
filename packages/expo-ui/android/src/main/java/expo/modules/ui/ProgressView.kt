@@ -112,7 +112,6 @@ data class LinearWavyProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,
   val trackColor: Color? = null,
-  val strokeCap: String? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -146,7 +145,6 @@ data class CircularWavyProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,
   val trackColor: Color? = null,
-  val strokeWidth: Float? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -165,7 +163,7 @@ fun FunctionalComposableScope.CircularWavyProgressIndicatorContent(props: Circul
       modifier = modifier
     )
   } else {
-    val trackColor = props.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor
+    val trackColor = props.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor
 
     CircularWavyProgressIndicator(
       color = color,

@@ -88,11 +88,6 @@ export type LinearWavyProgressIndicatorProps = {
      */
     trackColor?: ColorValue;
     /**
-     * Stroke cap style for the indicator ends.
-     * @default 'round'
-     */
-    strokeCap?: StrokeCap;
-    /**
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
@@ -116,10 +111,6 @@ export type CircularWavyProgressIndicatorProps = {
      * Track (background) color.
      */
     trackColor?: ColorValue;
-    /**
-     * Width of the circular stroke in dp.
-     */
-    strokeWidth?: number;
     /**
      * Modifiers for the component.
      */
