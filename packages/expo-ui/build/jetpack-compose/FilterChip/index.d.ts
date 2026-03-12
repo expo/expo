@@ -1,9 +1,13 @@
-import { type ModifierConfig } from '../../types';
+import { ExpoModifier } from '../../types';
 export type FilterChipProps = {
     /**
      * Whether the chip is currently selected.
      */
     selected: boolean;
+    /**
+     * The text label to display on the chip.
+     */
+    label: string;
     /**
      * Whether the chip is enabled and can be interacted with.
      */
@@ -15,19 +19,15 @@ export type FilterChipProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ModifierConfig[];
+    modifiers?: ExpoModifier[];
     /**
-     * Children containing Label, LeadingIcon, and TrailingIcon slots.
+     * Children containing LeadingIcon and TrailingIcon slots.
      */
     children?: React.ReactNode;
 };
 type SlotChildProps = {
     children: React.ReactNode;
 };
-/**
- * Label slot for FilterChip.
- */
-declare function FilterChipLabel(props: SlotChildProps): import("react").JSX.Element;
 /**
  * Leading icon slot for FilterChip.
  */
@@ -38,11 +38,10 @@ declare function FilterChipLeadingIcon(props: SlotChildProps): import("react").J
 declare function FilterChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
 /**
  * A filter chip component following Material 3 design guidelines.
- * Supports slot-based `Label`, `LeadingIcon`, and `TrailingIcon` children.
+ * Supports slot-based `LeadingIcon` and `TrailingIcon` children.
  */
 declare function FilterChipComponent(props: FilterChipProps): import("react").JSX.Element;
 declare namespace FilterChipComponent {
-    var Label: typeof FilterChipLabel;
     var LeadingIcon: typeof FilterChipLeadingIcon;
     var TrailingIcon: typeof FilterChipTrailingIcon;
 }

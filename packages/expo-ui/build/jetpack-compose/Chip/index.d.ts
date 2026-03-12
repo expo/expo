@@ -1,128 +1,57 @@
-import { type ModifierConfig } from '../../types';
-type SlotChildProps = {
-    children: React.ReactNode;
-};
-export type AssistChipProps = {
+import React from 'react';
+import { ExpoModifier } from '../../types';
+/**
+ * Available text style variants for chip labels.
+ */
+export type ChipTextStyle = 'labelSmall' | 'labelMedium' | 'labelLarge' | 'bodySmall' | 'bodyMedium' | 'bodyLarge';
+export interface ChipProps {
     /**
-     * Whether the chip is enabled and can be clicked.
-     * @default true
+     * The variant of the chip.
+     */
+    variant?: 'assist' | 'filter' | 'input' | 'suggestion';
+    /**
+     * The text label to display on the chip
+     */
+    label: string;
+    /**
+     * Optional leading icon name (using Material Icons). Used for assist, filter, input (avatar icon), and suggestion chips.
+     */
+    leadingIcon?: string;
+    /**
+     * Optional trailing icon name (using Material Icons). Used for assist, filter, and input chips. For input chips, defaults to `filled.Close` if not specified.
+     */
+    trailingIcon?: string;
+    /**
+     * Size of the icon in density-independent pixels (dp). Defaults to 18.
+     */
+    iconSize?: number;
+    /**
+     * Text style variant for the chip label. Defaults to `labelSmall`.
+     */
+    textStyle?: ChipTextStyle;
+    /**
+     * Whether the chip is enabled and can be clicked. Used for assist, filter and input chips.
      */
     enabled?: boolean;
     /**
-     * Callback fired when the chip is clicked.
-     */
-    onPress?: () => void;
-    /**
-     * Modifiers for the component.
-     */
-    modifiers?: ModifierConfig[];
-    /**
-     * Children containing Label, LeadingIcon, and TrailingIcon slots.
-     */
-    children?: React.ReactNode;
-};
-/**
- * Label slot for AssistChip.
- */
-declare function AssistChipLabel(props: SlotChildProps): import("react").JSX.Element;
-/**
- * Leading icon slot for AssistChip.
- */
-declare function AssistChipLeadingIcon(props: SlotChildProps): import("react").JSX.Element;
-/**
- * Trailing icon slot for AssistChip.
- */
-declare function AssistChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
-/**
- * An assist chip that helps users complete actions and primary tasks.
- */
-declare function AssistChipComponent(props: AssistChipProps): import("react").JSX.Element;
-declare namespace AssistChipComponent {
-    var Label: typeof AssistChipLabel;
-    var LeadingIcon: typeof AssistChipLeadingIcon;
-    var TrailingIcon: typeof AssistChipTrailingIcon;
-}
-export { AssistChipComponent as AssistChip };
-export type InputChipProps = {
-    /**
-     * Whether the chip is enabled and can be interacted with.
-     * @default true
-     */
-    enabled?: boolean;
-    /**
-     * Whether the chip is selected.
-     * @default false
+     * Whether the chip is selected. Used only for filter chips.
      */
     selected?: boolean;
     /**
-     * Callback fired when the chip is clicked.
+     * Modifiers for the component.
+     */
+    modifiers?: ExpoModifier[];
+    /**
+     * Callback fired when the chip is clicked. Used for assist and filter chips.
      */
     onPress?: () => void;
     /**
-     * Modifiers for the component.
+     * Callback fired when the chip is dismissed. Only used for input chips.
      */
-    modifiers?: ModifierConfig[];
-    /**
-     * Children containing Label, Avatar, and TrailingIcon slots.
-     */
-    children?: React.ReactNode;
-};
-/**
- * Label slot for InputChip.
- */
-declare function InputChipLabel(props: SlotChildProps): import("react").JSX.Element;
-/**
- * Avatar slot for InputChip.
- */
-declare function InputChipAvatar(props: SlotChildProps): import("react").JSX.Element;
-/**
- * Trailing icon slot for InputChip.
- */
-declare function InputChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
-/**
- * An input chip that represents user input and can be dismissed.
- */
-declare function InputChipComponent(props: InputChipProps): import("react").JSX.Element;
-declare namespace InputChipComponent {
-    var Label: typeof InputChipLabel;
-    var Avatar: typeof InputChipAvatar;
-    var TrailingIcon: typeof InputChipTrailingIcon;
+    onDismiss?: () => void;
 }
-export { InputChipComponent as InputChip };
-export type SuggestionChipProps = {
-    /**
-     * Whether the chip is enabled and can be clicked.
-     * @default true
-     */
-    enabled?: boolean;
-    /**
-     * Callback fired when the chip is clicked.
-     */
-    onPress?: () => void;
-    /**
-     * Modifiers for the component.
-     */
-    modifiers?: ModifierConfig[];
-    /**
-     * Children containing Label and Icon slots.
-     */
-    children?: React.ReactNode;
-};
 /**
- * Label slot for SuggestionChip.
+ * Displays a native chip component.
  */
-declare function SuggestionChipLabel(props: SlotChildProps): import("react").JSX.Element;
-/**
- * Icon slot for SuggestionChip.
- */
-declare function SuggestionChipIcon(props: SlotChildProps): import("react").JSX.Element;
-/**
- * A suggestion chip that offers contextual suggestions and recommendations.
- */
-declare function SuggestionChipComponent(props: SuggestionChipProps): import("react").JSX.Element;
-declare namespace SuggestionChipComponent {
-    var Label: typeof SuggestionChipLabel;
-    var Icon: typeof SuggestionChipIcon;
-}
-export { SuggestionChipComponent as SuggestionChip };
+export declare function Chip(props: ChipProps): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map

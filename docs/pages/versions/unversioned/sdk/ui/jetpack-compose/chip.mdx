@@ -1,6 +1,6 @@
 ---
 title: Chip
-description: Jetpack Compose Chip components for displaying compact elements.
+description: A Jetpack Compose Chip component for displaying compact elements.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android']
@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI Chips match the official Jetpack Compose [Chip API](https://developer.android.com/develop/ui/compose/components/chip). Each chip type is a separate component: `AssistChip`, `FilterChip`, `InputChip`, and `SuggestionChip`. All content (label, icons) is provided via slot children.
+Expo UI Chip matches the official Jetpack Compose [Chip API](https://developer.android.com/develop/ui/compose/components/chip) and supports assist, filter, input, and suggestion chip variants.
 
 ## Installation
 
@@ -20,19 +20,16 @@ Expo UI Chips match the official Jetpack Compose [Chip API](https://developer.an
 ### Assist chip
 
 ```tsx AssistChipExample.tsx
-import { Host, AssistChip, Icon, Text } from '@expo/ui/jetpack-compose';
+import { Host, Chip } from '@expo/ui/jetpack-compose';
 
 export default function AssistChipExample() {
   return (
     <Host matchContents>
-      <AssistChip onPress={() => console.log('Opening flight booking...')}>
-        <AssistChip.Label>
-          <Text>Book Flight</Text>
-        </AssistChip.Label>
-        <AssistChip.LeadingIcon>
-          <Icon source={require('./assets/flight.xml')} size={18} />
-        </AssistChip.LeadingIcon>
-      </AssistChip>
+      <Chip
+        variant="assist"
+        label="Book Flight"
+        onPress={() => console.log('Opening flight booking...')}
+      />
     </Host>
   );
 }
@@ -42,18 +39,19 @@ export default function AssistChipExample() {
 
 ```tsx FilterChipExample.tsx
 import { useState } from 'react';
-import { Host, FilterChip, Text } from '@expo/ui/jetpack-compose';
+import { Host, Chip } from '@expo/ui/jetpack-compose';
 
 export default function FilterChipExample() {
   const [selected, setSelected] = useState(false);
 
   return (
     <Host matchContents>
-      <FilterChip selected={selected} onPress={() => setSelected(!selected)}>
-        <FilterChip.Label>
-          <Text>Images</Text>
-        </FilterChip.Label>
-      </FilterChip>
+      <Chip
+        variant="filter"
+        label="Images"
+        selected={selected}
+        onPress={() => setSelected(!selected)}
+      />
     </Host>
   );
 }
@@ -62,16 +60,12 @@ export default function FilterChipExample() {
 ### Input chip
 
 ```tsx InputChipExample.tsx
-import { Host, InputChip, Text } from '@expo/ui/jetpack-compose';
+import { Host, Chip } from '@expo/ui/jetpack-compose';
 
 export default function InputChipExample() {
   return (
     <Host matchContents>
-      <InputChip onPress={() => console.log('Dismissed Work chip')}>
-        <InputChip.Label>
-          <Text>Work</Text>
-        </InputChip.Label>
-      </InputChip>
+      <Chip variant="input" label="Work" onDismiss={() => console.log('Dismissed Work chip')} />
     </Host>
   );
 }
@@ -80,16 +74,16 @@ export default function InputChipExample() {
 ### Suggestion chip
 
 ```tsx SuggestionChipExample.tsx
-import { Host, SuggestionChip, Text } from '@expo/ui/jetpack-compose';
+import { Host, Chip } from '@expo/ui/jetpack-compose';
 
 export default function SuggestionChipExample() {
   return (
     <Host matchContents>
-      <SuggestionChip onPress={() => console.log('Searching nearby...')}>
-        <SuggestionChip.Label>
-          <Text>Nearby</Text>
-        </SuggestionChip.Label>
-      </SuggestionChip>
+      <Chip
+        variant="suggestion"
+        label="Nearby"
+        onPress={() => console.log('Searching nearby...')}
+      />
     </Host>
   );
 }
@@ -98,7 +92,7 @@ export default function SuggestionChipExample() {
 ## API
 
 ```tsx
-import { AssistChip, FilterChip, InputChip, SuggestionChip } from '@expo/ui/jetpack-compose';
+import { Chip } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/chip" apiName="Chip" />

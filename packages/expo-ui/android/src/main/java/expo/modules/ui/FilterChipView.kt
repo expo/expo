@@ -2,6 +2,7 @@ package expo.modules.ui
 
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
@@ -13,6 +14,7 @@ open class FilterChipPressedEvent : Record, Serializable
 
 data class FilterChipProps(
   val selected: Boolean = false,
+  val label: String = "",
   val enabled: Boolean = true,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -24,22 +26,13 @@ fun FunctionalComposableScope.FilterChipContent(
 ) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
-  val labelSlotView = findChildSlotView(view, "label")
   val leadingIconSlotView = findChildSlotView(view, "leadingIcon")
   val trailingIconSlotView = findChildSlotView(view, "trailingIcon")
 
   FilterChip(
     selected = props.selected,
     onClick = { onPress(FilterChipPressedEvent()) },
-    label = labelSlotView?.let {
-      {
-        with(ComposableScope()) {
-          with(it) {
-            Content()
-          }
-        }
-      }
-    } ?: {},
+    label = { Text(props.label) },
     enabled = props.enabled,
     leadingIcon = leadingIconSlotView?.let {
       {
