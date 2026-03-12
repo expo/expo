@@ -2,16 +2,9 @@ import { useImage } from 'expo-image';
 import { Color, Stack, useLocalSearchParams } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  Switch,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+
+import { ToggleRow } from '../components/ToggleRow';
 
 export default function ToolbarScreen() {
   const params = useLocalSearchParams();
@@ -55,14 +48,6 @@ export default function ToolbarScreen() {
     searchInputRef.current?.blur();
   };
 
-  const handleSendEmail = () => {
-    Alert.alert('Send Email', 'Email sent succesiconully!');
-  };
-
-  const handleDeleteEmail = () => {
-    Alert.alert('Delete Email', 'Email deleted!');
-  };
-
   const handleArchiveToggle = () => {
     setEmailsArchived(!emailsArchived);
     Alert.alert('Archive', emailsArchived ? 'Unarchived emails' : 'Archived emails');
@@ -101,6 +86,7 @@ export default function ToolbarScreen() {
           headerLargeTitle: false,
         }}
       />
+      <Stack.SearchBar />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
@@ -113,128 +99,106 @@ export default function ToolbarScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Search Bar</Text>
-            <Switch
-              testID="toggle-search-bar"
-              value={showSearchBar}
-              onValueChange={setShowSearchBar}
-            />
-          </View>
+          <ToggleRow
+            label="Show Search Bar"
+            testID="toggle-search-bar"
+            value={showSearchBar}
+            onValueChange={setShowSearchBar}
+          />
 
           {showSearchBar && (
             <>
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Search Bar Shares Background</Text>
-                <Switch
-                  testID="toggle-search-bar-share-background"
-                  value={sharesBackgroundSearchBar}
-                  onValueChange={setSharesBackgroundSearchBar}
-                />
-              </View>
+              <ToggleRow
+                label="Search Bar Shares Background"
+                testID="toggle-search-bar-share-background"
+                value={sharesBackgroundSearchBar}
+                onValueChange={setSharesBackgroundSearchBar}
+              />
 
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Search Bar Hides Shared Background</Text>
-                <Switch
-                  testID="toggle-search-bar-hide-shared-background"
-                  value={hidesSharedBackgroundSearchBar}
-                  onValueChange={setHidesSharedBackgroundSearchBar}
-                />
-              </View>
+              <ToggleRow
+                label="Search Bar Hides Shared Background"
+                testID="toggle-search-bar-hide-shared-background"
+                value={hidesSharedBackgroundSearchBar}
+                onValueChange={setHidesSharedBackgroundSearchBar}
+              />
             </>
           )}
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Search Button</Text>
-            <Switch
-              testID="toggle-search-button"
-              value={showSearchButton}
-              onValueChange={setShowSearchButton}
-            />
-          </View>
+          <ToggleRow
+            label="Show Search Button"
+            testID="toggle-search-button"
+            value={showSearchButton}
+            onValueChange={setShowSearchButton}
+          />
 
           {showSearchButton && (
             <>
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Search Shares Background</Text>
-                <Switch
-                  testID="toggle-search-button-share-background"
-                  value={sharesBackgroundSearchButton}
-                  onValueChange={setSharesBackgroundSearchButton}
-                />
-              </View>
+              <ToggleRow
+                label="Search Shares Background"
+                testID="toggle-search-button-share-background"
+                value={sharesBackgroundSearchButton}
+                onValueChange={setSharesBackgroundSearchButton}
+              />
 
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Search Hides Shared Background</Text>
-                <Switch
-                  testID="toggle-search-button-hide-shared-background"
-                  value={hidesSharedBackgroundSearchButton}
-                  onValueChange={setHidesSharedBackgroundSearchButton}
-                />
-              </View>
+              <ToggleRow
+                label="Search Hides Shared Background"
+                testID="toggle-search-button-hide-shared-background"
+                value={hidesSharedBackgroundSearchButton}
+                onValueChange={setHidesSharedBackgroundSearchButton}
+              />
             </>
           )}
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Mic Button</Text>
-            <Switch
-              testID="toggle-mic-button"
-              value={showMicButton}
-              onValueChange={setShowMicButton}
-            />
-          </View>
+          <ToggleRow
+            label="Show Mic Button"
+            testID="toggle-mic-button"
+            value={showMicButton}
+            onValueChange={setShowMicButton}
+          />
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Custom View</Text>
-            <Switch
-              testID="toggle-custom-view"
-              value={showCustomView}
-              onValueChange={setShowCustomView}
-            />
-          </View>
+          <ToggleRow
+            label="Show Custom View"
+            testID="toggle-custom-view"
+            value={showCustomView}
+            onValueChange={setShowCustomView}
+          />
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Menu</Text>
-            <Switch testID="toggle-menu" value={showMenu} onValueChange={setShowMenu} />
-          </View>
+          <ToggleRow
+            label="Show Menu"
+            testID="toggle-menu"
+            value={showMenu}
+            onValueChange={setShowMenu}
+          />
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Button</Text>
-            <Switch
-              testID="toggle-xcasset-button"
-              value={showXcassetButton}
-              onValueChange={setShowXcassetButton}
-            />
-          </View>
+          <ToggleRow
+            label="Show Xcasset Button"
+            testID="toggle-xcasset-button"
+            value={showXcassetButton}
+            onValueChange={setShowXcassetButton}
+          />
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Menu</Text>
-            <Switch
-              testID="toggle-xcasset-menu"
-              value={showXcassetMenu}
-              onValueChange={setShowXcassetMenu}
-            />
-          </View>
+          <ToggleRow
+            label="Show Xcasset Menu"
+            testID="toggle-xcasset-menu"
+            value={showXcassetMenu}
+            onValueChange={setShowXcassetMenu}
+          />
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Fixed Spacer (20pt)</Text>
-            <Switch
-              testID="toggle-fixed-spacer"
-              value={showFixedSpacer}
-              onValueChange={setShowFixedSpacer}
-            />
-          </View>
+          <ToggleRow
+            label="Show Fixed Spacer (20pt)"
+            testID="toggle-fixed-spacer"
+            value={showFixedSpacer}
+            onValueChange={setShowFixedSpacer}
+          />
 
           {showFixedSpacer && (
             <>
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Fixed Spacer Shares Background</Text>
-                <Switch
-                  testID="toggle-fixed-spacer-share-background"
-                  value={fixedSpacerShareBackground}
-                  onValueChange={setFixedSpacerShareBackground}
-                />
-              </View>
+              <ToggleRow
+                label="Fixed Spacer Shares Background"
+                testID="toggle-fixed-spacer-share-background"
+                value={fixedSpacerShareBackground}
+                onValueChange={setFixedSpacerShareBackground}
+              />
 
               <View style={styles.switchRow}>
                 <Text style={styles.label}>Fixed Spacer Width (pt)</Text>
@@ -387,137 +351,161 @@ export default function ToolbarScreen() {
 
         {/* Nested menu with dynamic content */}
         {showMenu && (
-          <Stack.Toolbar.Menu
-            icon="ellipsis.circle"
-            title="Actions"
-            tintColor={Color.ios.systemBrown}>
-            {/* Simple actions */}
-            <Stack.Toolbar.MenuAction icon="paperplane" onPress={handleSendEmail}>
-              Send email
-            </Stack.Toolbar.MenuAction>
-            <Stack.Toolbar.MenuAction icon="trash" destructive onPress={handleDeleteEmail}>
-              Delete email
-            </Stack.Toolbar.MenuAction>
-
-            {/* Toggle action with isOn state */}
-            <Stack.Toolbar.MenuAction
-              icon={emailsArchived ? 'tray.full' : 'tray'}
-              isOn={emailsArchived}
-              onPress={handleArchiveToggle}>
-              {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
-            </Stack.Toolbar.MenuAction>
-
-            {/* Nested inline menu */}
-            <Stack.Toolbar.Menu inline title="Organize">
-              <Stack.Toolbar.MenuAction
-                icon="folder"
-                onPress={() => Alert.alert('Move', 'Moving to folder...')}>
-                Move to folder
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction
-                icon="tag"
-                onPress={() => Alert.alert('Tag', 'Adding tag...')}>
-                Add tag
-              </Stack.Toolbar.MenuAction>
-            </Stack.Toolbar.Menu>
-
-            {/* Nested menu with state-based selections */}
-            <Stack.Toolbar.Menu title="Preferences" image={image2}>
-              <Stack.Toolbar.MenuAction
-                icon="bell"
-                isOn={notificationsEnabled}
-                onPress={handleNotificationsToggle}>
-                {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
-              </Stack.Toolbar.MenuAction>
-
-              {/* Color selection submenu */}
-              <Stack.Toolbar.Menu inline title="Favorite Color">
-                <Stack.Toolbar.MenuAction
-                  icon="circle.fill"
-                  isOn={favoriteColors.includes('red')}
-                  onPress={() => handleColorSelect('red')}>
-                  Red
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction
-                  icon="circle.fill"
-                  isOn={favoriteColors.includes('blue')}
-                  onPress={() => handleColorSelect('blue')}>
-                  Blue
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction
-                  icon="circle.fill"
-                  isOn={favoriteColors.includes('green')}
-                  onPress={() => handleColorSelect('green')}>
-                  Green
-                </Stack.Toolbar.MenuAction>
-              </Stack.Toolbar.Menu>
-            </Stack.Toolbar.Menu>
-
-            {/* Palette menu example (small icons only) */}
-            <Stack.Toolbar.Menu palette inline title="Palette Actions">
-              <Stack.Toolbar.MenuAction icon="star" onPress={() => Alert.alert('Star')}>
-                Star-palette
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
-                Flag-palette
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
-                Pin-palette
-              </Stack.Toolbar.MenuAction>
-            </Stack.Toolbar.Menu>
-
-            <Stack.Toolbar.Menu inline elementSize="small" title="Small Actions">
-              <Stack.Toolbar.MenuAction icon="star.fill" onPress={() => Alert.alert('Star')}>
-                Star
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="flag.fill" onPress={() => Alert.alert('Flag')}>
-                Flag
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="pin.fill" onPress={() => Alert.alert('Pin')}>
-                Pin
-              </Stack.Toolbar.MenuAction>
-            </Stack.Toolbar.Menu>
-
-            {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
-            <Stack.Toolbar.Menu inline elementSize="medium" title="Medium Size">
-              <Stack.Toolbar.MenuAction
-                icon="arrow.clockwise"
-                onPress={() => Alert.alert('Refreshing')}>
-                Refresh
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction
-                icon="arrow.2.circlepath"
-                onPress={() => Alert.alert('Resuming')}>
-                Resume
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
-                Pin
-              </Stack.Toolbar.MenuAction>
-            </Stack.Toolbar.Menu>
-
-            {/* elementSize="large" displays actions with larger icons and titles */}
-            <Stack.Toolbar.Menu inline elementSize="large" title="Large Size">
-              <Stack.Toolbar.MenuAction
-                icon="square.and.arrow.up"
-                onPress={() => Alert.alert('Sharing')}>
-                Share
-              </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="doc.on.doc" onPress={() => Alert.alert('Copying')}>
-                Copy
-              </Stack.Toolbar.MenuAction>
-            </Stack.Toolbar.Menu>
-
-            {/* Disabled action */}
-            <Stack.Toolbar.MenuAction icon="lock" disabled onPress={() => {}}>
-              Locked action
-            </Stack.Toolbar.MenuAction>
-          </Stack.Toolbar.Menu>
+          <ActionsMenu
+            image={image2}
+            emailsArchived={emailsArchived}
+            onArchiveToggle={handleArchiveToggle}
+            notificationsEnabled={notificationsEnabled}
+            onNotificationsToggle={handleNotificationsToggle}
+            favoriteColors={favoriteColors}
+            onColorSelect={handleColorSelect}
+          />
         )}
 
         {/* Flexible spacer at the end */}
         <Stack.Toolbar.Spacer />
       </Stack.Toolbar>
     </>
+  );
+}
+
+function ActionsMenu({
+  image,
+  emailsArchived,
+  onArchiveToggle,
+  notificationsEnabled,
+  onNotificationsToggle,
+  favoriteColors,
+  onColorSelect,
+}: {
+  image: ReturnType<typeof useImage>;
+  emailsArchived: boolean;
+  onArchiveToggle: () => void;
+  notificationsEnabled: boolean;
+  onNotificationsToggle: () => void;
+  favoriteColors: ('red' | 'blue' | 'green')[];
+  onColorSelect: (color: 'red' | 'blue' | 'green') => void;
+}) {
+  return (
+    <Stack.Toolbar.Menu icon="ellipsis.circle" title="Actions" tintColor={Color.ios.systemBrown}>
+      {/* Simple actions */}
+      <Stack.Toolbar.MenuAction
+        icon="paperplane"
+        onPress={() => Alert.alert('Send Email', 'Email sent succesiconully!')}>
+        Send email
+      </Stack.Toolbar.MenuAction>
+      <Stack.Toolbar.MenuAction
+        icon="trash"
+        destructive
+        onPress={() => Alert.alert('Delete Email', 'Email deleted!')}>
+        Delete email
+      </Stack.Toolbar.MenuAction>
+
+      {/* Toggle action with isOn state */}
+      <Stack.Toolbar.MenuAction
+        icon={emailsArchived ? 'tray.full' : 'tray'}
+        isOn={emailsArchived}
+        onPress={onArchiveToggle}>
+        {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
+      </Stack.Toolbar.MenuAction>
+
+      {/* Nested inline menu */}
+      <Stack.Toolbar.Menu inline title="Organize">
+        <Stack.Toolbar.MenuAction
+          icon="folder"
+          onPress={() => Alert.alert('Move', 'Moving to folder...')}>
+          Move to folder
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="tag" onPress={() => Alert.alert('Tag', 'Adding tag...')}>
+          Add tag
+        </Stack.Toolbar.MenuAction>
+      </Stack.Toolbar.Menu>
+
+      {/* Nested menu with state-based selections */}
+      <Stack.Toolbar.Menu title="Preferences" image={image}>
+        <Stack.Toolbar.MenuAction
+          icon="bell"
+          isOn={notificationsEnabled}
+          onPress={onNotificationsToggle}>
+          {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+        </Stack.Toolbar.MenuAction>
+
+        {/* Color selection submenu */}
+        <Stack.Toolbar.Menu inline title="Favorite Color">
+          <Stack.Toolbar.MenuAction
+            icon="circle.fill"
+            isOn={favoriteColors.includes('red')}
+            onPress={() => onColorSelect('red')}>
+            Red
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction
+            icon="circle.fill"
+            isOn={favoriteColors.includes('blue')}
+            onPress={() => onColorSelect('blue')}>
+            Blue
+          </Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction
+            icon="circle.fill"
+            isOn={favoriteColors.includes('green')}
+            onPress={() => onColorSelect('green')}>
+            Green
+          </Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar.Menu>
+
+      {/* Palette menu example (small icons only) */}
+      <Stack.Toolbar.Menu palette inline title="Palette Actions">
+        <Stack.Toolbar.MenuAction icon="star" onPress={() => Alert.alert('Star')}>
+          Star-palette
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+          Flag-palette
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+          Pin-palette
+        </Stack.Toolbar.MenuAction>
+      </Stack.Toolbar.Menu>
+
+      <Stack.Toolbar.Menu inline elementSize="small" title="Small Actions">
+        <Stack.Toolbar.MenuAction icon="star.fill" onPress={() => Alert.alert('Star')}>
+          Star
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="flag.fill" onPress={() => Alert.alert('Flag')}>
+          Flag
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="pin.fill" onPress={() => Alert.alert('Pin')}>
+          Pin
+        </Stack.Toolbar.MenuAction>
+      </Stack.Toolbar.Menu>
+
+      {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
+      <Stack.Toolbar.Menu inline elementSize="medium" title="Medium Size">
+        <Stack.Toolbar.MenuAction icon="arrow.clockwise" onPress={() => Alert.alert('Refreshing')}>
+          Refresh
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="arrow.2.circlepath" onPress={() => Alert.alert('Resuming')}>
+          Resume
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+          Pin
+        </Stack.Toolbar.MenuAction>
+      </Stack.Toolbar.Menu>
+
+      {/* elementSize="large" displays actions with larger icons and titles */}
+      <Stack.Toolbar.Menu inline elementSize="large" title="Large Size">
+        <Stack.Toolbar.MenuAction icon="square.and.arrow.up" onPress={() => Alert.alert('Sharing')}>
+          Share
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="doc.on.doc" onPress={() => Alert.alert('Copying')}>
+          Copy
+        </Stack.Toolbar.MenuAction>
+      </Stack.Toolbar.Menu>
+
+      {/* Disabled action */}
+      <Stack.Toolbar.MenuAction icon="lock" disabled onPress={() => {}}>
+        Locked action
+      </Stack.Toolbar.MenuAction>
+    </Stack.Toolbar.Menu>
   );
 }
 
