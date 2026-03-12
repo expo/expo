@@ -12,7 +12,6 @@ function SuspenseFallback({ route }) {
         <Toast_1.Toast filename={route?.contextKey}>Bundling...</Toast_1.Toast>
       </Toast_1.ToastWrapper>);
     }
-    // TODO: Support user's customizing the fallback.
     return null;
 }
 //# sourceMappingURL=SuspenseFallback.js.map
