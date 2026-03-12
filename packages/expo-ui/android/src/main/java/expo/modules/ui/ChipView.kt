@@ -23,19 +23,38 @@ import java.io.Serializable
 
 open class ChipPressedEvent : Record, Serializable
 
-class ChipColors : Record {
+class AssistChipColors : Record {
   @Field val containerColor: Color? = null
   @Field val labelColor: Color? = null
-  @Field val iconColor: Color? = null
+  @Field val leadingIconContentColor: Color? = null
+  @Field val trailingIconContentColor: Color? = null
 }
 
-class SelectableChipColors : Record {
+class FilterChipColors : Record {
   @Field val containerColor: Color? = null
   @Field val labelColor: Color? = null
   @Field val iconColor: Color? = null
   @Field val selectedContainerColor: Color? = null
   @Field val selectedLabelColor: Color? = null
-  @Field val selectedIconColor: Color? = null
+  @Field val selectedLeadingIconColor: Color? = null
+  @Field val selectedTrailingIconColor: Color? = null
+}
+
+class InputChipColors : Record {
+  @Field val containerColor: Color? = null
+  @Field val labelColor: Color? = null
+  @Field val leadingIconColor: Color? = null
+  @Field val trailingIconColor: Color? = null
+  @Field val selectedContainerColor: Color? = null
+  @Field val selectedLabelColor: Color? = null
+  @Field val selectedLeadingIconColor: Color? = null
+  @Field val selectedTrailingIconColor: Color? = null
+}
+
+class SuggestionChipColors : Record {
+  @Field val containerColor: Color? = null
+  @Field val labelColor: Color? = null
+  @Field val iconContentColor: Color? = null
 }
 
 class ChipBorder : Record {
@@ -59,7 +78,7 @@ private fun FunctionalComposableScope.slotContent(slotName: String): (@Composabl
 
 data class AssistChipProps(
   val enabled: Boolean = true,
-  val colors: ChipColors = ChipColors(),
+  val colors: AssistChipColors = AssistChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
   val modifiers: ModifierList = emptyList()
@@ -75,8 +94,8 @@ fun FunctionalComposableScope.AssistChipContent(
   val colors = AssistChipDefaults.assistChipColors(
     containerColor = props.colors.containerColor.composeOrNull ?: ComposeColor.Unspecified,
     labelColor = props.colors.labelColor.composeOrNull ?: ComposeColor.Unspecified,
-    leadingIconContentColor = props.colors.iconColor.composeOrNull ?: ComposeColor.Unspecified,
-    trailingIconContentColor = props.colors.iconColor.composeOrNull ?: ComposeColor.Unspecified
+    leadingIconContentColor = props.colors.leadingIconContentColor.composeOrNull ?: ComposeColor.Unspecified,
+    trailingIconContentColor = props.colors.trailingIconContentColor.composeOrNull ?: ComposeColor.Unspecified
   )
 
   val elevation = if (props.elevation != null) {
@@ -116,7 +135,7 @@ fun FunctionalComposableScope.AssistChipContent(
 data class FilterChipProps(
   val selected: Boolean = false,
   val enabled: Boolean = true,
-  val colors: SelectableChipColors = SelectableChipColors(),
+  val colors: FilterChipColors = FilterChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
   val modifiers: ModifierList = emptyList()
@@ -135,8 +154,8 @@ fun FunctionalComposableScope.FilterChipContent(
     iconColor = props.colors.iconColor.composeOrNull ?: ComposeColor.Unspecified,
     selectedContainerColor = props.colors.selectedContainerColor.composeOrNull ?: ComposeColor.Unspecified,
     selectedLabelColor = props.colors.selectedLabelColor.composeOrNull ?: ComposeColor.Unspecified,
-    selectedLeadingIconColor = props.colors.selectedIconColor.composeOrNull ?: ComposeColor.Unspecified,
-    selectedTrailingIconColor = props.colors.selectedIconColor.composeOrNull ?: ComposeColor.Unspecified
+    selectedLeadingIconColor = props.colors.selectedLeadingIconColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedTrailingIconColor = props.colors.selectedTrailingIconColor.composeOrNull ?: ComposeColor.Unspecified
   )
 
   val elevation = if (props.elevation != null) {
@@ -177,7 +196,7 @@ fun FunctionalComposableScope.FilterChipContent(
 data class InputChipProps(
   val enabled: Boolean = true,
   val selected: Boolean = false,
-  val colors: SelectableChipColors = SelectableChipColors(),
+  val colors: InputChipColors = InputChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
   val modifiers: ModifierList = emptyList()
@@ -194,12 +213,12 @@ fun FunctionalComposableScope.InputChipContent(
   val colors = InputChipDefaults.inputChipColors(
     containerColor = props.colors.containerColor.composeOrNull ?: ComposeColor.Unspecified,
     labelColor = props.colors.labelColor.composeOrNull ?: ComposeColor.Unspecified,
-    leadingIconColor = props.colors.iconColor.composeOrNull ?: ComposeColor.Unspecified,
-    trailingIconColor = props.colors.iconColor.composeOrNull ?: ComposeColor.Unspecified,
+    leadingIconColor = props.colors.leadingIconColor.composeOrNull ?: ComposeColor.Unspecified,
+    trailingIconColor = props.colors.trailingIconColor.composeOrNull ?: ComposeColor.Unspecified,
     selectedContainerColor = props.colors.selectedContainerColor.composeOrNull ?: ComposeColor.Unspecified,
     selectedLabelColor = props.colors.selectedLabelColor.composeOrNull ?: ComposeColor.Unspecified,
-    selectedLeadingIconColor = props.colors.selectedIconColor.composeOrNull ?: ComposeColor.Unspecified,
-    selectedTrailingIconColor = props.colors.selectedIconColor.composeOrNull ?: ComposeColor.Unspecified
+    selectedLeadingIconColor = props.colors.selectedLeadingIconColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedTrailingIconColor = props.colors.selectedTrailingIconColor.composeOrNull ?: ComposeColor.Unspecified
   )
 
   val elevation = if (props.elevation != null) {
@@ -239,7 +258,7 @@ fun FunctionalComposableScope.InputChipContent(
 
 data class SuggestionChipProps(
   val enabled: Boolean = true,
-  val colors: ChipColors = ChipColors(),
+  val colors: SuggestionChipColors = SuggestionChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
   val modifiers: ModifierList = emptyList()
@@ -255,7 +274,7 @@ fun FunctionalComposableScope.SuggestionChipContent(
   val colors = SuggestionChipDefaults.suggestionChipColors(
     containerColor = props.colors.containerColor.composeOrNull ?: ComposeColor.Unspecified,
     labelColor = props.colors.labelColor.composeOrNull ?: ComposeColor.Unspecified,
-    iconContentColor = props.colors.iconColor.composeOrNull ?: ComposeColor.Unspecified
+    iconContentColor = props.colors.iconContentColor.composeOrNull ?: ComposeColor.Unspecified
   )
 
   val elevation = if (props.elevation != null) {

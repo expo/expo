@@ -5,24 +5,49 @@ import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
- * Colors for non-selectable chip types (AssistChip, SuggestionChip).
+ * Colors for AssistChip.
  */
-export type ChipColors = {
+export type AssistChipColors = {
   containerColor?: ColorValue;
   labelColor?: ColorValue;
-  iconColor?: ColorValue;
+  leadingIconContentColor?: ColorValue;
+  trailingIconContentColor?: ColorValue;
 };
 
 /**
- * Colors for selectable chip types (FilterChip, InputChip).
+ * Colors for FilterChip.
  */
-export type SelectableChipColors = {
+export type FilterChipColors = {
   containerColor?: ColorValue;
   labelColor?: ColorValue;
   iconColor?: ColorValue;
   selectedContainerColor?: ColorValue;
   selectedLabelColor?: ColorValue;
-  selectedIconColor?: ColorValue;
+  selectedLeadingIconColor?: ColorValue;
+  selectedTrailingIconColor?: ColorValue;
+};
+
+/**
+ * Colors for InputChip.
+ */
+export type InputChipColors = {
+  containerColor?: ColorValue;
+  labelColor?: ColorValue;
+  leadingIconColor?: ColorValue;
+  trailingIconColor?: ColorValue;
+  selectedContainerColor?: ColorValue;
+  selectedLabelColor?: ColorValue;
+  selectedLeadingIconColor?: ColorValue;
+  selectedTrailingIconColor?: ColorValue;
+};
+
+/**
+ * Colors for SuggestionChip.
+ */
+export type SuggestionChipColors = {
+  containerColor?: ColorValue;
+  labelColor?: ColorValue;
+  iconContentColor?: ColorValue;
 };
 
 /**
@@ -63,9 +88,9 @@ export type AssistChipProps = {
    */
   enabled?: boolean;
   /**
-   * Colors for the chip's container, label, and icon.
+   * Colors for the chip's container, label, and icons.
    */
-  colors?: ChipColors;
+  colors?: AssistChipColors;
   /**
    * Elevation in dp.
    */
@@ -157,7 +182,7 @@ export type FilterChipProps = {
   /**
    * Colors for the chip's container, label, icon, and selected states.
    */
-  colors?: SelectableChipColors;
+  colors?: FilterChipColors;
   /**
    * Elevation in dp.
    */
@@ -249,9 +274,9 @@ export type InputChipProps = {
    */
   selected?: boolean;
   /**
-   * Colors for the chip's container, label, icon, and selected states.
+   * Colors for the chip's container, label, icons, and selected states.
    */
-  colors?: SelectableChipColors;
+  colors?: InputChipColors;
   /**
    * Elevation in dp.
    */
@@ -340,7 +365,7 @@ export type SuggestionChipProps = {
   /**
    * Colors for the chip's container, label, and icon.
    */
-  colors?: ChipColors;
+  colors?: SuggestionChipColors;
   /**
    * Elevation in dp.
    */
