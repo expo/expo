@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI Switch matches the official Jetpack Compose [Switch](https://developer.android.com/develop/ui/compose/components/switch) and [Checkbox](https://developer.android.com/develop/ui/compose/components/checkbox) APIs and supports switch, checkbox, and button variants.
+Expo UI Switch matches the official Jetpack Compose [Switch](https://developer.android.com/develop/ui/compose/components/switch) API.
 
 ## Installation
 
@@ -18,8 +18,6 @@ Expo UI Switch matches the official Jetpack Compose [Switch](https://developer.a
 ## Usage
 
 ### Toggle switch
-
-Use the `variant="switch"` prop to display a standard toggle switch.
 
 ```tsx ToggleSwitchExample.tsx
 import { useState } from 'react';
@@ -30,62 +28,30 @@ export default function ToggleSwitchExample() {
 
   return (
     <Host matchContents>
-      <Switch
-        value={checked}
-        onValueChange={setChecked}
-        label="Play music"
-        variant="switch"
-        color="#6200EE"
-      />
+      <Switch value={checked} onCheckedChange={setChecked} />
     </Host>
   );
 }
 ```
 
-### Checkbox
+### Custom colors
 
-Use the `variant="checkbox"` prop to display a checkbox control.
-
-```tsx CheckboxExample.tsx
+```tsx CustomColorsExample.tsx
 import { useState } from 'react';
 import { Host, Switch } from '@expo/ui/jetpack-compose';
 
-export default function CheckboxExample() {
+export default function CustomColorsExample() {
   const [checked, setChecked] = useState(false);
 
   return (
     <Host matchContents>
       <Switch
         value={checked}
-        onValueChange={setChecked}
-        label="Accept terms"
-        variant="checkbox"
-        color="#6200EE"
-      />
-    </Host>
-  );
-}
-```
-
-### Button variant
-
-Use the `variant="button"` prop to display a toggle button.
-
-```tsx ButtonVariantExample.tsx
-import { useState } from 'react';
-import { Host, Switch } from '@expo/ui/jetpack-compose';
-
-export default function ButtonVariantExample() {
-  const [checked, setChecked] = useState(false);
-
-  return (
-    <Host matchContents>
-      <Switch
-        value={checked}
-        onValueChange={setChecked}
-        label="Notifications"
-        variant="button"
-        color="#6200EE"
+        onCheckedChange={setChecked}
+        colors={{
+          checkedThumbColor: '#6200EE',
+          checkedTrackColor: '#EDE9FE',
+        }}
       />
     </Host>
   );

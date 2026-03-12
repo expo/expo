@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { type ExpoModifier, type ViewEvent } from '../../types';
+import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type RadioButtonProps = {
@@ -15,7 +15,7 @@ export type RadioButtonProps = {
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 type NativeRadioButtonProps = Omit<RadioButtonProps, 'onClick'> & {
