@@ -22,6 +22,7 @@
 - [iOS] Added `AccessoryWidgetBackground` component ([#43729](https://github.com/expo/expo/pull/43729) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add support for local image uri ([#43707](https://github.com/expo/expo/pull/43707) by [@jakex7](https://github.com/jakex7))
 - [android] add AnimatedVisibility transition API ([#43632](https://github.com/expo/expo/pull/43632) by [@Ubax](https://github.com/Ubax))
+- [Android] Add Loading Indicator component. ([#41169](https://github.com/expo/expo/pull/41169) by [@suveshmoza](https://github.com/suveshmoza))
 
 ### 🐛 Bug fixes
 
@@ -95,7 +96,7 @@
 
 - [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571) by [@shubh73](https://github.com/shubh73))
 - Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
-- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
+- [iOS] Added `contentShape` modifier for SwiftUI ([#42813](https://github.com/expo/expo/pull/42813) by [@sam-shubham](https://github.com/sam-shubham))
 
 ## 55.0.0-beta.3 — 2026-01-27
 

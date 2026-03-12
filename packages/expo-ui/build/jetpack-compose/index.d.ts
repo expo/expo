@@ -33,6 +33,7 @@ export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
 export * from './Text';
+export * from './LoadingIndicator';
 export * from './AnimatedVisibility';
 export * from './Box';
 export * from './Row';

@@ -178,6 +178,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./HorizontalFloatingToolbarScreen'));
     },
   },
+  {
+    name: 'Loading Indicator component',
+    route: 'ui/loading-indicator',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LoadingIndicatorScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
