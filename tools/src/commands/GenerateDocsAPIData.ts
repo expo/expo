@@ -116,6 +116,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/textbutton': ['jetpack-compose/TextButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/loadingindicator': [
+    'jetpack-compose/LoadingIndicator/index.tsx',
+    'expo-ui',
+  ],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {

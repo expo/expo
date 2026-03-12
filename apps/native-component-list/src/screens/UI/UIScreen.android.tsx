@@ -179,11 +179,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Loading component',
-    route: 'ui/loading',
+    name: 'Loading Indicator component',
+    route: 'ui/loading-indicator',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./LoadingScreen'));
+      return optionalRequire(() => require('./LoadingIndicatorScreen'));
     },
   },
 ];
