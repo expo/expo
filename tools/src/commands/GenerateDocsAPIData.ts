@@ -80,6 +80,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'expo-ui',
   ],
   'expo-ui/jetpack-compose/filterchip': ['jetpack-compose/FilterChip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/floatingactionbutton': [
+    'jetpack-compose/FloatingActionButton/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/horizontalfloatingtoolbar': [
     'jetpack-compose/HorizontalFloatingToolbar/index.tsx',
     'expo-ui',

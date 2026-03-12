@@ -155,11 +155,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'FloatingActionButton component',
+    route: 'ui/floating-action-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./FloatingActionButtonScreen'));
+    },
+  },
+  {
     name: 'graphicsLayer modifier',
     route: 'ui/graphics-layer',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./GraphicsLayerScreen'));
+    },
+  },
+  {
+    name: 'HorizontalFloatingToolbar component',
+    route: 'ui/horizontal-floating-toolbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HorizontalFloatingToolbarScreen'));
     },
   },
 ];
