@@ -77,11 +77,11 @@ export default function InputChipExample() {
   return (
     <Host matchContents>
       <FlowRow horizontalArrangement={{ spacedBy: 8 }}>
-        {chips.map((label) => (
+        {chips.map(label => (
           <InputChip
             key={label}
             selected
-            onClick={() => setChips((prev) => prev.filter((c) => c !== label))}>
+            onClick={() => setChips(prev => prev.filter(c => c !== label))}>
             <InputChip.Label>
               <Text>{label}</Text>
             </InputChip.Label>

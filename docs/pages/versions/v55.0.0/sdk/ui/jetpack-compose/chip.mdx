@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI Chips match the official Jetpack Compose [Chip API](https://developer.android.com/develop/ui/compose/components/chip). Each chip type is a separate component: `AssistChip`, `FilterChip`, `InputChip`, and `SuggestionChip`. All content (label, icons) is provided via slot children.
+Expo UI Chips match the official Jetpack Compose [Chip API](https://developer.android.com/develop/ui/compose/components/chip). Each chip type is a separate component: `AssistChip`, `FilterChip`, `InputChip`, and `SuggestionChip`.
 
 ## Installation
 
@@ -77,11 +77,11 @@ export default function InputChipExample() {
   return (
     <Host matchContents>
       <FlowRow horizontalArrangement={{ spacedBy: 8 }}>
-        {chips.map((label) => (
+        {chips.map(label => (
           <InputChip
             key={label}
             selected
-            onClick={() => setChips((prev) => prev.filter((c) => c !== label))}>
+            onClick={() => setChips(prev => prev.filter(c => c !== label))}>
             <InputChip.Label>
               <Text>{label}</Text>
             </InputChip.Label>
