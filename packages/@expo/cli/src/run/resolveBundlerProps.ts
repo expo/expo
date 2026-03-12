@@ -1,4 +1,5 @@
 import { Log } from '../log';
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { resolvePortAsync } from '../utils/port';
 
@@ -34,8 +35,8 @@ export async function resolveBundlerPropsAsync(
   // Skip bundling if the port is null -- meaning skip the bundler if the port is already running the app.
   options.bundler = !!port;
   if (!port) {
-    // Use explicit user-provided port, or the default port
-    port = options.port ?? 8081;
+    // Use explicit user-provided port, RCT_METRO_PORT env, or the default port
+    port = options.port ?? (env.RCT_METRO_PORT || 8081);
   }
   Log.debug(`Resolved port: ${port}, start dev server: ${options.bundler}`);
 
