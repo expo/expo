@@ -92,17 +92,9 @@ export default function ProgressScreen() {
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Gap size</ComposeText>
             <ComposeText>Space between indicator and track.</ComposeText>
-            <LinearProgressIndicator
-              progress={progress}
-              gapSize={0}
-              modifiers={[fillMaxWidth()]}
-            />
+            <LinearProgressIndicator progress={progress} gapSize={0} modifiers={[fillMaxWidth()]} />
             <LinearProgressIndicator progress={progress} modifiers={[fillMaxWidth()]} />
-            <LinearProgressIndicator
-              progress={progress}
-              gapSize={8}
-              modifiers={[fillMaxWidth()]}
-            />
+            <LinearProgressIndicator progress={progress} gapSize={8} modifiers={[fillMaxWidth()]} />
           </Column>
         </Card>
         <Card modifiers={[fillMaxWidth()]}>
