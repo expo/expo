@@ -30,7 +30,10 @@ import {
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
-import { SuspenseFallback } from './views/SuspenseFallback';
+import {
+  SuspenseFallback as DefaultSuspenseFallback,
+  type SuspenseFallbackProps,
+} from './views/SuspenseFallback';
 import { Try } from './views/Try';
 
 export type ScreenProps<
@@ -184,7 +187,10 @@ export function useSortedScreens(
   );
 }
 
-function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRoute) {
+function fromImport(
+  value: RouteNode,
+  { ErrorBoundary, SuspenseFallback, ...component }: LoadedRoute
+) {
   // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
   if (component?.default && __DEV__) {
     component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
@@ -205,6 +211,7 @@ function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRou
 
     return {
       default: Wrapped,
+      SuspenseFallback,
     };
   }
   if (process.env.NODE_ENV !== 'production') {
@@ -213,11 +220,11 @@ function fromImport(value: RouteNode, { ErrorBoundary, ...component }: LoadedRou
       component.default &&
       Object.keys(component.default).length === 0
     ) {
-      return { default: EmptyRoute };
+      return { default: EmptyRoute, SuspenseFallback };
     }
   }
 
-  return { default: component.default };
+  return { default: component.default, SuspenseFallback };
 }
 
 function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
@@ -242,13 +249,18 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
     | React.ComponentType<{ segment?: string }>;
 
+  let UserSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
+
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy(async () => {
       const res = value.loadRoute();
-      return fromLoadedRoute(value, res) as Promise<{
+      const result = (await fromLoadedRoute(value, res)) as {
         default: React.ComponentType<any>;
-      }>;
+        SuspenseFallback?: React.ComponentType<SuspenseFallbackProps>;
+      };
+      UserSuspenseFallback = result.SuspenseFallback;
+      return result;
     });
 
     if (__DEV__) {
@@ -256,7 +268,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     }
   } else {
     const res = value.loadRoute();
-    ScreenComponent = fromImport(value, res).default!;
+    const result = fromImport(value, res);
+    ScreenComponent = result.default!;
+    UserSuspenseFallback = result.SuspenseFallback;
   }
   const WrappedScreenComponent: typeof ScreenComponent = (props: object) => {
     useColorSchemeChangesIfNeeded();
@@ -334,7 +348,14 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         )}
         <ZoomTransitionTargetContextProvider route={route}>
           <ZoomTransitionEnabler route={route} />
-          <React.Suspense fallback={<SuspenseFallback route={value} />}>
+          <React.Suspense
+            fallback={
+              UserSuspenseFallback ? (
+                <UserSuspenseFallback route={value.route} />
+              ) : (
+                <DefaultSuspenseFallback route={value} />
+              )
+            }>
             <WrappedScreenComponent
               {...props}
               // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
