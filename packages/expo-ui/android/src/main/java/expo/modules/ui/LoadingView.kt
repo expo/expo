@@ -10,7 +10,6 @@ import androidx.compose.material3.LoadingIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
@@ -28,7 +27,7 @@ data class LoadingProps(
   val progress: MutableState<Float?> = mutableStateOf(null),
   val color: MutableState<Color?> = mutableStateOf(null),
   val containerColor: MutableState<Color?> = mutableStateOf(null),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 class LoadingView(context: Context, appContext: AppContext) :
@@ -41,6 +40,7 @@ class LoadingView(context: Context, appContext: AppContext) :
     val (progress) = props.progress
     val (color) = props.color
     val (containerColor) = props.containerColor
+    val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
 
       when (variant) {
         LoadingIndicatorVariant.CONTAINED -> {
@@ -50,13 +50,13 @@ class LoadingView(context: Context, appContext: AppContext) :
           if (progress != null) {
             ContainedLoadingIndicator(
               progress = { progress },
-              modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
+              modifier = modifier,
               indicatorColor = indicatorColor,
               containerColor = containerColor
             )
           } else {
             ContainedLoadingIndicator(
-              modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
+              modifier = modifier,
               indicatorColor = indicatorColor,
               containerColor = containerColor
             )
@@ -68,12 +68,12 @@ class LoadingView(context: Context, appContext: AppContext) :
           if (progress != null) {
             LoadingIndicator(
               progress = { progress },
-              modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
+              modifier = modifier,
               color = indicatorColor
             )
           } else {
             LoadingIndicator(
-              modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
+              modifier = modifier,
               color = indicatorColor
             )
           }

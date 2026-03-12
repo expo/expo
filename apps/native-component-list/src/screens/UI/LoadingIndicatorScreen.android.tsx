@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';
 
-export default function LoadingScreen() {
+export default function LoadingIndicatorScreen() {
   const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
@@ -55,6 +55,6 @@ export default function LoadingScreen() {
   );
 }
 
-LoadingScreen.navigationOptions = {
-  title: 'Loading',
+LoadingIndicatorScreen.navigationOptions = {
+  title: 'Loading Indicator',
 };

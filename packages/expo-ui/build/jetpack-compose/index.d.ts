@@ -50,5 +50,5 @@ export * from './FlowRow';
 export { useNativeState } from '../State/useNativeState';
 export type { ViewEvent } from '../types';
 export type { PrimitiveBaseProps } from './layout-types';
-export * from './Loading';
+export * from './LoadingIndicator';
 //# sourceMappingURL=index.d.ts.map
