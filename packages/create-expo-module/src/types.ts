@@ -10,6 +10,7 @@ export type CommandOptions = {
   withChangelog: boolean;
   example: boolean;
   local: boolean;
+  barrel: boolean;
   // Module configuration options (skip prompts when provided)
   name?: string;
   description?: string;
