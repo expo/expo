@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 - [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43896](https://github.com/expo/expo/pull/43896) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Refactored `Chip` to match native Material3 API: split into `AssistChip`/`FilterChip`/`InputChip`/`SuggestionChip` with slot-based content, added `colors`/`elevation`/`border` props. Merged `FilterChip` into `Chip` module. ([#43900](https://github.com/expo/expo/pull/43900) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
@@ -22,6 +24,8 @@
 - [android] Add `elementColors` prop to the `DateTimePicker` component ([#43787](https://github.com/expo/expo/pull/43787) by [@iankberry](https://github.com/iankberry))
 - [iOS] Added `AccessoryWidgetBackground` component ([#43729](https://github.com/expo/expo/pull/43729) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add support for local image uri ([#43707](https://github.com/expo/expo/pull/43707) by [@jakex7](https://github.com/jakex7))
+- [android] add AnimatedVisibility transition API ([#43632](https://github.com/expo/expo/pull/43632) by [@Ubax](https://github.com/Ubax))
+- [android] add `imePadding` modifier ([#43652](https://github.com/expo/expo/pull/43652) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

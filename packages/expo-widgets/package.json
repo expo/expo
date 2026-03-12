@@ -36,7 +36,8 @@
     "@expo/ui": "~55.0.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "^55.0.2",
+    "resolve-workspace-root": "^2.0.0"
   },
   "peerDependencies": {
     "expo": "*",

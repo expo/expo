@@ -13,9 +13,13 @@ struct HomeRootView: View {
   @ObservedObject var viewModel: HomeViewModel
   @State private var showingUserProfile = false
   @State private var selectedTab: HomeTab = .home
+  @State private var hasCompletedPermissionFlow: Bool
 
   init(viewModel: HomeViewModel) {
     self.viewModel = viewModel
+    let shouldSkip = DevelopmentServerService.isSimulator
+      || UserDefaults.standard.bool(forKey: DevelopmentServerService.networkPermissionGrantedKey)
+    _hasCompletedPermissionFlow = State(initialValue: shouldSkip)
   }
 
   public var body: some View {
@@ -57,6 +61,16 @@ struct HomeRootView: View {
         message: Text(error.message),
         dismissButton: .default(Text("OK"))
       )
+    }
+
+    if !hasCompletedPermissionFlow {
+      LocalNetworkPermissionView(serverService: viewModel.serverService) {
+        viewModel.serverService.startDiscovery()
+        withAnimation(.easeInOut(duration: 0.3)) {
+          hasCompletedPermissionFlow = true
+        }
+      }
+      .transition(.opacity)
     }
   }
 }

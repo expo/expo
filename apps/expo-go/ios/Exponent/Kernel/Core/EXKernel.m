@@ -16,10 +16,7 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-#import "EXDevMenu-Swift.h"
-#import "EXDevMenuInterface-Swift.h"
-
-@interface EXKernel () <DevMenuHostDelegate>
+@interface EXKernel ()
 @end
 
 NS_ASSUME_NONNULL_BEGIN
@@ -61,9 +58,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // init service registry: classes which manage shared resources among all hosts
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-    [DevMenuManager.shared setDelegate:self];
-    [DevMenuManager shared].configuration.onboardingAppName = @"Expo Go";
-    [[DevMenuManager shared] setShowFloatingActionButton:YES];
+    // Initialize the Expo Go dev menu manager (triggers lazy singleton init)
+    (void)[DevMenuManager shared];
 
     // Register keyboard commands (e.g., Cmd+D) for simulator
     [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
@@ -287,24 +283,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       [self->_browserController moveAppToVisible:appRecord];
     }];
   }
-}
-
-#pragma mark - DevMenuHostDelegate
-
-- (void)devMenuNavigateHome {
-  [self switchTasks];
-}
-
-- (void)devMenuTogglePerformanceMonitor {
-  [[self visibleApp].appManager togglePerformanceMonitor];
-}
-
-- (void)devMenuToggleElementInspector {
-  [[self visibleApp].appManager toggleElementInspector];
-}
-
-- (BOOL)devMenuShouldShowReactNativeDevMenu {
-  return NO;
 }
 
 @end
