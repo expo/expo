@@ -1,5 +1,6 @@
 import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
+import type { AndroidSymbol } from 'expo-symbols';
 import { type ReactNode } from 'react';
 import { type ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -55,6 +56,12 @@ export interface StackToolbarMenuProps {
      * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
      */
     icon?: StackHeaderItemSharedProps['icon'];
+    /**
+     * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+     *
+     * @platform android
+     */
+    md?: AndroidSymbol;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -154,6 +161,7 @@ export interface StackToolbarMenuProps {
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarMenu: React.FC<StackToolbarMenuProps>;
@@ -170,6 +178,12 @@ export interface StackToolbarMenuActionProps {
      */
     disabled?: boolean;
     icon?: SFSymbol | ImageSourcePropType;
+    /**
+     * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+     *
+     * @platform android
+     */
+    md?: AndroidSymbol;
     /**
      * Image to display for the menu action.
      *
@@ -248,6 +262,7 @@ export interface StackToolbarMenuActionProps {
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps>;

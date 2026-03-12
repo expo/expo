@@ -1,4 +1,5 @@
 import type { ImageRef } from 'expo-image';
+import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -7,6 +8,27 @@ import type { BasicTextStyle } from '../utils/font';
 export interface RouterToolbarHostProps {
   children?: React.ReactNode;
   withImePadding: boolean;
+}
+
+export interface RouterToolbarMenuItemProps {
+  label: string;
+  onPress?: () => void;
+  enabled?: boolean;
+  hidden?: boolean;
+  isOn?: boolean;
+  leadingIconSource?: ImageSourcePropType;
+  leadingMdIconName?: AndroidSymbol;
+}
+
+export interface RouterToolbarMenuProps {
+  source?: ImageSourcePropType;
+  mdIconName?: AndroidSymbol;
+  tintColor?: ColorValue;
+  disabled?: boolean;
+  hidden?: boolean;
+  inline?: boolean;
+  label?: string;
+  children?: React.ReactNode;
 }
 
 export interface RouterToolbarItemProps {

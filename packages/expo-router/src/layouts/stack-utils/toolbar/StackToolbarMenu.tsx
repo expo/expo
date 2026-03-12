@@ -5,6 +5,7 @@ import type {
   NativeStackHeaderItemMenuSubmenu,
 } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
+import type { AndroidSymbol } from 'expo-symbols';
 import { Children, useId, useMemo, type ReactNode } from 'react';
 import {
   Platform,
@@ -21,12 +22,15 @@ import { useToolbarPlacement } from './context';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   extractIconRenderingMode,
+  extractImageSource,
+  extractMdIconName,
   extractXcassetName,
   type StackHeaderItemSharedProps,
 } from './shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
 import { LinkMenuAction } from '../../../link/elements';
 import { NativeLinkPreviewAction } from '../../../link/preview/native';
+import { RouterToolbarMenu, RouterToolbarMenuItem } from '../../../toolbar/native';
 import {
   filterAllowedChildrenElements,
   getFirstChildOfType,
@@ -104,6 +108,12 @@ export interface StackToolbarMenuProps {
    * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
    */
   icon?: StackHeaderItemSharedProps['icon'];
+  /**
+   * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+   *
+   * @platform android
+   */
+  md?: AndroidSymbol;
   /**
    * Controls how image-based icons are rendered on iOS.
    *
@@ -205,6 +215,7 @@ export interface StackToolbarMenuProps {
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
@@ -223,12 +234,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
   );
 
   if (Platform.OS === 'android') {
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(
-        'Stack.Toolbar.Menu is not supported on Android. The menu will not render. Use Stack.Toolbar.Button with ImageSourcePropType icons instead.'
-      );
-    }
-    return null;
+    return <AndroidToolbarMenu {...props} children={validChildren} />;
   }
 
   const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
@@ -390,6 +396,12 @@ export interface StackToolbarMenuActionProps {
    */
   disabled?: boolean;
   icon?: SFSymbol | ImageSourcePropType;
+  /**
+   * Material Design icon name for Android. See the [Material icons catalog](https://fonts.google.com/icons).
+   *
+   * @platform android
+   */
+  md?: AndroidSymbol;
   // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display for the menu action.
@@ -470,6 +482,7 @@ export interface StackToolbarMenuActionProps {
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (props) => {
@@ -477,6 +490,27 @@ export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (pr
 
   if (placement !== 'bottom') {
     throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
+  }
+
+  if (Platform.OS === 'android') {
+    const labelChild = getFirstChildOfType(props.children, StackToolbarLabel);
+    const stringChildren = Children.toArray(props.children)
+      .filter((child) => typeof child === 'string')
+      .join('');
+    const label = labelChild?.props.children ?? stringChildren;
+    const iconSource = props.icon && typeof props.icon !== 'string' ? props.icon : undefined;
+
+    return (
+      <RouterToolbarMenuItem
+        label={label}
+        onPress={props.onPress}
+        enabled={!props.disabled}
+        hidden={props.hidden}
+        leadingIconSource={iconSource}
+        leadingMdIconName={props.md}
+        isOn={props.isOn}
+      />
+    );
   }
 
   // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
@@ -616,6 +650,31 @@ const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
  * Native toolbar menu action - reuses LinkMenuAction.
  */
 const NativeToolbarMenuAction = LinkMenuAction;
+
+// #endregion
+
+// #region Android menu support
+
+/**
+ * Internal component that renders the Android toolbar menu.
+ */
+function AndroidToolbarMenu(props: StackToolbarMenuProps) {
+  const mdIconName = extractMdIconName(props);
+  const source = extractImageSource(props);
+
+  return (
+    <RouterToolbarMenu
+      source={source}
+      mdIconName={mdIconName ?? props.md}
+      tintColor={props.tintColor}
+      disabled={props.disabled}
+      hidden={props.hidden}
+      inline={props.inline}
+      label={props.title}>
+      {props.children}
+    </RouterToolbarMenu>
+  );
+}
 
 // #endregion
 
