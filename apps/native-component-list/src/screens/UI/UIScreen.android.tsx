@@ -19,11 +19,19 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Picker component',
-    route: 'ui/picker',
+    name: 'Radio Button component',
+    route: 'ui/radio-button',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./PickerScreen'));
+      return optionalRequire(() => require('./RadioButtonScreen'));
+    },
+  },
+  {
+    name: 'Segmented Control component',
+    route: 'ui/segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SegmentedControlScreen'));
     },
   },
   {

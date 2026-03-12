@@ -174,8 +174,14 @@ export declare const clickable: (handler: () => void, options?: {
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
  * @param handler - Function to call when the item is clicked.
+ * @param role - Optional semantic role for accessibility: 'radioButton', 'checkbox', 'switch', or 'tab'.
  */
-export declare const selectable: (selected: boolean, handler: () => void) => import("./createModifier").ModifierConfig;
+export declare const selectable: (selected: boolean, handler: () => void, role?: "radioButton" | "checkbox" | "switch" | "tab") => import("./createModifier").ModifierConfig;
+/**
+ * Marks a column/row as a selectable group for accessibility.
+ * Screen readers will treat the children as a group of selectable items.
+ */
+export declare const selectableGroup: () => import("./createModifier").ModifierConfig;
 /**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.

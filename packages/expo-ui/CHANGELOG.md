@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [android] Replace `Picker` with `SingleChoiceSegmentedButtonRow`, `MultiChoiceSegmentedButtonRow`, and `SegmentedButton` components. Replace `RadioButton` `nativeClickable` prop with `onClick` event. ([#43809](https://github.com/expo/expo/pull/43809) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))

@@ -326,3 +326,7 @@
 # After renaming ContextMenu to DropdownMenu in expo-ui (Android)
 /versions/unversioned/sdk/ui/jetpack-compose/contextmenu /versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu /versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu 301
+
+# Picker replaced by SegmentedButton
+/versions/latest/sdk/ui/jetpack-compose/picker /versions/latest/sdk/ui/jetpack-compose/segmentedbutton 301
+/versions/unversioned/sdk/ui/jetpack-compose/picker /versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton 301
