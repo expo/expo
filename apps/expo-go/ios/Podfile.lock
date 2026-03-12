@@ -2600,7 +2600,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Generated (1.26.20):
+  - react-native-maps/Generated (1.27.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2628,7 +2628,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-maps/Maps (1.26.20):
+  - react-native-maps/Maps (1.27.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -4763,7 +4763,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: d59202edb9173c808259b0945bb161d1e24963f0
+  hermes-engine: 49e6d6ae6255733a1c9c2163e6c69dd36aae6193
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4813,7 +4813,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 12a03cb4ecdb03d18dbdeb5be3345133eb50cad3
   React-microtasksnativemodule: 3889cab2172031863a5a4c84f72eb6ad6f230c93
   react-native-keyboard-controller: c00d45d824a23740eeb3d5bcff30e427a26e311d
-  react-native-maps: 9cc71a39c6935770047b4a92a35361c3a67c539f
+  react-native-maps: 00f50855f1a061186f2923be0709b3f09708ddf7
   react-native-netinfo: 5e036f49ab00a53569bcc0cbc2954b608b6532c3
   react-native-pager-view: 4cc305d9d25eda66adf44029a84a591d8b98c072
   react-native-safe-area-context: 54d812805f3c4e08a4580ad086cbde1d8780c2e4
