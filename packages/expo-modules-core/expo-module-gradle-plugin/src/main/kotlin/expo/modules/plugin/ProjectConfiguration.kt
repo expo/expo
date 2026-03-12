@@ -35,6 +35,9 @@ internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
   extra.set("kspVersion", kspVersion)
 
   project.dependencies.add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
+  // kotlinx-coroutines-core requires annotations:23.0.0 while kotlin-stdlib uses 13.0.
+  // Gradle 9's consistent resolution rejects this mismatch, so we force the higher version.
+  project.dependencies.add("implementation", "org.jetbrains:annotations:23.0.0")
 }
 
 internal fun Project.applyDefaultDependencies() {

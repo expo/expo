@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPkgVersion = getPkgVersion;
+exports.getPkgVersionFromPath = getPkgVersionFromPath;
 exports.findUpPackageJson = findUpPackageJson;
 const json_file_1 = __importDefault(require("@expo/json-file"));
 const path_1 = __importDefault(require("path"));
@@ -15,7 +16,10 @@ function getPkgVersion(projectRoot, pkgName) {
     const targetPkgJson = findUpPackageJson(targetPkg);
     if (!targetPkgJson)
         return null;
-    const pkg = json_file_1.default.read(targetPkgJson);
+    return getPkgVersionFromPath(targetPkgJson);
+}
+function getPkgVersionFromPath(packageJsonPath) {
+    const pkg = json_file_1.default.read(packageJsonPath);
     const pkgVersion = pkg.version;
     if (typeof pkgVersion === 'string') {
         return pkgVersion;

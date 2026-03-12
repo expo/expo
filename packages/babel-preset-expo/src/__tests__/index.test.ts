@@ -152,9 +152,11 @@ it(`compiles sample file with Metro targeting Hermes`, () => {
     caller: getCaller({ name: 'metro' }),
   })!;
 
+  expect(withHermes.code).not.toEqual(withoutHermes.code);
+
   // Hermes v1 supports most modern JS features natively, so the output
-  // is equivalent to the default profile when not in dev mode.
-  expect(withHermes.code).toEqual(withoutHermes.code);
+  // should be shorter than the default profile (fewer transforms applied).
+  expect(withHermes.code!.length).toBeLessThan(withoutHermes.code!.length);
 });
 
 it(`supports overwriting the default engine option`, () => {

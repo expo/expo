@@ -4,6 +4,7 @@
 #import "EXKernel.h"
 #import "EXKernelAppRegistry.h"
 #import "EXReactAppManager.h"
+#import "Expo_Go-Swift.h"
 
 #import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
@@ -256,7 +257,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
+  [[DevMenuManager shared] toggleMenu];
 }
 
 - (void)_handleRefreshCommand
