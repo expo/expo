@@ -1,6 +1,7 @@
 import type { LoaderFunction } from 'expo-server';
 import { type ComponentType, type PropsWithChildren } from 'react';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
+import { type SuspenseFallbackProps } from './views/SuspenseFallback';
 import { type ErrorBoundaryProps } from './views/Try';
 export type DynamicConvention = {
     name: string;
@@ -10,6 +11,7 @@ export type DynamicConvention = {
 type Params = Record<string, string | string[]>;
 export type LoadedRoute = {
     ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+    SuspenseFallback?: ComponentType<SuspenseFallbackProps>;
     default?: ComponentType<any>;
     unstable_settings?: Record<string, any>;
     getNavOptions?: (args: any) => any;
@@ -57,6 +59,7 @@ export type RouteNode = {
     /** Middleware function for server-side request processing. Only present on the root route node. */
     middleware?: MiddlewareNode;
 };
+export declare const SuspenseFallbackContext: import("react").Context<ComponentType<SuspenseFallbackProps> | undefined>;
 export declare const LocalRouteParamsContext: import("react").Context<object | undefined>;
 /** Return the RouteNode at the current contextual boundary. */
 export declare function useRouteNode(): RouteNode | null;

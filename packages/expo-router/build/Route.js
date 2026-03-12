@@ -1,7 +1,7 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = void 0;
+exports.sortRoutes = exports.sortRoutesWithInitial = exports.LocalRouteParamsContext = exports.SuspenseFallbackContext = void 0;
 exports.useRouteNode = useRouteNode;
 exports.useContextKey = useContextKey;
 exports.Route = Route;
@@ -11,6 +11,7 @@ const sortRoutes_1 = require("./sortRoutes");
 Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithInitial; } });
 Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
 const CurrentRouteContext = (0, react_1.createContext)(null);
+exports.SuspenseFallbackContext = (0, react_1.createContext)(undefined);
 exports.LocalRouteParamsContext = (0, react_1.createContext)({});
 if (process.env.NODE_ENV !== 'production') {
     CurrentRouteContext.displayName = 'RouteNode';
