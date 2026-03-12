@@ -14,15 +14,13 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.with
 
-data class CardElementColors(
-  @Field val containerColor: Color? = null,
+class CardColors : Record {
+  @Field val containerColor: Color? = null
   @Field val contentColor: Color? = null
-) : Record
+}
 
 data class CardProps(
-  val variant: String = "default",
-  val color: Color? = null,
-  val elementColors: CardElementColors? = null,
+  val colors: CardColors = CardColors(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -30,43 +28,67 @@ data class CardProps(
 fun FunctionalComposableScope.CardContent(props: CardProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
-  val colors = when {
-    props.elementColors != null -> CardDefaults.cardColors(
-      containerColor = props.elementColors.containerColor?.compose ?: androidx.compose.ui.graphics.Color.Unspecified,
-      contentColor = props.elementColors.contentColor?.compose ?: androidx.compose.ui.graphics.Color.Unspecified
-    )
-    props.color != null -> CardDefaults.cardColors(
-      containerColor = props.color.compose
-    )
-    else -> CardDefaults.cardColors()
-  }
+  val colors = CardDefaults.cardColors(
+    containerColor = props.colors.containerColor.composeOrNull
+      ?: CardDefaults.cardColors().containerColor,
+    contentColor = props.colors.contentColor.composeOrNull
+      ?: CardDefaults.cardColors().contentColor
+  )
 
   val content: @Composable ColumnScope.() -> Unit = {
     val scope = ComposableScope().with(columnScope = this)
     Children(scope)
   }
 
-  when (props.variant) {
-    "elevated" -> {
-      ElevatedCard(
-        modifier = modifier,
-        colors = colors,
-        content = content
-      )
-    }
-    "outlined" -> {
-      OutlinedCard(
-        modifier = modifier,
-        colors = colors,
-        content = content
-      )
-    }
-    else -> {
-      Card(
-        modifier = modifier,
-        colors = colors,
-        content = content
-      )
-    }
+  Card(
+    modifier = modifier,
+    colors = colors,
+    content = content
+  )
+}
+
+@Composable
+fun FunctionalComposableScope.ElevatedCardContent(props: CardProps) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  val colors = CardDefaults.elevatedCardColors(
+    containerColor = props.colors.containerColor.composeOrNull
+      ?: CardDefaults.elevatedCardColors().containerColor,
+    contentColor = props.colors.contentColor.composeOrNull
+      ?: CardDefaults.elevatedCardColors().contentColor
+  )
+
+  val content: @Composable ColumnScope.() -> Unit = {
+    val scope = ComposableScope().with(columnScope = this)
+    Children(scope)
   }
+
+  ElevatedCard(
+    modifier = modifier,
+    colors = colors,
+    content = content
+  )
+}
+
+@Composable
+fun FunctionalComposableScope.OutlinedCardContent(props: CardProps) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  val colors = CardDefaults.outlinedCardColors(
+    containerColor = props.colors.containerColor.composeOrNull
+      ?: CardDefaults.outlinedCardColors().containerColor,
+    contentColor = props.colors.contentColor.composeOrNull
+      ?: CardDefaults.outlinedCardColors().contentColor
+  )
+
+  val content: @Composable ColumnScope.() -> Unit = {
+    val scope = ComposableScope().with(columnScope = this)
+    Children(scope)
+  }
+
+  OutlinedCard(
+    modifier = modifier,
+    colors = colors,
+    content = content
+  )
 }

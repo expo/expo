@@ -1,7 +1,6 @@
 import { requireNativeView } from 'expo';
-import React from 'react';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
@@ -15,71 +14,54 @@ export type ChipTextStyle =
   | 'bodyMedium'
   | 'bodyLarge';
 
-export interface ChipProps {
-  /**
-   * The variant of the chip.
-   */
-  variant?: 'assist' | 'filter' | 'input' | 'suggestion';
+// region AssistChip
 
+export type AssistChipProps = {
   /**
-   * The text label to display on the chip
+   * The text label to display on the chip.
    */
   label: string;
-
   /**
-   * Optional leading icon name (using Material Icons). Used for assist, filter, input (avatar icon), and suggestion chips.
+   * Optional leading icon name (using Material Icons).
    */
   leadingIcon?: string;
-
   /**
-   * Optional trailing icon name (using Material Icons). Used for assist, filter, and input chips. For input chips, defaults to `filled.Close` if not specified.
+   * Optional trailing icon name (using Material Icons).
    */
   trailingIcon?: string;
-
   /**
-   * Size of the icon in density-independent pixels (dp). Defaults to 18.
+   * Size of the icon in density-independent pixels (dp).
+   * @default 18
    */
   iconSize?: number;
-
   /**
-   * Text style variant for the chip label. Defaults to `labelSmall`.
+   * Text style variant for the chip label.
+   * @default 'labelSmall'
    */
   textStyle?: ChipTextStyle;
-
   /**
-   * Whether the chip is enabled and can be clicked. Used for assist, filter and input chips.
+   * Whether the chip is enabled and can be clicked.
+   * @default true
    */
   enabled?: boolean;
-
   /**
-   * Whether the chip is selected. Used only for filter chips.
+   * Callback fired when the chip is clicked.
    */
-  selected?: boolean;
-
+  onPress?: () => void;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
+};
 
-  /**
-   * Callback fired when the chip is clicked. Used for assist and filter chips.
-   */
-  onPress?: () => void;
+type NativeAssistChipProps = AssistChipProps;
 
-  /**
-   * Callback fired when the chip is dismissed. Only used for input chips.
-   */
-  onDismiss?: () => void;
-}
-
-type NativeChipProps = ChipProps;
-// Native component declaration using the same pattern as Button
-const ChipNativeView: React.ComponentType<NativeChipProps> = requireNativeView(
+const AssistChipNativeView: React.ComponentType<NativeAssistChipProps> = requireNativeView(
   'ExpoUI',
-  'ChipView'
+  'AssistChipView'
 );
 
-function transformChipProps(props: ChipProps): NativeChipProps {
+function transformAssistChipProps(props: AssistChipProps): NativeAssistChipProps {
   const { modifiers, ...restProps } = props;
   return {
     modifiers,
@@ -89,8 +71,141 @@ function transformChipProps(props: ChipProps): NativeChipProps {
 }
 
 /**
- * Displays a native chip component.
+ * An assist chip that helps users complete actions and primary tasks.
  */
-export function Chip(props: ChipProps): React.JSX.Element {
-  return <ChipNativeView {...transformChipProps(props)} />;
+export function AssistChip(props: AssistChipProps) {
+  return <AssistChipNativeView {...transformAssistChipProps(props)} />;
 }
+
+// endregion
+
+// region InputChip
+
+export type InputChipProps = {
+  /**
+   * The text label to display on the chip.
+   */
+  label: string;
+  /**
+   * Optional leading icon name (using Material Icons), displayed as an avatar.
+   */
+  leadingIcon?: string;
+  /**
+   * Optional trailing icon name (using Material Icons). Defaults to `filled.Close` if not specified.
+   */
+  trailingIcon?: string;
+  /**
+   * Size of the icon in density-independent pixels (dp).
+   * @default 18
+   */
+  iconSize?: number;
+  /**
+   * Text style variant for the chip label.
+   * @default 'labelSmall'
+   */
+  textStyle?: ChipTextStyle;
+  /**
+   * Whether the chip is enabled and can be interacted with.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Whether the chip is selected.
+   * @default false
+   */
+  selected?: boolean;
+  /**
+   * Callback fired when the chip is clicked.
+   */
+  onPress?: () => void;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+};
+
+type NativeInputChipProps = InputChipProps;
+
+const InputChipNativeView: React.ComponentType<NativeInputChipProps> = requireNativeView(
+  'ExpoUI',
+  'InputChipView'
+);
+
+function transformInputChipProps(props: InputChipProps): NativeInputChipProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
+/**
+ * An input chip that represents user input and can be dismissed.
+ */
+export function InputChip(props: InputChipProps) {
+  return <InputChipNativeView {...transformInputChipProps(props)} />;
+}
+
+// endregion
+
+// region SuggestionChip
+
+export type SuggestionChipProps = {
+  /**
+   * The text label to display on the chip.
+   */
+  label: string;
+  /**
+   * Optional icon name (using Material Icons).
+   */
+  leadingIcon?: string;
+  /**
+   * Size of the icon in density-independent pixels (dp).
+   * @default 18
+   */
+  iconSize?: number;
+  /**
+   * Text style variant for the chip label.
+   * @default 'labelSmall'
+   */
+  textStyle?: ChipTextStyle;
+  /**
+   * Whether the chip is enabled and can be clicked.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Callback fired when the chip is clicked.
+   */
+  onPress?: () => void;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+};
+
+type NativeSuggestionChipProps = SuggestionChipProps;
+
+const SuggestionChipNativeView: React.ComponentType<NativeSuggestionChipProps> = requireNativeView(
+  'ExpoUI',
+  'SuggestionChipView'
+);
+
+function transformSuggestionChipProps(props: SuggestionChipProps): NativeSuggestionChipProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
+/**
+ * A suggestion chip that offers contextual suggestions and recommendations.
+ */
+export function SuggestionChip(props: SuggestionChipProps) {
+  return <SuggestionChipNativeView {...transformSuggestionChipProps(props)} />;
+}
+
+// endregion
