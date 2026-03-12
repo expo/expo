@@ -225,22 +225,32 @@ class ExpoUIModule : Module() {
       )
     }
 
-    ExpoUIView("ChipView", events = {
-      Events(
-        "onPress",
-        "onDismiss"
-      )
-    }) { props: ChipProps ->
-      val onPress by remember { EventDispatcher<ChipPressedEvent>() }
-      val onDismiss by remember { EventDispatcher<ChipPressedEvent>() }
-      ChipContent(props, { onPress(it) }, { onDismiss(it) })
+    ExpoUIView("AssistChipView", events = {
+      Events("onNativeClick")
+    }) { props: AssistChipProps ->
+      val onNativeClick by remember { EventDispatcher<ChipPressedEvent>() }
+      AssistChipContent(props) { onNativeClick(it) }
+    }
+
+    ExpoUIView("InputChipView", events = {
+      Events("onNativeClick")
+    }) { props: InputChipProps ->
+      val onNativeClick by remember { EventDispatcher<ChipPressedEvent>() }
+      InputChipContent(props) { onNativeClick(it) }
+    }
+
+    ExpoUIView("SuggestionChipView", events = {
+      Events("onNativeClick")
+    }) { props: SuggestionChipProps ->
+      val onNativeClick by remember { EventDispatcher<ChipPressedEvent>() }
+      SuggestionChipContent(props) { onNativeClick(it) }
     }
 
     ExpoUIView("FilterChipView", events = {
-      Events("onPress")
+      Events("onNativeClick")
     }) { props: FilterChipProps ->
-      val onPress by remember { EventDispatcher<FilterChipPressedEvent>() }
-      FilterChipContent(props) { onPress(it) }
+      val onNativeClick by remember { EventDispatcher<ChipPressedEvent>() }
+      FilterChipContent(props) { onNativeClick(it) }
     }
 
     ExpoUIView("TextButtonView", events = {
