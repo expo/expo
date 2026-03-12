@@ -96,9 +96,7 @@ export default function ButtonScreen() {
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Leading & Trailing Icons</ComposeText>
             <ComposeText>Use Icon as a child to add leading or trailing icons.</ComposeText>
-            <Button
-              onClick={() => console.log('Add clicked')}
-              contentPadding={{ start: 16 }}>
+            <Button onClick={() => console.log('Add clicked')}>
               <Icon source={addIcon} size={18} tintColor="#FFFFFF" />
               <Spacer modifiers={[width(8)]} />
               <ComposeText>Add Item</ComposeText>
@@ -108,9 +106,7 @@ export default function ButtonScreen() {
               <Spacer modifiers={[width(8)]} />
               <Icon source={sendIcon} size={18} />
             </OutlinedButton>
-            <FilledTonalButton
-              onClick={() => console.log('Both icons clicked')}
-              contentPadding={{ start: 16 }}>
+            <FilledTonalButton onClick={() => console.log('Both icons clicked')}>
               <Icon source={addIcon} size={18} />
               <Spacer modifiers={[width(8)]} />
               <ComposeText>Create & Send</ComposeText>

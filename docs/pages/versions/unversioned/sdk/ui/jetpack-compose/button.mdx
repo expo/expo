@@ -86,7 +86,7 @@ export default function ButtonVariantsExample() {
 
 ### Button with icons
 
-Since buttons accept composable children, you can add leading and trailing icons using the `Icon` component. This follows the [Material 3 buttons with icon](https://m3.material.io/components/buttons/guidelines) pattern ([official sample](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/samples/src/main/java/androidx/compose/material3/samples/ButtonSamples.kt;l=179?q=ButtonWithIconSample)), use 18dp icon size, 8dp spacing between the icon and label, and 16dp start `contentPadding` for buttons with a leading icon.
+Since buttons accept composable children, you can add leading and trailing icons using the `Icon` component. This follows the [Material 3 buttons with icon](https://m3.material.io/components/buttons/guidelines) pattern ([official sample](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/samples/src/main/java/androidx/compose/material3/samples/ButtonSamples.kt;l=179?q=ButtonWithIconSample)), use 18dp icon size, 8dp spacing between the icon and label.
 
 ```tsx ButtonWithIconsExample.tsx
 import {
@@ -106,8 +106,8 @@ const sendIcon = require('./assets/send.png');
 export default function ButtonWithIconsExample() {
   return (
     <Host matchContents>
-      {/* Leading icon — use contentPadding to match M3 spec */}
-      <Button onClick={() => {}} contentPadding={{ start: 16 }}>
+      {/* Leading icon */}
+      <Button onClick={() => {}}>
         <Icon source={addIcon} size={18} tintColor="#FFFFFF" />
         <Spacer modifiers={[width(8)]} />
         <Text>Add Item</Text>
@@ -121,7 +121,7 @@ export default function ButtonWithIconsExample() {
       </OutlinedButton>
 
       {/* Both leading and trailing icons */}
-      <FilledTonalButton onClick={() => {}} contentPadding={{ start: 16 }}>
+      <FilledTonalButton onClick={() => {}}>
         <Icon source={addIcon} size={18} />
         <Spacer modifiers={[width(8)]} />
         <Text>Create & Send</Text>
