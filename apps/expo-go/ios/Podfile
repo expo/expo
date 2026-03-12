@@ -134,6 +134,16 @@ target 'Expo Go' do
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
       end
 
+      # React-Fabric's "animated" subspec flattens headers with header_dir, but
+      # source files use subdirectory includes (e.g. event_drivers/EventAnimationDriver.h).
+      # Add the ReactCommon source root so the compiler can resolve these paths.
+      if pod_name == 'React-Fabric'
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+          config.build_settings['HEADER_SEARCH_PATHS'] << '"$(PODS_TARGET_SRCROOT)"'
+        end
+      end
+
       # On iOS, the Stripe dependency StripePaymentsUI can't seem to find a header that should be there.
       if pod_name == 'StripePaymentsUI'
         target_installation_result.native_target.build_configurations.each do |config|
