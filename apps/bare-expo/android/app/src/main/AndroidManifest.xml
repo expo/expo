@@ -64,12 +64,5 @@
     <activity android:name=".BrowserLauncherActivity" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
 
     </activity>
-    <receiver
-        android:name=".DebugBgTaskReceiver"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="dev.expo.payments.DEBUG_BG_TASK"/>
-      </intent-filter>
-    </receiver>
   </application>
 </manifest>
