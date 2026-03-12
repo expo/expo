@@ -13,7 +13,10 @@ export interface StackToolbarProps {
      *
      * - `'left'`: Renders items in the left area of the header.
      * - `'right'`: Renders items in the right area of the header.
-     * - `'bottom'`: Renders items in the bottom toolbar (iOS only).
+     * - `'bottom'`: Renders items in the bottom toolbar (iOS and Android).
+     *   On Android, uses Material 3 `HorizontalFloatingToolbar` from `@expo/ui`.
+     *   Only `Stack.Toolbar.Button` with `ImageSourcePropType` icons is supported on Android.
+     *   SF Symbols, xcasset icons, Spacer, Menu, View, and SearchBarSlot are iOS-only.
      *
      * @default 'bottom'
      */
@@ -27,6 +30,16 @@ export interface StackToolbarProps {
      * @default false
      */
     asChild?: boolean;
+    /**
+     * When `true`, disables automatic addition of `imePadding` to the bottom toolbar on Android.
+     *
+     * > **Note:** This prop is only applicable for bottom placement on Android
+     *
+     * @default false
+     *
+     * @platform android
+     */
+    disableImePadding?: boolean;
 }
 /**
  * The component used to configure the stack toolbar.
@@ -88,7 +101,7 @@ export interface StackToolbarProps {
  * ```
  *
  * @experimental
- * @platform ios
+ * @platform ios, android
  */
 export declare const StackToolbar: {
     (props: StackToolbarProps): React.JSX.Element;

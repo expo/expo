@@ -133,6 +133,7 @@
   "dependencies": {
     "@expo/metro-runtime": "^55.0.6",
     "@expo/schema-utils": "^55.0.2",
+    "@expo/ui": "^55.0.0",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-navigation/bottom-tabs": "^7.10.1",

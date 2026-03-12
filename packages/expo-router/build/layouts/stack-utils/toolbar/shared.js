@@ -1,12 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.extractMdIconName = extractMdIconName;
 exports.extractXcassetName = extractXcassetName;
 exports.extractIconRenderingMode = extractIconRenderingMode;
+exports.extractImageSource = extractImageSource;
 exports.convertStackHeaderSharedPropsToRNSharedHeaderItem = convertStackHeaderSharedPropsToRNSharedHeaderItem;
 const react_1 = require("react");
 const toolbar_primitives_1 = require("./toolbar-primitives");
 const children_1 = require("../../../utils/children");
 const font_1 = require("../../../utils/font");
+/** @internal */
+function extractMdIconName(props) {
+    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+    if (iconComponentProps && 'md' in iconComponentProps) {
+        return iconComponentProps.md;
+    }
+    return undefined;
+}
 /** @internal */
 function extractXcassetName(props) {
     const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
@@ -24,6 +34,24 @@ function extractIconRenderingMode(props) {
     const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
     if (iconComponentProps && 'renderingMode' in iconComponentProps) {
         return iconComponentProps.renderingMode;
+    }
+    return undefined;
+}
+/**
+ * Extracts the raw `ImageSourcePropType` from either:
+ * - A `<Stack.Toolbar.Icon src={...} />` child component
+ * - The `icon` prop when it's not an SF Symbol string
+ *
+ * Used by Android toolbar to get the raw image source for `@expo/ui` Icon.
+ * @internal
+ */
+function extractImageSource(props) {
+    const iconComponentProps = (0, children_1.getFirstChildOfType)(props.children, toolbar_primitives_1.StackToolbarIcon)?.props;
+    if (iconComponentProps && 'src' in iconComponentProps) {
+        return iconComponentProps.src;
+    }
+    if (props.icon && typeof props.icon !== 'string') {
+        return props.icon;
     }
     return undefined;
 }
@@ -64,10 +92,13 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacem
                 tinted: effectiveRenderingMode === 'template',
             };
         }
-        return {
-            type: 'sfSymbol',
-            name: iconComponentProps.sf,
-        };
+        if ('sf' in iconComponentProps) {
+            return {
+                type: 'sfSymbol',
+                name: iconComponentProps.sf,
+            };
+        }
+        return undefined;
     })();
     const item = {
         ...rest,

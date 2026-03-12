@@ -1,4 +1,5 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
+import type { AndroidSymbol } from 'expo-symbols';
 import { Children, type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -59,6 +60,15 @@ type RNSharedHeaderItem = Pick<
 >;
 
 /** @internal */
+export function extractMdIconName(props: StackHeaderItemSharedProps): AndroidSymbol | undefined {
+  const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
+  if (iconComponentProps && 'md' in iconComponentProps) {
+    return iconComponentProps.md;
+  }
+  return undefined;
+}
+
+/** @internal */
 export function extractXcassetName(props: StackHeaderItemSharedProps): string | undefined {
   const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
   if (iconComponentProps && 'xcasset' in iconComponentProps) {
@@ -78,6 +88,27 @@ export function extractIconRenderingMode(
   const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
   if (iconComponentProps && 'renderingMode' in iconComponentProps) {
     return iconComponentProps.renderingMode;
+  }
+  return undefined;
+}
+
+/**
+ * Extracts the raw `ImageSourcePropType` from either:
+ * - A `<Stack.Toolbar.Icon src={...} />` child component
+ * - The `icon` prop when it's not an SF Symbol string
+ *
+ * Used by Android toolbar to get the raw image source for `@expo/ui` Icon.
+ * @internal
+ */
+export function extractImageSource(
+  props: StackHeaderItemSharedProps
+): ImageSourcePropType | undefined {
+  const iconComponentProps = getFirstChildOfType(props.children, StackToolbarIcon)?.props;
+  if (iconComponentProps && 'src' in iconComponentProps) {
+    return iconComponentProps.src;
+  }
+  if (props.icon && typeof props.icon !== 'string') {
+    return props.icon;
   }
   return undefined;
 }
@@ -126,10 +157,13 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
         tinted: effectiveRenderingMode === 'template',
       };
     }
-    return {
-      type: 'sfSymbol',
-      name: iconComponentProps.sf,
-    };
+    if ('sf' in iconComponentProps) {
+      return {
+        type: 'sfSymbol',
+        name: iconComponentProps.sf,
+      };
+    }
+    return undefined;
   })();
   const item: RNSharedHeaderItem = {
     ...rest,

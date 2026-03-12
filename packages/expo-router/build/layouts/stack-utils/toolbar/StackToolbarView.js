@@ -34,7 +34,7 @@ const native_1 = require("../../../toolbar/native");
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 const StackToolbarView = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();

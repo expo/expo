@@ -29,6 +29,9 @@ export default function Layout() {
           <NativeTabs.Trigger.Label>Index tab</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon sf="applewatch.side.right" md="watch" />
         </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="toolbar">
+          <NativeTabs.Trigger.Label>Toolbar tab</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
         <NativeTabs.Trigger
           name="faces"
           listeners={{

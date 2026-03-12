@@ -7,6 +7,7 @@ import type {
 import type { ImageRef } from 'expo-image';
 import { Children, useId, useMemo, type ReactNode } from 'react';
 import {
+  Platform,
   StyleSheet,
   type ColorValue,
   type ImageSourcePropType,
@@ -220,6 +221,15 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     () => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN),
     [props.children]
   );
+
+  if (Platform.OS === 'android') {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        'Stack.Toolbar.Menu is not supported on Android. The menu will not render. Use Stack.Toolbar.Button with ImageSourcePropType icons instead.'
+      );
+    }
+    return null;
+  }
 
   const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props, true);
 

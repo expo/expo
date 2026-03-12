@@ -108,7 +108,7 @@ const children_1 = require("../../../utils/children");
  * ```
  *
  * @experimental
- * @platform ios
+ * @platform ios, android
  */
 const StackToolbar = (props) => {
     const parentPlacement = (0, context_1.useToolbarPlacement)();
@@ -121,20 +121,20 @@ const StackToolbar = (props) => {
     return <StackToolbarHeader {...props} key={props.placement}/>;
 };
 exports.StackToolbar = StackToolbar;
-const StackToolbarBottom = ({ children }) => {
+const StackToolbarBottom = ({ children, disableImePadding }) => {
     return (<context_1.ToolbarPlacementContext.Provider value="bottom">
       <NativeMenuContext_1.NativeMenuContext value>
-        <native_1.RouterToolbarHost>{children}</native_1.RouterToolbarHost>
+        <native_1.RouterToolbarHost withImePadding={!disableImePadding}>{children}</native_1.RouterToolbarHost>
       </NativeMenuContext_1.NativeMenuContext>
     </context_1.ToolbarPlacementContext.Provider>);
 };
-const StackToolbarHeader = ({ children, placement, asChild }) => {
+const StackToolbarHeader = ({ children, placement, asChild, disableImePadding, }) => {
     if (placement !== 'left' && placement !== 'right') {
         throw new Error(`Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`);
     }
     const options = (0, react_1.useMemo)(() => appendStackToolbarPropsToOptions({}, 
     // satisfies ensures every prop is listed here
-    { children, placement, asChild }), [children, placement, asChild]);
+    { children, placement, asChild, disableImePadding }), [children, placement, asChild, disableImePadding]);
     (0, composition_options_1.useCompositionOption)(options);
     return null;
 };

@@ -1,0 +1,80 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RouterToolbarHost = RouterToolbarHost;
+exports.RouterToolbarItem = RouterToolbarItem;
+const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
+const modifiers_1 = require("@expo/ui/jetpack-compose/modifiers");
+const react_1 = require("react");
+const react_native_1 = require("react-native");
+const react_native_safe_area_context_1 = require("react-native-safe-area-context");
+function RouterToolbarHost(props) {
+    const insets = (0, react_native_safe_area_context_1.useSafeAreaInsets)();
+    const modifiers = (0, react_1.useMemo)(() => {
+        const baseModifiers = [(0, modifiers_1.fillMaxWidth)(), (0, modifiers_1.padding)(0, 0, 0, insets.bottom)];
+        if (props.withImePadding) {
+            baseModifiers.push((0, modifiers_1.imePadding)());
+        }
+        return baseModifiers;
+    }, [insets.bottom, props.withImePadding]);
+    return (<react_native_1.View style={[react_native_1.StyleSheet.absoluteFill]} pointerEvents="box-none">
+      <jetpack_compose_1.Host style={{ width: '100%', height: '100%', paddingHorizontal: 24 }}>
+        <jetpack_compose_1.Box modifiers={modifiers} contentAlignment="bottomCenter">
+          <jetpack_compose_1.HorizontalFloatingToolbar modifiers={[(0, modifiers_1.height)(64)]}>
+            {props.children}
+          </jetpack_compose_1.HorizontalFloatingToolbar>
+        </jetpack_compose_1.Box>
+      </jetpack_compose_1.Host>
+    </react_native_1.View>);
+}
+function RouterToolbarItem(props) {
+    if (props.type === 'fluidSpacer') {
+        // Silently ignore fluid spacer on android
+        return null;
+    }
+    if (props.type === 'fixedSpacer') {
+        if (props.width) {
+            return (<AnimatedWrapper visible={!props.hidden}>
+          <jetpack_compose_1.Box modifiers={[(0, modifiers_1.width)(props.width)]}/>
+        </AnimatedWrapper>);
+        }
+        return null;
+    }
+    if (props.type === 'searchBar') {
+        if (process.env.NODE_ENV !== 'production') {
+            console.warn('Stack.Toolbar.SearchBarSlot is not supported on Android. The search bar will not render.');
+        }
+        return null;
+    }
+    if (hasChildren(props.children)) {
+        return (<AnimatedWrapper visible={!props.hidden}>
+        <jetpack_compose_1.RNHostView matchContents>
+          <>{props.children}</>
+        </jetpack_compose_1.RNHostView>
+      </AnimatedWrapper>);
+    }
+    if (!props.source) {
+        if (process.env.NODE_ENV !== 'production' && !props.mdIconName) {
+            console.warn('Stack.Toolbar.Button on Android requires an ImageSourcePropType icon. SF Symbols and xcasset icons are not supported. Use the `icon` prop with a require() or { uri } source, or use <Stack.Toolbar.Icon src={...} />.');
+        }
+        return null;
+    }
+    return (<AnimatedWrapper visible={!props.hidden}>
+      <jetpack_compose_1.IconButton onPress={props.onSelected} disabled={props.disabled}>
+        <jetpack_compose_1.Icon source={props.source} tintColor={props.tintColor} size={24}/>
+      </jetpack_compose_1.IconButton>
+    </AnimatedWrapper>);
+}
+function AnimatedWrapper({ visible, children }) {
+    return (<jetpack_compose_1.AnimatedVisibility 
+    // As mentioned in the docs, `scaleIn` does not animate layout, so we need to combine it with `expandIn` to get the layout animation as well. The same applies to `scaleOut` and `shrinkOut`.
+    // https://developer.android.com/reference/kotlin/androidx/compose/animation/package-summary#scaleOut(androidx.compose.animation.core.FiniteAnimationSpec,kotlin.Float,androidx.compose.ui.graphics.TransformOrigin)
+    enterTransition={jetpack_compose_1.EnterTransition.scaleIn().plus(jetpack_compose_1.EnterTransition.expandIn())} exitTransition={jetpack_compose_1.ExitTransition.scaleOut().plus(jetpack_compose_1.ExitTransition.shrinkOut())} visible={visible}>
+      {children}
+    </jetpack_compose_1.AnimatedVisibility>);
+}
+function hasChildren(children) {
+    if (children == null)
+        return false;
+    return react_1.Children.count(children) > 0;
+}
+//# sourceMappingURL=native.android.js.map

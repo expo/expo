@@ -36,7 +36,10 @@ export interface StackToolbarProps {
    *
    * - `'left'`: Renders items in the left area of the header.
    * - `'right'`: Renders items in the right area of the header.
-   * - `'bottom'`: Renders items in the bottom toolbar (iOS only).
+   * - `'bottom'`: Renders items in the bottom toolbar (iOS and Android).
+   *   On Android, uses Material 3 `HorizontalFloatingToolbar` from `@expo/ui`.
+   *   Only `Stack.Toolbar.Button` with `ImageSourcePropType` icons is supported on Android.
+   *   SF Symbols, xcasset icons, Spacer, Menu, View, and SearchBarSlot are iOS-only.
    *
    * @default 'bottom'
    */
@@ -50,6 +53,16 @@ export interface StackToolbarProps {
    * @default false
    */
   asChild?: boolean;
+  /**
+   * When `true`, disables automatic addition of `imePadding` to the bottom toolbar on Android.
+   *
+   * > **Note:** This prop is only applicable for bottom placement on Android
+   *
+   * @default false
+   *
+   * @platform android
+   */
+  disableImePadding?: boolean;
 }
 
 /**
@@ -112,7 +125,7 @@ export interface StackToolbarProps {
  * ```
  *
  * @experimental
- * @platform ios
+ * @platform ios, android
  */
 export const StackToolbar = (props: StackToolbarProps) => {
   const parentPlacement = useToolbarPlacement();
@@ -127,17 +140,22 @@ export const StackToolbar = (props: StackToolbarProps) => {
   return <StackToolbarHeader {...props} key={props.placement} />;
 };
 
-const StackToolbarBottom = ({ children }: StackToolbarProps) => {
+const StackToolbarBottom = ({ children, disableImePadding }: StackToolbarProps) => {
   return (
     <ToolbarPlacementContext.Provider value="bottom">
       <NativeMenuContext value>
-        <RouterToolbarHost>{children}</RouterToolbarHost>
+        <RouterToolbarHost withImePadding={!disableImePadding}>{children}</RouterToolbarHost>
       </NativeMenuContext>
     </ToolbarPlacementContext.Provider>
   );
 };
 
-const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps) => {
+const StackToolbarHeader = ({
+  children,
+  placement,
+  asChild,
+  disableImePadding,
+}: StackToolbarProps) => {
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
       `Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`
@@ -149,9 +167,12 @@ const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps)
       appendStackToolbarPropsToOptions(
         {},
         // satisfies ensures every prop is listed here
-        { children, placement, asChild } satisfies Record<keyof StackToolbarProps, unknown>
+        { children, placement, asChild, disableImePadding } satisfies Record<
+          keyof StackToolbarProps,
+          unknown
+        >
       ),
-    [children, placement, asChild]
+    [children, placement, asChild, disableImePadding]
   );
   useCompositionOption(options);
 

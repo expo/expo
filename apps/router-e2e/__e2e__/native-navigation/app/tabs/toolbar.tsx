@@ -87,7 +87,7 @@ export default function ToolbarScreen() {
       console.error(error);
     },
   });
-  const image2 = useImage(require('../../../assets/sad-expo.svg'), {
+  const image2 = useImage(require('../../../../assets/sad-expo.svg'), {
     maxWidth: 24,
     maxHeight: 24,
     onError(error) {
@@ -281,7 +281,7 @@ export default function ToolbarScreen() {
         </View>
       </ScrollView>
 
-      <Stack.Toolbar>
+      <Stack.Toolbar disableImePadding>
         {/* Flexible spacer at the start */}
         <Stack.Toolbar.Spacer />
 
@@ -305,7 +305,7 @@ export default function ToolbarScreen() {
 
         <Stack.Toolbar.Button
           image={image}
-          icon={require('../../../assets/expo-transparent.png')}
+          icon={require('../../../../assets/expo-transparent.png')}
         />
 
         {/* TODO: On android mounting and unmounting does not work properly with animations */}
@@ -384,7 +384,10 @@ export default function ToolbarScreen() {
           })}
           iconRenderingMode="original"
           onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
-          <Stack.Toolbar.Icon xcasset="expo-logo" src={require('../../../assets/expo-logo.png')} />
+          <Stack.Toolbar.Icon
+            xcasset="expo-logo"
+            src={require('../../../../assets/expo-logo.png')}
+          />
         </Stack.Toolbar.Button>
 
         {/* Xcasset menu */}

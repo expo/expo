@@ -1,4 +1,5 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
+import type { AndroidSymbol } from 'expo-symbols';
 import { type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -37,6 +38,8 @@ export interface StackHeaderItemSharedProps {
 }
 type RNSharedHeaderItem = Pick<NativeStackHeaderItemButton, 'label' | 'labelStyle' | 'icon' | 'variant' | 'tintColor' | 'disabled' | 'width' | 'hidesSharedBackground' | 'sharesBackground' | 'identifier' | 'badge' | 'accessibilityLabel' | 'accessibilityHint'>;
 /** @internal */
+export declare function extractMdIconName(props: StackHeaderItemSharedProps): AndroidSymbol | undefined;
+/** @internal */
 export declare function extractXcassetName(props: StackHeaderItemSharedProps): string | undefined;
 /**
  * Extracts the rendering mode from the Icon child component (for `src` and `xcasset` variants).
@@ -44,6 +47,15 @@ export declare function extractXcassetName(props: StackHeaderItemSharedProps): s
  * @internal
  */
 export declare function extractIconRenderingMode(props: StackHeaderItemSharedProps): 'template' | 'original' | undefined;
+/**
+ * Extracts the raw `ImageSourcePropType` from either:
+ * - A `<Stack.Toolbar.Icon src={...} />` child component
+ * - The `icon` prop when it's not an SF Symbol string
+ *
+ * Used by Android toolbar to get the raw image source for `@expo/ui` Icon.
+ * @internal
+ */
+export declare function extractImageSource(props: StackHeaderItemSharedProps): ImageSourcePropType | undefined;
 export declare function convertStackHeaderSharedPropsToRNSharedHeaderItem(props: StackHeaderItemSharedProps, isBottomPlacement?: boolean): RNSharedHeaderItem;
 export {};
 //# sourceMappingURL=shared.d.ts.map

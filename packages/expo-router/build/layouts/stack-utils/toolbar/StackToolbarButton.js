@@ -10,6 +10,7 @@ const shared_1 = require("./shared");
 const toolbar_primitives_1 = require("./toolbar-primitives");
 const native_1 = require("../../../toolbar/native");
 const children_1 = require("../../../utils/children");
+const materialIcon_1 = require("../../../utils/materialIcon");
 /**
  * A button used inside `Stack.Toolbar`.
  *
@@ -46,7 +47,7 @@ const children_1 = require("../../../utils/children");
  * }
  * ```
  *
- * @platform ios
+ * @platform ios, android
  */
 const StackToolbarButton = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
@@ -69,12 +70,18 @@ const StackToolbarButton = (props) => {
     if (placement !== 'bottom') {
         throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
     }
+    // md icon: child Icon takes priority over Button md prop
+    const mdIconName = (0, shared_1.extractMdIconName)(props) ?? props.md;
+    const materialSource = (0, materialIcon_1.useMaterialIconSource)(mdIconName);
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props, true);
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
     const xcassetName = (0, shared_1.extractXcassetName)(props);
     const imageRenderingMode = (0, shared_1.extractIconRenderingMode)(props) ?? props.iconRenderingMode;
-    return (<NativeToolbarButton {...sharedProps} icon={icon} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode}/>);
+    const source = (0, shared_1.extractImageSource)(props);
+    // Explicit source takes priority over resolved material icon
+    const resolvedSource = source ?? materialSource;
+    return (<NativeToolbarButton {...sharedProps} icon={icon} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} source={resolvedSource} mdIconName={mdIconName}/>);
 };
 exports.StackToolbarButton = StackToolbarButton;
 function convertStackToolbarButtonPropsToRNHeaderItem(props) {
@@ -96,7 +103,7 @@ const ALLOWED_CHILDREN = [toolbar_primitives_1.StackToolbarLabel, toolbar_primit
 const NativeToolbarButton = (props) => {
     const id = (0, react_1.useId)();
     const renderingMode = props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
-    return (<native_1.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} imageRenderingMode={renderingMode} onSelected={props.onPress} possibleTitles={props.possibleTitles} selected={props.selected} sharesBackground={!props.separateBackground} systemImageName={props.icon} xcassetName={props.xcassetName} title={props.label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)}/>);
+    return (<native_1.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} imageRenderingMode={renderingMode} mdIconName={props.mdIconName} onSelected={props.onPress} possibleTitles={props.possibleTitles} selected={props.selected} sharesBackground={!props.separateBackground} source={props.source} systemImageName={props.icon} xcassetName={props.xcassetName} title={props.label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)}/>);
 };
 // #endregion
 //# sourceMappingURL=StackToolbarButton.js.map
