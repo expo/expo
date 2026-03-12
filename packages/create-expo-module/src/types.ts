@@ -19,6 +19,7 @@ export type CommandOptions = {
   authorEmail?: string;
   authorUrl?: string;
   repo?: string;
+  platform?: string[];
 };
 
 /**
@@ -33,6 +34,7 @@ export type SubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    platforms: string[];
   };
   author: string;
   license: string;
@@ -47,6 +49,7 @@ export type LocalSubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    platforms: string[];
   };
   type: 'local';
 };
