@@ -19,6 +19,8 @@ Expo UI Chips match the official Jetpack Compose [Chip API](https://developer.an
 
 ### Assist chip
 
+Assist chips help users take actions or start tasks, such as booking a flight or opening a map. They often appear as temporary UI elements in response to user input.
+
 ```tsx AssistChipExample.tsx
 import { Host, AssistChip, Icon, Text } from '@expo/ui/jetpack-compose';
 
@@ -40,6 +42,8 @@ export default function AssistChipExample() {
 
 ### Filter chip
 
+Filter chips allow users to refine content from a set of options. They support a selected state and are commonly used in search bars or content filtering.
+
 ```tsx FilterChipExample.tsx
 import { useState } from 'react';
 import { Host, FilterChip, Text } from '@expo/ui/jetpack-compose';
@@ -60,6 +64,8 @@ export default function FilterChipExample() {
 ```
 
 ### Input chip
+
+Input chips represent discrete pieces of information entered by a user, such as tags in a text field. They support avatars, trailing icons, and can be dismissed.
 
 ```tsx InputChipExample.tsx
 import { useState } from 'react';
@@ -91,6 +97,8 @@ export default function InputChipExample() {
 ```
 
 ### Suggestion chip
+
+Suggestion chips help narrow a user's intent by presenting dynamically generated suggestions, such as quick-reply options in a chat or search refinements.
 
 ```tsx SuggestionChipExample.tsx
 import { Host, SuggestionChip, Text } from '@expo/ui/jetpack-compose';
