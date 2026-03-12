@@ -51,7 +51,7 @@ export default function CheckboxScreen() {
             <ComposeText>Disabled</ComposeText>
             <ComposeText>Non-interactive checkbox using the enabled prop.</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 16 }}>
-              <Checkbox value={true} enabled={false} />
+              <Checkbox value enabled={false} />
               <Checkbox value={false} enabled={false} />
             </Row>
           </Column>
