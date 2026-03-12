@@ -84,6 +84,55 @@ export default function ButtonVariantsExample() {
 }
 ```
 
+### Button with icons
+
+Since buttons accept composable children, you can add leading and trailing icons using the `Icon` component. This follows the [Material 3 buttons with icon](https://m3.material.io/components/buttons/guidelines) pattern ([official sample](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/samples/src/main/java/androidx/compose/material3/samples/ButtonSamples.kt;l=179?q=ButtonWithIconSample)), use 18dp icon size with 8dp spacing between the icon and label.
+
+```tsx ButtonWithIconsExample.tsx
+import {
+  Host,
+  Button,
+  OutlinedButton,
+  FilledTonalButton,
+  Icon,
+  Spacer,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { width } from '@expo/ui/jetpack-compose/modifiers';
+
+const addIcon = require('./assets/add.png');
+const sendIcon = require('./assets/send.png');
+
+export default function ButtonWithIconsExample() {
+  return (
+    <Host matchContents>
+      {/* Leading icon — use contentPadding to match M3 spec */}
+      <Button onClick={() => {}} contentPadding={{ start: 16 }}>
+        <Icon source={addIcon} size={18} tintColor="#FFFFFF" />
+        <Spacer modifiers={[width(8)]} />
+        <Text>Add Item</Text>
+      </Button>
+
+      {/* Trailing icon */}
+      <OutlinedButton onClick={() => {}}>
+        <Text>Send</Text>
+        <Spacer modifiers={[width(8)]} />
+        <Icon source={sendIcon} size={18} />
+      </OutlinedButton>
+
+      {/* Both leading and trailing icons */}
+      <FilledTonalButton onClick={() => {}} contentPadding={{ start: 16 }}>
+        <Icon source={addIcon} size={18} />
+        <Spacer modifiers={[width(8)]} />
+        <Text>Create & Send</Text>
+        <Spacer modifiers={[width(8)]} />
+        <Icon source={sendIcon} size={18} />
+      </FilledTonalButton>
+    </Host>
+  );
+}
+```
+
 ### Custom colors
 
 Override container and content colors using the `colors` prop.

@@ -10,9 +10,14 @@ import {
   Card,
   LazyColumn,
   Shape,
+  Icon,
+  Spacer,
 } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
+import { fillMaxWidth, padding, width } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
+
+const addIcon = require('../../../assets/icons/api/Camera.png');
+const sendIcon = require('../../../assets/icons/api/Notification.png');
 
 export default function ButtonScreen() {
   return (
@@ -84,6 +89,33 @@ export default function ButtonScreen() {
             </Button>
             <FilledTonalButton colors={{ containerColor: '#FF6347', contentColor: '#FFFFFF' }}>
               <ComposeText>Tomato</ComposeText>
+            </FilledTonalButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Leading & Trailing Icons</ComposeText>
+            <ComposeText>Use Icon as a child to add leading or trailing icons.</ComposeText>
+            <Button
+              onClick={() => console.log('Add clicked')}
+              contentPadding={{ start: 16 }}>
+              <Icon source={addIcon} size={18} tintColor="#FFFFFF" />
+              <Spacer modifiers={[width(8)]} />
+              <ComposeText>Add Item</ComposeText>
+            </Button>
+            <OutlinedButton onClick={() => console.log('Send clicked')}>
+              <ComposeText>Send</ComposeText>
+              <Spacer modifiers={[width(8)]} />
+              <Icon source={sendIcon} size={18} />
+            </OutlinedButton>
+            <FilledTonalButton
+              onClick={() => console.log('Both icons clicked')}
+              contentPadding={{ start: 16 }}>
+              <Icon source={addIcon} size={18} />
+              <Spacer modifiers={[width(8)]} />
+              <ComposeText>Create & Send</ComposeText>
+              <Spacer modifiers={[width(8)]} />
+              <Icon source={sendIcon} size={18} />
             </FilledTonalButton>
           </Column>
         </Card>

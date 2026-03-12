@@ -11,6 +11,16 @@ export type ButtonColors = {
     disabledContainerColor?: ColorValue;
     disabledContentColor?: ColorValue;
 };
+/**
+ * Content padding for the button's inner content.
+ * All values are in density-independent pixels (dp).
+ */
+export type ButtonContentPadding = {
+    start?: number;
+    top?: number;
+    end?: number;
+    bottom?: number;
+};
 export type ButtonProps = {
     /**
      * Callback that is called when the button is clicked.
@@ -26,6 +36,11 @@ export type ButtonProps = {
      * @platform android
      */
     colors?: ButtonColors;
+    /**
+     * The padding between the button container and its content.
+     * Use this to adjust internal spacing, for example when adding a leading icon
+     */
+    contentPadding?: ButtonContentPadding;
     /**
      * The shape of the button.
      */
