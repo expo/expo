@@ -560,4 +560,14 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu/',
   '/versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu/':
     '/versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/latest/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/latest/sdk/ui/jetpack-compose/dropdownmenu/',
+
+  // After merging FilterChip into Chip in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/chip/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/chip/',
+  '/versions/latest/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/latest/sdk/ui/jetpack-compose/chip/',
 };

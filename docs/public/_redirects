@@ -326,3 +326,9 @@
 # After renaming ContextMenu to DropdownMenu in expo-ui (Android)
 /versions/unversioned/sdk/ui/jetpack-compose/contextmenu /versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu /versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu 301
+/versions/latest/sdk/ui/jetpack-compose/contextmenu /versions/latest/sdk/ui/jetpack-compose/dropdownmenu 301
+
+# After merging FilterChip into Chip in expo-ui (Android)
+/versions/unversioned/sdk/ui/jetpack-compose/filterchip /versions/unversioned/sdk/ui/jetpack-compose/chip 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/filterchip /versions/v55.0.0/sdk/ui/jetpack-compose/chip 301
+/versions/latest/sdk/ui/jetpack-compose/filterchip /versions/latest/sdk/ui/jetpack-compose/chip 301
