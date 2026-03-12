@@ -42,7 +42,6 @@ describe(getXcodeBuildArgsAsync, () => {
       'id=demo-udid',
       'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'COMPILER_INDEX_STORE_ENABLE=NO',
-      '-quiet',
       'DEVELOPMENT_TEAM=my-dev-team',
       '-allowProvisioningUpdates',
       '-allowProvisioningDeviceRegistration',
@@ -76,7 +75,6 @@ describe(getXcodeBuildArgsAsync, () => {
       'id=demo-udid',
       'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'COMPILER_INDEX_STORE_ENABLE=NO',
-      '-quiet',
     ]);
     expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
   });
@@ -106,7 +104,6 @@ describe(getXcodeBuildArgsAsync, () => {
       'generic/platform=iOS Simulator',
       'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'COMPILER_INDEX_STORE_ENABLE=NO',
-      '-quiet',
     ]);
     expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
   });
@@ -136,7 +133,6 @@ describe(getXcodeBuildArgsAsync, () => {
       'generic/platform=tvOS Simulator',
       'COCOAPODS_PARALLEL_CODE_SIGN=true',
       'COMPILER_INDEX_STORE_ENABLE=NO',
-      '-quiet',
     ]);
   });
 });
