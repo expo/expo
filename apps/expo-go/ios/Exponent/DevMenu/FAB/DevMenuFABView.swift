@@ -126,7 +126,7 @@ struct DevMenuFABView: View {
     UserDefaults.standard.set(true, forKey: hasStoredPositionKey)
   }
 
-  @State private var position: CGPoint = .zero
+  @State private var position: CGPoint = loadStoredPosition() ?? .zero
   @State private var isDragging = false
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
@@ -223,6 +223,8 @@ struct DevMenuFABView: View {
 
         if dragDistance < FABConstants.dragThreshold {
           isDragging = false
+          let feedback = UIImpactFeedbackGenerator(style: .light)
+          feedback.impactOccurred()
           onOpenMenu()
         } else {
           let velocity = CGPoint(

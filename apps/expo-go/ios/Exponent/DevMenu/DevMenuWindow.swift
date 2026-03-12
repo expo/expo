@@ -11,7 +11,7 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
     self.manager = manager
     self.devMenuViewController = DevMenuViewController(manager: manager)
 
-    super.init(frame: .zero)
+    super.init(frame: UIScreen.main.bounds)
 
     self.rootViewController = UIViewController()
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
@@ -47,23 +47,21 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
     isPresenting = true
     devMenuViewController.modalPresentationStyle = .pageSheet
 
-    if #available(iOS 15.0, *) {
-      if let sheet = devMenuViewController.sheetPresentationController {
-        if #available(iOS 16.0, *) {
-          sheet.detents = [
-            .custom(resolver: { context in
-              return context.maximumDetentValue * 0.6
-            }),
-            .large()
-          ]
-        } else {
-          sheet.detents = [.medium(), .large()]
-        }
-
-        sheet.largestUndimmedDetentIdentifier = .large
-        sheet.prefersEdgeAttachedInCompactHeight = true
-        sheet.delegate = self
+    if let sheet = devMenuViewController.sheetPresentationController {
+      if #available(iOS 16.0, *) {
+        sheet.detents = [
+          .custom(resolver: { context in
+            return context.maximumDetentValue * 0.6
+          }),
+          .large()
+        ]
+      } else {
+        sheet.detents = [.medium(), .large()]
       }
+
+      sheet.largestUndimmedDetentIdentifier = .large
+      sheet.prefersEdgeAttachedInCompactHeight = true
+      sheet.delegate = self
     }
 
     rootVC.present(devMenuViewController, animated: true) { [weak self] in
