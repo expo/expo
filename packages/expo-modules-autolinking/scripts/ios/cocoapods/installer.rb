@@ -106,6 +106,9 @@ module Pod
       else
         Pod::UI.puts "[Expo] ".yellow + "ReactCodegen target not found in pods project"
       end
+
+      # TODO: chrfalch - remove when RN 0.85 ships (VFS overlay fixes the umbrella header)
+      disable_swift_module_interface_for_prebuilt_react()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
@@ -147,6 +150,24 @@ module Pod
       return :dynamic if ENV["USE_FRAMEWORKS"].downcase == 'dynamic'
       return :static if ENV["USE_FRAMEWORKS"].downcase == 'static'
       nil
+    end
+
+    # Prevents swiftinterface verification failures caused by the prebuilt React.xcframework's
+    # broken umbrella header. Only applied to pod target xcconfigs — aggregate target xcconfigs
+    # are left untouched so brownfield targets retain SWIFT_EMIT_MODULE_INTERFACE=YES.
+    # TODO: chrfalch - remove when RN 0.85 ships (VFS overlay fixes the umbrella header)
+    def disable_swift_module_interface_for_prebuilt_react()
+      return unless ENV['RCT_USE_PREBUILT_RNCORE'] == '1'
+
+      Pod::UI.puts "[Expo] ".blue + "Disabling SWIFT_EMIT_MODULE_INTERFACE for prebuilt React compatibility"
+
+      self.pod_targets.each do |pod_target|
+        pod_target.build_settings.each do |config_name, build_settings|
+          xcconfig = build_settings.xcconfig
+          xcconfig.attributes['SWIFT_EMIT_MODULE_INTERFACE'] = 'NO'
+          xcconfig.save_as(pod_target.xcconfig_path(config_name))
+        end
+      end
     end
   end
 end
