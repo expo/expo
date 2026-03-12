@@ -1,4 +1,38 @@
+import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
+/**
+ * Colors for non-selectable chip types (AssistChip, SuggestionChip).
+ */
+export type ChipColors = {
+    containerColor?: ColorValue;
+    labelColor?: ColorValue;
+    iconColor?: ColorValue;
+};
+/**
+ * Colors for selectable chip types (FilterChip, InputChip).
+ */
+export type SelectableChipColors = {
+    containerColor?: ColorValue;
+    labelColor?: ColorValue;
+    iconColor?: ColorValue;
+    selectedContainerColor?: ColorValue;
+    selectedLabelColor?: ColorValue;
+    selectedIconColor?: ColorValue;
+};
+/**
+ * Border configuration for chips.
+ */
+export type ChipBorder = {
+    /**
+     * Border width in dp.
+     * @default 1
+     */
+    width?: number;
+    /**
+     * Border color.
+     */
+    color?: ColorValue;
+};
 type SlotChildProps = {
     children: React.ReactNode;
 };
@@ -9,9 +43,21 @@ export type AssistChipProps = {
      */
     enabled?: boolean;
     /**
+     * Colors for the chip's container, label, and icon.
+     */
+    colors?: ChipColors;
+    /**
+     * Elevation in dp.
+     */
+    elevation?: number;
+    /**
+     * Border configuration.
+     */
+    border?: ChipBorder;
+    /**
      * Callback fired when the chip is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
      * Modifiers for the component.
      */
@@ -43,6 +89,62 @@ declare namespace AssistChipComponent {
     var TrailingIcon: typeof AssistChipTrailingIcon;
 }
 export { AssistChipComponent as AssistChip };
+export type FilterChipProps = {
+    /**
+     * Whether the chip is currently selected.
+     */
+    selected: boolean;
+    /**
+     * Whether the chip is enabled and can be interacted with.
+     */
+    enabled?: boolean;
+    /**
+     * Colors for the chip's container, label, icon, and selected states.
+     */
+    colors?: SelectableChipColors;
+    /**
+     * Elevation in dp.
+     */
+    elevation?: number;
+    /**
+     * Border configuration.
+     */
+    border?: ChipBorder;
+    /**
+     * Callback fired when the chip is clicked.
+     */
+    onClick?: () => void;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+    /**
+     * Children containing Label, LeadingIcon, and TrailingIcon slots.
+     */
+    children?: React.ReactNode;
+};
+/**
+ * Label slot for FilterChip.
+ */
+declare function FilterChipLabel(props: SlotChildProps): import("react").JSX.Element;
+/**
+ * Leading icon slot for FilterChip.
+ */
+declare function FilterChipLeadingIcon(props: SlotChildProps): import("react").JSX.Element;
+/**
+ * Trailing icon slot for FilterChip.
+ */
+declare function FilterChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
+/**
+ * A filter chip component for refining content with selection/deselection.
+ */
+declare function FilterChipComponent(props: FilterChipProps): import("react").JSX.Element;
+declare namespace FilterChipComponent {
+    var Label: typeof FilterChipLabel;
+    var LeadingIcon: typeof FilterChipLeadingIcon;
+    var TrailingIcon: typeof FilterChipTrailingIcon;
+}
+export { FilterChipComponent as FilterChip };
 export type InputChipProps = {
     /**
      * Whether the chip is enabled and can be interacted with.
@@ -55,9 +157,21 @@ export type InputChipProps = {
      */
     selected?: boolean;
     /**
+     * Colors for the chip's container, label, icon, and selected states.
+     */
+    colors?: SelectableChipColors;
+    /**
+     * Elevation in dp.
+     */
+    elevation?: number;
+    /**
+     * Border configuration.
+     */
+    border?: ChipBorder;
+    /**
      * Callback fired when the chip is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
      * Modifiers for the component.
      */
@@ -96,9 +210,21 @@ export type SuggestionChipProps = {
      */
     enabled?: boolean;
     /**
+     * Colors for the chip's container, label, and icon.
+     */
+    colors?: ChipColors;
+    /**
+     * Elevation in dp.
+     */
+    elevation?: number;
+    /**
+     * Border configuration.
+     */
+    border?: ChipBorder;
+    /**
      * Callback fired when the chip is clicked.
      */
-    onPress?: () => void;
+    onClick?: () => void;
     /**
      * Modifiers for the component.
      */

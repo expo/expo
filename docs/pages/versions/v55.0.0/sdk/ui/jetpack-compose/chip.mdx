@@ -25,7 +25,7 @@ import { Host, AssistChip, Icon, Text } from '@expo/ui/jetpack-compose';
 export default function AssistChipExample() {
   return (
     <Host matchContents>
-      <AssistChip onPress={() => console.log('Opening flight booking...')}>
+      <AssistChip onClick={() => console.log('Opening flight booking...')}>
         <AssistChip.Label>
           <Text>Book Flight</Text>
         </AssistChip.Label>
@@ -49,7 +49,7 @@ export default function FilterChipExample() {
 
   return (
     <Host matchContents>
-      <FilterChip selected={selected} onPress={() => setSelected(!selected)}>
+      <FilterChip selected={selected} onClick={() => setSelected(!selected)}>
         <FilterChip.Label>
           <Text>Images</Text>
         </FilterChip.Label>
@@ -62,16 +62,29 @@ export default function FilterChipExample() {
 ### Input chip
 
 ```tsx InputChipExample.tsx
-import { Host, InputChip, Text } from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+import { Host, InputChip, Icon, Text, FlowRow } from '@expo/ui/jetpack-compose';
 
 export default function InputChipExample() {
+  const [chips, setChips] = useState(['Work', 'Travel', 'News']);
+
   return (
     <Host matchContents>
-      <InputChip onPress={() => console.log('Dismissed Work chip')}>
-        <InputChip.Label>
-          <Text>Work</Text>
-        </InputChip.Label>
-      </InputChip>
+      <FlowRow horizontalArrangement={{ spacedBy: 8 }}>
+        {chips.map((label) => (
+          <InputChip
+            key={label}
+            selected
+            onClick={() => setChips((prev) => prev.filter((c) => c !== label))}>
+            <InputChip.Label>
+              <Text>{label}</Text>
+            </InputChip.Label>
+            <InputChip.TrailingIcon>
+              <Icon source={require('./assets/close.xml')} size={18} />
+            </InputChip.TrailingIcon>
+          </InputChip>
+        ))}
+      </FlowRow>
     </Host>
   );
 }
@@ -85,7 +98,7 @@ import { Host, SuggestionChip, Text } from '@expo/ui/jetpack-compose';
 export default function SuggestionChipExample() {
   return (
     <Host matchContents>
-      <SuggestionChip onPress={() => console.log('Searching nearby...')}>
+      <SuggestionChip onClick={() => console.log('Searching nearby...')}>
         <SuggestionChip.Label>
           <Text>Nearby</Text>
         </SuggestionChip.Label>

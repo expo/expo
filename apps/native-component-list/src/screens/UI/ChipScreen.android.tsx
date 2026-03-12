@@ -37,7 +37,7 @@ export default function ChipScreen() {
             <ComposeText>Assist chips</ComposeText>
             <ComposeText>Help users complete actions and primary tasks.</ComposeText>
             <FlowRow horizontalArrangement={{ spacedBy: 8 }}>
-              <AssistChip onPress={() => Alert.alert('Assist', 'Opening flight booking...')}>
+              <AssistChip onClick={() => Alert.alert('Assist', 'Opening flight booking...')}>
                 <AssistChip.Label>
                   <ComposeText>Book</ComposeText>
                 </AssistChip.Label>
@@ -45,12 +45,12 @@ export default function ChipScreen() {
                   <Icon source={require('../../../assets/icons/ui/add.xml')} size={18} />
                 </AssistChip.LeadingIcon>
               </AssistChip>
-              <AssistChip onPress={() => Alert.alert('Assist', 'Adding to calendar...')}>
+              <AssistChip onClick={() => Alert.alert('Assist', 'Adding to calendar...')}>
                 <AssistChip.Label>
                   <ComposeText>Calendar</ComposeText>
                 </AssistChip.Label>
               </AssistChip>
-              <AssistChip onPress={() => Alert.alert('Assist', 'Sharing location...')}>
+              <AssistChip onClick={() => Alert.alert('Assist', 'Sharing location...')}>
                 <AssistChip.Label>
                   <ComposeText>Share</ComposeText>
                 </AssistChip.Label>
@@ -72,7 +72,7 @@ export default function ChipScreen() {
                 <FilterChip
                   key={filter}
                   selected={selectedFilters.includes(filter)}
-                  onPress={() => handleFilterToggle(filter)}>
+                  onClick={() => handleFilterToggle(filter)}>
                   <FilterChip.Label>
                     <ComposeText>{filter}</ComposeText>
                   </FilterChip.Label>
@@ -92,10 +92,16 @@ export default function ChipScreen() {
             <ComposeText>Represent user input that can be dismissed.</ComposeText>
             <FlowRow horizontalArrangement={{ spacedBy: 8 }}>
               {inputChips.map((chipLabel) => (
-                <InputChip key={chipLabel} onPress={() => handleInputDismiss(chipLabel)}>
+                <InputChip key={chipLabel} selected onClick={() => handleInputDismiss(chipLabel)}>
                   <InputChip.Label>
                     <ComposeText>{chipLabel}</ComposeText>
                   </InputChip.Label>
+                  <InputChip.Avatar>
+                    <Icon source={require('../../../assets/icons/ui/person.xml')} size={18} />
+                  </InputChip.Avatar>
+                  <InputChip.TrailingIcon>
+                    <Icon source={require('../../../assets/icons/ui/close.xml')} size={18} />
+                  </InputChip.TrailingIcon>
                 </InputChip>
               ))}
             </FlowRow>
@@ -106,17 +112,17 @@ export default function ChipScreen() {
             <ComposeText>Suggestion chips</ComposeText>
             <ComposeText>Offer contextual suggestions and recommendations.</ComposeText>
             <FlowRow horizontalArrangement={{ spacedBy: 8 }}>
-              <SuggestionChip onPress={() => Alert.alert('Suggestion', 'Applying dark mode...')}>
+              <SuggestionChip onClick={() => Alert.alert('Suggestion', 'Applying dark mode...')}>
                 <SuggestionChip.Label>
                   <ComposeText>Dark Mode</ComposeText>
                 </SuggestionChip.Label>
               </SuggestionChip>
-              <SuggestionChip onPress={() => Alert.alert('Suggestion', 'Searching nearby...')}>
+              <SuggestionChip onClick={() => Alert.alert('Suggestion', 'Searching nearby...')}>
                 <SuggestionChip.Label>
                   <ComposeText>Nearby</ComposeText>
                 </SuggestionChip.Label>
               </SuggestionChip>
-              <SuggestionChip onPress={() => Alert.alert('Suggestion', 'Adding photos...')}>
+              <SuggestionChip onClick={() => Alert.alert('Suggestion', 'Adding photos...')}>
                 <SuggestionChip.Label>
                   <ComposeText>Photos</ComposeText>
                 </SuggestionChip.Label>
