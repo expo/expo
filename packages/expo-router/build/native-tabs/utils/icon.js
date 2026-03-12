@@ -22,13 +22,18 @@ function convertIconColorPropToObject(iconColor) {
 }
 function useAwaitedScreensIcon(icon) {
     const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+    const renderingMode = icon && typeof icon === 'object' && 'renderingMode' in icon
+        ? icon.renderingMode
+        : undefined;
     const [awaitedIcon, setAwaitedIcon] = (0, react_1.useState)(undefined);
     (0, react_1.useEffect)(() => {
         const loadIcon = async () => {
             if (src && src instanceof Promise) {
                 const awaitedSrc = await src;
                 if (awaitedSrc) {
-                    const currentAwaitedIcon = { src: awaitedSrc };
+                    const currentAwaitedIcon = renderingMode
+                        ? { src: awaitedSrc, renderingMode }
+                        : { src: awaitedSrc };
                     setAwaitedIcon(currentAwaitedIcon);
                 }
             }
@@ -38,7 +43,7 @@ function useAwaitedScreensIcon(icon) {
         // The icon object can be recreated, while src should stay the same
         // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
         // So we should be safe with promise resolving
-    }, [src]);
+    }, [src, renderingMode]);
     return (0, react_1.useMemo)(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
 }
 function isAwaitedIcon(icon) {
@@ -85,17 +90,22 @@ function convertOptionsIconToAndroidPropsIcon(icon) {
     }
     return undefined;
 }
-function convertComponentSrcToImageSource(src) {
+function convertComponentSrcToImageSource(src, renderingMode) {
+    let result;
     if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerVectorIcon)) {
         const props = src.props;
-        return { src: props.family.getImageSource(props.name, 24, 'white') };
+        result = { src: props.family.getImageSource(props.name, 24, 'white') };
     }
     else if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerPromiseIcon)) {
-        return { src: src.props.loader() };
+        result = { src: src.props.loader() };
     }
     else {
         console.warn('Only VectorIcon is supported as a React element in Icon.src');
+        return undefined;
     }
-    return undefined;
+    if (renderingMode) {
+        return { ...result, renderingMode };
+    }
+    return result;
 }
 //# sourceMappingURL=icon.js.map
