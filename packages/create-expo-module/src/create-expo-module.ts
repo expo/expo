@@ -17,8 +17,10 @@ import {
   type PackageManagerName,
 } from './packageManager';
 import {
+  ALL_PLATFORMS,
   getLocalFolderNamePrompt,
   getLocalSubstitutionDataPrompts,
+  getPlatformPrompt,
   getSlugPrompt,
   getSubstitutionDataPrompts,
 } from './prompts';
@@ -116,6 +118,96 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
 }
 
 /**
+ * Reads `app.json` from the nearest project root (found by walking up from CWD)
+ * and returns the `expo.platforms` list mapped to module platform names (`ios` → `apple`).
+ * Returns `null` when `app.json` is absent or has no `expo.platforms` field.
+ */
+async function getLocalAppJsonPlatforms(): Promise<string[] | null> {
+  let root: string | null = null;
+  for (let dir = CWD; path.dirname(dir) !== dir; dir = path.dirname(dir)) {
+    if (fs.existsSync(path.resolve(dir, 'package.json'))) {
+      root = dir;
+      break;
+    }
+  }
+  if (!root) {
+    return null;
+  }
+  const appJsonPath = path.resolve(root, 'app.json');
+  if (!fs.existsSync(appJsonPath)) {
+    return null;
+  }
+  try {
+    const content = await fs.promises.readFile(appJsonPath, 'utf8');
+    const appJson = JSON.parse(content);
+    const raw: string[] | undefined = appJson?.expo?.platforms;
+    if (!Array.isArray(raw) || raw.length === 0) {
+      return null;
+    }
+    // app.json uses 'ios', expo-module.config.json uses 'apple'
+    const platformMap: Record<string, string> = { ios: 'apple', android: 'android', web: 'web' };
+    const mapped = raw
+      .map((p) => platformMap[p] ?? p)
+      .filter((p) => (ALL_PLATFORMS as readonly string[]).includes(p));
+    return mapped.length > 0 ? mapped : null;
+  } catch {
+    debug('Failed to read or parse app.json for platform defaults');
+    return null;
+  }
+}
+
+/**
+ * Determines the target platforms for the module.
+ *
+ * Priority:
+ *   1. `--platform` CLI flag
+ *   2. Non-interactive mode → all platforms
+ *   3. Interactive + local module → pre-select from app.json, then prompt
+ *   4. Interactive + non-local → prompt with all platforms pre-selected
+ */
+async function resolvePlatformsAsync(
+  isLocal: boolean,
+  interactive: boolean,
+  options: CommandOptions
+): Promise<string[]> {
+  if (options.platform && options.platform.length > 0) {
+    const valid = options.platform.filter((p) => (ALL_PLATFORMS as readonly string[]).includes(p));
+    const invalid = options.platform.filter(
+      (p) => !(ALL_PLATFORMS as readonly string[]).includes(p)
+    );
+    if (invalid.length > 0) {
+      console.warn(
+        chalk.yellow(
+          `⚠️  Unknown platform(s) ignored: ${invalid.join(', ')}. Valid values: ${ALL_PLATFORMS.join(', ')}`
+        )
+      );
+    }
+    if (valid.length === 0) {
+      console.warn(chalk.yellow(`⚠️  No valid platforms specified. Defaulting to all platforms.`));
+      return [...ALL_PLATFORMS];
+    }
+    return valid;
+  }
+
+  if (!interactive) {
+    return [...ALL_PLATFORMS];
+  }
+
+  const appJsonPlatforms = isLocal ? await getLocalAppJsonPlatforms() : null;
+  const preSelected: readonly string[] = appJsonPlatforms ?? ALL_PLATFORMS;
+
+  if (appJsonPlatforms) {
+    debug(`Using app.json platforms as defaults: ${appJsonPlatforms.join(', ')}`);
+  }
+
+  const { platforms } = await prompts(getPlatformPrompt(preSelected), {
+    onCancel: () => process.exit(0),
+  });
+
+  return platforms as string[];
+}
+
+/**
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
@@ -158,7 +250,7 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   const packageManager = resolvePackageManager();
   const packagePath = options.source
-    ? path.join(CWD, options.source)
+    ? path.resolve(CWD, options.source)
     : await downloadPackageAsync(targetDir, options.local);
 
   await logEventAsync(eventCreateExpoModule(packageManager, options));
@@ -370,6 +462,15 @@ function handleSuffix(name: string, suffix: string): string {
 }
 
 /**
+ * Maps template top-level directory names to the platform name in `expo-module.config.json`.
+ * Files under these directories are only copied when the corresponding platform is selected.
+ */
+const TEMPLATE_DIR_TO_PLATFORM: Record<string, string> = {
+  ios: 'apple',
+  android: 'android',
+};
+
+/**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
 async function createModuleFromTemplate(
@@ -381,6 +482,13 @@ async function createModuleFromTemplate(
 
   // Iterate through all template files.
   for (const file of files) {
+    // Skip platform-specific directories when the platform was not selected.
+    const topLevelDir = file.split(path.sep)[0];
+    const requiredPlatform = TEMPLATE_DIR_TO_PLATFORM[topLevelDir];
+    if (requiredPlatform && !data.project.platforms.includes(requiredPlatform)) {
+      continue;
+    }
+
     const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
       openDelimiter: '{',
       closeDelimiter: '}',
@@ -471,9 +579,10 @@ async function askForSubstitutionDataAsync(
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const interactive = isInteractive();
 
-  // Non-interactive mode: use CLI options and defaults
+  const platforms = await resolvePlatformsAsync(isLocal, interactive, options);
+
   if (!interactive) {
-    return getSubstitutionDataFromOptions(slug, isLocal, options);
+    return getSubstitutionDataFromOptions(slug, isLocal, options, platforms);
   }
 
   // Interactive mode: prompt for values, but skip prompts for CLI-provided values
@@ -519,6 +628,7 @@ async function askForSubstitutionDataAsync(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        platforms,
       },
       type: 'local',
     };
@@ -543,6 +653,7 @@ async function askForSubstitutionDataAsync(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      platforms,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
@@ -581,7 +692,8 @@ function getCliValueForPrompt(promptName: string, options: CommandOptions): stri
 async function getSubstitutionDataFromOptions(
   slug: string,
   isLocal: boolean,
-  options: CommandOptions
+  options: CommandOptions,
+  platforms: string[]
 ): Promise<SubstitutionData | LocalSubstitutionData> {
   const rawName = options.name ?? slugToModuleName(slug);
   const { name, wasRenamed } = ensureSafeModuleName(rawName);
@@ -606,6 +718,7 @@ async function getSubstitutionDataFromOptions(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        platforms,
       },
       type: 'local',
     };
@@ -632,6 +745,7 @@ async function getSubstitutionDataFromOptions(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      platforms,
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
@@ -745,6 +859,10 @@ program
   .option('--author-email <email>', 'Author email for package.json.')
   .option('--author-url <url>', "URL to the author's profile (e.g., GitHub profile).")
   .option('--repo <url>', 'URL of the repository.')
+  .option(
+    '-p, --platform <platforms...>',
+    `Target platforms for the module. Available values: ${ALL_PLATFORMS.join(', ')}.`
+  )
   .action(main);
 
 program
