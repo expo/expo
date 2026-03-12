@@ -27,6 +27,15 @@ export type CardBorder = {
   color?: ColorValue;
 };
 
+function transformProps<T extends { modifiers?: ModifierConfig[] }>(props: T): T {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  } as T;
+}
+
 // region Card
 
 export type CardProps = {
@@ -59,20 +68,11 @@ const CardNativeView: React.ComponentType<NativeCardProps> = requireNativeView(
   'CardView'
 );
 
-function transformCardProps(props: CardProps): NativeCardProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
-}
-
 /**
  * A card component that renders a filled card surface for content.
  */
 export function Card(props: CardProps) {
-  return <CardNativeView {...transformCardProps(props)} />;
+  return <CardNativeView {...transformProps(props)} />;
 }
 
 // endregion
@@ -105,20 +105,11 @@ const ElevatedCardNativeView: React.ComponentType<NativeElevatedCardProps> = req
   'ElevatedCardView'
 );
 
-function transformElevatedCardProps(props: ElevatedCardProps): NativeElevatedCardProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
-}
-
 /**
  * An elevated card component that provides a raised surface for content.
  */
 export function ElevatedCard(props: ElevatedCardProps) {
-  return <ElevatedCardNativeView {...transformElevatedCardProps(props)} />;
+  return <ElevatedCardNativeView {...transformProps(props)} />;
 }
 
 // endregion
@@ -155,20 +146,11 @@ const OutlinedCardNativeView: React.ComponentType<NativeOutlinedCardProps> = req
   'OutlinedCardView'
 );
 
-function transformOutlinedCardProps(props: OutlinedCardProps): NativeOutlinedCardProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
-}
-
 /**
  * An outlined card component that provides a bordered surface for content.
  */
 export function OutlinedCard(props: OutlinedCardProps) {
-  return <OutlinedCardNativeView {...transformOutlinedCardProps(props)} />;
+  return <OutlinedCardNativeView {...transformProps(props)} />;
 }
 
 // endregion

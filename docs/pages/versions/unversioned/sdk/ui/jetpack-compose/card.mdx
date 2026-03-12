@@ -63,7 +63,7 @@ export default function CardTypesExample() {
 
 ### Custom elevation
 
-All card types accept an `elevation` prop (in dp) to control shadow depth.
+Use the `elevation` prop (in dp) to control shadow depth. Elevation is most meaningful on `ElevatedCard`, which uses shadow elevation. Filled `Card` uses tonal elevation by default, so changes may be subtle.
 
 ```tsx ElevatedCardExample.tsx
 import { Host, ElevatedCard, Text } from '@expo/ui/jetpack-compose';

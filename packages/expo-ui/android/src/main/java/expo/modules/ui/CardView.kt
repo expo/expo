@@ -16,15 +16,15 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.with
 
-class CardColors : Record {
-  @Field val containerColor: Color? = null
+data class CardColors(
+  @Field val containerColor: Color? = null,
   @Field val contentColor: Color? = null
-}
+) : Record
 
-class CardBorder : Record {
-  @Field val width: Float = 1f
+data class CardBorder(
+  @Field val width: Float = 1f,
   @Field val color: Color? = null
-}
+) : Record
 
 // region Card
 
@@ -39,11 +39,12 @@ data class CardProps(
 fun FunctionalComposableScope.CardContent(props: CardProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
+  val defaults = CardDefaults.cardColors()
   val colors = CardDefaults.cardColors(
     containerColor = props.colors.containerColor.composeOrNull
-      ?: CardDefaults.cardColors().containerColor,
+      ?: defaults.containerColor,
     contentColor = props.colors.contentColor.composeOrNull
-      ?: CardDefaults.cardColors().contentColor
+      ?: defaults.contentColor
   )
 
   val elevation = if (props.elevation != null) {
@@ -91,11 +92,12 @@ data class ElevatedCardProps(
 fun FunctionalComposableScope.ElevatedCardContent(props: ElevatedCardProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
+  val defaults = CardDefaults.elevatedCardColors()
   val colors = CardDefaults.elevatedCardColors(
     containerColor = props.colors.containerColor.composeOrNull
-      ?: CardDefaults.elevatedCardColors().containerColor,
+      ?: defaults.containerColor,
     contentColor = props.colors.contentColor.composeOrNull
-      ?: CardDefaults.elevatedCardColors().contentColor
+      ?: defaults.contentColor
   )
 
   val elevation = if (props.elevation != null) {
@@ -132,11 +134,12 @@ data class OutlinedCardProps(
 fun FunctionalComposableScope.OutlinedCardContent(props: OutlinedCardProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
+  val defaults = CardDefaults.outlinedCardColors()
   val colors = CardDefaults.outlinedCardColors(
     containerColor = props.colors.containerColor.composeOrNull
-      ?: CardDefaults.outlinedCardColors().containerColor,
+      ?: defaults.containerColor,
     contentColor = props.colors.contentColor.composeOrNull
-      ?: CardDefaults.outlinedCardColors().contentColor
+      ?: defaults.contentColor
   )
 
   val elevation = if (props.elevation != null) {
