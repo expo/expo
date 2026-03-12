@@ -114,12 +114,6 @@ export const wrapContentHeight = (alignment?: 'top' | 'centerVertically' | 'bott
  */
 export const imePadding = () => createModifier('imePadding');
 
-/**
- * Adds padding to keep content within the safe drawing area,
- * avoiding system UI like status bars, navigation bars, and display cutouts.
- */
-export const safeDrawingPadding = () => createModifier('safeDrawingPadding');
-
 // =============================================================================
 // Position Modifiers
 // =============================================================================

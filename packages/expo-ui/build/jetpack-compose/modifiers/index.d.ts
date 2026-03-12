@@ -63,11 +63,6 @@ export declare const wrapContentHeight: (alignment?: "top" | "centerVertically" 
  */
 export declare const imePadding: () => import("./createModifier").ModifierConfig;
 /**
- * Adds padding to keep content within the safe drawing area,
- * avoiding system UI like status bars, navigation bars, and display cutouts.
- */
-export declare const safeDrawingPadding: () => import("./createModifier").ModifierConfig;
-/**
  * Offsets the view from its natural position.
  * @param x - Horizontal offset in dp.
  * @param y - Vertical offset in dp.

@@ -179,11 +179,9 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Modifiers (imePadding, safeDrawingPadding)',
+    name: 'Modifiers',
     route: 'ui/modifiers',
-    options: {
-      headerShown: false,
-    },
+    options: {},
     getComponent() {
       return optionalRequire(() => require('./ModifiersScreen'));
     },
