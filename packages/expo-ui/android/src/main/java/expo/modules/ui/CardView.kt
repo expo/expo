@@ -1,12 +1,14 @@
 package expo.modules.ui
 
 import android.graphics.Color
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
@@ -19,8 +21,17 @@ class CardColors : Record {
   @Field val contentColor: Color? = null
 }
 
+class CardBorder : Record {
+  @Field val width: Float = 1f
+  @Field val color: Color? = null
+}
+
+// region Card
+
 data class CardProps(
   val colors: CardColors = CardColors(),
+  val elevation: Float? = null,
+  val border: CardBorder? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -35,6 +46,23 @@ fun FunctionalComposableScope.CardContent(props: CardProps) {
       ?: CardDefaults.cardColors().contentColor
   )
 
+  val elevation = if (props.elevation != null) {
+    CardDefaults.cardElevation(defaultElevation = props.elevation.dp)
+  } else {
+    CardDefaults.cardElevation()
+  }
+
+  val border = if (props.border != null) {
+    val borderColor = props.border.color.composeOrNull
+    if (borderColor != null) {
+      BorderStroke(props.border.width.dp, borderColor)
+    } else {
+      BorderStroke(props.border.width.dp, CardDefaults.outlinedCardBorder().brush)
+    }
+  } else {
+    null
+  }
+
   val content: @Composable ColumnScope.() -> Unit = {
     val scope = ComposableScope().with(columnScope = this)
     Children(scope)
@@ -43,12 +71,24 @@ fun FunctionalComposableScope.CardContent(props: CardProps) {
   Card(
     modifier = modifier,
     colors = colors,
+    elevation = elevation,
+    border = border,
     content = content
   )
 }
 
+// endregion
+
+// region ElevatedCard
+
+data class ElevatedCardProps(
+  val colors: CardColors = CardColors(),
+  val elevation: Float? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
 @Composable
-fun FunctionalComposableScope.ElevatedCardContent(props: CardProps) {
+fun FunctionalComposableScope.ElevatedCardContent(props: ElevatedCardProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
   val colors = CardDefaults.elevatedCardColors(
@@ -58,6 +98,12 @@ fun FunctionalComposableScope.ElevatedCardContent(props: CardProps) {
       ?: CardDefaults.elevatedCardColors().contentColor
   )
 
+  val elevation = if (props.elevation != null) {
+    CardDefaults.elevatedCardElevation(defaultElevation = props.elevation.dp)
+  } else {
+    CardDefaults.elevatedCardElevation()
+  }
+
   val content: @Composable ColumnScope.() -> Unit = {
     val scope = ComposableScope().with(columnScope = this)
     Children(scope)
@@ -66,12 +112,24 @@ fun FunctionalComposableScope.ElevatedCardContent(props: CardProps) {
   ElevatedCard(
     modifier = modifier,
     colors = colors,
+    elevation = elevation,
     content = content
   )
 }
 
+// endregion
+
+// region OutlinedCard
+
+data class OutlinedCardProps(
+  val colors: CardColors = CardColors(),
+  val elevation: Float? = null,
+  val border: CardBorder? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
 @Composable
-fun FunctionalComposableScope.OutlinedCardContent(props: CardProps) {
+fun FunctionalComposableScope.OutlinedCardContent(props: OutlinedCardProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
   val colors = CardDefaults.outlinedCardColors(
@@ -81,6 +139,23 @@ fun FunctionalComposableScope.OutlinedCardContent(props: CardProps) {
       ?: CardDefaults.outlinedCardColors().contentColor
   )
 
+  val elevation = if (props.elevation != null) {
+    CardDefaults.outlinedCardElevation(defaultElevation = props.elevation.dp)
+  } else {
+    CardDefaults.outlinedCardElevation()
+  }
+
+  val border = if (props.border != null) {
+    val borderColor = props.border.color.composeOrNull
+    if (borderColor != null) {
+      BorderStroke(props.border.width.dp, borderColor)
+    } else {
+      BorderStroke(props.border.width.dp, CardDefaults.outlinedCardBorder().brush)
+    }
+  } else {
+    CardDefaults.outlinedCardBorder()
+  }
+
   val content: @Composable ColumnScope.() -> Unit = {
     val scope = ComposableScope().with(columnScope = this)
     Children(scope)
@@ -89,6 +164,10 @@ fun FunctionalComposableScope.OutlinedCardContent(props: CardProps) {
   OutlinedCard(
     modifier = modifier,
     colors = colors,
+    elevation = elevation,
+    border = border,
     content = content
   )
 }
+
+// endregion

@@ -31,6 +31,18 @@ export default function CardScreen() {
             <ComposeText>A card with a border outline.</ComposeText>
           </Column>
         </OutlinedCard>
+        <ElevatedCard modifiers={[fillMaxWidth()]} elevation={8}>
+          <Column modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Custom elevation</ComposeText>
+            <ComposeText>Elevated card with 8dp shadow.</ComposeText>
+          </Column>
+        </ElevatedCard>
+        <OutlinedCard modifiers={[fillMaxWidth()]} border={{ width: 2, color: '#6200EE' }}>
+          <Column modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Custom border</ComposeText>
+            <ComposeText>Outlined card with 2dp purple border.</ComposeText>
+          </Column>
+        </OutlinedCard>
         <Card
           modifiers={[fillMaxWidth()]}
           colors={{ containerColor: '#EDE9FE', contentColor: '#4C1D95' }}>

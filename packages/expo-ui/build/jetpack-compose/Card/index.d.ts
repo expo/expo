@@ -7,6 +7,20 @@ export type CardColors = {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
 };
+/**
+ * Border configuration for cards.
+ */
+export type CardBorder = {
+    /**
+     * Border width in dp.
+     * @default 1
+     */
+    width?: number;
+    /**
+     * Border color.
+     */
+    color?: ColorValue;
+};
 export type CardProps = {
     /**
      * The content to display inside the card.
@@ -17,20 +31,68 @@ export type CardProps = {
      */
     colors?: CardColors;
     /**
+     * Default elevation in dp.
+     */
+    elevation?: number;
+    /**
+     * Border configuration for the card.
+     */
+    border?: CardBorder;
+    /**
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
 };
 /**
- * A card component that provides a surface for content.
+ * A card component that renders a filled card surface for content.
  */
 export declare function Card(props: CardProps): import("react").JSX.Element;
+export type ElevatedCardProps = {
+    /**
+     * The content to display inside the card.
+     */
+    children?: React.ReactNode;
+    /**
+     * Colors for card's core elements.
+     */
+    colors?: CardColors;
+    /**
+     * Default elevation in dp. Material 3 default is 1dp.
+     */
+    elevation?: number;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+};
 /**
  * An elevated card component that provides a raised surface for content.
  */
-export declare function ElevatedCard(props: CardProps): import("react").JSX.Element;
+export declare function ElevatedCard(props: ElevatedCardProps): import("react").JSX.Element;
+export type OutlinedCardProps = {
+    /**
+     * The content to display inside the card.
+     */
+    children?: React.ReactNode;
+    /**
+     * Colors for card's core elements.
+     */
+    colors?: CardColors;
+    /**
+     * Default elevation in dp.
+     */
+    elevation?: number;
+    /**
+     * Border configuration for the outlined card.
+     */
+    border?: CardBorder;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+};
 /**
  * An outlined card component that provides a bordered surface for content.
  */
-export declare function OutlinedCard(props: CardProps): import("react").JSX.Element;
+export declare function OutlinedCard(props: OutlinedCardProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
