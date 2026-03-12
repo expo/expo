@@ -16,7 +16,7 @@
 - [android] add support for header toolbar ([#44052](https://github.com/expo/expo/pull/44052) by [@Ubax](https://github.com/Ubax))
 - Copy material top tabs as `/js-top-tabs`. ([#44268](https://github.com/expo/expo/pull/44268) by [@jakex7](https://github.com/jakex7))
 - Support `ColorValue`. ([#44301](https://github.com/expo/expo/pull/44301) by [@jakex7](https://github.com/jakex7))
-- Allow users to customize route-level `<Suspense>` fallback
+- Allow users to customize route-level `<Suspense>` fallback ([#43885](https://github.com/expo/expo/pull/43885) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
