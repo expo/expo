@@ -1,5 +1,6 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
+const { resolveWorkspaceRoot } = require('resolve-workspace-root');
 
 const projectRoot = process.cwd();
 const config = getDefaultConfig(projectRoot);
@@ -15,6 +16,15 @@ const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts
 const watchFolders = config.watchFolders;
 if (!watchFolders.some((entry) => !entry.startsWith(projectRoot))) {
   watchFolders.push(projectRoot);
+}
+// If expo-widgets is outside the user's project (e.g., symlinked, in a different monorepo,
+// or as an installed dependency), add its workspace root so Metro can resolve its dependencies.
+const rel = path.relative(projectRoot, __dirname);
+if (rel.startsWith('..') || path.isAbsolute(rel)) {
+  const widgetWorkspaceRoot = resolveWorkspaceRoot(__dirname);
+  if (widgetWorkspaceRoot && !watchFolders.includes(widgetWorkspaceRoot)) {
+    watchFolders.push(widgetWorkspaceRoot);
+  }
 }
 
 const buildConfig = {

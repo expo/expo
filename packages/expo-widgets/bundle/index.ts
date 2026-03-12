@@ -61,6 +61,7 @@ Object.assign(globalThis, {
   ...modifiers,
   ...jsxRuntime,
   ...React,
+  React,
   __expoWidgetRender,
   __expoWidgetHandlePress,
 });
