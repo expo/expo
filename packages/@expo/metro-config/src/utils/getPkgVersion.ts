@@ -7,13 +7,15 @@ export function getPkgVersion(projectRoot: string, pkgName: string): string | nu
   if (!targetPkg) return null;
   const targetPkgJson = findUpPackageJson(targetPkg);
   if (!targetPkgJson) return null;
-  const pkg = JsonFile.read(targetPkgJson);
+  return getPkgVersionFromPath(targetPkgJson);
+}
 
+export function getPkgVersionFromPath(packageJsonPath: string): string | null {
+  const pkg = JsonFile.read(packageJsonPath);
   const pkgVersion = pkg.version;
   if (typeof pkgVersion === 'string') {
     return pkgVersion;
   }
-
   return null;
 }
 
