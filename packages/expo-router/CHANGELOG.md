@@ -14,6 +14,7 @@
 - Fix regex for routes with multiple spaces in file name ([#43935](https://github.com/expo/expo/pull/43935) by [@Ubax](https://github.com/Ubax))
 - Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
 - fix hash order to be RFC compliant ([#43933](https://github.com/expo/expo/pull/43933) by [@Ubax](https://github.com/Ubax))
+- [ios] fix tint color on VectorIcon ([#43904](https://github.com/expo/expo/pull/43904) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
