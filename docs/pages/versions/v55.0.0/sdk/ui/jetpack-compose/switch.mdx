@@ -51,8 +51,52 @@ export default function CustomColorsExample() {
         colors={{
           checkedThumbColor: '#6200EE',
           checkedTrackColor: '#EDE9FE',
+          uncheckedThumbColor: '#9CA3AF',
+          uncheckedTrackColor: '#F3F4F6',
+          uncheckedBorderColor: '#D1D5DB',
         }}
       />
+    </Host>
+  );
+}
+```
+
+### Custom thumb content
+
+Use `Switch.ThumbContent` to render a custom element inside the thumb. `Switch.DefaultIconSize` gives you the M3 default icon size so your content fits perfectly.
+
+```tsx ThumbContentExample.tsx
+import { useState } from 'react';
+import { Host, Switch, Box } from '@expo/ui/jetpack-compose';
+import { size, clip, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ThumbContentExample() {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Switch
+        value={checked}
+        onCheckedChange={setChecked}
+        colors={{
+          checkedThumbColor: '#7C3AED',
+          checkedTrackColor: '#EDE9FE',
+          checkedIconColor: '#7C3AED',
+          uncheckedThumbColor: '#9CA3AF',
+          uncheckedTrackColor: '#F3F4F6',
+          uncheckedBorderColor: '#D1D5DB',
+          uncheckedIconColor: '#9CA3AF',
+        }}>
+        <Switch.ThumbContent>
+          <Box
+            modifiers={[
+              size(Switch.DefaultIconSize, Switch.DefaultIconSize),
+              clip(Shapes.Circle),
+              background(checked ? '#FFFFFF' : '#E5E7EB'),
+            ]}
+          />
+        </Switch.ThumbContent>
+      </Switch>
     </Host>
   );
 }

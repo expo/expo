@@ -62,9 +62,12 @@ export default function CustomColorsExample() {
 
 Use `TriStateCheckbox` for a parent checkbox that reflects the state of its children. It supports three states: `'on'`, `'off'`, and `'indeterminate'`.
 
+Apply the `toggleable` modifier to each `Row` to make the entire row (checkbox + label) tappable with correct accessibility semantics. When using `toggleable` on the row, omit `onCheckedChange`/`onClick` from the checkbox itself to avoid double-handling.
+
 ```tsx SelectAllExample.tsx
 import { useState } from 'react';
 import { Host, Checkbox, TriStateCheckbox, Row, Column, Text } from '@expo/ui/jetpack-compose';
+import { toggleable } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SelectAllExample() {
   const [child1, setChild1] = useState(false);
@@ -77,28 +80,39 @@ export default function SelectAllExample() {
   return (
     <Host matchContents>
       <Column>
-        <Row verticalAlignment="center">
-          <TriStateCheckbox
-            state={parentState}
-            onClick={() => {
-              const newState = parentState !== 'on';
-              setChild1(newState);
-              setChild2(newState);
-              setChild3(newState);
-            }}
-          />
+        <Row
+          verticalAlignment="center"
+          modifiers={[
+            toggleable(
+              parentState === 'on',
+              () => {
+                const newState = parentState !== 'on';
+                setChild1(newState);
+                setChild2(newState);
+                setChild3(newState);
+              },
+              { role: 'checkbox' }
+            ),
+          ]}>
+          <TriStateCheckbox state={parentState} />
           <Text>Select all</Text>
         </Row>
-        <Row verticalAlignment="center">
-          <Checkbox value={child1} onCheckedChange={setChild1} />
+        <Row
+          verticalAlignment="center"
+          modifiers={[toggleable(child1, () => setChild1(!child1), { role: 'checkbox' })]}>
+          <Checkbox value={child1} />
           <Text>Option 1</Text>
         </Row>
-        <Row verticalAlignment="center">
-          <Checkbox value={child2} onCheckedChange={setChild2} />
+        <Row
+          verticalAlignment="center"
+          modifiers={[toggleable(child2, () => setChild2(!child2), { role: 'checkbox' })]}>
+          <Checkbox value={child2} />
           <Text>Option 2</Text>
         </Row>
-        <Row verticalAlignment="center">
-          <Checkbox value={child3} onCheckedChange={setChild3} />
+        <Row
+          verticalAlignment="center"
+          modifiers={[toggleable(child3, () => setChild3(!child3), { role: 'checkbox' })]}>
+          <Checkbox value={child3} />
           <Text>Option 3</Text>
         </Row>
       </Column>

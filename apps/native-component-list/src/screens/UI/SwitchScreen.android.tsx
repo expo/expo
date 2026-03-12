@@ -1,14 +1,21 @@
 import {
   Host,
   Switch,
+  Box,
   Text as ComposeText,
   Column,
   Card,
   LazyColumn,
 } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  fillMaxWidth,
+  padding,
+  size,
+  clip,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-import { View } from 'react-native';
 
 export default function SwitchScreen() {
   const [checked, setChecked] = React.useState<boolean>(true);
@@ -40,13 +47,12 @@ export default function SwitchScreen() {
                 uncheckedThumbColor: '#9CA3AF',
               }}>
               <Switch.ThumbContent>
-                <View
-                  style={{
-                    width: Switch.DefaultIconSize,
-                    height: Switch.DefaultIconSize,
-                    borderRadius: Switch.DefaultIconSize / 2,
-                    backgroundColor: checked ? '#ffffff' : '#E5E7EB',
-                  }}
+                <Box
+                  modifiers={[
+                    size(Switch.DefaultIconSize, Switch.DefaultIconSize),
+                    clip(Shapes.Circle),
+                    background(checked ? '#FFFFFF' : '#E5E7EB'),
+                  ]}
                 />
               </Switch.ThumbContent>
             </Switch>
