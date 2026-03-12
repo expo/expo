@@ -106,9 +106,7 @@ type NativeTriStateCheckboxProps = Omit<TriStateCheckboxProps, 'onClick'> & {
 const TriStateCheckboxNativeView: React.ComponentType<NativeTriStateCheckboxProps> =
   requireNativeView('ExpoUI', 'TriStateCheckboxView');
 
-function transformTriStateCheckboxProps(
-  props: TriStateCheckboxProps
-): NativeTriStateCheckboxProps {
+function transformTriStateCheckboxProps(props: TriStateCheckboxProps): NativeTriStateCheckboxProps {
   const { modifiers, onClick, ...restProps } = props;
   return {
     modifiers,
