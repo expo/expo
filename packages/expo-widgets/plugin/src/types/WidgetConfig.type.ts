@@ -5,4 +5,5 @@ export type WidgetConfig = {
   supportedFamilies: WidgetFamily[];
   displayName: string;
   description: string;
+  contentMarginsDisabled: boolean;
 };

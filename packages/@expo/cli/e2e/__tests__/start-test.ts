@@ -105,6 +105,8 @@ describeSkipWin('server', () => {
         '@expo/require-utils',
         'expo',
         '@expo/local-build-cache-provider',
+        // Without this, the hermes-parser install a version that is incompatible with flow Readonly / ReadonlyArray
+        'babel-preset-expo',
       ],
     });
     await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });

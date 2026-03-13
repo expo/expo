@@ -25,14 +25,14 @@ export function getRedirectPath(redirectPath: string): string {
 
   // A list of pages we know are renamed and can redirect
   if (RENAMED_PAGES[redirectPath]) {
-    redirectPath = RENAMED_PAGES[redirectPath];
+    return RENAMED_PAGES[redirectPath];
   }
 
   // Catch any unversioned paths which are also renamed
   if (isVersionedPath(redirectPath)) {
     const unversionedPath = removeVersionFromPath(redirectPath);
     if (RENAMED_PAGES[unversionedPath]) {
-      redirectPath = RENAMED_PAGES[unversionedPath];
+      return RENAMED_PAGES[unversionedPath];
     }
   }
 
@@ -385,7 +385,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/customizing-webpack': '/archive/customizing-webpack',
 
   // May 2024 home / get started section
-  '/overview/': '/get-started/introduction/',
+  '/overview/': '/get-started/create-a-project/',
   '/get-started/installation/': '/get-started/create-a-project/',
   '/get-started/expo-go/': '/get-started/set-up-your-environment/',
 
@@ -551,4 +551,31 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/unversioned/sdk/router-ui/': '/versions/unversioned/sdk/router/ui/',
   '/versions/unversioned/sdk/router-native-tabs/': '/versions/unversioned/sdk/router/native-tabs/',
   '/versions/unversioned/sdk/router-split-view/': '/versions/unversioned/sdk/router/split-view/',
+
+  // After merging get-started/introduction into get-started/create-a-project
+  '/get-started/introduction/': '/get-started/create-a-project/',
+
+  // After renaming ContextMenu to DropdownMenu in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/latest/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/latest/sdk/ui/jetpack-compose/dropdownmenu/',
+
+  // After merging FilterChip into Chip in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/chip/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/chip/',
+  '/versions/latest/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/latest/sdk/ui/jetpack-compose/chip/',
+
+  // After removing TextButton and merging into Button in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/button/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/button/',
+  '/versions/latest/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/latest/sdk/ui/jetpack-compose/button/',
 };

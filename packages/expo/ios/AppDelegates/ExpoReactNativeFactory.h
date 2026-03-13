@@ -7,6 +7,6 @@
 @protocol RCTHostRuntimeDelegate;
 
 NS_SWIFT_NAME(ExpoReactNativeFactoryObjC)
-@interface EXReactNativeFactory : RCTReactNativeFactory <RCTHostDelegate, RCTHostRuntimeDelegate>
+@interface EXReactNativeFactory : RCTReactNativeFactory <RCTHostDelegate>
 
 @end

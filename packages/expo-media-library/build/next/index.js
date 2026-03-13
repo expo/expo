@@ -13,6 +13,20 @@ export class Asset extends ExpoMediaLibraryNext.Asset {
     static delete(assets) {
         return ExpoMediaLibraryNext.deleteAssets(assets);
     }
+    // @hidden
+    getFavorite() {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('MediaLibrary', 'getFavorite is only available on iOS');
+        }
+        return super.getFavorite();
+    }
+    // @hidden
+    setFavorite(isFavorite) {
+        if (Platform.OS !== 'ios') {
+            throw new UnavailabilityError('MediaLibrary', 'setFavorite is only available on iOS');
+        }
+        return super.setFavorite(isFavorite);
+    }
 }
 export class Album extends ExpoMediaLibraryNext.Album {
     // @hidden

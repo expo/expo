@@ -96,11 +96,11 @@ export default function App() {
       "import React from 'react';
       import { WebView } from 'expo/dom/internal';
       var filePath = "unknown?file=" + "file:///unknown";
-      var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
+      var _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {
         return React.createElement(WebView, Object.assign({
-          ref: ref
+          ref
         }, props, {
-          filePath: filePath
+          filePath
         }));
       });
       if (__DEV__) _Expo_DOMProxyComponent.displayName = "DOM(App)";
@@ -126,11 +126,11 @@ it(`adds dom components proxy for ios in production`, () => {
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
     var filePath = "d42c4b55f14e2195bf85622978627ebe.html";
-    var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
+    var _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {
       return React.createElement(WebView, Object.assign({
-        ref: ref
+        ref
       }, props, {
-        filePath: filePath
+        filePath
       }));
     });
     if (false) _Expo_DOMProxyComponent.displayName = "DOM(App)";
@@ -148,11 +148,11 @@ it(`adds dom components proxy for android in production`, () => {
     "import React from 'react';
     import { WebView } from 'expo/dom/internal';
     var filePath = "d42c4b55f14e2195bf85622978627ebe.html";
-    var _Expo_DOMProxyComponent = React.forwardRef(function (props, ref) {
+    var _Expo_DOMProxyComponent = React.forwardRef((props, ref) => {
       return React.createElement(WebView, Object.assign({
-        ref: ref
+        ref
       }, props, {
-        filePath: filePath
+        filePath
       }));
     });
     if (false) _Expo_DOMProxyComponent.displayName = "DOM(App)";

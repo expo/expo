@@ -1,5 +1,7 @@
 import { type ColorValue } from 'react-native';
+import { type AnimatedValue } from './animation';
 export { type ExpoModifier } from '../../types';
+export { animated, spring, tween, snap, keyframes, type AnimationSpec, type AnimatedValue, } from './animation';
 export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
 /**
  * Applies equal padding on all sides.
@@ -56,6 +58,11 @@ export declare const wrapContentWidth: (alignment?: "start" | "centerHorizontall
  */
 export declare const wrapContentHeight: (alignment?: "top" | "centerVertically" | "bottom") => import("./createModifier").ModifierConfig;
 /**
+ * Adds padding to avoid the software keyboard (IME).
+ * When the keyboard is visible, padding is added to keep content above it.
+ */
+export declare const imePadding: () => import("./createModifier").ModifierConfig;
+/**
  * Offsets the view from its natural position.
  * @param x - Horizontal offset in dp.
  * @param y - Vertical offset in dp.
@@ -93,14 +100,55 @@ export declare const blur: (radius: number) => import("./createModifier").Modifi
  */
 export declare const rotate: (degrees: number) => import("./createModifier").ModifierConfig;
 /**
+ * Applies a graphics layer transformation with animation support.
+ * @param params - Transform and visual effect parameters.
+ * @see [Compose graphicsLayer documentation](https://developer.android.com/develop/ui/compose/graphics/draw/modifiers).
+ */
+export declare const graphicsLayer: (params: {
+    /** Rotation around the X axis in degrees. */
+    rotationX?: number | AnimatedValue;
+    /** Rotation around the Y axis in degrees. */
+    rotationY?: number | AnimatedValue;
+    /** Rotation around the Z axis in degrees. */
+    rotationZ?: number | AnimatedValue;
+    /** Horizontal scale factor (1.0 = no change). */
+    scaleX?: number | AnimatedValue;
+    /** Vertical scale factor (1.0 = no change). */
+    scaleY?: number | AnimatedValue;
+    /** Opacity (0.0 = transparent, 1.0 = opaque). */
+    alpha?: number | AnimatedValue;
+    /** Horizontal translation in dp. */
+    translationX?: number | AnimatedValue;
+    /** Vertical translation in dp. */
+    translationY?: number | AnimatedValue;
+    /** Distance from the camera in dp. Affects 3D rotation perspective. */
+    cameraDistance?: number;
+    /** Shadow elevation in dp. */
+    shadowElevation?: number | AnimatedValue;
+    /** Horizontal pivot point for transforms (0.0 = left, 0.5 = center, 1.0 = right). */
+    transformOriginX?: number;
+    /** Vertical pivot point for transforms (0.0 = top, 0.5 = center, 1.0 = bottom). */
+    transformOriginY?: number;
+    /** Whether to clip content to the shape. */
+    clip?: boolean;
+    /** Shape for clipping and shadow. Uses the same shapes as the `clip` modifier. */
+    shape?: BuiltinShape;
+    /** Color of the ambient shadow. */
+    ambientShadowColor?: ColorValue;
+    /** Color of the spot shadow. */
+    spotShadowColor?: ColorValue;
+    /** Compositing strategy: 'auto', 'offscreen', or 'modulate'. */
+    compositingStrategy?: "auto" | "offscreen" | "modulate";
+}) => import("./createModifier").ModifierConfig;
+/**
  * Sets the z-index for layering.
  * @param index - Z-index value.
  */
 export declare const zIndex: (index: number) => import("./createModifier").ModifierConfig;
 /**
  * Animates size changes with spring animation.
- * @param dampingRatio - Spring damping ratio. Default is DampingRatioNoBouncy.
- * @param stiffness - Spring stiffness. Default is StiffnessMedium.
+ * @param dampingRatio - Spring damping ratio. Default is `DampingRatioNoBouncy`.
+ * @param stiffness - Spring stiffness. Default is `StiffnessMedium`.
  */
 export declare const animateContentSize: (dampingRatio?: number, stiffness?: number) => import("./createModifier").ModifierConfig;
 /**
@@ -121,8 +169,12 @@ export declare const matchParentSize: () => import("./createModifier").ModifierC
 /**
  * Makes the view clickable.
  * @param handler - Function to call when clicked.
+ * @param options - Optional configuration.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
  */
-export declare const clickable: (handler: () => void) => import("./createModifier").ModifierConfig;
+export declare const clickable: (handler: () => void, options?: {
+    indication?: boolean;
+}) => import("./createModifier").ModifierConfig;
 /**
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
