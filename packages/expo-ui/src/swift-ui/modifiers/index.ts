@@ -568,6 +568,28 @@ export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
 /**
+ * Sets the default anchor point for a scroll view's content.
+ * @param anchor - The anchor point for initial scroll position and content size changes.
+ * @default 'top'
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:)).
+ */
+export const defaultScrollAnchor = (
+  anchor:
+    | 'zero'
+    | 'topLeading'
+    | 'top'
+    | 'topTrailing'
+    | 'leading'
+    | 'center'
+    | 'trailing'
+    | 'bottomLeading'
+    | 'bottom'
+    | 'bottomTrailing'
+) => createModifier('defaultScrollAnchor', { anchor });
+
+/**
  * Disables the move action for a view in a list.
  * Apply to items within a `ForEach` to prevent them from being moved.
  * @param disabled - Whether moving should be disabled
@@ -1097,6 +1119,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
