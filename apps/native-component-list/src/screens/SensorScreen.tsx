@@ -218,7 +218,7 @@ const PedometerSensor = () => {
 
       if (isHistoryAvailable) {
         if (Platform.OS === 'android') {
-          await Sensors.Pedometer.subscribeRecording();
+          await Sensors.Pedometer.subscribeRecordingAsync();
         }
         const end = new Date();
         const start = new Date();
