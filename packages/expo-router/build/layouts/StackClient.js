@@ -295,6 +295,7 @@ const stackRouterOverride = (original) => {
                     if (id !== undefined) {
                         route = state.routes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
+                    const preloadZoomTransitionId = getZoomTransitionIdFromAction(action);
                     if (route) {
                         return {
                             ...state,
@@ -302,29 +303,42 @@ const stackRouterOverride = (original) => {
                                 if (r.key !== route?.key) {
                                     return r;
                                 }
+                                const mergedParams = routeParamList[action.payload.name] !== undefined
+                                    ? {
+                                        ...routeParamList[action.payload.name],
+                                        ...action.payload.params,
+                                    }
+                                    : action.payload.params;
                                 return {
                                     ...r,
-                                    params: routeParamList[action.payload.name] !== undefined
+                                    params: preloadZoomTransitionId
                                         ? {
-                                            ...routeParamList[action.payload.name],
-                                            ...action.payload.params,
+                                            ...mergedParams,
+                                            [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
                                         }
-                                        : action.payload.params,
+                                        : mergedParams,
                                 };
                             }),
                         };
                     }
                     else {
                         // START FORK
+                        const preloadedRouteKey = `${action.payload.name}-${(0, non_secure_1.nanoid)()}`;
+                        const preloadedRouteParams = routeParamList[action.payload.name] !== undefined
+                            ? {
+                                ...routeParamList[action.payload.name],
+                                ...action.payload.params,
+                            }
+                            : action.payload.params;
                         const currentPreloadedRoute = {
-                            key: `${action.payload.name}-${(0, non_secure_1.nanoid)()}`,
+                            key: preloadedRouteKey,
                             name: action.payload.name,
-                            params: routeParamList[action.payload.name] !== undefined
+                            params: preloadZoomTransitionId
                                 ? {
-                                    ...routeParamList[action.payload.name],
-                                    ...action.payload.params,
+                                    ...preloadedRouteParams,
+                                    [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: preloadedRouteKey,
                                 }
-                                : action.payload.params,
+                                : preloadedRouteParams,
                         };
                         // END FORK
                         return {

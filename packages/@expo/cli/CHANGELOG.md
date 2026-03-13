@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- Revert the `-quiet` change to ensure build env vars are always printed. ([#43906](https://github.com/expo/expo/pull/43906) by [@EvanBacon](https://github.com/EvanBacon))
 - Avoid `ERR_TTY_INIT_FAILED` when `LOG_EVENTS=1` or `LOG_EVENTS=2` is used in non-interactive terminals. ([#43796](https://github.com/expo/expo/pull/43796) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
 - Prevent hanging when installing iOS apps on device. ([#43618](https://github.com/expo/expo/pull/43618) by [@EvanBacon](https://github.com/EvanBacon))
