@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `isAvailableAsync` returning `true` on devices without a camera.
+
 ### 💡 Others
 
 ## 55.0.9 — 2026-02-25
