@@ -1,19 +1,146 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
-searchRank: 3
----
+import React from 'react';
+import { 
+  StyleSheet, 
+  Text, 
+  View, 
+  Image, 
+  ScrollView, 
+  TouchableOpacity, 
+  Dimensions 
+} from 'react-native';
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+const { width } = Dimensions.get('window');
 
-Let's set up a local development environment for running your project on Android and iOS.
+const ServiceCard = ({ title, description }) => (
+  <View style={styles.card}>
+    <Text style={styles.cardTitle}>{title}</Text>
+    <Text style={styles.cardDescription}>{description}</Text>
+  </View>
+);
 
-## Where would you like to develop?
+export default function YetrixLandingPage() {
+  return (
+    <ScrollView style={styles.container}>
+      {/* Header / Navbar */}
+      <View style={styles.navbar}>
+        <Image 
+          source={{ uri: 'uploaded:1000054337.png' }} 
+          style={styles.logo} 
+          resizeMode="contain"
+        />
+        <View style={styles.navLinks}>
+          <Text style={styles.navLink}>Services</Text>
+          <Text style={styles.navLink}>About</Text>
+          <TouchableOpacity style={styles.contactBtn}>
+            <Text style={styles.contactBtnText}>Connect</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+      {/* Hero Section */}
+      <View style={styles.hero}>
+        <Text style={styles.heroTagline}>VISION MEETS EXECUTION</Text>
+        <Text style={styles.heroTitle}>Empowering Businesses with AI & IT Solutions</Text>
+        <Text style={styles.heroSubtitle}>
+          From Data Annotation to Digital Marketing, we deliver speed, accuracy, and ROI.
+        </Text>
+      </View>
+
+      {/* Services Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionHeading}>Our Core Services</Text>
+        <View style={styles.grid}>
+          <ServiceCard 
+            title="Data Annotation" 
+            description="High-quality labeling for AI/ML models with a human-in-the-loop approach." 
+          />
+          <ServiceCard 
+            title="Digital Documentation" 
+            description="Secure digitization, classification, and audit-ready record management." 
+          />
+          <ServiceCard 
+            title="IT Services" 
+            description="24/7 monitoring, system integration, and dependable technical support." 
+          />
+          <ServiceCard 
+            title="Digital Marketing" 
+            description="SEO, Social Media, and Paid Ads designed for measurable growth." 
+          />
+        </View>
+      </View>
+
+      {/* Footer / Contact */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>Let's Build the Future Together</Text>
+        <Text style={styles.contactInfo}>📧 contact@yetrix.in | 📞 7416288830</Text>
+        <Text style={styles.copyright}>© 2026 Yetrix IT Solutions</Text>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff' },
+  navbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    paddingVertical: 20,
+    backgroundColor: '#f8f9fa',
+  },
+  logo: { width: 120, height: 50 },
+  navLinks: { flexDirection: 'row', alignItems: 'center' },
+  navLink: { marginHorizontal: 15, fontWeight: '600', color: '#333' },
+  contactBtn: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  contactBtnText: { color: '#fff', fontWeight: 'bold' },
+  hero: {
+    padding: 60,
+    alignItems: 'center',
+    backgroundColor: '#050a30', // Deep Navy Professional look
+  },
+  heroTagline: { color: '#00d4ff', letterSpacing: 2, fontWeight: 'bold' },
+  heroTitle: { 
+    fontSize: 36, 
+    color: '#fff', 
+    textAlign: 'center', 
+    marginVertical: 20, 
+    fontWeight: '800' 
+  },
+  heroSubtitle: { fontSize: 18, color: '#ccd1d1', textAlign: 'center', maxWidth: 600 },
+  section: { padding: 40 },
+  sectionHeading: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 30 },
+  grid: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'space-around' 
+  },
+  card: {
+    width: width > 800 ? '45%' : '90%',
+    backgroundColor: '#fff',
+    padding: 25,
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+    borderTopWidth: 4,
+    borderTopColor: '#007AFF',
+  },
+  cardTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  cardDescription: { color: '#666', lineHeight: 22 },
+  footer: { backgroundColor: '#111', padding: 40, alignItems: 'center' },
+  footerText: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
+  contactInfo: { color: '#bbb', marginTop: 10 },
+  copyright: { color: '#666', marginTop: 20, fontSize: 12 },
+});
 
 <PlatformAndDeviceForm />
 
