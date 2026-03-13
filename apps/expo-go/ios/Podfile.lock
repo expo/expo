@@ -51,7 +51,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu-interface (55.0.1)
   - Expo/Tests (55.0.2):
     - boost
     - DoubleConversion
@@ -3996,7 +3995,6 @@ DEPENDENCIES:
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
-  - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - Expo/Tests (from `../../../packages/expo`)
   - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
@@ -4241,8 +4239,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-manifests/ios"
   Expo:
     :path: "../../../packages/expo"
-  expo-dev-menu-interface:
-    :path: "../../../packages/expo-dev-menu-interface/ios"
   ExpoAgeRange:
     :path: "../../../packages/expo-age-range/ios"
   ExpoAppleAuthentication:
@@ -4579,8 +4575,6 @@ SPEC CHECKSUMS:
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 2b53302deb6d7275ae26005b8014f5a1aee42a0e
   Expo: 224f1fb5a288d682b0d1c9f6b403b72d8a44fb9b
-  expo-dev-menu: a573133995474040d2ed6379752bb41b1dddc2dc
-  expo-dev-menu-interface: bf6f816d29b45bec038080790963c635e8d588c2
   ExpoAgeRange: 704d7c542e662f7bb843cbcea8929ef6e43c17d8
   ExpoAppleAuthentication: 86e97b24bd6687c156c55bb448f570bc29081ace
   ExpoAsset: 7701a5ed7df0170d280b29af4b9e5e570cab29b2
@@ -4657,11 +4651,11 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
+  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 912e24e9d788b04c9f50eaf3721ce9968b2d3bf9
+  hermes-engine: 020d7dbf64ea2ac7f2dc43408d80cc6035c4b3e8
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4673,7 +4667,7 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
-  RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
+  RCT-Folly: 9e4e1ae78413fb0387567f5dc5d5d5672f23f457
   RCTDeprecation: 7e2e4f68ac7b42644697ff2477fd450772c2dd3c
   RCTRequired: 967eb804f6a6e70e1c6a3f9b1c926b187ce719f4
   RCTSwiftUI: 6dea7b613e8930a973b723c121aa8646374ee694
@@ -4782,6 +4776,6 @@ SPEC CHECKSUMS:
   Yoga: bfdaa1a276ab5eea82ff81ed4e520c07b42f16e4
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 36012c3980f12daefe512bac18804cfcbbee9e87
+PODFILE CHECKSUM: 469fa268de37a2284f838298c746a4f8ec019b43
 
 COCOAPODS: 1.16.2
