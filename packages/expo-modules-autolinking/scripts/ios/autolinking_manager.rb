@@ -179,39 +179,27 @@ module Expo
 
     public def resolve
       require 'open3'
-      max_retries = 3
-      last_error = nil
+      stdout, stderr, status = Open3.capture3(*resolve_command_args)
 
-      max_retries.times do |attempt|
-        stdout, stderr, status = Open3.capture3(*resolve_command_args)
-
-        if status.success? && !stdout.strip.empty?
-          begin
-            return JSON.parse(stdout)
-          rescue => error
-            last_error = "Couldn't parse JSON coming from `expo-modules-autolinking` command:\n#{error}\n" \
-                         "stdout (first 500 chars): #{stdout[0..500]}\n" \
-                         "stderr: #{stderr.strip}"
-          end
-        else
-          if !status.success?
-            last_error = "expo-modules-autolinking command exited with status #{status.exitstatus}.\n" \
-                         "Command: #{resolve_command_args.join(' ')}\n" \
-                         "stderr: #{stderr.strip}"
-          else
-            last_error = "expo-modules-autolinking command returned empty output.\n" \
-                         "Command: #{resolve_command_args.join(' ')}\n" \
-                         "stderr: #{stderr.strip}"
-          end
-        end
-
-        if attempt < max_retries - 1
-          Pod::UI.warn "expo-modules-autolinking attempt #{attempt + 1} failed, retrying... (#{last_error.lines.first.strip})"
-          sleep(1)
+      if status.success? && !stdout.strip.empty?
+        begin
+          return JSON.parse(stdout)
+        rescue => error
+          raise "Couldn't parse JSON coming from `expo-modules-autolinking` command:\n#{error}\n" \
+                "stdout (first 500 chars): #{stdout[0..500]}\n" \
+                "stderr: #{stderr.strip}"
         end
       end
 
-      raise last_error
+      if !status.success?
+        raise "expo-modules-autolinking command exited with status #{status.exitstatus}.\n" \
+              "Command: #{resolve_command_args.join(' ')}\n" \
+              "stderr: #{stderr.strip}"
+      end
+
+      raise "expo-modules-autolinking command returned empty output.\n" \
+            "Command: #{resolve_command_args.join(' ')}\n" \
+            "stderr: #{stderr.strip}"
     end
 
     public def base_command_args
