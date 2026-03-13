@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.SystemClock
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.fitness.FitnessLocal
 import com.google.android.gms.fitness.LocalRecordingClient
@@ -32,6 +33,8 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.sensors.UseSensorProxy
 import expo.modules.sensors.createSensorProxy
+import java.util.concurrent.CancellationException
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 private const val EventName = "Exponent.pedometerUpdate"
@@ -39,6 +42,17 @@ private const val EventNameEvent = "Exponent.pedometerEvent"
 private const val TransitionAction = "expo.modules.sensors.PEDOMETER_TRANSITION"
 
 class NotSupportedException(message: String) : CodedException(message)
+
+class TaskCancelledException(operationName: String) : CodedException(
+  "TASK_CANCELLED",
+  "The pedometer operation was cancelled while attempting to $operationName.",
+  null
+)
+class TaskFailedException(operationName: String, cause: Throwable) : CodedException(
+  "TASK_FAILED",
+  "The pedometer operation failed while attempting to $operationName.",
+  cause
+)
 class ReadDataFailedException(statusCode: Int, statusMessage: String?) : CodedException(
   "READ_DATA_FAILED",
   "Failed to read data from the Recording API. Code: $statusCode. Message: $statusMessage",
@@ -71,6 +85,25 @@ class PedometerModule : Module() {
         context,
         LocalRecordingClient.LOCAL_RECORDING_CLIENT_MIN_VERSION_CODE
       ) == ConnectionResult.SUCCESS
+    }
+
+    fun <T> awaitTask(task: Task<T>, operationName: String): T {
+      try {
+        return Tasks.await(task)
+      } catch (e: SecurityException) {
+        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
+      } catch (e: CancellationException) {
+        throw TaskCancelledException(operationName)
+      } catch (e: InterruptedException) {
+        Thread.currentThread().interrupt()
+        throw TaskFailedException(operationName, e)
+      } catch (e: ExecutionException) {
+        val cause = e.cause
+        if (cause is SecurityException) {
+          throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
+        }
+        throw TaskFailedException(operationName, cause ?: e)
+      }
     }
 
     fun ensureTransitionPendingIntent(): PendingIntent {
@@ -247,11 +280,10 @@ class PedometerModule : Module() {
 
       val request = ActivityTransitionRequest(transitions)
 
-      try {
-        Tasks.await(activityRecognitionClient.requestActivityTransitionUpdates(request, pendingIntent))
-      } catch (e: SecurityException) {
-        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-      }
+      awaitTask(
+        activityRecognitionClient.requestActivityTransitionUpdates(request, pendingIntent),
+        "start event updates"
+      )
 
       isEventUpdatesActive = true
       true
@@ -267,11 +299,10 @@ class PedometerModule : Module() {
       }
 
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-      try {
-        Tasks.await(localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA))
-      } catch (e: SecurityException) {
-        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-      }
+      awaitTask(
+        localRecordingClient.subscribe(LocalDataType.TYPE_STEP_COUNT_DELTA),
+        "subscribe to recording updates"
+      )
     }
 
     AsyncFunction("unsubscribeRecordingAsync") {
@@ -280,11 +311,10 @@ class PedometerModule : Module() {
       }
 
       val localRecordingClient = FitnessLocal.getLocalRecordingClient(context)
-      try {
-        Tasks.await(localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA))
-      } catch (e: SecurityException) {
-        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-      }
+      awaitTask(
+        localRecordingClient.unsubscribe(LocalDataType.TYPE_STEP_COUNT_DELTA),
+        "unsubscribe from recording updates"
+      )
     }
 
     AsyncFunction("getStepCountAsync") { startTime: Long, endTime: Long ->
@@ -299,11 +329,10 @@ class PedometerModule : Module() {
         .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
         .build()
 
-      val response = try {
-        Tasks.await(localRecordingClient.readData(readRequest))
-      } catch (e: SecurityException) {
-        throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
-      }
+      val response = awaitTask(
+        localRecordingClient.readData(readRequest),
+        "read recorded step data"
+      )
 
       if (!response.status.isSuccess) {
         throw ReadDataFailedException(response.status.statusCode, response.status.statusMessage)
