@@ -1,7 +1,8 @@
 import * as fs from 'fs';
+import { vol } from 'memfs';
+import type { Socket } from 'net';
 import * as os from 'os';
 import * as path from 'path';
-import { Socket } from 'net';
 
 import { AFCClient } from '../AFCClient';
 
@@ -129,11 +130,12 @@ describe('uploadFile', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'afc-test-'));
+    tmpDir = path.join(os.tmpdir(), 'afc-test');
+    vol.mkdirSync(tmpDir, { recursive: true });
   });
 
   afterEach(() => {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
+    vol.rmSync(tmpDir, { recursive: true, force: true });
   });
 
   function mockClient() {
