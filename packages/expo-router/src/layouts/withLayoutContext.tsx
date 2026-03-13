@@ -98,10 +98,8 @@ export function useFilterScreenChildren(
         screens?.map(
           (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
         ) ?? [];
-      const allNames = [
-        ...screenNames.map(normalizeName),
-        ...[...protectedScreens].map(normalizeName),
-      ];
+      const protectedScreenNames = Array.from(protectedScreens).map(normalizeName);
+      const allNames = [...screenNames.map(normalizeName), ...protectedScreenNames];
       if (new Set(allNames).size !== allNames.length) {
         throw new Error('Screen names must be unique: ' + allNames);
       }

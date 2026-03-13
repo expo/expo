@@ -852,6 +852,9 @@ describe('Screen options with /index suffix normalization', () => {
     expect(screen.getByTestId('settings')).toBeVisible();
     expect(screen).toHavePathname('/settings/general');
 
+    // Verify the title option is actually applied
+    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('General Settings');
+
     expect(spy).not.toHaveBeenCalledWith(
       expect.stringContaining('[Layout children]'),
       expect.anything()
@@ -881,6 +884,9 @@ describe('Screen options with /index suffix normalization', () => {
     expect(screen.getByTestId('otp')).toBeVisible();
     expect(screen).toHavePathname('/otp/signin');
 
+    // Verify the title option is actually applied
+    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('OTP Flow');
+
     expect(spy).not.toHaveBeenCalledWith(
       expect.stringContaining('[Layout children]'),
       expect.anything()
@@ -909,6 +915,9 @@ describe('Screen options with /index suffix normalization', () => {
 
     expect(screen.getByTestId('step1')).toBeVisible();
     expect(screen).toHavePathname('/otp/signin/step1');
+
+    // Verify the title option is actually applied
+    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('OTP Flow');
 
     expect(spy).not.toHaveBeenCalledWith(
       expect.stringContaining('[Layout children]'),
