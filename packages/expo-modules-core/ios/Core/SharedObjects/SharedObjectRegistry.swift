@@ -29,7 +29,7 @@ public final class SharedObjectRegistry {
    The counter of IDs to assign to the shared object pairs.
    The next pair added to the registry will be saved using this ID.
    */
-  private var nextId: SharedObjectId = 1
+  internal /* visible for testing */ var nextId: SharedObjectId = 1
 
   /**
    A dictionary of shared object pairs.
