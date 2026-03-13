@@ -136,7 +136,11 @@ export default {
         return {};
     },
     async isAvailableAsync() {
-        return canGetUserMedia();
+        if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) {
+            return false;
+        }
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.some((device) => device.kind === 'videoinput');
     },
     async takePicture(options, camera) {
         return await camera.takePicture(options);

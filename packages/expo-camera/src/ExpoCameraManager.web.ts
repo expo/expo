@@ -154,7 +154,11 @@ export default {
     return {};
   },
   async isAvailableAsync(): Promise<boolean> {
-    return canGetUserMedia();
+    if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) {
+      return false;
+    }
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    return devices.some((device) => device.kind === 'videoinput');
   },
   async takePicture(
     options: CameraPictureOptions,
