@@ -15,15 +15,11 @@ import Debug from 'debug';
 import { shouldSkipAutoPlugin } from '../getAutolinkedPackages';
 import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
-import { withSdk52ReactNative77CompatAndroid } from './sdk52/ReactNative77CompatPlugin';
-import { withSdk52ReactNative78CompatAndroid } from './sdk52/ReactNative78CompatPlugin';
 import withEdgeToEdge from './unversioned/edge-to-edge/withEdgeToEdge';
-import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
 import withDocumentPicker from './unversioned/expo-document-picker';
 import withInlineModules from './unversioned/expo-inline-modules/withInlineModules';
-import withNavigationBar from './unversioned/expo-navigation-bar/expo-navigation-bar';
 import withNotifications from './unversioned/expo-notifications/expo-notifications';
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
@@ -113,8 +109,6 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
 
     // Dangerous -- these plugins run in reverse order.
     AndroidConfig.GoogleServices.withGoogleServicesFile,
-    withSdk52ReactNative77CompatAndroid,
-    withSdk52ReactNative78CompatAndroid,
 
     // Modify colors.xml and styles.xml
     AndroidConfig.StatusBar.withStatusBar,
@@ -146,7 +140,6 @@ const versionedExpoSDKPackages: string[] = [
 export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withMaps,
-    withAdMob,
     withAppleAuthentication,
     withContacts,
     withNotifications,
@@ -156,7 +149,6 @@ export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
     // and splash screen will warn about conflicting rules.
     withSystemUI,
     withSplashScreen,
-    withNavigationBar,
     withInlineModules,
   ]);
 };
