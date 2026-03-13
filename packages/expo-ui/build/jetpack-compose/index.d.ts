@@ -3,7 +3,6 @@ export * from './AlertDialog';
 export * from './BasicAlertDialog';
 export * from './Card';
 export * from './Chip';
-export * from './FilterChip';
 export * from './Button';
 export * from './Icon';
 export * from './IconButton';

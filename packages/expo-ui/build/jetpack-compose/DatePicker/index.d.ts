@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { ExpoModifier } from '../../types';
+import type { ModifierConfig } from '../../types';
 export type AndroidVariant = 'picker' | 'input';
 export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
 /**
@@ -138,12 +138,47 @@ export type DateTimePickerProps = {
      */
     is24Hour?: boolean;
     /**
+     * Constrains which dates can be selected. Mirrors the native Compose `selectableDates` parameter.
+     * `start` is the earliest selectable date, `end` is the latest.
+     */
+    selectableDates?: {
+        start?: Date;
+        end?: Date;
+    };
+    /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
- * Renders a `DateTimePicker` component.
+ * Renders an inline `DateTimePicker` component.
  */
 export declare function DateTimePicker(props: DateTimePickerProps): import("react").JSX.Element;
+export type DatePickerDialogProps = {
+    initialDate?: string | null;
+    variant?: AndroidVariant;
+    showVariantToggle?: boolean;
+    confirmButtonLabel?: string;
+    dismissButtonLabel?: string;
+    color?: ColorValue;
+    elementColors?: DatePickerElementColors & TimePickerElementColors;
+    selectableDates?: {
+        start?: Date;
+        end?: Date;
+    };
+    onDateSelected?: (date: Date) => void;
+    onDismissRequest: () => void;
+};
+export declare function DatePickerDialog(props: DatePickerDialogProps): import("react").JSX.Element;
+export type TimePickerDialogProps = {
+    initialDate?: string | null;
+    is24Hour?: boolean;
+    confirmButtonLabel?: string;
+    dismissButtonLabel?: string;
+    color?: ColorValue;
+    elementColors?: DatePickerElementColors & TimePickerElementColors;
+    onDateSelected?: (date: Date) => void;
+    onDismissRequest: () => void;
+};
+export declare function TimePickerDialog(props: TimePickerDialogProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

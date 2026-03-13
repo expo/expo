@@ -216,12 +216,6 @@ export async function getXcodeBuildArgsAsync(
     'COMPILER_INDEX_STORE_ENABLE=NO',
   ];
 
-  // Use -quiet flag to reduce xcodebuild output noise when not in debug/verbose mode.
-  // This reduces output processing overhead and makes logs cleaner.
-  if (!env.EXPO_DEBUG) {
-    args.push('-quiet');
-  }
-
   // Skip code signing setup for generic simulator builds (no device).
   if (
     props.device &&
