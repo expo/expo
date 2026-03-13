@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { type ModifierConfig } from '../../types';
+import type { ModifierConfig } from '../../types';
 import { type ShapeJSXElement } from '../Shape';
 /**
  * Colors for icon button elements.
@@ -36,22 +36,34 @@ export type IconButtonProps = {
     /**
      * Content to display inside the icon button.
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
 };
 /**
  * A standard icon button with no background.
  */
-export declare function IconButton(props: IconButtonProps): import("react").JSX.Element;
+export declare const IconButton: {
+    (props: IconButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 /**
  * A filled icon button with a solid background.
  */
-export declare function FilledIconButton(props: IconButtonProps): import("react").JSX.Element;
+export declare const FilledIconButton: {
+    (props: IconButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 /**
  * A filled tonal icon button with a muted background.
  */
-export declare function FilledTonalIconButton(props: IconButtonProps): import("react").JSX.Element;
+export declare const FilledTonalIconButton: {
+    (props: IconButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 /**
  * An outlined icon button with a border and no fill.
  */
-export declare function OutlinedIconButton(props: IconButtonProps): import("react").JSX.Element;
+export declare const OutlinedIconButton: {
+    (props: IconButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 //# sourceMappingURL=index.d.ts.map

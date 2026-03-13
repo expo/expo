@@ -17,6 +17,7 @@ fun FunctionalComposableScope.IconButtonContent(
   props: ButtonProps,
   onButtonPressed: (ButtonPressedEvent) -> Unit
 ) {
+  val shape = shapeFromShapeRecord(props.shape)
   IconButton(
     onClick = { onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
@@ -26,6 +27,7 @@ fun FunctionalComposableScope.IconButtonContent(
       disabledContainerColor = props.colors.disabledContainerColor.compose,
       disabledContentColor = props.colors.disabledContentColor.compose
     ),
+    shape = shape ?: IconButtonDefaults.standardShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
     Children(ComposableScope())

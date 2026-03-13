@@ -1,9 +1,8 @@
 import { type ColorValue } from 'react-native';
-import { type ModifierConfig, ViewEvent } from '../../types';
+import type { ModifierConfig, ViewEvent } from '../../types';
 import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
 /**
  * Colors for button elements.
- * @platform android
  */
 export type ButtonColors = {
     containerColor?: ColorValue;
@@ -33,7 +32,6 @@ export type ButtonProps = {
     enabled?: boolean;
     /**
      * Colors for button elements.
-     * @platform android
      */
     colors?: ButtonColors;
     /**
@@ -52,7 +50,7 @@ export type ButtonProps = {
     /**
      * Content to display inside the button.
      */
-    children?: React.ReactNode;
+    children: React.ReactNode;
 };
 type NativeButtonProps = Omit<ButtonProps, 'onClick' | 'shape' | 'children'> & {
     shape?: ShapeRecordProps;
@@ -64,28 +62,38 @@ type NativeButtonProps = Omit<ButtonProps, 'onClick' | 'shape' | 'children'> & {
 export declare function transformButtonProps(props: Omit<ButtonProps, 'children'>): NativeButtonProps;
 /**
  * A filled button component.
- * @platform android
  */
-export declare function Button(props: ButtonProps): import("react").JSX.Element;
+export declare const Button: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 /**
  * A filled tonal button component.
- * @platform android
  */
-export declare function FilledTonalButton(props: ButtonProps): import("react").JSX.Element;
+export declare const FilledTonalButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 /**
  * An outlined button component.
- * @platform android
  */
-export declare function OutlinedButton(props: ButtonProps): import("react").JSX.Element;
+export declare const OutlinedButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 /**
  * An elevated button component.
- * @platform android
  */
-export declare function ElevatedButton(props: ButtonProps): import("react").JSX.Element;
+export declare const ElevatedButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 /**
  * A text button component.
- * @platform android
  */
-export declare function TextButton(props: ButtonProps): import("react").JSX.Element;
+export declare const TextButton: {
+    (props: ButtonProps): import("react").JSX.Element;
+    displayName: string;
+};
 export {};
 //# sourceMappingURL=index.d.ts.map

@@ -1,13 +1,12 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { type ModifierConfig, ViewEvent } from '../../types';
+import type { ModifierConfig, ViewEvent } from '../../types';
 import { ShapeJSXElement, ShapeRecordProps, parseJSXShape } from '../Shape';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * Colors for button elements.
- * @platform android
  */
 export type ButtonColors = {
   containerColor?: ColorValue;
@@ -39,7 +38,6 @@ export type ButtonProps = {
   enabled?: boolean;
   /**
    * Colors for button elements.
-   * @platform android
    */
   colors?: ButtonColors;
   /**
@@ -58,18 +56,13 @@ export type ButtonProps = {
   /**
    * Content to display inside the button.
    */
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 type NativeButtonProps = Omit<ButtonProps, 'onClick' | 'shape' | 'children'> & {
   shape?: ShapeRecordProps;
   children?: React.ReactNode;
 } & ViewEvent<'onButtonPressed', void>;
-
-const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
-  'ExpoUI',
-  'Button'
-);
 
 /**
  * @hidden
@@ -86,81 +79,38 @@ export function transformButtonProps(props: Omit<ButtonProps, 'children'>): Nati
   };
 }
 
-const FilledTonalButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
-  'ExpoUI',
-  'FilledTonalButton'
-);
+function createButtonComponent(name: string) {
+  const NativeView: React.ComponentType<NativeButtonProps> = requireNativeView('ExpoUI', name);
 
-const OutlinedButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
-  'ExpoUI',
-  'OutlinedButton'
-);
-
-const ElevatedButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
-  'ExpoUI',
-  'ElevatedButton'
-);
-
-const TextButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
-  'ExpoUI',
-  'TextButton'
-);
+  function Component(props: ButtonProps) {
+    const { children, ...restProps } = props;
+    return <NativeView {...transformButtonProps(restProps)}>{children}</NativeView>;
+  }
+  Component.displayName = name;
+  return Component;
+}
 
 /**
  * A filled button component.
- * @platform android
  */
-export function Button(props: ButtonProps) {
-  const { children, ...restProps } = props;
-  return <ButtonNativeView {...transformButtonProps(restProps)}>{children}</ButtonNativeView>;
-}
+export const Button = createButtonComponent('Button');
 
 /**
  * A filled tonal button component.
- * @platform android
  */
-export function FilledTonalButton(props: ButtonProps) {
-  const { children, ...restProps } = props;
-  return (
-    <FilledTonalButtonNativeView {...transformButtonProps(restProps)}>
-      {children}
-    </FilledTonalButtonNativeView>
-  );
-}
+export const FilledTonalButton = createButtonComponent('FilledTonalButton');
 
 /**
  * An outlined button component.
- * @platform android
  */
-export function OutlinedButton(props: ButtonProps) {
-  const { children, ...restProps } = props;
-  return (
-    <OutlinedButtonNativeView {...transformButtonProps(restProps)}>
-      {children}
-    </OutlinedButtonNativeView>
-  );
-}
+export const OutlinedButton = createButtonComponent('OutlinedButton');
 
 /**
  * An elevated button component.
- * @platform android
  */
-export function ElevatedButton(props: ButtonProps) {
-  const { children, ...restProps } = props;
-  return (
-    <ElevatedButtonNativeView {...transformButtonProps(restProps)}>
-      {children}
-    </ElevatedButtonNativeView>
-  );
-}
+export const ElevatedButton = createButtonComponent('ElevatedButton');
 
 /**
  * A text button component.
- * @platform android
  */
-export function TextButton(props: ButtonProps) {
-  const { children, ...restProps } = props;
-  return (
-    <TextButtonNativeView {...transformButtonProps(restProps)}>{children}</TextButtonNativeView>
-  );
-}
+export const TextButton = createButtonComponent('TextButton');
