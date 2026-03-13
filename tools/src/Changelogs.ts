@@ -87,7 +87,7 @@ export enum ChangeType {
 export const UNPUBLISHED_VERSION_NAME = 'Unpublished';
 
 export const VERSION_EMPTY_PARAGRAPH_TEXT =
-  '_This version does not introduce any user-facing changes._\n';
+  '_This version does not introduce any user-facing changes. This typically means that some dependency was updated or there was a minor internal change._\n';
 
 /**
  * Depth of headings that mean the version containing following changes.
