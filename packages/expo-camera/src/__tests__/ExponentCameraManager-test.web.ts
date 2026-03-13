@@ -9,7 +9,7 @@ jest.mock('../web/WebUserMediaManager', () => {
   const actual = jest.requireActual('../web/WebUserMediaManager');
   return {
     ...actual,
-    canGetUserMedia: () => !!navigator.mediaDevices?.getUserMedia,
+    canGetUserMedia: () => !!globalThis.navigator.mediaDevices?.getUserMedia,
   };
 });
 
