@@ -562,4 +562,12 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/v55.0.0/sdk/ui/jetpack-compose/chip/',
   '/versions/latest/sdk/ui/jetpack-compose/filterchip/':
     '/versions/latest/sdk/ui/jetpack-compose/chip/',
+
+  // After removing TextButton and merging into Button in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/button/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/button/',
+  '/versions/latest/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/latest/sdk/ui/jetpack-compose/button/',
 };

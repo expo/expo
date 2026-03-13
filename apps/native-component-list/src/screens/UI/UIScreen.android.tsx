@@ -27,6 +27,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'IconButton component',
+    route: 'ui/icon-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./IconButtonScreen'));
+    },
+  },
+  {
     name: 'Picker component',
     route: 'ui/picker',
     options: {},
