@@ -1846,6 +1846,10 @@ extension ViewModifierRegistry {
       return try DefaultScrollAnchorModifier(from: params, appContext: appContext)
     }
 
+    register("defaultScrollAnchorForRole") { params, appContext, _ in
+      return try DefaultScrollAnchorForRoleModifier(from: params, appContext: appContext)
+    }
+
     register("progressViewStyle") { params, appContext, _ in
       return try ProgressViewStyleModifier(from: params, appContext: appContext)
     }
