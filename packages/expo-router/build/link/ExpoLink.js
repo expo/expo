@@ -51,16 +51,20 @@ function ExpoLink(props) {
 function ExpoLinkImpl(props) {
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
     const href = (0, useZoomHref_1.useZoomHref)(props);
+    // When href from useZoomHref is different from the original href,
+    // it means we are doing a zoom transition to a different route
+    // Otherwise useZoomHref returns the same href
+    const withZoomTransition = !!href && href !== props.href;
     const shouldUseLinkWithPreview = process.env.EXPO_OS === 'ios' && isLinkWithPreview(props) && !isPreview;
     if (shouldUseLinkWithPreview) {
-        return <LinkWithPreview_1.LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href}/>;
+        return (<LinkWithPreview_1.LinkWithPreview {...props} withZoomTransition={withZoomTransition} href={href} hrefForPreviewNavigation={props.href}/>);
     }
     let children = props.children;
     if (react_1.default.Children.count(props.children) > 1) {
         const arrayChildren = react_1.default.Children.toArray(props.children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== elements_1.LinkPreview && child.type !== elements_1.LinkMenu));
         children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
     }
-    return <BaseExpoRouterLink_1.BaseExpoRouterLink {...props} href={href} children={children}/>;
+    return (<BaseExpoRouterLink_1.BaseExpoRouterLink {...props} withZoomTransition={withZoomTransition} href={href} children={children}/>);
 }
 function isLinkWithPreview(props) {
     const isExternal = (0, url_1.shouldLinkExternally)(String(props.href));

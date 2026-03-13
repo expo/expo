@@ -47,10 +47,11 @@ const href_1 = require("./href");
 const useLinkHooks_1 = require("./useLinkHooks");
 const useLinkToPathProps_1 = __importDefault(require("./useLinkToPathProps"));
 const Prefetch_1 = require("../Prefetch");
+const useZoomPrefetchNavigation_1 = require("./zoom/useZoomPrefetchNavigation");
 const Slot_1 = require("../ui/Slot");
 function BaseExpoRouterLink({ href, replace, push, dismissTo, 
 // TODO: This does not prevent default on the anchor tag.
-relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySingular: singular, prefetch, ...rest }) {
+relativeToDirectory, asChild, rel, target, download, withAnchor, withZoomTransition, dangerouslySingular: singular, prefetch, ...rest }) {
     // Mutate the style prop to add the className on web.
     const style = (0, useLinkHooks_1.useInteropClassName)(rest);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
@@ -76,6 +77,11 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         withAnchor,
         dangerouslySingular: singular,
     });
+    const zoomPressHandler = (0, useZoomPrefetchNavigation_1.useZoomPrefetchNavigation)({
+        withZoomTransition,
+        resolvedHref,
+        navigate: props.onPress,
+    });
     const onPress = (e) => {
         if (previewContext?.blockPressRef.current) {
             return;
@@ -83,7 +89,9 @@ relativeToDirectory, asChild, rel, target, download, withAnchor, dangerouslySing
         if ('onPress' in rest) {
             rest.onPress?.(e);
         }
-        props.onPress(e);
+        if (!zoomPressHandler(e)) {
+            props.onPress?.(e);
+        }
     };
     const Component = asChild ? Slot_1.Slot : react_native_1.Text;
     if (asChild && react_1.default.Children.count(rest.children) > 1) {

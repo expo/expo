@@ -9,7 +9,12 @@ import { resolveHref } from './href';
 import { useInteropClassName, useHrefAttrs, LinkProps } from './useLinkHooks';
 import useLinkToPathProps from './useLinkToPathProps';
 import { Prefetch } from '../Prefetch';
+import { useZoomPrefetchNavigation } from './zoom/useZoomPrefetchNavigation';
 import { Slot } from '../ui/Slot';
+
+export interface BaseExpoRouterLinkProps extends LinkProps {
+  withZoomTransition: boolean;
+}
 
 export function BaseExpoRouterLink({
   href,
@@ -23,10 +28,11 @@ export function BaseExpoRouterLink({
   target,
   download,
   withAnchor,
+  withZoomTransition,
   dangerouslySingular: singular,
   prefetch,
   ...rest
-}: LinkProps) {
+}: BaseExpoRouterLinkProps) {
   // Mutate the style prop to add the className on web.
   const style = useInteropClassName(rest);
 
@@ -55,6 +61,12 @@ export function BaseExpoRouterLink({
     dangerouslySingular: singular,
   });
 
+  const zoomPressHandler = useZoomPrefetchNavigation({
+    withZoomTransition,
+    resolvedHref,
+    navigate: props.onPress,
+  });
+
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
     if (previewContext?.blockPressRef.current) {
       return;
@@ -62,7 +74,9 @@ export function BaseExpoRouterLink({
     if ('onPress' in rest) {
       rest.onPress?.(e);
     }
-    props.onPress(e);
+    if (!zoomPressHandler(e)) {
+      props.onPress?.(e);
+    }
   };
 
   const Component = asChild ? Slot : Text;

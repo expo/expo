@@ -22,10 +22,21 @@ export function ExpoLink(props: LinkProps) {
 function ExpoLinkImpl(props: LinkProps) {
   const isPreview = useIsPreview();
   const href = useZoomHref(props);
+  // When href from useZoomHref is different from the original href,
+  // it means we are doing a zoom transition to a different route
+  // Otherwise useZoomHref returns the same href
+  const withZoomTransition = !!href && href !== props.href;
   const shouldUseLinkWithPreview =
     process.env.EXPO_OS === 'ios' && isLinkWithPreview(props) && !isPreview;
   if (shouldUseLinkWithPreview) {
-    return <LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href} />;
+    return (
+      <LinkWithPreview
+        {...props}
+        withZoomTransition={withZoomTransition}
+        href={href}
+        hrefForPreviewNavigation={props.href}
+      />
+    );
   }
   let children = props.children;
   if (React.Children.count(props.children) > 1) {
@@ -35,7 +46,14 @@ function ExpoLinkImpl(props: LinkProps) {
     children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
   }
 
-  return <BaseExpoRouterLink {...props} href={href} children={children} />;
+  return (
+    <BaseExpoRouterLink
+      {...props}
+      withZoomTransition={withZoomTransition}
+      href={href}
+      children={children}
+    />
+  );
 }
 
 function isLinkWithPreview(props: LinkProps): boolean {
