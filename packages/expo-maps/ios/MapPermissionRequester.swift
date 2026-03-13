@@ -43,7 +43,7 @@ class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManage
     if description != nil {
       systemStatus = locationManager.authorizationStatus
     } else {
-      EXFatal(EXErrorWithMessage("""
+      RCTFatal(RCTErrorWithMessage("""
       This app is missing 'NSLocationWhenInUseUsageDescription',
       so MapKit services will fail. Add this entry to your bundle's Info.plist.
       """))

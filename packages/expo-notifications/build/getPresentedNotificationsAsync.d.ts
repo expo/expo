@@ -5,5 +5,5 @@ import { Notification } from './Notifications.types';
  * @return A Promise which resolves with a list of notifications ([`Notification`](#notification)) currently present in the notification tray (Notification Center).
  * @header dismiss
  */
-export default function getPresentedNotificationsAsync(): Promise<Notification[]>;
+export declare function getPresentedNotificationsAsync(): Promise<Notification[]>;
 //# sourceMappingURL=getPresentedNotificationsAsync.d.ts.map

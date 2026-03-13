@@ -1,7 +1,7 @@
 import NotificationCategoriesModule from '../NotificationCategoriesModule.native';
-import deleteNotificationCategoryAsync from '../deleteNotificationCategoryAsync';
-import getNotificationCategoriesAsync from '../getNotificationCategoriesAsync';
-import setNotificationCategoryAsync from '../setNotificationCategoryAsync';
+import { deleteNotificationCategoryAsync } from '../deleteNotificationCategoryAsync';
+import { getNotificationCategoriesAsync } from '../getNotificationCategoriesAsync';
+import { setNotificationCategoryAsync } from '../setNotificationCategoryAsync';
 
 it(`setNotificationCategoryAsync accepts the expected arguments`, async () => {
   await setNotificationCategoryAsync(

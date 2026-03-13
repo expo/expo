@@ -2,7 +2,6 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.jni.ExpectedType
 import kotlin.reflect.KType
 
@@ -66,7 +65,6 @@ private fun createDeferredValues(
   return result
 }
 
-@EitherType
 class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType
@@ -108,7 +106,6 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   override fun isTrivial(): Boolean = false
 }
 
-@EitherType
 class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType
@@ -155,7 +152,6 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
     ExpectedType.merge(firstType, secondType, thirdType)
 }
 
-@EitherType
 class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType

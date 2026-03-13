@@ -65,10 +65,12 @@ class BrightnessModule : Module() {
         Settings.System.SCREEN_BRIGHTNESS_MODE,
         Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
       )
+      // Android's SCREEN_BRIGHTNESS accepts values from 1 to 255 (not 0 to 255)
+      // Map input range [0, 1] to Android's valid range [1, 255]
       Settings.System.putInt(
         currentActivity.contentResolver,
         Settings.System.SCREEN_BRIGHTNESS,
-        (brightnessValue * 255).roundToInt()
+        (brightnessValue * 254 + 1).roundToInt()
       )
     }
 
@@ -122,7 +124,8 @@ class BrightnessModule : Module() {
         currentActivity.contentResolver,
         Settings.System.SCREEN_BRIGHTNESS
       )
-      brightness.toInt() / 255f
+      // Map Android's range [1, 255] back to [0, 1]
+      (brightness.toInt() - 1) / 254f
     }
   }
 

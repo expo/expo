@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`renders Stack.Toolbar to RSC 1`] = `
+"1:I["src/layouts/stack-utils/toolbar/StackToolbarClient.tsx",[],"",1]
+2:I["src/layouts/stack-utils/toolbar/StackToolbarButton.tsx",[],"StackToolbarButton",1]
+3:I["src/layouts/stack-utils/toolbar/StackToolbarView.tsx",[],"StackToolbarView",1]
+4:I["src/layouts/stack-utils/toolbar/StackToolbarSpacer.tsx",[],"StackToolbarSpacer",1]
+5:I["src/layouts/stack-utils/toolbar/StackToolbarMenu.tsx",[],"StackToolbarMenu",1]
+6:I["src/layouts/stack-utils/toolbar/StackToolbarSearchBarSlot.tsx",[],"StackToolbarSearchBarSlot",1]
+0:[["$","$L1",null,{"placement":"left","children":[["$","$L2",null,{},null],["$","$L3",null,{},null],["$","$L4",null,{},null],["$","$L5",null,{},null]]},null],["$","$L1",null,{"placement":"right","children":["$","$L2",null,{},null]},null],["$","$L1",null,{"children":["$","$L6",null,{},null]},null]]"
+`;
+
 exports[`renders to RSC 1`] = `
 "1:I["src/layouts/stack-utils/StackScreen.tsx",[],"StackScreen",1]
 0:["$","$L1",null,{"options":{"title":"..."}},null]"

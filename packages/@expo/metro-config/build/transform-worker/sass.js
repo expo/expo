@@ -7,6 +7,7 @@ exports.matchSass = matchSass;
 exports.compileSass = compileSass;
 const resolve_from_1 = __importDefault(require("resolve-from"));
 let sassInstance = null;
+// TODO(@kitten): Add optional peer for `sass` instead
 function getSassInstance(projectRoot) {
     if (!sassInstance) {
         const sassPath = resolve_from_1.default.silent(projectRoot, 'sass');
@@ -26,14 +27,12 @@ function matchSass(filename) {
     }
     return null;
 }
-function compileSass(projectRoot, { filename, src }, 
-// TODO: Expose to users somehow...
-options) {
+function compileSass(projectRoot, { src }, options) {
     const sass = getSassInstance(projectRoot);
     const result = sass.compileString(src, options);
     return {
         src: result.css,
-        // TODO: Should we use this? Leaning towards no since the CSS will be parsed again by the CSS loader.
+        // NOTE(@kitten): Types won't match up, but we're aware of the format from SASS matching
         map: result.sourceMap,
     };
 }

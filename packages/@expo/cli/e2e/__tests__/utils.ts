@@ -293,3 +293,33 @@ export function findProjectFiles(projectRoot: string) {
 export function stripWhitespace(str: string): string {
   return str.replace(/\s+/g, '').trim();
 }
+
+/**
+ * Gets the data from a page and its associated loader.
+ *
+ * @remarks We retrieve the loader first to check for a module ID collision between the main and
+ * loader bundles. See https://github.com/expo/expo/pull/42245
+ */
+export function getPageAndLoaderData(url: string, addIndexSuffixToLoaderPath?: boolean) {
+  let effectiveLoaderPath = url === '/' ? '/index' : url;
+  if (addIndexSuffixToLoaderPath) {
+    effectiveLoaderPath += '/index';
+  }
+  return [
+    {
+      name: 'loader endpoint',
+      url: `/_expo/loaders${effectiveLoaderPath}`,
+      getData: (response: Response) => {
+        return response.json();
+      },
+    },
+    {
+      name: 'page',
+      url: `${url}`,
+      getData: async (response: Response) => {
+        const html = getHtml(await response.text());
+        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
+      },
+    },
+  ];
+}

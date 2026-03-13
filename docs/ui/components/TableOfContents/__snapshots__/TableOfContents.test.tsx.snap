@@ -3,11 +3,11 @@
 exports[`TableOfContents correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="w-[280px] px-6 pb-10 pt-[52px]"
+    class="w-[280px] px-6 pt-[52px] pb-10"
     data-toc="true"
   >
     <p
-      class="text-default text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-[100] -ml-6 -mt-[52px] flex min-h-[32px] w-[272px] select-none items-center gap-2 bg-gradient-to-b from-default from-80% to-transparent py-3 pl-6"
+      class="text-inherit text-[14px] leading-[1.5715] tracking-[-0.006rem] font-medium absolute z-[100] -mt-[52px] -ml-6 flex min-h-[32px] w-[272px] select-none from-default items-center gap-2 bg-linear-to-b from-80% to-transparent py-3 pl-6"
       data-text="true"
     >
       <svg
@@ -31,7 +31,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
       </svg>
        On this page
       <button
-        class="cursor-pointer inline-flex border border-solid rounded-md font-medium items-center whitespace-nowrap gap-1.5 h-8 text-3xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 ml-auto mr-2 px-2 transition-opacity duration-300 pointer-events-none opacity-0"
+        class="cursor-pointer inline-flex border border-solid rounded-full font-medium items-center whitespace-nowrap gap-1.5 h-8 text-3xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 mr-2 ml-auto px-2 transition-opacity duration-300 pointer-events-none opacity-0"
         type="button"
       >
         <span
@@ -67,12 +67,12 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         class="flex items-center"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate !text-pretty focus-visible:relative focus-visible:z-10"
+          class="mb-1.5 flex items-center justify-between truncate text-pretty! focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#base-level-heading"
         >
           <p
-            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary! hocus:text-link! w-full"
             data-text="true"
           >
             Base level heading
@@ -83,12 +83,12 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         class="flex items-center"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
+          class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#level-3-subheading"
         >
           <p
-            class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] w-full !text-secondary hocus:!text-link"
+            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] text-secondary! hocus:text-link! w-full"
             data-text="true"
           >
             Level 3 subheading
@@ -99,12 +99,12 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         class="flex items-center"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate !text-pretty pl-3 focus-visible:relative focus-visible:z-10"
+          class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#code-heading-depth-1"
         >
           <code
-            class="leading-[1.6154] text-default w-full !text-secondary hocus:!text-link truncate !text-2xs"
+            class="leading-[1.6154] text-inherit text-secondary! hocus:text-link! w-full text-2xs! truncate"
             data-text="true"
           >
             Code heading depth 1

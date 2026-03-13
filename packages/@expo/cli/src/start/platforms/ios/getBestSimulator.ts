@@ -103,5 +103,13 @@ export async function getBestSimulatorAsync({ osType }: DeviceContext): Promise<
     return simulatorOpenedByApp.udid;
   }
 
-  return await getBestUnbootedSimulatorAsync({ osType });
+  try {
+    return await getBestUnbootedSimulatorAsync({ osType });
+  } catch (error) {
+    // Instead of throwing, return null if no simulators are found
+    if (error instanceof CommandError && error.code === 'UNSUPPORTED_OS_TYPE') {
+      return null;
+    }
+    throw error;
+  }
 }

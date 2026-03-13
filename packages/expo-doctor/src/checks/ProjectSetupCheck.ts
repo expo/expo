@@ -45,7 +45,9 @@ export class ProjectSetupCheck implements DoctorCheck {
     const expoDir = path.join(projectRoot, '.expo');
     if (fs.existsSync(expoDir)) {
       const isIgnored = await isFileIgnoredAsync(expoDir, false);
-      if (!isIgnored) {
+      // NOTE: If `isIgnored` is `null`, its status is undetermined. For `.expo/` specifically, we skip the issue
+      // if the ignore-status is undetermined to avoid false-positives
+      if (isIgnored === false) {
         issues.push(
           `The .expo directory is not ignored by Git. It contains machine-specific device history and development server settings and should not be committed.`
         );

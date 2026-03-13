@@ -6,6 +6,7 @@
 #include "types/JNIToJSIConverter.h"
 #include <jsi/JSIDynamic.h>
 #include "JSIContext.h"
+#include "Exceptions.h"
 
 namespace expo {
 
@@ -99,7 +100,7 @@ void JNIUtils::emitEventOnWeakJavaScriptObject(
 
       for (size_t i = 0; i < size; i++) {
         jni::local_ref<jobject> arg = localArgs->getElement(i);
-        convertedArgs.push_back(convert(env, rt, std::move(arg)));
+        convertedArgs.push_back(convert(env, rt, arg));
       }
 
       return convertedArgs;
@@ -131,7 +132,7 @@ void JNIUtils::emitEventOnJavaScriptObject(
 
       for (size_t i = 0; i < size; i++) {
         jni::local_ref<jobject> arg = localArgs->getElement(i);
-        convertedArgs.push_back(convert(env, rt, std::move(arg)));
+        convertedArgs.push_back(convert(env, rt, arg));
       }
 
       return convertedArgs;
@@ -175,7 +176,7 @@ void JNIUtils::emitEventOnJSIObject(
 
   jsiContext->runtimeHolder->jsInvoker->invokeAsync([
                                                       jsiContext,
-                                                      name = std::move(name),
+                                                      name = name,
                                                       argsProvider = std::move(argsProvider),
                                                       weakThis = std::move(jsiThis)
                                                     ]() {
@@ -210,7 +211,7 @@ void JNIUtils::emitEventOnJSIObject(
 
   jsiContext->runtimeHolder->jsInvoker->invokeAsync([
                                                       jsiContext,
-                                                      name = std::move(name),
+                                                      name = name,
                                                       weakThis = std::move(jsiThis),
                                                       argsProvider = std::move(argsProvider)
                                                     ]() {

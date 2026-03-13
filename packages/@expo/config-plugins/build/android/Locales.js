@@ -54,7 +54,9 @@ async function setLocalesAsync(config, {
   if (!locales) {
     return config;
   }
-  const localesMap = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'android');
+  const {
+    localesMap
+  } = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'android');
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     const stringsFilePath = _path().default.join(await _().AndroidConfig.Paths.getResourceFolderAsync(projectRoot), `values-b+${lang.replaceAll('-', '+')}`, 'strings.xml');
     (0, _XML().writeXMLAsync)({

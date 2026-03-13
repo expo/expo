@@ -2,7 +2,6 @@ import spawnAsync from '@expo/spawn-async';
 import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import {
@@ -28,7 +27,8 @@ describe('managed project test', () => {
   let originalConfig: any;
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
+
     // Pin the SDK version to prevent the latest version breaking snapshots
     await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-49', projectName], {
       stdio: 'inherit',
@@ -48,7 +48,7 @@ describe('managed project test', () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should have same hash after adding js only library', async () => {
@@ -221,7 +221,8 @@ describe(`getHashSourcesAsync - managed project`, () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
+
     // Pin the SDK version to prevent the latest version breaking snapshots
     await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-49', projectName], {
       stdio: 'inherit',
@@ -241,7 +242,7 @@ describe(`getHashSourcesAsync - managed project`, () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should match snapshot', async () => {

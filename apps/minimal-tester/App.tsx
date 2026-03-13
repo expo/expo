@@ -138,7 +138,7 @@ export function VideoExample() {
 
   return (
     <View style={[styles.exampleContainer, styles.videoExample]}>
-      <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+      <VideoView style={styles.video} player={player} allowsPictureInPicture />
       <View style={styles.buttons}>
         <Button title={status.isPlaying ? 'Pause' : 'Play'} onPress={togglePlaying} />
       </View>
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   blurImage: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   blurContainer: {
     flex: 1,

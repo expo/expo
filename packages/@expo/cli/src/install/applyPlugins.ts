@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 
 import * as Log from '../log';
+import { parsePackageSpecifier } from './utils/parsePackageSpecifier';
 
 /**
  * A convenience feature for automatically applying Expo Config Plugins to the `app.json` after installing them.
@@ -17,7 +18,7 @@ export async function applyPluginsAsync(projectRoot: string, packages: string[])
       projectRoot,
       exp,
       // Split any possible NPM tags. i.e. `expo@latest` -> `expo`
-      packages.map((pkg) => pkg.split('@')[0]).filter(Boolean)
+      packages.map(parsePackageSpecifier).filter((x) => x != null)
     );
   } catch (error: any) {
     // If we fail to apply plugins, the log a warning and continue.

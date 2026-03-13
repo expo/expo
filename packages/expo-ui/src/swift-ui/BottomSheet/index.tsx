@@ -1,51 +1,39 @@
 import { requireNativeView } from 'expo';
+import { ComponentType } from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type PresentationDetent = 'medium' | 'large' | number;
-export type PresentationDragIndicatorVisibility = 'automatic' | 'visible' | 'hidden';
-
 export type BottomSheetProps = {
   /**
    * The children of the `BottomSheet` component.
+   * Use `Group` to wrap your content and apply presentation modifiers
+   * like `presentationDetents`, `presentationDragIndicator`,
+   * `presentationBackgroundInteraction`, and `interactiveDismissDisabled`.
    */
-  children: any;
+  children: React.ReactNode;
   /**
-   * Whether the `BottomSheet` is opened.
+   * Whether the `BottomSheet` is presented.
    */
-  isOpened: boolean;
+  isPresented: boolean;
   /**
-   * Callback function that is called when the `BottomSheet` is opened.
+   * Callback function that is called when the `BottomSheet` presented state changes.
    */
-  onIsOpenedChange: (isOpened: boolean) => void;
+  onIsPresentedChange: (isPresented: boolean) => void;
   /**
-   * Setting it to `true` will disable the interactive dismiss of the `BottomSheet`.
+   * When `true`, the sheet will automatically size itself to fit its content.
+   * This sets the presentation detent to match the height of the children.
+   * @default false
    */
-  interactiveDismissDisabled?: boolean;
-  /**
-   * Array of presentation detents for the `BottomSheet`.
-   * Controls the heights that the sheet can snap to.
-   * - `medium` - Medium height sheet
-   * - `large` - Full height sheet
-   * - number (0-1) - Fraction of screen height (for example, 0.4 equals to 40% of screen)
-   */
-  presentationDetents?: PresentationDetent[];
-  /**
-   * Controls the visibility of the drag indicator for the `BottomSheet`.
-   * - `automatic` - System decides based on context (default)
-   * - `visible` - Always show the drag indicator
-   * - `hidden` - Never show the drag indicator
-   */
-  presentationDragIndicator?: PresentationDragIndicatorVisibility;
+  fitToContents?: boolean;
 } & CommonViewModifierProps;
 
-type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {
-  onIsOpenedChange: (event: NativeSyntheticEvent<{ isOpened: boolean }>) => void;
+type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsPresentedChange'> & {
+  onIsPresentedChange: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
 };
 
-const BottomSheetNativeView: React.ComponentType<NativeBottomSheetProps> = requireNativeView(
+const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNativeView(
   'ExpoUI',
   'BottomSheetView'
 );
@@ -56,12 +44,17 @@ function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetPr
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    onIsOpenedChange: ({ nativeEvent: { isOpened } }) => {
-      props?.onIsOpenedChange?.(isOpened);
+    onIsPresentedChange: ({ nativeEvent: { isPresented } }) => {
+      props?.onIsPresentedChange?.(isPresented);
     },
   };
 }
 
-export function BottomSheet(props: BottomSheetProps) {
+/**
+ * `BottomSheet` presents content from the bottom of the screen.
+ */
+function BottomSheet(props: BottomSheetProps) {
   return <BottomSheetNativeView {...transformBottomSheetProps(props)} />;
 }
+
+export { BottomSheet };

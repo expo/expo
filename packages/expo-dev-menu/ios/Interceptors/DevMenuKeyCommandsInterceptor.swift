@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import UIKit
 import React
 import EXDevMenuInterface
 
@@ -11,10 +10,12 @@ class DevMenuKeyCommandsInterceptor {
   static var isInstalled: Bool = false {
     willSet {
       if isInstalled != newValue {
-        if newValue {
-          registerKeyCommands()
-        } else {
-          unregisterKeyCommands()
+        DispatchQueue.main.async {
+          if newValue {
+            registerKeyCommands()
+          } else {
+            unregisterKeyCommands()
+          }
         }
       }
     }
@@ -39,14 +40,6 @@ class DevMenuKeyCommandsInterceptor {
       withInput: "d",
       modifierFlags: .control,
       action: { _ in DevMenuManager.shared.toggleMenu() }
-    )
-
-    commands.registerKeyCommand(
-      withInput: "r",
-      modifierFlags: .command,
-      action: { _ in
-        DevMenuManager.shared.reload()
-      }
     )
 
     commands.registerKeyCommand(
@@ -82,7 +75,6 @@ class DevMenuKeyCommandsInterceptor {
     commands.unregisterKeyCommand(withInput: "d", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "d", modifierFlags: .control)
     commands.unregisterKeyCommand(withInput: "r", modifierFlags: [])
-    commands.unregisterKeyCommand(withInput: "r", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "i", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "p", modifierFlags: .command)
 

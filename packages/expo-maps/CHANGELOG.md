@@ -6,15 +6,82 @@
 
 ### 🎉 New features
 
+- [Android] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add programmatic selection support for annotations via `selectAnnotation()` ref method. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add `onAnnotationClick` event callback for annotation tap handling. ([#42187](https://github.com/expo/expo/pull/42187) by [@huextrat](https://github.com/huextrat))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 💡 Others
+
+- [ios] refactor distance and hit detection ([#43087](https://github.com/expo/expo/pull/43087) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.6 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- Fixed geodesic polyline rendering on iOS by properly applying MapContourStyle enum. ([#39814](https://github.com/expo/expo/pull/39814) by [@sgup](https://github.com/sgup))
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+### 🎉 New features
+
+- [iOS] Add `colorScheme` prop to control map appearance (light/dark mode). ([#42199](https://github.com/expo/expo/pull/42199) by [@huextrat](https://github.com/huextrat))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS] Add `monogram` property to `AppleMapsMarker` for displaying initials on markers. ([#42159](https://github.com/expo/expo/pull/42159) by [@huextrat](https://github.com/huextrat))
+- [iOS] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#41655](https://github.com/expo/expo/pull/41655) by [@matinzd](https://github.com/matinzd))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix MapKit built-in buttons not responding ([#41151](https://github.com/expo/expo/pull/41151) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix Map resets camera position on navigation tab switch. ([#41639](https://github.com/expo/expo/pull/41639) by [@nishan](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+- [iOS] Export `MapStyleElevation` enum. ([#42148](https://github.com/expo/expo/pull/42148) by [@gustavoharff](https://github.com/gustavoharff))
+
+## 0.12.9 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 0.12.8 - 2025-10-01
 
 ### 🐛 Bug fixes
 
-- [iOS] Add workaround for iOS 26 onTapGesture known issue ([#39849](https://github.com/expo/expo/pull/39849) by [@nishan](https://github.com/intergalacticspacehighway)) ([#39849](https://github.com/expo/expo/pull/39849) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Add workaround for iOS 26 onTapGesture known issue ([#39849](https://github.com/expo/expo/pull/39849) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 0.12.7 — 2025-09-11
 

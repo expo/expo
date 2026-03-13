@@ -77,10 +77,6 @@ it('stacks should always push a new route', () => {
                     name: 'post/[id]',
                     params: {
                       id: '1',
-                      params: {
-                        id: '1',
-                      },
-                      screen: 'index',
                     },
                     path: undefined,
                     state: {
@@ -107,10 +103,6 @@ it('stacks should always push a new route', () => {
                     name: 'user/[id]',
                     params: {
                       id: '1',
-                      params: {
-                        id: '1',
-                      },
-                      screen: 'index',
                     },
                     path: undefined,
                     state: {
@@ -137,10 +129,6 @@ it('stacks should always push a new route', () => {
                     name: 'post/[id]',
                     params: {
                       id: '2',
-                      params: {
-                        id: '2',
-                      },
-                      screen: 'index',
                     },
                     path: undefined,
                     state: {
@@ -607,7 +595,7 @@ it('push should also add anchor routes', () => {
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: {},
+                    params: { initial: false },
                     path: undefined,
                   },
                 ],

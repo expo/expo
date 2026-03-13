@@ -255,9 +255,14 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    *
    * @param source The source of the video to be played.
    * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
+   * @param playerBuilderOptions Options to apply to the player builder before the native constructor is invoked.
    * @hidden
    */
-  constructor(source: VideoSource, useSynchronousReplace?: boolean);
+  constructor(
+    source: VideoSource,
+    useSynchronousReplace?: boolean,
+    playerBuilderOptions?: PlayerBuilderOptions
+  );
 
   /**
    * Resumes the player.
@@ -338,66 +343,64 @@ export type VideoThumbnailOptions = {
  */
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
-export type VideoSource =
-  | string
-  | number
-  | null
-  | {
-      /**
-       * The URI of the video.
-       *
-       * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
-       *
-       * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
-       */
-      uri?: string;
+export type VideoSource = string | number | null | VideoSourceObject;
 
-      /**
-       * The asset ID of a local video asset, acquired with the `require` function.
-       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
-       */
-      assetId?: number;
+export type VideoSourceObject = {
+  /**
+   * The URI of the video.
+   *
+   * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
+   *
+   * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
+   */
+  uri?: string;
 
-      /**
-       * Specifies the DRM options which will be used by the player while loading the video.
-       */
-      drm?: DRMOptions;
+  /**
+   * The asset ID of a local video asset, acquired with the `require` function.
+   * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+   */
+  assetId?: number;
 
-      /**
-       * Specifies information which will be displayed in the now playing notification.
-       * When undefined the player will display information contained in the video metadata.
-       * @platform android
-       * @platform ios
-       */
-      metadata?: VideoMetadata;
+  /**
+   * Specifies the DRM options which will be used by the player while loading the video.
+   */
+  drm?: DRMOptions;
 
-      /**
-       * Specifies headers sent with the video request.
-       * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
-       * @platform android
-       * @platform ios
-       */
-      headers?: Record<string, string>;
+  /**
+   * Specifies information which will be displayed in the now playing notification.
+   * When undefined the player will display information contained in the video metadata.
+   * @platform android
+   * @platform ios
+   */
+  metadata?: VideoMetadata;
 
-      /**
-       * Specifies whether the player should use caching for the video.
-       * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
-       * @default false
-       * @platform android
-       * @platform ios
-       */
-      useCaching?: boolean;
+  /**
+   * Specifies headers sent with the video request.
+   * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
+   * @platform android
+   * @platform ios
+   */
+  headers?: Record<string, string>;
 
-      /**
-       * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
-       *
-       * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
-       * @default 'auto'
-       * @platform android
-       * @platform ios
-       */
-      contentType?: ContentType;
-    };
+  /**
+   * Specifies whether the player should use caching for the video.
+   * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  useCaching?: boolean;
+
+  /**
+   * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
+   *
+   * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
+   * @default 'auto'
+   * @platform android
+   * @platform ios
+   */
+  contentType?: ContentType;
+};
 
 /**
  * Contains information about any errors that the player encountered during the playback
@@ -571,7 +574,7 @@ export type SubtitleTrack = {
    *
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the subtitle track. For example, `en`, `pl`, `de`.
@@ -582,6 +585,27 @@ export type SubtitleTrack = {
    * Label of the subtitle track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the subtitle track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default subtitle track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -594,6 +618,11 @@ export type VideoTrack = {
    * > This field is platform-specific and may return different depending on the operating system.
    */
   id: string;
+
+  /**
+   * The URL of the `VideoTrack` for HLS video sources. `null` for other source types.
+   */
+  url: string | null;
 
   /**
    * Size of the video track.
@@ -614,8 +643,21 @@ export type VideoTrack = {
 
   /**
    * Specifies the bitrate in bits per second. This is the peak bitrate if known, or else the average bitrate if known, or else null.
+   *
+   * @deprecated Use `peakBitrate` or `averageBitrate` instead.
    */
   bitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   *
+   */
+  averageBitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   */
+  peakBitrate: number | null;
 
   /**
    * Specifies the frame rate of the video track in frames per second.
@@ -642,7 +684,7 @@ export type AudioTrack = {
    * A string used by expo-video to identify the audio track.
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the audio track. For example, 'en', 'pl', 'de'.
@@ -653,6 +695,27 @@ export type AudioTrack = {
    * Label of the audio track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the audio track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default audio track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -735,4 +798,24 @@ export type ScrubbingModeOptions = {
    * @default true
    */
   allowSkippingMediaCodecFlush?: boolean;
+};
+
+/**
+ * Options to apply to the player builder before the native constructor is invoked
+ * @platform android
+ */
+export type PlayerBuilderOptions = {
+  /**
+   * Seek backward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekBackwardIncrement?: number;
+
+  /**
+   * Seek forward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekForwardIncrement?: number;
 };

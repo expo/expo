@@ -46,6 +46,7 @@ import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
 const isDev = process.env.NODE_ENV === 'development';
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
+export const LITERAL_UNION_COLLAPSE_THRESHOLD = 50;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -65,7 +66,7 @@ export const mdComponents: Components = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE className="break-words !inline py-0">{children}</CODE>
+      <CODE className="inline! py-0 break-words">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
@@ -238,11 +239,13 @@ export const resolveTypeName = (
           sdkVersion,
         });
       } else if (type === 'array') {
-        return resolveTypeName(elementType, sdkVersion) + '[]';
+        return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
       }
       return elementType.name + type;
+    } else if (type === 'rest' && elementType) {
+      return <>...{resolveTypeName(elementType, sdkVersion)}</>;
     } else if (elementType?.type === 'array') {
-      return resolveTypeName(elementType, sdkVersion) + '[]';
+      return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
     } else if (elementType?.declaration) {
       if (type === 'array') {
         const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
@@ -258,8 +261,16 @@ export const resolveTypeName = (
       }
       return elementType.name + type;
     } else if (type === 'union' && types?.length) {
+      const isLargeLiteralUnion =
+        types.length > LITERAL_UNION_COLLAPSE_THRESHOLD &&
+        types.every((t: TypeDefinitionData) =>
+          ['literal', 'templateLiteral', 'intrinsic', 'reference', 'tuple'].includes(t.type)
+        );
+      if (isLargeLiteralUnion) {
+        return 'See description for available values.';
+      }
       return renderUnion(types, { sdkVersion });
-    } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
+    } else if (elementType?.type === 'union' && elementType?.types?.length) {
       const unionTypes = elementType?.types ?? [];
       return (
         <>
@@ -386,8 +397,6 @@ export const resolveTypeName = (
       return operator ?? 'undefined';
     } else if (type === 'intrinsic') {
       return name ?? 'undefined';
-    } else if (type === 'rest' && elementType) {
-      return `...${resolveTypeName(elementType, sdkVersion)}`;
     } else if (value === null) {
       return 'null';
     }
@@ -416,7 +425,7 @@ export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div className="flex items-start gap-1">
       <span className={STYLES_SECONDARY}>Default:</span>
-      <CODE className="!text-[90%]">{defaultValue}</CODE>
+      <CODE className="text-[90!%]">{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -513,7 +522,7 @@ export const getCommentContent = (content: CommentContentData[]) => {
   return content
     .map(entry => {
       if (entry.tag === '@link' && !entry.text.includes('/')) {
-        return `[${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}](#${slug(entry.text)})`;
+        return `[\`${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}\`](#${slug(entry.text)})`;
       }
       return entry.text;
     })

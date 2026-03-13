@@ -25,7 +25,7 @@ Don't have a project yet? No problem. It's quick and easy to create a "Hello wor
 
 Run the following command to create a new project:
 
-<Terminal cmd={['$ npx create-expo-app my-app']} />
+<Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55']} />
 
 EAS Build also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
@@ -78,7 +78,7 @@ For development, we recommend creating a [development build](/develop/developmen
 
 Additional configuration may be required for some scenarios:
 
-- Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables).
+- Does your app code depend on environment variables? [Add them to your build configuration](/eas/environment-variables).
 - Is your project inside of a monorepo? [Follow these instructions](/build-reference/build-with-monorepos).
 - Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
 - Does your app depend on specific versions of tools like Node, Yarn, npm, CocoaPods, or Xcode? [Specify these versions in your build configuration](/build/eas-json).

@@ -4,6 +4,7 @@ exports.resolveExpoModule = resolveExpoModule;
 exports.findModulesAsync = findModulesAsync;
 const ExpoModuleConfig_1 = require("../ExpoModuleConfig");
 const dependencies_1 = require("../dependencies");
+const memoize_1 = require("../memoize");
 async function resolveExpoModule(resolution, platform, excludeNames) {
     if (excludeNames.has(resolution.name)) {
         return null;
@@ -28,14 +29,17 @@ async function resolveExpoModule(resolution, platform, excludeNames) {
 }
 /** Searches for modules to link based on given config. */
 async function findModulesAsync({ appRoot, autolinkingOptions, }) {
+    const memoizer = (0, memoize_1.createMemoizer)();
     const excludeNames = new Set(autolinkingOptions.exclude);
     // custom native modules should be resolved first so that they can override other modules
     const searchPaths = autolinkingOptions.nativeModulesDir
         ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
         : autolinkingOptions.searchPaths;
-    return (0, dependencies_1.filterMapResolutionResult)((0, dependencies_1.mergeResolutionResults)(await Promise.all([
-        ...searchPaths.map((searchPath) => (0, dependencies_1.scanDependenciesInSearchPath)(searchPath)),
-        (0, dependencies_1.scanDependenciesRecursively)(appRoot),
-    ])), (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames));
+    return memoizer.withMemoizer(async () => {
+        return (0, dependencies_1.filterMapResolutionResult)((0, dependencies_1.mergeResolutionResults)(await Promise.all([
+            ...searchPaths.map((searchPath) => (0, dependencies_1.scanDependenciesInSearchPath)(searchPath)),
+            (0, dependencies_1.scanDependenciesRecursively)(appRoot),
+        ])), (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames));
+    });
 }
 //# sourceMappingURL=findModules.js.map

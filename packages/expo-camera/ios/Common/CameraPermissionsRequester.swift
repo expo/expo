@@ -19,7 +19,7 @@ extension BaseCameraRequester {
     if description != nil {
       systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
     } else {
-      EXFatal(EXErrorWithMessage("""
+      RCTFatal(RCTErrorWithMessage("""
       This app is missing \(key),
       so \(service) services will fail. Add this entry to your bundle's Info.plist.
       """))
@@ -62,40 +62,6 @@ class CameraOnlyPermissionRequester: NSObject, EXPermissionsRequester, BaseCamer
 
   func getPermissions() -> [AnyHashable: Any] {
     return permissions(for: cameraKey, service: "video")
-  }
-
-  func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
-    requestAccess { [weak self] _ in
-      resolve(self?.getPermissions())
-    }
-  }
-}
-
-class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraRequester {
-  let mediaType: AVMediaType = .video
-
-  static func permissionType() -> String {
-    "camera"
-  }
-
-  func getPermissions() -> [AnyHashable: Any] {
-    var systemStatus: AVAuthorizationStatus
-
-    let cameraUsuageDescription = Bundle.main.infoDictionary?[cameraKey] as? String
-    let microphoneUsuageDescription = Bundle.main.infoDictionary?[microphoneKey] as? String
-
-    if let cameraUsuageDescription, let microphoneUsuageDescription {
-      systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
-    } else {
-      EXFatal(EXErrorWithMessage("""
-      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription,
-      so audio/video services will fail. Add one of these entries to
-      your bundle's Info.plist
-      """))
-      systemStatus = .denied
-    }
-
-    return permissionWith(status: systemStatus)
   }
 
   func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {

@@ -67,7 +67,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     by owner: AnyObject?,
     withArguments args: [Any],
     appContext: AppContext,
-    callback: @Sendable @escaping (FunctionCallResult) -> ()
+    callback: @Sendable @escaping (FunctionCallResult) -> Void
   ) {
     let promise = Promise(appContext: appContext) { value in
       callback(.success(Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)))
@@ -138,7 +138,6 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     let maxRetryCount = 3
 
     queue.async {
-#if RCT_NEW_ARCH_ENABLED
       // Checks if this is a view function unregistered in the view registry. The check can be performed from the main thread only.
       if retryCount < maxRetryCount,
         let viewTag = arguments.first as? Int,
@@ -150,7 +149,6 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
         self.dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: arguments, queue: queue, retryCount: retryCount + 1, block)
         return
       }
-#endif
       // Schedule the block as normal.
       block()
     }
@@ -158,6 +156,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
 
   // MARK: - JavaScriptObjectBuilder
 
+  @JavaScriptActor
   func build(appContext: AppContext) throws -> JavaScriptObject {
     // It seems to be safe to capture a strong reference to `self` here. This is needed for detached functions, that are not part of the module definition.
     // Module definitions are held in memory anyway, but detached definitions (returned by other functions) are not, so we need to capture them here.

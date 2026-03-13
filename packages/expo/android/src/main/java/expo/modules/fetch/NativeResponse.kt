@@ -40,7 +40,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     get() = this.sink.bodyUsed
 
   override fun deallocate() {
-    this.sink.finalize()
+    this.sink.finalize(directBuffer = false)
     super.deallocate()
   }
 
@@ -57,10 +57,10 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     }
     if (state == ResponseState.RESPONSE_RECEIVED) {
       state = ResponseState.BODY_STREAMING_STARTED
-      val queuedData = this.sink.finalize()
+      val queuedData = this.sink.finalize(directBuffer = false).array()
       emit("didReceiveResponseData", queuedData)
     } else if (state == ResponseState.BODY_COMPLETED) {
-      val queuedData = this.sink.finalize()
+      val queuedData = this.sink.finalize(directBuffer = false).array()
       return queuedData
     }
     return null

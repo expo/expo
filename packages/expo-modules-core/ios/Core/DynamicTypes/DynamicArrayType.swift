@@ -22,7 +22,7 @@ internal struct DynamicArrayType: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    let value = jsValue.getArray()
+    let value = jsValue.isArray() ? jsValue.getArray() : [jsValue]
     return try value.map { try elementType.cast(jsValue: $0, appContext: appContext) }
   }
 
@@ -37,9 +37,7 @@ internal struct DynamicArrayType: AnyDynamicType {
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     if let result = result as? [Any] {
-      return try result.map({ element in
-        return try elementType.convertResult(element, appContext: appContext)
-      })
+      return result.map { Conversions.convertFunctionResult($0, appContext: appContext) }
     }
     return result
   }

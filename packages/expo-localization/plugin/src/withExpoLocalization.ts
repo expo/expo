@@ -23,6 +23,10 @@ type ConfigPluginProps = {
       };
 };
 
+export function convertBcp47ToResourceQualifier(locale: string): string {
+  return `b+${locale.replaceAll('-', '+')}`;
+}
+
 function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   const mergedConfig = { ...config.extra, ...data };
 
@@ -106,10 +110,13 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
     });
     config = withAppBuildGradle(config, (config) => {
       if (config.modResults.language === 'groovy') {
+        const resourceQualifiers = supportedLocales.map((locale) =>
+          convertBcp47ToResourceQualifier(locale)
+        );
         config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
           config.modResults.contents,
           'defaultConfig',
-          `    resourceConfigurations += [${supportedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `
+          `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `
         );
       } else {
         WarningAggregator.addWarningAndroid(
@@ -148,15 +155,15 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
   });
 }
 
-function withExpoLocalization(
-  config: ExpoConfig,
-  data: ConfigPluginProps = {
-    allowDynamicLocaleChangesAndroid: true,
-  }
-) {
+function withExpoLocalization(config: ExpoConfig, data: ConfigPluginProps = {}) {
+  // Ensure allowDynamicLocaleChangesAndroid defaults to true
+  const normalizedData = {
+    ...data,
+    allowDynamicLocaleChangesAndroid: data.allowDynamicLocaleChangesAndroid ?? true,
+  };
   return withPlugins(config, [
-    [withExpoLocalizationIos, data],
-    [withExpoLocalizationAndroid, data],
+    [withExpoLocalizationIos, normalizedData],
+    [withExpoLocalizationAndroid, normalizedData],
   ]);
 }
 

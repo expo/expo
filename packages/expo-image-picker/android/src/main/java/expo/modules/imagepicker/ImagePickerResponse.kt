@@ -7,7 +7,7 @@ import expo.modules.kotlin.types.Enumerable
 
 internal class ImagePickerAsset(
   @Field val assetId: String? = null,
-  @Field val type: MediaType = MediaType.IMAGE,
+  @Field val type: MediaType? = MediaType.IMAGE,
   @Field val uri: String = "",
   @Field val width: Int = 0,
   @Field val height: Int = 0,

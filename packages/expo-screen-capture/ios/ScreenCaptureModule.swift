@@ -5,7 +5,7 @@ let onScreenshotEventName = "onScreenshot"
 public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
   private var isListening = false
-  private var blockView = UIView()
+  private var blockView: UIView?
   private var protectionTextField: UITextField?
   private var originalParent: CALayer?
   private var blurEffectView: AnimatedBlurEffectView?
@@ -20,12 +20,6 @@ public final class ScreenCaptureModule: Module {
     Name("ExpoScreenCapture")
 
     Events(onScreenshotEventName)
-
-    OnCreate {
-      let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-      blockView.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
-      blockView.backgroundColor = .black
-    }
 
     OnDestroy {
       allowScreenshots()
@@ -98,8 +92,9 @@ public final class ScreenCaptureModule: Module {
   func preventScreenRecording() {
     guard let keyWindow = keyWindow,
       let visibleView = keyWindow.subviews.first else { return }
-    let isCaptured = UIScreen.main.isCaptured
+    let blockView = getOrCreateBlockView()
 
+    let isCaptured = UIScreen.main.isCaptured
     if isCaptured {
       visibleView.addSubview(blockView)
     } else {
@@ -112,6 +107,19 @@ public final class ScreenCaptureModule: Module {
     sendEvent(onScreenshotEventName, [
       "body": nil
     ])
+  }
+
+  private func getOrCreateBlockView() -> UIView {
+    guard let blockView else {
+      let view = UIView()
+      let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
+      view.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
+      view.backgroundColor = .black
+
+      self.blockView = view
+      return view
+    }
+    return blockView
   }
 
   private func preventScreenshots() {

@@ -3,15 +3,20 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import universeNodeConfig from 'eslint-config-universe/flat/node.js';
 import universeTypescriptAnalysisConfig from 'eslint-config-universe/flat/shared/typescript-analysis.js';
 import universeWebConfig from 'eslint-config-universe/flat/web.js';
+import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
-import tailwind from 'eslint-plugin-tailwindcss';
 import testingLibrary from 'eslint-plugin-testing-library';
 import unicorn from 'eslint-plugin-unicorn'; // eslint-disable-line
 
-const TAILWIND_DEFAULTS = {
+const CLASS_NAME_PREFIXES = ['container', 'icon', 'text'];
+
+const CLASS_NAME_PATTERN = '(c|C)lass(Name)?$';
+
+const TAILWIND_SETTINGS = {
+  entryPoint: 'styles/global.css',
   callees: ['mergeClasses'],
-  classRegex: '^(confirmation|container|icon)?(c|C)lass(Name)?$',
+  attributes: [`^(${CLASS_NAME_PREFIXES.join('|')})?${CLASS_NAME_PATTERN}`],
 };
 
 const CORE_RULES = {
@@ -72,6 +77,8 @@ export default defineConfig([
     '**/.cache',
     '**/.next/',
     '**/.swc/',
+    '**/.wrangler/',
+    '**/.worker-test/',
     '**/.yarn/',
     '**/.vale',
     '**/node_modules',
@@ -107,11 +114,13 @@ export default defineConfig([
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     plugins: {
       '@next/next': nextPlugin,
-      tailwind,
+      'better-tailwindcss': betterTailwindcss,
       lodash,
       unicorn,
     },
-    extends: ['tailwind/flat/recommended'],
+    settings: {
+      'better-tailwindcss': TAILWIND_SETTINGS,
+    },
     rules: {
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs['core-web-vitals'].rules,
@@ -206,15 +215,13 @@ export default defineConfig([
           warnOnDuplicates: true,
         },
       ],
-      'tailwindcss/classnames-order': 'off',
-      'tailwindcss/enforces-negative-arbitrary-values': 'error',
-      'tailwindcss/enforces-shorthand': 'error',
-      'tailwindcss/no-arbitrary-value': 'off',
-      'tailwindcss/no-custom-classname': [
+      'better-tailwindcss/enforce-consistent-class-order': 'off',
+      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
+      'better-tailwindcss/enforce-shorthand-classes': 'error',
+      'better-tailwindcss/no-unknown-classes': [
         'error',
         {
-          cssFiles: ['node_modules/@expo/styleguide/dist/global.css'],
-          whitelist: [
+          ignore: [
             'diff-.+',
             'react-player',
             'dark-theme',
@@ -222,11 +229,14 @@ export default defineConfig([
             'terminal-snippet',
             'table-wrapper',
             'tutorial-code-annotation',
+            'max-sm:.+',
+            'max-medium:.+',
+            'max-md-gutters:.+',
+            '\\[table_&\\]:.+',
+            '\\[table_&\\]',
           ],
-          ...TAILWIND_DEFAULTS,
         },
       ],
-      'tailwindcss/no-unnecessary-arbitrary-value': ['error', TAILWIND_DEFAULTS],
       'no-restricted-properties': [
         'warn',
         {

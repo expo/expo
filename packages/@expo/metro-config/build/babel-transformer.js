@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
+const getPkgVersion_1 = require("./utils/getPkgVersion");
+const transitiveResolveFrom_1 = require("./utils/transitiveResolveFrom");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
     return String(value) === 'true';
@@ -25,6 +27,19 @@ function memoize(fn) {
 const memoizeWarning = memoize((message) => {
     debug(message);
 });
+function getIsHermesV1(projectRoot) {
+    const hermesCompilerPackageJsonPath = (0, transitiveResolveFrom_1.transitiveResolveFrom)(projectRoot, [
+        'react-native/package.json',
+        'hermes-compiler/package.json',
+    ]);
+    if (!hermesCompilerPackageJsonPath) {
+        return true;
+    }
+    const hermesVersion = (0, getPkgVersion_1.getPkgVersionFromPath)(hermesCompilerPackageJsonPath);
+    // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
+    const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
+    return !isLegacyHermes;
+}
 function getBabelCaller({ filename, options, }) {
     const isNodeModule = filename.includes('node_modules');
     const isReactServer = options.customTransformOptions?.environment === 'react-server';
@@ -62,6 +77,8 @@ function getBabelCaller({ filename, options, }) {
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: stringOrUndefined(options.customTransformOptions?.engine),
+        // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
+        isHermesV1: getIsHermesV1(options.projectRoot),
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
         isNodeModule,
@@ -79,6 +96,11 @@ function getBabelCaller({ filename, options, }) {
         // Enable React compiler support in Babel.
         // TODO: Remove this in the future when compiler is on by default.
         supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)
+            ? true
+            : undefined,
+        // When true, indicates this bundle should contain only the loader export.
+        // Used by server-data-loaders-plugin to strip everything except the loader function.
+        isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
             ? true
             : undefined,
         // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported

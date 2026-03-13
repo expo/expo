@@ -1,6 +1,4 @@
 /* eslint-env browser */
-import invariant from 'invariant';
-
 import * as CapabilityUtils from './WebCapabilityUtils';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
 import { requestUserMediaAsync } from './WebUserMediaManager';
@@ -36,18 +34,8 @@ export function toDataURL(
   imageType: ImageType,
   quality: number
 ): string {
-  const types = ['png', 'jpg'];
-  invariant(
-    types.includes(imageType),
-    `expo-camera: ${imageType} is not a valid ImageType. Expected a string from: ${types.join(', ')}`
-  );
-
   const format = ImageTypeFormat[imageType];
   if (imageType === 'jpg') {
-    invariant(
-      quality <= 1 && quality >= 0,
-      `expo-camera: ${quality} is not a valid image quality. Expected a number from 0...1`
-    );
     return canvas.toDataURL(format, quality);
   } else {
     return canvas.toDataURL(format);
@@ -63,39 +51,15 @@ export function hasValidConstraints(
 }
 
 function ensureCameraPictureOptions(config: CameraPictureOptions): CameraPictureOptions {
-  const captureOptions: CameraPictureOptions = {
-    scale: 1,
-    imageType: 'png' as ImageType,
-    isImageMirror: false,
+  return {
+    ...config,
+    scale: config.scale ?? 1,
+    imageType: config.imageType ?? 'png',
+    isImageMirror: config.isImageMirror ?? false,
   };
-  for (const key in config) {
-    const prop = key as keyof CameraPictureOptions;
-    if (prop in config && config[prop] !== undefined && prop in captureOptions) {
-      captureOptions[prop] = config[prop] as any;
-    }
-  }
-  return captureOptions;
 }
 
 const DEFAULT_QUALITY = 0.92;
-
-export function captureImageData(
-  video: HTMLVideoElement | null,
-  pictureOptions: Pick<CameraPictureOptions, 'scale' | 'isImageMirror'> = {}
-): ImageData | null {
-  if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
-    return null;
-  }
-  const canvas = captureImageContext(video, pictureOptions);
-
-  const context = canvas.getContext('2d', { alpha: false });
-  if (!context || !canvas.width || !canvas.height) {
-    return null;
-  }
-
-  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-  return imageData;
-}
 
 export function captureImageContext(
   video: HTMLVideoElement,
@@ -220,13 +184,8 @@ export async function getStreamDevice(
   preferredWidth?: number | ConstrainLongRange,
   preferredHeight?: number | ConstrainLongRange
 ): Promise<MediaStream> {
-  const constraints: MediaStreamConstraints = getIdealConstraints(
-    preferredCameraType,
-    preferredWidth,
-    preferredHeight
-  );
-  const stream: MediaStream = await requestUserMediaAsync(constraints);
-  return stream;
+  const constraints = getIdealConstraints(preferredCameraType, preferredWidth, preferredHeight);
+  return requestUserMediaAsync(constraints);
 }
 
 export function isWebKit(): boolean {
@@ -248,25 +207,18 @@ export function capture(
   config: CameraPictureOptions
 ): CameraCapturedPicture {
   const base64 = captureImage(video, config);
+  const { width = 0, height = 0 } = settings;
 
   const capturedPicture: CameraCapturedPicture = {
     uri: base64,
     base64,
-    width: 0,
-    height: 0,
+    width,
+    height,
     format: config.imageType ?? 'jpg',
+    exif: settings,
   };
 
-  if (settings) {
-    const { width = 0, height = 0 } = settings;
-    capturedPicture.width = width;
-    capturedPicture.height = height;
-    capturedPicture.exif = settings;
-  }
-
-  if (config.onPictureSaved) {
-    config.onPictureSaved(capturedPicture);
-  }
+  config.onPictureSaved?.(capturedPicture);
   return capturedPicture;
 }
 
@@ -365,38 +317,12 @@ export function stopMediaStream(stream: MediaStream | null) {
   if (!stream) {
     return;
   }
-  if (stream.getAudioTracks) {
-    stream.getAudioTracks().forEach((track) => track.stop());
-  }
-  if (stream.getVideoTracks) {
-    stream.getVideoTracks().forEach((track) => track.stop());
-  }
-  if (isMediaStreamTrack(stream)) {
-    stream.stop();
-  }
+  stream.getAudioTracks().forEach((track) => track.stop());
+  stream.getVideoTracks().forEach((track) => track.stop());
 }
 
-export function setVideoSource(
-  video: HTMLVideoElement,
-  stream: MediaStream | MediaSource | Blob | null
-): void {
-  const createObjectURL = window.URL.createObjectURL ?? window.webkitURL.createObjectURL;
-
-  if (typeof video.srcObject !== 'undefined') {
-    video.srcObject = stream;
-  } else if (typeof (video as any).mozSrcObject !== 'undefined') {
-    (video as any).mozSrcObject = stream;
-  } else if (stream && createObjectURL) {
-    video.src = createObjectURL(stream as MediaSource | Blob);
-  }
-
-  if (!stream) {
-    const revokeObjectURL = window.URL.revokeObjectURL ?? window.webkitURL.revokeObjectURL;
-    const source = video.src ?? video.srcObject ?? (video as any).mozSrcObject;
-    if (revokeObjectURL && typeof source === 'string') {
-      revokeObjectURL(source);
-    }
-  }
+export function setVideoSource(video: HTMLVideoElement, stream: MediaStream | null): void {
+  video.srcObject = stream;
 }
 
 export function isCapabilityAvailable(
@@ -411,10 +337,6 @@ export function isCapabilityAvailable(
   }
 
   return false;
-}
-
-function isMediaStreamTrack(input: any): input is MediaStreamTrack {
-  return typeof input.stop === 'function';
 }
 
 function convertNormalizedSetting(range: MediaSettingsRange, value?: number): number | undefined {

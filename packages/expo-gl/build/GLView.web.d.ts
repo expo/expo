@@ -23,7 +23,6 @@ export declare class GLView extends React.Component<GLViewWebProps> {
     private getGLContext;
     private setCanvasRef;
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
-    startARSessionAsync(): Promise<void>;
     createCameraTextureAsync(): Promise<void>;
     destroyObjectAsync(glObject: WebGLObject): Promise<void>;
 }

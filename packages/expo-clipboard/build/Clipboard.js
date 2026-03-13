@@ -1,7 +1,6 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
-import ExpoClipboard from './ExpoClipboard';
-const onClipboardEventName = 'onClipboardChanged';
+import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -31,23 +30,6 @@ export async function setStringAsync(text, options = {}) {
         throw new UnavailabilityError('Clipboard', 'setStringAsync');
     }
     return ExpoClipboard.setStringAsync(text, options);
-}
-/**
- * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
- *
- * @returns On web, this returns a boolean value indicating whether or not the string was saved to
- * the user's clipboard. On iOS and Android, nothing is returned.
- */
-export function setString(text) {
-    if (Platform.OS === 'web') {
-        // on web, we need to return legacy method,
-        // because of different return type
-        return ExpoClipboard.setString(text);
-    }
-    else {
-        setStringAsync(text);
-    }
 }
 /**
  * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).
@@ -185,31 +167,11 @@ export async function hasImageAsync() {
  * ```
  */
 export function addClipboardListener(listener) {
-    // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
-    const listenerWrapper = (event) => {
-        const wrappedEvent = {
-            ...event,
-            get content() {
-                console.warn("The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content");
-                return '';
-            },
-        };
-        listener(wrappedEvent);
-    };
-    return ExpoClipboard.addListener(onClipboardEventName, listenerWrapper);
+    return ExpoClipboard.addListener(clipboardEventName, listener);
 }
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
- *
- * @param subscription The subscription to remove (created by addClipboardListener).
- *
- * @example
- * ```typescript
- * const subscription = addClipboardListener(() => {
- *   alert('Copy pasta!');
- * });
- * removeClipboardListener(subscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export function removeClipboardListener(subscription) {
     subscription.remove();

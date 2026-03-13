@@ -84,7 +84,7 @@ export default function DocumentationNestedScrollLayout({
     <div className="mx-auto flex h-dvh w-full flex-col overflow-hidden">
       <div className="max-lg-gutters:sticky">{header}</div>
       <div className="mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
-        <div className="relative h-full max-lg-gutters:hidden">
+        <div className="max-lg-gutters:hidden relative h-full">
           {onSidebarToggle ? (
             <div
               className={mergeClasses(
@@ -99,12 +99,12 @@ export default function DocumentationNestedScrollLayout({
                     theme="quaternary"
                     size="xs"
                     className={mergeClasses(
-                      'inline-flex size-9 items-center justify-center rounded-full border !p-0 transition-colors duration-150 ease-out',
+                      'inline-flex size-9 items-center justify-center rounded-full border p-0! transition-colors duration-150 ease-out',
                       'shadow-sm',
                       isSidebarCollapsed
                         ? 'border-palette-gray5 bg-palette-gray4 text-icon-secondary dark:border-palette-gray6 dark:bg-palette-gray5'
                         : 'border-default bg-default text-icon-secondary',
-                      'hover:bg-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-blue9'
+                      'hover:bg-element focus-visible:ring-palette-blue9 focus-visible:ring-2 focus-visible:outline-none'
                     )}
                     aria-label={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
                     title={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
@@ -128,7 +128,7 @@ export default function DocumentationNestedScrollLayout({
           ) : null}
           <div
             className={mergeClasses(
-              'flex h-full max-w-[280px] flex-col overflow-hidden border-r border-r-default transition-[max-width,opacity,width] duration-200 ease-out will-change-[max-width,width,opacity]',
+              'border-r-default flex h-full max-w-[280px] flex-col overflow-hidden border-r transition-[max-width,opacity,width] duration-200 ease-out will-change-[max-width,width,opacity]',
               isSidebarCollapsed
                 ? 'w-0 max-w-0 border-r-0 opacity-0'
                 : 'w-[280px] max-w-[280px] opacity-100'
@@ -158,7 +158,7 @@ export default function DocumentationNestedScrollLayout({
               className={mergeClasses(
                 'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
                 isChatExpanded &&
-                  'lg:pr-[360px] lg:pl-8 lg:max-w-[calc(100%-360px)] max-lg-gutters:max-w-screen-xl max-lg-gutters:pl-0 max-lg-gutters:pr-0'
+                  'max-lg-gutters:max-w-screen-xl max-lg-gutters:pl-0 max-lg-gutters:pr-0'
               )}>
               {children}
             </div>
@@ -167,7 +167,7 @@ export default function DocumentationNestedScrollLayout({
         {!hideTOC && (
           <div
             className={mergeClasses(
-              'flex h-[calc(100dvh-60px)] max-w-[280px] shrink-0 flex-col overflow-hidden border-l border-l-default',
+              'border-l-default flex h-[calc(100dvh-60px)] max-w-[280px] shrink-0 flex-col overflow-hidden border-l',
               'max-xl-gutters:hidden'
             )}>
             <ScrollContainer ref={sidebarRightRef}>

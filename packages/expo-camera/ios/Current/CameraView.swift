@@ -58,6 +58,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   internal var videoBitrate: Int?
+  var videoStabilizationMode: VideoStabilizationMode = .auto
 
   var presetCamera = AVCaptureDevice.Position.back {
     didSet {
@@ -71,13 +72,17 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
 
   var torchEnabled = false {
     didSet {
-      sessionManager.enableTorch()
+      sessionQueue.async {
+        self.sessionManager.enableTorch()
+      }
     }
   }
 
   var autoFocus = AVCaptureDevice.FocusMode.continuousAutoFocus {
     didSet {
-      sessionManager.setFocusMode()
+      sessionQueue.async {
+        self.sessionManager.setFocusMode()
+      }
     }
   }
 
@@ -91,8 +96,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     didSet {
       sessionQueue.async {
         self.sessionManager.setCameraMode()
-        let preset = self.mode == .video ? self.videoQuality.toPreset() : self.pictureSize.toCapturePreset()
-        self.sessionManager.updateSessionPreset(preset: preset)
       }
     }
   }
@@ -126,7 +129,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
 
   var zoom: CGFloat = 0 {
     didSet {
-      sessionManager.updateZoom()
+      sessionQueue.async {
+        self.sessionManager.updateZoom()
+      }
     }
   }
 
@@ -148,7 +153,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
-    permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
+    permissionsManager = appContext?.permissions
 
     sessionManager = CameraSessionManager(delegate: self)
     photoCapture = CameraPhotoCapture(delegate: self)
@@ -291,14 +296,20 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     super.layoutSubviews()
     self.backgroundColor = .black
     previewLayer.frame = self.bounds
-    self.layer.insertSublayer(previewLayer, at: 0)
+    if previewLayer.superlayer == nil {
+      self.layer.insertSublayer(previewLayer, at: 0)
+    } else if previewLayer.superlayer !== self.layer {
+      previewLayer.removeFromSuperlayer()
+      self.layer.insertSublayer(previewLayer, at: 0)
+    }
   }
 
   public override func removeFromSuperview() {
     super.removeFromSuperview()
-    sessionQueue.async {
-      self.sessionManager.stopSession()
+    sessionQueue.async { [weak self] in
+      self?.sessionManager.stopSession()
     }
+    motionManager.stopAccelerometerUpdates()
     lifecycleManager?.unregisterAppLifecycleListener(self)
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
@@ -348,6 +359,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   deinit {
+    motionManager.stopAccelerometerUpdates()
     photoCapture.cleanup()
     videoRecording.cleanup()
   }

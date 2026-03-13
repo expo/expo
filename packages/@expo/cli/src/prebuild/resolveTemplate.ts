@@ -10,7 +10,6 @@ import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
 import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError } from '../utils/errors';
 import {
-  ExtractProps,
   downloadAndExtractNpmModuleAsync,
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
@@ -40,20 +39,18 @@ export async function cloneTemplateAsync({
   ora: Ora;
 }): Promise<string> {
   if (template) {
-    const appName = exp.name;
+    const expName = exp.name;
     const { type, uri } = template;
     if (type === 'file') {
-      return await extractLocalNpmTarballAsync(uri, {
-        cwd: templateDirectory,
-        name: appName,
+      return await extractLocalNpmTarballAsync(uri, templateDirectory, {
+        expName,
       });
     } else if (type === 'npm') {
-      return await downloadAndExtractNpmModuleAsync(uri, {
-        cwd: templateDirectory,
-        name: appName,
+      return await downloadAndExtractNpmModuleAsync(uri, templateDirectory, {
+        expName,
       });
     } else if (type === 'repository') {
-      return await resolveAndDownloadRepoTemplateAsync(templateDirectory, ora, appName, uri);
+      return await resolveAndDownloadRepoTemplateAsync(templateDirectory, ora, expName, uri);
     } else {
       throw new Error(`Unknown template type: ${type}`);
     }
@@ -63,9 +60,8 @@ export async function cloneTemplateAsync({
     } catch (error: any) {
       const templatePackageName = getTemplateNpmPackageNameFromSdkVersion(exp.sdkVersion);
       debug('Fallback to SDK template:', templatePackageName);
-      return await downloadAndExtractNpmModuleAsync(templatePackageName, {
-        cwd: templateDirectory,
-        name: exp.name,
+      return await downloadAndExtractNpmModuleAsync(templatePackageName, templateDirectory, {
+        expName: exp.name,
       });
     }
   }
@@ -116,7 +112,8 @@ function hasRepo({ username, name, branch, filePath }: RepoInfo) {
 
 async function downloadAndExtractRepoAsync(
   { username, name, branch, filePath }: RepoInfo,
-  props: ExtractProps
+  output: string,
+  props: { expName?: string }
 ): Promise<string> {
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
 
@@ -138,13 +135,17 @@ async function downloadAndExtractRepoAsync(
     }
   );
 
-  return await extractNpmTarballFromUrlAsync(url, { ...props, strip, filter });
+  return await extractNpmTarballFromUrlAsync(url, output, {
+    ...props,
+    strip,
+    filter,
+  });
 }
 
 async function resolveAndDownloadRepoTemplateAsync(
   templateDirectory: string,
   oraInstance: Ora,
-  appName: string,
+  expName: string,
   template: string,
   templatePath?: string
 ) {
@@ -196,8 +197,5 @@ async function resolveAndDownloadRepoTemplateAsync(
     `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
   );
 
-  return await downloadAndExtractRepoAsync(repoInfo, {
-    cwd: templateDirectory,
-    name: appName,
-  });
+  return await downloadAndExtractRepoAsync(repoInfo, templateDirectory, { expName });
 }

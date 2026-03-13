@@ -5,6 +5,7 @@
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 #import <ExpoModulesJSI/EXRawJavaScriptFunction.h>
 #import <ExpoModulesJSI/EXJavaScriptTypedArray.h>
+#import <ExpoModulesJSI/EXRawJavaScriptArrayBuffer.h>
 #import <ExpoModulesJSI/TypedArray.h>
 
 @implementation EXJavaScriptValue {
@@ -77,11 +78,29 @@
   return false;
 }
 
+- (BOOL)isArray
+{
+  if (_value.isObject()) {
+    jsi::Runtime *runtime = [_runtime get];
+    return _value.getObject(*runtime).isArray(*runtime);
+  }
+  return false;
+}
+
 - (BOOL)isTypedArray
 {
   if (_value.isObject()) {
     jsi::Runtime *runtime = [_runtime get];
     return expo::isTypedArray(*runtime, _value.getObject(*runtime));
+  }
+  return false;
+}
+
+- (BOOL)isArrayBuffer
+{
+  if (_value.isObject()) {
+    jsi::Runtime *runtime = [_runtime get];
+    return _value.getObject(*runtime).isArrayBuffer(*runtime);
   }
   return false;
 }
@@ -156,6 +175,16 @@
   jsi::Runtime *runtime = [_runtime get];
   std::shared_ptr<jsi::Object> objectPtr = std::make_shared<jsi::Object>(_value.asObject(*runtime));
   return [[EXJavaScriptTypedArray alloc] initWith:objectPtr runtime:_runtime];
+}
+
+- (nullable EXJavaScriptArrayBuffer *)getArrayBuffer
+{
+  if (![self isArrayBuffer]) {
+    return nil;
+  }
+  jsi::Runtime *runtime = [_runtime get];
+  std::shared_ptr<jsi::Object> objectPtr = std::make_shared<jsi::Object>(_value.asObject(*runtime));
+  return [[EXJavaScriptArrayBuffer alloc] initWith:objectPtr runtime:_runtime];
 }
 
 #pragma mark - Helpers

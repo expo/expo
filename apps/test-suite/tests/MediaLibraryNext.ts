@@ -56,6 +56,27 @@ export async function test(t) {
     }
   });
 
+  t.describe('Stress tests', async () => {
+    t.it('creating files with the same filename', async () => {
+      for (let i = 0; i < 40; i++) {
+        const asset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(asset);
+      }
+    });
+
+    t.it('moving files with the same filename to album', async () => {
+      const createdAssets = [];
+      for (let i = 0; i < 40; i++) {
+        const album = await Album.create(createAlbumName(`temp album ${i}`), [pngFile.localUri]);
+        albumsContainer.push(album);
+        createdAssets.push(...(await album.getAssets()));
+      }
+      assetsContainer.push(...createdAssets);
+      const albumName = createAlbumName('stress test moving directories');
+      const album = await Album.create(albumName, createdAssets);
+      albumsContainer.push(album);
+    });
+  });
   t.describe('Album creation', () => {
     t.it('creates an album from a list of paths', async () => {
       const albumName = createAlbumName('album from paths');
@@ -309,6 +330,18 @@ export async function test(t) {
       t.expect(width).toBeGreaterThan(0);
     });
 
+    if (Platform.OS === 'ios') {
+      t.it('sets and gets favorite status', async () => {
+        t.expect(await asset.getFavorite()).toBe(false);
+        // mark as favorite
+        await asset.setFavorite(true);
+        t.expect(await asset.getFavorite()).toBe(true);
+        // unmark as favorite
+        await asset.setFavorite(false);
+        t.expect(await asset.getFavorite()).toBe(false);
+      });
+    }
+
     t.it('returns an asset info object', async () => {
       const info = await asset.getInfo();
       t.expect(info).toBeDefined();
@@ -321,6 +354,9 @@ export async function test(t) {
       t.expect(info.duration).toBe(await asset.getDuration());
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
+      if (Platform.OS === 'ios') {
+        t.expect(info.isFavorite).toBe(await asset.getFavorite());
+      }
     });
   });
 

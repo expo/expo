@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXScopedModuleRegistry.h"
-#import "EXUnversioned.h"
 
 static NSMutableDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses;
 
@@ -28,7 +27,7 @@ void EXRegisterScopedModule(Class moduleClass, ...)
     if ([kernelServiceClassName isEqualToString:@"nil"]) {
       unversionedKernelServiceClassNames[kernelServiceClassName] = EX_KERNEL_SERVICE_NONE;
     } else {
-      unversionedKernelServiceClassNames[kernelServiceClassName] = [EX_UNVERSIONED(@"EX") stringByAppendingString:kernelServiceClassName];
+      unversionedKernelServiceClassNames[kernelServiceClassName] = [@"EX" stringByAppendingString:kernelServiceClassName];
     }
   }
   va_end(argumentList);

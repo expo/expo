@@ -37,10 +37,12 @@ public protocol AnyViewDefinition: Sendable {
   /**
    Calls defined lifecycle methods with the given type.
    */
+  @MainActor
   func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: AppleView)
 
   /**
    Creates a JavaScript object that may be used as a React component prototype.
    */
+  @JavaScriptActor
   func createReactComponentPrototype(appContext: AppContext) throws -> JavaScriptObject
 }

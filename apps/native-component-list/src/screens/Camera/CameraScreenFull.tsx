@@ -3,7 +3,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '@react-native-community/slider';
 import {
-  BarcodePoint,
   BarcodeScanningResult,
   CameraView,
   CameraCapturedPicture,
@@ -13,12 +12,13 @@ import {
   PermissionStatus,
   Camera,
   FocusMode,
+  VideoStabilization,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system/legacy';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import * as Svg from 'react-native-svg';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import GalleryScreen from './GalleryScreen';
 
@@ -27,18 +27,27 @@ const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 const flashModeOrder: Record<string, FlashMode> = {
   off: 'on',
   on: 'auto',
-  auto: 'off',
+  auto: 'screen',
+  screen: 'off',
 };
 
 const flashIcons: Record<string, string> = {
   off: 'flash-off',
   on: 'flash',
   auto: 'flash-outline',
+  screen: 'sunny',
 };
 
 const volumeIcons: Record<string, string> = {
   on: 'volume-high',
   off: 'volume-mute',
+};
+
+const videoStabilizationModeOrder: Record<string, VideoStabilization> = {
+  off: 'standard',
+  standard: 'cinematic',
+  cinematic: 'auto',
+  auto: 'off',
 };
 
 const photos: CameraCapturedPicture[] = [];
@@ -50,10 +59,8 @@ interface State {
   barcodeScanning: boolean;
   mute: boolean;
   torchEnabled: boolean;
-  cornerPoints?: BarcodePoint[];
   mirror?: boolean;
   autoFocus: FocusMode;
-  barcodeData: string;
   newPhotos: boolean;
   previewPaused: boolean;
   permissionsGranted: boolean;
@@ -67,6 +74,7 @@ interface State {
   showMoreOptions: boolean;
   mode: CameraMode;
   recording: boolean;
+  videoStabilizationMode: VideoStabilization;
 }
 
 function Gestures({ children }: { children: React.ReactNode }) {
@@ -110,10 +118,8 @@ export default function CameraScreen() {
     facing: 'back',
     barcodeScanning: false,
     torchEnabled: false,
-    cornerPoints: undefined,
     mute: false,
     mirror: false,
-    barcodeData: '',
     autoFocus: 'off',
     newPhotos: false,
     previewPaused: false,
@@ -125,7 +131,24 @@ export default function CameraScreen() {
     pictureSizeId: 0,
     mode: 'picture',
     recording: false,
+    videoStabilizationMode: 'auto',
   });
+
+  const barcodeBounds = useSharedValue({ x: 0, y: 0, w: 0, h: 0 });
+  const barcodeOpacity = useSharedValue(0);
+  const [barcodeData, setBarcodeData] = useState('');
+
+  const barcodeOverlayStyle = useAnimatedStyle(() => ({
+    position: 'absolute' as const,
+    left: barcodeBounds.value.x,
+    top: barcodeBounds.value.y,
+    width: barcodeBounds.value.w,
+    height: barcodeBounds.value.h,
+    borderWidth: 2,
+    borderColor: 'red',
+    backgroundColor: 'black',
+    opacity: barcodeOpacity.value,
+  }));
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -183,6 +206,12 @@ export default function CameraScreen() {
     setState((state) => ({
       ...state,
       autoFocus: state.autoFocus === 'on' ? 'off' : 'on',
+    }));
+
+  const toggleVideoStabilization = () =>
+    setState((state) => ({
+      ...state,
+      videoStabilizationMode: videoStabilizationModeOrder[state.videoStabilizationMode],
     }));
 
   const collectPictureSizes = async () => {
@@ -284,14 +313,19 @@ export default function CameraScreen() {
     setState((state) => ({ ...state, newPhotos: true }));
   };
 
-  const onBarcodeScanned = (code: BarcodeScanningResult) => {
-    console.log('Found: ', code);
-    setState((state) => ({
-      ...state,
-      barcodeData: code.data,
-      cornerPoints: code.cornerPoints,
-    }));
-  };
+  const onBarcodeScanned = useCallback(
+    (code: BarcodeScanningResult) => {
+      const { origin, size } = code.bounds;
+      const spring = { damping: 30, stiffness: 90 };
+      barcodeBounds.value = withSpring(
+        { x: origin.x, y: origin.y, w: size.width, h: size.height },
+        spring
+      );
+      barcodeOpacity.value = size.width > 0 && size.height > 0 ? 1 : 0;
+      setBarcodeData(code.data);
+    },
+    [barcodeBounds, barcodeOpacity]
+  );
 
   const renderGallery = () => {
     return <GalleryScreen onPress={toggleView} photos={photos} />;
@@ -424,27 +458,37 @@ export default function CameraScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      <View style={styles.pictureSizeContainer}>
+        <Text style={styles.pictureQualityLabel}>Video Stabilization</Text>
+        <TouchableOpacity onPress={toggleVideoStabilization} style={styles.stabilizationButton}>
+          <Text style={{ color: 'white', textTransform: 'capitalize' }}>
+            {state.videoStabilizationMode}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
-  const renderBarcode = () => {
-    const origin: BarcodePoint | undefined = state.cornerPoints ? state.cornerPoints[0] : undefined;
-    return (
-      <Svg.Svg style={styles.barcode} pointerEvents="none">
-        {origin && (
-          <Svg.Text fill="#CF4048" stroke="#CF4048" fontSize="14" x={origin.x} y={origin.y - 8}>
-            {state.barcodeData}
-          </Svg.Text>
-        )}
-
-        <Svg.Polygon
-          points={state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
-          stroke="red"
-          strokeWidth={5}
-        />
-      </Svg.Svg>
-    );
-  };
+  const renderBarcode = () => (
+    <View style={styles.barcode} pointerEvents="none">
+      <Animated.View style={barcodeOverlayStyle}>
+        <Text
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: 0,
+            color: 'black',
+            fontSize: 12,
+            fontWeight: 'bold',
+            paddingHorizontal: 4,
+            paddingVertical: 2,
+          }}>
+          {barcodeData}
+        </Text>
+      </Animated.View>
+    </View>
+  );
 
   const renderCamera = () => (
     <View style={{ flex: 1 }}>
@@ -467,6 +511,7 @@ export default function CameraScreen() {
             mute={state.mute}
             zoom={state.zoom}
             videoQuality="1080p"
+            videoStabilizationMode={state.videoStabilizationMode}
             onMountError={handleMountError}
             barcodeScannerSettings={{
               barcodeTypes: ['qr', 'pdf417'],
@@ -580,6 +625,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  stabilizationButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#4630EB',
+    borderRadius: 4,
+  },
   facesContainer: {
     position: 'absolute',
     bottom: 0,
@@ -592,7 +643,9 @@ const styles = StyleSheet.create({
   },
   barcode: {
     position: 'absolute',
-    borderWidth: 1,
-    borderColor: 'red',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

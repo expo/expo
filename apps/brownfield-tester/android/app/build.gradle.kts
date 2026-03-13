@@ -26,6 +26,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     buildFeatures {
@@ -54,9 +55,10 @@ dependencies {
     implementation("com.facebook.react:hermes-android")
 }
 
-val projectRoot = File(rootDir.absoluteFile, "../../minimal-tester").absolutePath
+val projectRoot = File(rootDir.absoluteFile, "../expo-app").absolutePath
 
 react {
+    root = File(projectRoot)
     entryFile = file(listOf("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
     reactNativeDir = file(listOf("node", "--print", "require.resolve('react-native/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absoluteFile
     hermesCommand = file(listOf("node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absolutePath + "/hermesc/%OS-BIN%/hermesc"

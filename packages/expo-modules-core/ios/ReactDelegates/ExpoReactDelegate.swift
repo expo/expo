@@ -23,7 +23,6 @@ public class ExpoReactDelegate: NSObject {
       .compactMap { $0.createReactRootView(reactDelegate: self, moduleName: moduleName, initialProperties: initialProperties, launchOptions: launchOptions) }
       .first(where: { _ in true })
       ?? {
-
       return reactNativeFactory.recreateRootView(withBundleURL: nil, moduleName: moduleName, initialProps: initialProperties, launchOptions: launchOptions)
     }()
   }

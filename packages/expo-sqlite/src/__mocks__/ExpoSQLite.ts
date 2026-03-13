@@ -230,6 +230,10 @@ function normalizeSQLite3Args(
       result[Number(key)] = value;
     }
     for (const [key, value] of Object.entries(bindBlobParams)) {
+      if (value instanceof ArrayBuffer) {
+        result[Number(key)] = new Uint8Array(value) as any;
+        continue;
+      }
       result[Number(key)] = value;
     }
     return result;
@@ -243,6 +247,10 @@ function normalizeSQLite3Args(
   }
   for (const [key, value] of Object.entries(bindBlobParams)) {
     const normalizedKey = key.replace(replaceRegexp, '');
+    if (value instanceof ArrayBuffer) {
+      result[normalizedKey] = new Uint8Array(value) as any;
+      continue;
+    }
     result[normalizedKey] = value;
   }
   return result;

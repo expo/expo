@@ -2,8 +2,6 @@
 
 #import <ExpoModulesCore/Platform.h>
 
-#ifdef RCT_NEW_ARCH_ENABLED
-
 #ifdef __cplusplus
 
 #import <React/RCTViewComponentView.h> // Allows non-umbrella since it's coming from React-RCTFabric
@@ -13,21 +11,16 @@
 
 #else
 
-// Interface visible in Swift
-@interface ExpoFabricViewObjC
-@end
-
-#endif // __cplusplus
-#else  // Paper
-
 #import <React/RCTView.h>
 
+// Interface visible in Swift
 @interface ExpoFabricViewObjC : RCTView
 @end
 
-#endif // !RCT_NEW_ARCH_ENABLED
+#endif // __cplusplus
 
 @class EXAppContext;
+@class EXViewModuleWrapper;
 
 // Addition to the interface that is visible in both Swift and Objective-C
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
@@ -36,7 +29,7 @@
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
 
-- (void)viewDidUpdateProps;
+- (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
 - (void)setShadowNodeSize:(float)width height:(float)height;
 
@@ -57,5 +50,12 @@
  * Called for unmounting (detaching) a child component view from `self` component view.
  */
 - (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
+
+#pragma mark - Component registration
+
+/**
+ Registers given view module in the global `RCTComponentViewFactory`.
+ */
++ (void)registerComponent:(nonnull EXViewModuleWrapper *)viewModule appContext:(nonnull EXAppContext *)appContext;
 
 @end

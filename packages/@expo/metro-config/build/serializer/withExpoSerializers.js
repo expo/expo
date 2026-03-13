@@ -7,16 +7,45 @@ exports.withExpoSerializers = withExpoSerializers;
 exports.withSerializerPlugins = withSerializerPlugins;
 exports.createDefaultExportCustomSerializer = createDefaultExportCustomSerializer;
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
-const sourceMapString_1 = require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString");
 const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleToString"));
 const jsc_safe_url_1 = require("jsc-safe-url");
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
-const baseJSBundle_1 = require("./fork/baseJSBundle");
-const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
-const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
+// Lazy-loaded to avoid pulling in metro-source-map and @babel/traverse at startup (~100ms savings)
+let _sourceMapString;
+function getSourceMapString() {
+    if (!_sourceMapString) {
+        _sourceMapString =
+            require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
+    }
+    return _sourceMapString;
+}
+// Lazy-loaded to avoid pulling in @babel/generator, @babel/core at startup
+let _reconcileTransformSerializerPlugin;
+function getReconcileTransformSerializerPlugin() {
+    if (!_reconcileTransformSerializerPlugin) {
+        _reconcileTransformSerializerPlugin =
+            require('./reconcileTransformSerializerPlugin').reconcileTransformSerializerPlugin;
+    }
+    return _reconcileTransformSerializerPlugin;
+}
+let _treeShakeSerializer;
+function getTreeShakeSerializer() {
+    if (!_treeShakeSerializer) {
+        _treeShakeSerializer = require('./treeShakeSerializerPlugin').treeShakeSerializer;
+    }
+    return _treeShakeSerializer;
+}
+// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString chain at startup
+let _baseJSBundle;
+function getBaseJSBundle() {
+    if (!_baseJSBundle) {
+        _baseJSBundle = require('./fork/baseJSBundle').baseJSBundle;
+    }
+    return _baseJSBundle;
+}
 function withExpoSerializers(config, options = {}) {
     const processors = [];
     processors.push(environmentVariableSerializerPlugin_1.serverPreludeSerializerPlugin);
@@ -24,9 +53,9 @@ function withExpoSerializers(config, options = {}) {
         processors.push(environmentVariableSerializerPlugin_1.environmentVariableSerializerPlugin);
     }
     // Then tree-shake the modules.
-    processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
+    processors.push(getTreeShakeSerializer());
     // Then finish transforming the modules from AST to JS.
-    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
+    processors.push(getReconcileTransformSerializerPlugin());
     return withSerializerPlugins(config, processors, options);
 }
 // There can only be one custom serializer as the input doesn't match the output.
@@ -69,7 +98,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
                 return debugId;
             }
             // TODO: Perform this cheaper.
-            const bundle = (0, baseJSBundle_1.baseJSBundle)(entryPoint, preModules, graph, {
+            const bundle = getBaseJSBundle()(entryPoint, preModules, graph, {
                 ...options,
                 debugId: undefined,
             });
@@ -100,13 +129,13 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
                     premodulesToBundle = plugin({ graph, premodules: [...premodulesToBundle], debugId });
                 }
             }
-            bundleCode = (0, bundleToString_1.default)((0, baseJSBundle_1.baseJSBundle)(entryPoint, premodulesToBundle, graph, {
+            bundleCode = (0, bundleToString_1.default)(getBaseJSBundle()(entryPoint, premodulesToBundle, graph, {
                 ...options,
                 debugId,
             })).code;
         }
         const getEnsuredMaps = () => {
-            bundleMap ??= (0, sourceMapString_1.sourceMapString)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+            bundleMap ??= getSourceMapString()([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
                 // TODO: Surface this somehow.
                 excludeSource: false,
                 // excludeSource: options.serializerOptions?.excludeSource,
@@ -167,13 +196,22 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             platform: graph.transformOptions?.platform,
             environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
         };
+        const isLoaderBundle = graph.transformOptions?.customTransformOptions?.isLoaderBundle === 'true';
+        const loaderPaths = isLoaderBundle ? getLoaderPaths(graph.dependencies) : new Set();
         const options = {
             ...inputOptions,
             createModuleId: (moduleId, ...props) => {
-                if (props.length > 0) {
-                    return inputOptions.createModuleId(moduleId, ...props);
+                // For loader bundles, append `+loader` to modules with `loaderReference`.
+                // This creates different module IDs from `render.js` for the same source file,
+                // avoiding module ID collisions when both bundles are loaded in the same runtime.
+                let pathToHash = moduleId;
+                if (isLoaderBundle && loaderPaths.has(moduleId)) {
+                    pathToHash = `${moduleId}+loader`;
                 }
-                return inputOptions.createModuleId(moduleId, 
+                if (props.length > 0) {
+                    return inputOptions.createModuleId(pathToHash, ...props);
+                }
+                return inputOptions.createModuleId(pathToHash, 
                 // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
                 context);
             },
@@ -244,5 +282,20 @@ function unwrapOriginalSerializer(serializer) {
     if (!serializer || !('__originalSerializer' in serializer))
         return null;
     return serializer.__originalSerializer;
+}
+/**
+ * Collect paths of modules that have `loaderReference` metadata.
+ * In loader bundles, these modules need different IDs to avoid collisions with `render.js`.
+ */
+function getLoaderPaths(dependencies) {
+    const loaderPaths = new Set();
+    for (const module of dependencies.values()) {
+        for (const output of module.output) {
+            if ('loaderReference' in output.data && typeof output.data.loaderReference === 'string') {
+                loaderPaths.add(module.path);
+            }
+        }
+    }
+    return loaderPaths;
 }
 //# sourceMappingURL=withExpoSerializers.js.map

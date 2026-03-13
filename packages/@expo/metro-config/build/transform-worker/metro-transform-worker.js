@@ -60,13 +60,13 @@ const metro_cache_1 = require("@expo/metro/metro-cache");
 const metro_cache_key_1 = require("@expo/metro/metro-cache-key");
 const metro_source_map_1 = require("@expo/metro/metro-source-map");
 const metroTransformPlugins = __importStar(require("@expo/metro/metro-transform-plugins"));
-const getMinifier_1 = __importDefault(require("@expo/metro/metro-transform-worker/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
 const transform_plugins_1 = require("../transform-plugins");
+const getMinifier_1 = require("./utils/getMinifier");
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -105,7 +105,7 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
             isIgnored: false,
         },
     ]).toMap(undefined, {});
-    const minify = (0, getMinifier_1.default)(config.minifierPath);
+    const minify = (0, getMinifier_1.getMinifier)(config.minifierPath);
     try {
         const minified = await minify({
             code,
@@ -127,18 +127,6 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
     }
 };
 exports.minifyCode = minifyCode;
-function renameTopLevelModuleVariables() {
-    // A babel plugin which renames variables in the top-level scope that are named "module".
-    return {
-        visitor: {
-            Program(path) {
-                ['global', 'require', 'module', 'exports'].forEach((name) => {
-                    path.scope.rename(name, path.scope.generateUidIdentifier(name).name);
-                });
-            },
-        },
-    };
-}
 function applyUseStrictDirective(ast) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
@@ -407,6 +395,8 @@ async function transformJS(file, { config, options }) {
         : undefined;
     let lineCount;
     ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
+    // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
+    // that React Compiler and other Babel plugins may add.
     const output = [
         {
             data: {
@@ -418,6 +408,7 @@ async function transformJS(file, { config, options }) {
                 reactServerReference: file.reactServerReference,
                 reactClientReference: file.reactClientReference,
                 expoDomComponentReference: file.expoDomComponentReference,
+                loaderReference: file.loaderReference,
                 ...(possibleReconcile
                     ? {
                         ast: wrappedAst,
@@ -430,6 +421,22 @@ async function transformJS(file, { config, options }) {
             type: file.type,
         },
     ];
+    if (possibleReconcile) {
+        const reactCompilerFlag = options.customTransformOptions?.reactCompiler;
+        if (reactCompilerFlag === true || reactCompilerFlag === 'true') {
+            try {
+                return {
+                    dependencies,
+                    // React compiler adds symbols to the AST which break threading. This will ensure the
+                    // AST and other properties are fully serialized before being sent to the worker.
+                    output: JSON.parse(JSON.stringify(output)),
+                };
+            }
+            catch (error) {
+                throw new Error(`Failed to serialize output for file ${file.filename}: ${error}`);
+            }
+        }
+    }
     return {
         dependencies,
         output,
@@ -486,6 +493,7 @@ async function transformJSWithBabel(file, context) {
         reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
         expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+        loaderReference: transformResult.metadata?.loaderReference,
         performConstantFolding: transformResult.metadata?.performConstantFolding,
     };
     return await transformJS(jsFile, context);
@@ -593,7 +601,7 @@ function getCacheKey(config) {
     // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
     const filesKey = (0, metro_cache_key_1.getCacheKey)([
         require.resolve(babelTransformerPath),
-        require.resolve(minifierPath),
+        (0, getMinifier_1.resolveMinifier)(minifierPath),
         require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
         require.resolve('./collect-dependencies'),
         require.resolve('./asset-transformer'),

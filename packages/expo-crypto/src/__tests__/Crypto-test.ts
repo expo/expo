@@ -3,12 +3,11 @@ import ExpoCrypto from '../ExpoCrypto';
 
 jest.mock('../ExpoCrypto', () => ({
   getRandomValues: jest.fn(async () => 0),
-  getRandomBase64StringAsync: jest.fn(async () => 0),
   digestStringAsync: jest.fn(async () => 0),
   digestString: jest.fn(async () => 0),
 }));
 
-jest.mock('base64-js', () => ({ toByteArray: jest.fn(() => {}) }));
+jest.mock('../aes', () => ({}));
 
 it(`asserts invalid algorithm errors`, async () => {
   await expect(Crypto.digestStringAsync(null as any, '<DEBUG>')).rejects.toThrow(TypeError);
@@ -69,12 +68,6 @@ it(`accepts valid byte counts`, async () => {
     await expect(Crypto.getRandomBytesAsync(value));
     expect(ExpoCrypto.getRandomValues).toHaveBeenCalled();
   }
-});
-
-it(`falls back to an alternative native method when getRandomValues is not available`, async () => {
-  ExpoCrypto.getRandomValues = null;
-  await expect(Crypto.getRandomBytesAsync(1024));
-  expect(ExpoCrypto.getRandomBase64StringAsync).toHaveBeenCalled();
 });
 
 it(`asserts invalid byte count errors`, async () => {

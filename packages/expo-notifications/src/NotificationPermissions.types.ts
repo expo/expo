@@ -43,11 +43,11 @@ export interface NotificationPermissionsStatus extends PermissionResponse {
     allowsAlert: boolean | null;
     allowsBadge: boolean | null;
     allowsSound: boolean | null;
-    allowsCriticalAlerts?: boolean | null;
+    allowsCriticalAlerts: boolean | null;
     alertStyle: IosAlertStyle;
-    allowsPreviews?: IosAllowsPreviews;
-    providesAppNotificationSettings?: boolean;
-    allowsAnnouncements?: boolean | null;
+    allowsPreviews: IosAllowsPreviews | null;
+    providesAppNotificationSettings: boolean | null;
+    allowsAnnouncements: boolean | null;
   };
 }
 

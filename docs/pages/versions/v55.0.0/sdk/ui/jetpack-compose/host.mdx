@@ -1,0 +1,58 @@
+---
+title: Host
+description: A Jetpack Compose Host component for bridging React Native and Jetpack Compose.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+The `Host` component is the bridge between React Native and Jetpack Compose. Every Jetpack Compose component from `@expo/ui/jetpack-compose` must be wrapped in a `Host` to render correctly.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Match contents
+
+Use the `matchContents` prop to make the `Host` size itself to fit the content. You can pass a boolean or an object to control vertical and horizontal sizing independently.
+
+```tsx MatchContents.tsx
+import { Host, Button } from '@expo/ui/jetpack-compose';
+
+export default function MatchContents() {
+  return (
+    <Host matchContents>
+      <Button onPress={() => console.log('Pressed')}>Sized to content</Button>
+    </Host>
+  );
+}
+```
+
+### With style
+
+Apply standard React Native styles to the `Host` wrapper.
+
+```tsx HostWithStyle.tsx
+import { Host, Button } from '@expo/ui/jetpack-compose';
+
+export default function HostWithStyle() {
+  return (
+    <Host style={{ padding: 16, backgroundColor: '#f0f0f0', borderRadius: 8 }}>
+      <Button onPress={() => console.log('Pressed')}>Styled host</Button>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Host } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/host" apiName="Host" />

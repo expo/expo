@@ -164,7 +164,7 @@ async function calculateFingerprintHashAsync({
 
   const Fingerprint = importFingerprintForDev(projectRoot);
   if (!Fingerprint) {
-    debug('@expo/fingerprint is not installed in the project, unable to calculate fingerprint');
+    Log.warn('@expo/fingerprint is not installed in the project, skipping build cache.');
     return null;
   }
   const fingerprint = await Fingerprint.createFingerprintAsync(projectRoot);

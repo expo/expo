@@ -21,3 +21,6 @@ __rsc_tests__
 
 # Exclude source of dev-plugin-webui to reduce package size
 /dev-plugin-webui/
+
+# Include all files in the bundled dev-plugin-dist
+!/dev-plugin-dist/**/*

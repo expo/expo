@@ -24,7 +24,7 @@ import { parseTrigger } from './scheduleNotificationAsync';
  * ```
  * @header schedule
  */
-export default async function getNextTriggerDateAsync(trigger) {
+export async function getNextTriggerDateAsync(trigger) {
     if (!NotificationScheduler.getNextTriggerDateAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'getNextTriggerDateAsync');
     }

@@ -9,6 +9,7 @@
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
 #include "JSFunctionsDecorator.h"
+#include "../Exceptions.h"
 
 namespace expo {
 

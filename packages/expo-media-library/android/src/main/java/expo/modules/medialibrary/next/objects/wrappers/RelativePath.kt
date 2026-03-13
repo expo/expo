@@ -6,7 +6,7 @@ import android.os.Environment
 value class RelativePath(val value: String) {
   init {
     require(
-      value.matches(Regex("""^[\w-]+(/[\w-]+)*/$"""))
+      value.matches(Regex("""^[\w -]+(/[\w -]+)*/$"""))
     ) { "Invalid relative path: $value" }
   }
 

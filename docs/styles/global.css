@@ -1,31 +1,32 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.cjs";
 
-html {
-  @apply bg-default;
-}
+@layer base {
+  html {
+    @apply bg-default;
+  }
 
-body {
-  text-rendering: optimizeLegibility;
-  line-height: 1;
-}
+  body {
+    text-rendering: optimizeLegibility;
+    line-height: 1;
+  }
 
-input {
-  appearance: unset;
-}
+  input {
+    appearance: unset;
+  }
 
-#__next[aria-hidden] {
-  filter: none !important;
-}
+  #__next[aria-hidden] {
+    filter: none !important;
+  }
 
-img {
-  max-width: 768px;
-  width: 100%;
-}
+  img {
+    max-width: 768px;
+    width: 100%;
+  }
 
-img.wide-image {
-  max-width: 900px;
+  img.wide-image {
+    max-width: 900px;
+  }
 }
 
 code {
@@ -172,11 +173,11 @@ div.tippy-box {
 }
 
 .diff-gutter-col {
-  @apply w-10 bg-element;
+  @apply w-6 bg-element;
 }
 
 .diff-gutter {
-  @apply px-2 text-3xs;
+  @apply px-1 text-3xs;
   text-align: right;
   user-select: none;
 }

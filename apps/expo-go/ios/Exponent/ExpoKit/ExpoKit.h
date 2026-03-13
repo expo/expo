@@ -29,17 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Set up dependencies that need to be initialized before app delegates.
  */
-- (void)prepareWithLaunchOptions:(nullable NSDictionary *)launchOptions;
-
-/**
- *  Keys to third-party integrations used inside ExpoKit.
- *  TODO: document this.
- */
-@property (nonatomic, strong) NSDictionary *applicationKeys;
-
-@property (nonatomic, readonly) NSDictionary *launchOptions;
-
-@property (nonatomic, weak) Class moduleRegistryDelegateClass;
+- (void)prepare;
 
 @end
 

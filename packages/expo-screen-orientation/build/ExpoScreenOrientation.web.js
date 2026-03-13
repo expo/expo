@@ -63,7 +63,7 @@ class ExpoScreenOrientation extends NativeModule {
     orientation = Platform.canUseViewport
         ? screen.orientation || screen.msOrientation || null
         : null;
-    async emitOrientationEvent() {
+    emitOrientationEvent = async () => {
         const [orientationLock, orientation] = await Promise.all([
             getOrientationLockAsync(),
             getOrientationAsync(),
@@ -72,25 +72,24 @@ class ExpoScreenOrientation extends NativeModule {
             orientationLock,
             orientationInfo: { orientation },
         });
-    }
+    };
     startObserving() {
-        this.listener = () => this.emitOrientationEvent();
         if (Platform.canUseEventListeners) {
-            if (this.orientation && this.orientation.addEventListener) {
-                this.orientation.addEventListener('change', this.listener);
+            if (this.orientation?.addEventListener) {
+                this.orientation.addEventListener('change', this.emitOrientationEvent);
             }
             else {
-                window.addEventListener('orientationchange', this.listener);
+                window.addEventListener('orientationchange', this.emitOrientationEvent);
             }
         }
     }
     stopObserving() {
         if (Platform.canUseEventListeners) {
-            if (this.orientation && this.orientation.removeEventListener) {
-                this.orientation.removeEventListener('change', this.listener);
+            if (this.orientation?.removeEventListener) {
+                this.orientation.removeEventListener('change', this.emitOrientationEvent);
             }
             else {
-                window.removeEventListener('orientationchange', this.listener);
+                window.removeEventListener('orientationchange', this.emitOrientationEvent);
             }
         }
     }

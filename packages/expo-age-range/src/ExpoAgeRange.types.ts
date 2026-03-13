@@ -52,7 +52,14 @@ export type AgeRangeResponse = {
     | 'SUPERVISED'
     | 'SUPERVISED_APPROVAL_PENDING'
     | 'SUPERVISED_APPROVAL_DENIED'
+    | 'DECLARED'
     | 'UNKNOWN';
+  /**
+   * The effective date (timestamp) of the most recent significant change that was approved.
+   *
+   * @platform android
+   */
+  mostRecentApprovalDate?: number;
 };
 
 export interface ExpoAgeRangeModule extends NativeModule {

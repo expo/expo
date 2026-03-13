@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Base64
 import androidx.core.net.toUri
+import expo.modules.imagepicker.contracts.MediaList
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.RawImageExporter
@@ -19,13 +20,17 @@ internal class MediaHandler(
     get() = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }
 
   internal suspend fun readExtras(
-    bareResult: List<Pair<MediaType, Uri>>,
+    bareResult: MediaList,
     options: ImagePickerOptions
   ): ImagePickerResponse {
     val results = bareResult.map { (mediaType, uri) ->
       when (mediaType) {
         MediaType.VIDEO -> handleVideo(uri)
         MediaType.IMAGE -> handleImage(uri, options)
+        null -> ImagePickerAsset(
+          type = null,
+          uri = uri.toString()
+        )
       }
     }
 
@@ -47,7 +52,7 @@ internal class MediaHandler(
     } else {
       CompressionImageExporter(appContextProvider, options.quality)
     }
-    val mimeType = getType(context.contentResolver, sourceUri)
+    val mimeType = requireNotNull(getType(context.contentResolver, sourceUri)) // this won't be null due to previous checks
     val outputFile = createOutputFile(cacheDirectory, mimeType.toImageFileExtension())
 
     val exportedImage = exporter.exportAsync(sourceUri, outputFile, context.contentResolver)
@@ -73,17 +78,21 @@ internal class MediaHandler(
     )
   }
 
-  private fun getAdditionalFileData(uri: Uri): AdditionalFileData? = context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-    val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-    cursor.moveToFirst()
-
-    val name: String? = cursor.getString(nameIndex)
-    val size = cursor.getLong(sizeIndex)
-    AdditionalFileData(
-      name,
-      size
-    )
+  private fun getAdditionalFileData(uri: Uri): AdditionalFileData? {
+    val queriedFields = listOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE).toTypedArray()
+    return context.contentResolver.query(uri, queriedFields, null, null, null)?.use { cursor ->
+      if (!cursor.moveToFirst()) {
+        return null
+      }
+      runCatching {
+        val name = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME).takeIf { it != -1 }?.let { cursor.getString(it) }
+        val size = cursor.getColumnIndex(OpenableColumns.SIZE).takeIf { it != -1 }?.let { cursor.getLong(it) }
+        AdditionalFileData(
+          name,
+          size
+        )
+      }.getOrNull()
+    }
   }
 
   private suspend fun handleVideo(

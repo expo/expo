@@ -1,0 +1,98 @@
+appId: com.expo.routere2e
+name: Toolbar menu
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://toolbar?menu=1
+- runFlow: ../close-warning.yml
+- assertVisible: "Toolbar E2E Test Screen"
+- tapOn: "Actions"
+- assertVisible: "Send email"
+- assertVisible:
+    id: "paperplane"
+- assertVisible: "Delete email"
+- assertVisible:
+    id: "trash"
+- assertVisible: "Archive emails"
+- assertVisible:
+    id: "tray"
+- assertVisible: "Organize"
+- assertVisible: "Move to folder"
+- assertVisible:
+    id: "folder"
+- assertVisible: "Add tag"
+- assertVisible:
+    id: "tag"
+- assertVisible: "Preferences"
+- assertVisible: "Palette Actions"
+- assertVisible: "Star-palette"
+- assertVisible:
+    id: "star"
+- assertVisible: "Flag-palette"
+- assertVisible:
+    id: "flag"
+- assertVisible: "Pin-palette"
+- assertVisible:
+    id: "pin"
+- assertVisible: "Small Actions"
+- assertVisible: "Star"
+- assertVisible:
+    id: "star.fill"
+- assertVisible: "Flag"
+- assertVisible:
+    id: "flag.fill"
+- assertVisible: "Pin"
+- assertVisible:
+    id: "pin.fill"
+- swipe:
+    start: 5%, 90%
+    end: 5%, 50%
+    duration: 100
+- assertVisible: "Medium Size"
+- assertVisible: "Refresh"
+- assertVisible:
+    id: "arrow.clockwise"
+- assertVisible: "Resume"
+- assertVisible:
+    id: "arrow.2.circlepath"
+- assertVisible: "Large Size"
+- assertVisible: "Share"
+- assertVisible:
+    id: "square.and.arrow.up"
+- assertVisible: "Copy"
+- assertVisible:
+    id: "doc.on.doc"
+- assertVisible: "Locked action"
+- assertVisible:
+    id: "lock"
+- tapOn: "Preferences"
+- assertVisible: "Preferences"
+- assertVisible: "Disable notifications"
+- assertVisible: "Red"
+- assertVisible: "Blue"
+- assertVisible:
+    id: "checkmark"
+    index: 1
+- assertNotVisible:
+    id: "checkmark"
+    index: 2
+- assertVisible: "Green"
+- assertVisible: "Favorite Color"
+- tapOn: "Preferences"
+- assertVisible: "Large Size"
+- assertVisible: "Share"
+- tapOn: "Share"
+- assertVisible: "Sharing"
+- tapOn: "OK"
+- tapOn: "Actions"
+- tapOn: "Preferences"
+- tapOn: "Red"
+- assertVisible: "You selected red"
+- tapOn: "OK"
+- tapOn: "Actions"
+- tapOn: "Preferences"
+- assertVisible:
+    id: "checkmark"
+    index: 1
+- assertVisible:
+    id: "checkmark"
+    index: 2

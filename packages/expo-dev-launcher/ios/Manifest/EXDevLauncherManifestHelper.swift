@@ -1,10 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#if os(iOS) || os(tvOS)
 import UIKit
+#endif
 
 @objc
 public class EXDevLauncherManifestHelper: NSObject {
-  #if !os(tvOS)
+  #if !os(tvOS) && !os(macOS)
   private static func defaultOrientationForOrientationMask(_ orientationMask: UIInterfaceOrientationMask) -> UIInterfaceOrientation {
     if orientationMask.contains(.all) {
       return UIInterfaceOrientation.unknown
@@ -60,7 +62,7 @@ public class EXDevLauncherManifestHelper: NSObject {
       alpha: 1.0
     )
   }
-
+#if !os(macOS)
   @objc
   public static func exportManifestUserInterfaceStyle(_ userInterfaceStyle: String?) -> UIUserInterfaceStyle {
     switch userInterfaceStyle {
@@ -72,4 +74,5 @@ public class EXDevLauncherManifestHelper: NSObject {
       return .unspecified
     }
   }
+#endif
 }

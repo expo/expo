@@ -18,9 +18,11 @@ import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
+import expo.modules.camera.records.VideoStabilizationMode
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.tasks.writeStreamToFile
 import expo.modules.camera.utils.CameraUtils
+import expo.modules.camera.utils.CameraViewHelper
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.core.utilities.VRUtilities
@@ -115,7 +117,7 @@ class CameraViewModule : Module() {
         return@AsyncFunction
       }
 
-      appContext.imageLoader?.loadImageForManipulationFromURL(
+      appContext.service<ImageLoaderInterface>()?.loadImageForManipulationFromURL(
         url,
         object : ImageLoaderInterface.ResultListener {
           override fun onSuccess(bitmap: Bitmap) {
@@ -332,6 +334,18 @@ class CameraViewModule : Module() {
         }
       }
 
+      Prop("videoStabilizationMode") { view, mode: VideoStabilizationMode? ->
+        mode?.let {
+          if (view.videoStabilizationMode != it) {
+            view.videoStabilizationMode = it
+          }
+        } ?: run {
+          if (view.videoStabilizationMode != VideoStabilizationMode.AUTO) {
+            view.videoStabilizationMode = VideoStabilizationMode.AUTO
+          }
+        }
+      }
+
       Prop("barcodeScannerSettings") { view, settings: BarcodeSettings? ->
         if (!CameraUtils.isMLKitBarcodeScannerAvailable()) {
           appContext.jsLogger?.warn("Barcode scanning has been disabled")
@@ -413,9 +427,7 @@ class CameraViewModule : Module() {
       }
 
       OnViewDidUpdateProps { view ->
-        moduleScope.launch {
-          view.createCamera()
-        }
+        view.recreateCamera()
       }
 
       OnViewDestroys { view ->

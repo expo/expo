@@ -42,6 +42,11 @@ const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, 
         return screen;
     });
 });
+/**
+ * Renders a tabs navigator.
+ *
+ * @hideType
+ */
 const Tabs = Object.assign((props) => {
     return <ExpoTabs {...props} UNSTABLE_router={TabRouter_1.tabRouterOverride}/>;
 }, {

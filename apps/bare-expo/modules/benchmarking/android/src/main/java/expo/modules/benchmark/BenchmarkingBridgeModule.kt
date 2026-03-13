@@ -9,8 +9,12 @@ class BenchmarkingBridgeModule : BaseJavaModule() {
   override fun getName(): String = "BenchmarkingBridgeModule"
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun nothing() {
+  fun nothing(): Double {
     // Do nothing
+
+    // For some reason, isBlockingSynchronousMethod doesn't let functions be Void/Unit
+    // so returning a dummy number
+    return 0.0
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)

@@ -1,5 +1,4 @@
 import { Asset } from 'expo-asset';
-import { Platform } from 'expo-modules-core';
 
 import { AudioSource } from '../Audio.types';
 
@@ -41,6 +40,9 @@ function createSourceFromAsset(
   const uri = asset.localUri ?? asset.uri;
   const result: AudioSourceObject = { uri };
 
+  if (asset.name) {
+    result.name = asset.name;
+  }
   if (extras.assetId != null) {
     result.assetId = extras.assetId;
   }
@@ -49,6 +51,12 @@ function createSourceFromAsset(
   }
 
   return result;
+}
+
+export function resolveSources(sources: AudioSource[]): NonNullable<AudioSource>[] {
+  return sources
+    .map((source) => resolveSource(source))
+    .filter((source): source is NonNullable<AudioSource> => source != null);
 }
 
 export function resolveSource(source?: AudioSource | string | number | null): AudioSource | null {
@@ -115,17 +123,7 @@ export async function resolveSourceWithDownload(
 
       // Use the local URI if available after download
       if (assetToDownload.localUri) {
-        let finalUri = assetToDownload.localUri;
-
-        // On web, we need to fetch the audio file and create a blob URL
-        // this fully downloads the file to the user's device memory and makes it available for the user to play
-        // fetch() is subject to CORS restrictions, so we need to document this for the users on web
-        // TODO(@hirbod): evaluate if we should implement a downloadAsync for web instead of using fetch here
-        if (Platform.OS === 'web') {
-          const response = await fetch(assetToDownload.localUri);
-          const blob = await response.blob();
-          finalUri = URL.createObjectURL(blob);
-        }
+        const finalUri = assetToDownload.localUri;
 
         if (fallbackSource && typeof fallbackSource === 'object') {
           return {

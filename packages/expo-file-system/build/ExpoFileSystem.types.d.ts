@@ -10,6 +10,13 @@ export type FileCreateOptions = {
      */
     overwrite?: boolean;
 };
+export type RelocationOptions = {
+    /**
+     * Whether to overwrite the destination if it exists.
+     * @default false
+     */
+    overwrite?: boolean;
+};
 export declare enum EncodingType {
     /**
      * Standard encoding format.
@@ -26,6 +33,11 @@ export type FileWriteOptions = {
      * @default FileSystem.EncodingType.UTF8
      */
     encoding?: EncodingType | 'utf8' | 'base64';
+    /**
+     * Whether to append the contents to the end of the file or overwrite the existing file.
+     * @default false
+     */
+    append?: boolean;
 };
 export type DirectoryCreateOptions = {
     /**
@@ -49,6 +61,41 @@ export type DirectoryCreateOptions = {
      */
     idempotent?: boolean;
 };
+/**
+ * Specifies the access mode when opening a file handle.
+ * @platform android
+ */
+export declare enum FileMode {
+    /**
+     * Opens the file for both reading and writing.
+     * The cursor is positioned at the beginning of the file.
+     *
+     * > **Note**: This mode cannot be used with SAF (Storage Access Framework) `content://` URIs.
+     */
+    ReadWrite = "rw",
+    /**
+     * Opens the file for reading only.
+     * The cursor is positioned at the beginning of the file.
+     */
+    ReadOnly = "r",
+    /**
+     * Opens the file for writing only.
+     * The cursor is positioned at the beginning of the file.
+     */
+    WriteOnly = "w",
+    /**
+     * Opens the file for writing only.
+     * The cursor is positioned at the end of the file.
+     *
+     * > **Note**: For SAF files, this is a strict append-only mode.
+     * The cursor cannot be moved; calling `seek()` will have no effect.
+     */
+    Append = "wa",
+    /**
+     * Opens the file for writing only and truncates the file to zero length (wipes content).
+     */
+    Truncate = "wt"
+}
 export declare class Directory {
     /**
      * Creates an instance of a directory.
@@ -89,11 +136,11 @@ export declare class Directory {
     /**
      * Copies a directory.
      */
-    copy(destination: Directory | File): void;
+    copy(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): void;
+    move(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Renames a directory.
      */
@@ -231,20 +278,28 @@ export declare class File {
     /**
      * Copies a file.
      */
-    copy(destination: Directory | File): void;
+    copy(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Moves a directory. Updates the `uri` property that now points to the new location.
      */
-    move(destination: Directory | File): void;
+    move(destination: Directory | File, options?: RelocationOptions): void;
     /**
      * Renames a file.
      */
     rename(newName: string): void;
     /**
      * Returns A `FileHandle` object that can be used to read and write data to the file.
+     *
+     * @param mode - The {@link FileMode} to use.
+     * - **Android**: Supports all `FileMode` values, but SAF `content://` URIs do not support `ReadWrite` mode.
+     * - **iOS**: Defaults to `FileMode.ReadWrite`; explicitly passing other modes will be ignored.
+     * - **Defaults**:
+     *   - For SAF `content://` URIs, the default is `FileMode.ReadOnly`.
+     *   - For standard `file://` URIs, the default is `FileMode.ReadWrite`.
+     *
      * @throws Error if the file does not exist or cannot be opened.
      */
-    open(): FileHandle;
+    open(mode?: FileMode): FileHandle;
     /**
      * A static method that downloads a file from the network.
      *
@@ -316,7 +371,8 @@ export type FileInfo = {
      */
     exists: boolean;
     /**
-     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     * A URI pointing to the file. This is the same as the `fileUri` input parameter
+     * and preserves its scheme (for example, `file://` or `content://`).
      */
     uri?: string;
     /**

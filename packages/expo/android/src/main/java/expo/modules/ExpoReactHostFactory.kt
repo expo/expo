@@ -39,23 +39,23 @@ object ExpoReactHostFactory {
     private val hostHandlers: List<ReactNativeHostHandler>
   ) : ReactHostDelegate {
 
-    val hostDelegateJsBundleFilePath: String? by lazy {
-      hostHandlers.asSequence()
-        .mapNotNull { it.getJSBundleFile(useDevSupport) }
-        .firstOrNull() ?: jsBundleFilePath
-    }
+    val hostDelegateJsBundleFilePath: String?
+      get() =
+        hostHandlers.asSequence()
+          .mapNotNull { it.getJSBundleFile(useDevSupport) }
+          .firstOrNull() ?: jsBundleFilePath
 
-    val hostDelegateJSBundleAssetPath: String? by lazy {
-      hostHandlers.asSequence()
-        .mapNotNull { it.getBundleAssetName(useDevSupport) }
-        .firstOrNull() ?: jsBundleAssetPath
-    }
+    val hostDelegateJSBundleAssetPath: String?
+      get() =
+        hostHandlers.asSequence()
+          .mapNotNull { it.getBundleAssetName(useDevSupport) }
+          .firstOrNull() ?: jsBundleAssetPath
 
-    val hostDelegateUseDeveloperSupport: Boolean by lazy {
-      hostHandlers.asSequence()
-        .mapNotNull { it.useDeveloperSupport }
-        .firstOrNull() ?: useDevSupport
-    }
+    val hostDelegateUseDeveloperSupport: Boolean
+      get() =
+        hostHandlers.asSequence()
+          .mapNotNull { it.useDeveloperSupport }
+          .firstOrNull() ?: useDevSupport
 
     // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
     private var _jsBundleLoader: JSBundleLoader? = null

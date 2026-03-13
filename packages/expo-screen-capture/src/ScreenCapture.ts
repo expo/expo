@@ -152,23 +152,9 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
   return ExpoScreenCapture.addListener(onScreenshotEventName, listener);
 }
 
-// @needsAudit
 /**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
- * You can also call `remove()` on that `Subscription` object.
- *
- * @param subscription Subscription returned by `addScreenshotListener`.
- *
- * @example
- * ```ts
- * let mySubscription = addScreenshotListener(() => {
- *   console.log("You took a screenshot!");
- * });
- * ...
- * mySubscription.remove();
- * // OR
- * removeScreenshotListener(mySubscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export function removeScreenshotListener(subscription: EventSubscription) {
   subscription.remove();

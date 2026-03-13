@@ -3,12 +3,13 @@ package expo.modules.filesystem.unifiedfile
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import expo.modules.filesystem.fsops.CopyMoveStrategy
 import expo.modules.kotlin.AppContext
 import java.io.InputStream
 import java.io.OutputStream
 
 class SAFDocumentFile(private val context: Context, override val uri: Uri) : UnifiedFileInterface {
-  private val documentFile: DocumentFile?
+  val documentFile: DocumentFile?
     get() {
       // Relying on singleUri.isDirectory did not work, and there's no explicit method for this, so we check path
       val pathSegment = uri.pathSegments.getOrNull(0) ?: "tree"
@@ -70,18 +71,28 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
     return null
   }
 
-  override fun outputStream(): OutputStream {
-    return context.contentResolver.openOutputStream(uri)
+  override fun outputStream(append: Boolean): OutputStream {
+    val mode = if (append) "wa" else "w"
+    return context.contentResolver.openOutputStream(uri, mode)
       ?: throw IllegalStateException("Unable to open output stream for URI: $uri")
   }
 
   override fun inputStream(): InputStream {
     return context.contentResolver.openInputStream(uri)
-      ?: throw IllegalStateException("Unable to open output stream for URI: $uri")
+      ?: throw IllegalStateException("Unable to open input stream for URI: $uri")
   }
 
   override fun length(): Long {
     return documentFile?.length() ?: 0
+  }
+
+  /**
+   * Finds a child file/directory by name.
+   * @return The child file if found, null otherwise
+   */
+  fun findFile(name: String): SAFDocumentFile? {
+    val child = documentFile?.findFile(name) ?: return null
+    return SAFDocumentFile(context, child.uri)
   }
 
   override fun walkTopDown(): Sequence<SAFDocumentFile> {
@@ -94,6 +105,8 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
       }
     }
   }
+
+  override val copyMoveStrategy: CopyMoveStrategy = CopyMoveStrategy.SAF(this, context)
 }
 
 fun DocumentFile.deleteRecursively(): Boolean {

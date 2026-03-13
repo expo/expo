@@ -16,10 +16,6 @@ export {
 
 export { router, Router } from './imperative-api';
 
-export * from './link/Link';
-export * from './link/elements';
-export { useIsPreview } from './link/preview/PreviewRouteContext';
-
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 
@@ -41,14 +37,13 @@ export * as SplashScreen from './views/Splash';
 // React Navigation
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, EffectCallback } from './useFocusEffect';
+export { useIsFocused } from './useIsFocused';
 export type { ResultState } from './fork/getStateFromPath';
 
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 
 export type * from './types';
-
-export * from './color';
 
 export {
   Badge,
@@ -60,3 +55,7 @@ export {
   VectorIcon,
   VectorIconProps,
 } from './primitives';
+
+export { unstable_navigationEvents } from './navigationEvents';
+
+export { Tabs } from './layouts/Tabs';

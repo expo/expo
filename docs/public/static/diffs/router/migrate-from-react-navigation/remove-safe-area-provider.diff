@@ -1,0 +1,14 @@
+diff --git a/App.tsx b/App.tsx
+index 0000000..1111111 100644
+--- a/App.tsx
++++ b/App.tsx
+@@ -1,9 +1,6 @@
+-import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+ export default function App() {
+   return (
+-    <SafeAreaProvider>
+       <MyApp />
+-    </SafeAreaProvider>
+   )
+ }

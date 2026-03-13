@@ -26,11 +26,11 @@ Add `com.apple.developer.declared-age-range` entitlement according to [app.json 
 ```json
 {
   "expo": {
-	"ios": {
-	  "entitlements": {
-		"com.apple.developer.declared-age-range": true
-	  }
-	}
+    "ios": {
+      "entitlements": {
+        "com.apple.developer.declared-age-range": true
+      }
+    }
   }
 }
 ```

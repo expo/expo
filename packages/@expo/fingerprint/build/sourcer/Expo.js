@@ -33,14 +33,20 @@ async function getExpoConfigSourcesAsync(projectRoot, config, loadedModules, opt
     const isAndroid = options.platforms.includes('android');
     const isIos = options.platforms.includes('ios');
     const splashScreenPluginProps = getConfigPluginProps(expoConfig, 'expo-splash-screen');
+    const fontPluginProps = getConfigPluginProps(expoConfig, 'expo-font');
     const externalFiles = [
+        // expo-font files
+        ...(fontPluginProps?.fonts ?? []),
+        ...(isIos ? (fontPluginProps?.ios?.fonts ?? []) : []),
+        ...(isAndroid
+            ? (fontPluginProps?.android?.fonts ?? []).flatMap((f) => typeof f === 'string' ? [f] : (f.fontDefinitions ?? []).map((d) => d.path))
+            : []),
         // icons
         expoConfig.icon,
         isAndroid ? expoConfig.android?.icon : undefined,
         ...(isIos ? collectIosIcons(expoConfig.ios?.icon) : []),
         isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
         isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
-        expoConfig.notification?.icon,
         // expo-splash-screen images
         splashScreenPluginProps?.image,
         splashScreenPluginProps?.dark?.image,

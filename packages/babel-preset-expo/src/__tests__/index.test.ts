@@ -140,7 +140,7 @@ it(`compiles sample file with Metro targeting Hermes`, () => {
     babelrc: false,
     presets: [preset],
     sourceMaps: true,
-    caller: getCaller({ name: 'metro', engine: 'hermes' }),
+    caller: getCaller({ name: 'metro', engine: 'hermes', isHermesV1: true }),
   };
   const fileName = path.resolve(__dirname, 'samples/App.js');
 
@@ -154,7 +154,8 @@ it(`compiles sample file with Metro targeting Hermes`, () => {
 
   expect(withHermes.code).not.toEqual(withoutHermes.code);
 
-  // 😎
+  // Hermes v1 supports most modern JS features natively, so the output
+  // should be shorter than the default profile (fewer transforms applied).
   expect(withHermes.code!.length).toBeLessThan(withoutHermes.code!.length);
 });
 
@@ -175,14 +176,14 @@ it(`supports overwriting the default engine option`, () => {
       ],
     ],
     sourceMaps: true,
-    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
+    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes', isDev: true }),
   })!;
 
   const secondPass = babel.transformFileSync(fileName, {
     babelrc: false,
     presets: [[preset, {}]],
     sourceMaps: true,
-    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes' }),
+    caller: getCaller({ name: 'metro', platform: 'ios', engine: 'hermes', isDev: true }),
   })!;
 
   expect(firstPass.code).not.toEqual(secondPass.code);

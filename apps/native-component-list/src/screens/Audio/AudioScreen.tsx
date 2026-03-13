@@ -1,5 +1,11 @@
+import { preload } from 'expo-audio';
+
+import { sfx1, sfx2 } from './AudioPreloadScreen';
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
+
+preload(sfx1);
+preload(sfx2);
 
 export const AudioScreens = [
   {
@@ -7,7 +13,15 @@ export const AudioScreens = [
     route: 'audio/expo-audio',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/AudioScreen'));
+      return optionalRequire(() => require('./AudioPlayerScreen'));
+    },
+  },
+  {
+    name: 'Expo Audio Playlist',
+    route: 'audio/expo-audio-playlist',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AudioPlaylistScreen'));
     },
   },
   {
@@ -15,7 +29,7 @@ export const AudioScreens = [
     route: 'audio/expo-audio-recording',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/RecordingScreen'));
+      return optionalRequire(() => require('./RecordingScreen'));
     },
   },
   {
@@ -23,32 +37,31 @@ export const AudioScreens = [
     route: 'audio/expo-audio-createAudioPlayer',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/CreateAudioPlayerScreen'));
+      return optionalRequire(() => require('./CreateAudioPlayerScreen'));
     },
   },
-
   {
     name: 'Expo Audio Lock Screen Controls',
     route: 'audio/expo-audio-controls',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/AudioControlsScreen'));
+      return optionalRequire(() => require('./AudioControlsScreen'));
     },
   },
   {
-    name: 'Expo AV Player',
-    route: 'audio/expo-av',
+    name: 'Expo Audio Events',
+    route: 'audio/expo-audio-events',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./AV/AudioScreen'));
+      return optionalRequire(() => require('./AudioEventsScreen'));
     },
   },
   {
-    name: 'Expo AV Recording',
-    route: 'audio/expo-av-recording',
+    name: 'Expo Audio Preloading',
+    route: 'audio/expo-audio-preload',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./AV/RecordingScreen'));
+      return optionalRequire(() => require('./AudioPreloadScreen'));
     },
   },
 ];

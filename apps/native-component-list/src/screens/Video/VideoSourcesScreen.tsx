@@ -33,7 +33,6 @@ export default function VideoSourcesScreen() {
         player={player}
         contentFit="contain"
         contentPosition={{ dx: 0, dy: 0 }}
-        allowsFullscreen
         showsTimecodes={false}
       />
       <ScrollView style={styles.controlsContainer}>

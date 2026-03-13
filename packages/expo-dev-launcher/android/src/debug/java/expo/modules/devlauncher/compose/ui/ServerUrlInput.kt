@@ -84,7 +84,7 @@ fun ServerUrlInput(
       TextInput(
         placeholder = {
           NewText(
-            text = "http://localhost:8081",
+            text = "exp://",
             style = NewAppTheme.font.md,
             color = NewAppTheme.colors.text.secondary
           )

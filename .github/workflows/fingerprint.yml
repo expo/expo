@@ -50,7 +50,6 @@ jobs:
         with:
           yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
         run: yarn install --frozen-lockfile --network-timeout 1000000
       - name: E2E Test @expo/fingerprint

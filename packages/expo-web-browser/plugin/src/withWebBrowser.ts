@@ -1,19 +1,20 @@
 import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
-import { withWebBrowserAndroid, PluginConfig } from './withWebBrowserAndroid';
+type PluginConfig = {
+  experimentalLauncherActivity?: boolean;
+};
 
 const pkg = require('expo-web-browser/package.json');
 
 const withWebBrowser: ConfigPlugin<PluginConfig | null> = (config, props) => {
-  if (!props) {
+  if (props?.experimentalLauncherActivity) {
+    console.warn(
+      'The `experimentalLauncherActivity` option has been removed. To achieve similar behaviour, set both `createTask` and `useProxyActivity` to true when using `openBrowserAsync` or `openAuthSessionAsync`.'
+    );
     return config;
   }
 
-  if (!props.experimentalLauncherActivity) {
-    return config;
-  }
-
-  return withWebBrowserAndroid(config);
+  return config;
 };
 
 export default createRunOncePlugin(withWebBrowser, pkg.name, pkg.version);

@@ -62,6 +62,7 @@ import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
+import expo.modules.camera.records.VideoStabilizationMode
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.utils.BarCodeScannerResult
 import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
@@ -180,6 +181,12 @@ class ExpoCameraView(
     }
 
   var videoEncodingBitrate: Int? = null
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var videoStabilizationMode: VideoStabilizationMode = VideoStabilizationMode.AUTO
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -317,7 +324,20 @@ class ExpoCameraView(
   }
 
   fun setCameraFlashMode(mode: FlashMode) {
-    imageCaptureUseCase?.flashMode = mode.mapToLens()
+    val currentMode = if (mode == FlashMode.SCREEN && lensFacing != CameraType.FRONT) {
+      FlashMode.ON
+    } else {
+      mode
+    }
+
+    if (currentMode == FlashMode.SCREEN) {
+      appContext.currentActivity?.window?.let { window ->
+        previewView.setScreenFlashWindow(window)
+        imageCaptureUseCase?.screenFlash = previewView.screenFlash
+      }
+    }
+
+    imageCaptureUseCase?.flashMode = currentMode.mapToLens()
   }
 
   private fun setTorchEnabled(enabled: Boolean) {
@@ -374,8 +394,7 @@ class ExpoCameraView(
 
                 else -> promise.reject(
                   CameraExceptions.VideoRecordingFailed(
-                    event.cause?.message
-                      ?: "Video recording Failed: ${event.cause?.message ?: "Unknown error"}"
+                    event.cause?.message ?: "Unknown error"
                   )
                 )
               }
@@ -405,8 +424,14 @@ class ExpoCameraView(
     }
   }
 
+  fun recreateCamera() {
+    scope.launch {
+      createCamera()
+    }
+  }
+
   @SuppressLint("UnsafeOptInUsageError")
-  suspend fun createCamera() {
+  private suspend fun createCamera() {
     if (!shouldCreateCamera || previewPaused) {
       return
     }
@@ -444,10 +469,30 @@ class ExpoCameraView(
       .requireLensFacing(lensFacing.mapToCharacteristic())
       .build()
 
-    imageCaptureUseCase = ImageCapture.Builder()
+    // Screen flash only works with front camera - fall back to ON for back camera
+    val currentFlashMode = if (flashMode == FlashMode.SCREEN && lensFacing != CameraType.FRONT) {
+      FlashMode.ON
+    } else {
+      flashMode
+    }
+
+    if (currentFlashMode == FlashMode.SCREEN) {
+      appContext.currentActivity?.window?.let { window ->
+        previewView.setScreenFlashWindow(window)
+      }
+    }
+
+    val imageCaptureBuilder = ImageCapture.Builder()
       .setResolutionSelector(resolutionSelector)
-      .setFlashMode(flashMode.mapToLens())
-      .build()
+      .setFlashMode(currentFlashMode.mapToLens())
+
+    if (currentFlashMode == FlashMode.SCREEN) {
+      previewView.screenFlash?.let { screenFlash ->
+        imageCaptureBuilder.setScreenFlash(screenFlash)
+      }
+    }
+
+    imageCaptureUseCase = imageCaptureBuilder.build()
 
     val videoCapture = createVideoCapture()
     imageAnalysisUseCase = createImageAnalyzer()
@@ -496,7 +541,7 @@ class ExpoCameraView(
           try {
             analyzer.setAnalyzer(
               ContextCompat.getMainExecutor(context),
-              BarcodeAnalyzer(lensFacing, barcodeFormats) {
+              BarcodeAnalyzer(barcodeFormats) {
                 onBarcodeScanned(it)
               }
             )
@@ -566,7 +611,7 @@ class ExpoCameraView(
       if (mirror) {
         setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       }
-      setVideoStabilizationEnabled(true)
+      setVideoStabilizationEnabled(videoStabilizationMode.isEnabled())
     }.build()
   }
 
@@ -650,6 +695,8 @@ class ExpoCameraView(
 
     val scaleX: Float
     val scaleY: Float
+    var offsetX = 0f
+    var offsetY = 0f
 
     when (previewView.scaleType) {
       PreviewView.ScaleType.FIT_CENTER -> {
@@ -659,10 +706,11 @@ class ExpoCameraView(
         if (previewAspectRatio > imageAspectRatio) {
           scaleY = previewHeight / imageHeight
           scaleX = scaleY
+          offsetX = (previewWidth - imageWidth * scaleX) / 2f
         } else {
-          // Preview is taller - letterbox on top/bottom
           scaleX = previewWidth / imageWidth
           scaleY = scaleX
+          offsetY = (previewHeight - imageHeight * scaleY) / 2f
         }
       }
       PreviewView.ScaleType.FILL_CENTER -> {
@@ -670,13 +718,13 @@ class ExpoCameraView(
         val imageAspectRatio = imageWidth / imageHeight
 
         if (previewAspectRatio > imageAspectRatio) {
-          // Preview is wider - scale to fill width, crop top/bottom
           scaleX = previewWidth / imageWidth
           scaleY = scaleX
+          offsetY = (previewHeight - imageHeight * scaleY) / 2f
         } else {
-          // Preview is taller - scale to fill height, crop left/right
           scaleY = previewHeight / imageHeight
           scaleX = scaleY
+          offsetX = (previewWidth - imageWidth * scaleX) / 2f
         }
       }
       else -> {
@@ -687,12 +735,12 @@ class ExpoCameraView(
 
     cornerPoints.mapX { index ->
       val originalX = cornerPoints[index]
-      (originalX * scaleX).roundToInt()
+      (originalX * scaleX + offsetX).roundToInt()
     }
 
     cornerPoints.mapY { index ->
       val originalY = cornerPoints[index]
-      (originalY * scaleY).roundToInt()
+      (originalY * scaleY + offsetY).roundToInt()
     }
 
     barcode.cornerPoints = cornerPoints
@@ -707,8 +755,8 @@ class ExpoCameraView(
     val density = previewView.resources.displayMetrics.density
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {
-      val y = cornerPoints[i].toFloat() / density
-      val x = cornerPoints[i + 1].toFloat() / density
+      val x = cornerPoints[i].toFloat() / density
+      val y = cornerPoints[i + 1].toFloat() / density
       convertedCornerPoints.add(
         Bundle().apply {
           putFloat("x", x)
@@ -738,10 +786,12 @@ class ExpoCameraView(
   private fun onBarcodeScanned(barcode: BarCodeScannerResult) {
     if (shouldScanBarcodes) {
       transformBarcodeScannerResultToViewCoordinates(barcode)
+
       val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(
         barcode.cornerPoints,
         barcode.boundingBox
       )
+
       onBarcodeScanned(
         BarcodeScannedEvent(
           target = id,
@@ -781,8 +831,8 @@ class ExpoCameraView(
     addView(
       previewView,
       ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT
+        LayoutParams.MATCH_PARENT,
+        LayoutParams.MATCH_PARENT
       )
     )
   }

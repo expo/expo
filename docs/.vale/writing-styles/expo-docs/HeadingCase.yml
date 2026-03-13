@@ -18,8 +18,10 @@ exceptions:
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
   - '.*^iOS(.*)'
+  - '.*iPhone.*'
   - '.*web.*'
   - '.*AASA.*'
+  - '.*AES.*'
   - '.*API.*'
   - '.*APIs.*'
   - '.*^Android(.*)'
@@ -59,6 +61,7 @@ exceptions:
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
+  - '.*Convex.*'
   - '.*Command Line Tools.*'
   - '.*Config Plugin.*'
   - '.*CORS.*'
@@ -94,6 +97,7 @@ exceptions:
   - '.*Flipper.*'
   - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
+  - '.*FAB.*'
   - '.*FAQ.*'
   - '.*FCM.*'
   - '.*FYI.*'
@@ -133,9 +137,11 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*MCP*'
+  - '.*MultiBrowse.*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
   - '.*metro\.config\.js.*'
+  - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
   - '.*Node Package Managers.*'
@@ -148,6 +154,7 @@ exceptions:
   - '.*OTA.*'
   - '.*OTF.*'
   - '.*PostCSS.*'
+  - '.*PostHog.*'
   - '.*PRAGMA.*'
   - '.*Prebuild.*'
   - '.*Privacy Shield.*'
@@ -162,14 +169,17 @@ exceptions:
   - '.*React Navigation.*'
   - '.*Reanimated.*'
   - '.*Remote Debugging.*'
+  - '.*Resend.*'
   - '.*REST API.*'
   - '.*Remote JS.*'
   - '.*Router.*'
   - ".*Router's.*"
+  - '.*RxDB.*'
   - '.*SAF.*'
   - '.*SASS.*'
   - '.*SDK.*'
   - '.*SecureStore.*'
+  - '.*SF Symbol.*'
   - '.*Sentry.*'
   - '.*Server-side.*'
   - '.*Sierra.*'
@@ -184,6 +194,7 @@ exceptions:
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
+  - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
   - '.*TestFlight.*'
@@ -213,9 +224,9 @@ exceptions:
   # PascalCase for React component names that end with common component suffixes
   - '^[A-Z][a-zA-Z]*(?:Input|Sheet|Picker|Progress|Menu|View|Button|Switch|Slider|Text|TextInput)(?:\s*\([^)]+\))?$'
   # Standalone Expo UI component names
-  - '^(?:BottomSheet|CircularProgress|LinearProgress|DateTimePicker|ContextMenu|ColorPicker|TextField)(?:\s*\([^)]+\))?$'
+  - '^(?:BottomSheet|Button|Chip|CircularProgress|ColorPicker|ContextMenu|DatePicker|DateTimePicker|DisclosureGroup|Divider|DropdownMenu|Form|Gauge|Host|LinearProgress|List|Menu|Modifiers|Namespace|Picker|Popover|ProgressView|Section|Slider|Switch|TextField|TextInput|Toggle)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
-  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer)(?:\s*\([^)]+\))?$'
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
   # Specific edge cases
   - two-factor
   - (deprecated)
@@ -285,3 +296,12 @@ exceptions:
   - 'Mode 2: Payload mode'
   - 'Method 1: Use'
   - 'Method 2: Use'
+  - 'Image manipulation without disk I/O'
+  - Live Activities
+  - Live Activity
+  - 'Prerequisite: Creating widget'
+  - 'Prerequisite: Creating Live Activity'
+  - Hiding the Tab bar
+  - Integrated vs Isolated
+  - Expo Skills
+  - DSL

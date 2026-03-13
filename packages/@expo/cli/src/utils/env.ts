@@ -63,11 +63,11 @@ class Env {
 
   /** Skip warning users about a dirty git status */
   get EXPO_NO_GIT_STATUS() {
-    return boolish('EXPO_NO_GIT_STATUS', false);
+    return boolish('EXPO_NO_GIT_STATUS', true);
   }
   /** Disable auto web setup */
   get EXPO_NO_WEB_SETUP() {
-    return boolish('EXPO_NO_WEB_SETUP', false);
+    return boolish('EXPO_NO_WEB_SETUP', envIsHeadless());
   }
   /** Disable auto TypeScript setup */
   get EXPO_NO_TYPESCRIPT_SETUP() {
@@ -80,6 +80,10 @@ class Env {
   /** Disable the app select redirect page. */
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
+  }
+  /** Disable printing the QR code in the interactive Terminal UI. */
+  get EXPO_NO_QR_CODE(): boolean {
+    return boolish('EXPO_NO_QR_CODE', false);
   }
   /** The React Metro port that's baked into react-native scripts and tools. */
   get RCT_METRO_PORT() {
@@ -144,6 +148,16 @@ class Env {
   }
 
   /**
+   * Instructs a different Metro config to be loaded.
+   * The path, according to metro-config, should be a path relative to the current working directory.
+   * This flag is internal and was added for external tools.
+   * @internal
+   */
+  get EXPO_OVERRIDE_METRO_CONFIG(): string | undefined {
+    return process.env.EXPO_OVERRIDE_METRO_CONFIG?.trim() || undefined;
+  }
+
+  /**
    * Use the network inspector by overriding the metro inspector proxy with a custom version.
    * @deprecated This has been replaced by `@react-native/dev-middleware` and is now unused.
    */
@@ -162,13 +176,6 @@ class Env {
    */
   get EXPO_METRO_UNSTABLE_ERRORS() {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
-  }
-
-  /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
-   * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
-   */
-  get EXPO_USE_STICKY_RESOLVER() {
-    return boolish('EXPO_USE_STICKY_RESOLVER', false);
   }
 
   /** Disable Environment Variable injection in client bundles. */
@@ -251,14 +258,12 @@ class Env {
 
   /** Disable the React Native Directory compatibility check for new architecture when installing packages */
   get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
-    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', envIsHeadless());
   }
 
   /** Disable the dependency validation when installing other dependencies and starting the project */
   get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
-    // Default to disabling when running in a web container (stackblitz, bolt, etc).
-    const isWebContainer = process.versions.webcontainer != null;
-    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', envIsHeadless());
   }
 
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
@@ -291,6 +296,18 @@ class Env {
   get EXPO_UNSTABLE_LOG_BOX(): boolean {
     return boolish('EXPO_UNSTABLE_LOG_BOX', false);
   }
+
+  /**
+   * Enable Bonjour advertising of the Expo CLI on local networks
+   */
+  get EXPO_UNSTABLE_BONJOUR(): boolean {
+    return boolish('EXPO_UNSTABLE_BONJOUR', !envIsHeadless());
+  }
+
+  /** @internal Configure other environment variables for headless operations */
+  get EXPO_UNSTABLE_HEADLESS() {
+    return boolish('EXPO_UNSTABLE_HEADLESS', envIsWebcontainer());
+  }
 }
 
 export const env = new Env();
@@ -301,4 +318,8 @@ export function envIsWebcontainer() {
     env.EXPO_FORCE_WEBCONTAINER_ENV ||
     (process.env.SHELL === '/bin/jsh' && !!process.versions.webcontainer)
   );
+}
+
+export function envIsHeadless() {
+  return env.EXPO_UNSTABLE_HEADLESS;
 }

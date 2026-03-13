@@ -9,6 +9,7 @@ import {
   getInlineEnvVarsEnabled,
   getIsDev,
   getIsFastRefreshEnabled,
+  getIsHermesV1,
   getIsNodeModule,
   getIsProd,
   getIsReactServer,
@@ -27,6 +28,7 @@ import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plu
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
+import { widgetsPlugin } from './widgets-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -106,6 +108,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
+  const isHermesV1 = api.caller(getIsHermesV1);
   const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
@@ -172,6 +175,20 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // Give users the ability to opt-out of the feature, per-platform.
     platformOptions['react-compiler'] !== false
   ) {
+    const reactCompilerOptions = platformOptions['react-compiler'];
+    const reactCompilerOptOutDirectives = new Set([
+      // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
+      'widget',
+      // We need to manually include the default opt-out directives, since they get overridden
+      // See:
+      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L48C1-L48C77
+      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L69-L86
+      'use no memo',
+      'use no forget',
+      // Add the user's override but preserve defaults above to avoid the pitfall of them being removed
+      ...(reactCompilerOptions?.customOptOutDirectives ?? []),
+    ]);
+
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
@@ -181,7 +198,9 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           ...(platformOptions['react-compiler']?.environment ?? {}),
         },
         panicThreshold: isDev ? undefined : 'NONE',
-        ...platformOptions['react-compiler'],
+        ...reactCompilerOptions,
+        // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
+        customOptOutDirectives: [...reactCompilerOptOutDirectives],
       },
     ]);
   }
@@ -199,9 +218,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
     // should retain the same behavior since it's hard to debug the differences.
-    extraPlugins.push(
-      require('@babel/plugin-transform-parameters'),
+    if (!isHermesV1) {
+      extraPlugins.push(require('@babel/plugin-transform-parameters'));
+    }
 
+    extraPlugins.push(
       // Add support for class static blocks.
       [require('@babel/plugin-transform-class-static-block'), { loose: true }]
     );
@@ -271,8 +292,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
 
-    // Strip loader() functions from client bundles
-    if (!isServerEnv) {
+    // Process `loader()` functions for client, loader and server bundles (excluding RSC)
+    // - Client bundles: Remove loader exports, they run on server only
+    // - Server bundles: Keep loader exports (needed for SSG)
+    // - Loader-only bundles: Keep only loader exports, remove everything else
+    if (!isReactServer) {
       extraPlugins.push(serverDataLoadersPlugin);
     }
   }
@@ -291,6 +315,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
   extraPlugins.push(environmentRestrictedImportsPlugin);
+
+  // Transform widget component JSX expressions to capture widget components for native-side evaluation.
+  // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
+  if (hasModule('expo-widgets')) {
+    extraPlugins.push(widgetsPlugin);
+  }
 
   if (
     platformOptions.enableReactFastRefresh ||

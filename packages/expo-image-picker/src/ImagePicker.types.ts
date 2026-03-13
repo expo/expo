@@ -262,11 +262,11 @@ export type ImagePickerAsset = {
    */
   assetId?: string | null;
   /**
-   * Width of the image or video.
+   * Width of the image or video. Can be `0` if the system did not provide the width.
    */
   width: number;
   /**
-   * Height of the image or video.
+   * Height of the image or video. Can be `0` if the system did not provide the height.
    */
   height: number;
   /**
@@ -275,8 +275,9 @@ export type ImagePickerAsset = {
    * - `'video'` - for videos.
    * - `'livePhoto'` - for live photos. (iOS only)
    * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (iOS only)
+   * - `null` - when the type could not be determined. This is rare but can happen with some Android ContentProviders.
    */
-  type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo';
+  type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo' | null;
   /**
    * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
    * or user gave limited permission to access the media library.

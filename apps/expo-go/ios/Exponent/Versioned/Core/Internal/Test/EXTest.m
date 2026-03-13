@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXTest.h"
-#import "EXUnversioned.h"
 
 #import <os/log.h>
 
@@ -63,7 +62,7 @@ RCT_EXPORT_METHOD(completed:(NSString *)jsonStringifiedResult)
     resultObj = failedResult;
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXTestSuiteCompletedNotification")
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"EXTestSuiteCompletedNotification"
                                                       object:nil
                                                     userInfo:resultObj];
   

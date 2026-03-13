@@ -6,15 +6,6 @@ import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
 /**
- * Helper to determine if a given screen should be treated as a modal-type presentation
- *
- * @param options - The navigation options.
- * @returns Whether the screen should be treated as a modal-type presentation.
- *
- * @internal
- */
-export declare function isModalPresentation(options?: PresentationOptions | null): boolean;
-/**
  * Helper to determine if a given screen should be treated as a transparent modal-type presentation
  *
  * @param options - The navigation options.

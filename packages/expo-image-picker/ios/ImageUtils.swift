@@ -183,25 +183,37 @@ internal struct ImageUtils {
   }
 
   /**
-   Reads base64 representation of the image data. If the data is `nil` fallbacks to reading the data from the url.
+   Returns a base64-encoded JPEG representation of the image.
+   When `tryReadingFile` is true, reads the file at `fileUrl`, decodes it into a `UIImage`,
+   then re-encodes as JPEG so the result is always JPEG regardless of the source format.
+   Otherwise uses the provided `UIImage` directly.
    */
-  static func readBase64From(imageData: Data?, orImageFileUrl url: URL, tryReadingFile: Bool) throws
-    -> String? {
+  static func readJpegBase64From(
+    image: UIImage,
+    compressionQuality: Double,
+    orFileUrl fileUrl: URL,
+    tryReadingFile: Bool
+  ) throws -> String? {
+    let sourceImage: UIImage
     if tryReadingFile {
       do {
-        let data = try Data(contentsOf: url)
-        return data.base64EncodedString()
+        let data = try Data(contentsOf: fileUrl)
+        guard let loaded = UIImage(data: data) else {
+          throw FailedToReadImageDataException()
+        }
+        sourceImage = loaded
       } catch {
         throw FailedToReadImageDataException()
           .causedBy(error)
       }
+    } else {
+      sourceImage = image
     }
 
-    guard let data = imageData else {
+    guard let jpegData = sourceImage.jpegData(compressionQuality: compressionQuality) else {
       throw FailedToReadImageDataForBase64Exception()
     }
-
-    return data.base64EncodedString()
+    return jpegData.base64EncodedString()
   }
 
   static func readExifFrom(mediaInfo: MediaInfo) async -> ExifInfo? {

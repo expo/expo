@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { evalModule } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
-import requireString from 'require-from-string';
 
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
 import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
@@ -25,9 +25,16 @@ export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
 
 // Support unhandled rejections
-// Detect if running in Bun
 
-// @ts-expect-error: This is a global variable that is set by Bun.
+declare global {
+  namespace NodeJS {
+    interface Process {
+      isBun?: boolean;
+    }
+  }
+}
+
+// Detect if running in Bun
 if (!process.isBun) {
   require('source-map-support').install({
     retrieveSourceMap(source: string) {
@@ -140,5 +147,5 @@ export function evalMetroNoHandling(projectRoot: string, src: string, filename: 
     debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
   }
 
-  return profile(requireString, 'eval-metro-bundle')(src, filename);
+  return profile(evalModule, 'eval-metro-bundle')(src, filename);
 }

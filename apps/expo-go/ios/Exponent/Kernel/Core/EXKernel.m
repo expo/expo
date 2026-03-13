@@ -2,24 +2,21 @@
 
 #import "EXAppState.h"
 #import "EXAppViewController.h"
-#import "EXBuildConstants.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXVersions.h"
-#import "EXHomeModule.h"
+#import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-#import "EXDevMenu-Swift.h"
-#import "EXDevMenuInterface-Swift.h"
-
-@interface EXKernel () <DevMenuHostDelegate>
+@interface EXKernel ()
 @end
 
 NS_ASSUME_NONNULL_BEGIN
@@ -61,7 +58,11 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // init service registry: classes which manage shared resources among all hosts
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-    [DevMenuManager.shared setDelegate:self];
+    // Initialize the Expo Go dev menu manager (triggers lazy singleton init)
+    (void)[DevMenuManager shared];
+
+    // Register keyboard commands (e.g., Cmd+D) for simulator
+    [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -130,13 +131,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
 }
 
-#pragma mark - App props
-
-- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
-{
-  return nil;
-}
-
 #pragma mark - App State
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
@@ -163,9 +157,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     return;
   }
 
-  if (_visibleApp != _appRegistry.homeAppRecord) {
+  if (_visibleApp != nil) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [_browserController moveHomeToVisible];
+      [self->_browserController moveHomeToVisible];
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
@@ -191,7 +185,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [appRecord.viewController reloadFromCache];
 }
 
-- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord
+- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord * _Nullable)appRecord
 {
   EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;
   if (appRecord != appRecordPreviouslyVisible) {
@@ -211,12 +205,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
+      [self _unregisterUnusedAppRecords];
     } else {
       _visibleApp = nil;
-    }
-    
-    if (_visibleApp && _visibleApp != _appRegistry.homeAppRecord) {
-      [self _unregisterUnusedAppRecords];
+      if (appRecordPreviouslyVisible) {
+        [_appRegistry unregisterAppWithRecord:appRecordPreviouslyVisible];
+      }
     }
   }
 }
@@ -289,12 +283,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       [self->_browserController moveAppToVisible:appRecord];
     }];
   }
-}
-
-#pragma mark - DevMenuHostDelegate
-
-- (void)devMenuNavigateHome {
-  [self switchTasks];
 }
 
 @end

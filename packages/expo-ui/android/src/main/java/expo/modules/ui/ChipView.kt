@@ -1,190 +1,309 @@
 package expo.modules.ui
 
-import android.content.Context
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import android.graphics.Color
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.unit.dp
-import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 
 open class ChipPressedEvent : Record, Serializable
 
-data class ChipProps(
-  val variant: MutableState<String> = mutableStateOf("assist"),
-  val label: MutableState<String> = mutableStateOf(""),
-  val leadingIcon: MutableState<String?> = mutableStateOf(null),
-  val trailingIcon: MutableState<String?> = mutableStateOf(null),
-  val iconSize: MutableState<Int> = mutableIntStateOf(18),
-  val textStyle: MutableState<String> = mutableStateOf("labelSmall"),
-  val enabled: MutableState<Boolean> = mutableStateOf(true),
-  val selected: MutableState<Boolean> = mutableStateOf(false)
+class AssistChipColors : Record {
+  @Field val containerColor: Color? = null
+  @Field val labelColor: Color? = null
+  @Field val leadingIconContentColor: Color? = null
+  @Field val trailingIconContentColor: Color? = null
+}
+
+class FilterChipColors : Record {
+  @Field val containerColor: Color? = null
+  @Field val labelColor: Color? = null
+  @Field val iconColor: Color? = null
+  @Field val selectedContainerColor: Color? = null
+  @Field val selectedLabelColor: Color? = null
+  @Field val selectedLeadingIconColor: Color? = null
+  @Field val selectedTrailingIconColor: Color? = null
+}
+
+class InputChipColors : Record {
+  @Field val containerColor: Color? = null
+  @Field val labelColor: Color? = null
+  @Field val leadingIconColor: Color? = null
+  @Field val trailingIconColor: Color? = null
+  @Field val selectedContainerColor: Color? = null
+  @Field val selectedLabelColor: Color? = null
+  @Field val selectedLeadingIconColor: Color? = null
+  @Field val selectedTrailingIconColor: Color? = null
+}
+
+class SuggestionChipColors : Record {
+  @Field val containerColor: Color? = null
+  @Field val labelColor: Color? = null
+  @Field val iconContentColor: Color? = null
+}
+
+class ChipBorder : Record {
+  @Field val width: Float = 1f
+  @Field val color: Color? = null
+}
+
+private fun FunctionalComposableScope.slotContent(slotName: String): (@Composable () -> Unit)? {
+  return findChildSlotView(view, slotName)?.let { slotView ->
+    {
+      with(ComposableScope()) {
+        with(slotView) {
+          Content()
+        }
+      }
+    }
+  }
+}
+
+// region AssistChip
+
+data class AssistChipProps(
+  val enabled: Boolean = true,
+  val colors: AssistChipColors = AssistChipColors(),
+  val elevation: Float? = null,
+  val border: ChipBorder? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
-class ChipView(context: Context, appContext: AppContext) :
-  ExpoComposeView<ChipProps>(context, appContext) {
-
-  override val props = ChipProps()
-
-  private val onPress by EventDispatcher<ChipPressedEvent>()
-  private val onDismiss by EventDispatcher<ChipPressedEvent>()
-
-  @OptIn(ExperimentalMaterial3Api::class)
-  @Composable
-  override fun ComposableScope.Content() {
-    val variant by props.variant
-    val label by props.label
-    val leadingIcon by props.leadingIcon
-    val trailingIcon by props.trailingIcon
-    val iconSize by props.iconSize
-    val textStyle by props.textStyle
-    val enabled by props.enabled
-    val selected by props.selected
-
-    val chipModifier = Modifier
-      .padding(4.dp)
-      .wrapContentSize(Alignment.Center)
-
-    @Composable
-    fun AssistChipComposable() {
-      AssistChip(
-        onClick = { onPress.invoke(ChipPressedEvent()) },
-        label = { ChipText(label = label, textStyle = textStyle) },
-        leadingIcon = {
-          leadingIcon?.let {
-            ChipIcon(iconName = it, iconSize = iconSize)
-          }
-        },
-        trailingIcon = {
-          trailingIcon?.let {
-            ChipIcon(iconName = it, iconSize = iconSize)
-          }
-        },
-        enabled = enabled,
-        colors = AssistChipDefaults.assistChipColors(),
-        border = AssistChipDefaults.assistChipBorder(enabled = enabled),
-        modifier = chipModifier
-      )
-    }
-
-    @Composable
-    fun FilterChipComposable() {
-      FilterChip(
-        onClick = { onPress.invoke(ChipPressedEvent()) },
-        label = { ChipText(label = label, textStyle = textStyle) },
-        selected = selected,
-        leadingIcon = if (selected) {
-          {
-            ChipIcon(iconName = "filled.Done", iconSize = iconSize)
-          }
-        } else {
-          null
-        },
-        trailingIcon = {
-          trailingIcon?.let {
-            ChipIcon(iconName = it, iconSize = iconSize)
-          }
-        },
-        enabled = enabled,
-        colors = FilterChipDefaults.filterChipColors(),
-        border = FilterChipDefaults.filterChipBorder(enabled = enabled, selected = selected),
-        modifier = chipModifier
-      )
-    }
-
-    @Composable
-    fun InputChipComposable() {
-      if (!enabled) return
-      InputChip(
-        onClick = { onDismiss.invoke(ChipPressedEvent()) },
-        label = { ChipText(label = label, textStyle = textStyle) },
-        enabled = enabled,
-        selected = selected,
-        avatar = {
-          leadingIcon?.let {
-            ChipIcon(iconName = it, iconSize = iconSize)
-          }
-        },
-        trailingIcon = {
-          ChipIcon(
-            iconName = trailingIcon ?: "filled.Close",
-            iconSize = iconSize
-          )
-        },
-        modifier = chipModifier
-      )
-    }
-
-    @Composable
-    fun SuggestionChipComposable() {
-      SuggestionChip(
-        onClick = { onPress.invoke(ChipPressedEvent()) },
-        label = { ChipText(label = label, textStyle = textStyle) },
-        icon = {
-          leadingIcon?.let {
-            ChipIcon(iconName = it, iconSize = iconSize)
-          }
-        },
-        modifier = chipModifier
-      )
-    }
-
-    when (variant.lowercase()) {
-      "assist" -> AssistChipComposable()
-      "filter" -> FilterChipComposable()
-      "input" -> InputChipComposable()
-      "suggestion" -> SuggestionChipComposable()
-      else -> AssistChipComposable()
-    }
-  }
-}
-
 @Composable
-private fun ChipText(label: String, textStyle: String = "labelSmall") {
-  Box(
-    contentAlignment = Alignment.Center,
-    modifier = Modifier.fillMaxSize()
-  ) {
-    Text(
-      text = label,
-      style = when (textStyle) {
-        "labelSmall" -> MaterialTheme.typography.labelSmall
-        "labelMedium" -> MaterialTheme.typography.labelMedium
-        "labelLarge" -> MaterialTheme.typography.labelLarge
-        "bodySmall" -> MaterialTheme.typography.bodySmall
-        "bodyMedium" -> MaterialTheme.typography.bodyMedium
-        "bodyLarge" -> MaterialTheme.typography.bodyLarge
-        else -> MaterialTheme.typography.labelSmall
-      },
-      textAlign = TextAlign.Center
-    )
-  }
-}
-
-@Composable
-private fun ChipIcon(
-  iconName: String,
-  iconSize: Int = 18,
-  tint: Color = MaterialTheme.colorScheme.primary,
-  modifier: Modifier = Modifier
+fun FunctionalComposableScope.AssistChipContent(
+  props: AssistChipProps,
+  onPress: (ChipPressedEvent) -> Unit
 ) {
-  getImageVector(iconName)?.let { imageVector ->
-    Icon(
-      imageVector = imageVector,
-      contentDescription = iconName,
-      tint = tint,
-      modifier = modifier
-        .size(iconSize.dp)
-        .padding(end = 4.dp)
-    )
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  val colors = AssistChipDefaults.assistChipColors(
+    containerColor = props.colors.containerColor.composeOrNull ?: ComposeColor.Unspecified,
+    labelColor = props.colors.labelColor.composeOrNull ?: ComposeColor.Unspecified,
+    leadingIconContentColor = props.colors.leadingIconContentColor.composeOrNull ?: ComposeColor.Unspecified,
+    trailingIconContentColor = props.colors.trailingIconContentColor.composeOrNull ?: ComposeColor.Unspecified
+  )
+
+  val elevation = if (props.elevation != null) {
+    AssistChipDefaults.assistChipElevation(elevation = props.elevation.dp)
+  } else {
+    AssistChipDefaults.assistChipElevation()
   }
+
+  val border = if (props.border != null) {
+    val borderColor = props.border.color.composeOrNull
+    if (borderColor != null) {
+      BorderStroke(props.border.width.dp, borderColor)
+    } else {
+      AssistChipDefaults.assistChipBorder(enabled = props.enabled, borderWidth = props.border.width.dp)
+    }
+  } else {
+    AssistChipDefaults.assistChipBorder(enabled = props.enabled)
+  }
+
+  AssistChip(
+    onClick = { onPress(ChipPressedEvent()) },
+    label = slotContent("label") ?: {},
+    leadingIcon = slotContent("leadingIcon"),
+    trailingIcon = slotContent("trailingIcon"),
+    enabled = props.enabled,
+    colors = colors,
+    elevation = elevation,
+    border = border,
+    modifier = modifier
+  )
 }
+
+// endregion
+
+// region FilterChip
+
+data class FilterChipProps(
+  val selected: Boolean = false,
+  val enabled: Boolean = true,
+  val colors: FilterChipColors = FilterChipColors(),
+  val elevation: Float? = null,
+  val border: ChipBorder? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+@Composable
+fun FunctionalComposableScope.FilterChipContent(
+  props: FilterChipProps,
+  onPress: (ChipPressedEvent) -> Unit
+) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  val colors = FilterChipDefaults.filterChipColors(
+    containerColor = props.colors.containerColor.composeOrNull ?: ComposeColor.Unspecified,
+    labelColor = props.colors.labelColor.composeOrNull ?: ComposeColor.Unspecified,
+    iconColor = props.colors.iconColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedContainerColor = props.colors.selectedContainerColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedLabelColor = props.colors.selectedLabelColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedLeadingIconColor = props.colors.selectedLeadingIconColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedTrailingIconColor = props.colors.selectedTrailingIconColor.composeOrNull ?: ComposeColor.Unspecified
+  )
+
+  val elevation = if (props.elevation != null) {
+    FilterChipDefaults.filterChipElevation(elevation = props.elevation.dp)
+  } else {
+    FilterChipDefaults.filterChipElevation()
+  }
+
+  val border = if (props.border != null) {
+    val borderColor = props.border.color.composeOrNull
+    if (borderColor != null) {
+      BorderStroke(props.border.width.dp, borderColor)
+    } else {
+      FilterChipDefaults.filterChipBorder(enabled = props.enabled, selected = props.selected, borderWidth = props.border.width.dp)
+    }
+  } else {
+    FilterChipDefaults.filterChipBorder(enabled = props.enabled, selected = props.selected)
+  }
+
+  FilterChip(
+    selected = props.selected,
+    onClick = { onPress(ChipPressedEvent()) },
+    label = slotContent("label") ?: {},
+    leadingIcon = slotContent("leadingIcon"),
+    trailingIcon = slotContent("trailingIcon"),
+    enabled = props.enabled,
+    colors = colors,
+    elevation = elevation,
+    border = border,
+    modifier = modifier
+  )
+}
+
+// endregion
+
+// region InputChip
+
+data class InputChipProps(
+  val enabled: Boolean = true,
+  val selected: Boolean = false,
+  val colors: InputChipColors = InputChipColors(),
+  val elevation: Float? = null,
+  val border: ChipBorder? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.InputChipContent(
+  props: InputChipProps,
+  onPress: (ChipPressedEvent) -> Unit
+) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  val colors = InputChipDefaults.inputChipColors(
+    containerColor = props.colors.containerColor.composeOrNull ?: ComposeColor.Unspecified,
+    labelColor = props.colors.labelColor.composeOrNull ?: ComposeColor.Unspecified,
+    leadingIconColor = props.colors.leadingIconColor.composeOrNull ?: ComposeColor.Unspecified,
+    trailingIconColor = props.colors.trailingIconColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedContainerColor = props.colors.selectedContainerColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedLabelColor = props.colors.selectedLabelColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedLeadingIconColor = props.colors.selectedLeadingIconColor.composeOrNull ?: ComposeColor.Unspecified,
+    selectedTrailingIconColor = props.colors.selectedTrailingIconColor.composeOrNull ?: ComposeColor.Unspecified
+  )
+
+  val elevation = if (props.elevation != null) {
+    InputChipDefaults.inputChipElevation(elevation = props.elevation.dp)
+  } else {
+    InputChipDefaults.inputChipElevation()
+  }
+
+  val border = if (props.border != null) {
+    val borderColor = props.border.color.composeOrNull
+    if (borderColor != null) {
+      BorderStroke(props.border.width.dp, borderColor)
+    } else {
+      InputChipDefaults.inputChipBorder(enabled = props.enabled, selected = props.selected, borderWidth = props.border.width.dp)
+    }
+  } else {
+    InputChipDefaults.inputChipBorder(enabled = props.enabled, selected = props.selected)
+  }
+
+  InputChip(
+    onClick = { onPress(ChipPressedEvent()) },
+    label = slotContent("label") ?: {},
+    enabled = props.enabled,
+    selected = props.selected,
+    avatar = slotContent("avatar"),
+    trailingIcon = slotContent("trailingIcon"),
+    colors = colors,
+    elevation = elevation,
+    border = border,
+    modifier = modifier
+  )
+}
+
+// endregion
+
+// region SuggestionChip
+
+data class SuggestionChipProps(
+  val enabled: Boolean = true,
+  val colors: SuggestionChipColors = SuggestionChipColors(),
+  val elevation: Float? = null,
+  val border: ChipBorder? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+@Composable
+fun FunctionalComposableScope.SuggestionChipContent(
+  props: SuggestionChipProps,
+  onPress: (ChipPressedEvent) -> Unit
+) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+
+  val colors = SuggestionChipDefaults.suggestionChipColors(
+    containerColor = props.colors.containerColor.composeOrNull ?: ComposeColor.Unspecified,
+    labelColor = props.colors.labelColor.composeOrNull ?: ComposeColor.Unspecified,
+    iconContentColor = props.colors.iconContentColor.composeOrNull ?: ComposeColor.Unspecified
+  )
+
+  val elevation = if (props.elevation != null) {
+    SuggestionChipDefaults.suggestionChipElevation(elevation = props.elevation.dp)
+  } else {
+    SuggestionChipDefaults.suggestionChipElevation()
+  }
+
+  val border = if (props.border != null) {
+    val borderColor = props.border.color.composeOrNull
+    if (borderColor != null) {
+      BorderStroke(props.border.width.dp, borderColor)
+    } else {
+      SuggestionChipDefaults.suggestionChipBorder(enabled = props.enabled, borderWidth = props.border.width.dp)
+    }
+  } else {
+    SuggestionChipDefaults.suggestionChipBorder(enabled = props.enabled)
+  }
+
+  SuggestionChip(
+    onClick = { onPress(ChipPressedEvent()) },
+    label = slotContent("label") ?: {},
+    icon = slotContent("icon"),
+    enabled = props.enabled,
+    colors = colors,
+    elevation = elevation,
+    border = border,
+    modifier = modifier
+  )
+}
+
+// endregion

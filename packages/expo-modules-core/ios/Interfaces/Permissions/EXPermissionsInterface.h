@@ -3,10 +3,6 @@
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 
-// Many headers of permissions requesters have refs to `UMPromise*Block` without importing
-// the header declaring it, so we fix it here, but this definitely needs to be removed.
-#import <ExpoModulesCore/EXUnimodulesCompat.h>
-
 typedef enum EXPermissionStatus {
   EXPermissionStatusDenied,
   EXPermissionStatusGranted,

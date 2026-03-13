@@ -88,31 +88,36 @@ extension ExpoSwiftUI {
       self.init(viewType, elements: [nameDefinitionElement])
     }
 
+    /**
+     Used by wrapper patterns (e.g., `ExpoUIView`)
+     */
+    public convenience init(_ viewType: ViewType.Type, name: String, elements: [AnyViewDefinitionElement]) {
+      var allElements: [AnyViewDefinitionElement] = [ViewNameDefinition(name: name)]
+      allElements.append(contentsOf: elements)
+      self.init(viewType, elements: allElements)
+    }
+
     public override func createView(appContext: AppContext) -> AppleView? {
       // It's assumed that this function is called only from the main thread.
       // In the ideal scenario it would be marked as `@MainActor`, but then `ViewModuleWrapper`
       // would be incompatible with `RCTViewManager` as it doesn't specify the actor.
       return MainActor.assumeIsolated {
-#if RCT_NEW_ARCH_ENABLED
         let props = Props()
         props.appContext = appContext
-        
+
         if ViewType.self is WithHostingView.Type {
           let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)
           // Set up events to call view's `dispatchEvent` method.
           // This is supported only on the new architecture, `dispatchEvent` exists only there.
-          props.setUpEvents(view.dispatchEvent(_:payload:))
+          props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
           return AppleView.from(view)
         }
-        
+
         let view = SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
         // Set up events to call view's `dispatchEvent` method.
         // This is supported only on the new architecture, `dispatchEvent` exists only there.
-        props.setUpEvents(view.dispatchEvent(_:payload:))
+        props.setUpEvents { [weak view] eventName, payload in view?.dispatchEvent(eventName, payload: payload) }
         return AppleView.from(view)
-#else
-        return AppleView.from(UnimplementedExpoView(appContext: appContext, text: "Rendering SwiftUI views is possible only with the New Architecture enabled"))
-#endif
       }
     }
 
@@ -126,13 +131,12 @@ extension ExpoSwiftUI {
     }
 
     public override func getSupportedEventNames() -> [String] {
-      let propEventNames: [String] = allMirrorChildren(dummyPropsMirror).compactMap { (label: String?, value: Any) in
+      return allMirrorChildren(dummyPropsMirror).compactMap { (label: String?, value: Any) in
         guard let event = value as? EventDispatcher else {
           return nil
         }
         return event.customName ?? convertLabelToKey(label)
-      }
-      return propEventNames
+      } as [String]
     }
   }
 }

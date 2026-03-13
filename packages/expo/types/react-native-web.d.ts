@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { StyleProp } from 'react-native';
 import * as RN from 'react-native';
 

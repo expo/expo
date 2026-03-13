@@ -16,11 +16,11 @@ public final class ExpoGLModule: Module {
     }
 
     AsyncFunction("createContextAsync") { (promise: Promise) in
-      guard let legacyModuleRegistry = appContext?.legacyModuleRegistry else {
-        promise.reject("E_GL_MODULE_REGISTRY_NOT_FOUND", "ExpoGL.createContextAsync: Unable to find the module registry")
+      guard let runtime = try? appContext?.runtime, let fileSystem = appContext?.fileSystem else {
+        promise.reject("E_GL_APP_CONTEXT_NOT_FOUND", "ExpoGL.createContextAsync: Unable to get the app context")
         return
       }
-      let glContext = EXGLContext(delegate: nil, andModuleRegistry: legacyModuleRegistry)
+      let glContext = EXGLContext(delegate: nil, runtime: runtime, fileSystem: fileSystem)
 
       glContext.prepare({ success in
         if success {

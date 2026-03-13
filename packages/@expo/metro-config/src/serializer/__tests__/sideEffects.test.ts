@@ -42,3 +42,14 @@ it('matches side effects for matching file with glob', () => {
   //
   expect(matcher('/other/file/foo.fx.js')).toBe(true);
 });
+it('matches side effects with matching path patterns', () => {
+  const matcher = _createSideEffectMatcher('/', {
+    sideEffects: ['src/asyncRequire/*.ts'],
+  });
+  expect(matcher('file.js')).toBe(false);
+  expect(matcher('file.ts')).toBe(false);
+  expect(matcher('other/file.js')).toBe(false);
+  expect(matcher('other/file.ts')).toBe(false);
+  expect(matcher('src/asyncRequire/file.js')).toBe(false);
+  expect(matcher('src/asyncRequire/file.ts')).toBe(true);
+});

@@ -245,7 +245,7 @@ When you run the `npx expo prebuild` command inside your **example** directory, 
   cmdCopy="$ cd example && npx expo prebuild --clean"
 />
 
-To inject your custom API keys into **AndroidManifest.xml** and **Info.plist**, use helper [`mods` provided by `expo/config-plugins`](/config-plugins/plugins-and-mods/#what-are-mods). These make it easy to modify native files. For this example, use `withAndroidManifest` and `withInfoPlist`.
+To inject your custom API keys into **AndroidManifest.xml** and **Info.plist**, use helper [`mods` provided by `expo/config-plugins`](/config-plugins/mods/). These make it easy to modify native files. For this example, use `withAndroidManifest` and `withInfoPlist`.
 
 As the name suggests, `withAndroidManifest` allows you to read and modify the **AndroidManifest.xml** file. Use `AndroidConfig` helpers to add a metadata item to the main application, as shown below:
 

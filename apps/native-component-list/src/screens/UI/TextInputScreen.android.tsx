@@ -12,14 +12,16 @@ export default function TextInputScreen() {
       <Section title="Current value">
         <Text>{JSON.stringify(value)}</Text>
       </Section>
-      <Button
-        onPress={async () => {
-          textRef.current?.setText('Hello there!');
-        }}>
-        Set text
-      </Button>
+      <Host matchContents>
+        <Button
+          onPress={async () => {
+            textRef.current?.setText('Hello there!');
+          }}>
+          Set text
+        </Button>
+      </Host>
       <Section title="Text Input">
-        <Host>
+        <Host matchContents>
           <TextInput
             ref={textRef}
             autocorrection={false}
@@ -29,7 +31,7 @@ export default function TextInputScreen() {
         </Host>
       </Section>
       <Section title="Multiline Text Input">
-        <Host>
+        <Host matchContents>
           <TextInput
             multiline
             numberOfLines={5}
@@ -40,7 +42,7 @@ export default function TextInputScreen() {
         </Host>
       </Section>
       <Section title="Phone Text Input">
-        <Host>
+        <Host matchContents>
           <TextInput
             multiline
             numberOfLines={5}
@@ -53,7 +55,7 @@ export default function TextInputScreen() {
       </Section>
 
       <Section title="Capitalization">
-        <Host>
+        <Host matchContents>
           <TextInput
             multiline
             numberOfLines={5}

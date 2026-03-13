@@ -17,17 +17,16 @@ internal struct PickerView: ExpoSwiftUI.View {
 
   init(props: PickerProps) {
     self.props = props
+    let initialSelection = Self.getHashableFromEither(props.selection)
+    _selection = State(initialValue: initialSelection)
+    _prevSelection = State(initialValue: initialSelection)
   }
 
   @ViewBuilder
   private func makePicker() -> some View {
-    let content = (props.children?
-      .compactMap { $0.childView as? PickerContentView }
-      .first)
+    let content = props.children?.slot("content")
 
-    let labelContent = props.children?
-      .compactMap { $0.childView as? PickerLabelView }
-      .first
+    let labelContent = props.children?.slot("label")
 
     if let systemImage = props.systemImage, let label = props.label {
       Picker(label, systemImage: systemImage, selection: $selection) { content }
@@ -44,7 +43,7 @@ internal struct PickerView: ExpoSwiftUI.View {
     picker
     .onChange(of: selection) { newValue in
       guard let newValue else { return }
-      let currentSelection = getHashableFromEither(props.selection)
+      let currentSelection = Self.getHashableFromEither(props.selection)
       if currentSelection == newValue {
         return
       }
@@ -59,18 +58,19 @@ internal struct PickerView: ExpoSwiftUI.View {
       props.onSelectionChange(payload)
     }
     .onReceive(props.selection.publisher) { newValue in
-      let hashableValue = getHashableFromEither(newValue)
+      let hashableValue = Self.getHashableFromEither(newValue)
       if prevSelection == hashableValue { return }
       selection = hashableValue
       prevSelection = hashableValue
     }
   }
 
-  private func getHashableFromEither(_ either: Either<String, Double>?) -> AnyHashable? {
+  private static func getHashableFromEither(_ either: Either<String, Double>?) -> AnyHashable? {
     guard let either else { return nil }
     if let stringValue: String = either.get() {
       return stringValue
-    } else if let doubleValue: Double = either.get() {
+    }
+    if let doubleValue: Double = either.get() {
       return doubleValue
     }
     return nil

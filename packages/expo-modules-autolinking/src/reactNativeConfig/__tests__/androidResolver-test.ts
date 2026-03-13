@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 
+import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
 import {
   matchNativePackageClassName,
   parseComponentDescriptorsAsync,
@@ -11,13 +12,20 @@ import {
 
 jest.mock('fs/promises');
 
+const itWithMemoize = (name: string, fn: () => Promise<void>) => {
+  return it(name, async () => {
+    await createMemoizer().withMemoizer(fn);
+    expect(_verifyMemoizerFreed()).toBe(true);
+  });
+};
+
 describe(resolveDependencyConfigImplAndroidAsync, () => {
   afterEach(() => {
     jest.resetAllMocks();
     vol.reset();
   });
 
-  it('should return android config if all native files found', async () => {
+  itWithMemoize('should return android config if all native files found', async () => {
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/android/build.gradle': `
@@ -59,10 +67,12 @@ public class TestPackage implements ReactPackage {
     `);
   });
 
-  it('should return android config if gradle found but not AndroidManifest.xml', async () => {
-    vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
-      '/app/node_modules/react-native-test/android/build.gradle': `
+  itWithMemoize(
+    'should return android config if gradle found but not AndroidManifest.xml',
+    async () => {
+      vol.fromJSON({
+        '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+        '/app/node_modules/react-native-test/android/build.gradle': `
 android {
     namespace "com.test"
     defaultConfig {
@@ -70,7 +80,7 @@ android {
     }
 }
 `,
-      '/app/node_modules/react-native-test/android/src/main/com/test/TestPackage.java': `\
+        '/app/node_modules/react-native-test/android/src/main/com/test/TestPackage.java': `\
 package com.test;
 
 import com.facebook.react.ReactPackage;
@@ -78,30 +88,33 @@ import com.facebook.react.ReactPackage;
 public class TestPackage implements ReactPackage {
 }
 `,
-    });
-    const result = await resolveDependencyConfigImplAndroidAsync(
-      '/app/node_modules/react-native-test',
-      undefined
-    );
-    expect(result).not.toBeNull();
-  });
+      });
+      const result = await resolveDependencyConfigImplAndroidAsync(
+        '/app/node_modules/react-native-test',
+        undefined
+      );
+      expect(result).not.toBeNull();
+    }
+  );
 
-  it('should return C++-only config without AndroidManifest.xml and gradle file', async () => {
-    vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
-      '/app/node_modules/react-native-test/android/build.gradle': '',
-      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
-    });
-    const result = await resolveDependencyConfigImplAndroidAsync(
-      '/app/node_modules/react-native-test',
-      {
-        cxxModuleCMakeListsModuleName: 'TestMod',
-        cxxModuleCMakeListsPath: 'CMakeLists.txt',
-        cxxModuleHeaderName: 'TestModSpec',
-        sourceDir: 'cpp',
-      }
-    );
-    expect(result).toMatchInlineSnapshot(`
+  itWithMemoize(
+    'should return C++-only config without AndroidManifest.xml and gradle file',
+    async () => {
+      vol.fromJSON({
+        '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+        '/app/node_modules/react-native-test/android/build.gradle': '',
+        '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+      });
+      const result = await resolveDependencyConfigImplAndroidAsync(
+        '/app/node_modules/react-native-test',
+        {
+          cxxModuleCMakeListsModuleName: 'TestMod',
+          cxxModuleCMakeListsPath: 'CMakeLists.txt',
+          cxxModuleHeaderName: 'TestModSpec',
+          sourceDir: 'cpp',
+        }
+      );
+      expect(result).toMatchInlineSnapshot(`
       {
         "buildTypes": [],
         "cmakeListsPath": "/app/node_modules/react-native-test/cpp/build/generated/source/codegen/jni/CMakeLists.txt",
@@ -115,23 +128,27 @@ public class TestPackage implements ReactPackage {
         "sourceDir": "/app/node_modules/react-native-test/cpp",
       }
     `);
-  });
+    }
+  );
 
-  it('should not misdetect an Expo module as a C++-only React Native module', async () => {
-    vol.fromJSON({
-      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
-      '/app/node_modules/react-native-test/android/build.gradle': '',
-      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
-      '/app/node_modules/react-native-test/expo-module.config.json': '{}',
-    });
-    const result = await resolveDependencyConfigImplAndroidAsync(
-      '/app/node_modules/react-native-test',
-      undefined
-    );
-    expect(result).toBe(null);
-  });
+  itWithMemoize(
+    'should not misdetect an Expo module as a C++-only React Native module',
+    async () => {
+      vol.fromJSON({
+        '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+        '/app/node_modules/react-native-test/android/build.gradle': '',
+        '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+        '/app/node_modules/react-native-test/expo-module.config.json': '{}',
+      });
+      const result = await resolveDependencyConfigImplAndroidAsync(
+        '/app/node_modules/react-native-test',
+        undefined
+      );
+      expect(result).toBe(null);
+    }
+  );
 
-  it('should return android config from custom sourceDir', async () => {
+  itWithMemoize('should return android config from custom sourceDir', async () => {
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/custom/android/build.gradle': `
@@ -160,7 +177,7 @@ public class TestPackage implements ReactPackage {
     expect(result?.sourceDir).toBe('/app/node_modules/react-native-test/custom/android');
   });
 
-  it('should return null if gradle found but without namespace', async () => {
+  itWithMemoize('should return null if gradle found but without namespace', async () => {
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/android/build.gradle': `
@@ -186,7 +203,7 @@ public class TestPackage implements ReactPackage {
     expect(result).toBeNull();
   });
 
-  it('should return null if reactNativeConfig is null', async () => {
+  itWithMemoize('should return null if reactNativeConfig is null', async () => {
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
       null
@@ -194,7 +211,7 @@ public class TestPackage implements ReactPackage {
     expect(result).toBeNull();
   });
 
-  it('should return null if no gradle and AndroidManifest found', async () => {
+  itWithMemoize('should return null if no gradle and AndroidManifest found', async () => {
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
       undefined
@@ -208,7 +225,7 @@ describe(parsePackageNameAsync, () => {
     vol.reset();
   });
 
-  it('should parse package name from build.gradle', async () => {
+  itWithMemoize('should parse package name from build.gradle', async () => {
     vol.fromJSON({
       '/app/node_modules/test/src/main/AndroidManifest.xml': '',
       '/app/node_modules/test/build.gradle': `\
@@ -227,7 +244,7 @@ android {
     expect(result).toEqual('com.test');
   });
 
-  it('should parse package name from AndroidManifest.xml', async () => {
+  itWithMemoize('should parse package name from AndroidManifest.xml', async () => {
     vol.fromJSON({
       '/app/node_modules/test/src/main/AndroidManifest.xml': `\
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.test">
@@ -248,7 +265,7 @@ describe(parseNativePackageClassNameAsync, () => {
     vol.reset();
   });
 
-  it('should parse component descriptors from java file', async () => {
+  itWithMemoize('should parse component descriptors from java file', async () => {
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.java': `\
 package com.test;
@@ -267,7 +284,7 @@ public class TestPackage implements ReactPackage {
     expect(result).toEqual('TestPackage');
   });
 
-  it('should parse component descriptors from kotlin file', async () => {
+  itWithMemoize('should parse component descriptors from kotlin file', async () => {
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.kt': `\
 package com.test
@@ -292,7 +309,7 @@ describe(parseLibraryNameAsync, () => {
     vol.reset();
   });
 
-  it('should parse library name from package.json', async () => {
+  itWithMemoize('should parse library name from package.json', async () => {
     const result = await parseLibraryNameAsync('/app/node_modules/test', {
       codegenConfig: {
         name: 'test',
@@ -301,7 +318,7 @@ describe(parseLibraryNameAsync, () => {
     expect(result).toBe('test');
   });
 
-  it('should parse library name from build.gradle', async () => {
+  itWithMemoize('should parse library name from build.gradle', async () => {
     vol.fromJSON({
       '/app/node_modules/test/build.gradle': `\
 ext {
@@ -313,7 +330,7 @@ ext {
     expect(result).toBe('test');
   });
 
-  it('should parse library name from build.gradle.kts', async () => {
+  itWithMemoize('should parse library name from build.gradle.kts', async () => {
     vol.fromJSON({
       '/app/node_modules/test/build.gradle.kts': `\
 ext {
@@ -332,7 +349,7 @@ describe(parseComponentDescriptorsAsync, () => {
     vol.reset();
   });
 
-  it('should parse component descriptors', async () => {
+  itWithMemoize('should parse component descriptors', async () => {
     vol.fromJSON({
       // not matched: no `codegenNativeComponent` pattern
       '/app/node_modules/test/Test.ts': `export default {};`,

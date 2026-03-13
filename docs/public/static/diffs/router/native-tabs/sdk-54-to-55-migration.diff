@@ -1,0 +1,25 @@
+diff --git a/app/_layout.tsx b/app/_layout.tsx
+index 0000000..1111111 100644
+--- a/app/_layout.tsx
++++ b/app/_layout.tsx
+@@ -1,14 +1,10 @@
+-import MIcons from '@expo/vector-icons/MaterialIcons';
+-import { NativeTabs, Icon, Label, Badge, VectorIcon } from 'expo-router/unstable-native-tabs';
++import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+ export default function TabLayout() {
+   return (
+     <NativeTabs>
+       <NativeTabs.Trigger name="index">
+-        <Label>Home</Label>
++        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+-        <Icon
+-          sf="house.fill"
+-          androidSrc={<VectorIcon family={MIcons} name="home" />}
+-        />
++        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+-        <Badge>9+</Badge>
++        <NativeTabs.Trigger.Badge>9+</NativeTabs.Trigger.Badge>
+       </NativeTabs.Trigger>
+     </NativeTabs>
+   );

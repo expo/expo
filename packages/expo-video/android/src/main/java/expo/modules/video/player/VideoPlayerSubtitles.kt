@@ -9,6 +9,7 @@ import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
+import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.records.SubtitleTrack
 import java.lang.ref.WeakReference
 

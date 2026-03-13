@@ -1,1 +1,2 @@
-export const ExpoBlob = Blob;
+const ExpoBlob = Blob;
+export { ExpoBlob as Blob };

@@ -25,7 +25,9 @@ enum class EncodingType(val value: String) : Enumerable {
 
 data class WriteOptions(
   @Field
-  val encoding: EncodingType = EncodingType.UTF8
+  val encoding: EncodingType = EncodingType.UTF8,
+  @Field
+  val append: Boolean = false
 ) : Record
 
 data class DownloadOptions(
@@ -33,6 +35,11 @@ data class DownloadOptions(
   val headers: Map<String, String> = emptyMap(),
   @Field
   val idempotent: Boolean = false
+) : Record
+
+data class RelocationOptions(
+  @Field
+  val overwrite: Boolean = false
 ) : Record
 
 data class FileInfo(

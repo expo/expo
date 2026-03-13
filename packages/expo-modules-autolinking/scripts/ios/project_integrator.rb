@@ -246,6 +246,7 @@ module Expo
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
+      podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -293,11 +294,13 @@ module Expo
 
       with_node \\
         --no-warnings \\
-        --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" \\
+        --eval "require(\'expo/bin/autolinking\')" \\
+        expo-modules-autolinking \\
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
         #{entitlement_param} \\
         #{app_root_param} \\
+        #{podfile_properties_param} \\
         --platform "apple" \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT

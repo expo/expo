@@ -394,6 +394,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
         '**/__tests__/**',
         '**/__mocks__/**',
         '**/__fixtures__/**',
+        '**/e2e/**',
       ],
     });
     const templatesPaths = await glob('**/package.json', {

@@ -3,12 +3,10 @@ package expo.modules.calendar.domain.event.records.input
 import expo.modules.calendar.CalendarUtils.recurrenceRuleSDF
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.util.Calendar
 
-@OptIn(EitherType::class)
 data class RecurrenceRuleInput(
   @Field val frequency: String = "",
   @Field val interval: Int? = null,

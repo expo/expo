@@ -137,7 +137,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
     },
     ...domProps,
     containerStyle: [containerStyle, debugZeroHeightStyle, dom?.containerStyle],
-    onLayout: __DEV__ ? debugOnLayout : dom?.onLayout,
+    onLayout: (__DEV__ ? debugOnLayout : dom?.onLayout) as RawWebViewProps['onLayout'],
     injectedJavaScriptBeforeContentLoaded: [
       // Inject the top-most OS for the DOM component to read.
       `window.$$EXPO_DOM_HOST_OS = ${JSON.stringify(process.env.EXPO_OS)};true;`,

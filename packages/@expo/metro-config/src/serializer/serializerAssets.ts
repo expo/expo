@@ -18,6 +18,8 @@ export type SerialAsset = {
     reactClientReferences?: string[];
     // DOM Component references from the static babel pass.
     expoDomComponentReferences?: string[];
+    // File paths of route modules that have loader exports.
+    loaderReferences?: string[];
     requires?: string[];
   };
 };

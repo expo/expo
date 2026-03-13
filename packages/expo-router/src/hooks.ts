@@ -1,17 +1,21 @@
 'use client';
 
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import React, { use } from 'react';
+import { NavigationProp, useNavigation, useStateForPath } from '@react-navigation/native';
+import type { LoaderFunction } from 'expo-server';
+import React, { use, useMemo } from 'react';
 
-import { LocalRouteParamsContext, useRouteNode } from './Route';
+import { LocalRouteParamsContext, useContextKey } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
+import { getRouteInfoFromState } from './global-state/routeInfo';
 import { store, useRouteInfo } from './global-state/router-store';
 import { router, Router } from './imperative-api';
-import { resolveHref } from './link/href';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
+import { LoaderCacheContext } from './loaders/LoaderCache';
 import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
-import { fetchLoaderModule } from './loaders/utils';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
+import { getLoaderData } from './loaders/getLoaderData';
+import { fetchLoader } from './loaders/utils';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import { getSingularId } from './useScreens';
 
 export { useRouteInfo };
 
@@ -345,9 +349,6 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
   }
 }
 
-const loaderDataCache = new Map<string, any>();
-const loaderPromiseCache = new Map<string, Promise<any>>();
-
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
 
@@ -360,26 +361,30 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  * import { useLoaderData } from 'expo-router';
  *
  * export function loader() {
- *   return Promise.resolve({ foo: 'bar' }}
+ *   return Promise.resolve({ foo: 'bar' }};
  * }
  *
  * export default function Route() {
- *  // { foo: 'bar' }
- *  const data = useLoaderData<typeof loader>();
+ *  const data = useLoaderData<typeof loader>(); // { foo: 'bar' }
  *
  *  return <Text>Data: {JSON.stringify(data)}</Text>;
  * }
  */
 export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T> {
-  const routeNode = useRouteNode();
-  const params = useLocalSearchParams();
   const serverDataLoaderContext = use(ServerDataLoaderContext);
+  const loaderCache = use(LoaderCacheContext);
 
-  if (!routeNode) {
-    throw new Error('No route node found. This is likely a bug in expo-router.');
-  }
+  const stateForPath = useStateForPath();
+  const contextKey = useContextKey();
 
-  const resolvedPath = `/${resolveHref({ pathname: routeNode?.route, params })}`;
+  const resolvedPath = useMemo(() => {
+    const routeInfo = getRouteInfoFromState(stateForPath);
+    const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
+    const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
+    const searchString = routeInfo.searchParams?.toString() || '';
+
+    return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
+  }, [contextKey, stateForPath]);
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {
@@ -394,30 +399,15 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     }
   }
 
-  // Check cache for route data
-  if (loaderDataCache.has(resolvedPath)) {
-    return loaderDataCache.get(resolvedPath);
+  const result = getLoaderData<LoaderFunctionResult<T>>({
+    resolvedPath,
+    cache: loaderCache,
+    fetcher: fetchLoader,
+  });
+
+  if (result instanceof Promise) {
+    return use(result);
   }
 
-  // Fetch data if not cached
-  if (!loaderPromiseCache.has(resolvedPath)) {
-    const promise = fetchLoaderModule(resolvedPath)
-      .then((data) => {
-        loaderDataCache.set(resolvedPath, data);
-        return data;
-      })
-      .catch((error) => {
-        console.error(`Failed to load loader data for route: ${resolvedPath}:`, error);
-        throw new Error(`Failed to load loader data for route: ${resolvedPath}`, {
-          cause: error,
-        });
-      })
-      .finally(() => {
-        loaderPromiseCache.delete(resolvedPath);
-      });
-
-    loaderPromiseCache.set(resolvedPath, promise);
-  }
-
-  return use(loaderPromiseCache.get(resolvedPath)!);
+  return result;
 }

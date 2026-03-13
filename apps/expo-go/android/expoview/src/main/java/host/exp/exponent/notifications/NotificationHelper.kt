@@ -53,8 +53,7 @@ object NotificationHelper {
     manifest: Manifest,
     exponentManifest: ExponentManifest
   ): Int {
-    val colorStringLocal = colorString ?: manifest.getNotificationPreferences()?.getNullable(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY)
-    return if (colorString != null && ColorParser.isValid(colorStringLocal)) {
+    return if (colorString != null && ColorParser.isValid(colorString)) {
       Color.parseColor(colorString)
     } else {
       exponentManifest.getColorFromManifest(manifest)
@@ -67,17 +66,7 @@ object NotificationHelper {
     exponentManifest: ExponentManifest,
     bitmapListener: BitmapListener?
   ) {
-    val notificationPreferences = manifest.getNotificationPreferences()
-    var iconUrl: String?
-    if (url == null) {
-      iconUrl = manifest.getIconUrl()
-      if (notificationPreferences != null) {
-        iconUrl = notificationPreferences.getNullable(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY)
-      }
-    } else {
-      iconUrl = url
-    }
-
+    val iconUrl = url ?: manifest.getIconUrl()
     exponentManifest.loadIconBitmap(iconUrl, bitmapListener!!)
   }
 

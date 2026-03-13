@@ -229,12 +229,6 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Audio/AV/VideoScreen'));
-    },
-    name: 'Video (expo-av)',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/Video/VideoScreen'));
     },
     name: 'Video (expo-video)',

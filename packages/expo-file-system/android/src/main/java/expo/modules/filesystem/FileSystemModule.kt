@@ -6,14 +6,13 @@ import android.os.Build
 import android.util.Base64
 import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
@@ -21,14 +20,12 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
-import java.util.EnumSet
 
 class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
   @RequiresApi(Build.VERSION_CODES.O)
-  @OptIn(EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
 
@@ -53,7 +50,7 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions? ->
-      to.validatePermission(Permission.WRITE)
+      to.validatePermission(FilePermissionService.Permission.WRITE)
       val requestBuilder = Request.Builder().url(url.toURL())
 
       options?.headers?.forEach { (key, value) ->
@@ -100,7 +97,9 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("pickDirectoryAsync") Coroutine { initialUri: Uri? ->
-      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY))
+      val result = filePickerLauncher.launch(
+        FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY)
+      )
       when (result) {
         is FilePickerContractResult.Success -> result.path as FileSystemDirectory
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
@@ -108,7 +107,9 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("pickFileAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
-      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, mimeType, PickerType.FILE))
+      val result = filePickerLauncher.launch(
+        FilePickerContractOptions(initialUri, mimeType, PickerType.FILE)
+      )
       when (result) {
         is FilePickerContractResult.Success -> result.path as FileSystemFile
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
@@ -117,9 +118,13 @@ class FileSystemModule : Module() {
 
     Function("info") { url: URI ->
       val file = File(url)
-      val permissions = appContext.filePermission?.getPathPermissions(appContext.reactContext, file.path)
-        ?: EnumSet.noneOf(Permission::class.java)
-      if (permissions.contains(Permission.READ) && file.exists()) {
+      val permissions = appContext
+        .filePermission
+        .getPathPermissions(
+          appContext.reactContext ?: throw Exceptions.ReactContextLost(),
+          file.path
+        )
+      if (permissions.contains(FilePermissionService.Permission.READ) && file.exists()) {
         PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
       } else {
         PathInfo(exists = false, isDirectory = null)
@@ -143,18 +148,19 @@ class FileSystemModule : Module() {
       }
 
       Function("write") { file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions? ->
+        val append = options?.append ?: false
         if (content.`is`(String::class)) {
           content.get(String::class).let {
             if (options?.encoding == EncodingType.BASE64) {
-              file.write(Base64.decode(it, Base64.DEFAULT))
+              file.write(Base64.decode(it, Base64.DEFAULT), append)
             } else {
-              file.write(it)
+              file.write(it, append)
             }
           }
         }
         if (content.`is`(TypedArray::class)) {
           content.get(TypedArray::class).let {
-            file.write(it)
+            file.write(it, append)
           }
         }
       }
@@ -199,12 +205,12 @@ class FileSystemModule : Module() {
         file.creationTime
       }
 
-      Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
-        file.copy(destination)
+      Function("copy") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { file: FileSystemFile, destination: FileSystemPath ->
-        file.move(destination)
+      Function("move") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { file: FileSystemFile, newName: String ->
@@ -239,16 +245,16 @@ class FileSystemModule : Module() {
         file.type
       }
 
-      Function("open") { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+      Function("open") { file: FileSystemFile, mode: FileMode? ->
+        file.openHandle(mode)
       }
     }
 
     Class(FileSystemFileHandle::class) {
-      Constructor { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+      Constructor { file: FileSystemFile, mode: FileMode? ->
+        file.openHandle(mode)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
       Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
@@ -300,12 +306,12 @@ class FileSystemModule : Module() {
         directory.validatePath()
       }
 
-      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.copy(destination)
+      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.move(destination)
+      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { directory: FileSystemDirectory, newName: String ->

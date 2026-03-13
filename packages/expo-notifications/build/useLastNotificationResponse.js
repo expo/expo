@@ -38,7 +38,7 @@ import { addNotificationResponseReceivedListener, addNotificationResponseCleared
  * ```
  * @header listen
  */
-export default function useLastNotificationResponse() {
+export function useLastNotificationResponse() {
     const [lastNotificationResponse, setLastNotificationResponse] = useState(undefined);
     // useLayoutEffect ensures the listener is registered as soon as possible
     useLayoutEffect(() => {

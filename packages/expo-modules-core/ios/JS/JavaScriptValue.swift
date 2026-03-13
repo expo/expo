@@ -116,6 +116,13 @@ extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {
     throw JavaScriptValueConversionException((kind: kind, target: "TypedArray"))
   }
 
+  func asArrayBuffer() throws -> JavaScriptArrayBuffer {
+    if let backingBuffer = getArrayBuffer() {
+      return JavaScriptArrayBuffer(backingBuffer)
+    }
+    throw JavaScriptValueConversionException((kind: kind, target: "ArrayBuffer"))
+  }
+
   // MARK: - AnyJavaScriptValue
 
   public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {

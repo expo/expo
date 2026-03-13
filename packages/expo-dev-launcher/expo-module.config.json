@@ -3,11 +3,13 @@
   "apple": {
     "podspecPath": "expo-dev-launcher.podspec",
     "swiftModuleName": "EXDevLauncher",
+    "modules": ["DevLauncherModule"],
     "appDelegateSubscribers": ["ExpoDevLauncherAppDelegateSubscriber"],
     "reactDelegateHandlers": ["ExpoDevLauncherReactDelegateHandler"],
     "debugOnly": true
   },
   "android": {
+    "modules": ["expo.modules.devlauncher.modules.ExpoDevLauncherModule"],
     "gradlePlugins": [
       {
         "id": "expo-dev-launcher-gradle-plugin",

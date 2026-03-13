@@ -86,7 +86,7 @@ describe(checkPackagesAsync, () => {
       pkg: {
         expo: {
           install: {
-            exclude: ['expo-av', 'expo-blur'],
+            exclude: ['expo-audio', 'expo-blur'],
           },
         },
       },
@@ -98,14 +98,14 @@ describe(checkPackagesAsync, () => {
     });
     jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([
       {
-        packageName: 'expo-av',
+        packageName: 'expo-audio',
         packageType: 'dependencies',
         expectedVersionOrRange: '^2.0.0',
         actualVersion: '1.0.0',
       },
     ]);
     await checkPackagesAsync('/', {
-      packages: ['expo-av'],
+      packages: ['expo-audio'],
       options: { fix: true },
       // @ts-expect-error
       packageManager: {},
@@ -113,7 +113,7 @@ describe(checkPackagesAsync, () => {
     });
 
     expect(Log.log).toHaveBeenCalledWith(
-      expect.stringContaining('Skipped fixing dependencies: expo-av and expo-blur')
+      expect.stringContaining('Skipped fixing dependencies: expo-audio and expo-blur')
     );
   });
 
@@ -199,7 +199,7 @@ describe(checkPackagesAsync, () => {
         actualVersion: '0.69.0',
       },
       {
-        packageName: 'expo-av',
+        packageName: 'expo-audio',
         packageType: 'devDependencies' as const,
         expectedVersionOrRange: '^2.0.0',
         actualVersion: '1.5.0',
@@ -210,7 +210,7 @@ describe(checkPackagesAsync, () => {
 
     await expect(
       checkPackagesAsync('/', {
-        packages: ['react-native', 'expo-av'],
+        packages: ['react-native', 'expo-audio'],
         options: { fix: false, json: true },
         // @ts-expect-error
         packageManager: {},
@@ -229,7 +229,7 @@ describe(checkPackagesAsync, () => {
       pkg: {
         expo: {
           install: {
-            exclude: ['expo-av'],
+            exclude: ['expo-audio'],
           },
         },
       },
@@ -242,7 +242,7 @@ describe(checkPackagesAsync, () => {
     jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce([]);
 
     await checkPackagesAsync('/', {
-      packages: ['expo-av'],
+      packages: ['expo-audio'],
       options: { fix: false, json: true },
       // @ts-expect-error
       packageManager: {},
@@ -264,7 +264,7 @@ describe(checkPackagesAsync, () => {
         actualVersion: '0.71.8',
       },
       {
-        packageName: 'expo-av',
+        packageName: 'expo-audio',
         packageType: 'devDependencies' as const,
         expectedVersionOrRange: '~13.4.0',
         actualVersion: '13.3.1',
@@ -281,7 +281,7 @@ describe(checkPackagesAsync, () => {
 
     await expect(
       checkPackagesAsync('/', {
-        packages: ['react-native', 'expo-av', '@expo/vector-icons'],
+        packages: ['react-native', 'expo-audio', '@expo/vector-icons'],
         options: { fix: false, json: true },
         // @ts-expect-error
         packageManager: {},
@@ -303,7 +303,7 @@ describe(checkPackagesAsync, () => {
     expect(parsedOutput.dependencies).toHaveLength(3);
 
     // Validate each dependency object structure and content
-    const expectedPackageNames = ['react-native', 'expo-av', '@expo/vector-icons'];
+    const expectedPackageNames = ['react-native', 'expo-audio', '@expo/vector-icons'];
     const expectedPackageTypes = ['dependencies', 'devDependencies', 'dependencies'];
     const expectedVersions = ['^0.72.0', '~13.4.0', '^13.0.0'];
     const actualVersions = ['0.71.8', '13.3.1', '12.0.1'];

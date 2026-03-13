@@ -92,6 +92,13 @@ function _expoDocumentPicker() {
   };
   return data;
 }
+function _withInlineModules() {
+  const data = _interopRequireDefault(require("./unversioned/expo-inline-modules/withInlineModules"));
+  _withInlineModules = function () {
+    return data;
+  };
+  return data;
+}
 function _expoNavigationBar() {
   const data = _interopRequireDefault(require("./unversioned/expo-navigation-bar/expo-navigation-bar"));
   _expoNavigationBar = function () {
@@ -127,13 +134,6 @@ function _expoUpdates() {
   };
   return data;
 }
-function _newArchPlistHotfix() {
-  const data = _interopRequireDefault(require("./unversioned/new-arch-plist-hotfix/new-arch-plist-hotfix"));
-  _newArchPlistHotfix = function () {
-    return data;
-  };
-  return data;
-}
 function _reactNativeMaps() {
   const data = _interopRequireDefault(require("./unversioned/react-native-maps"));
   _reactNativeMaps = function () {
@@ -160,15 +160,13 @@ const withIosExpoPlugins = (config, {
   config.ios.bundleIdentifier = bundleIdentifier;
   return (0, _configPlugins().withPlugins)(config, [[_configPlugins().IOSConfig.BundleIdentifier.withBundleIdentifier, {
     bundleIdentifier
-  }], _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps, _configPlugins().IOSConfig.BuildProperties.withNewArchEnabledPodfileProps,
+  }], _configPlugins().IOSConfig.Google.withGoogle, _configPlugins().IOSConfig.Name.withDisplayName, _configPlugins().IOSConfig.Name.withProductName, _configPlugins().IOSConfig.Orientation.withOrientation, _configPlugins().IOSConfig.RequiresFullScreen.withRequiresFullScreen, _configPlugins().IOSConfig.Scheme.withScheme, _configPlugins().IOSConfig.UsesNonExemptEncryption.withUsesNonExemptEncryption, _configPlugins().IOSConfig.Version.withBuildNumber, _configPlugins().IOSConfig.Version.withVersion, _configPlugins().IOSConfig.Google.withGoogleServicesFile, _configPlugins().IOSConfig.BuildProperties.withJsEnginePodfileProps,
   // Entitlements
   _configPlugins().IOSConfig.Entitlements.withAssociatedDomains,
   // XcodeProject
   _configPlugins().IOSConfig.DeviceFamily.withDeviceFamily, _configPlugins().IOSConfig.Bitcode.withBitcode, _configPlugins().IOSConfig.Locales.withLocales, _configPlugins().IOSConfig.DevelopmentTeam.withDevelopmentTeam,
   // Dangerous
-  _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo,
-  // Temporary hotfix
-  _newArchPlistHotfix().default]);
+  _withIosIcons().withIosIcons, _configPlugins().IOSConfig.PrivacyInfo.withPrivacyInfo]);
 };
 
 /**
@@ -182,7 +180,7 @@ const withAndroidExpoPlugins = (config, props) => {
   config.android.package = props.package;
   return (0, _configPlugins().withPlugins)(config, [
   // gradle.properties
-  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps, _configPlugins().AndroidConfig.BuildProperties.withNewArchEnabledGradleProps,
+  _configPlugins().AndroidConfig.BuildProperties.withJsEngineGradleProps,
   // settings.gradle
   _configPlugins().AndroidConfig.Name.withNameSettingsGradle,
   // project build.gradle
@@ -199,7 +197,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // Dangerous -- these plugins run in reverse order.
   _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile, _ReactNative77CompatPlugin().withSdk52ReactNative77CompatAndroid, _ReactNative78CompatPlugin().withSdk52ReactNative78CompatAndroid,
   // Modify colors.xml and styles.xml
-  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, config => (0, _withEdgeToEdge().default)(config, props), _withAndroidIcons().withAndroidIcons,
+  _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withEdgeToEdge().default, _withAndroidIcons().withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files
   // Added last to ensure this plugin runs first. Out of tree solutions will mistakenly resolve the package incorrectly otherwise.
   _configPlugins().AndroidConfig.Package.withPackageRefactor]);
@@ -207,12 +205,12 @@ const withAndroidExpoPlugins = (config, props) => {
 
 // Must keep in sync with `withVersionedExpoSDKPlugins`
 exports.withAndroidExpoPlugins = withAndroidExpoPlugins;
-const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
+const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui', 'expo-inline-modules'];
 const withVersionedExpoSDKPlugins = config => {
   return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default,
   // System UI must come before splash screen as they overlap
   // and splash screen will warn about conflicting rules.
-  _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default]);
+  _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default, _withInlineModules().default]);
 };
 exports.withVersionedExpoSDKPlugins = withVersionedExpoSDKPlugins;
 function getAutoPlugins() {

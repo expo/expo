@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBrowserslistTargets = getBrowserslistTargets;
 const debug = require('debug')('expo:metro:browserslist');
 const browserslistCache = {};
+// Suppress `browserslist`'s own "data is X months old" warning in transform workers.
+process.env.BROWSERSLIST_IGNORE_OLD_DATA = '1';
 async function getBrowserslistTargets(projectRoot) {
     if (browserslistCache[projectRoot]) {
         return browserslistCache[projectRoot];

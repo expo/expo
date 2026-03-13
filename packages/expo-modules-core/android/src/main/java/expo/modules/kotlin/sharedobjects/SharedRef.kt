@@ -2,7 +2,7 @@ package expo.modules.kotlin.sharedobjects
 
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import kotlin.reflect.KClass
 
 /**
@@ -12,9 +12,9 @@ import kotlin.reflect.KClass
 @DoNotStrip
 open class SharedRef<RefType>(
   val ref: RefType,
-  runtimeContext: RuntimeContext? = null
-) : SharedObject(runtimeContext) {
-  constructor(ref: RefType, appContext: AppContext) : this(ref, appContext.hostingRuntimeContext)
+  runtime: Runtime? = null
+) : SharedObject(runtime) {
+  constructor(ref: RefType, appContext: AppContext) : this(ref, appContext.runtime)
 
   /**
    * A type of the native reference. It can be used to distinguish between different SharedRefs in the JavaScript.

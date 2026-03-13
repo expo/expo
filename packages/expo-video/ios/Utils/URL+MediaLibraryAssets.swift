@@ -58,6 +58,7 @@ private extension PHImageManager {
 
         if let error = info?[PHImageErrorKey] as? Error {
           continuation.resume(throwing: PlayerItemLoadException("Failed to request an AVAsset for \(urlString): \(error.localizedDescription)"))
+          return
         }
 
         continuation.resume(returning: asset)

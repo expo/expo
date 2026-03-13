@@ -32,7 +32,7 @@ npx expo install expo-sensors
 
 No additional set up necessary for basic usage.
 
-**Note:** Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates. If you need a update interval less than 200ms, you should add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.
+**Note:** Starting in Android 12 (API level 31), the system has a 200Hz limit for each sensor updates. If you need an update interval of greater than 200Hz, you should add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.
 
 ### Configure for iOS
 

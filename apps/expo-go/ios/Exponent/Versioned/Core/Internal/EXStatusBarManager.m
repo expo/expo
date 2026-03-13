@@ -1,6 +1,5 @@
 
 #import "EXStatusBarManager.h"
-#import "EXUnversioned.h"
 
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
@@ -50,12 +49,12 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
   _capturedStatusBarProperties = [[self _currentStatusBarProperties] mutableCopy];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
+                                               name:@"EXKernelBridgeDidForegroundNotification"
                                              object:self.bridge];
-  
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidBackground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
+                                               name:@"EXKernelBridgeDidBackgroundNotification"
                                              object:self.bridge];
 }
 
