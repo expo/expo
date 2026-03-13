@@ -91,6 +91,20 @@ export function expectFileNotExists(projectName: string, ...filePath: string[]) 
   expect({ [targetPath]: fs.existsSync(targetPath) }).toEqual({ [targetPath]: false });
 }
 
+/**
+ * Creates a temporary directory with a minimal package.json, simulating an Expo project root.
+ * Used for --local module tests. The caller is responsible for cleaning up.
+ */
+export function createFakeProject(): string {
+  const projectPath = getTemporaryPath();
+  fs.mkdirSync(projectPath, { recursive: true });
+  fs.writeFileSync(
+    path.join(projectPath, 'package.json'),
+    JSON.stringify({ name: 'test-app', version: '1.0.0' })
+  );
+  return projectPath;
+}
+
 /** Read and parse a JSON file from the test project */
 export function readJson(projectName: string, ...filePath: string[]) {
   const targetPath = getTestPath(projectName, ...filePath);
