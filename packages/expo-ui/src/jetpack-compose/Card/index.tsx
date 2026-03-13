@@ -36,6 +36,15 @@ function transformProps<T extends { modifiers?: ModifierConfig[] }>(props: T): T
   } as T;
 }
 
+function createCardComponent<P extends { modifiers?: ModifierConfig[] }>(
+  viewName: string
+): React.ComponentType<P> {
+  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  return function CardComponent(props: P) {
+    return <NativeView {...transformProps(props)} />;
+  };
+}
+
 // region Card
 
 export type CardProps = {
@@ -61,19 +70,10 @@ export type CardProps = {
   modifiers?: ModifierConfig[];
 };
 
-type NativeCardProps = CardProps;
-
-const CardNativeView: React.ComponentType<NativeCardProps> = requireNativeView(
-  'ExpoUI',
-  'CardView'
-);
-
 /**
  * A card component that renders a filled card surface for content.
  */
-export function Card(props: CardProps) {
-  return <CardNativeView {...transformProps(props)} />;
-}
+export const Card = createCardComponent<CardProps>('CardView');
 
 // endregion
 
@@ -98,19 +98,10 @@ export type ElevatedCardProps = {
   modifiers?: ModifierConfig[];
 };
 
-type NativeElevatedCardProps = ElevatedCardProps;
-
-const ElevatedCardNativeView: React.ComponentType<NativeElevatedCardProps> = requireNativeView(
-  'ExpoUI',
-  'ElevatedCardView'
-);
-
 /**
  * An elevated card component that provides a raised surface for content.
  */
-export function ElevatedCard(props: ElevatedCardProps) {
-  return <ElevatedCardNativeView {...transformProps(props)} />;
-}
+export const ElevatedCard = createCardComponent<ElevatedCardProps>('ElevatedCardView');
 
 // endregion
 
@@ -139,18 +130,9 @@ export type OutlinedCardProps = {
   modifiers?: ModifierConfig[];
 };
 
-type NativeOutlinedCardProps = OutlinedCardProps;
-
-const OutlinedCardNativeView: React.ComponentType<NativeOutlinedCardProps> = requireNativeView(
-  'ExpoUI',
-  'OutlinedCardView'
-);
-
 /**
  * An outlined card component that provides a bordered surface for content.
  */
-export function OutlinedCard(props: OutlinedCardProps) {
-  return <OutlinedCardNativeView {...transformProps(props)} />;
-}
+export const OutlinedCard = createCardComponent<OutlinedCardProps>('OutlinedCardView');
 
 // endregion

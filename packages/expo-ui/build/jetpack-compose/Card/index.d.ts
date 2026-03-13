@@ -46,7 +46,7 @@ export type CardProps = {
 /**
  * A card component that renders a filled card surface for content.
  */
-export declare function Card(props: CardProps): import("react").JSX.Element;
+export declare const Card: import("react").ComponentType<CardProps>;
 export type ElevatedCardProps = {
     /**
      * The content to display inside the card.
@@ -68,7 +68,7 @@ export type ElevatedCardProps = {
 /**
  * An elevated card component that provides a raised surface for content.
  */
-export declare function ElevatedCard(props: ElevatedCardProps): import("react").JSX.Element;
+export declare const ElevatedCard: import("react").ComponentType<ElevatedCardProps>;
 export type OutlinedCardProps = {
     /**
      * The content to display inside the card.
@@ -94,5 +94,5 @@ export type OutlinedCardProps = {
 /**
  * An outlined card component that provides a bordered surface for content.
  */
-export declare function OutlinedCard(props: OutlinedCardProps): import("react").JSX.Element;
+export declare const OutlinedCard: import("react").ComponentType<OutlinedCardProps>;
 //# sourceMappingURL=index.d.ts.map
