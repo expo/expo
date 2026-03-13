@@ -3,6 +3,7 @@
  */
 
 import { PermissionStatus } from '../Camera.types';
+import ExponentCameraManager from '../ExpoCameraManager';
 
 jest.mock('../web/WebUserMediaManager', () => {
   const actual = jest.requireActual('../web/WebUserMediaManager');
@@ -11,9 +12,6 @@ jest.mock('../web/WebUserMediaManager', () => {
     canGetUserMedia: () => !!navigator.mediaDevices?.getUserMedia,
   };
 });
-
-// Import after mock setup
-import ExponentCameraManager from '../ExpoCameraManager';
 
 describe(ExponentCameraManager.isAvailableAsync, () => {
   it('returns false when getUserMedia is not available', async () => {
@@ -46,9 +44,9 @@ describe(ExponentCameraManager.isAvailableAsync, () => {
     Object.defineProperty(window.navigator, 'mediaDevices', {
       value: {
         getUserMedia: jest.fn(),
-        enumerateDevices: jest.fn().mockResolvedValue([
-          { kind: 'videoinput', deviceId: 'cam1', label: 'FaceTime Camera' },
-        ]),
+        enumerateDevices: jest
+          .fn()
+          .mockResolvedValue([{ kind: 'videoinput', deviceId: 'cam1', label: 'FaceTime Camera' }]),
       },
       writable: true,
       configurable: true,
