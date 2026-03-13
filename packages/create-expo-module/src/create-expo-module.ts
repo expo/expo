@@ -57,9 +57,13 @@ const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
  * Non-interactive when: CI=1/true or non-TTY stdin.
  */
 function isInteractive(): boolean {
-  // Check for CI environment
   const ci = process.env.CI;
-  if (ci === '1' || ci === 'true' || ci?.toLowerCase() === 'true') {
+  if (ci === '1' || ci?.toLowerCase() === 'true') {
+    return false;
+  }
+  // Check for Expo's own non-interactive flag, used across expo-module-scripts and @expo/cli
+  // to force non-interactive mode in sub-processes (e.g. during `prepare` or `prepublishOnly`)
+  if (process.env.EXPO_NONINTERACTIVE) {
     return false;
   }
   // Check for TTY
