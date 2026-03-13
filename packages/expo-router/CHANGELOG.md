@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Allow users to customize route-level `<Suspense>` fallback ([#43885](https://github.com/expo/expo/pull/43885) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 - Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))

@@ -131,7 +131,7 @@ function useSortedScreens(order, protectedScreens, useOnlyUserDefinedScreens = f
         return routeToScreen(value.route, value.props);
     }), [sorted, protectedScreens]);
 }
-function fromImport(value, { ErrorBoundary, ...component }) {
+function fromImport(value, { ErrorBoundary, SuspenseFallback, ...component }) {
     // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
     if (component?.default && __DEV__) {
         component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
@@ -149,16 +149,17 @@ function fromImport(value, { ErrorBoundary, ...component }) {
         }
         return {
             default: Wrapped,
+            SuspenseFallback,
         };
     }
     if (process.env.NODE_ENV !== 'production') {
         if (typeof component.default === 'object' &&
             component.default &&
             Object.keys(component.default).length === 0) {
-            return { default: EmptyRoute_1.EmptyRoute };
+            return { default: EmptyRoute_1.EmptyRoute, SuspenseFallback };
         }
     }
-    return { default: component.default };
+    return { default: component.default, SuspenseFallback };
 }
 function fromLoadedRoute(value, res) {
     if (!(res instanceof Promise)) {
@@ -175,11 +176,14 @@ function getQualifiedRouteComponent(value) {
         return qualifiedStore.get(value);
     }
     let ScreenComponent;
+    let UserSuspenseFallback;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
         ScreenComponent = react_1.default.lazy(async () => {
             const res = value.loadRoute();
-            return fromLoadedRoute(value, res);
+            const result = (await fromLoadedRoute(value, res));
+            UserSuspenseFallback = result.SuspenseFallback;
+            return result;
         });
         if (__DEV__) {
             ScreenComponent.displayName = `AsyncRoute(${value.route})`;
@@ -187,7 +191,9 @@ function getQualifiedRouteComponent(value) {
     }
     else {
         const res = value.loadRoute();
-        ScreenComponent = fromImport(value, res).default;
+        const result = fromImport(value, res);
+        ScreenComponent = result.default;
+        UserSuspenseFallback = result.SuspenseFallback;
     }
     const WrappedScreenComponent = (props) => {
         (0, utils_1.useColorSchemeChangesIfNeeded)();
@@ -235,7 +241,7 @@ function getQualifiedRouteComponent(value) {
         {navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
         <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
           <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
-          <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+          <react_1.default.Suspense fallback={UserSuspenseFallback ? (<UserSuspenseFallback route={value.route}/>) : (<SuspenseFallback_1.SuspenseFallback route={value}/>)}>
             <WrappedScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.

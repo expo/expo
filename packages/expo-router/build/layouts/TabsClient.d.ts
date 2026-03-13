@@ -3,7 +3,7 @@ import { ParamListBase, TabNavigationState } from '@react-navigation/native';
 import React, { ComponentProps } from 'react';
 import { Href } from '../types';
 import { Protected } from '../views/Protected';
-declare const BottomTabNavigator: React.ComponentType<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & ({
+declare const BottomTabNavigator: React.ComponentType<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -55,7 +55,7 @@ export type BottomTabNavigator = typeof BottomTabNavigator;
 type TabsProps = BottomTabNavigationOptions & {
     href?: Href | null;
 };
-declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & ({
+declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -102,7 +102,7 @@ declare const ExpoTabs: React.ForwardRefExoticComponent<Omit<Omit<import("@react
     id?: undefined;
 } | {
     id: string;
-})), "children"> & Partial<Pick<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & ({
+})), "children"> & Partial<Pick<Omit<import("@react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
