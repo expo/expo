@@ -11,6 +11,7 @@ import { useZoomHref } from './zoom/useZoomHref';
 import { shouldLinkExternally } from '../utils/url';
 import { ZoomTransitionSourceContextProvider } from './zoom/zoom-transition-context-providers';
 
+// ROUTER_INTRO: Link component
 export function ExpoLink(props: LinkProps) {
   return (
     <ZoomTransitionSourceContextProvider linkProps={props}>

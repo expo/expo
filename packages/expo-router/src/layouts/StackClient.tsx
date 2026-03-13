@@ -154,10 +154,16 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
   original
 ) => {
   return {
+    // ROUTER_INTRO: stack getStateForAction
     getStateForAction: (state, action, options) => {
       if (action.target && action.target !== state.key) {
         return null;
       }
+      // ROUTER_INTRO: stack getStateForAction
+      // console.log('getStateForAction');
+      // console.log('state', state);
+      // console.log('action', action);
+      // console.log('options', options);
 
       if (!isStackAction(action)) {
         return original.getStateForAction(state, action, options);
@@ -378,6 +384,10 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               routes: [...result.routes.slice(0, -1), modifiedLastRoute],
             };
           }
+
+          // ROUTER_INTRO: result of stack getStateForAction
+          // console.log('getStateForAction result');
+          // console.log(result);
 
           return result;
           // return {

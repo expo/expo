@@ -27,6 +27,7 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
   > = {
     ...tabRouter,
     // @ts-expect-error TODO: For some reason this is not typed correctly
+    // ROUTER_INTRO: native tabs getStateForAction
     getStateForAction: (state, action: TabActionType | CommonNavigationAction, options) => {
       switch (action.type) {
         case 'NAVIGATE': {

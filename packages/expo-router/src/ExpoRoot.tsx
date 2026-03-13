@@ -59,6 +59,7 @@ const documentTitle = {
 /**
  * @hidden
  */
+// ROUTER_INTRO: ExpoRoot is the root component of each expo-router app.
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
   initScreensFeatureFlags();
   /*
@@ -98,6 +99,7 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
+// ROUTER_INTRO: Configuration of react-navigation and linking
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -139,6 +141,7 @@ function ContextNavigator({
     ? `${serverContext.location.pathname}${serverContext.location.search}`
     : undefined;
 
+  // ROUTER_INTRO: Global state
   const store = useStore(context, linking, serverUrl);
 
   useDomComponentNavigation();
@@ -158,6 +161,7 @@ function ContextNavigator({
     }
   }
 
+  // ROUTER_INTRO: Actual configuration of the NavigationContainer
   return (
     <StoreContext.Provider value={store}>
       <UpstreamNavigationContainer

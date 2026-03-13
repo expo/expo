@@ -16,7 +16,9 @@ export type Options = Omit<OptionsCore, 'getSystemRoute'>;
  *      - If multiple routes have the same name, the most specific route is used
  */
 export function getRoutes(contextModule: RequireContext, options: Options = {}): RouteNode | null {
-  return getRoutesCore(contextModule, {
+  // ROUTER_INTRO
+  // console.log('contextModule.keys()\n', contextModule.keys());
+  const r = getRoutesCore(contextModule, {
     getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
       if (route === '' && type === 'layout') {
         // Root layout when no layout is defined.
@@ -85,6 +87,9 @@ export function getRoutes(contextModule: RequireContext, options: Options = {}):
     },
     ...options,
   });
+  // ROUTER_INTRO
+  // console.log('getRoutes result\n', r);
+  return r;
 }
 
 export function getExactRoutes(

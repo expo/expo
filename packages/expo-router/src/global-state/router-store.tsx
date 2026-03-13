@@ -86,6 +86,7 @@ export const store = {
   get linking() {
     return storeRef.current.linking;
   },
+  // ROUTER_INTRO: setFocusedState is called by BaseRoute, when the route is focused
   setFocusedState(state: FocusedRouteState) {
     const routeInfo = getCachedRouteInfo(state);
     storeRef.current.routeInfo = routeInfo;
@@ -99,6 +100,7 @@ export const store = {
       });
     }
   },
+  // ROUTER_INTRO: onStateChange is called by react navigation container on state changes
   onStateChange(newState: ReactNavigationState | undefined) {
     if (!newState) {
       return;
@@ -153,6 +155,7 @@ export function useStore(
   let rootComponent: ComponentType<any> = Fragment;
   let initialState: ReactNavigationState | undefined;
 
+  // ROUTER_INTRO: Getting the routes tree
   const routeNode = getRoutes(context, {
     ...config,
     skipGenerated: true,
@@ -172,6 +175,7 @@ export function useStore(
       ];
     });
 
+  // ROUTER_INTRO: Configuring linking and the root component based on the routes tree
   if (routeNode) {
     // We have routes, so get the linking config and the root component
     linking = getLinkingConfig(routeNode, context, () => store.getRouteInfo(), {
@@ -182,6 +186,8 @@ export function useStore(
       sitemap: config?.sitemap ?? true,
       notFound: config?.notFound ?? true,
     });
+    // ROUTER_INTRO
+    // console.log('linking\n', linking);
     rootComponent = getQualifiedRouteComponent(routeNode);
 
     // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
@@ -250,6 +256,7 @@ const routeInfoSubscribe = (callback: () => void) => {
   };
 };
 
+// ROUTER_INTRO: useRouteInfo
 export function useRouteInfo(): UrlObject {
   const routeInfo = useSyncExternalStore(
     routeInfoSubscribe,

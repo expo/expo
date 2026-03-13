@@ -99,6 +99,7 @@ export type Router = {
 /**
  * @hidden
  */
+// ROUTER_INTRO: global router
 export const router: Router = {
   navigate,
   push,

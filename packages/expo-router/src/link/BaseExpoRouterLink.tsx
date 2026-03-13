@@ -62,6 +62,7 @@ export function BaseExpoRouterLink({
     if ('onPress' in rest) {
       rest.onPress?.(e);
     }
+    // ROUTER_INTRO: onPress - navigation
     props.onPress(e);
   };
 

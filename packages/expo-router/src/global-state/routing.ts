@@ -61,12 +61,14 @@ export const routingQueue = {
   snapshot() {
     return routingQueue.queue;
   },
+  // ROUTER_INTRO: add to routing queue
   add(action: NavigationAction | LinkAction) {
     routingQueue.queue.push(action);
     for (const callback of routingQueue.subscribers) {
       callback();
     }
   },
+  // ROUTER_INTRO: process routing queue
   run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
@@ -74,6 +76,9 @@ export const routingQueue = {
     let action: NavigationAction | LinkAction | undefined;
     while ((action = events.shift())) {
       if (ref.current) {
+        // Distinguishing between link and router link actions
+        // in order to avoid stale state issues in linkTo.
+        // https://github.com/expo/expo/pull/39682
         if (action.type === 'ROUTER_LINK') {
           const {
             payload: { href, options },
@@ -88,6 +93,7 @@ export const routingQueue = {
             !!options.__internal__PreviewKey
           );
           if (action) {
+            // ROUTER_INTRO: dispatch navigation action from routing queue
             ref.current.dispatch(action);
           }
         } else {
@@ -113,6 +119,7 @@ export function prefetch(href: Href, options?: NavigationOptions) {
   return linkTo(resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 
+// ROUTER_INTRO: router.push implementation
 export function push(url: Href, options?: NavigationOptions) {
   return linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }
@@ -232,7 +239,7 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
     if (href.startsWith('//') && Platform.OS !== 'web') {
       href = `https:${href}`;
     }
-
+    // ROUTER_INTRO: External linking
     Linking.openURL(href);
     return;
   }
@@ -263,6 +270,7 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
     },
   };
 
+  // ROUTER_INTRO: add to routing queue from linkTo
   routingQueue.add(linkAction);
 }
 

@@ -41,6 +41,7 @@ export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPr
       if (emitDomLinkEvent(href, options)) {
         return;
       }
+      // ROUTER_INTRO: linkTo
       linkTo(href, options);
     }
   };

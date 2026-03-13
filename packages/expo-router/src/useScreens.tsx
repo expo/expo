@@ -158,6 +158,7 @@ function getSortedChildren(
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
+// ROUTER_INTRO: returns screens ordered alphabetically with user defined screens first
 export function useSortedScreens(
   order: ScreenProps[],
   protectedScreens: Set<string>,
@@ -262,6 +263,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     useColorSchemeChangesIfNeeded();
     return <ScreenComponent {...props} />;
   };
+  // ROUTER_INTRO: BaseRoute
   function BaseRoute({
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
@@ -293,6 +295,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     if (isFocused) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]);
+      // ROUTER_INTRO: setFocusedState
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
     }
 
