@@ -26,7 +26,9 @@ export default function BottomSheetScreen() {
             <ComposeText>React Native Content</ComposeText>
             <ComposeText>Sheet with interactive RN views inside</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 12 }}>
-              <Button onPress={() => setShowRNContent(true)}>Open RN Content Sheet</Button>
+              <Button onClick={() => setShowRNContent(true)}>
+                <ComposeText>Open RN Content Sheet</ComposeText>
+              </Button>
             </Row>
           </Column>
         </Card>
@@ -36,8 +38,8 @@ export default function BottomSheetScreen() {
             <ComposeText>React Native Content with flex: 1</ComposeText>
             <ComposeText>Sheet with RN views that fill available space</ComposeText>
             <Row horizontalArrangement={{ spacedBy: 12 }}>
-              <Button onPress={() => setShowRNContentWithFlex(true)}>
-                Open Flex Content Sheet
+              <Button onClick={() => setShowRNContentWithFlex(true)}>
+                <ComposeText>Open Flex Content Sheet</ComposeText>
               </Button>
             </Row>
           </Column>
