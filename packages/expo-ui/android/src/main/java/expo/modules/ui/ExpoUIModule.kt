@@ -143,6 +143,22 @@ class ExpoUIModule : Module() {
       DateTimePickerContent(props) { onDateSelected(it) }
     }
 
+    ExpoUIView("DatePickerDialogView", events = {
+      Events("onDateSelected", "onDismissRequest")
+    }) { props: DatePickerDialogProps ->
+      val onDateSelected by remember { EventDispatcher<DatePickerResult>() }
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ExpoDatePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
+    }
+
+    ExpoUIView("TimePickerDialogView", events = {
+      Events("onDateSelected", "onDismissRequest")
+    }) { props: TimePickerDialogProps ->
+      val onDateSelected by remember { EventDispatcher<DatePickerResult>() }
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ExpoTimePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
+    }
+
     ExpoUIView("DropdownMenuView", events = {
       Events("onDismissRequest")
     }) { props: DropdownMenuProps ->
