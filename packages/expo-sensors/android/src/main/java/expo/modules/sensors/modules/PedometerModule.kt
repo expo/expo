@@ -39,6 +39,11 @@ private const val EventNameEvent = "Exponent.pedometerEvent"
 private const val TransitionAction = "expo.modules.sensors.PEDOMETER_TRANSITION"
 
 class NotSupportedException(message: String) : CodedException(message)
+class ReadDataFailedException(statusCode: Int, statusMessage: String?) : CodedException(
+  "READ_DATA_FAILED",
+  "Failed to read data from the Recording API. Code: $statusCode. Message: $statusMessage",
+  null
+)
 class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
 
@@ -157,13 +162,12 @@ class PedometerModule : Module() {
       val pendingIntent = transitionPendingIntent
       if (pendingIntent != null) {
         if (isEventUpdatesActive) {
-          try {
-            Tasks.await(activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent))
-          } catch (_: SecurityException) {
-            // ignore missing permission at cleanup time
-          }
+          activityRecognitionClient
+            .removeActivityTransitionUpdates(pendingIntent)
+            .addOnCompleteListener { pendingIntent.cancel() }
+        } else {
+          pendingIntent.cancel()
         }
-        pendingIntent.cancel()
       }
 
       isEventUpdatesActive = false
@@ -301,23 +305,14 @@ class PedometerModule : Module() {
         throw Exceptions.MissingPermissions(Manifest.permission.ACTIVITY_RECOGNITION)
       }
 
-      if (!response.status.isSuccess)
-        throw CodedException(
-          "READ_DATA_FAILED",
-          "Failed to read data from the Recording API. " +
-            "Code: ${response.status.statusCode}. " +
-            "Message: ${response.status.statusMessage}",
-          null
-        )
-
-      var sum = 0
-      for (bucket in response.buckets) {
-        for (dataSet in bucket.dataSets) {
-          for (dataPoint in dataSet.dataPoints) {
-            sum += dataPoint.getValue(LocalField.FIELD_STEPS).asInt()
-          }
-        }
+      if (!response.status.isSuccess) {
+        throw ReadDataFailedException(response.status.statusCode, response.status.statusMessage)
       }
+
+      val sum = response.buckets
+        .flatMap { it.dataSets }
+        .flatMap { it.dataPoints }
+        .sumOf { it.getValue(LocalField.FIELD_STEPS).asInt() }
 
       mapOf("steps" to sum.toLong())
     }
