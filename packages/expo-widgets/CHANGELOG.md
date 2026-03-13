@@ -23,6 +23,7 @@
 ### 💡 Others
 
 - Remove extraneous `@expo/config-plugins` dependency ([#43452](https://github.com/expo/expo/pull/43452) by [@kitten](https://github.com/kitten))
+- Fixed build error from nightly tests. ([#43849](https://github.com/expo/expo/pull/43849) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-02-25
 
