@@ -87,10 +87,12 @@ class ExpoUIModule : Module() {
     //region Expo UI views
 
     ExpoUIView("ModalBottomSheetView", events = {
-      Events("onDismissRequest")
+      Events("onIsPresentedChange")
     }) { props: ModalBottomSheetProps ->
-      val onDismissRequest by remember { EventDispatcher<Unit>() }
-      ModalBottomSheetContent(props) { onDismissRequest(Unit) }
+      val onIsPresentedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      ModalBottomSheetContent(props) { isPresented ->
+        onIsPresentedChange(GenericEventPayload1(isPresented))
+      }
     }
 
     // Defines a single view for now – a single choice segmented control

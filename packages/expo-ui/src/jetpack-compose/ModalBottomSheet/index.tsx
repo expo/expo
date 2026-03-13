@@ -1,54 +1,126 @@
 import { requireNativeView } from 'expo';
 import React from 'react';
+import { type ColorValue, type NativeSyntheticEvent } from 'react-native';
 
-import { type ExpoModifier, type ViewEvent } from '../../types';
+import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+type SlotNativeViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
+
+const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
+
+export type ModalBottomSheetProperties = {
+  /**
+   * Whether the bottom sheet can be dismissed by pressing the back button.
+   * @default true
+   */
+  shouldDismissOnBackPress?: boolean;
+  /**
+   * Whether the bottom sheet can be dismissed by clicking outside (on the scrim).
+   * @default true
+   */
+  shouldDismissOnClickOutside?: boolean;
+};
 
 export type ModalBottomSheetProps = {
   /**
    * The children of the `ModalBottomSheet` component.
+   * Can include a `ModalBottomSheet.DragHandle` slot for a custom drag handle.
    */
   children: React.ReactNode;
   /**
-   * Callback function that is called when the bottom sheet is dismissed.
+   * Whether the `ModalBottomSheet` is presented.
    */
-  onDismissRequest: () => void;
+  isPresented: boolean;
+  /**
+   * Callback function that is called when the presentation state changes.
+   * The sheet animates its dismiss before calling this with `false`.
+   */
+  onIsPresentedChange: (isPresented: boolean) => void;
   /**
    * Immediately opens the bottom sheet in full screen.
    * @default false
    */
   skipPartiallyExpanded?: boolean;
   /**
+   * The background color of the bottom sheet.
+   */
+  containerColor?: ColorValue;
+  /**
+   * The preferred color of the content inside the bottom sheet.
+   */
+  contentColor?: ColorValue;
+  /**
+   * The color of the scrim overlay behind the bottom sheet.
+   */
+  scrimColor?: ColorValue;
+  /**
+   * Whether to show the default drag handle at the top of the bottom sheet.
+   * Ignored if a custom `ModalBottomSheet.DragHandle` slot is provided.
+   * @default true
+   */
+  showDragHandle?: boolean;
+  /**
+   * Whether gestures (swipe to dismiss) are enabled on the bottom sheet.
+   * @default true
+   */
+  sheetGesturesEnabled?: boolean;
+  /**
+   * Properties for the modal window behavior.
+   */
+  properties?: ModalBottomSheetProperties;
+  /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
-type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onDismissRequest'> &
-  ViewEvent<'onDismissRequest', void>;
+type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onIsPresentedChange'> & {
+  onIsPresentedChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
+};
 
 const ModalBottomSheetNativeView: React.ComponentType<NativeModalBottomSheetProps> =
   requireNativeView('ExpoUI', 'ModalBottomSheetView');
 
 function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetProps {
-  const { modifiers, onDismissRequest, ...restProps } = props;
+  const { modifiers, onIsPresentedChange, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     skipPartiallyExpanded: props.skipPartiallyExpanded ?? false,
-    onDismissRequest: () => {
-      onDismissRequest?.();
+    onIsPresentedChange: ({ nativeEvent: { value } }) => {
+      onIsPresentedChange?.(value);
     },
   };
 }
 
 /**
+ * A custom drag handle slot for `ModalBottomSheet`.
+ * Wrap any content to use as the sheet's drag handle.
+ *
+ * @platform android
+ */
+function DragHandle(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="dragHandle">{props.children}</SlotNativeView>;
+}
+
+/**
  * A Material Design modal bottom sheet.
  */
-export function ModalBottomSheet(props: ModalBottomSheetProps) {
+function ModalBottomSheetComponent(props: ModalBottomSheetProps) {
   return <ModalBottomSheetNativeView {...transformProps(props)} />;
 }
+
+ModalBottomSheetComponent.DragHandle = DragHandle;
+
+export const ModalBottomSheet = ModalBottomSheetComponent;
 
 /**
  * @deprecated Use `ModalBottomSheet` instead.

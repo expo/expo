@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   Column,
@@ -7,135 +8,258 @@ import {
   ModalBottomSheet,
   RNHostView,
   Row,
+  Switch,
   Text as ComposeText,
 } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, height, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  background,
+  clip,
+  fillMaxWidth,
+  height,
+  padding,
+  Shapes,
+  weight,
+  width,
+} from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 import { Pressable, Text as RNText, View } from 'react-native';
 
 export default function BottomSheetScreen() {
+  const [showSheet, setShowSheet] = React.useState(false);
   const [showRNContent, setShowRNContent] = React.useState(false);
   const [showRNContentWithFlex, setShowRNContentWithFlex] = React.useState(false);
   const [counter, setCounter] = React.useState(0);
+
+  // Configurable props
+  const [skipPartiallyExpanded, setSkipPartiallyExpanded] = React.useState(false);
+  const [showDragHandle, setShowDragHandle] = React.useState(true);
+  const [useCustomDragHandle, setUseCustomDragHandle] = React.useState(false);
+  const [sheetGesturesEnabled, setSheetGesturesEnabled] = React.useState(true);
+  const [shouldDismissOnBackPress, setShouldDismissOnBackPress] = React.useState(true);
+  const [shouldDismissOnClickOutside, setShouldDismissOnClickOutside] = React.useState(true);
+  const [useCustomColors, setUseCustomColors] = React.useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
-            <ComposeText>React Native Content</ComposeText>
-            <ComposeText>Sheet with interactive RN views inside</ComposeText>
-            <Row horizontalArrangement={{ spacedBy: 12 }}>
-              <Button onPress={() => setShowRNContent(true)}>Open RN Content Sheet</Button>
+            <ComposeText>Configurable Sheet</ComposeText>
+            <ComposeText>Toggle props below, then open the sheet.</ComposeText>
+
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText>skipPartiallyExpanded</ComposeText>
+              <Switch
+                variant="switch"
+                value={skipPartiallyExpanded}
+                onValueChange={setSkipPartiallyExpanded}
+              />
             </Row>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText>showDragHandle</ComposeText>
+              <Switch variant="switch" value={showDragHandle} onValueChange={setShowDragHandle} />
+            </Row>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText>useCustomDragHandle</ComposeText>
+              <Switch
+                variant="switch"
+                value={useCustomDragHandle}
+                onValueChange={setUseCustomDragHandle}
+              />
+            </Row>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText>sheetGesturesEnabled</ComposeText>
+              <Switch
+                variant="switch"
+                value={sheetGesturesEnabled}
+                onValueChange={setSheetGesturesEnabled}
+              />
+            </Row>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText>shouldDismissOnBackPress</ComposeText>
+              <Switch
+                variant="switch"
+                value={shouldDismissOnBackPress}
+                onValueChange={setShouldDismissOnBackPress}
+              />
+            </Row>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText>shouldDismissOnClickOutside</ComposeText>
+              <Switch
+                variant="switch"
+                value={shouldDismissOnClickOutside}
+                onValueChange={setShouldDismissOnClickOutside}
+              />
+            </Row>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText>useCustomColors</ComposeText>
+              <Switch variant="switch" value={useCustomColors} onValueChange={setUseCustomColors} />
+            </Row>
+
+            <Button onPress={() => setShowSheet(true)}>Open Sheet</Button>
+          </Column>
+        </Card>
+
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>React Native Content</ComposeText>
+            <ComposeText>Sheet with interactive RN views inside.</ComposeText>
+            <Button onPress={() => setShowRNContent(true)}>Open RN Content Sheet</Button>
           </Column>
         </Card>
 
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>React Native Content with flex: 1</ComposeText>
-            <ComposeText>Sheet with RN views that fill available space</ComposeText>
-            <Row horizontalArrangement={{ spacedBy: 12 }}>
-              <Button onPress={() => setShowRNContentWithFlex(true)}>
-                Open Flex Content Sheet
-              </Button>
-            </Row>
+            <ComposeText>Sheet with RN views that fill available space.</ComposeText>
+            <Button onPress={() => setShowRNContentWithFlex(true)}>Open Flex Content Sheet</Button>
           </Column>
         </Card>
       </LazyColumn>
 
-      {showRNContent && (
-        <ModalBottomSheet
-          onDismissRequest={() => setShowRNContent(false)}
-          skipPartiallyExpanded={false}>
-          <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
-            <ComposeText>Mixing Compose + RN in a Bottom Sheet</ComposeText>
-            <Row horizontalArrangement={{ spacedBy: 24 }} verticalAlignment="center">
-              <RNHostView matchContents>
-                <Pressable
-                  onPress={() => setCounter((prev) => prev - 1)}
-                  style={{
-                    height: 50,
-                    width: 50,
-                    borderRadius: 100,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: '#9B59B6',
-                  }}>
-                  <RNText style={{ color: 'white', fontSize: 24 }}>-</RNText>
-                </Pressable>
-              </RNHostView>
-              <ComposeText>{counter}</ComposeText>
-              <RNHostView matchContents>
-                <Pressable
-                  onPress={() => setCounter((prev) => prev + 1)}
-                  style={{
-                    height: 50,
-                    width: 50,
-                    borderRadius: 100,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: '#9B59B6',
-                  }}>
-                  <RNText style={{ color: 'white', fontSize: 24 }}>+</RNText>
-                </Pressable>
-              </RNHostView>
-            </Row>
-            <RNHostView matchContents>
-              <View style={{ padding: 24 }}>
-                <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
-                  React Native Content
-                </RNText>
-                <RNText style={{ color: '#666', marginBottom: 16 }}>Counter: {counter}</RNText>
-                <Pressable
-                  style={{
-                    backgroundColor: '#007AFF',
-                    padding: 12,
-                    borderRadius: 8,
-                    alignItems: 'center',
-                    marginBottom: 12,
-                  }}
-                  onPress={() => setCounter((prev) => prev + 1)}>
-                  <RNText style={{ color: 'white', fontWeight: '600' }}>Increment</RNText>
-                </Pressable>
-                <Pressable
-                  style={{
-                    backgroundColor: '#FF3B30',
-                    padding: 12,
-                    borderRadius: 8,
-                    alignItems: 'center',
-                  }}
-                  onPress={() => setShowRNContent(false)}>
-                  <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
-                </Pressable>
-              </View>
-            </RNHostView>
-          </Column>
-        </ModalBottomSheet>
-      )}
+      <ModalBottomSheet
+        isPresented={showSheet}
+        onIsPresentedChange={setShowSheet}
+        skipPartiallyExpanded={skipPartiallyExpanded}
+        showDragHandle={showDragHandle}
+        sheetGesturesEnabled={sheetGesturesEnabled}
+        properties={{
+          shouldDismissOnBackPress,
+          shouldDismissOnClickOutside,
+        }}
+        {...(useCustomColors && {
+          containerColor: '#1a1a2e',
+          contentColor: '#e0e0e0',
+          scrimColor: '#806200EE',
+        })}>
+        {useCustomDragHandle && (
+          <ModalBottomSheet.DragHandle>
+            <Column
+              horizontalAlignment="center"
+              modifiers={[fillMaxWidth(), padding(0, 12, 0, 8)]}>
+              <Box
+                modifiers={[width(60), height(6), clip(Shapes.Circle), background('#6200EE')]}
+              />
+            </Column>
+          </ModalBottomSheet.DragHandle>
+        )}
+        <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+          <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+            <ComposeText modifiers={[weight(1)]}>Bottom Sheet</ComposeText>
+            <Button onPress={() => setShowSheet(false)}>✕</Button>
+          </Row>
+          <ComposeText>This sheet reflects the toggled props above.</ComposeText>
+          <ComposeText>When skipPartiallyExpanded is off, drag up to expand.</ComposeText>
+          <ComposeText>{'\n'}Additional content to allow full expansion:</ComposeText>
+          <ComposeText>Item 1</ComposeText>
+          <ComposeText>Item 2</ComposeText>
+          <ComposeText>Item 3</ComposeText>
+          <ComposeText>Item 4</ComposeText>
+          <ComposeText>Item 5</ComposeText>
+          <ComposeText>Item 6</ComposeText>
+          <ComposeText>Item 7</ComposeText>
+          <ComposeText>Item 8</ComposeText>
+          <ComposeText>Item 9</ComposeText>
+          <ComposeText>Item 10</ComposeText>
+          <ComposeText>Item 11</ComposeText>
+          <ComposeText>Item 12</ComposeText>
+          <ComposeText>Item 13</ComposeText>
+          <ComposeText>Item 14</ComposeText>
+          <ComposeText>Item 15</ComposeText>
+          <Button onPress={() => setShowSheet(false)}>Close</Button>
+        </Column>
+      </ModalBottomSheet>
 
-      {showRNContentWithFlex && (
-        <ModalBottomSheet
-          onDismissRequest={() => setShowRNContentWithFlex(false)}
-          skipPartiallyExpanded>
-          <Column modifiers={[height(400), padding(16, 16, 16, 16)]}>
-            <ComposeText>RN View with flex: 1</ComposeText>
-            <RNHostView>
-              <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10 }}>
-                <RNText
-                  style={{
-                    color: 'white',
-                    fontSize: 18,
-                    fontWeight: 'bold',
-                    padding: 16,
-                  }}>
-                  React Native Content (flex: 1)
-                </RNText>
-              </View>
+      <ModalBottomSheet
+        isPresented={showRNContent}
+        onIsPresentedChange={setShowRNContent}
+        skipPartiallyExpanded={false}>
+        <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+          <ComposeText>Mixing Compose + RN in a Bottom Sheet</ComposeText>
+          <Row horizontalArrangement={{ spacedBy: 24 }} verticalAlignment="center">
+            <RNHostView matchContents>
+              <Pressable
+                onPress={() => setCounter((prev) => prev - 1)}
+                style={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#9B59B6',
+                }}>
+                <RNText style={{ color: 'white', fontSize: 24 }}>-</RNText>
+              </Pressable>
             </RNHostView>
-          </Column>
-        </ModalBottomSheet>
-      )}
+            <ComposeText>{counter}</ComposeText>
+            <RNHostView matchContents>
+              <Pressable
+                onPress={() => setCounter((prev) => prev + 1)}
+                style={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#9B59B6',
+                }}>
+                <RNText style={{ color: 'white', fontSize: 24 }}>+</RNText>
+              </Pressable>
+            </RNHostView>
+          </Row>
+          <RNHostView matchContents>
+            <View style={{ padding: 24 }}>
+              <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                React Native Content
+              </RNText>
+              <RNText style={{ color: '#666', marginBottom: 16 }}>Counter: {counter}</RNText>
+              <Pressable
+                style={{
+                  backgroundColor: '#007AFF',
+                  padding: 12,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                  marginBottom: 12,
+                }}
+                onPress={() => setCounter((prev) => prev + 1)}>
+                <RNText style={{ color: 'white', fontWeight: '600' }}>Increment</RNText>
+              </Pressable>
+              <Pressable
+                style={{
+                  backgroundColor: '#FF3B30',
+                  padding: 12,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                }}
+                onPress={() => setShowRNContent(false)}>
+                <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+              </Pressable>
+            </View>
+          </RNHostView>
+        </Column>
+      </ModalBottomSheet>
+
+      <ModalBottomSheet
+        isPresented={showRNContentWithFlex}
+        onIsPresentedChange={setShowRNContentWithFlex}
+        skipPartiallyExpanded>
+        <Column modifiers={[height(400), padding(16, 16, 16, 16)]}>
+          <ComposeText>RN View with flex: 1</ComposeText>
+          <RNHostView>
+            <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+              <RNText
+                style={{
+                  color: 'white',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  padding: 16,
+                }}>
+                React Native Content (flex: 1)
+              </RNText>
+            </View>
+          </RNHostView>
+        </Column>
+      </ModalBottomSheet>
     </Host>
   );
 }
