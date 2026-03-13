@@ -486,39 +486,27 @@ describe('routes without /index suffix', () => {
       expect(screen).toHavePathname('/otp/signin/step1');
     });
 
-    it('should handle both name="otp/[flow]" and name="otp/[flow]/index"', () => {
-      let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
-
-      renderRouter(
-        {
-          _layout: function Layout() {
-            useStateResult = useState(false);
-            return (
-              <Stack id={undefined}>
-                <Stack.Protected guard={useStateResult[0]}>
-                  <Stack.Screen name="otp/[flow]" />
-                  <Stack.Screen name="otp/[flow]/index" />
-                </Stack.Protected>
-              </Stack>
-            );
+    it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', () => {
+      expect(() =>
+        renderRouter(
+          {
+            _layout: function Layout() {
+              const [guard] = useState(false);
+              return (
+                <Stack id={undefined}>
+                  <Stack.Protected guard={guard}>
+                    <Stack.Screen name="otp/[flow]" />
+                    <Stack.Screen name="otp/[flow]/index" />
+                  </Stack.Protected>
+                </Stack>
+              );
+            },
+            index: () => <Text testID="index">index</Text>,
+            'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
           },
-          index: () => <Text testID="index">index</Text>,
-          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
-        },
-        { initialUrl: '/otp/signin' }
-      );
-
-      expect(screen.getByTestId('index')).toBeVisible();
-      expect(screen).toHavePathname('/');
-
-      act(() => {
-        useStateResult[1](true);
-      });
-
-      act(() => router.replace('/otp/signin'));
-
-      expect(screen.getByTestId('otp')).toBeVisible();
-      expect(screen).toHavePathname('/otp/signin');
+          { initialUrl: '/otp/signin' }
+        )
+      ).toThrow('Screen names must be unique');
     });
   });
 });

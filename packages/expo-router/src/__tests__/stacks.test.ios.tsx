@@ -918,32 +918,22 @@ describe('Screen options with /index suffix normalization', () => {
     spy.mockRestore();
   });
 
-  it('should handle both name="otp/[flow]" and name="otp/[flow]/index"', () => {
-    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    renderRouter(
-      {
-        _layout: () => (
-          <Stack id={undefined}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Short' }} />
-            <Stack.Screen name="otp/[flow]/index" options={{ title: 'OTP Full' }} />
-          </Stack>
-        ),
-        index: () => <Text testID="index">Index</Text>,
-        'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
-      },
-      { initialUrl: '/otp/signin' }
-    );
-
-    expect(screen.getByTestId('otp')).toBeVisible();
-    expect(screen).toHavePathname('/otp/signin');
-
-    expect(spy).not.toHaveBeenCalledWith(
-      expect.stringContaining('[Layout children]'),
-      expect.anything()
-    );
-
-    spy.mockRestore();
+  it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', () => {
+    expect(() =>
+      renderRouter(
+        {
+          _layout: () => (
+            <Stack id={undefined}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Short' }} />
+              <Stack.Screen name="otp/[flow]/index" options={{ title: 'OTP Full' }} />
+            </Stack>
+          ),
+          index: () => <Text testID="index">Index</Text>,
+          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+        },
+        { initialUrl: '/otp/signin' }
+      )
+    ).toThrow('Screen names must be unique');
   });
 });
