@@ -89,7 +89,9 @@ class EmbeddedLoader internal constructor(
       return FileDownloader.AssetDownloadResult(assetEntity, false)
     } else {
       try {
-        assetEntity.hash = loaderFiles.copyAssetAndGetHash(assetEntity, destination, context)
+        val result = loaderFiles.copyAssetAndGetHash(assetEntity, destination, context)
+        assetEntity.hash = result.hash
+        assetEntity.expectedSize = result.size
         assetEntity.downloadTime = Date()
         assetEntity.relativePath = filename
         return FileDownloader.AssetDownloadResult(assetEntity, true)
