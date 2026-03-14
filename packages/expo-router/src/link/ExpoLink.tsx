@@ -3,6 +3,7 @@
 import React, { Children, isValidElement } from 'react';
 
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
+import { LinkWithMenuDialog } from './LinkWithMenuDialog';
 import { LinkWithPreview } from './LinkWithPreview';
 import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
@@ -27,6 +28,10 @@ function ExpoLinkImpl(props: LinkProps) {
   if (shouldUseLinkWithPreview) {
     return <LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href} />;
   }
+  const shouldUseLinkWithMenuDialog = process.env.EXPO_OS === 'android' && isLinkWithMenu(props);
+  if (shouldUseLinkWithMenuDialog) {
+    return <LinkWithMenuDialog {...props} href={href} />;
+  }
   let children = props.children;
   if (React.Children.count(props.children) > 1) {
     const arrayChildren = React.Children.toArray(props.children).filter(
@@ -44,5 +49,11 @@ function isLinkWithPreview(props: LinkProps): boolean {
     (child) =>
       isValidElement(child) &&
       ((!isExternal && child.type === LinkPreview) || child.type === LinkMenu)
+  );
+}
+
+function isLinkWithMenu(props: LinkProps): boolean {
+  return Children.toArray(props.children).some(
+    (child) => isValidElement(child) && child.type === LinkMenu
   );
 }

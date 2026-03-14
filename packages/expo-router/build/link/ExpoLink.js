@@ -37,6 +37,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoLink = ExpoLink;
 const react_1 = __importStar(require("react"));
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
+const LinkWithMenuDialog_1 = require("./LinkWithMenuDialog");
 const LinkWithPreview_1 = require("./LinkWithPreview");
 const elements_1 = require("./elements");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
@@ -55,6 +56,10 @@ function ExpoLinkImpl(props) {
     if (shouldUseLinkWithPreview) {
         return <LinkWithPreview_1.LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href}/>;
     }
+    const shouldUseLinkWithMenuDialog = process.env.EXPO_OS === 'android' && isLinkWithMenu(props);
+    if (shouldUseLinkWithMenuDialog) {
+        return <LinkWithMenuDialog_1.LinkWithMenuDialog {...props} href={href}/>;
+    }
     let children = props.children;
     if (react_1.default.Children.count(props.children) > 1) {
         const arrayChildren = react_1.default.Children.toArray(props.children).filter((child) => !(0, react_1.isValidElement)(child) || (child.type !== elements_1.LinkPreview && child.type !== elements_1.LinkMenu));
@@ -66,5 +71,8 @@ function isLinkWithPreview(props) {
     const isExternal = (0, url_1.shouldLinkExternally)(String(props.href));
     return react_1.Children.toArray(props.children).some((child) => (0, react_1.isValidElement)(child) &&
         ((!isExternal && child.type === elements_1.LinkPreview) || child.type === elements_1.LinkMenu));
+}
+function isLinkWithMenu(props) {
+    return react_1.Children.toArray(props.children).some((child) => (0, react_1.isValidElement)(child) && child.type === elements_1.LinkMenu);
 }
 //# sourceMappingURL=ExpoLink.js.map
