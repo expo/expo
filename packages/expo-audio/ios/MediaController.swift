@@ -129,7 +129,7 @@ class MediaController {
 
   private func loadArtworkFromURL(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) {
     URLSession.shared.dataTask(with: url) { data, _, error in
-      if error != nil {
+      if error != nil || data == nil {
         completion(nil)
         return
       }
