@@ -113,8 +113,9 @@ function ContextNavigator({
     if (initialLocation instanceof URL) {
       contextType = {
         location: {
-          pathname: initialLocation.pathname + initialLocation.hash,
+          pathname: initialLocation.pathname,
           search: initialLocation.search,
+          hash: initialLocation.hash,
         },
       };
     } else if (typeof initialLocation === 'string') {
@@ -124,6 +125,7 @@ function ContextNavigator({
         location: {
           pathname: url.pathname,
           search: url.search,
+          hash: url.hash,
         },
       };
     }
@@ -136,7 +138,7 @@ function ContextNavigator({
    * e.g Static renders, units tests, etc
    */
   const serverUrl = serverContext.location
-    ? `${serverContext.location.pathname}${serverContext.location.search}`
+    ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
     : undefined;
 
   const store = useStore(context, linking, serverUrl);
