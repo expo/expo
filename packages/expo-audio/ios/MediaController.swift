@@ -22,6 +22,13 @@ class MediaController {
 
     DispatchQueue.main.async {
       if let player {
+        let session = AVAudioSession.sharedInstance()
+        do {
+          try session.setCategory(.playback, mode: .default, options: [])
+        } catch {
+          log.warn("Failed to configure audio session for lockscreen controls: \(error.localizedDescription)")
+        }
+        
         self.enableRemoteCommands(options: options)
         self.updateNowPlayingInfo(for: player)
       } else {
