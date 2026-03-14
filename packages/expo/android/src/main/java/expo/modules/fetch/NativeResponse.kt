@@ -52,18 +52,20 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun startStreaming(): ByteArray? {
-    if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
+    synchronized(this) {
+      if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
+        return null
+      }
+      if (state == ResponseState.RESPONSE_RECEIVED) {
+        state = ResponseState.BODY_STREAMING_STARTED
+        val queuedData = this.sink.finalize(directBuffer = false).array()
+        emit("didReceiveResponseData", queuedData)
+      } else if (state == ResponseState.BODY_COMPLETED) {
+        val queuedData = this.sink.finalize(directBuffer = false).array()
+        return queuedData
+      }
       return null
     }
-    if (state == ResponseState.RESPONSE_RECEIVED) {
-      state = ResponseState.BODY_STREAMING_STARTED
-      val queuedData = this.sink.finalize(directBuffer = false).array()
-      emit("didReceiveResponseData", queuedData)
-    } else if (state == ResponseState.BODY_COMPLETED) {
-      val queuedData = this.sink.finalize(directBuffer = false).array()
-      return queuedData
-    }
-    return null
   }
 
   fun cancelStreaming() {
