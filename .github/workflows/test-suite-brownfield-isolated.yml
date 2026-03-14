@@ -67,9 +67,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
@@ -128,9 +126,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🌠 Download build (Release)
         uses: actions/download-artifact@v4
         with:
@@ -150,7 +146,7 @@ jobs:
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: 
+          script:
             ./packages/expo-brownfield/e2e/scripts/run-e2e-android.sh
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
@@ -186,9 +182,7 @@ jobs:
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.2
         run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: 🍺 Install required tools
