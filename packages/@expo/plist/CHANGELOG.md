@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add xmlbuilder-js CreateOptions parameter. ([#41314](https://github.com/expo/expo/pull/41314) by [@dnicolson](https://github.com/dnicolson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
