@@ -3,6 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider as ReactNavigationThemeProvider,
 } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { Appearance, useColorScheme } from 'react-native';
@@ -14,6 +15,9 @@ import { useNotificationResponseRedirect } from '../useNotificationResponseRedir
 import setColorScheme = Appearance.setColorScheme;
 
 export default function Root() {
+  useFonts({
+    SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
+  });
   useNotificationResponseRedirect();
   const colorScheme = useColorScheme();
 

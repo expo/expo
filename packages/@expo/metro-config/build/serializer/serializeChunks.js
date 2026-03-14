@@ -12,6 +12,7 @@ const assert_1 = __importDefault(require("assert"));
 const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
 const exportPath_1 = require("./exportPath");
+const filterEmbeddedFontAssets_1 = require("./filterEmbeddedFontAssets");
 const getCssDeps_1 = require("./getCssDeps");
 const getAssets_1 = __importDefault(require("../transform-worker/getAssets"));
 const filePath_1 = require("../utils/filePath");
@@ -98,9 +99,10 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
         publicPath,
         isHosted,
     }));
+    const filteredAssets = (0, filterEmbeddedFontAssets_1.filterEmbeddedFontsFromAssets)(metroAssets, options.projectRoot, platform);
     return {
         artifacts: [...jsAssets, ...cssDeps],
-        assets: metroAssets,
+        assets: filteredAssets,
     };
 }
 class Chunk {
