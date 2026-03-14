@@ -178,19 +178,28 @@ module Expo
     end
 
     public def resolve
-      json = []
+      require 'open3'
+      stdout, stderr, status = Open3.capture3(*resolve_command_args)
 
-      IO.popen(resolve_command_args) do |data|
-        while line = data.gets
-          json << line
+      if status.success? && !stdout.strip.empty?
+        begin
+          return JSON.parse(stdout)
+        rescue => error
+          raise "Couldn't parse JSON coming from `expo-modules-autolinking` command:\n#{error}\n" \
+                "stdout (first 500 chars): #{stdout[0..500]}\n" \
+                "stderr: #{stderr.strip}"
         end
       end
 
-      begin
-        JSON.parse(json.join())
-      rescue => error
-        raise "Couldn't parse JSON coming from `expo-modules-autolinking` command:\n#{error}"
+      if !status.success?
+        raise "expo-modules-autolinking command exited with status #{status.exitstatus}.\n" \
+              "Command: #{resolve_command_args.join(' ')}\n" \
+              "stderr: #{stderr.strip}"
       end
+
+      raise "expo-modules-autolinking command returned empty output.\n" \
+            "Command: #{resolve_command_args.join(' ')}\n" \
+            "stderr: #{stderr.strip}"
     end
 
     public def base_command_args
