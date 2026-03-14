@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Support custom SF Symbols from asset catalogs by trying `UIImage(named:)` before `UIImage(systemName:)`. ([#43946](https://github.com/expo/expo/pull/43946) by [@chrism](https://github.com/chrism))
+
 ### 💡 Others
 
 - Add explicit type re-export and return type annotations ([#43562](https://github.com/expo/expo/pull/43562) by [@kitten](https://github.com/kitten))
