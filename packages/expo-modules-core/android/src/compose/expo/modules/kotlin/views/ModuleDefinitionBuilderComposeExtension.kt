@@ -85,7 +85,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
           val property = eventProp as KProperty1<Props, ComposeEventDispatcher<Any?>>
           property.isAccessible = true
           val dispatcher = property.get(instance)
-          dispatcher.callback = { arg -> ViewEvent(eventProp.name, holder, null).invoke(arg) }
+          dispatcher.callback = { arg -> ViewEvent(eventProp.name, holder, dispatcher.coalescingKey).invoke(arg) }
         }
 
         holder
