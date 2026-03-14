@@ -1,0 +1,10 @@
+{
+  "platforms": [
+    "apple"
+  ],
+  "apple": {
+    "podspecPath": [
+      "./apple/ExpoModulesJSI.podspec"
+    ]
+  }
+}
