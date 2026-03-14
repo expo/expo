@@ -73,6 +73,7 @@ internal struct VideoTrack: Record, Equatable {
   @Field var averageBitrate: Int? = nil
   @Field var isSupported: Bool = true
   @Field var frameRate: Float? = nil
+  @Field var videoRange: VideoRange? = nil
 
   static func == (lhs: VideoTrack, rhs: VideoTrack) -> Bool {
     guard lhs.id != nil, rhs.id != nil else {
@@ -92,6 +93,7 @@ internal struct VideoTrack: Record, Equatable {
       averageBitrate = Int(bitrateFloat)
     }
 
+    let videoRange = VideoRange.from(videoRange: await assetTrack.avVideoRange)
     let peakBitrate = await assetTrack.getPeakBitrate()
 
     if let cgSize = try? await assetTrack.load(.naturalSize) {
@@ -106,7 +108,8 @@ internal struct VideoTrack: Record, Equatable {
       peakBitrate: peakBitrate,
       averageBitrate: averageBitrate,
       isSupported: supported,
-      frameRate: frameRate
+      frameRate: frameRate,
+      videoRange: videoRange
     )
   }
 
@@ -123,6 +126,7 @@ internal struct VideoTrack: Record, Equatable {
     let frameRate = videoAttributes.nominalFrameRate.map(Float.init)
     let peakBitrate = assetVariant.peakBitRate.map(Int.init)
     let averageBitrate = assetVariant.averageBitRate.map(Int.init)
+    let videoRange = VideoRange.from(videoRange: assetVariant.videoAttributes?.videoRange ?? .sdr)
 
     return VideoTrack(
       id: id,
@@ -133,7 +137,8 @@ internal struct VideoTrack: Record, Equatable {
       peakBitrate: peakBitrate,
       averageBitrate: averageBitrate,
       isSupported: isPlayable,
-      frameRate: frameRate
+      frameRate: frameRate,
+      videoRange: videoRange
     )
   }
 
@@ -166,6 +171,8 @@ internal struct VideoTrack: Record, Equatable {
     let id = idLine.trimmingCharacters(in: .whitespacesAndNewlines)
     let size = VideoSize(width: width, height: height)
     let mimeType = codecsToMimeType(codecs: details["CODECS"])
+    let videoRangeString = details["VIDEO-RANGE"]?.lowercased() ?? "sdr"
+    let videoRange = VideoRange(rawValue: videoRangeString ) ?? .sdr
     var peakBitrage: Int? = nil
     var averageBitrate: Int? = nil
     var frameRate: Float? = nil
@@ -191,7 +198,8 @@ internal struct VideoTrack: Record, Equatable {
       bitrate: bitrate,
       peakBitrate: peakBitrage,
       averageBitrate: averageBitrate,
-      frameRate: frameRate
+      frameRate: frameRate,
+      videoRange: videoRange
     )
   }
 
