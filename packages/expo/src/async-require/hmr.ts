@@ -92,9 +92,12 @@ const HMRClient = {
   },
 
   registerBundle(requestUrl: string) {
-    assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
     pendingEntryPoints.push(requestUrl);
-    registerBundleEntryPoints(hmrClient);
+    if (hmrClient) {
+      registerBundleEntryPoints(hmrClient);
+    }
+    // If hmrClient is not yet initialized, entry points will be
+    // processed when setup() calls registerBundleEntryPoints().
   },
 
   log(level: LogLevel, data: any[]) {
