@@ -551,6 +551,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/unversioned/sdk/router-ui/': '/versions/unversioned/sdk/router/ui/',
   '/versions/unversioned/sdk/router-native-tabs/': '/versions/unversioned/sdk/router/native-tabs/',
   '/versions/unversioned/sdk/router-split-view/': '/versions/unversioned/sdk/router/split-view/',
+  '/versions/v55.0.0/sdk/router-ui/': '/versions/v55.0.0/sdk/router/ui/',
+  '/versions/v55.0.0/sdk/router-native-tabs/': '/versions/v55.0.0/sdk/router/native-tabs/',
+  '/versions/v55.0.0/sdk/router-split-view/': '/versions/v55.0.0/sdk/router/split-view/',
+  '/versions/latest/sdk/router-ui/': '/versions/latest/sdk/router/ui/',
+  '/versions/latest/sdk/router-native-tabs/': '/versions/latest/sdk/router/native-tabs/',
+  '/versions/latest/sdk/router-split-view/': '/versions/latest/sdk/router/split-view/',
 
   // After merging get-started/introduction into get-started/create-a-project
   '/get-started/introduction/': '/get-started/create-a-project/',
