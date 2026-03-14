@@ -13,8 +13,14 @@ public struct Button: ExpoSwiftUI.View {
   public var body: some View {
     if let label = props.label {
       if let systemImage = props.systemImage {
-        SwiftUI.Button(label, systemImage: systemImage, role: props.role?.toNativeRole()) {
+        SwiftUI.Button(role: props.role?.toNativeRole(), action: {
           props.onButtonPress()
+        }) {
+          if UIImage(named: systemImage) != nil {
+            Label(label, image: systemImage)
+          } else {
+            Label(label, systemImage: systemImage)
+          }
         }
       } else {
         SwiftUI.Button(label, role: props.role?.toNativeRole()) {

@@ -33,6 +33,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Support custom SF Symbols from asset catalogs in `Button` by trying `UIImage(named:)` before `UIImage(systemName:)`. ([#43946](https://github.com/expo/expo/pull/43946) by [@chrism](https://github.com/chrism))
 - [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))
 - [Android] Fix touch events for RN views inside Compose BottomSheet. ([#43716](https://github.com/expo/expo/pull/43716) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `RNHostView` child parent related crash. ([#43691](https://github.com/expo/expo/pull/43691) by [@nishan](https://github.com/intergalacticspacehighway))
