@@ -132,13 +132,13 @@ Yarn Modern on EAS requires adding [`eas-build-pre-install` hook](/build-referen
 
 Requires installing Node.js. See [pnpm documentation](https://pnpm.io/installation) for installation instructions.
 
-By default, a project created with `create-expo-app` and pnpm uses [`node-linker`](https://pnpm.io/npmrc#node-linker) with its value set to `hoisted` to install dependencies.
+By default, a project created with `create-expo-app` and pnpm uses [`nodeLinker`](https://pnpm.io/settings#nodelinker) with its value set to `hoisted` to install dependencies.
 
-```ini .npmrc
-node-linker=hoisted
+```yaml pnpm-workspace.yaml
+nodeLinker: hoisted
 ```
 
-> **info** In **SDK 54** and later, Expo supports isolated installations, and you can delete the `node-linker` setting if you prefer to use isolated dependencies.
+> **info** In **SDK 54** and later, Expo supports isolated installations, and you can delete the `nodeLinker` setting if you prefer to use isolated dependencies.
 
 #### EAS installation
 
