@@ -417,6 +417,15 @@ Promise.all([
 
 The [`withExclusiveTransactionAsync()`](#withexclusivetransactionasynctask) function addresses this. Only queries that run within the scope function passed to `withExclusiveTransactionAsync()` will run within the actual SQL transaction.
 
+> **warning** `withExclusiveTransactionAsync()` opens a **new database connection** internally. Any per-connection state — such as `PRAGMA foreign_keys = ON` — set on your original database instance will **not** carry over to the transaction. If you rely on connection-specific PRAGMAs, you must re-execute them on the `txn` object at the beginning of your task callback:
+>
+> ```ts
+> await db.withExclusiveTransactionAsync(async (txn) => {
+>   await txn.execAsync('PRAGMA foreign_keys = ON');
+>   // ... your queries here
+> });
+> ```
+
 ### Executing PRAGMA queries
 
 ```js Executing PRAGMA queries
