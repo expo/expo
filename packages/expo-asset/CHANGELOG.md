@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for .glb model assets. ([#42495](https://github.com/expo/expo/pull/42495) by [@pchalupa](https://github.com/pchalupa))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
