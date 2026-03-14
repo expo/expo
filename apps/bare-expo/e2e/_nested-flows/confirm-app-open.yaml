@@ -1,16 +1,19 @@
 appId: dev.expo.Payments
 jsEngine: graaljs
 ---
-# Run once to approve the first time deep linking prompt on iOS
-# This runs before all tests (only on iOS), as some tests fail because the prompt is not confirmed
-# The tapOn is optional because the file is executed multiple times in CI, if it fails
+# Run once to approve the first time deep linking prompt on iOS.
+# This runs before all tests (only on iOS)
+# Once accepted, the dialog is permanently dismissed for the simulator.
 - openLink: bareexpo://apis
+- extendedWaitUntil:
+    visible: Open
+    timeout: 10000
 - tapOn:
-    text: 'Open'
+    text: Open
     optional: true
 # for good measure
 - stopApp: dev.expo.Payments
 - openLink: bareexpo://apis
 - tapOn:
-    text: 'Open'
+    text: Open
     optional: true
