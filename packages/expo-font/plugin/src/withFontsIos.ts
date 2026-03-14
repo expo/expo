@@ -8,6 +8,7 @@ import {
   withXcodeProject,
 } from 'expo/config-plugins';
 import path from 'path';
+import fs from 'fs';
 
 import { resolveFontPaths } from './utils';
 
@@ -21,9 +22,26 @@ function addFontsToTarget(config: ExpoConfig, fonts: string[]) {
   return withXcodeProject(config, async (config) => {
     const resolvedFonts = await resolveFontPaths(fonts, config.modRequest.projectRoot);
     const project = config.modResults;
+
     const platformProjectRoot = config.modRequest.platformProjectRoot;
-    IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
-    addResourceFile(project, platformProjectRoot, resolvedFonts);
+
+    if (!IOSConfig.XcodeUtils.isAppTargetUsingFileSystemSynchronizedGroups(project)) {
+      // TODO: Deprecate support for non-synchronized groups after SDK 55.
+      IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
+      addResourceFile(project, platformProjectRoot, resolvedFonts);
+    } else {
+      // Copy to app group
+      const fontsDirectory = path.join(
+        config.modRequest.platformProjectRoot,
+        config.modRequest.projectName!,
+        'fonts'
+      );
+      await fs.promises.mkdir(fontsDirectory, { recursive: true });
+      for (const font of resolvedFonts) {
+        const destPath = path.join(fontsDirectory, path.basename(font));
+        await fs.promises.copyFile(font, destPath);
+      }
+    }
     return config;
   });
 }

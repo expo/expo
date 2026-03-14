@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withFontsIos = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 const utils_1 = require("./utils");
 const withFontsIos = (config, fonts) => {
     config = addFontsToTarget(config, fonts);
@@ -18,8 +19,20 @@ function addFontsToTarget(config, fonts) {
         const resolvedFonts = await (0, utils_1.resolveFontPaths)(fonts, config.modRequest.projectRoot);
         const project = config.modResults;
         const platformProjectRoot = config.modRequest.platformProjectRoot;
-        config_plugins_1.IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
-        addResourceFile(project, platformProjectRoot, resolvedFonts);
+        if (!config_plugins_1.IOSConfig.XcodeUtils.isAppTargetUsingFileSystemSynchronizedGroups(project)) {
+            // TODO: Deprecate support for non-synchronized groups after SDK 55.
+            config_plugins_1.IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
+            addResourceFile(project, platformProjectRoot, resolvedFonts);
+        }
+        else {
+            // Copy to app group
+            const fontsDirectory = path_1.default.join(config.modRequest.platformProjectRoot, config.modRequest.projectName, 'fonts');
+            await fs_1.default.promises.mkdir(fontsDirectory, { recursive: true });
+            for (const font of resolvedFonts) {
+                const destPath = path_1.default.join(fontsDirectory, path_1.default.basename(font));
+                await fs_1.default.promises.copyFile(font, destPath);
+            }
+        }
         return config;
     });
 }

@@ -1,4 +1,11 @@
-import { resolveXcodeBuildSetting, sanitizedName } from '../Xcodeproj';
+import path from 'path';
+import xcode from 'xcode';
+
+import {
+  isAppTargetUsingFileSystemSynchronizedGroups,
+  resolveXcodeBuildSetting,
+  sanitizedName,
+} from '../Xcodeproj';
 
 describe(sanitizedName, () => {
   it(`formats basic name`, () => {
@@ -96,5 +103,25 @@ describe(resolveXcodeBuildSetting, () => {
         (setting) => ({ PRODUCT_NAME: 'foo_-bar' })[setting]
       )
     ).toBe('org.reactjs.native.example.foo--bar');
+  });
+});
+
+describe(isAppTargetUsingFileSystemSynchronizedGroups, () => {
+  const fixturesPath = path.join(__dirname, '../../__tests__/fixtures');
+
+  it(`returns true for modern template with fileSystemSynchronizedGroups`, () => {
+    const projectPath = path.join(fixturesPath, 'project-modern-template.pbxproj');
+    const project = xcode.project(projectPath);
+    project.parseSync();
+
+    expect(isAppTargetUsingFileSystemSynchronizedGroups(project)).toBe(true);
+  });
+
+  it(`returns false for legacy template without fileSystemSynchronizedGroups`, () => {
+    const projectPath = path.join(fixturesPath, 'project-multitarget.pbxproj');
+    const project = xcode.project(projectPath);
+    project.parseSync();
+
+    expect(isAppTargetUsingFileSystemSynchronizedGroups(project)).toBe(false);
   });
 });
