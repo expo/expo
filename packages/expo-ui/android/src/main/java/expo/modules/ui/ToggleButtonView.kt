@@ -14,6 +14,7 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -23,7 +24,8 @@ data class ToggleButtonProps(
   val variant: String = "default",
   val color: Color? = null,
   val disabled: Boolean = false,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onCheckedChange: ComposeEventDispatcher<ToggleButtonValueChangeEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 data class ToggleButtonValueChangeEvent(
@@ -32,8 +34,7 @@ data class ToggleButtonValueChangeEvent(
 
 @Composable
 fun FunctionalComposableScope.ToggleButtonContent(
-  props: ToggleButtonProps,
-  onCheckedChange: (ToggleButtonValueChangeEvent) -> Unit
+  props: ToggleButtonProps
 ) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
@@ -58,7 +59,7 @@ fun FunctionalComposableScope.ToggleButtonContent(
     "icon" -> {
       IconToggleButton(
         checked = props.checked,
-        onCheckedChange = { onCheckedChange(ToggleButtonValueChangeEvent(it)) },
+        onCheckedChange = { props.onCheckedChange(ToggleButtonValueChangeEvent(it)) },
         enabled = !props.disabled,
         modifier = modifier,
         content = content
@@ -67,7 +68,7 @@ fun FunctionalComposableScope.ToggleButtonContent(
     "filledIcon" -> {
       FilledIconToggleButton(
         checked = props.checked,
-        onCheckedChange = { onCheckedChange(ToggleButtonValueChangeEvent(it)) },
+        onCheckedChange = { props.onCheckedChange(ToggleButtonValueChangeEvent(it)) },
         enabled = !props.disabled,
         modifier = modifier,
         content = content
@@ -76,7 +77,7 @@ fun FunctionalComposableScope.ToggleButtonContent(
     "outlinedIcon" -> {
       OutlinedIconToggleButton(
         checked = props.checked,
-        onCheckedChange = { onCheckedChange(ToggleButtonValueChangeEvent(it)) },
+        onCheckedChange = { props.onCheckedChange(ToggleButtonValueChangeEvent(it)) },
         enabled = !props.disabled,
         modifier = modifier,
         content = content
@@ -85,7 +86,7 @@ fun FunctionalComposableScope.ToggleButtonContent(
     else -> {
       ToggleButton(
         checked = props.checked,
-        onCheckedChange = { onCheckedChange(ToggleButtonValueChangeEvent(it)) },
+        onCheckedChange = { props.onCheckedChange(ToggleButtonValueChangeEvent(it)) },
         enabled = !props.disabled,
         modifier = modifier,
         colors = ToggleButtonDefaults.toggleButtonColors(),

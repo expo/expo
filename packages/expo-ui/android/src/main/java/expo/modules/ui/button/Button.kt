@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
@@ -50,16 +51,16 @@ data class ButtonProps(
   val enabled: Boolean = true,
   val contentPadding: ContentPaddingRecord? = null,
   val shape: ShapeRecord? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onButtonPressed: ComposeEventDispatcher<ButtonPressedEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.ButtonContent(
-  props: ButtonProps,
-  onClick: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   androidx.compose.material3.Button(
-    onClick = { onClick(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     contentPadding = props.contentPadding?.toPaddingValues() ?: ButtonDefaults.ContentPadding,
     colors = ButtonDefaults.buttonColors(
@@ -77,11 +78,10 @@ fun FunctionalComposableScope.ButtonContent(
 
 @Composable
 fun FunctionalComposableScope.FilledTonalButtonContent(
-  props: ButtonProps,
-  onClick: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   FilledTonalButton(
-    onClick = { onClick(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     contentPadding = props.contentPadding?.toPaddingValues() ?: ButtonDefaults.ContentPadding,
     colors = ButtonDefaults.filledTonalButtonColors(
@@ -99,11 +99,10 @@ fun FunctionalComposableScope.FilledTonalButtonContent(
 
 @Composable
 fun FunctionalComposableScope.OutlinedButtonContent(
-  props: ButtonProps,
-  onClick: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   OutlinedButton(
-    onClick = { onClick(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     contentPadding = props.contentPadding?.toPaddingValues() ?: ButtonDefaults.ContentPadding,
     colors = ButtonDefaults.outlinedButtonColors(
@@ -121,11 +120,10 @@ fun FunctionalComposableScope.OutlinedButtonContent(
 
 @Composable
 fun FunctionalComposableScope.ElevatedButtonContent(
-  props: ButtonProps,
-  onClick: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   ElevatedButton(
-    onClick = { onClick(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     contentPadding = props.contentPadding?.toPaddingValues() ?: ButtonDefaults.ContentPadding,
     colors = ButtonDefaults.elevatedButtonColors(
@@ -143,11 +141,10 @@ fun FunctionalComposableScope.ElevatedButtonContent(
 
 @Composable
 fun FunctionalComposableScope.TextButtonContent(
-  props: ButtonProps,
-  onClick: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   TextButton(
-    onClick = { onClick(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     contentPadding = props.contentPadding?.toPaddingValues() ?: ButtonDefaults.TextButtonContentPadding,
     colors = ButtonDefaults.textButtonColors(

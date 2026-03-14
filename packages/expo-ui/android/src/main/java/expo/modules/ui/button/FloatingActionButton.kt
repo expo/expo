@@ -9,6 +9,7 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
@@ -27,14 +28,15 @@ data class FloatingActionButtonProps(
   val variant: FloatingActionButtonVariant = FloatingActionButtonVariant.MEDIUM,
   val expanded: Boolean = true,
   val containerColor: Color? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onButtonPressed: ComposeEventDispatcher<Unit> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.FloatingActionButtonContent(
-  props: FloatingActionButtonProps,
-  onClick: () -> Unit
+  props: FloatingActionButtonProps
 ) {
+  val onClick = { props.onButtonPressed(Unit) }
   val containerColor = props.containerColor?.compose ?: FloatingActionButtonDefaults.containerColor
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 

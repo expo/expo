@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
@@ -91,7 +92,8 @@ data class SwitchProps(
   val enabled: Boolean = true,
   val variant: String = "switch",
   val elementColors: SwitchColors = SwitchColors(),
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onValueChange: ComposeEventDispatcher<ValueChangeEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
@@ -183,15 +185,14 @@ fun ThemedHybridSwitch(
 
 @Composable
 fun FunctionalComposableScope.SwitchContent(
-  props: SwitchProps,
-  onValueChange: (ValueChangeEvent) -> Unit
+  props: SwitchProps
 ) {
   val thumbContentSlotView = findChildSlotView(view, "thumbContent")
 
   ThemedHybridSwitch(
     props.variant,
     props.value,
-    { newChecked -> onValueChange(ValueChangeEvent(newChecked)) },
+    { newChecked -> props.onValueChange(ValueChangeEvent(newChecked)) },
     props.elementColors,
     ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     props.enabled,

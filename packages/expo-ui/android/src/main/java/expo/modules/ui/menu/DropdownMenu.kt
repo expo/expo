@@ -13,8 +13,7 @@ import expo.modules.ui.isSlotView
 
 @Composable
 fun FunctionalComposableScope.DropdownMenuContent(
-  props: DropdownMenuProps,
-  onDismissRequest: () -> Unit
+  props: DropdownMenuProps
 ) {
   val itemsSlotView = findChildSlotView(view, "items")
 
@@ -25,7 +24,7 @@ fun FunctionalComposableScope.DropdownMenuContent(
     DropdownMenu(
       containerColor = props.color?.composeOrNull ?: MenuDefaults.containerColor,
       expanded = props.expanded,
-      onDismissRequest = onDismissRequest
+      onDismissRequest = { props.onDismissRequest(Unit) }
     ) {
       itemsSlotView?.let {
         with(ComposableScope()) {

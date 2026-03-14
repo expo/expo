@@ -10,15 +10,17 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
 data class SearchBarProps(
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onSearch: ComposeEventDispatcher<GenericEventPayload1<String>> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
-fun FunctionalComposableScope.SearchBarContent(props: SearchBarProps, onSearch: (GenericEventPayload1<String>) -> Unit) {
+fun FunctionalComposableScope.SearchBarContent(props: SearchBarProps) {
   val searchBarState = rememberSearchBarState()
   val textFieldState = rememberTextFieldState()
 
@@ -27,7 +29,7 @@ fun FunctionalComposableScope.SearchBarContent(props: SearchBarProps, onSearch: 
       SearchBarDefaults.InputField(
         searchBarState = searchBarState,
         textFieldState = textFieldState,
-        onSearch = { value -> onSearch.invoke(GenericEventPayload1(value)) },
+        onSearch = { value -> props.onSearch(GenericEventPayload1(value)) },
         placeholder = {
           Children(ComposableScope(), filter = { isSlotWithName(it, "placeholder") })
         }

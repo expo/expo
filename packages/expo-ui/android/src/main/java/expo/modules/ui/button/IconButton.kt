@@ -14,12 +14,11 @@ import expo.modules.ui.shapeFromShapeRecord
 
 @Composable
 fun FunctionalComposableScope.IconButtonContent(
-  props: ButtonProps,
-  onButtonPressed: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   val shape = shapeFromShapeRecord(props.shape)
   IconButton(
-    onClick = { onButtonPressed(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     colors = IconButtonDefaults.iconButtonColors(
       containerColor = props.colors.containerColor.compose,
@@ -36,12 +35,11 @@ fun FunctionalComposableScope.IconButtonContent(
 
 @Composable
 fun FunctionalComposableScope.FilledIconButtonContent(
-  props: ButtonProps,
-  onButtonPressed: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   val shape = shapeFromShapeRecord(props.shape)
   FilledIconButton(
-    onClick = { onButtonPressed(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     colors = IconButtonDefaults.filledIconButtonColors(
       containerColor = props.colors.containerColor.compose,
@@ -58,12 +56,11 @@ fun FunctionalComposableScope.FilledIconButtonContent(
 
 @Composable
 fun FunctionalComposableScope.FilledTonalIconButtonContent(
-  props: ButtonProps,
-  onButtonPressed: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   val shape = shapeFromShapeRecord(props.shape)
   FilledTonalIconButton(
-    onClick = { onButtonPressed(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     colors = IconButtonDefaults.filledTonalIconButtonColors(
       containerColor = props.colors.containerColor.compose,
@@ -80,12 +77,11 @@ fun FunctionalComposableScope.FilledTonalIconButtonContent(
 
 @Composable
 fun FunctionalComposableScope.OutlinedIconButtonContent(
-  props: ButtonProps,
-  onButtonPressed: (ButtonPressedEvent) -> Unit
+  props: ButtonProps
 ) {
   val shape = shapeFromShapeRecord(props.shape)
   OutlinedIconButton(
-    onClick = { onButtonPressed(ButtonPressedEvent()) },
+    onClick = { props.onButtonPressed(ButtonPressedEvent()) },
     enabled = props.enabled,
     colors = IconButtonDefaults.outlinedIconButtonColors(
       containerColor = props.colors.containerColor.compose,

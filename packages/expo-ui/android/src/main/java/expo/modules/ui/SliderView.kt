@@ -6,15 +6,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -42,7 +42,9 @@ data class SliderProps(
   val steps: Int = 0,
   val enabled: Boolean = true,
   val colors: SliderColors = SliderColors(),
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onValueChange: ComposeEventDispatcher<SliderValueChangedEvent> = ComposeEventDispatcher(),
+  val onValueChangeFinished: ComposeEventDispatcher<Unit> = ComposeEventDispatcher()
 ) : ComposeProps
 
 data class SliderValueChangedEvent(
@@ -52,8 +54,6 @@ data class SliderValueChangedEvent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FunctionalComposableScope.SliderContent(props: SliderProps) {
-  val onValueChange by remember { this@SliderContent.EventDispatcher<SliderValueChangedEvent>() }
-  val onValueChangeFinished by remember { this@SliderContent.EventDispatcher<Unit>() }
   val interactionSource = remember { MutableInteractionSource() }
 
   var localValue by remember { mutableFloatStateOf(props.value.coerceIn(props.min, props.max)) }
@@ -88,11 +88,11 @@ fun FunctionalComposableScope.SliderContent(props: SliderProps) {
     onValueChange = {
       isDragging = true
       localValue = it
-      onValueChange(SliderValueChangedEvent(it))
+      props.onValueChange(SliderValueChangedEvent(it))
     },
     onValueChangeFinished = {
       isDragging = false
-      onValueChangeFinished(Unit)
+      props.onValueChangeFinished(Unit)
     },
     colors = sliderColors,
     thumb = { sliderState ->

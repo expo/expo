@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
@@ -30,13 +31,13 @@ class DropdownMenuItemColors : Record {
 data class DropdownMenuItemProps(
   val enabled: Boolean = true,
   val elementColors: DropdownMenuItemColors = DropdownMenuItemColors(),
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onItemPressed: ComposeEventDispatcher<ItemPressedEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.DropdownMenuItemContent(
-  props: DropdownMenuItemProps,
-  onItemPressed: (ItemPressedEvent) -> Unit
+  props: DropdownMenuItemProps
 ) {
   val textSlotView = findChildSlotView(view, "text")
   val leadingSlotView = findChildSlotView(view, "leadingIcon")
@@ -64,7 +65,7 @@ fun FunctionalComposableScope.DropdownMenuItemContent(
       { with(ComposableScope()) { with(it) { Content() } } }
     },
     onClick = {
-      onItemPressed(ItemPressedEvent())
+      props.onItemPressed(ItemPressedEvent())
     }
   )
 }

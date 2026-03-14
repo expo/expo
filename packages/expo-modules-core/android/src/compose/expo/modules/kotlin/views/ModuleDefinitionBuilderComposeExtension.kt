@@ -8,10 +8,13 @@ import expo.modules.kotlin.modules.InternalModuleDefinitionBuilder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.viewevent.ViewEvent
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.typeOf
 
 /**
@@ -44,11 +47,9 @@ open class ModuleDefinitionBuilderWithCompose(
   @JvmName("ComposeView")
   inline fun <reified Props : ComposeProps> View(
     name: String,
-    events: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
     noinline viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
   ) {
     val definitionBuilder = ComposeViewFunctionDefinitionBuilder(name, Props::class, viewFunction)
-    events.invoke(definitionBuilder)
     registerViewDefinition(definitionBuilder.build())
   }
 }
@@ -59,9 +60,15 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
   val propsClass: KClass<Props>,
   val viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
 ) {
-  private var callbacksDefinition: CallbacksDefinition = CallbacksDefinition(arrayOf(GLOBAL_EVENT_NAME))
-
   fun build(): ViewManagerDefinition {
+    val allProperties = propsClass.memberProperties
+    val (eventProperties, regularProperties) = allProperties.partition { prop ->
+      prop.returnType.classifier == ComposeEventDispatcher::class
+    }
+
+    val eventNames = eventProperties.map { it.name }.toTypedArray()
+    val callbacksDefinition = CallbacksDefinition(arrayOf(GLOBAL_EVENT_NAME, *eventNames))
+
     return ViewManagerDefinition(
       name = name,
       viewFactory = { context, appContext ->
@@ -70,33 +77,26 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
         } catch (e: Exception) {
           throw IllegalStateException("Could not instantiate props instance of $name compose component.", e)
         }
-        ComposeFunctionHolder(context, appContext, name, viewFunction, instance)
+        val holder = ComposeFunctionHolder(context, appContext, name, viewFunction, instance)
+
+        // Wire each ComposeEventDispatcher to a ViewEvent that emits through React Native
+        for (eventProp in eventProperties) {
+          @Suppress("UNCHECKED_CAST")
+          val property = eventProp as KProperty1<Props, ComposeEventDispatcher<Any?>>
+          property.isAccessible = true
+          val dispatcher = property.get(instance)
+          dispatcher.callback = { arg -> ViewEvent(eventProp.name, holder, dispatcher.coalescingKey).invoke(arg) }
+        }
+
+        holder
       },
       callbacksDefinition = callbacksDefinition,
       viewType = ComposeFunctionHolder::class.java,
-      props = propsClass.memberProperties.associate { prop ->
+      // Only register regular (non-event) properties as props
+      props = regularProperties.associate { prop ->
         val kType = prop.returnType
         prop.name to ComposeViewProp(prop.name, AnyType(kType), prop)
       }
-    )
-  }
-
-  /**
-   * Defines prop names that should be treated as callbacks.
-   */
-  fun Events(vararg callbacks: String) {
-    callbacksDefinition = CallbacksDefinition(
-      arrayOf(GLOBAL_EVENT_NAME, *callbacks)
-    )
-  }
-
-  /**
-   * Defines prop names that should be treated as callbacks.
-   */
-  @JvmName("EventsWithArray")
-  fun Events(callbacks: Array<String>) {
-    callbacksDefinition = CallbacksDefinition(
-      arrayOf(GLOBAL_EVENT_NAME, *callbacks)
     )
   }
 }

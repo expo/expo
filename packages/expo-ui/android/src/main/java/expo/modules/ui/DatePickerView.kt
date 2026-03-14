@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.util.Calendar
@@ -111,7 +112,8 @@ data class DateTimePickerProps(
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
   val selectableDates: SelectableDatesRecord? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onDateSelected: ComposeEventDispatcher<DatePickerResult> = ComposeEventDispatcher()
 ) : ComposeProps
 
 data class DatePickerDialogProps(
@@ -123,6 +125,8 @@ data class DatePickerDialogProps(
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
   val selectableDates: SelectableDatesRecord? = null,
+  val onDateSelected: ComposeEventDispatcher<DatePickerResult> = ComposeEventDispatcher(),
+  val onDismissRequest: ComposeEventDispatcher<Unit> = ComposeEventDispatcher()
 ) : ComposeProps
 
 data class TimePickerDialogProps(
@@ -132,6 +136,8 @@ data class TimePickerDialogProps(
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
+  val onDateSelected: ComposeEventDispatcher<DatePickerResult> = ComposeEventDispatcher(),
+  val onDismissRequest: ComposeEventDispatcher<Unit> = ComposeEventDispatcher()
 ) : ComposeProps
 
 private fun toUtcDayMillis(localMillis: Long): Long {
@@ -245,7 +251,9 @@ fun buildTimePickerColors(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (DatePickerResult) -> Unit, onDismissRequest: () -> Unit) {
+fun ExpoDatePickerDialogContent(props: DatePickerDialogProps) {
+  val onDateSelected = props.onDateSelected
+  val onDismissRequest = { props.onDismissRequest(Unit) }
   val locale = LocalConfiguration.current.locales[0]
   val variant = props.variant.toDisplayMode()
   val selectableDates = rememberSelectableDates(props.selectableDates)
@@ -289,7 +297,9 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (DatePickerResult) -> Unit, onDismissRequest: () -> Unit) {
+fun ExpoTimePickerDialogContent(props: TimePickerDialogProps) {
+  val onDateSelected = props.onDateSelected
+  val onDismissRequest = { props.onDismissRequest(Unit) }
   val initialDate = props.initialDate
 
   val state = remember(initialDate, props.is24Hour) {
@@ -338,15 +348,15 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FunctionalComposableScope.DateTimePickerContent(props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
+fun FunctionalComposableScope.DateTimePickerContent(props: DateTimePickerProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   if (props.displayedComponents == DisplayedComponents.HOUR_AND_MINUTE) {
     ExpoTimePicker(props = props, modifier = modifier) {
-      onDateSelected(it)
+      props.onDateSelected(it)
     }
   } else {
     ExpoDatePicker(props = props, modifier = modifier) {
-      onDateSelected(it)
+      props.onDateSelected(it)
     }
   }
 }
