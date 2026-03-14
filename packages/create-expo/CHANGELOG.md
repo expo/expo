@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ignore unrs-resolver build with pnpm ([#43827](https://github.com/expo/expo/pull/43827) by [@karlhorky](https://github.com/karlhorky))
+
 ### 💡 Others
 
 ## 3.6.6 — 2026-02-25
