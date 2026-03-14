@@ -48,6 +48,10 @@ describe('export-no-ssg', () => {
     expect(files).toContain('server/_expo/functions/api/externals+api.js');
     expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
 
+    // API route with asset import
+    expect(files).toContain('server/_expo/functions/api/with-asset+api.js');
+    expect(files).toContain('server/_expo/functions/api/with-asset+api.js.map');
+
     // TODO: We shouldn't export this
     expect(files).toContain('server/_expo/functions/api/empty+api.js');
     expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
@@ -77,5 +81,19 @@ describe('export-no-ssg', () => {
     expect(
       await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'))
     ).toMatchSnapshot();
+  });
+
+  it('exports assets referenced by API routes', async () => {
+    const files = findProjectFiles(outputDir);
+
+    // Assets from API routes should be exported to the client folder
+    // The icon.png asset is imported in api/with-asset+api.ts
+    // Asset format: client/assets/assets/<name>.<hash>.<ext>
+    const assetFiles = files.filter((f) => f.startsWith('client/assets/'));
+    expect(assetFiles.length).toBeGreaterThan(0);
+
+    // The icon.png from the API route should be exported with a hash-based filename
+    const hasIconAsset = assetFiles.some((f) => f.includes('icon.') && f.endsWith('.png'));
+    expect(hasIconAsset).toBe(true);
   });
 });
