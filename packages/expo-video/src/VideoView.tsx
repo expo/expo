@@ -33,8 +33,29 @@ export class VideoView extends PureComponent<VideoViewProps> {
   }
 
   /**
-   * Exits fullscreen mode.
-   */
+    * Exits fullscreen mode.
+    *
+    * > **Note:** On Android the JS runtime is paused when the `VideoView` is in fullscreen mode. Because of this `exitFullscreen` will only work when called from a native listener - see the example below.
+    *
+    * @example
+    * ```tsx
+    *   const ref = useRef<VideoView>()
+    *   const player = useVideoPlayer(source)
+    *
+    *   // This will work on all platforms
+    *   useEventListener(player, 'playToEnd', () => {
+    *     ref.current?.exitFullscreen();
+    *   });
+    *
+    *   // This will not work on Android
+    *   const enterAndExit = useCallback(() => {
+    *     setTimeout(() => {
+    *       ref.current?.exitFullscreen()
+    *     }, 5000)
+    *     ref.current?.enterFullscreen()
+    *   },[])
+    * ```
+    */
   async exitFullscreen(): Promise<void> {
     return await this.nativeRef.current?.exitFullscreen();
   }
