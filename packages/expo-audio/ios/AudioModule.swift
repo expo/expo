@@ -277,8 +277,8 @@ public class AudioModule: Module {
         }
       }
 
-      AsyncFunction("seekTo") { (player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
-        await player.seekTo(
+      Function("seekTo") { (player: AudioPlayer, seconds: Double, toleranceMillisBefore: Double?, toleranceMillisAfter: Double?) in
+        player.seekTo(
           seconds: seconds,
           toleranceMillisBefore: toleranceMillisBefore,
           toleranceMillisAfter: toleranceMillisAfter
