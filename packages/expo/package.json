@@ -103,6 +103,7 @@
   "devDependencies": {
     "@expo/dom-webview": "^55.0.3",
     "@expo/metro-runtime": "^55.0.6",
+    "@types/ungap__structured-clone": "^1.2.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/react-test-renderer": "~19.1.0",
