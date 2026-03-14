@@ -1,4 +1,4 @@
-import type { WebSocketBackingStore } from './WebSocketBackingStore';
+import type { WebSocketBackingStore } from './WebSocketBackingStore.js';
 
 /**
  * The connection info for devtools plugins client.

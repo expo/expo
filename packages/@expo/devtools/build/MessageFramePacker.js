@@ -29,7 +29,7 @@
  *   4. Payload (Variable length):
  *      - The actual payload data, which can vary in type and length depending on the PayloadType.
  */
-import { blobToArrayBufferAsync } from './utils/blobUtils';
+import { blobToArrayBufferAsync } from './utils/blobUtils.js';
 var PayloadTypeIndicator;
 (function (PayloadTypeIndicator) {
     PayloadTypeIndicator[PayloadTypeIndicator["Uint8Array"] = 1] = "Uint8Array";
