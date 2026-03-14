@@ -1,4 +1,4 @@
-import type { RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/internal/routing';
 import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
 
 /**

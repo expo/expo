@@ -1,4 +1,4 @@
-import { getMockConfig } from 'expo-router/build/testing-library/mock-config';
+import { getMockConfig } from 'expo-router/internal/testing';
 
 import {
   getHtmlFiles,
@@ -6,7 +6,7 @@ import {
   getFilesToExportFromServerAsync,
 } from '../exportStaticAsync';
 
-jest.mock('expo-router/build/views/Navigator', () => ({}));
+jest.mock('expo-router/internal/views/Navigator', () => ({}));
 jest.mock('expo-constants', () => ({}));
 jest.mock('react-native', () => ({}));
 jest.mock('expo-linking', () => ({}));

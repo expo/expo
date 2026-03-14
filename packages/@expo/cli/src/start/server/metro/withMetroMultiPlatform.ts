@@ -670,8 +670,8 @@ export function withExtendedResolver(
 
       if (env.EXPO_UNSTABLE_WEB_MODAL) {
         const webModalModule = doReplace(
-          'expo-router/build/layouts/_web-modal.js',
-          'expo-router/build/layouts/ExperimentalModalStack.js'
+          'expo-router/internal/layouts/WebModal.js',
+          'expo-router/internal/layouts/ExperimentalModalStack.js'
         );
         if (webModalModule) {
           debug('Using `_unstable-web-modal` implementation.');

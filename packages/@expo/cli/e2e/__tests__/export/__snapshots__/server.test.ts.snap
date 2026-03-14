@@ -124,7 +124,7 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
-      "file": "expo-router/build/views/Sitemap.js",
+      "file": "expo-router/internal/views/Sitemap.js",
       "generated": true,
       "namedRegex": "^/_sitemap(?:/)?$",
       "page": "/_sitemap",
@@ -298,7 +298,7 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
-      "file": "expo-router/build/views/Sitemap.js",
+      "file": "expo-router/internal/views/Sitemap.js",
       "generated": true,
       "namedRegex": "^/_sitemap(?:/)?$",
       "page": "/_sitemap",
