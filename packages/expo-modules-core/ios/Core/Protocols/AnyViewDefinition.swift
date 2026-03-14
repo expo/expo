@@ -37,6 +37,7 @@ public protocol AnyViewDefinition: Sendable {
   /**
    Calls defined lifecycle methods with the given type.
    */
+  @MainActor
   func callLifecycleMethods(withType type: ViewLifecycleMethodType, forView view: AppleView)
 
   /**

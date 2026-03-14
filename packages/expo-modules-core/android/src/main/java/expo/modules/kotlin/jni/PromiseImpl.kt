@@ -54,7 +54,7 @@ class PromiseImpl @DoNotStrip internal constructor(
   }
 
   // Copy of the reject method from [com.facebook.react.bridge.PromiseImpl]
-  override fun reject(code: String, message: String?, cause: Throwable?) = checkIfWasSettled {
+  override fun reject(code: String?, message: String?, cause: Throwable?) = checkIfWasSettled {
     // TODO(@lukmccall): Add information about the stack trace to the error message
     callback.invoke(code, message ?: cause?.message ?: "unknown")
   }

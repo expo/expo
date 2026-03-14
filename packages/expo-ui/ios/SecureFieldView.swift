@@ -46,7 +46,6 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
       props.placeholder,
       text: $textManager.text
     )
-      .modifier(UIBaseViewModifier(props: props))
       .fixedSize(horizontal: false, vertical: true)
       .focused($isFocused)
       .onSubmit({

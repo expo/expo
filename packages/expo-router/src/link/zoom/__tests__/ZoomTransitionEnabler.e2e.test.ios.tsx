@@ -1,11 +1,13 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/Stack';
 import { renderRouter } from '../../../testing-library';
 import { Pressable } from '../../../views/Pressable';
 import { Link } from '../../Link';
+import { ZoomTransitionTargetContext } from '../zoom-transition-context';
 
 jest.mock('../../preview/native', () => {
   const { View } = require('react-native');
@@ -160,5 +162,97 @@ describe('ZoomTransitionEnabler with gestureEnabled', () => {
 
     act(() => fireEvent.press(toggleButton));
     expect(getLastDismissalBoundsRect()).toBeNull();
+  });
+});
+
+function navigateViaPreviewZoomLink() {
+  // Simulate preview navigation: navigate with __internal__PreviewKey which sets
+  // INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME on the route params.
+  // The zoom source ID is included as a param so the stack's getRehydratedState
+  // will attach the screen ID automatically.
+  act(() =>
+    router.navigate(
+      {
+        pathname: '/dest',
+        params: {
+          __internal_expo_router_zoom_transition_source_id: 'preview-source',
+        },
+      },
+      { __internal__PreviewKey: 'preview-key-123' }
+    )
+  );
+  expect(screen.getByTestId('dest-page')).toBeVisible();
+}
+
+describe('hasEnabler tracking', () => {
+  let onHasEnabler: jest.Mock;
+
+  function DestWithEnablerTracker({ onHasEnabler }: { onHasEnabler: (v: boolean) => void }) {
+    const { hasEnabler } = use(ZoomTransitionTargetContext);
+    onHasEnabler(hasEnabler);
+    return <View testID="dest-page" />;
+  }
+
+  beforeEach(() => {
+    MockedLinkZoomTransitionEnabler.mockClear();
+    onHasEnabler = jest.fn();
+  });
+
+  it('hasEnabler is true in a screen with zoom transition', () => {
+    renderRouter({
+      index: IndexWithZoomLink,
+      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
+    });
+
+    navigateViaZoomLink();
+    expect(onHasEnabler).toHaveBeenCalledWith(true);
+  });
+
+  it('hasEnabler is true in a modal destination without preview', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="dest" options={{ presentation: 'modal' }} />
+        </Stack>
+      ),
+      index: IndexWithZoomLink,
+      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
+    });
+
+    navigateViaZoomLink();
+    expect(onHasEnabler).toHaveBeenCalledWith(true);
+  });
+
+  it('hasEnabler is true in a modal destination with preview', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="dest" options={{ presentation: 'modal' }} />
+        </Stack>
+      ),
+      index: () => <View testID="index-page" />,
+      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
+    });
+
+    navigateViaPreviewZoomLink();
+    expect(onHasEnabler).toHaveBeenCalledWith(true);
+  });
+
+  it('hasEnabler is false when non-modal and preview', () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    renderRouter({
+      index: () => <View testID="index-page" />,
+      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
+    });
+
+    navigateViaPreviewZoomLink();
+    // Non-modal + preview navigation should warn and not enable zoom transition
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Zoom transition with link preview is only supported for screens presented modally'
+      )
+    );
+    expect(onHasEnabler).not.toHaveBeenCalledWith(true);
+    consoleWarnSpy.mockRestore();
   });
 });

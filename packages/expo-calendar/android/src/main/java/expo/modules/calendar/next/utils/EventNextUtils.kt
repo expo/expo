@@ -38,13 +38,13 @@ fun dateToMilliseconds(stringValue: String?): Long? {
   return cal.timeInMillis
 }
 
-fun removeRemindersForEvent(contentResolver: ContentResolver, eventID: Int) {
+fun removeRemindersForEvent(contentResolver: ContentResolver, eventID: Long) {
   val projection = arrayOf(
     CalendarContract.Reminders._ID
   )
   val cursor = CalendarContract.Reminders.query(
     contentResolver,
-    eventID.toLong(),
+    eventID,
     projection
   )
 

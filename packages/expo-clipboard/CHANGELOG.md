@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Removed deprecated `setString` function. Use `setStringAsync` instead. ([#41758](https://github.com/expo/expo/pull/41758) by [@barthap](https://github.com/barthap))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.7 — 2026-02-20
 

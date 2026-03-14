@@ -78,8 +78,6 @@ class BarcodeScannerUtils {
       if !value.isEmpty && value.hasPrefix("0") {
         result["data"] = value.dropFirst()
       }
-    } else {
-      result["data"] = item.payloadStringValue
     }
 
     let bounds = item.bounds

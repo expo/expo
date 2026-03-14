@@ -207,34 +207,28 @@ describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
     expect(result.onPress).toBe(onPress);
   });
 
-  describe('icon warnings', () => {
-    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    beforeEach(() => {
-      consoleSpy.mockClear();
-    });
-
-    afterAll(() => {
-      consoleSpy.mockRestore();
-    });
-
-    it('warns for non-SF Symbol icons', () => {
-      convertStackToolbarMenuActionPropsToRNHeaderItem({
+  describe('image icons', () => {
+    it('converts image icon to imageSource format by default', () => {
+      const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
         icon: { uri: 'https://example.com/icon.png' },
       });
 
-      // TODO: https://linear.app/expo/issue/ENG-19155/support-images-in-submenus-and-actions-in-react-native-screens
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'When Icon is used inside Stack.Toolbar.MenuAction, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
-      );
+      expect(result.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'https://example.com/icon.png' },
+      });
     });
 
-    it('does not warn for SF Symbol icons', () => {
-      convertStackToolbarMenuActionPropsToRNHeaderItem({
-        icon: 'star.fill',
+    it('converts image icon to templateSource format when iconRenderingMode is template', () => {
+      const result = convertStackToolbarMenuActionPropsToRNHeaderItem({
+        icon: { uri: 'https://example.com/icon.png' },
+        iconRenderingMode: 'template',
       });
 
-      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(result.icon).toEqual({
+        type: 'templateSource',
+        templateSource: { uri: 'https://example.com/icon.png' },
+      });
     });
   });
 });
@@ -404,47 +398,8 @@ describe('submenu conversion', () => {
     expect(result?.menu.items).toHaveLength(0);
   });
 
-  describe('submenu icon warnings', () => {
-    let consoleSpy: jest.SpyInstance;
-
-    beforeEach(() => {
-      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      consoleSpy.mockRestore();
-    });
-
-    it('warns for non-SF Symbol icons in submenu', () => {
-      convertStackToolbarMenuPropsToRNHeaderItem({
-        children: (
-          <StackToolbarMenu title="Submenu" icon={{ uri: 'https://example.com/icon.png' }}>
-            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
-          </StackToolbarMenu>
-        ),
-      });
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
-      );
-    });
-
-    it('warns for xcasset icons in submenu', () => {
-      convertStackToolbarMenuPropsToRNHeaderItem({
-        children: (
-          <StackToolbarMenu title="Submenu">
-            <StackToolbarIcon xcasset="custom-icon" />
-            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
-          </StackToolbarMenu>
-        ),
-      });
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'When Icon is used inside Stack.Toolbar.Menu used as a submenu, only sfSymbol icons are supported. This is a limitation of React Native Screens.'
-      );
-    });
-
-    it('accepts SF Symbol icons in submenu', () => {
+  describe('submenu icons', () => {
+    it('passes SF Symbol icons in submenu', () => {
       const result = convertStackToolbarMenuPropsToRNHeaderItem({
         children: (
           <StackToolbarMenu title="Submenu" icon="folder.fill">
@@ -453,9 +408,40 @@ describe('submenu conversion', () => {
         ),
       });
 
-      expect(consoleSpy).not.toHaveBeenCalled();
       expect(result?.menu.items[0]).toMatchObject({
         icon: { type: 'sfSymbol', name: 'folder.fill' },
+      });
+    });
+
+    it('converts image icons to imageSource format in submenu', () => {
+      const result = convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu" icon={{ uri: 'https://example.com/icon.png' }}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(result?.menu.items[0]).toMatchObject({
+        icon: {
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        },
+      });
+    });
+
+    it('converts xcasset icons in submenu to imageSource format', () => {
+      const result = convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu">
+            <StackToolbarIcon xcasset="custom-icon" />
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(result?.menu.items[0]).toMatchObject({
+        icon: { type: 'imageSource', imageSource: { uri: 'custom-icon' } },
       });
     });
   });

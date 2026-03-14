@@ -11,20 +11,25 @@ class BrownfieldTester: ObservableObject {
     private var listenerId: String?
     private var messageTimer: Timer?
     private var messageCounter = 0
+    private var stateListeners: [AnyCancellable?] = []
     
     // MARK: - Lifecycle Methods
     
     func start() {
         setupListener()
         startTimer()
+        setupStateListeners()
     }
     
     func stop() {
         if let listenerId = listenerId {
             BrownfieldMessaging.removeListener(id: listenerId)
         }
+
         messageTimer?.invalidate()
         messageTimer = nil
+
+        stateListeners.forEach { $0?.cancel() }
     }
     
     // MARK: - Private Logic
@@ -48,7 +53,52 @@ class BrownfieldTester: ObservableObject {
     private func startTimer() {
         messageTimer = Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { [weak self] _ in
             self?.sendMessage()
+            self?.setTime()
         }
+    }
+    
+    private func setupStateListeners() {
+        stateListeners.append(contentsOf: [
+            BrownfieldState.subscribe("number") { number in
+                if let cast = number as? Double {
+                    print("BrownfieldState \(cast)")
+                    if cast == 1 {
+                        BrownfieldState.set("number", 2)
+                    }
+                }
+            },
+            BrownfieldState.subscribe("string", as: String.self) { string in
+                print("BrownfieldState \(string)")
+                if string == "exex" {
+                  BrownfieldState.set("string", string + "po")
+                }
+            },
+            BrownfieldState.subscribe("boolean") { bool in
+                if let cast = bool as? Bool {
+                    print("BrownfieldState \(String(describing: bool))")
+                }
+            },
+            BrownfieldState.subscribe("array", as: [Any].self) { array in
+                print("BrownfieldState \(array)")
+                if array.count == 3 {
+                    var modified = array
+                    BrownfieldState.set("array", modified.append(contentsOf: [
+                        ["a": "b"],
+                        2.34,
+                    ]))
+                }
+            },
+            BrownfieldState.subscribe("object") { obj in
+                if let cast = obj as? [String: Any?] {
+                    print("BrownfieldState \(cast)")
+                    if cast["d"] == nil && cast["a"] != nil {
+                        var modified = cast
+                        modified["d"] = [["e": "f"]]
+                        BrownfieldState.set("object", modified)
+                    }
+                }
+            },
+        ])
     }
     
     private func sendMessage() {
@@ -64,4 +114,12 @@ class BrownfieldTester: ObservableObject {
         BrownfieldMessaging.sendMessage(nativeMessage)
         print("Sent: \(nativeMessage)")
     }
+    
+    private func setTime() {
+       let formatter = DateFormatter()
+       formatter.locale = Locale(identifier: "en_US_POSIX")
+       formatter.dateFormat = "HH:mm:ss"
+       let timeString = formatter.string(from: Date())
+       BrownfieldState.set("time", timeString)
+   }
 }

@@ -25,17 +25,25 @@ export interface AndroidConfig extends CommonConfig {
     tasks: string[];
     variant: BuildVariant;
 }
+export interface PackageConfiguration {
+    packageName: string;
+}
 export type BuildConfiguration = 'Debug' | 'Release';
 export interface IosConfig extends CommonConfig {
     artifacts: string;
     buildConfiguration: BuildConfiguration;
     derivedDataPath: string;
     device: string;
-    hermesFrameworkPath: string;
+    output: 'frameworks' | PackageConfiguration;
     scheme: string;
     simulator: string;
     workspace: string;
 }
 export interface TasksConfigAndroid extends CommonConfig {
     library: string;
+}
+export interface XCFrameworkSpec {
+    name: string;
+    path: string;
+    targets: string[];
 }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.os.OperationCanceledException
@@ -211,8 +212,12 @@ class ImagePickerModule : Module() {
         result.data.size == 1 &&
         result.data[0].first == MediaType.IMAGE
       ) {
+        val sourceUri = result.data[0].second
+        val mediaType = getType(context.contentResolver, sourceUri)
+        val compressFormat = mediaType?.toBitmapCompressFormat() ?: Bitmap.CompressFormat.JPEG
+        val outputFile = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension())
         result = launchPicker {
-          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second.toString(), options))
+          cropImageLauncher.launch(CropImageContractOptions(sourceUri.toString(), options, outputFile, compressFormat))
         }
       }
       mediaHandler.readExtras(result.data, options)

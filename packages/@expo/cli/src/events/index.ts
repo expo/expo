@@ -1,6 +1,5 @@
 import { Console } from 'node:console';
 import path from 'node:path';
-import { WriteStream } from 'node:tty';
 
 import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
 import { LogStream } from './stream';
@@ -11,6 +10,7 @@ interface InitMetadata {
   version: string;
 }
 
+let logPath = process.cwd();
 let logStream: LogStream | undefined;
 
 function parseLogTarget(env: string | undefined) {
@@ -23,6 +23,7 @@ function parseLogTarget(env: string | undefined) {
       try {
         const parsedPath = path.parse(env);
         logDestination = path.format(parsedPath);
+        logPath = parsedPath.dir;
       } catch {
         logDestination = undefined;
       }
@@ -46,11 +47,13 @@ export function installEventLogger(env = process.env.LOG_EVENTS) {
   const eventLogDestination = parseLogTarget(env);
   if (eventLogDestination) {
     if (eventLogDestination === 1) {
-      const output = new WriteStream(2);
+      // Reuse Node's existing stdio streams so redirected or piped terminals don't
+      // attempt TTY-only initialization when LOG_EVENTS swaps console output.
+      const output = process.stderr;
       Object.defineProperty(process, 'stdout', { get: () => output });
       globalThis.console = new Console(output, output);
     } else if (eventLogDestination === 2) {
-      const output = new WriteStream(1);
+      const output = process.stdout;
       Object.defineProperty(process, 'stderr', { get: () => output });
       globalThis.console = new Console(output, output);
     }
@@ -110,6 +113,17 @@ export const events: EventLoggerBuilder = ((
     }
   }
   log.category = category;
+
+  log.path = function relativePath(target: string | undefined | null): string | null {
+    try {
+      return target != null && path.isAbsolute(target)
+        ? path.relative(logPath, target).replace(/\\/, '/') || '.'
+        : (target ?? null);
+    } catch {
+      return target || null;
+    }
+  };
+
   return log;
 }) as EventLoggerBuilder;
 

@@ -10,10 +10,12 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
 import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
+import { websiteSchema } from '~/constants/structured-data';
 import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
 import { markdownComponents } from '~/ui/components/Markdown';
+import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
 
 import '~/common/suppress-trailing-slash-warning';
@@ -65,6 +67,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useAnalyticsPageTracking();
   return (
     <>
+      <StructuredData id="website" data={websiteSchema} />
       {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
         html,

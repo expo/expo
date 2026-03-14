@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Make `msaaSamples` and `enableExperimentalWorkletSupport` optional in `GLViewProps` to align TypeScript types with their runtime `defaultProps` values. ([#43767](https://github.com/expo/expo/pull/43767) by [@jcarlosroldan](https://github.com/jcarlosroldan))
+
 ### 💡 Others
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-20
 

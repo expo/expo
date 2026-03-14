@@ -605,11 +605,7 @@ class AudioModule : Module() {
       }
 
       Function("getStatus") { recorder: AudioRecorder ->
-        try {
-          return@Function recorder.getAudioRecorderStatus()
-        } catch (e: Exception) {
-          throw e
-        }
+        recorder.getAudioRecorderStatus()
       }
 
       AsyncFunction("getCurrentInput") { recorder: AudioRecorder ->

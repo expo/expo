@@ -33,9 +33,6 @@ export type LazyColumnProps = {
   /**
    * The vertical arrangement of items.
    * Can be a preset string or an object with `spacedBy` to specify spacing in dp.
-   * @example
-   * verticalArrangement="center"
-   * verticalArrangement={{ spacedBy: 8 }}
    */
   verticalArrangement?:
     | 'top'

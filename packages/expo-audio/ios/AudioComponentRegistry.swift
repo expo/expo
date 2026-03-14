@@ -80,6 +80,12 @@ class AudioComponentRegistry {
     }
   }
 
+  var allPlayables: [any Playable] {
+    return registryQueue.sync {
+      Array(players.values) + Array(playlists.values)
+    }
+  }
+
   #if os(iOS)
   var allRecorders: [String: AudioRecorder] {
     return registryQueue.sync {

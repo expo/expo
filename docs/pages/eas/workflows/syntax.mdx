@@ -13,7 +13,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 A workflow is a configurable automated process made up of one or more jobs. You must create a YAML file to define your workflow configuration.
 
-To get started with workflows, see [Get Started with EAS Workflows](/eas/workflows/get-started) or see [Examples](/eas/workflows/examples) for complete workflow configurations.
+To get started with workflows, see [Get Started with EAS Workflows](/eas/workflows/get-started) or see [Examples](/eas/workflows/examples/introduction) for complete workflow configurations.
 
 ## Workflow files
 
@@ -62,6 +62,8 @@ on:
       - version-*
 ```
 
+> **info** You can skip `push` and `pull_request` triggered workflow runs by including `[eas skip]`, `[skip eas]`, or `[no eas]` in the commit message.
+
 ### `on.push`
 
 Runs your workflow when you push a commit to matching branches and/or tags.
@@ -107,6 +109,7 @@ With the `branches` list, you can trigger the workflow only when those specified
 With the `types` list, you can trigger the workflow only on the specified pull request event types. For example, if you use `types: ['opened']`, only the `pull_request.opened` event (sent when a pull request is first opened) will trigger the workflow. Defaults to `['opened', 'reopened', 'synchronize']` when not provided. Supported event types:
 
 - `opened`
+- `ready_for_review`
 - `reopened`
 - `synchronize`
 - `labeled`
@@ -620,6 +623,12 @@ type GitHubContext = {
     };
     pull_request?: {
       number: number;
+      title: string;
+      body: string | null;
+      state: 'open' | 'closed';
+      draft: boolean;
+      merged: boolean | null;
+      // ... Other fields from the GitHub Pull Request webhook payload
     };
     number?: number;
     schedule?: string;
@@ -627,6 +636,8 @@ type GitHubContext = {
   };
 };
 ```
+
+> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes all fields from GitHub's Pull Request webhook payload. The commonly used fields are shown above, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 

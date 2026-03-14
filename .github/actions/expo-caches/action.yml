@@ -194,12 +194,28 @@ runs:
       shell: bash
       run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;${{ inputs.ndk-version }}"
 
-    - name: ♻️ Restore ccache
-      if: inputs.ccache == 'true'
+    - name: 🔍️ Get Xcode version for iOS ccache key
+      if: inputs.ccache == 'true' && runner.os == 'macOS'
+      id: xcode-version
+      shell: bash
+      run: echo "hash=$(xcodebuild -version | md5)" >> $GITHUB_OUTPUT
+
+    - name: ♻️ Restore ccache (iOS)
+      if: inputs.ccache == 'true' && runner.os == 'macOS'
       uses: actions/cache@v4
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('yarn.lock', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/*.mm', 'packages/**/*.m') }}
+        # It is necessary to include Xcode version in the cache key, because each Xcode version introduces changes to clang compiler,
+        # which is a part of ccache hashes. After an Xcode version change the hit rate would drop to 0% until a new cache is built.
+        key: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-${{ hashFiles('**/Podfile.lock', 'yarn.lock', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/*.mm', 'packages/**/*.m') }}
+        restore-keys: ${{ runner.os }}-ccache-${{ steps.xcode-version.outputs.hash }}-
+
+    - name: ♻️ Restore ccache (Android)
+      if: inputs.ccache == 'true' && runner.os == 'Linux'
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}/.ccache
+        key: ${{ runner.os }}-ccache-${{ hashFiles('yarn.lock', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h') }}
         restore-keys: ${{ runner.os }}-ccache-
 
     - name: 🔍️ Get cache key of Git LFS files

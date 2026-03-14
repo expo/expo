@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXJavaScriptSerializable.h>
-#import <ExpoModulesCore/SerializableExtractor.h>
+#import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
+#import <ExpoModulesWorklets/SerializableExtractor.h>
 #import <ExpoModulesJSI/EXJavaScriptValue.h>
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 

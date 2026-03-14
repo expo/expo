@@ -8,10 +8,8 @@ platforms: ['android']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A linear progress indicator component for displaying progress in a horizontal bar format.
+Expo UI LinearProgress matches the official Jetpack Compose [Progress Indicator API](https://developer.android.com/develop/ui/compose/components/progress) and displays progress in a horizontal bar format.
 
 ## Installation
 
@@ -19,30 +17,59 @@ A linear progress indicator component for displaying progress in a horizontal ba
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="LinearProgress component on Android."
-      src="/static/images/expo-ui/linearprogress/android.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { LinearProgress } from '@expo/ui/jetpack-compose';
+### Indeterminate progress
 
-    <LinearProgress progress={0.5} style={{ width: 300 }} color="red" />
-    ```
+When no `progress` is provided, the progress indicator displays an indeterminate animating bar.
 
-  </Tab>
-</Tabs>
+```tsx IndeterminateLinearExample.tsx
+import { Host, LinearProgress } from '@expo/ui/jetpack-compose';
 
-> See [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/progress) for more information.
+export default function IndeterminateLinearExample() {
+  return (
+    <Host matchContents>
+      <LinearProgress />
+    </Host>
+  );
+}
+```
+
+### Determinate progress
+
+Provide a `progress` value between `0` and `1` to show determinate progress.
+
+```tsx DeterminateLinearExample.tsx
+import { Host, LinearProgress } from '@expo/ui/jetpack-compose';
+
+export default function DeterminateLinearExample() {
+  return (
+    <Host matchContents>
+      <LinearProgress progress={0.5} />
+    </Host>
+  );
+}
+```
+
+### Wavy progress
+
+`LinearWavyProgress` renders a linear progress indicator with a wavy animation style.
+
+```tsx LinearWavyExample.tsx
+import { Host, LinearWavyProgress } from '@expo/ui/jetpack-compose';
+
+export default function LinearWavyExample() {
+  return (
+    <Host matchContents>
+      <LinearWavyProgress progress={0.6} />
+    </Host>
+  );
+}
+```
 
 ## API
 
 ```tsx
-import { LinearProgress } from '@expo/ui/jetpack-compose';
+import { LinearProgress, LinearWavyProgress } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/linearprogress" apiName="LinearProgress" />
+<APISection packageName="expo-ui/jetpack-compose/linearprogress" apiName="LinearWavyProgress" />

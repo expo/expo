@@ -2,7 +2,6 @@
 
 import Foundation
 import UIKit
-import EXDevMenu
 
 @MainActor
 class SettingsManager: ObservableObject {

@@ -290,7 +290,7 @@ export type BarcodeScanningResult = {
      * [Google MLKit's native order](https://developers.google.com/android/reference/com/google/mlkit/vision/barcode/common/Barcode#getCornerPoints())
      * is used, which is `topLeft`, `topRight`, `bottomRight`, `bottomLeft`.
      * On iOS, the order is `bottomLeft`, `bottomRight`, `topLeft`, `topRight`. On Web, the order is
-     * `topLeft`, `bottomLeft`, `topRight`, `bottomRight`.
+     * `topLeft`, `topRight`, `bottomRight`, `bottomLeft` (matching Android/BarcodeDetector order).
      *
      */
     cornerPoints: BarcodePoint[];

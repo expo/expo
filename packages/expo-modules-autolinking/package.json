@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "55.0.7",
+  "version": "55.0.8",
   "description": "Scripts that autolink Expo modules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,7 +38,7 @@
     "memfs": "^3.2.0"
   },
   "dependencies": {
-    "@expo/require-utils": "^55.0.1",
+    "@expo/require-utils": "^55.0.2",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.1.0",
     "commander": "^7.2.0"

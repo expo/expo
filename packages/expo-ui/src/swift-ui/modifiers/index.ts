@@ -239,6 +239,24 @@ export const scaleEffect = (scale: number | { x: number; y: number }) =>
 export const rotationEffect = (angle: number) => createModifier('rotationEffect', { angle });
 
 /**
+ * Applies a 3D rotation transformation.
+ * @param params - The rotation parameters: `angle` (in degrees), `axis` (x, y, z), and `perspective`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/rotation3deffect(_:axis:anchor:anchorz:perspective:)).
+ */
+export const rotation3DEffect = (params: {
+  angle: number;
+  axis?: { x?: number; y?: number; z?: number };
+  perspective?: number;
+}) =>
+  createModifier('rotation3DEffect', {
+    angle: params.angle,
+    axisX: params.axis?.x ?? 0,
+    axisY: params.axis?.y ?? 0,
+    axisZ: params.axis?.z ?? 0,
+    perspective: params.perspective ?? 1,
+  });
+
+/**
  * Applies an offset (translation) to a view.
  * @param params - The offset parameters: `x` and `y`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/offset(x:y:)).
@@ -548,6 +566,44 @@ export const scrollDismissesKeyboard = (
  */
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
+
+type UnitPointValue =
+  | 'zero'
+  | 'topLeading'
+  | 'top'
+  | 'topTrailing'
+  | 'leading'
+  | 'center'
+  | 'trailing'
+  | 'bottomLeading'
+  | 'bottom'
+  | 'bottomTrailing';
+
+/**
+ * Sets the default anchor point for a scroll view's content.
+ * @param anchor - The anchor point for initial scroll position and content size changes, or `null` to reset.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:)).
+ */
+export const defaultScrollAnchor = (anchor: UnitPointValue | null) =>
+  createModifier('defaultScrollAnchor', { anchor });
+
+/**
+ * Sets the default anchor point for a scroll view for a specific role.
+ * Pass `null` to opt out of a specific role while keeping anchors for other roles.
+ * @param anchor - The anchor point, or `null` to opt out of this role.
+ * @param role - The scroll anchor role: `'initialOffset'`, `'sizeChanges'`, or `'alignment'`.
+ * @platform ios 18.0+
+ * @platform tvos 18.0+
+ * @platform macos 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:for:)).
+ */
+export const defaultScrollAnchorForRole = (
+  anchor: UnitPointValue | null,
+  role: 'initialOffset' | 'sizeChanges' | 'alignment'
+) => createModifier('defaultScrollAnchorForRole', { anchor, role });
 
 /**
  * Disables the move action for a view in a list.
@@ -978,6 +1034,37 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
  */
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
 
+/**
+ * Adds a luminance to alpha effect to this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
+ */
+export const luminanceToAlpha = () => createModifier('luminanceToAlpha', {});
+
+/**
+ * Sets the mode by which SwiftUI resizes an image to fit its space.
+ * @param capInsets - Inset values that indicate a portion of the image that SwiftUI doesn’t resize.
+ * @param resizingMode - The mode by which SwiftUI resizes the image.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/resizable(capinsets:resizingmode:)).
+ */
+export const resizable = (
+  capInsets?: {
+    top?: number;
+    bottom?: number;
+    leading?: number;
+    trailing?: number;
+  },
+  resizingMode?: 'stretch' | 'tile'
+) => createModifier('resizable', { ...capInsets, resizingMode });
+
+/**
+ * Specifies the how to render an Image when using the WidgetKit/WidgetRenderingMode/accented mode.
+ * @param renderingMode - A constant describing how the Image should be rendered.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/widgetaccentedrenderingmode(_:)).
+ */
+export const widgetAccentedRenderingMode = (
+  renderingMode: 'fullColor' | 'accented' | 'desaturated' | 'accentedDesaturated'
+) => createModifier('widgetAccentedRenderingMode', { renderingMode });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -999,12 +1086,14 @@ export type BuiltInModifier =
   | ReturnType<typeof onTapGesture>
   | ReturnType<typeof onLongPressGesture>
   | ReturnType<typeof onAppear>
+  | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>
   | ReturnType<typeof scaleEffect>
   | ReturnType<typeof rotationEffect>
+  | ReturnType<typeof rotation3DEffect>
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
   | ReturnType<typeof foregroundStyle>
@@ -1046,6 +1135,8 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof defaultScrollAnchor>
+  | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1076,7 +1167,9 @@ export type BuiltInModifier =
   | ReturnType<typeof progressViewStyle>
   | ReturnType<typeof gaugeStyle>
   | ReturnType<typeof listStyle>
-  | ReturnType<typeof contentTransition>;
+  | ReturnType<typeof contentTransition>
+  | ReturnType<typeof resizable>
+  | ReturnType<typeof widgetAccentedRenderingMode>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

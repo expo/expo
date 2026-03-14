@@ -6,13 +6,13 @@ import android.os.Build
 import android.util.Base64
 import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import okhttp3.OkHttpClient
@@ -50,7 +50,7 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions? ->
-      to.validatePermission(Permission.WRITE)
+      to.validatePermission(FilePermissionService.Permission.WRITE)
       val requestBuilder = Request.Builder().url(url.toURL())
 
       options?.headers?.forEach { (key, value) ->
@@ -124,7 +124,7 @@ class FileSystemModule : Module() {
           appContext.reactContext ?: throw Exceptions.ReactContextLost(),
           file.path
         )
-      if (permissions.contains(Permission.READ) && file.exists()) {
+      if (permissions.contains(FilePermissionService.Permission.READ) && file.exists()) {
         PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
       } else {
         PathInfo(exists = false, isDirectory = null)
@@ -205,12 +205,12 @@ class FileSystemModule : Module() {
         file.creationTime
       }
 
-      Function("copy") { file: FileSystemFile, destination: FileSystemPath ->
-        file.copy(destination)
+      Function("copy") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { file: FileSystemFile, destination: FileSystemPath ->
-        file.move(destination)
+      Function("move") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        file.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { file: FileSystemFile, newName: String ->
@@ -245,14 +245,14 @@ class FileSystemModule : Module() {
         file.type
       }
 
-      Function("open") { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+      Function("open") { file: FileSystemFile, mode: FileMode? ->
+        file.openHandle(mode)
       }
     }
 
     Class(FileSystemFileHandle::class) {
-      Constructor { file: FileSystemFile ->
-        FileSystemFileHandle(file)
+      Constructor { file: FileSystemFile, mode: FileMode? ->
+        file.openHandle(mode)
       }
       Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
@@ -306,12 +306,12 @@ class FileSystemModule : Module() {
         directory.validatePath()
       }
 
-      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.copy(destination)
+      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath ->
-        directory.move(destination)
+      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        directory.move(destination, options ?: RelocationOptions())
       }
 
       Function("rename") { directory: FileSystemDirectory, newName: String ->

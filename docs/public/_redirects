@@ -174,7 +174,7 @@
 /guides/customizing-webpack /archive/customizing-webpack 301
 
 # May 2024 home / get started section
-/overview /get-started/introduction 301
+/overview /get-started/create-a-project 301
 /get-started/installation /get-started/create-a-project 301
 /get-started/expo-go /get-started/set-up-your-environment 301
 
@@ -292,7 +292,8 @@
 /regulatory-compliance/privacy-shield /regulatory-compliance/data-and-privacy-protection 301
 
 # After changing brownfield docs
-/brownfield/installing-expo-modules /brownfield/get-started 301
+/brownfield/installing-expo-modules /brownfield/overview 301
+/brownfield/get-started /brownfield/isolated-approach 301
 
 # After removing Navigation section from Home and adding a Navigation page
 /develop/file-based-routing /develop/app-navigation 301
@@ -313,3 +314,26 @@
 
 # After creating EAS environment variables section
 /eas/hosting/environment-variables /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
+
+# After separating expo-router reference into multiple subsections
+/versions/unversioned/sdk/router-ui /versions/unversioned/sdk/router/ui 301
+/versions/unversioned/sdk/router-native-tabs /versions/unversioned/sdk/router/native-tabs 301
+/versions/unversioned/sdk/router-split-view /versions/unversioned/sdk/router/split-view 301
+
+# After merging get-started/introduction into get-started/create-a-project
+/get-started/introduction /get-started/create-a-project 301
+
+# After renaming ContextMenu to DropdownMenu in expo-ui (Android)
+/versions/unversioned/sdk/ui/jetpack-compose/contextmenu /versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu /versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu 301
+/versions/latest/sdk/ui/jetpack-compose/contextmenu /versions/latest/sdk/ui/jetpack-compose/dropdownmenu 301
+
+# After merging FilterChip into Chip in expo-ui (Android)
+/versions/unversioned/sdk/ui/jetpack-compose/filterchip /versions/unversioned/sdk/ui/jetpack-compose/chip 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/filterchip /versions/v55.0.0/sdk/ui/jetpack-compose/chip 301
+/versions/latest/sdk/ui/jetpack-compose/filterchip /versions/latest/sdk/ui/jetpack-compose/chip 301
+
+# After removing TextButton and merging into Button in expo-ui (Android)
+/versions/unversioned/sdk/ui/jetpack-compose/textbutton /versions/unversioned/sdk/ui/jetpack-compose/button 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/textbutton /versions/v55.0.0/sdk/ui/jetpack-compose/button 301
+/versions/latest/sdk/ui/jetpack-compose/textbutton /versions/latest/sdk/ui/jetpack-compose/button 301

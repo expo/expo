@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "55.0.0-preview.7",
+  "version": "55.0.1",
   "description": "A collection of UI components",
   "sideEffects": [
     "*.fx.js"
@@ -54,6 +54,9 @@
   "devDependencies": {
     "@types/react": "~19.2.0",
     "expo-module-scripts": "^55.0.2"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "peerDependencies": {
     "expo": "*",

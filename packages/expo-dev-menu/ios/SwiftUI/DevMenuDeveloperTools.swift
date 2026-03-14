@@ -79,15 +79,14 @@ struct DevMenuDeveloperTools: View {
         Divider()
 
         DevMenuToggleButton(
-          title: "Show dev menu button",
+          title: "Tools button",
           icon: "hand.tap",
           isEnabled: viewModel.showFloatingActionButton,
           action: viewModel.toggleFloatingActionButton
         )
         #endif
       }
-      .background(Color.expoSystemBackground)
-      .cornerRadius(18)
+      .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))
     }
   }
 }

@@ -8,7 +8,22 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix support for react-native 0.84 ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix crash in FabState coerceTo ([#43752](https://github.com/expo/expo/pull/43752) by [@kot331107](https://github.com/kot331107))
+
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.7 — 2026-02-20
 

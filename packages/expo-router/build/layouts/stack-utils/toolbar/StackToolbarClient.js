@@ -55,6 +55,9 @@ const children_1 = require("../../../utils/children");
  * - Use `placement="right"` to customize the right side of the header.
  * - Use `placement="bottom"` (default) to show a bottom toolbar (iOS only).
  *
+ * If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
+ *
  * > **Note:** Using `Stack.Toolbar` with `placement="left"` or `placement="right"` will
  * automatically make the header visible (`headerShown: true`), as the toolbar is rendered
  * as part of the native header.
@@ -62,7 +65,6 @@ const children_1 = require("../../../utils/children");
  * > **Note:** `Stack.Toolbar` with `placement="bottom"` can only be used inside **page**
  * components, not in layout components.
  *
- * > **Note**: Stack.Toolbar is an experimental API and may change without notice.
  *
  * @example
  * ```tsx
@@ -105,10 +107,8 @@ const children_1 = require("../../../utils/children");
  * }
  * ```
  *
+ * @experimental
  * @platform ios
- *
- * > **Note:** If multiple instances of this component are rendered for the same screen,
- * the last one rendered in the component tree takes precedence.
  */
 const StackToolbar = (props) => {
     const parentPlacement = (0, context_1.useToolbarPlacement)();

@@ -41,6 +41,13 @@ function _codeframe() {
   };
   return data;
 }
+function _transform() {
+  const data = require("./transform");
+  _transform = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
@@ -65,35 +72,35 @@ const tsExtensionMapping = {
   '.cts': '.cjs',
   '.mts': '.mjs'
 };
-function toFormat(filename) {
+function maybeReadFileSync(filename) {
+  try {
+    return _nodeFs().default.readFileSync(filename, 'utf8');
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+}
+function toFormat(filename, isLegacy) {
   if (filename.endsWith('.cjs')) {
     return 'commonjs';
   } else if (filename.endsWith('.mjs')) {
     return 'module';
   } else if (filename.endsWith('.js')) {
-    return undefined;
+    return isLegacy ? 'commonjs' : null;
   } else if (filename.endsWith('.mts')) {
     return 'module-typescript';
   } else if (filename.endsWith('.cts')) {
     return 'commonjs-typescript';
   } else if (filename.endsWith('.ts')) {
-    return 'typescript';
+    return isLegacy ? 'commonjs-typescript' : 'typescript';
   } else {
-    return undefined;
-  }
-}
-function isTypescriptFilename(filename) {
-  switch (toFormat(filename)) {
-    case 'module-typescript':
-    case 'commonjs-typescript':
-    case 'typescript':
-      return true;
-    default:
-      return false;
+    return null;
   }
 }
 function compileModule(code, filename, opts) {
-  const format = toFormat(filename);
+  const format = toFormat(filename, false);
   const prependPaths = opts.paths ?? [];
   const nodeModulePaths = nodeModule()._nodeModulePaths(_nodePath().default.dirname(filename));
   const paths = [...prependPaths, ...nodeModulePaths];
@@ -102,28 +109,28 @@ function compileModule(code, filename, opts) {
       filename,
       paths
     });
-    mod._compile(code, filename, format);
+    mod._compile(code, filename, format != null ? format : undefined);
+    mod.loaded = true;
     require.cache[filename] = mod;
     parent?.children?.splice(parent.children.indexOf(mod), 1);
-    return mod.exports;
+    return mod;
   } catch (error) {
     delete require.cache[filename];
     throw error;
   }
 }
 const hasStripTypeScriptTypes = typeof nodeModule().stripTypeScriptTypes === 'function';
-function evalModule(code, filename, opts = {}) {
+function evalModule(code, filename, opts = {}, format = toFormat(filename, true)) {
   let inputCode = code;
   let inputFilename = filename;
   let diagnostic;
-  if (filename.endsWith('.ts') || filename.endsWith('.cts') || filename.endsWith('.mts')) {
-    const ext = _nodePath().default.extname(filename);
+  if (format === 'typescript' || format === 'module-typescript' || format === 'commonjs-typescript') {
     const ts = loadTypescript();
     if (ts) {
       let module;
-      if (ext === '.cts') {
+      if (format === 'commonjs-typescript') {
         module = ts.ModuleKind.CommonJS;
-      } else if (ext === '.mts') {
+      } else if (format === 'module-typescript') {
         module = ts.ModuleKind.ESNext;
       } else {
         // NOTE(@kitten): We can "preserve" the output, meaning, it can either be ESM or CJS
@@ -159,22 +166,29 @@ function evalModule(code, filename, opts = {}) {
       });
     }
     if (inputCode !== code) {
+      const ext = _nodePath().default.extname(filename);
       const inputExt = tsExtensionMapping[ext] ?? ext;
       if (inputExt !== ext) {
         inputFilename = _nodePath().default.join(_nodePath().default.dirname(filename), _nodePath().default.basename(filename, ext) + inputExt);
       }
     }
+  } else if (format === 'commonjs') {
+    inputCode = (0, _transform().toCommonJS)(filename, code);
   }
   try {
     const mod = compileModule(inputCode, inputFilename, opts);
     if (inputFilename !== filename) {
       require.cache[filename] = mod;
     }
-    return mod;
+    return mod.exports;
   } catch (error) {
     // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
     // since it's likely more useful than the eval error
-    throw (0, _codeframe().formatDiagnostic)(diagnostic) ?? (0, _codeframe().annotateError)(code, filename, error) ?? error;
+    const diagnosticError = (0, _codeframe().formatDiagnostic)(diagnostic);
+    if (diagnosticError) {
+      throw diagnosticError;
+    }
+    throw (0, _codeframe().annotateError)(code, filename, error) ?? error;
   }
 }
 async function requireOrImport(filename) {
@@ -200,19 +214,30 @@ async function loadModule(filename) {
  * NOTE: Requiring ESM has been added in all LTS versions (Node 20.19+, 22.12+, 24).
  * This already forms the minimum required Node version as of Expo SDK 54 */
 function loadModuleSync(filename) {
+  const format = toFormat(filename, true);
+  const isTypeScript = format === 'module-typescript' || format === 'commonjs-typescript' || format === 'typescript';
   try {
-    if (!isTypescriptFilename(filename)) {
+    if (format !== 'module' && !isTypeScript) {
       return require(filename);
     }
   } catch (error) {
     if (error.code === 'MODULE_NOT_FOUND') {
       throw error;
+    } else if (format == null) {
+      const code = maybeReadFileSync(filename);
+      throw (0, _codeframe().annotateError)(code, filename, error) || error;
     }
     // We fallback to always evaluating the entrypoint module
     // This is out of safety, since we're not trusting the requiring ESM feature
     // and evaluating the module manually bypasses the error when it's flagged off
   }
+
+  // Load from cache manually, if `loaded` is set and exports are defined, to avoid
+  // double transform or double evaluation
+  if (require.cache[filename]?.exports && require.cache[filename].loaded) {
+    return require.cache[filename].exports;
+  }
   const code = _nodeFs().default.readFileSync(filename, 'utf8');
-  return evalModule(code, filename);
+  return evalModule(code, filename, {}, format);
 }
 //# sourceMappingURL=load.js.map

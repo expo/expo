@@ -29,6 +29,7 @@ export type FormattedProperty = {
   type?: string | string[];
   example?: any;
   bareWorkflow?: string;
+  deprecated?: boolean;
   subproperties: FormattedProperty[];
   parent?: string;
   enum?: string[];

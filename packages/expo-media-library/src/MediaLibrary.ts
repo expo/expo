@@ -981,3 +981,29 @@ export async function albumNeedsMigrationAsync(album: AlbumRef): Promise<boolean
 
   return await MediaLibrary.albumNeedsMigrationAsync(getId(album));
 }
+
+/**
+ * On iOS, this adds or removes the asset from the system "Favorites" smart album.
+ * @param asset An [Asset](#asset) or its ID.
+ * @param isFavorite Whether the asset should be marked as favorite.
+ * @platform ios
+ * @return Returns a promise which fulfils with `true` if the operation was successful.
+ */
+export async function setAssetFavoriteAsync(
+  asset: AssetRef,
+  isFavorite: boolean
+): Promise<boolean> {
+  if (!MediaLibrary.setAssetFavoriteAsync) {
+    throw new UnavailabilityError('MediaLibrary', 'setAssetFavoriteAsync');
+  }
+
+  if (Platform.OS !== 'ios') {
+    throw new UnavailabilityError('MediaLibrary', 'setAssetFavoriteAsync is only available on iOS');
+  }
+
+  const assetId = getId(asset);
+
+  checkAssetIds([assetId]);
+
+  return await MediaLibrary.setAssetFavoriteAsync(assetId, isFavorite);
+}

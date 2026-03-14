@@ -1,22 +1,32 @@
 package expo.modules.devlauncher.compose.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
+import com.composeunstyled.TextField
+import com.composeunstyled.TextInput
 import expo.modules.devlauncher.compose.models.SettingsAction
 import expo.modules.devlauncher.compose.models.SettingsState
+import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.ui.LauncherIcons
 import expo.modules.devlauncher.services.ApplicationInfo
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -90,6 +100,20 @@ fun SettingsScreen(
 
     NewText(
       "Selected gestures will toggle the developer menu while inside a preview. The menu allows you to reload or return to home and exposes developer tools.",
+      style = NewAppTheme.font.md.merge(
+        lineHeight = 21.sp
+      ),
+      color = NewAppTheme.colors.text.quaternary
+    )
+
+    Spacer(NewAppTheme.spacing.`6`)
+
+    NSDSection(state, onAction)
+
+    Spacer(NewAppTheme.spacing.`3`)
+
+    NewText(
+      "Filter discovered packagers by the current app's package name or a specific project slug. Only matching development servers will be shown on the home screen.",
       style = NewAppTheme.font.md.merge(
         lineHeight = 21.sp
       ),
@@ -178,7 +202,7 @@ private fun MenuGesturesSection(state: SettingsState, onAction: (SettingsAction)
           },
           content = {
             NewText(
-              text = "Action button"
+              text = "Tools button"
             )
           },
           rightComponent = {
@@ -188,6 +212,103 @@ private fun MenuGesturesSection(state: SettingsState, onAction: (SettingsAction)
           },
           onClick = { onAction(SettingsAction.ToggleShowFabAtLaunch(!state.showFabAtLaunch)) }
         )
+      }
+    }
+  }
+}
+
+@Composable
+private fun NSDSection(state: SettingsState, onAction: (SettingsAction) -> Unit) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
+  ) {
+    Section.Header("network service discovery")
+
+    RoundedSurface {
+      Column {
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            LauncherIcons.PackageSearch(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(
+              text = "Filter by package name"
+            )
+          },
+          rightComponent = {
+            ToggleSwitch(
+              isToggled = state.filterByPackageName
+            )
+          },
+          onClick = { onAction(SettingsAction.ToggleFilterByPackageName(!state.filterByPackageName)) }
+        )
+
+        Divider(
+          thickness = 0.5.dp,
+          color = NewAppTheme.colors.border.default
+        )
+
+        Column(
+          modifier = Modifier
+            .background(NewAppTheme.colors.background.subtle)
+            .fillMaxWidth()
+            .padding(NewAppTheme.spacing.`3`)
+        ) {
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = NewAppTheme.spacing.`2`)
+          ) {
+            LauncherIcons.Link(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+            NewText(
+              text = "Filter by slug",
+              style = NewAppTheme.font.md,
+              color = NewAppTheme.colors.text.default
+            )
+          }
+
+          TextField(
+            value = state.filterBySlug,
+            onValueChange = { newSlug ->
+              onAction(SettingsAction.UpdateFilterBySlug(newSlug))
+            },
+            textColor = NewAppTheme.colors.text.default,
+            textStyle = NewAppTheme.font.md,
+            singleLine = true,
+            modifier = Modifier
+              .fillMaxWidth()
+              .border(
+                width = 1.dp,
+                shape = RoundedCornerShape(NewAppTheme.borderRadius.xl),
+                color = NewAppTheme.colors.border.default
+              )
+              .clip(RoundedCornerShape(NewAppTheme.borderRadius.xl))
+              .background(NewAppTheme.colors.background.element)
+              .padding(NewAppTheme.spacing.`3`),
+            keyboardOptions = KeyboardOptions(
+              capitalization = KeyboardCapitalization.None,
+              autoCorrectEnabled = false
+            ),
+            cursorBrush = SolidColor(NewAppTheme.colors.text.default.copy(alpha = 0.9f))
+          ) {
+            TextInput(
+              placeholder = {
+                NewText(
+                  text = "my-project-slug",
+                  style = NewAppTheme.font.md,
+                  color = NewAppTheme.colors.text.secondary
+                )
+              }
+            )
+          }
+        }
       }
     }
   }
@@ -205,7 +326,9 @@ fun SettingsScreenPreview() {
           appId = "01980973-2cf9-71fb-a891-a53444132a6e",
           runtimeVersion = "1.0.0",
           projectUrl = "https://u.expo.dev/01980973-2cf9-71fb-a891-a53444132a6e"
-        )
+        ),
+        filterByPackageName = true,
+        filterBySlug = "bare-expo"
       )
     )
   }

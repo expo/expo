@@ -1,13 +1,17 @@
 'use client';
 
 import { useRoute } from '@react-navigation/native';
-import { use, useEffect } from 'react';
+import { use } from 'react';
 
 import type { UsePreventZoomTransitionDismissalOptions } from './usePreventZoomTransitionDismissal.types';
 import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../navigationParams';
 import { useNavigation } from '../../useNavigation';
+import { isRoutePreloadedInStack } from '../../utils/stack';
+import { isModalPresentation } from '../../utils/stackPresentation';
+import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
+import { useIsPreview } from '../preview/PreviewRouteContext';
 
 export function usePreventZoomTransitionDismissal(
   options?: UsePreventZoomTransitionDismissalOptions
@@ -15,12 +19,26 @@ export function usePreventZoomTransitionDismissal(
   const context = use(ZoomTransitionTargetContext);
   const route = useRoute();
   const navigation = useNavigation();
+  const isPreview = useIsPreview();
+  const isFocused = navigation.isFocused();
+  const isPreloaded = isPreview ? false : isRoutePreloadedInStack(navigation.getState(), route);
 
   const descriptorsMap = use(DescriptorsContext);
   const currentDescriptor = descriptorsMap[route.key];
   const gestureEnabled = currentDescriptor?.options?.gestureEnabled;
+  const isModal = isModalPresentation(currentDescriptor?.options);
 
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
+    if (isPreview) return;
+    if (isModal) {
+      console.warn(
+        '[expo-router] usePreventZoomTransitionDismissal has no effect on screens presented modally. Please remove this hook from the screen component or change the screen presentation to a non-modal style.'
+      );
+      return;
+    }
+    if (!context.hasEnabler) {
+      return;
+    }
     const rect = options?.unstable_dismissalBoundsRect;
 
     // Validate rect if provided
@@ -47,12 +65,14 @@ export function usePreventZoomTransitionDismissal(
 
     context.setDismissalBoundsRect?.(computedRect);
 
-    // Disable React Navigation's gesture handler when we have custom bounds to prevent conflicts.
-    // The native zoom transition's interactiveDismissShouldBegin callback handles dismissal instead.
-    // We use the internal option to preserve the user's gestureEnabled setting.
-    navigation.setOptions({
-      [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]: computedRect ? false : undefined,
-    });
+    if (!isPreloaded || (isPreloaded && isFocused)) {
+      // Disable React Navigation's gesture handler when we have custom bounds to prevent conflicts.
+      // The native zoom transition's interactiveDismissShouldBegin callback handles dismissal instead.
+      // We use the internal option to preserve the user's gestureEnabled setting.
+      navigation.setOptions({
+        [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]: computedRect ? false : undefined,
+      });
+    }
 
     // Cleanup on unmount
     return () => {
@@ -66,5 +86,9 @@ export function usePreventZoomTransitionDismissal(
     context.setDismissalBoundsRect,
     gestureEnabled,
     navigation,
+    isFocused,
+    isPreloaded,
+    isModal,
+    isPreview,
   ]);
 }

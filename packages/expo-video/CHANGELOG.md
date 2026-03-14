@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix crash when loading PHAsset url fails ([#43373](https://github.com/expo/expo/pull/43373) by [@fractalbeauty](https://github.com/fractalbeauty))
+
 ### 💡 Others
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-20
 
@@ -248,6 +254,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Fix player reporting status `readyToPlay` while a source is being loaded asynchronously. ([#37180](https://github.com/expo/expo/pull/37180) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player going into `loading` status for a single frame when unpausing with a full buffer. ([#37181](https://github.com/expo/expo/pull/37181) by [@behenate](https://github.com/behenate))
 - [iOS] Fix player getting stuck in `loading` state for null sources. ([#37183](https://github.com/expo/expo/pull/37183) by [@behenate](https://github.com/behenate))
+- [iOS] Fix player not setting default audio track for some HLS streams. ([#37395](https://github.com/expo/expo/pull/37395) by [@vitorclelis96](https://github.com/vitorclelis96))
 
 ## 2.1.9 — 2025-05-08
 

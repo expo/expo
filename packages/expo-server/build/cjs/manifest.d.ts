@@ -48,6 +48,8 @@ export interface RouteInfo<TRegex = RegExp | string> {
     methods?: string[];
     /** Path to the loader module for this route, typically `_expo/loaders/[ROUTE].js`. When present, the loader should be executed before rendering. */
     loader?: string;
+    /** Per-route async chunk assets. Merged with top-level `assets` at serve time. */
+    assets?: AssetInfo;
 }
 export interface RoutesManifest<TRegex = RegExp | string> {
     /**

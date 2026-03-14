@@ -20,8 +20,8 @@ public class ExpoNotificationsPermissionsRequester: NSObject, EXPermissionsReque
     let semaphore = DispatchSemaphore(value: 0)
     var result: [AnyHashable: Any] = [:]
 
-    Task.detached {
-      result = await self.getPermissionsAsync()
+    UNUserNotificationCenter.current().getNotificationSettings { settings in
+      result = self.makePermissionsResult(from: settings)
       semaphore.signal()
     }
 
@@ -31,7 +31,10 @@ public class ExpoNotificationsPermissionsRequester: NSObject, EXPermissionsReque
 
   private func getPermissionsAsync() async -> [AnyHashable: Any] {
     let settings = await UNUserNotificationCenter.current().notificationSettings()
+    return makePermissionsResult(from: settings)
+  }
 
+  private func makePermissionsResult(from settings: UNNotificationSettings) -> [AnyHashable: Any] {
     let generalStatus: EXPermissionStatus = switch settings.authorizationStatus {
     case .authorized:
       EXPermissionStatusGranted

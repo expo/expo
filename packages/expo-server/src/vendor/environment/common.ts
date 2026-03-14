@@ -1,5 +1,5 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
-import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
+import type { AssetInfo, Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
 import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
 import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/matchers';
 
@@ -83,10 +83,12 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
       throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
     }
 
-    const assets = manifest.assets;
+    const topLevelAssets = manifest.assets;
     ssrRenderer = async (request, options) => {
       const url = new URL(request.url);
       const location = new URL(url.pathname + url.search, url.origin);
+      const assets = mergeAssets(topLevelAssets, options?.assets);
+
       return ssrModule.getStaticContent(location, {
         loader: options?.loader,
         request,
@@ -120,7 +122,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
       // SSR path: Render at runtime if SSR module is available
       const renderer = await getServerRenderer();
       if (renderer) {
-        let renderOptions: RenderOptions | undefined;
+        let renderOptions: RenderOptions = { assets: route.assets };
 
         try {
           if (route.loader) {
@@ -128,6 +130,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
             const result = await executeLoader(request, route, params);
             const data = isResponse(result) ? await result.json() : result;
             renderOptions = {
+              assets: route.assets,
               loader: {
                 data: data ?? null,
                 key: resolveLoaderContextKey(route.page, params),
@@ -197,5 +200,15 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
         await Promise.all(requests.map((request) => input.loadModule(request)));
       }
     },
+  };
+}
+
+/**
+ * Merges top-level assets with per-route async chunk assets. Top-level assets come first
+ */
+function mergeAssets(topLevel?: AssetInfo, routeLevel?: AssetInfo): AssetInfo {
+  return {
+    css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
+    js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
   };
 }

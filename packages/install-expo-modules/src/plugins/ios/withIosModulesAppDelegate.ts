@@ -143,9 +143,14 @@ export function updateModulesAppDelegateSwift(
     }
   }
 
-  // Add imports if needed
-  if (!contents.match(/^import\s+Expo\s*$/m)) {
+  // Add imports if needed.
+  // SDK 55+ uses `internal import` to match ExpoModulesProvider.swift (Swift 6 compatibility).
+  const useInternalImport = sdkVersion && semver.gte(sdkVersion, '55.0.0');
+  if (!contents.match(/^(internal\s+)?import\s+Expo\s*$/m)) {
     contents = addSwiftImports(contents, ['Expo']);
+    if (useInternalImport) {
+      contents = contents.replace(/^import Expo$/m, 'internal import Expo');
+    }
   }
 
   // Replace superclass with ExpoAppDelegate

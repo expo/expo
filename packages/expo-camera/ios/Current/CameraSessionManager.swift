@@ -182,7 +182,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     do {
       try device.lockForConfiguration()
       defer { device.unlockForConfiguration() }
-      if device.hasTorch && device.isTorchModeSupported(.on) {
+      if device.isTorchModeSupported(.on) {
         device.torchMode = delegate.torchEnabled ? .on : .off
       }
     } catch {
@@ -318,17 +318,11 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     runtimeErrorTask?.cancel()
   }
 
-  var currentPhotoOutput: AVCapturePhotoOutput? {
-    return photoOutput
-  }
+  var currentPhotoOutput: AVCapturePhotoOutput? { photoOutput }
 
-  var currentVideoFileOutput: AVCaptureMovieFileOutput? {
-    return videoFileOutput
-  }
+  var currentVideoFileOutput: AVCaptureMovieFileOutput? { videoFileOutput }
 
-  var currentDevice: AVCaptureDevice? {
-    return captureDeviceInput?.device
-  }
+  var currentDevice: AVCaptureDevice? { captureDeviceInput?.device }
 
   private func addDevice(_ device: AVCaptureDevice) {
     guard let delegate else {

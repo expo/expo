@@ -241,7 +241,7 @@ export function withExtendedResolver(
       : null;
 
   // TODO: Move this to be a transform key for invalidation.
-  if (!isExporting && isInteractive()) {
+  if (!isExporting && !env.CI) {
     if (isTsconfigPathsEnabled) {
       // TODO: We should track all the files that used imports and invalidate them
       // currently the user will need to save all the files that use imports to

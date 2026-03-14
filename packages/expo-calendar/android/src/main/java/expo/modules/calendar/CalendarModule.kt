@@ -217,7 +217,7 @@ class CalendarModule : Module() {
 
   //endregion
 
-  private suspend fun saveEvent(eventInput: Either<NewEventInput, EventUpdateInput>): Int {
+  private suspend fun saveEvent(eventInput: Either<NewEventInput, EventUpdateInput>): Long {
     return if (eventInput.`is`(EventUpdateInput::class)) {
       eventRepository.updateEvent(eventInput.second())
     } else {

@@ -15,9 +15,8 @@ file(
   "${main_dir}/decorators/*.cpp"
   "${main_dir}/installers/*.cpp"
   "${main_dir}/worklets/*.cpp"
+  "${main_dir}/fabric/*.cpp"
 )
-
-file(GLOB fabric_andorid_sources "${ANDROID_SRC_DIR}/fabric/*.cpp")
 
 add_library(
   expo-modules-core
@@ -34,8 +33,8 @@ target_include_directories(
   PRIVATE
   ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react
   ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react/fabric
-  # header only imports from turbomodule, e.g. CallInvokerHolder.h
-  "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+  # header only imports from jni, e.g. react/turbomodule/CallInvokerHolder.h
+  "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
   "${ANDROID_SRC_DIR}/fabric"
   "${COMMON_DIR}"
   "${COMMON_DIR}/fabric"

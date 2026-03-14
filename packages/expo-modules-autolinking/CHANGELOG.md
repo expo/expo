@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))
+- Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+- Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.7 — 2026-02-20
 

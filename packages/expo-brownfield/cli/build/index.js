@@ -36,6 +36,7 @@ program
     .option('-x, --xcworkspace <xcworkspace>', 'path to the Xcode workspace (.xcworkspace)')
     .option('-a, --artifacts <artifacts>', 'path to the artifacts directory')
     .option('--dry-run', 'only print the commands without executing them')
+    .option('-p, --package [package]', 'package artifacts as a Swift Package (with an optionally specified name)')
     .action(async function () {
     await (0, commands_1.buildIos)(this);
 });

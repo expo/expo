@@ -12,8 +12,20 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 type SwitchElementColors = {
   checkedThumbColor?: ColorValue;
   checkedTrackColor?: ColorValue;
+  checkedBorderColor?: ColorValue;
+  checkedIconColor?: ColorValue;
   uncheckedThumbColor?: ColorValue;
   uncheckedTrackColor?: ColorValue;
+  uncheckedBorderColor?: ColorValue;
+  uncheckedIconColor?: ColorValue;
+  disabledCheckedThumbColor?: ColorValue;
+  disabledCheckedTrackColor?: ColorValue;
+  disabledCheckedBorderColor?: ColorValue;
+  disabledCheckedIconColor?: ColorValue;
+  disabledUncheckedThumbColor?: ColorValue;
+  disabledUncheckedTrackColor?: ColorValue;
+  disabledUncheckedBorderColor?: ColorValue;
+  disabledUncheckedIconColor?: ColorValue;
 };
 
 // @docsMissing
@@ -34,18 +46,18 @@ export type SwitchProps = {
    * Indicates whether the switch is checked.
    */
   value: boolean;
-  /**
-   * Label for the switch.
-   *
-   * > On Android, the label has an effect only when the `Switch` is used inside a `ContextMenu`.
-   */
-  label?: string;
 
   /**
    * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
    * @default 'switch'
    */
   variant?: 'checkbox' | 'switch' | 'button';
+  /**
+   * Whether the switch is enabled.
+   * @default true
+   * @platform android
+   */
+  enabled?: boolean;
   /**
    * Callback function that is called when the checked state changes.
    */

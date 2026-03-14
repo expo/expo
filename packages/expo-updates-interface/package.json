@@ -1,6 +1,6 @@
 {
   "name": "expo-updates-interface",
-  "version": "55.1.2",
+  "version": "55.1.3",
   "description": "Native interface for modules that optionally depend on expo-updates, e.g. expo-dev-launcher.",
   "main": "index.js",
   "keywords": [

@@ -75,6 +75,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ConfirmationDialog component',
+    route: 'ui/confirmation-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ConfirmationDialogScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
@@ -264,6 +272,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'rotation3DEffect modifier',
+    route: 'ui/rotation-3d-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./Rotation3DEffectScreen'));
     },
   },
 ];

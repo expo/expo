@@ -58,6 +58,9 @@ interface EventLoggerType<Category, Events> {
 
 export interface EventLogger<Category, Events> extends EventLoggerType<Category, Events> {
   <EventName extends keyof Events>(event: EventName, data: Events[EventName]): void;
+
+  path(target: string): string;
+  path(target: string | null | undefined): string | null;
 }
 
 export interface EventBuilder {

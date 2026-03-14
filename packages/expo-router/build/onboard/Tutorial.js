@@ -7,8 +7,8 @@ exports.Tutorial = Tutorial;
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const exports_1 = require("../exports");
 const getDevServer_1 = require("../getDevServer");
+const link_1 = require("../link");
 const Pressable_1 = require("../views/Pressable");
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
 function createEntryFileAsync() {
@@ -53,7 +53,7 @@ function Tutorial() {
           <react_native_1.Text style={{ fontWeight: '600' }}>{getRootDir()}</react_native_1.Text> directory.
         </react_native_1.Text>
         <react_native_1.Text>
-          <exports_1.Link href="https://docs.expo.dev/router/introduction/" {...react_native_1.Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
+          <link_1.Link href="https://docs.expo.dev/router/introduction/" {...react_native_1.Platform.select({ web: { target: '_blank' }, native: { asChild: true } })}>
             <Pressable_1.Pressable>
               {({ hovered, pressed }) => (<react_native_1.Text style={[
                 styles.link,
@@ -74,7 +74,7 @@ function Tutorial() {
                   Learn more about Expo Router in the documentation.
                 </react_native_1.Text>)}
             </Pressable_1.Pressable>
-          </exports_1.Link>
+          </link_1.Link>
         </react_native_1.Text>
         {canAutoTouchFile && <Button />}
       </react_native_1.View>

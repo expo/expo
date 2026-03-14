@@ -11,6 +11,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const picomatch_1 = __importDefault(require("picomatch"));
 const findUpPackageJsonPath_1 = require("./findUpPackageJsonPath");
+const filePath_1 = require("../utils/filePath");
 const debug = require('debug')('expo:side-effects');
 function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value.path], checked = new Set()) {
     const currentModuleHasSideEffect = getShallowSideEffect(options, value);
@@ -65,8 +66,11 @@ function _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath = '') {
     if (Array.isArray(packageJson.sideEffects)) {
         const sideEffects = packageJson.sideEffects
             .filter((sideEffect) => typeof sideEffect === 'string')
-            .map((sideEffect) => sideEffect.replace(/^\.\//, ''));
-        sideEffectMatcher = (0, picomatch_1.default)(sideEffects, { matchBase: true });
+            .map((sideEffect) => {
+            const pattern = sideEffect.replace(/^\.\//, '');
+            return pattern.includes('/') ? pattern : `**/${pattern}`;
+        });
+        sideEffectMatcher = (0, picomatch_1.default)(sideEffects);
     }
     else if (typeof packageJson.sideEffects === 'boolean' || !packageJson.sideEffects) {
         sideEffectMatcher = packageJson.sideEffects;
@@ -83,8 +87,8 @@ function _createSideEffectMatcher(dirRoot, packageJson, packageJsonPath = '') {
             return sideEffectMatcher;
         }
         else {
-            const relativeName = path_1.default.relative(dirRoot, fp);
-            return sideEffectMatcher(relativeName);
+            const relativeName = path_1.default.isAbsolute(fp) ? path_1.default.relative(dirRoot, fp) : path_1.default.normalize(fp);
+            return sideEffectMatcher((0, filePath_1.toPosixPath)(relativeName));
         }
     };
 }

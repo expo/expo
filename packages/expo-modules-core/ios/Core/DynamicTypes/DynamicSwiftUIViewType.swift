@@ -34,9 +34,19 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
     guard Thread.isMainThread else {
       throw NonMainThreadException()
     }
+    // Direct match, the virtual view's content type matches exactly.
+    // e.g. View(SlotView.self)
     if let view = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.SwiftUIVirtualView<ViewType.Props, ViewType>.self) {
       return view.contentView
     }
+    // For wrapper types
+    // e.g. ExpoUIView(SecureFieldView.self)
+    if let provider = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.ViewWrapper.self),
+       let innerView = provider.getWrappedView() as? ViewType {
+      return innerView
+    }
+    // For views using WithHostingView protocol.
+    // e.g. View(HostView.self) where HostView conforms to WithHostingView
     guard let view = appContext.findView(withTag: viewTag, ofType: AnyExpoSwiftUIHostingView.self) else {
       throw Exceptions.SwiftUIViewNotFound((tag: viewTag, type: innerType.self))
     }

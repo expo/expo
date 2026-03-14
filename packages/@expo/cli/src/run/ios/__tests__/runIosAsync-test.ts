@@ -95,9 +95,12 @@ describe(resolveOptionsAsync, () => {
 
     expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
+      buildCacheProvider: undefined,
       configuration: 'Debug',
       device: { name: 'mock', udid: '123' },
+      eagerBundleOptions: undefined,
       isSimulator: true,
+      osType: 'iOS',
       port: 8081,
       projectRoot: '/',
       scheme: 'ReactNativeProject',
@@ -146,6 +149,7 @@ describe(resolveOptionsAsync, () => {
 
     expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
+      buildCacheProvider: undefined,
       configuration: 'Debug',
       device: {
         deviceType: 'device',
@@ -155,7 +159,9 @@ describe(resolveOptionsAsync, () => {
         udid: '00008101-001964A22629003A',
         connectionType: 'USB',
       },
+      eagerBundleOptions: undefined,
       isSimulator: false,
+      osType: 'iOS',
       port: 8081,
       projectRoot: '/',
       scheme: 'ReactNativeProject',

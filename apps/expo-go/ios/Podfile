@@ -3,6 +3,11 @@ require_relative '../../../react-native-lab/react-native/packages/react-native/s
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+ENV['RCT_HERMES_V1_ENABLED'] = '1'
+
+# Build Expo Go from Expo's fork of React Native
+ENV['RCT_USE_RN_DEP']  = '0'
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
@@ -46,6 +51,7 @@ target 'Expo Go' do
       'expo-dev-launcher',
       'expo-dev-client',
       'expo-dev-menu',
+      'expo-dev-menu-interface',
       'expo-maps',
       'expo-network-addons',
       'expo-insights',
@@ -63,8 +69,6 @@ target 'Expo Go' do
 
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
-
-  pod 'expo-dev-menu', :path => '../../../packages/expo-dev-menu', :configurations => ['Debug', 'Release']
 
   config_command = [
     'node',
@@ -109,6 +113,7 @@ target 'Expo Go' do
         target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_ENABLE_DEBUGGER=1"
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << "HERMES_V1_ENABLED=1"
         end
       end
       if ['React-jsinspector', 'React-RCTNetwork'].include?(pod_name)
