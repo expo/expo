@@ -61,38 +61,41 @@ Toggle on the React Compiler experiment in your app config file:
 
 ### Enabling the linter
 
-> In the future, all of the following steps below will be automated by Expo CLI.
+Run [`npx expo lint`](/guides/using-eslint/#eslint) to set up ESLint in your app, then follow the instructions for your SDK version:
 
-Additionally, you should use the ESLint plugin to continuously enforce the rules of React in your project.
+<Tabs tabs={['SDK 55 and later', 'SDK 54 and earlier']}>
+  <Tab>
 
-<Step label="1">
+    React Compiler lint rules are included by default with `eslint-config-expo` in SDK 55 and later.
 
-Run [`npx expo lint`](/guides/using-eslint/#eslint) to ensure ESLint is setup in your app, then install the ESLint plugin for React Compiler:
+    If you previously installed `eslint-plugin-react-compiler`, you can uninstall it and remove it from your ESLint configuration.
 
-<Terminal cmd={['$ npx expo install eslint-plugin-react-compiler -- -D']} />
+  </Tab>
+  <Tab>
 
-</Step>
+    Install the ESLint plugin for React Compiler:
 
-<Step label="2">
+    <Terminal cmd={['$ npx expo install eslint-plugin-react-compiler -- -D']} />
 
-Update your [ESLint configuration](/guides/using-eslint/) to include the plugin:
+    Update your [ESLint configuration](/guides/using-eslint/) to include the plugin:
 
-```js .eslintrc.js
-// https://docs.expo.dev/guides/using-eslint/
-const { defineConfig } = require('eslint/config');
-const expoConfig = require('eslint-config-expo/flat');
-const reactCompiler = require('eslint-plugin-react-compiler');
+    ```js eslint.config.js
+    // https://docs.expo.dev/guides/using-eslint/
+    const { defineConfig } = require('eslint/config');
+    const expoConfig = require('eslint-config-expo/flat');
+    const reactCompiler = require('eslint-plugin-react-compiler');
 
-module.exports = defineConfig([
-  expoConfig,
-  reactCompiler.configs.recommended,
-  {
-    ignores: ['dist/*'],
-  },
-]);
-```
+    module.exports = defineConfig([
+      expoConfig,
+      reactCompiler.configs.recommended,
+      {
+        ignores: ['dist/*'],
+      },
+    ]);
+    ```
 
-</Step>
+  </Tab>
+</Tabs>
 
 ## Incremental adoption
 
