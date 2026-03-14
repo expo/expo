@@ -1,4 +1,4 @@
-import commander from 'commander';
+import { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
 
@@ -134,7 +134,7 @@ export interface AutolinkingCommonArguments {
   platform?: SupportedPlatform | null;
 }
 
-export function registerAutolinkingArguments(command: commander.Command): commander.Command {
+export function registerAutolinkingArguments(command: Command): Command {
   return command
     .option<string[] | null>(
       '-e, --exclude <exclude...>',

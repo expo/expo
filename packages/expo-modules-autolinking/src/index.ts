@@ -1,4 +1,4 @@
-import commander from 'commander';
+import { Command } from 'commander';
 
 import { generateModulesProviderCommand } from './commands/generateModulesProviderCommand';
 import { mirrorKotlinInlineModulesCommand } from './commands/mirrorKotlinInlineModulesCommand';
@@ -9,7 +9,7 @@ import { verifyCommand } from './commands/verifyCommand';
 import { createMemoizer } from './memoize';
 
 async function main(args: string[]) {
-  const cli = commander
+  const cli = new Command()
     .version(require('expo-modules-autolinking/package.json').version)
     .description('CLI command that searches for native modules to autolink them.');
 

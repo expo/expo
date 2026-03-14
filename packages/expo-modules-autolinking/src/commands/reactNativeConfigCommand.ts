@@ -1,4 +1,4 @@
-import commander from 'commander';
+import { Command } from 'commander';
 
 import {
   AutolinkingCommonArguments,
@@ -13,7 +13,7 @@ interface ReactNativeConfigArguments extends AutolinkingCommonArguments {
 }
 
 /** The react-native-config command (like RN CLI linking) */
-export function reactNativeConfigCommand(cli: commander.CommanderStatic) {
+export function reactNativeConfigCommand(cli: Command) {
   return registerAutolinkingArguments(cli.command('react-native-config [searchPaths...]'))
     .option(
       '-p, --platform [platform]',
