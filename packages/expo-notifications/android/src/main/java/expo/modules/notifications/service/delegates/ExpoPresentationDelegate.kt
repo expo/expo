@@ -2,6 +2,7 @@ package expo.modules.notifications.service.delegates
 
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -35,6 +36,7 @@ open class ExpoPresentationDelegate(
 
   companion object {
     protected const val ANDROID_NOTIFICATION_ID = 0
+    private const val GROUP_SUMMARY_TAG_SUFFIX = ":expo-group-summary"
 
     protected const val INTERNAL_IDENTIFIER_SCHEME = "expo-notifications"
     protected const val INTERNAL_IDENTIFIER_AUTHORITY = "foreign_notifications"
@@ -104,12 +106,17 @@ open class ExpoPresentationDelegate(
     }
     CoroutineScope(Dispatchers.IO).launch {
       val androidNotification = createNotification(notification, behavior)
+      val manager = NotificationManagerCompat.from(context)
 
-      NotificationManagerCompat.from(context).notify(
+      manager.notify(
         notification.notificationRequest.identifier,
         getNotifyId(notification.notificationRequest),
         androidNotification
       )
+
+      notification.notificationRequest.content.group?.let { group ->
+        postGroupSummaryIfNeeded(manager, group, androidNotification)
+      }
     }
   }
 
@@ -129,6 +136,74 @@ open class ExpoPresentationDelegate(
   }
 
   /**
+   * Posts (or updates) a group summary notification so that Android visually
+   * bundles all notifications sharing the same group key.
+   */
+  private fun postGroupSummaryIfNeeded(
+    manager: NotificationManagerCompat,
+    group: String,
+    androidNotification: android.app.Notification
+  ) {
+    val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      androidNotification.channelId
+    } else {
+      null
+    }
+
+    val builder = if (channelId != null) {
+      NotificationCompat.Builder(context, channelId)
+    } else {
+      NotificationCompat.Builder(context)
+    }
+
+    val summaryNotification = builder
+      .setSmallIcon(getSmallIcon())
+      .setGroup(group)
+      .setGroupSummary(true)
+      .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+      .setAutoCancel(true)
+      .build()
+
+    manager.notify("$group$GROUP_SUMMARY_TAG_SUFFIX", ANDROID_NOTIFICATION_ID, summaryNotification)
+  }
+
+  private fun getSmallIcon(): Int {
+    try {
+      val ai = context.packageManager.getApplicationInfo(
+        context.packageName, PackageManager.GET_META_DATA
+      )
+      if (ai.metaData.containsKey(ExpoNotificationBuilder.META_DATA_DEFAULT_ICON_KEY)) {
+        return ai.metaData.getInt(ExpoNotificationBuilder.META_DATA_DEFAULT_ICON_KEY)
+      }
+    } catch (e: Exception) {
+      Log.e("expo-notifications", "Could not fetch default notification icon.", e)
+    }
+    return context.applicationInfo.icon
+  }
+
+  /**
+   * Cancels group summary notifications whose groups no longer have any child notifications.
+   */
+  private fun cleanUpOrphanedGroupSummaries(manager: NotificationManagerCompat) {
+    val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val activeNotifications = nm.activeNotifications
+
+    val summaryTags = activeNotifications
+      .filter { it.tag?.endsWith(GROUP_SUMMARY_TAG_SUFFIX) == true }
+      .map { it.tag!! }
+
+    for (summaryTag in summaryTags) {
+      val groupKey = summaryTag.removeSuffix(GROUP_SUMMARY_TAG_SUFFIX)
+      val hasGroupMembers = activeNotifications.any {
+        it.tag != summaryTag && it.notification?.group == groupKey
+      }
+      if (!hasGroupMembers) {
+        manager.cancel(summaryTag, ANDROID_NOTIFICATION_ID)
+      }
+    }
+  }
+
+  /**
    * Callback called to fetch a collection of currently displayed notifications.
    *
    * **Note:** This feature is only supported on Android 23+.
@@ -137,21 +212,25 @@ open class ExpoPresentationDelegate(
    */
   override fun getAllPresentedNotifications(): Collection<Notification> {
     val notificationManager = (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-    return notificationManager.activeNotifications.mapNotNull { getNotification(it) }
+    return notificationManager.activeNotifications
+      .filter { it.tag?.endsWith(GROUP_SUMMARY_TAG_SUFFIX) != true }
+      .mapNotNull { getNotification(it) }
   }
 
   override fun dismissNotifications(identifiers: Collection<String>) {
+    val manager = NotificationManagerCompat.from(context)
     identifiers.forEach { identifier ->
       val foreignNotification = parseNotificationIdentifier(identifier)
       if (foreignNotification != null) {
         // Foreign notification identified by us
-        NotificationManagerCompat.from(context).cancel(foreignNotification.first, foreignNotification.second)
+        manager.cancel(foreignNotification.first, foreignNotification.second)
       } else {
         // If the notification exists, let's assume it's ours, we have no reason to believe otherwise
         val existingNotification = this.getAllPresentedNotifications().find { it.notificationRequest.identifier == identifier }
-        NotificationManagerCompat.from(context).cancel(identifier, getNotifyId(existingNotification?.notificationRequest))
+        manager.cancel(identifier, getNotifyId(existingNotification?.notificationRequest))
       }
     }
+    cleanUpOrphanedGroupSummaries(manager)
   }
 
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
@@ -191,6 +270,7 @@ open class ExpoPresentationDelegate(
       .setSubtitle(NotificationCompat.getSubText(notification)?.toString())
       .setAutoDismiss(NotificationCompat.getAutoCancel(notification))
       .setSticky(NotificationCompat.getOngoing(notification))
+      .setGroup(NotificationCompat.getGroup(notification))
       .setPriority(NotificationPriority.fromNativeValue(notification.priority)) // using deprecated field
       .setVibrationPattern(notification.vibrate) // using deprecated field
       .setSound(notification.sound)

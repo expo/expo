@@ -67,6 +67,9 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
 
   override val categoryId = notificationData.categoryId
 
+  // FCM's RemoteMessage.Notification has no group field — only the data payload can carry it
+  override val group = notificationData.group
+
   override val isSticky = notificationData.isSticky
 
   override val subText = notificationData.subText
