@@ -35,6 +35,12 @@ open class NotificationsEmitter : Module(), NotificationListener {
       NotificationManager.removeListener(this@NotificationsEmitter)
     }
 
+    OnStartObserving("onDidReceiveNotificationResponse") {
+      lastNotificationResponseBundle?.let {
+        sendEvent(NEW_RESPONSE_EVENT_NAME, it)
+      }
+    }
+
     Function<Bundle?>("getLastNotificationResponse") {
       lastNotificationResponseBundle
     }

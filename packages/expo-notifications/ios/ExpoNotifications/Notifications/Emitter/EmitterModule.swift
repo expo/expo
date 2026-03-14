@@ -23,6 +23,12 @@ open class EmitterModule: Module, NotificationDelegate {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
+    OnStartObserving(onDidReceiveNotificationResponse) {
+      if let lastResponse = lastResponse {
+        self.sendEvent(onDidReceiveNotificationResponse, lastResponse)
+      }
+    }
+
     Function("getLastNotificationResponse") { () -> [String: Any]? in
       return lastResponse
     }
