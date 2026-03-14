@@ -335,6 +335,14 @@ class ExpoUIModule : Module() {
       CardContent(props)
     }
 
+    ExpoUIView("ElevatedCardView") { props: ElevatedCardProps ->
+      ElevatedCardContent(props)
+    }
+
+    ExpoUIView("OutlinedCardView") { props: OutlinedCardProps ->
+      OutlinedCardContent(props)
+    }
+
     ExpoUIView("ListItemView") { props: ListItemProps ->
       ListItemContent(props)
     }
