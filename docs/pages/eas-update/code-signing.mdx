@@ -36,6 +36,34 @@ This command generated a key pair along with a code signing certificate to be in
 - `../keys/public-key.pem`: the public key of the key pair.
 - `certs/certificate.pem`: the code signing certificate configured to be valid for 10 years. This file should be added to source control (if applicable).
 
+<Collapsible summary="Important: File handling and .gitignore configuration">
+
+**Certificate vs Private Key Handling:**
+
+- **Certificate file (`certs/certificate.pem`)**: **MUST** be committed to source control and included in your app builds. This file is not sensitive and is required for signature verification.
+
+- **Private key file (`../keys/private-key.pem`)**: **MUST NOT** be committed to source control. Keep this file secure and private (use KMS, password manager, etc.).
+
+**Common .gitignore Issue:**
+
+Projects created with `create-expo-app` include `*.pem` in `.gitignore` by default, which will prevent the certificate from being included in builds. This causes build errors like:
+
+```
+Error: File not found at `updates.codeSigningCertificate` path: /path/to/certs/certificate.pem
+```
+
+**Solution:** Update your `.gitignore` to allow the certificate while still protecting private keys:
+
+```gitignore
+# Ignore all .pem files except certificates
+*.pem
+!certs/certificate.pem
+```
+
+If you encounter build issues, see the [troubleshooting section](#troubleshooting) for detailed solutions.
+
+</Collapsible>
+
 - The generated private key must be kept private and secure. The command above suggests generating and storing these keys in a directory outside of your source control to ensure they are not accidentally checked into source control. We recommend storing the private key in the same way you would store other sensitive information (KMS, password manager, and so on), and how you store it will vary the steps needed to publish an update in step (3).
 - The public key may be stored alongside the private key, but isn't sensitive.
 - The certificate should be included in the project (checked into source control). It contains the public key and a method for verifying code signatures. When a signed update is downloaded, the update's signature is verified using this certificate.
@@ -79,6 +107,8 @@ After running the above command, your **app.json** will include additional confi
   }
 }
 ```
+
+> **warning** Make sure that `certs/certificate.pem` is not ignored by your `.gitignore` file. If you encounter build errors about the certificate file not being found, check the [troubleshooting section](#troubleshooting) for solutions.
 
 </Collapsible>
 
@@ -195,3 +225,53 @@ The process of removing code signing from an app is similar to [key rotation](#k
 1. Backup the old key and certificate that were generated in step (1) above.
 2. Remove the `updates.codeSigningMetadata` field from your app config (**app.json**).
 3. The new certificate-less app is a new distinct runtime, so a new runtime version should be set for builds to ensure that only unsigned updates run in the new build.
+
+## Troubleshooting
+
+### Certificate file not found during build
+
+If you encounter an error like:
+
+```
+Error: [android.manifest]: withAndroidManifestBaseMod: File not found at `updates.codeSigningCertificate` path: /path/to/certs/certificate.pem
+```
+
+This typically occurs when the certificate file is being ignored by `.gitignore`. 
+
+**Common causes:**
+- Projects created with `create-expo-app` include `*.pem` in `.gitignore` by default
+- Custom `.gitignore` rules that exclude certificate files
+- Certificate file not committed to source control
+
+**Solutions:**
+1. **Check your `.gitignore` file** and ensure `certs/certificate.pem` is not being ignored. If you have a rule like `*.pem`, you can add an exception:
+   ```gitignore
+   # Ignore all .pem files except certificates
+   *.pem
+   !certs/certificate.pem
+   ```
+
+2. **Verify the file exists** in your repository by running:
+   ```bash
+   git ls-files | grep certificate.pem
+   ```
+   If the command returns no results, the file is not tracked by git.
+
+3. **Force add the certificate** if it's being ignored:
+   ```bash
+   git add -f certs/certificate.pem
+   git commit -m "Add code signing certificate"
+   ```
+
+4. **Check the file path** in your **app.json** matches the actual file location:
+   ```json
+   {
+     "expo": {
+       "updates": {
+         "codeSigningCertificate": "./certs/certificate.pem"
+       }
+     }
+   }
+   ```
+
+Remember: Only the certificate file (`certs/certificate.pem`) should be committed to source control. The private key files should remain secure and outside of your repository.
