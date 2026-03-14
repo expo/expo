@@ -220,6 +220,7 @@ class AudioModule : Module() {
       }
 
       players.values.forEach { player ->
+        player.serviceConnection.playsInSilentMode = playsInSilentMode
         player.serviceConnection.playbackServiceBinder?.service?.playsInSilentMode = playsInSilentMode
       }
 
