@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders NativeStack 1`] = `
+"2:I["src/native-stack-view/NativeStackNavigator.tsx",[],"NativeStackWithContext",1]
+1:{"name":"","env":"Server","key":null,"owner":null,"props":{}}
+0:D"$1"
+0:["$","$L2",null,{},"$1"]"
+`;

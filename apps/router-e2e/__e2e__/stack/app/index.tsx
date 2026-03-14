@@ -9,7 +9,9 @@ import {
   Switch,
   TextInput,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-screens/experimental';
 
 import { IsProtectedContext } from '../utils/contexts';
 
@@ -22,7 +24,16 @@ const HomeIndex = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   return (
-    <>
+    <SafeAreaView
+      edges={Platform.select({
+        ios: {},
+        default: {
+          top: true,
+          bottom: true,
+          left: true,
+          right: true,
+        },
+      })}>
       <ScrollView
         style={{ flex: 1, backgroundColor: '#fff' }}
         contentContainerStyle={{ alignItems: 'center', gap: 16 }}
@@ -107,7 +118,7 @@ const HomeIndex = () => {
         )}
         <Stack.Toolbar.Spacer />
       </Stack.Toolbar>
-    </>
+    </SafeAreaView>
   );
 };
 
