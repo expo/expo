@@ -157,7 +157,7 @@ open class ExpoPresentationDelegate(
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
   protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehaviorRecord?): android.app.Notification =
-    ExpoNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).apply {
+    ExpoNotificationBuilder(context, notification, HybridNotificationCategoriesStore(context, SharedPreferencesNotificationCategoriesStore(context))).apply {
       setAllowedBehavior(notificationBehavior)
     }.build()
 

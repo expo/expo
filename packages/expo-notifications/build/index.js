@@ -28,9 +28,7 @@ export { getAllScheduledNotificationsAsync } from './getAllScheduledNotification
 export { scheduleNotificationAsync } from './scheduleNotificationAsync';
 export { cancelScheduledNotificationAsync } from './cancelScheduledNotificationAsync';
 export { cancelAllScheduledNotificationsAsync } from './cancelAllScheduledNotificationsAsync';
-export { getNotificationCategoriesAsync } from './getNotificationCategoriesAsync';
-export { setNotificationCategoryAsync } from './setNotificationCategoryAsync';
-export { deleteNotificationCategoryAsync } from './deleteNotificationCategoryAsync';
+export { setNotificationCategoriesAsync, deleteNotificationCategoryAsync, setNotificationCategoryAsync, getNotificationCategoriesAsync, } from './NotificationCategories';
 export { getNextTriggerDateAsync } from './getNextTriggerDateAsync';
 export { useLastNotificationResponse } from './useLastNotificationResponse';
 export { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';

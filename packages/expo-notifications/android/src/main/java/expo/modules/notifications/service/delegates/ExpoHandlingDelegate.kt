@@ -137,7 +137,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
-    if (notificationResponse.action.opensAppToForeground()) {
+    if (notificationResponse.action.options.opensAppToForeground) {
       openAppToForeground(context, notificationResponse)
     }
 

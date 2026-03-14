@@ -9,7 +9,10 @@ import androidx.test.filters.SmallTest
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import expo.modules.notifications.notifications.interfaces.INotificationContent
+import expo.modules.notifications.notifications.categories.NotificationActionRecord
+import expo.modules.notifications.notifications.categories.NotificationCategoryRecord
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
+import expo.modules.notifications.service.delegates.HybridNotificationCategoriesStore
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
@@ -26,15 +29,16 @@ import org.junit.Test
 class ExpoNotificationBuilderTest {
 
   private lateinit var context: Context
-  private lateinit var categoriesStore: SharedPreferencesNotificationCategoriesStore
+  private lateinit var hybridStore: HybridNotificationCategoriesStore
 
   @Before
   fun setup() {
     context = InstrumentationRegistry.getInstrumentation().targetContext
-    categoriesStore = SharedPreferencesNotificationCategoriesStore(context)
-    val na = NotificationAction("test-action", "Test Action", true)
-    val nc = NotificationCategory("test-category", listOf(na))
-    categoriesStore.saveNotificationCategory(nc)
+    val legacyStore = SharedPreferencesNotificationCategoriesStore(context)
+    hybridStore = HybridNotificationCategoriesStore(context, legacyStore)
+    val action = NotificationActionRecord("test-action", "Test Action", null, NotificationActionRecord.Options(true))
+    val category = NotificationCategoryRecord("test-category", listOf(action))
+    hybridStore.saveCategory(category)
   }
 
   private fun createTestNotificationBuilder(notificationContent: INotificationContent): ExpoNotificationBuilder {
@@ -42,7 +46,7 @@ class ExpoNotificationBuilderTest {
     val exNotification =
       Notification(notificationRequest)
 
-    return ExpoNotificationBuilder(context, exNotification, categoriesStore)
+    return ExpoNotificationBuilder(context, exNotification, hybridStore)
   }
 
   private fun assertIsSilent(notification: Notification) {
