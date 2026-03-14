@@ -18,6 +18,16 @@ internal struct DatePickerView: ExpoSwiftUI.View {
       .onChange(of: date) { newDate in
         props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
       }
+      .onAppear {
+        if let selection = props.selection, selection != date {
+          date = selection
+        }
+      }
+      .onChange(of: props.selection) { newSelection in
+        if let newSelection, newSelection != date {
+          date = newSelection
+        }
+      }
       .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
 #endif
   }
