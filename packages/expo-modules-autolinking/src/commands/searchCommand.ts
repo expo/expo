@@ -1,4 +1,4 @@
-import commander from 'commander';
+import { Command } from 'commander';
 
 import {
   AutolinkingCommonArguments,
@@ -11,7 +11,7 @@ interface SearchArguments extends AutolinkingCommonArguments {
   json?: boolean | null;
 }
 
-export function searchCommand(cli: commander.CommanderStatic) {
+export function searchCommand(cli: Command) {
   return registerAutolinkingArguments(cli.command('search [searchPaths...]'))
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .action(async (searchPaths: string[] | null, commandArguments: SearchArguments) => {

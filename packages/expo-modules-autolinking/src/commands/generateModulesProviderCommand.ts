@@ -1,4 +1,4 @@
-import commander from 'commander';
+import { Command } from 'commander';
 import fs from 'fs';
 
 import {
@@ -23,7 +23,7 @@ type PartialPodfileProperties = {
 };
 
 /** Generates a source file listing all packages to link in the runtime */
-export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
+export function generateModulesProviderCommand(cli: Command) {
   return registerAutolinkingArguments(cli.command('generate-modules-provider [searchPaths...]'))
     .option(
       '-t, --target <path>',
