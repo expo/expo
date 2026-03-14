@@ -25,8 +25,16 @@ class DomWebViewModule : Module() {
         view.setSource(source)
       }
 
+      Prop("injectedJavaScript") { view: DomWebView, script: String ->
+        view.setInjectedJS(script)
+      }
+
       Prop("injectedJavaScriptBeforeContentLoaded") { view: DomWebView, script: String ->
         view.setInjectedJSBeforeContentLoaded(script)
+      }
+
+      Prop("injectedJavaScriptObject") { view: DomWebView, source: String ->
+        view.setInjectedJavaScriptObject(source)
       }
 
       Prop("webviewDebuggingEnabled") { view: DomWebView, enabled: Boolean ->
