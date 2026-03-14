@@ -23,6 +23,7 @@ const findUpProjectRoot_1 = require("./findUpProjectRoot");
         throw new Error(`Unsupported createUpdatesResourcesMode: ${createUpdatesResourcesMode}`);
     }
     const entryFileArg = process.argv[6];
+    require('@expo/env').load(possibleProjectRoot);
     await Promise.all([
         createUpdatesResourcesMode === 'all'
             ? (0, createManifestForBuildAsync_1.createManifestForBuildAsync)(platform, possibleProjectRoot, destinationDir, entryFileArg)

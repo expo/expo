@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Load `@expo/env` before evaluating Expo config in native build phase scripts ([#43635](https://github.com/expo/expo/pull/43635) by [@leeseonghyun21](https://github.com/leeseonghyun21))
+
 ### 💡 Others
 
 - Remove pin on `arg` dependency ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
