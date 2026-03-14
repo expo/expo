@@ -3,6 +3,12 @@ export type FileType = {
   content: string;
 };
 
+export type Attribute = {
+  'key.attribute': string;
+  'key.length': number;
+  'key.offset': number;
+};
+
 export type Structure = {
   'key.substructure': Structure[];
   'key.typename': string;
@@ -10,6 +16,9 @@ export type Structure = {
   'key.kind': string;
   'key.offset': number;
   'key.length': number;
+  'key.nameoffset': number;
+  'key.inheritedtypes': { 'key.name': string }[];
+  'key.attributes': Attribute[];
 };
 
 export type CursorInfoOutput = {
@@ -45,11 +54,6 @@ export type Prop = {
   types: Omit<ClosureTypes, 'returnType'>;
 };
 
-export type Constant = {
-  name: string;
-  types: ClosureTypes | null;
-};
-
 export type OutputModuleDefinition = {
   name: string;
   views: OutputNestedClassDefinition[];
@@ -57,7 +61,6 @@ export type OutputModuleDefinition = {
   events: {
     name: string;
   }[];
-  constants: Constant[];
 } & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]> &
   Record<'props', Prop[]>;
 
