@@ -12,24 +12,25 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
 data class DockedSearchBarProps(
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onQueryChange: ComposeEventDispatcher<GenericEventPayload1<String>> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.DockedSearchBarContent(
-  props: DockedSearchBarProps,
-  onQueryChange: (GenericEventPayload1<String>) -> Unit
+  props: DockedSearchBarProps
 ) {
   val searchBarState = rememberSearchBarState()
   val textFieldState = rememberTextFieldState()
 
   LaunchedEffect(Unit) {
     snapshotFlow { textFieldState.text.toString() }
-      .collect { onQueryChange(GenericEventPayload1(it)) }
+      .collect { props.onQueryChange(GenericEventPayload1(it)) }
   }
 
   DockedSearchBar(

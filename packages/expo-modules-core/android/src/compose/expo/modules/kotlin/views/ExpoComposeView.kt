@@ -17,10 +17,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.viewevent.CoalescingKey
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.ViewEvent
-import expo.modules.kotlin.viewevent.ViewEventDelegate
 
 data class ComposableScope(
   val rowScope: RowScope? = null,
@@ -231,9 +228,6 @@ class FunctionalComposableScope(
     view.Children(composableScope, filter)
   }
 
-  inline fun <reified T> EventDispatcher(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
-    return view.EventDispatcher<T>(coalescingKey)
-  }
 }
 
 @SuppressLint("ViewConstructor")

@@ -2,6 +2,7 @@ package expo.modules.ui.menu
 
 import android.graphics.Color
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.ui.ModifierList
 
@@ -14,5 +15,6 @@ data class DropdownMenuProps(
   val activationMethod: ActivationMethod = ActivationMethod.SINGLE_PRESS,
   val expanded: Boolean = false,
   val color: Color? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onDismissRequest: ComposeEventDispatcher<Unit> = ComposeEventDispatcher()
 ) : ComposeProps

@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -67,7 +68,8 @@ data class PickerProps(
   val elementColors: PickerColors = PickerColors(),
   val variant: String = "segmented",
   val buttonModifiers: List<ModifierType> = emptyList(),
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onOptionSelected: ComposeEventDispatcher<PickerOptionSelectedEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 data class PickerOptionSelectedEvent(
@@ -77,9 +79,9 @@ data class PickerOptionSelectedEvent(
 
 @Composable
 fun FunctionalComposableScope.PickerContent(
-  props: PickerProps,
-  onOptionSelected: (PickerOptionSelectedEvent) -> Unit
+  props: PickerProps
 ) {
+  val onOptionSelected = props.onOptionSelected
   val selectedIndex = props.selectedIndex
   val options = props.options
   val colors = props.elementColors

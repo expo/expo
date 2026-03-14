@@ -8,23 +8,25 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
 data class PullToRefreshBoxProps(
   val isRefreshing: Boolean = false,
   val modifiers: ModifierList = emptyList(),
-  val loadingIndicatorModifiers: ModifierList = emptyList()
+  val loadingIndicatorModifiers: ModifierList = emptyList(),
+  val onRefresh: ComposeEventDispatcher<Unit> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
-fun FunctionalComposableScope.PullToRefreshBoxContent(props: PullToRefreshBoxProps, onRefresh: () -> Unit) {
+fun FunctionalComposableScope.PullToRefreshBoxContent(props: PullToRefreshBoxProps) {
   val isRefreshing = props.isRefreshing
   val pullToRefreshState = rememberPullToRefreshState()
 
   PullToRefreshBox(
     isRefreshing = isRefreshing,
-    onRefresh = { onRefresh() },
+    onRefresh = { props.onRefresh(Unit) },
     state = pullToRefreshState,
     indicator = {
       PullToRefreshDefaults.LoadingIndicator(

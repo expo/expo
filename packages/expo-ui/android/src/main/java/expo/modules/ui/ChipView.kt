@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeEventDispatcher
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
@@ -81,13 +82,13 @@ data class AssistChipProps(
   val colors: AssistChipColors = AssistChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onNativeClick: ComposeEventDispatcher<ChipPressedEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.AssistChipContent(
-  props: AssistChipProps,
-  onPress: (ChipPressedEvent) -> Unit
+  props: AssistChipProps
 ) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
@@ -116,7 +117,7 @@ fun FunctionalComposableScope.AssistChipContent(
   }
 
   AssistChip(
-    onClick = { onPress(ChipPressedEvent()) },
+    onClick = { props.onNativeClick(ChipPressedEvent()) },
     label = slotContent("label") ?: {},
     leadingIcon = slotContent("leadingIcon"),
     trailingIcon = slotContent("trailingIcon"),
@@ -138,13 +139,13 @@ data class FilterChipProps(
   val colors: FilterChipColors = FilterChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onNativeClick: ComposeEventDispatcher<ChipPressedEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.FilterChipContent(
-  props: FilterChipProps,
-  onPress: (ChipPressedEvent) -> Unit
+  props: FilterChipProps
 ) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
@@ -177,7 +178,7 @@ fun FunctionalComposableScope.FilterChipContent(
 
   FilterChip(
     selected = props.selected,
-    onClick = { onPress(ChipPressedEvent()) },
+    onClick = { props.onNativeClick(ChipPressedEvent()) },
     label = slotContent("label") ?: {},
     leadingIcon = slotContent("leadingIcon"),
     trailingIcon = slotContent("trailingIcon"),
@@ -199,14 +200,14 @@ data class InputChipProps(
   val colors: InputChipColors = InputChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onNativeClick: ComposeEventDispatcher<ChipPressedEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FunctionalComposableScope.InputChipContent(
-  props: InputChipProps,
-  onPress: (ChipPressedEvent) -> Unit
+  props: InputChipProps
 ) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
@@ -239,7 +240,7 @@ fun FunctionalComposableScope.InputChipContent(
   }
 
   InputChip(
-    onClick = { onPress(ChipPressedEvent()) },
+    onClick = { props.onNativeClick(ChipPressedEvent()) },
     label = slotContent("label") ?: {},
     enabled = props.enabled,
     selected = props.selected,
@@ -261,13 +262,13 @@ data class SuggestionChipProps(
   val colors: SuggestionChipColors = SuggestionChipColors(),
   val elevation: Float? = null,
   val border: ChipBorder? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  val onNativeClick: ComposeEventDispatcher<ChipPressedEvent> = ComposeEventDispatcher()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.SuggestionChipContent(
-  props: SuggestionChipProps,
-  onPress: (ChipPressedEvent) -> Unit
+  props: SuggestionChipProps
 ) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
@@ -295,7 +296,7 @@ fun FunctionalComposableScope.SuggestionChipContent(
   }
 
   SuggestionChip(
-    onClick = { onPress(ChipPressedEvent()) },
+    onClick = { props.onNativeClick(ChipPressedEvent()) },
     label = slotContent("label") ?: {},
     icon = slotContent("icon"),
     enabled = props.enabled,
