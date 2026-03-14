@@ -1,11 +1,22 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 /**
+ Protocol for handling authentication challenges from URLSession.
+ Native modules can implement this to provide credentials for challenges
+ like client certificate authentication (mTLS).
+ */
+public protocol URLSessionAuthenticationChallengeDelegate: AnyObject {
+  func credential(for challenge: URLAuthenticationChallenge) -> URLCredential?
+}
+
+/**
  Shared URLSessionDelegate instance and delete calls back to ExpoRequestInterceptorProtocol instances.
  */
 public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate {
   private let dispatchQueue: DispatchQueue
   private var delegateMap: [AnyHashable: URLSessionDataDelegate] = [:]
+
+  public weak var authenticationChallengeDelegate: URLSessionAuthenticationChallengeDelegate?
 
   public init(dispatchQueue: DispatchQueue) {
     self.dispatchQueue = dispatchQueue
@@ -89,6 +100,7 @@ public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDeleg
     didReceive challenge: URLAuthenticationChallenge,
     completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
   ) {
+    // 1. Check per-task delegate first
     if let delegate = getDelegate(task: task),
       delegate.responds(to: #selector(URLSessionTaskDelegate.urlSession(_:task:didReceive:completionHandler:))) {
       delegate.urlSession?(
@@ -96,9 +108,23 @@ public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDeleg
         task: task,
         didReceive: challenge,
         completionHandler: completionHandler)
-    } else {
-      completionHandler(.performDefaultHandling, nil)
+      return
     }
+
+    // 2. Check authentication challenge delegate
+    if let credential = authenticationChallengeDelegate?.credential(for: challenge) {
+      completionHandler(.useCredential, credential)
+      return
+    }
+
+    // 3. Check URLCredentialStorage for stored credentials
+    if let credential = URLCredentialStorage.shared.defaultCredential(for: challenge.protectionSpace) {
+      completionHandler(.useCredential, credential)
+      return
+    }
+
+    // 4. Fall back to default handling
+    completionHandler(.performDefaultHandling, nil)
   }
 
   public func urlSession(
