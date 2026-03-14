@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix Fabric mount/detach mismatch in `BlurTargetView` that could trigger `view already removed from parent` errors during root tree transitions. ([#43595](https://github.com/expo/expo/pull/43595) by [@stathis](https://github.com/efstathiosntonas))
+- [Android] Fix the initial blur value not taking the `blurReductionFactor` into account. ([#43814](https://github.com/expo/expo/pull/43814) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
