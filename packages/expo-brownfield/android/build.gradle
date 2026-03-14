@@ -1,7 +1,25 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    def kotlinVersion = '2.1.20'
+    if (rootProject.ext.has('kotlinVersion')) {
+      def v = rootProject.ext.get('kotlinVersion')
+      kotlinVersion = (v instanceof Closure) ? v.call() : v.toString()
+    } else if (rootProject.hasProperty('kotlinVersion')) {
+      kotlinVersion = rootProject.property('kotlinVersion').toString()
+    }
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
 plugins {
   id 'com.android.library'
   id 'expo-module-gradle-plugin'
 }
+
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'expo.modules.brownfield'
 version = '55.0.11'
@@ -16,6 +34,10 @@ android {
     versionCode 1
     versionName '55.0.11'
   }
+
+  buildFeatures {
+    compose true
+  }
 }
 
 dependencies {
@@ -24,4 +46,5 @@ dependencies {
   implementation "com.squareup.okhttp3:okhttp:4.9.2"
   compileOnly "androidx.activity:activity-ktx:1.8.0"
   compileOnly "androidx.core:core-ktx:1.12.0"
+  compileOnly "androidx.compose.runtime:runtime:1.9.3"
 }

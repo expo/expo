@@ -56,28 +56,34 @@ appId: dev.expo.brownfieldintegratedtester
 
 # Validate property wrappers (SwiftUI)
 # and validate JS to native synchronization
+# Return to initial native view
 - runFlow:
     when:
       platform: iOS
     commands:
-      # Return to initial native view
       - swipe:
           direction: RIGHT
       - swipe:
           direction: RIGHT
-      # Open Shared State native screen
-      - tapOn:
-          id: openStateView
-      # Assert value from JS is received
-      - assertVisible: 'Time: 2[0-9]{3}.*'
-      # Assert property wrapper works
-      - assertVisible: "0"
-      - tapOn:
-          id: counterIncrement
-      - assertVisible: "1"
-      - tapOn:
-          id: counterDecrement
-      - tapOn:
-          id: counterDecrement
-      - assertVisible: "-1"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - back
+
+# Open Shared State native screen
+- tapOn:
+    id: openStateView
+# Assert value from JS is received
+- assertVisible: 'Time: 2[0-9]{3}.*'
+# Assert property wrapper works
+- assertVisible: "0"
+- tapOn:
+    id: counterIncrement
+- assertVisible: "1"
+- tapOn:
+    id: counterDecrement
+- tapOn:
+    id: counterDecrement
+- assertVisible: "-1"
       

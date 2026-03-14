@@ -26,5 +26,10 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
+        <activity
+            android:name=".StateActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
     </application>
 </manifest>
