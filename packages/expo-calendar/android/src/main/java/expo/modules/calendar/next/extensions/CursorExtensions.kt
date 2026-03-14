@@ -3,30 +3,34 @@ package expo.modules.calendar.next.extensions
 import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.CalendarContract
+import expo.modules.calendar.next.domain.AlarmMethod as DomainAlarmMethod
+import expo.modules.calendar.next.domain.AttendeeType as DomainAttendeeType
+import expo.modules.calendar.next.domain.CalendarAccessLevel as DomainCalendarAccessLevel
+import expo.modules.calendar.next.domain.CalendarEntity
+import expo.modules.calendar.next.domain.CalendarSource
 import expo.modules.calendar.next.records.AttendeeRecord
 import expo.modules.calendar.next.records.AttendeeRole
 import expo.modules.calendar.next.records.AttendeeStatus
 import expo.modules.calendar.next.records.AttendeeType
-import expo.modules.calendar.next.records.CalendarRecord
 import expo.modules.calendar.next.records.EventAccessLevel
 import expo.modules.calendar.next.records.EventAvailability
 import expo.modules.calendar.next.records.EventRecord
 import expo.modules.calendar.next.records.EventStatus
 import expo.modules.calendar.next.records.AlarmMethod
 import expo.modules.calendar.next.records.AlarmRecord
-import expo.modules.calendar.next.records.CalendarAccessLevel
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
-import expo.modules.calendar.next.records.Source
 import expo.modules.calendar.next.utils.sdf
 import java.util.Calendar
 
 private const val BEGIN_DATE_INDEX: Int = 3
 private const val END_DATE_INDEX: Int = 4
 
-fun Cursor.toCalendarRecord(): CalendarRecord {
+fun Cursor.toCalendarEntity(): CalendarEntity {
   val accessLevel = optInt(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
+  val accountName = optString(CalendarContract.Calendars.ACCOUNT_NAME)
+  val accountType = optString(CalendarContract.Calendars.ACCOUNT_TYPE)
 
-  return CalendarRecord(
+  return CalendarEntity(
     id = optString(CalendarContract.Calendars._ID),
     title = optString(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME),
     isPrimary = optInt(CalendarContract.Calendars.IS_PRIMARY) == 1,
@@ -37,10 +41,13 @@ fun Cursor.toCalendarRecord(): CalendarRecord {
     isVisible = optInt(CalendarContract.Calendars.VISIBLE) != 0,
     isSynced = optInt(CalendarContract.Calendars.SYNC_EVENTS) != 0,
     allowsModifications = isModificationAllowed(accessLevel),
-    accessLevel = CalendarAccessLevel.fromAccessLevelString(optString(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)),
-    allowedReminders = AlarmMethod.fromReminderString(optString(CalendarContract.Calendars.ALLOWED_REMINDERS)),
-    allowedAttendeeTypes = AttendeeType.fromAttendeeTypesString(optString(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)),
-    source = createSource(this)
+    accessLevel = DomainCalendarAccessLevel.fromContentProviderValue(accessLevel ?: CalendarContract.Calendars.CAL_ACCESS_NONE),
+    allowedReminders = AlarmMethod.fromReminderString(optString(CalendarContract.Calendars.ALLOWED_REMINDERS))
+      .mapNotNull { rm -> DomainAlarmMethod.entries.find { it.name == rm.name } },
+    allowedAttendeeTypes = AttendeeType.fromAttendeeTypesString(optString(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES))
+      .mapNotNull { at -> DomainAttendeeType.entries.find { it.name == at.name } },
+    allowedAvailabilities = null,
+    source = CalendarSource(name = accountName, type = accountType)
   )
 }
 
@@ -125,18 +132,6 @@ private fun isModificationAllowed(accessLevel: Int?): Boolean {
     CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
   )
   return allowedLevels.contains(accessLevel)
-}
-
-private fun createSource(cursor: Cursor): Source {
-  val accountName = cursor.optString(CalendarContract.Calendars.ACCOUNT_NAME)
-  val accountType = cursor.optString(CalendarContract.Calendars.ACCOUNT_TYPE)
-
-  return Source(
-    id = accountName,
-    type = accountType,
-    name = accountName,
-    isLocalAccount = accountType == CalendarContract.ACCOUNT_TYPE_LOCAL
-  )
 }
 
 private fun serializeAlarms(contentResolver: ContentResolver, eventId: String): MutableList<AlarmRecord>? {
