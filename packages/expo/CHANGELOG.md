@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add TypeScript declarations for image imports ([#43845](https://github.com/expo/expo/pull/43845) by [@karlhorky](https://github.com/karlhorky))
+
 ### 💡 Others
 
 - [iOS] Remove `RCTHostRuntimeDelegate` usage now that it's merged into `RCTHostDelegate`. ([#43838](https://github.com/expo/expo/pull/43838) by [@zoontek](https://github.com/zoontek))
