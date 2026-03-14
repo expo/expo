@@ -109,6 +109,6 @@ function fileNameFromContents({ filepath, src }) {
     return getFileName(decoded) + '-' + (0, hash_1.hashString)(src);
 }
 function getFileName(module) {
-    return path_1.default.basename(module).replace(/\.[^.]+$/, '');
+    return path_1.default.basename(module).replace(/\.\w+$/, '');
 }
 //# sourceMappingURL=getCssDeps.js.map
