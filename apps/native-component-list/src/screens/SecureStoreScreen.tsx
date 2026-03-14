@@ -45,23 +45,43 @@ function SecureStoreView() {
   const [value, setValue] = React.useState<string | undefined>();
   const [service, setService] = React.useState<string | undefined>();
   const [requireAuth, setRequireAuth] = React.useState<boolean>(false);
+  const [canUseFallback, setCanUseFallback] = React.useState<boolean>(false);
   const [byteSize, setByteSize] = React.useState<string>('4096');
+
+  const forceDeviceFallback = React.useMemo(
+    () =>
+      !SecureStore.canUseBiometricAuthentication() &&
+      SecureStore.canUseDeviceCredentialsAuthentication(),
+    []
+  );
+
+  const canUseAnyAuthentication = React.useMemo(
+    () =>
+      SecureStore.canUseDeviceCredentialsAuthentication() ||
+      SecureStore.canUseBiometricAuthentication(),
+    []
+  );
+
+  const authMode = React.useMemo(() => {
+    if (!requireAuth) return false;
+    return forceDeviceFallback || canUseFallback ? 'userPresence' : 'biometry';
+  }, [requireAuth, canUseFallback, forceDeviceFallback]);
 
   const storeOptions = React.useMemo<SecureStore.SecureStoreOptions>(
     () => ({
       keychainService: service,
-      requireAuthentication: requireAuth,
-      authenticationPrompt: requireAuth ? 'Authenticate' : undefined,
+      requireAuthentication: authMode,
+      authenticationPrompt: authMode ? 'Authenticate' : undefined,
     }),
-    [requireAuth, service]
+    [authMode, service]
   );
 
   async function storeValueAsync(value: string, key: string) {
     try {
       await SecureStore.setItemAsync(key, value, {
         keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
+        requireAuthentication: authMode,
+        authenticationPrompt: authMode ? 'Authenticate' : undefined,
       });
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
@@ -75,8 +95,8 @@ function SecureStoreView() {
     try {
       SecureStore.setItem(key, value, {
         keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
+        requireAuthentication: authMode,
+        authenticationPrompt: authMode ? 'Authenticate' : undefined,
       });
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
@@ -90,8 +110,8 @@ function SecureStoreView() {
     try {
       const fetchedValue = await SecureStore.getItemAsync(key, {
         keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
+        requireAuthentication: authMode,
+        authenticationPrompt: authMode ? 'Authenticate' : undefined,
       });
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
@@ -105,8 +125,8 @@ function SecureStoreView() {
     try {
       const fetchedValue = SecureStore.getItem(key, {
         keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
+        requireAuthentication: authMode,
+        authenticationPrompt: authMode ? 'Authenticate' : undefined,
       });
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
@@ -191,12 +211,27 @@ function SecureStoreView() {
       <Text style={{ marginBottom: 10 }}>
         Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
       </Text>
-      {SecureStore.canUseBiometricAuthentication() && (
-        <View style={styles.authToggleContainer}>
+      <Text style={{ marginBottom: 10 }}>
+        Can use fallback authentication:{' '}
+        {SecureStore.canUseDeviceCredentialsAuthentication().toString()}
+      </Text>
+      {canUseAnyAuthentication && (
+        <View style={[styles.authToggleContainer, { marginBottom: 10 }]}>
           <Text>Requires authentication:</Text>
           <Switch value={requireAuth} onValueChange={setRequireAuth} />
         </View>
       )}
+      {SecureStore.canUseBiometricAuthentication() &&
+        SecureStore.canUseDeviceCredentialsAuthentication() &&
+        requireAuth && (
+          <View style={[styles.authToggleContainer, { marginBottom: 10 }]}>
+            <Text>Biometrics only (no device PIN/pattern):</Text>
+            <Switch
+              value={!canUseFallback}
+              onValueChange={(biometryOnly) => setCanUseFallback(!biometryOnly)}
+            />
+          </View>
+        )}
       {value && key && (
         <ListButton onPress={() => storeValueAsync(value, key)} title="Store value with key" />
       )}

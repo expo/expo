@@ -1,5 +1,7 @@
 package expo.modules.securestore
 
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import android.content.Context
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
@@ -11,12 +13,16 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String) {
+class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String, isUserPresenceRequired: Boolean) {
+  private var authType: Int = if (isUserPresenceRequired) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
   private var executor: Executor = ContextCompat.getMainExecutor(context)
-  private var promptInfo = PromptInfo.Builder()
-    .setTitle(title)
-    .setNegativeButtonText(context.getString(android.R.string.cancel))
-    .build()
+  private var promptInfo = PromptInfo.Builder().apply {
+    setTitle(title)
+    setAllowedAuthenticators(authType)
+    if (!isUserPresenceRequired) {
+      setNegativeButtonText(context.getString(android.R.string.cancel))
+    }
+  }.build()
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
     suspendCoroutine { continuation ->
@@ -26,9 +32,7 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
         object : BiometricPrompt.AuthenticationCallback() {
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
-
-            val errorType = convertErrorCode(errorCode)
-            val message = "$errorType. $errString"
+            val message = convertErrorCode(errorCode)
             continuation.resumeWithException(AuthenticationException(message))
           }
 

@@ -75,6 +75,15 @@ open class SecureStoreModule : Module() {
       }
     }
 
+    Function("canUseDeviceCredentialsAuthentication") {
+      return@Function try {
+        authenticationHelper.assertDeviceSecurity()
+        true
+      } catch (e: AuthenticationException) {
+        false
+      }
+    }
+
     OnCreate {
       authenticationHelper = AuthenticationHelper(reactContext, appContext.legacyModuleRegistry)
       hybridAESEncryptor = HybridAESEncryptor(reactContext, mAESEncryptor)
@@ -127,7 +136,7 @@ open class SecureStoreModule : Module() {
 
     val scheme = encryptedItem.optString(SCHEME_PROPERTY).takeIf { it.isNotEmpty() }
       ?: throw DecryptException("Could not find the encryption scheme used for key: $key", key, options.keychainService)
-    val requireAuthentication = encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, false)
+    val requireAuthentication = encryptedItem.optString(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, null)
     val usesKeystoreSuffix = encryptedItem.optBoolean(USES_KEYSTORE_SUFFIX_PROPERTY, false)
 
     try {
@@ -191,7 +200,7 @@ open class SecureStoreModule : Module() {
       if (keyIsInvalidated) {
         // Invalidated keys will block writing even though it's not possible to re-validate them
         // so we remove them before saving.
-        val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.requireAuthentication)
+        val alias = mAESEncryptor.getExtendedKeyStoreAlias(options, options.isAuthenticationRequired, options.isUserPresenceRequired)
         removeKeyFromKeystore(alias, options.keychainService)
       }
 
@@ -200,8 +209,8 @@ open class SecureStoreModule : Module() {
        use in the encrypted JSON item so that we know how to decode and decrypt it when reading
        back a value.
        */
-      val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
-      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+      val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.isAuthenticationRequired, options.isUserPresenceRequired)
+      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.isAuthenticationRequired, options.authenticationPrompt, authenticationHelper, options.isUserPresenceRequired)
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
       saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
 
@@ -224,7 +233,7 @@ open class SecureStoreModule : Module() {
     }
   }
 
-  private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, requireAuthentication: Boolean, keychainService: String): Boolean {
+  private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, requireAuthentication: String?, keychainService: String): Boolean {
     // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
     encryptedItem.put(USES_KEYSTORE_SUFFIX_PROPERTY, true)
     // In order to be able to have the same keys under different keychains
@@ -282,11 +291,11 @@ open class SecureStoreModule : Module() {
       }
 
       val entryKeychainService = jsonEntry.optString(KEYSTORE_ALIAS_PROPERTY) ?: continue
-      val requireAuthentication = jsonEntry.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, false)
+      val requireAuthentication = jsonEntry.optString(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, null)
 
       // Entries which don't require authentication use separate keychains which can't be invalidated,
       // so we shouldn't delete them.
-      if (requireAuthentication && keychainService == entryKeychainService) {
+      if (requireAuthentication != null && keychainService == entryKeychainService) {
         sharedPreferences.edit().remove(key).apply()
         Log.w(TAG, "Removing entry: $key due to the encryption key being deleted")
       }
@@ -319,9 +328,10 @@ open class SecureStoreModule : Module() {
     keyStoreEntryClass: Class<E>,
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions,
-    requireAuthentication: Boolean
+    requireAuthentication: Boolean,
+    isUserPresenceRequired: Boolean
   ): E? {
-    val keystoreAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication)
+    val keystoreAlias = encryptor.getExtendedKeyStoreAlias(options, requireAuthentication, isUserPresenceRequired)
     return if (keyStore.containsAlias(keystoreAlias)) {
       val entry = keyStore.getEntry(keystoreAlias, null)
       if (!keyStoreEntryClass.isInstance(entry)) {
@@ -338,12 +348,17 @@ open class SecureStoreModule : Module() {
     keyStoreEntryClass: Class<E>,
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions,
-    requireAuthentication: Boolean
+    requireAuthentication: Boolean,
+    isUserPresenceRequired: Boolean
   ): E {
-    return getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication) ?: run {
+    return getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication, isUserPresenceRequired) ?: run {
       // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
       if (requireAuthentication) {
-        authenticationHelper.assertBiometricsSupport()
+        if (options.isUserPresenceRequired) {
+          authenticationHelper.assertDeviceSecurity()
+        } else {
+          authenticationHelper.assertBiometricsSupport()
+        }
       }
       encryptor.initializeKeyStoreEntry(keyStore, options)
     }
@@ -353,11 +368,22 @@ open class SecureStoreModule : Module() {
     keyStoreEntryClass: Class<E>,
     encryptor: KeyBasedEncryptor<E>,
     options: SecureStoreOptions,
-    requireAuthentication: Boolean,
+    requireAuthentication: String?,
     usesKeystoreSuffix: Boolean
   ): E? {
     return if (usesKeystoreSuffix) {
-      getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication)
+      val (requireAuthBool, isUserPresenceRequired) = when (requireAuthentication) {
+        null, "" -> false to false
+        "biometry" -> true to false
+        "userPresence" -> true to true
+        else -> {
+          throw CodedException(
+            "Invalid value for requireAuthentication: \"$requireAuthentication\". " +
+              "Expected \"biometry\", \"userPresence\", or null."
+          )
+        }
+      }
+      getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthBool, isUserPresenceRequired)
     } else {
       getLegacyKeyEntry(keyStoreEntryClass, encryptor, options)
     }
@@ -384,6 +410,7 @@ open class SecureStoreModule : Module() {
     const val USES_KEYSTORE_SUFFIX_PROPERTY = "usesKeystoreSuffix"
     const val DEFAULT_KEYSTORE_ALIAS = "key_v1"
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
+    const val USER_PRESENCE_KEYSTORE_SUFFIX = "keystoreUserPresence"
     const val UNAUTHENTICATED_KEYSTORE_SUFFIX = "keystoreUnauthenticated"
   }
 }

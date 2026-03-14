@@ -11,8 +11,18 @@ internal struct SecureStoreOptions: Record {
   var keychainService: String?
 
   @Field
-  var requireAuthentication: Bool
+  var requireAuthentication: String? = nil
 
   @Field
   var accessGroup: String?
+}
+
+extension SecureStoreOptions {
+  var isAuthenticationRequired: Bool {
+    return requireAuthentication != nil
+  }
+
+  var isUserPresenceRequired: Bool {
+    return requireAuthentication == "userPresence"
+  }
 }
