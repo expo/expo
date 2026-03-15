@@ -453,7 +453,7 @@ export declare const scrollDismissesKeyboard: (mode: "automatic" | "never" | "in
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
  */
 export declare const scrollDisabled: (disabled?: boolean) => ModifierConfig;
-type UnitPointValue = 'zero' | 'topLeading' | 'top' | 'topTrailing' | 'leading' | 'center' | 'trailing' | 'bottomLeading' | 'bottom' | 'bottomTrailing';
+export type UnitPointValue = 'zero' | 'topLeading' | 'top' | 'topTrailing' | 'leading' | 'center' | 'trailing' | 'bottomLeading' | 'bottom' | 'bottomTrailing';
 /**
  * Sets the default anchor point for a scroll view's content.
  * @param anchor - The anchor point for initial scroll position and content size changes, or `null` to reset.
@@ -474,6 +474,21 @@ export declare const defaultScrollAnchor: (anchor: UnitPointValue | null) => Mod
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:for:)).
  */
 export declare const defaultScrollAnchorForRole: (anchor: UnitPointValue | null, role: "initialOffset" | "sizeChanges" | "alignment") => ModifierConfig;
+/**
+ * Sets a stable identity for a view, used by `scrollPosition` to track visible items.
+ * @param id - The string identifier for this view.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/id(_:)).
+ */
+export declare const id: (id: string) => ModifierConfig;
+/**
+ * Sets the scroll snapping behavior for scrollable views.
+ * Use with `scrollTargetLayout` on the content container.
+ * @param behavior - `'paging'` for container-aligned snapping, `'viewAligned'` for view-aligned snapping.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetbehavior(_:)).
+ */
+export declare const scrollTargetBehavior: (behavior: "paging" | "viewAligned") => ModifierConfig;
 /**
  * Disables the move action for a view in a list.
  * Apply to items within a `ForEach` to prevent them from being moved.
