@@ -77,10 +77,20 @@ function defineLazyObjectProperty<T>(
  *
  * @see https://github.com/facebook/react-native/issues/934
  */
-export function installGlobal<T extends object>(name: string, getValue: () => T): void {
+export function installGlobal<T extends object>(
+  name: string,
+  getValue: () => T,
+  { skipIfExists = false }: { skipIfExists?: boolean } = {}
+): void {
   // @ts-ignore: globalThis is not defined in all environments
   const object = typeof global !== 'undefined' ? global : globalThis;
   const descriptor = Object.getOwnPropertyDescriptor(object, name);
+
+  // Skip installation if the property already exists and skipIfExists is true
+  if (skipIfExists && descriptor) {
+    return;
+  }
+
   if (__DEV__ && descriptor) {
     const backupName = `original${name[0].toUpperCase()}${name.slice(1)}`;
     Object.defineProperty(object, backupName, descriptor);
