@@ -21,7 +21,7 @@ inputs:
 outputs:
   avd-hit:
     description: 'Returns true, if AVD cache is up-to-date'
-    value: steps.avd-cache.outputs.cache-hit
+    value: ${{ steps.avd-cache.outputs.cache-hit }}
 
 runs:
   using: 'composite'
