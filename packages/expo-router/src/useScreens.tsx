@@ -39,27 +39,29 @@ export type ScreenProps<
   TEventMap extends EventMapBase = EventMapBase,
 > = {
   /** Name is required when used inside a Layout component. */
-  name?: string;
+  name?: string | undefined;
   /**
    * Redirect to the nearest sibling route.
    * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
    */
-  redirect?: boolean;
-  initialParams?: Record<string, any>;
+  redirect?: boolean | undefined;
+  initialParams?: Record<string, any> | undefined;
   options?:
     | TOptions
-    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
+    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions)
+    | undefined;
 
   listeners?:
     | ScreenListeners<TState, TEventMap>
     | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;
-      }) => ScreenListeners<TState, TEventMap>);
+      }) => ScreenListeners<TState, TEventMap>)
+    | undefined;
 
-  getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
+  getId?: (({ params }: { params?: Record<string, any> }) => string | undefined) | undefined;
 
-  dangerouslySingular?: SingularOptions;
+  dangerouslySingular?: SingularOptions | undefined;
 };
 
 export type SingularOptions =

@@ -471,11 +471,13 @@ const createStateObject = (initialRoute, route, isEmpty) => {
         if (initialRoute) {
             return {
                 index: 1,
+                // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                 routes: [{ name: initialRoute, params: route.params }, route],
             };
         }
         else {
             return {
+                // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                 routes: [route],
             };
         }
@@ -486,12 +488,14 @@ const createStateObject = (initialRoute, route, isEmpty) => {
                 index: 1,
                 routes: [
                     { name: initialRoute, params: route.params },
+                    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                     { ...route, state: { routes: [] } },
                 ],
             };
         }
         else {
             return {
+                // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                 routes: [{ ...route, state: { routes: [] } }],
             };
         }

@@ -2,29 +2,29 @@ import { PathConfigMap } from '@react-navigation/native';
 import type { NavigationState, PartialState } from '@react-navigation/routers';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 export type Options<ParamList extends object> = ExpoOptions & {
-    path?: string;
-    initialRouteName?: string;
+    path?: string | undefined;
+    initialRouteName?: string | undefined;
     screens: PathConfigMap<ParamList>;
 };
 type ParseConfig = Record<string, (value: string) => any>;
 export type RouteConfig = ExpoRouteConfig & {
     screen: string;
-    regex?: RegExp;
+    regex?: RegExp | undefined;
     path: string;
     pattern: string;
     routeNames: string[];
-    parse?: ParseConfig;
+    parse?: ParseConfig | undefined;
 };
 export type InitialRouteConfig = {
     initialRouteName: string;
     parentScreens: string[];
 };
 export type ResultState = PartialState<NavigationState> & {
-    state?: ResultState;
+    state?: ResultState | undefined;
 };
 export type ParsedRoute = {
     name: string;
-    path?: string;
+    path?: string | undefined;
     params?: Record<string, any> | undefined;
 };
 /**

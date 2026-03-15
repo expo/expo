@@ -9,10 +9,10 @@ export type ErrorBoundaryProps = {
 export declare class Try extends Component<PropsWithChildren<{
     catch: ComponentType<ErrorBoundaryProps>;
 }>, {
-    error?: Error;
+    error?: Error | undefined;
 }> {
     state: {
-        error: undefined;
+        error?: Error | undefined;
     };
     static getDerivedStateFromError(error: Error): {
         error: Error;

@@ -13,12 +13,14 @@ export interface LinkAppleZoomProps extends PropsWithChildren {
    *
    * @platform ios 18+
    */
-  alignmentRect?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+  alignmentRect?:
+    | {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+      }
+    | undefined;
 }
 
 /**
@@ -35,7 +37,7 @@ export function LinkAppleZoom(props: LinkAppleZoomProps) {
 }
 
 type LinkAppleZoomImplProps = LinkAppleZoomProps & {
-  onPress?: () => void;
+  onPress?: (() => void) | undefined;
 };
 
 function LinkAppleZoomImpl({ children, alignmentRect, ...rest }: LinkAppleZoomImplProps) {

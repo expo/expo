@@ -96,6 +96,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       : undefined;
 
   return (
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     <TabsHostWrapper
       // #region android props
       tabBarItemTitleFontColor={
@@ -206,6 +207,7 @@ function Screen(props: {
   }, [content, options.disableAutomaticContentInsets]);
 
   return (
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     <Tabs.Screen
       {...options}
       overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets}
@@ -258,6 +260,7 @@ function TabsHostWrapper(props: TabsHostProps) {
   }
 
   return (
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     <Tabs.Host
       tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode}
       tabBarMinimizeBehavior={tabBarMinimizeBehavior}

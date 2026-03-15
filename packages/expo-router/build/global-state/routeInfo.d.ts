@@ -23,8 +23,8 @@ type StrictState = (FocusedRouteState | NavigationState | PartialState<Navigatio
     }[];
 };
 type StrictFocusedRouteParams = Record<string, string | string[]> | {
-    screen?: string;
-    params?: StrictFocusedRouteParams;
+    screen?: string | undefined;
+    params?: StrictFocusedRouteParams | undefined;
 };
 export declare function getRouteInfoFromState(state?: StrictState): UrlObject;
 export {};

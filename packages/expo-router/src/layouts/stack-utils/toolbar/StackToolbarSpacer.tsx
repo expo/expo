@@ -11,7 +11,7 @@ export interface StackToolbarSpacerProps {
    *
    * @default false
    */
-  hidden?: boolean;
+  hidden?: boolean | undefined;
   // TODO(@ubax): implement fluid spacing in react-native-screens
   /**
    * The width of the spacing element.
@@ -20,7 +20,7 @@ export interface StackToolbarSpacerProps {
    * In Bottom placement, if width is not provided, the spacer will be flexible
    * and expand to fill available space.
    */
-  width?: number;
+  width?: number | undefined;
   // TODO(@ubax): implement missing props in react-native-screens
   /**
    * Whether this spacer shares background with adjacent items.
@@ -29,7 +29,7 @@ export interface StackToolbarSpacerProps {
    *
    * @platform iOS 26+
    */
-  sharesBackground?: boolean;
+  sharesBackground?: boolean | undefined;
 }
 
 /**
@@ -114,10 +114,10 @@ export function convertStackToolbarSpacerPropsToRNHeaderItem(
 // #region NativeToolbarSpacer
 
 interface NativeToolbarSpacerProps {
-  hidden?: boolean;
-  hidesSharedBackground?: boolean;
-  sharesBackground?: boolean;
-  width?: number;
+  hidden?: boolean | undefined;
+  hidesSharedBackground?: boolean | undefined;
+  sharesBackground?: boolean | undefined;
+  width?: number | undefined;
 }
 
 /**

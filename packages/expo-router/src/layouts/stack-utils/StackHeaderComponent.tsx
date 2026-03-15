@@ -9,20 +9,20 @@ export interface StackHeaderProps {
   /**
    * Child elements for custom header when `asChild` is true.
    */
-  children?: ReactNode;
+  children?: ReactNode | undefined;
   /**
    * Whether to hide the header completely. When set to `true`, the header will not be rendered.
    *
    * @default false
    */
-  hidden?: boolean;
+  hidden?: boolean | undefined;
   /**
    * When `true`, renders children as a custom header component, replacing the default header entirely.
    * Use this to implement fully custom header layouts.
    *
    * @default false
    */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
   /**
    * Whether the header should be transparent.
    * When `true`, the header is absolutely positioned and content scrolls underneath.
@@ -33,25 +33,27 @@ export interface StackHeaderProps {
    *
    * @default false
    */
-  transparent?: boolean;
+  transparent?: boolean | undefined;
   /**
    * The blur effect to apply to the header background on iOS.
    * Common values include 'regular', 'prominent', 'systemMaterial', etc.
    *
    * @platform ios
    */
-  blurEffect?: ScreenStackHeaderConfigProps['blurEffect'];
+  blurEffect?: ScreenStackHeaderConfigProps['blurEffect'] | undefined;
   /**
    * Style properties for the standard-sized header.
    * - `color`: Tint color for header elements (similar to tintColor in React Navigation)
    * - `backgroundColor`: Background color of the header
    * - `shadowColor`: Set to 'transparent' to hide the header shadow/border
    */
-  style?: StyleProp<{
-    color?: ColorValue; // tintColor from ReactNavigation
-    backgroundColor?: ScreenStackHeaderConfigProps['backgroundColor'];
-    shadowColor?: undefined | 'transparent';
-  }>;
+  style?:
+    | StyleProp<{
+        color?: ColorValue; // tintColor from ReactNavigation
+        backgroundColor?: ScreenStackHeaderConfigProps['backgroundColor'];
+        shadowColor?: undefined | 'transparent';
+      }>
+    | undefined;
   /**
    * Style properties for the large title header (iOS).
    * - `backgroundColor`: Background color of the large title header
@@ -59,10 +61,12 @@ export interface StackHeaderProps {
    *
    * @platform ios
    */
-  largeStyle?: StyleProp<{
-    backgroundColor?: ScreenStackHeaderConfigProps['largeTitleBackgroundColor'];
-    shadowColor?: undefined | 'transparent';
-  }>;
+  largeStyle?:
+    | StyleProp<{
+        backgroundColor?: ScreenStackHeaderConfigProps['largeTitleBackgroundColor'];
+        shadowColor?: undefined | 'transparent';
+      }>
+    | undefined;
 }
 
 /**
@@ -173,9 +177,11 @@ export function appendStackHeaderPropsToOptions(
     ...(shouldBeTransparent && { headerTransparent: true }),
     ...(props.transparent === false && { headerTransparent: false }),
     ...(flattenedStyle?.color && { headerTintColor: flattenedStyle.color as string }),
+    // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
     headerStyle: {
       backgroundColor: flattenedStyle?.backgroundColor as string | undefined,
     },
+    // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
     headerLargeStyle: {
       backgroundColor: flattenedLargeStyle?.backgroundColor as string | undefined,
     },

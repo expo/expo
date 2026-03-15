@@ -4,8 +4,8 @@ import { type ReactNode } from 'react';
 import { type StyleProp, type TextStyle } from 'react-native';
 import { type StackHeaderItemSharedProps } from './shared';
 export interface StackToolbarButtonProps {
-    accessibilityLabel?: string;
-    accessibilityHint?: string;
+    accessibilityLabel?: string | undefined;
+    accessibilityHint?: string | undefined;
     /**
      * There are two ways to specify the content of the button:
      *
@@ -47,20 +47,20 @@ export interface StackToolbarButtonProps {
      *
      * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only. Badge is only supported in left/right placements, not in bottom (iOS toolbar limitation).
      */
-    children?: ReactNode;
-    disabled?: boolean;
+    children?: ReactNode | undefined;
+    disabled?: boolean | undefined;
     /**
      * Whether the button should be hidden.
      *
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * Whether to hide the shared background.
      *
      * @platform iOS 26+
      */
-    hidesSharedBackground?: boolean;
+    hidesSharedBackground?: boolean | undefined;
     /**
      * Icon to display in the button.
      *
@@ -68,13 +68,13 @@ export interface StackToolbarButtonProps {
      *
      * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
      */
-    icon?: StackHeaderItemSharedProps['icon'];
+    icon?: StackHeaderItemSharedProps['icon'] | undefined;
     /**
      * Image to display in the button.
      *
      * > **Note**: This prop is only supported in toolbar with `placement="bottom"`.
      */
-    image?: ImageRef;
+    image?: ImageRef | undefined;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -91,34 +91,34 @@ export interface StackToolbarButtonProps {
      *
      * @platform ios
      */
-    iconRenderingMode?: 'template' | 'original';
-    onPress?: () => void;
+    iconRenderingMode?: 'template' | 'original' | undefined;
+    onPress?: (() => void) | undefined;
     /**
      * Whether to separate the background of this item from other header items.
      *
      * @default false
      */
-    separateBackground?: boolean;
+    separateBackground?: boolean | undefined;
     /**
      * Whether the button is in a selected state
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/isselected) for more information
      */
-    selected?: boolean;
+    selected?: boolean | undefined;
     /**
      * Style for the label of the header item.
      */
-    style?: StyleProp<TextStyle>;
+    style?: StyleProp<TextStyle> | undefined;
     /**
      * The tint color to apply to the button item
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/tintcolor) for more information.
      */
-    tintColor?: StackHeaderItemSharedProps['tintColor'];
+    tintColor?: StackHeaderItemSharedProps['tintColor'] | undefined;
     /**
      * @default 'plain'
      */
-    variant?: StackHeaderItemSharedProps['variant'];
+    variant?: StackHeaderItemSharedProps['variant'] | undefined;
 }
 /**
  * A button used inside `Stack.Toolbar`.

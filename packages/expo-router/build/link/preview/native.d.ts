@@ -5,30 +5,30 @@ import type { BasicTextStyle } from '../../utils/font';
 export interface NativeLinkPreviewActionProps {
     identifier: string;
     title: string;
-    label?: string;
-    icon?: string;
-    xcassetName?: string;
-    image?: ImageRef | null;
-    imageRenderingMode?: 'template' | 'original';
-    children?: React.ReactNode;
-    disabled?: boolean;
-    destructive?: boolean;
-    discoverabilityLabel?: string;
-    subtitle?: string;
-    accessibilityLabel?: string;
-    accessibilityHint?: string;
-    displayAsPalette?: boolean;
-    displayInline?: boolean;
-    preferredElementSize?: 'auto' | 'small' | 'medium' | 'large';
-    isOn?: boolean;
-    keepPresented?: boolean;
-    hidden?: boolean;
-    tintColor?: ColorValue;
-    barButtonItemStyle?: 'plain' | 'prominent';
-    sharesBackground?: boolean;
-    hidesSharedBackground?: boolean;
+    label?: string | undefined;
+    icon?: string | undefined;
+    xcassetName?: string | undefined;
+    image?: ImageRef | null | undefined;
+    imageRenderingMode?: 'template' | 'original' | undefined;
+    children?: React.ReactNode | undefined;
+    disabled?: boolean | undefined;
+    destructive?: boolean | undefined;
+    discoverabilityLabel?: string | undefined;
+    subtitle?: string | undefined;
+    accessibilityLabel?: string | undefined;
+    accessibilityHint?: string | undefined;
+    displayAsPalette?: boolean | undefined;
+    displayInline?: boolean | undefined;
+    preferredElementSize?: 'auto' | 'small' | 'medium' | 'large' | undefined;
+    isOn?: boolean | undefined;
+    keepPresented?: boolean | undefined;
+    hidden?: boolean | undefined;
+    tintColor?: ColorValue | undefined;
+    barButtonItemStyle?: 'plain' | 'prominent' | undefined;
+    sharesBackground?: boolean | undefined;
+    hidesSharedBackground?: boolean | undefined;
     onSelected: () => void;
-    titleStyle?: BasicTextStyle;
+    titleStyle?: BasicTextStyle | undefined;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
 export interface TabPath {
@@ -40,13 +40,13 @@ export interface NativeLinkPreviewProps extends ViewProps {
     tabPath: {
         path: TabPath[];
     } | undefined;
-    disableForceFlatten?: boolean;
-    onWillPreviewOpen?: () => void;
-    onDidPreviewOpen?: () => void;
-    onPreviewWillClose?: () => void;
-    onPreviewDidClose?: () => void;
-    onPreviewTapped?: () => void;
-    onPreviewTappedAnimationCompleted?: () => void;
+    disableForceFlatten?: boolean | undefined;
+    onWillPreviewOpen?: (() => void) | undefined;
+    onDidPreviewOpen?: (() => void) | undefined;
+    onPreviewWillClose?: (() => void) | undefined;
+    onPreviewDidClose?: (() => void) | undefined;
+    onPreviewTapped?: (() => void) | undefined;
+    onPreviewTappedAnimationCompleted?: (() => void) | undefined;
     children: React.ReactNode;
 }
 export declare function NativeLinkPreview(props: NativeLinkPreviewProps): import("react").JSX.Element | null;
@@ -54,14 +54,14 @@ export interface NativeLinkPreviewContentProps extends ViewProps {
     preferredContentSize?: {
         width: number;
         height: number;
-    };
+    } | undefined;
 }
 export declare function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps): import("react").JSX.Element | null;
 interface DismissalBoundsRect {
-    minX?: number;
-    maxX?: number;
-    minY?: number;
-    maxY?: number;
+    minX?: number | undefined;
+    maxX?: number | undefined;
+    minY?: number | undefined;
+    maxY?: number | undefined;
 }
 export declare function LinkZoomTransitionEnabler(props: {
     zoomTransitionSourceIdentifier: string;
@@ -75,8 +75,8 @@ interface LinkSourceAlignmentRect {
 }
 interface LinkZoomTransitionSourceProps extends PropsWithChildren {
     identifier: string;
-    alignment?: LinkSourceAlignmentRect;
-    animateAspectRatioChange?: boolean;
+    alignment?: LinkSourceAlignmentRect | undefined;
+    animateAspectRatioChange?: boolean | undefined;
 }
 export declare function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps): import("react").JSX.Element | null;
 export declare function LinkZoomTransitionAlignmentRectDetector(props: {

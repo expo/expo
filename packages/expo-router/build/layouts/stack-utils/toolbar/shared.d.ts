@@ -4,15 +4,15 @@ import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { type BasicTextStyle } from '../../../utils/font';
 export interface StackHeaderItemSharedProps {
-    children?: ReactNode;
-    style?: StyleProp<BasicTextStyle>;
-    hidesSharedBackground?: boolean;
-    separateBackground?: boolean;
-    accessibilityLabel?: string;
-    accessibilityHint?: string;
-    disabled?: boolean;
-    tintColor?: ColorValue;
-    icon?: SFSymbol | ImageSourcePropType;
+    children?: ReactNode | undefined;
+    style?: StyleProp<BasicTextStyle> | undefined;
+    hidesSharedBackground?: boolean | undefined;
+    separateBackground?: boolean | undefined;
+    accessibilityLabel?: string | undefined;
+    accessibilityHint?: string | undefined;
+    disabled?: boolean | undefined;
+    tintColor?: ColorValue | undefined;
+    icon?: SFSymbol | ImageSourcePropType | undefined;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -29,11 +29,11 @@ export interface StackHeaderItemSharedProps {
      *
      * @platform ios
      */
-    iconRenderingMode?: 'template' | 'original';
+    iconRenderingMode?: 'template' | 'original' | undefined;
     /**
      * @default 'plain'
      */
-    variant?: 'plain' | 'done' | 'prominent';
+    variant?: 'plain' | 'done' | 'prominent' | undefined;
 }
 type RNSharedHeaderItem = Pick<NativeStackHeaderItemButton, 'label' | 'labelStyle' | 'icon' | 'variant' | 'tintColor' | 'disabled' | 'width' | 'hidesSharedBackground' | 'sharesBackground' | 'identifier' | 'badge' | 'accessibilityLabel' | 'accessibilityHint'>;
 /** @internal */

@@ -33,6 +33,7 @@ const composition_options_1 = require("../../fork/native-stack/composition-optio
 function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColor, cancelButtonText, disableBackButtonOverride, hideNavigationBar, hideWhenScrolling, inputType, obscureBackground, onBlur, onCancelButtonPress, onChangeText, onClose, onFocus, onOpen, onSearchButtonPress, placeholder, placement, allowToolbarIntegration, textColor, hintTextColor, headerIconColor, shouldShowHintSearchIcon, }) {
     const options = (0, react_1.useMemo)(() => appendStackSearchBarPropsToOptions({}, 
     // satisfies ensures every prop is listed here
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     {
         ref,
         autoCapitalize,

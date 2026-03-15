@@ -78,6 +78,7 @@ function appendStyleToAppearance(style, appearance, states) {
         ...baseItemAppearance,
         ...Object.fromEntries(newAppearances.map(({ key, appearance }) => [key, appearance])),
     };
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     return {
         stacked: itemAppearance,
         inline: itemAppearance,
@@ -100,6 +101,7 @@ function convertStyleToAppearance(style) {
         focused: stateAppearance,
         disabled: {},
     };
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     return {
         inline: itemAppearance,
         stacked: itemAppearance,
@@ -113,6 +115,7 @@ function convertStyleToItemStateAppearance(style) {
     if (!style) {
         return {};
     }
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     const stateAppearance = {
         tabBarItemBadgeBackgroundColor: style.badgeBackgroundColor,
         tabBarItemTitlePositionAdjustment: style.titlePositionAdjustment,

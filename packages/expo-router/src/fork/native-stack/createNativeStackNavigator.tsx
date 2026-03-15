@@ -52,6 +52,7 @@ function NativeStackNavigator({
     StackActionHelpers<ParamListBase>,
     NativeStackNavigationOptionsWithInternal,
     NativeStackNavigationEventMap
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   >(StackRouter, {
     id,
     initialRouteName,

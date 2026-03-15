@@ -6,8 +6,8 @@ export type Screen =
   | {
       path: string;
       screens: Record<string, Screen>;
-      _route?: RouteNode;
-      initialRouteName?: string;
+      _route?: RouteNode | undefined;
+      initialRouteName?: string | undefined;
     };
 
 // `[page]` -> `:page`

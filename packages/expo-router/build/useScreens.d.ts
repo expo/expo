@@ -6,25 +6,25 @@ import { RouteNode } from './Route';
 import { UnknownOutputParams } from './types';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, TState extends NavigationState = NavigationState, TEventMap extends EventMapBase = EventMapBase> = {
     /** Name is required when used inside a Layout component. */
-    name?: string;
+    name?: string | undefined;
     /**
      * Redirect to the nearest sibling route.
      * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
      */
-    redirect?: boolean;
-    initialParams?: Record<string, any>;
+    redirect?: boolean | undefined;
+    initialParams?: Record<string, any> | undefined;
     options?: TOptions | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;
-    }) => TOptions);
+    }) => TOptions) | undefined;
     listeners?: ScreenListeners<TState, TEventMap> | ((prop: {
         route: RouteProp<ParamListBase, string>;
         navigation: any;
-    }) => ScreenListeners<TState, TEventMap>);
-    getId?: ({ params }: {
+    }) => ScreenListeners<TState, TEventMap>) | undefined;
+    getId?: (({ params }: {
         params?: Record<string, any>;
-    }) => string | undefined;
-    dangerouslySingular?: SingularOptions;
+    }) => string | undefined) | undefined;
+    dangerouslySingular?: SingularOptions | undefined;
 };
 export type SingularOptions = boolean | ((name: string, params: UnknownOutputParams) => string | undefined);
 /**

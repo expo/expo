@@ -97,7 +97,9 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
                 const ModalComponent = isTransparentModal
                     ? TransparentModalStackRouteDrawer_1.TransparentModalStackRouteDrawer
                     : ModalStackRouteDrawer_1.ModalStackRouteDrawer;
-                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} dismissible={isRemovePrevented ? false : undefined} themeColors={colors}/>);
+                return (
+                // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
+                <ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} dismissible={isRemovePrevented ? false : undefined} themeColors={colors}/>);
             })}
     </div>);
 };

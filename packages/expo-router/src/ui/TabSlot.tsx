@@ -10,11 +10,11 @@ export type TabSlotProps = ComponentProps<typeof ScreenContainer> & {
   /**
    * Remove inactive screens.
    */
-  detachInactiveScreens?: boolean;
+  detachInactiveScreens?: boolean | undefined;
   /**
    * Override how the `Screen` component is rendered.
    */
-  renderFn?: typeof defaultTabsSlotRender;
+  renderFn?: typeof defaultTabsSlotRender | undefined;
 };
 
 /**
@@ -125,6 +125,7 @@ export function defaultTabsSlotRender(
   }
 
   return (
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     <Screen
       key={descriptor.route.key}
       enabled={detachInactiveScreens}

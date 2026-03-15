@@ -27,11 +27,11 @@ type UseNavigationBuilderRouter = Parameters<typeof useNavigationBuilder>[0];
 type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
 
 export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
-  initialRouteName?: UseNavigationBuilderOptions['initialRouteName'];
-  screenOptions?: UseNavigationBuilderOptions['screenOptions'];
-  children?: UseNavigationBuilderOptions['children'];
-  router?: T;
-  routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
+  initialRouteName?: UseNavigationBuilderOptions['initialRouteName'] | undefined;
+  screenOptions?: UseNavigationBuilderOptions['screenOptions'] | undefined;
+  children?: UseNavigationBuilderOptions['children'] | undefined;
+  router?: T | undefined;
+  routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'> | undefined;
 };
 
 /**
@@ -39,6 +39,7 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
  *
  * @hidden
  */
+// @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
 export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({
   initialRouteName,
   screenOptions,
@@ -62,6 +63,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
 
   router ||= StackRouter as unknown as T;
 
+  // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   const navigation = useNavigationBuilder(router, {
     // Used for getting the parent with navigation.getParent('/normalized/path')
     ...routerOptions,
@@ -108,6 +110,7 @@ function SlotNavigator(props: NavigatorProps<any>) {
     contextKey,
   });
 
+  // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     ...props,
     id: contextKey,

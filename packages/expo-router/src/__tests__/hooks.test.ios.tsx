@@ -736,6 +736,7 @@ describe(useLoaderData, () => {
 
   afterEach(() => {
     global.window = originalWindow;
+    // @ts-expect-error — eopt: __EXPO_ROUTER_LOADER_DATA__ is not optional on globalThis
     delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
   });
 

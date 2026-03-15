@@ -11,13 +11,13 @@ export interface StackToolbarSearchBarSlotProps {
    *
    * @default false
    */
-  hidden?: boolean;
+  hidden?: boolean | undefined;
   /**
    * Whether to hide the shared background.
    *
    * @platform iOS 26+
    */
-  hidesSharedBackground?: boolean;
+  hidesSharedBackground?: boolean | undefined;
   /**
    * Whether this search bar slot has a separate background from adjacent items. When this prop is `true`, the search bar will always render as `integratedButton`.
    *
@@ -35,7 +35,7 @@ export interface StackToolbarSearchBarSlotProps {
    *
    * @platform iOS 26+
    */
-  separateBackground?: boolean;
+  separateBackground?: boolean | undefined;
 }
 
 /**
@@ -77,9 +77,9 @@ export const StackToolbarSearchBarSlot: React.FC<StackToolbarSearchBarSlotProps>
 // #region NativeToolbarSearchBarSlot
 
 interface NativeToolbarSearchBarSlotProps {
-  hidesSharedBackground?: boolean;
-  hidden?: boolean;
-  separateBackground?: boolean;
+  hidesSharedBackground?: boolean | undefined;
+  hidden?: boolean | undefined;
+  separateBackground?: boolean | undefined;
 }
 
 /**

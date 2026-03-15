@@ -66,6 +66,7 @@ export function NativeTabsNavigator({
     Record<string, (...args: unknown[]) => void>,
     NativeTabOptions,
     NativeTabNavigationEventMap
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   >(NativeBottomTabsRouter, {
     children,
     backBehavior,

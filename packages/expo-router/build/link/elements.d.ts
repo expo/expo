@@ -6,23 +6,23 @@ export interface LinkMenuActionProps {
     /**
      * The title of the menu item.
      */
-    children?: ReactNode;
+    children?: ReactNode | undefined;
     /**
      * If `true`, the menu item will be displayed as destructive.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
      */
-    destructive?: boolean;
+    destructive?: boolean | undefined;
     /**
      * If `true`, the menu item will be disabled and not selectable.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled) for more information.
      */
-    disabled?: boolean;
+    disabled?: boolean | undefined;
     /**
      * An elaborated title that explains the purpose of the action.
      */
-    discoverabilityLabel?: string;
+    discoverabilityLabel?: string | undefined;
     /**
      * Whether the menu element should be hidden.
      *
@@ -30,11 +30,11 @@ export interface LinkMenuActionProps {
      *
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * SF Symbol displayed alongside the menu item.
      */
-    icon?: SFSymbol;
+    icon?: SFSymbol | undefined;
     /**
      * Custom image loaded using `useImage()` hook from `expo-image`.
      * Takes priority over `icon` (SF Symbol) when both are provided.
@@ -54,7 +54,7 @@ export interface LinkMenuActionProps {
      * </Link.Menu>
      * ```
      */
-    image?: ImageRef | null;
+    image?: ImageRef | null | undefined;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -65,23 +65,23 @@ export interface LinkMenuActionProps {
      *
      * @platform ios
      */
-    imageRenderingMode?: 'template' | 'original';
+    imageRenderingMode?: 'template' | 'original' | undefined;
     /**
      * If `true`, the menu item will be displayed as selected.
      */
-    isOn?: boolean;
-    onPress?: () => void;
+    isOn?: boolean | undefined;
+    onPress?: (() => void) | undefined;
     /**
      * An optional subtitle for the menu item.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
      */
-    subtitle?: string;
+    subtitle?: string | undefined;
     /**
      * The title of the menu item.
      * @deprecated Use `children` prop instead.
      */
-    title?: string;
+    title?: string | undefined;
     /**
      * If `true`, the menu will be kept presented after the action is selected.
      *
@@ -90,7 +90,7 @@ export interface LinkMenuActionProps {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented) for more information.
      */
-    unstable_keepPresented?: boolean;
+    unstable_keepPresented?: boolean | undefined;
 }
 /**
  * This component renders a context menu action for a link.
@@ -103,17 +103,17 @@ export interface LinkMenuProps {
     /**
      * The title of the menu item
      */
-    title?: string;
+    title?: string | undefined;
     /**
      * An optional subtitle for the submenu. Does not appear on `inline` menus.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
      */
-    subtitle?: string;
+    subtitle?: string | undefined;
     /**
      * Optional SF Symbol displayed alongside the menu item.
      */
-    icon?: SFSymbol;
+    icon?: SFSymbol | undefined;
     /**
      * Custom image loaded using `useImage()` hook from `expo-image`.
      * Takes priority over `icon` (SF Symbol) when both are provided.
@@ -133,7 +133,7 @@ export interface LinkMenuProps {
      * </Link.Menu>
      * ```
      */
-    image?: ImageRef | null;
+    image?: ImageRef | null | undefined;
     /**
      * If `true`, the menu will be displayed as a palette.
      * This means that the menu will be displayed as one row.
@@ -143,28 +143,28 @@ export interface LinkMenuProps {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
      */
-    palette?: boolean;
+    palette?: boolean | undefined;
     /**
      * @deprecated Use `palette` prop instead.
      */
-    displayAsPalette?: boolean;
+    displayAsPalette?: boolean | undefined;
     /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
      */
-    inline?: boolean;
+    inline?: boolean | undefined;
     /**
      * @deprecated Use `inline` prop instead.
      */
-    displayInline?: boolean;
+    displayInline?: boolean | undefined;
     /**
      * If `true`, the menu item will be displayed as destructive.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
      */
-    destructive?: boolean;
+    destructive?: boolean | undefined;
     /**
      * The preferred size of the menu elements.
      * `elementSize` property is ignored when `palette` is used.
@@ -173,8 +173,8 @@ export interface LinkMenuProps {
      *
      * @platform iOS 16.0+
      */
-    elementSize?: 'small' | 'medium' | 'large' | 'auto';
-    children?: React.ReactNode;
+    elementSize?: 'small' | 'medium' | 'large' | 'auto' | undefined;
+    children?: React.ReactNode | undefined;
 }
 /**
  * Groups context menu actions for a link.
@@ -200,23 +200,23 @@ export type LinkPreviewStyle = Omit<ViewStyle, 'position' | 'width' | 'height'> 
      *
      * This is only **preferred** width, the actual width may be different
      */
-    width?: number;
+    width?: number | undefined;
     /**
      * Sets the preferred height of the preview.
      * If not set, full height of the screen will be used.
      *
      * This is only **preferred** height, the actual height may be different
      */
-    height?: number;
+    height?: number | undefined;
 };
 export interface LinkPreviewProps {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     /**
      * Custom styles for the preview container.
      *
      * Note that some styles may not work, as they are limited or reset by the native view
      */
-    style?: LinkPreviewStyle;
+    style?: LinkPreviewStyle | undefined;
 }
 /**
  * A component used to render and customize the link preview.
@@ -256,7 +256,7 @@ export interface LinkTriggerProps extends PropsWithChildren {
      *
      * @platform ios 18+
      */
-    withAppleZoom?: boolean;
+    withAppleZoom?: boolean | undefined;
 }
 /**
  * Serves as the trigger for a link.

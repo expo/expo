@@ -20,7 +20,7 @@ const BottomTabNavigator = createBottomTabNavigator().Navigator;
 
 export type BottomTabNavigator = typeof BottomTabNavigator;
 
-type TabsProps = BottomTabNavigationOptions & { href?: Href | null };
+type TabsProps = BottomTabNavigationOptions & { href?: Href | null | undefined };
 
 const ExpoTabs = withLayoutContext<
   TabsProps,

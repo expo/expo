@@ -198,12 +198,14 @@ function appendStackToolbarPropsToOptions(options, props) {
         }
     }
     if (placement === 'left') {
+        // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
         return {
             ...options,
             headerShown: true,
             unstable_headerLeftItems: convertToolbarChildrenToUnstableItems(children, 'left'),
         };
     }
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     return {
         ...options,
         headerShown: true,

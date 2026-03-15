@@ -4,13 +4,13 @@ export interface StackToolbarSearchBarSlotProps {
      *
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * Whether to hide the shared background.
      *
      * @platform iOS 26+
      */
-    hidesSharedBackground?: boolean;
+    hidesSharedBackground?: boolean | undefined;
     /**
      * Whether this search bar slot has a separate background from adjacent items. When this prop is `true`, the search bar will always render as `integratedButton`.
      *
@@ -28,7 +28,7 @@ export interface StackToolbarSearchBarSlotProps {
      *
      * @platform iOS 26+
      */
-    separateBackground?: boolean;
+    separateBackground?: boolean | undefined;
 }
 /**
  * A search bar slot for the bottom toolbar. This reserves space for the search bar

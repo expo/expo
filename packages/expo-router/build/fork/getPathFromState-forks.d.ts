@@ -1,12 +1,12 @@
 import { type Route } from '@react-navigation/native';
 import type { Options, State, StringifyConfig } from './getPathFromState';
 export type ExpoOptions = {
-    preserveDynamicRoutes?: boolean;
-    preserveGroups?: boolean;
-    shouldEncodeURISegment?: boolean;
+    preserveDynamicRoutes?: boolean | undefined;
+    preserveGroups?: boolean | undefined;
+    shouldEncodeURISegment?: boolean | undefined;
 };
 export type ExpoConfigItem = {
-    initialRouteName?: string;
+    initialRouteName?: string | undefined;
 };
 export declare function validatePathConfig<ParamList extends object>({ preserveDynamicRoutes, preserveGroups, shouldEncodeURISegment, ...options }: Options<ParamList>): void;
 export declare function fixCurrentParams(allParams: Record<string, any>, route: Route<string> & {

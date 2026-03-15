@@ -20,6 +20,7 @@ function NativeLinkPreviewAction(props) {
     }
     // Needed to pass shared object ID to native side
     const imageObjectId = props.image?.__expo_shared_object_id__;
+    // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
     return <LinkPreviewNativeActionView {...props} image={imageObjectId}/>;
 }
 const NativeLinkPreviewView = areNativeViewsAvailable

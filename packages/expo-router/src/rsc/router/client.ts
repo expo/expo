@@ -518,6 +518,7 @@ function ExpoRouterLink(
   ref: ForwardedRef<Text>
 ) {
   // Mutate the style prop to add the className on web.
+  // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
   const style = useInteropClassName(props);
 
   // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.

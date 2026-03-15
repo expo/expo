@@ -2,8 +2,8 @@ import type { RouteNode } from './Route';
 export type Screen = string | {
     path: string;
     screens: Record<string, Screen>;
-    _route?: RouteNode;
-    initialRouteName?: string;
+    _route?: RouteNode | undefined;
+    initialRouteName?: string | undefined;
 };
 export declare function parseRouteSegments(segments: string): string;
 export declare function getReactNavigationScreensConfig(nodes: RouteNode[], metaOnly: boolean): Record<string, Screen>;

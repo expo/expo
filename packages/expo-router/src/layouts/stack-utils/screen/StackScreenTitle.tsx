@@ -10,7 +10,7 @@ export type StackScreenTitleProps = {
    * The title content. Pass a string for a plain text title,
    * or a custom component when `asChild` is enabled.
    */
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   /**
    * Use this to render a custom component as the header title.
    *
@@ -21,35 +21,39 @@ export type StackScreenTitleProps = {
    * </Stack.Screen.Title>
    * ```
    */
-  asChild?: boolean;
-  style?: StyleProp<{
-    fontFamily?: TextStyle['fontFamily'];
-    fontSize?: TextStyle['fontSize'];
-    fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-    // TODO(@ubax): This should be ColorValue, but react-navigation types
-    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
-    color?: string;
-    textAlign?: 'left' | 'center';
-  }>;
+  asChild?: boolean | undefined;
+  style?:
+    | StyleProp<{
+        fontFamily?: TextStyle['fontFamily'];
+        fontSize?: TextStyle['fontSize'];
+        fontWeight?: Exclude<TextStyle['fontWeight'], number>;
+        // TODO(@ubax): This should be ColorValue, but react-navigation types
+        // currently only accept string for color props. In RN v8 we can change this to ColorValue.
+        color?: string;
+        textAlign?: 'left' | 'center';
+      }>
+    | undefined;
   /**
    * Style properties for the large title header.
    *
    * @platform ios
    */
-  largeStyle?: StyleProp<{
-    fontFamily?: TextStyle['fontFamily'];
-    fontSize?: TextStyle['fontSize'];
-    fontWeight?: Exclude<TextStyle['fontWeight'], number>;
-    // TODO(@ubax): This should be ColorValue, but react-navigation types
-    // currently only accept string for color props. In RN v8 we can change this to ColorValue.
-    color?: string;
-  }>;
+  largeStyle?:
+    | StyleProp<{
+        fontFamily?: TextStyle['fontFamily'];
+        fontSize?: TextStyle['fontSize'];
+        fontWeight?: Exclude<TextStyle['fontWeight'], number>;
+        // TODO(@ubax): This should be ColorValue, but react-navigation types
+        // currently only accept string for color props. In RN v8 we can change this to ColorValue.
+        color?: string;
+      }>
+    | undefined;
   /**
    * Enables large title mode.
    *
    * @platform ios
    */
-  large?: boolean;
+  large?: boolean | undefined;
 };
 
 /**
@@ -139,6 +143,7 @@ export function appendStackScreenTitlePropsToOptions(
   const flattenedStyle = StyleSheet.flatten(props.style);
   const flattenedLargeStyle = StyleSheet.flatten(props.largeStyle);
 
+  // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
   let titleOptions: NativeStackNavigationOptions = props.asChild
     ? { headerTitle: () => <>{props.children}</> }
     : { title: props.children as string | undefined };
@@ -173,6 +178,7 @@ export function appendStackScreenTitlePropsToOptions(
           }
         : {}),
     },
+    // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
     headerLargeTitleStyle: {
       ...flattenedLargeStyle,
       ...(flattenedLargeStyle?.fontWeight

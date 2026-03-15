@@ -55,16 +55,19 @@ describe(appendStackSearchBarPropsToOptions, () => {
     });
 
     it.each([true, false, undefined])('passes hideWhenScrolling=%s prop', (hideWhenScrolling) => {
+      // @ts-expect-error — eopt: boolean | undefined from it.each not assignable to react-native-screens StackSearchBarProps
       const result = appendStackSearchBarPropsToOptions({}, { hideWhenScrolling });
       expect(result.headerSearchBarOptions?.hideWhenScrolling).toBe(hideWhenScrolling);
     });
 
     it.each([true, false, undefined])('passes obscureBackground=%s prop', (obscureBackground) => {
+      // @ts-expect-error — eopt: boolean | undefined from it.each not assignable to react-native-screens StackSearchBarProps
       const result = appendStackSearchBarPropsToOptions({}, { obscureBackground });
       expect(result.headerSearchBarOptions?.obscureBackground).toBe(obscureBackground);
     });
 
     it.each([true, false, undefined])('passes hideNavigationBar=%s prop', (hideNavigationBar) => {
+      // @ts-expect-error — eopt: boolean | undefined from it.each not assignable to react-native-screens StackSearchBarProps
       const result = appendStackSearchBarPropsToOptions({}, { hideNavigationBar });
       expect(result.headerSearchBarOptions?.hideNavigationBar).toBe(hideNavigationBar);
     });
@@ -97,6 +100,7 @@ describe(appendStackSearchBarPropsToOptions, () => {
     it.each([true, false, undefined])(
       'passes shouldShowHintSearchIcon=%s prop',
       (shouldShowHintSearchIcon) => {
+        // @ts-expect-error — eopt: boolean | undefined from it.each not assignable to react-native-screens StackSearchBarProps
         const result = appendStackSearchBarPropsToOptions({}, { shouldShowHintSearchIcon });
         expect(result.headerSearchBarOptions?.shouldShowHintSearchIcon).toBe(
           shouldShowHintSearchIcon

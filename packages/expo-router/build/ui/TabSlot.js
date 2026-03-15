@@ -72,7 +72,9 @@ function defaultTabsSlotRender(descriptor, { isFocused, loaded, detachInactiveSc
         // Don't render a lazy screen if we've never navigated to it
         return null;
     }
-    return (<react_native_screens_1.Screen key={descriptor.route.key} enabled={detachInactiveScreens} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
+    return (
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
+    <react_native_screens_1.Screen key={descriptor.route.key} enabled={detachInactiveScreens} activityState={isFocused ? 2 : 0} freezeOnBlur={freezeOnBlur} style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
       {descriptor.render()}
     </react_native_screens_1.Screen>);
 }

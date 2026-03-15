@@ -1,24 +1,24 @@
 import type { DynamicConvention, RouteNode } from './Route';
 import type { RequireContext } from './types';
 export type Options = {
-    ignore?: RegExp[];
-    preserveApiRoutes?: boolean;
-    ignoreRequireErrors?: boolean;
-    ignoreEntryPoints?: boolean;
-    internal_stripLoadRoute?: boolean;
-    skipGenerated?: boolean;
+    ignore?: RegExp[] | undefined;
+    preserveApiRoutes?: boolean | undefined;
+    ignoreRequireErrors?: boolean | undefined;
+    ignoreEntryPoints?: boolean | undefined;
+    internal_stripLoadRoute?: boolean | undefined;
+    skipGenerated?: boolean | undefined;
     /** Skip routes created by `generateStaticParams()` */
-    skipStaticParams?: boolean;
-    notFound?: boolean;
-    unstable_useServerMiddleware?: boolean;
-    importMode?: string;
-    platformRoutes?: boolean;
-    sitemap?: boolean;
-    platform?: string;
-    redirects?: RedirectConfig[];
-    rewrites?: RewriteConfig[];
-    headers?: Record<string, string | string[]>;
-    preserveRedirectAndRewrites?: boolean;
+    skipStaticParams?: boolean | undefined;
+    notFound?: boolean | undefined;
+    unstable_useServerMiddleware?: boolean | undefined;
+    importMode?: string | undefined;
+    platformRoutes?: boolean | undefined;
+    sitemap?: boolean | undefined;
+    platform?: string | undefined;
+    redirects?: RedirectConfig[] | undefined;
+    rewrites?: RewriteConfig[] | undefined;
+    headers?: Record<string, string | string[]> | undefined;
+    preserveRedirectAndRewrites?: boolean | undefined;
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
     getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'> & {
         defaults?: RouteNode;
@@ -30,15 +30,15 @@ export type RedirectConfig = {
     source: string;
     destination: string;
     destinationContextKey: string;
-    permanent?: boolean;
-    methods?: string[];
-    external?: boolean;
+    permanent?: boolean | undefined;
+    methods?: string[] | undefined;
+    external?: boolean | undefined;
 };
 export type RewriteConfig = {
     source: string;
     destination: string;
     destinationContextKey: string;
-    methods?: string[];
+    methods?: string[] | undefined;
 };
 /**
  * Given a Metro context module, return an array of nested routes.

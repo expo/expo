@@ -23,6 +23,7 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
 
   const nativeTabRouter: Router<
     TabNavigationState<ParamListBase>,
+    // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
     TabActionType | CommonNavigationAction
   > = {
     ...tabRouter,

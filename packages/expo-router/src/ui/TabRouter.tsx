@@ -24,8 +24,8 @@ export type ExpoTabActionType =
   | ReplaceAction
   | {
       type: 'JUMP_TO';
-      source?: string;
-      target?: string;
+      source?: string | undefined;
+      target?: string | undefined;
       payload: {
         name: string;
         resetOnFocus?: boolean;
@@ -38,16 +38,19 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
 
   const router: Router<
     TabNavigationState<ParamListBase>,
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     ExpoTabActionType | CommonNavigationAction
   > = {
     ...rnTabRouter,
     getStateForAction(state, action, options) {
+      // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
       if (isReplaceAction(action)) {
         action = {
           ...action,
           type: 'JUMP_TO',
         };
         // Generate the state as if we were using JUMP_TO
+        // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
         const nextState = rnTabRouter.getStateForAction(state, action, options);
 
         if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
@@ -96,6 +99,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         };
         state = {
           ...state,
+          // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
           routes: state.routes.map((r) => {
             if (r.key !== route.key) {
               return r;
@@ -103,6 +107,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
             return { ...r, state: undefined };
           }),
         };
+        // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
         return rnTabRouter.getStateForAction(state, action, options);
       } else {
         return rnTabRouter.getStateForRouteFocus(state, route.key);

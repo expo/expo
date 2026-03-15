@@ -97,7 +97,9 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
     }
     return (<native_1.LocaleDirContext.Provider value={direction}>
       <native_1.UNSTABLE_UnhandledLinkingContext.Provider value={unhandledLinkingContext}>
+        {/* @ts-expect-error — eopt: @react-navigation LinkingContext type not compatible */}
         <native_1.LinkingContext.Provider value={linkingContext}>
+          {/* @ts-expect-error — eopt: @react-navigation NavigationContainerProps not compatible */}
           <native_1.BaseNavigationContainer {...rest} theme={theme} onReady={onReadyForLinkingHandling} onStateChange={onStateChangeForLinkingHandling} initialState={rest.initialState == null ? initialState : rest.initialState} ref={refContainer}/>
         </native_1.LinkingContext.Provider>
       </native_1.UNSTABLE_UnhandledLinkingContext.Provider>

@@ -51,10 +51,10 @@ export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = Lin
 };
 
 export type LinkingConfigOptions = {
-  metaOnly?: boolean;
-  serverUrl?: string;
-  getInitialURL?: typeof getInitialURL;
-  redirects?: StoreRedirects[];
+  metaOnly?: boolean | undefined;
+  serverUrl?: string | undefined;
+  getInitialURL?: typeof getInitialURL | undefined;
+  redirects?: StoreRedirects[] | undefined;
 };
 
 interface RouterOptions {
@@ -129,6 +129,7 @@ export function getLinkingConfig(
       return initialUrl;
     },
     subscribe: subscribe(nativeLinking, redirects),
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     getStateFromPath: <ParamList extends object>(path: string, options?: Options<ParamList>) => {
       return getStateFromPath(path, options, getRouteInfo().segments);
     },

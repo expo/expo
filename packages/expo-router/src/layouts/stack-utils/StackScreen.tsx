@@ -24,7 +24,7 @@ type StackBaseScreenProps = BaseScreenProps<
 
 export interface StackScreenProps extends PropsWithChildren {
   /** Name is required when used inside a Layout component. */
-  name?: StackBaseScreenProps['name'];
+  name?: StackBaseScreenProps['name'] | undefined;
 
   /**
    * Options to configure the screen.
@@ -33,7 +33,7 @@ export interface StackScreenProps extends PropsWithChildren {
    * The function form `options={({ route }) => ({})}` is only supported when used inside a Layout component.
    * When used inside a page component, pass an options object directly.
    */
-  options?: StackBaseScreenProps['options'];
+  options?: StackBaseScreenProps['options'] | undefined;
 
   /**
    * Redirect to the nearest sibling route.
@@ -41,21 +41,21 @@ export interface StackScreenProps extends PropsWithChildren {
    *
    * Only supported when used inside a Layout component.
    */
-  redirect?: StackBaseScreenProps['redirect'];
+  redirect?: StackBaseScreenProps['redirect'] | undefined;
 
   /**
    * Initial params to pass to the route.
    *
    * Only supported when used inside a Layout component.
    */
-  initialParams?: StackBaseScreenProps['initialParams'];
+  initialParams?: StackBaseScreenProps['initialParams'] | undefined;
 
   /**
    * Listeners for navigation events.
    *
    * Only supported when used inside a Layout component.
    */
-  listeners?: StackBaseScreenProps['listeners'];
+  listeners?: StackBaseScreenProps['listeners'] | undefined;
 
   /**
    * Function to determine a unique ID for the screen.
@@ -63,14 +63,14 @@ export interface StackScreenProps extends PropsWithChildren {
    *
    * Only supported when used inside a Layout component.
    */
-  getId?: StackBaseScreenProps['getId'];
+  getId?: StackBaseScreenProps['getId'] | undefined;
 
   /**
    * When enabled, the navigator will reuse an existing screen instead of pushing a new one.
    *
    * Only supported when used inside a Layout component.
    */
-  dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
+  dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'] | undefined;
 }
 
 /**

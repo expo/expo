@@ -57,13 +57,13 @@ export type UseTabsOptions = Omit<
   >,
   'children'
 > & {
-  backBehavior?: TabRouterOptions['backBehavior'];
+  backBehavior?: TabRouterOptions['backBehavior'] | undefined;
 };
 
 export type TabsProps = ViewProps & {
   /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
-  asChild?: boolean;
-  options?: UseTabsOptions;
+  asChild?: boolean | undefined;
+  options?: UseTabsOptions | undefined;
 };
 
 /**
@@ -179,6 +179,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     TabActionHelpers<ParamListBase>,
     ExpoTabsScreenOptions,
     TabNavigationEventMap
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   >(ExpoTabRouter, {
     children,
     ...rest,

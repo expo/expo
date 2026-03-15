@@ -25,7 +25,7 @@ export interface InternalNavigationOptions {
    * Internal option to control gesture-based dismissal independently from user's `gestureEnabled`.
    * When set, this value overrides the user's `gestureEnabled` option.
    */
-  [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]?: boolean;
+  [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]?: boolean | undefined;
 }
 
 const internalExpoRouterParamNames = [

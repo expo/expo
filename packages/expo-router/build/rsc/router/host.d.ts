@@ -14,8 +14,8 @@ declare const ENTRY = "e";
 declare const SET_ELEMENTS = "s";
 declare const ON_FETCH_DATA = "o";
 type FetchCache = {
-    [ENTRY]?: [input: string, params: unknown, elements: Elements];
-    [SET_ELEMENTS]?: SetElements;
+    [ENTRY]?: [input: string, params: unknown, elements: Elements] | undefined;
+    [SET_ELEMENTS]?: SetElements | undefined;
     [ON_FETCH_DATA]?: OnFetchData | undefined;
 };
 type Elements = Promise<Record<string, ReactNode>> & {

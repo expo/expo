@@ -11,7 +11,7 @@ const IsWithinSplitViewContext = createContext(false);
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
  */
 export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
-  children?: ReactNode;
+  children?: ReactNode | undefined;
 }
 
 function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps) {

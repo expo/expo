@@ -69,6 +69,7 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacem
             name: iconComponentProps.sf,
         };
     })();
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     const item = {
         ...rest,
         label: label?.props.children ?? stringChildren,
@@ -76,6 +77,7 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacem
     };
     if (style) {
         const convertedStyle = (0, font_1.convertTextStyleToRNTextStyle)(style) ?? {};
+        // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
         item.labelStyle = convertedStyle;
     }
     if (badgeComponent) {
@@ -84,6 +86,7 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props, isBottomPlacem
         };
         const badgeStyle = (0, font_1.convertTextStyleToRNTextStyle)(badgeComponent.props.style);
         if (badgeStyle) {
+            // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
             item.badge.style = badgeStyle;
         }
     }

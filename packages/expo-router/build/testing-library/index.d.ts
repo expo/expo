@@ -17,8 +17,8 @@ export declare const act: typeof React.act, cleanup: typeof import("@testing-lib
 };
 export declare let screen: typeof rnTestingLibrary.screen;
 export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] & {
-    initialUrl?: any;
-    linking?: Partial<ExpoLinkingOptions>;
+    initialUrl?: any | undefined;
+    linking?: Partial<ExpoLinkingOptions> | undefined;
 };
 type Result = ReturnType<typeof rnTestingLibrary.render> & {
     getPathname(): string;

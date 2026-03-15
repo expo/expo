@@ -161,6 +161,7 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
             item.icon = sharedProps.icon;
         }
         else {
+            // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
             item.icon = convertImageIconToPlatformIcon(sharedProps.icon);
         }
     }
@@ -204,6 +205,7 @@ exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
     const { children, isOn, unstable_keepPresented, icon, ...rest } = props;
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     const item = {
         ...rest,
         description: props.subtitle,
@@ -220,6 +222,7 @@ function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
             item.icon = sharedProps.icon;
         }
         else {
+            // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
             item.icon = convertImageIconToPlatformIcon(sharedProps.icon);
         }
     }

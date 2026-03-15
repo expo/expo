@@ -53,6 +53,7 @@ function convertStackToolbarViewPropsToRNHeaderItem(props) {
         console.warn('Stack.Toolbar.View requires a child element to render custom content in the toolbar.');
     }
     const element = children ? children : <></>;
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     return {
         type: 'custom',
         element,

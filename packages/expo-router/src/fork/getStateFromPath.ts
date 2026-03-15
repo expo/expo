@@ -8,8 +8,8 @@ import * as expo from './getStateFromPath-forks';
 import { INTERNAL_SLOT_NAME } from '../constants';
 
 export type Options<ParamList extends object> = ExpoOptions & {
-  path?: string;
-  initialRouteName?: string;
+  path?: string | undefined;
+  initialRouteName?: string | undefined;
   screens: PathConfigMap<ParamList>;
 };
 
@@ -17,11 +17,11 @@ type ParseConfig = Record<string, (value: string) => any>;
 
 export type RouteConfig = ExpoRouteConfig & {
   screen: string;
-  regex?: RegExp;
+  regex?: RegExp | undefined;
   path: string;
   pattern: string;
   routeNames: string[];
-  parse?: ParseConfig;
+  parse?: ParseConfig | undefined;
 };
 
 export type InitialRouteConfig = {
@@ -30,12 +30,12 @@ export type InitialRouteConfig = {
 };
 
 export type ResultState = PartialState<NavigationState> & {
-  state?: ResultState;
+  state?: ResultState | undefined;
 };
 
 export type ParsedRoute = {
   name: string;
-  path?: string;
+  path?: string | undefined;
   params?: Record<string, any> | undefined;
 };
 
@@ -628,10 +628,12 @@ const createStateObject = (
     if (initialRoute) {
       return {
         index: 1,
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         routes: [{ name: initialRoute, params: route.params }, route],
       };
     } else {
       return {
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         routes: [route],
       };
     }
@@ -641,11 +643,13 @@ const createStateObject = (
         index: 1,
         routes: [
           { name: initialRoute, params: route.params },
+          // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
           { ...route, state: { routes: [] } },
         ],
       };
     } else {
       return {
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         routes: [{ ...route, state: { routes: [] } }],
       };
     }
