@@ -1826,6 +1826,14 @@ extension ViewModifierRegistry {
       return try TagModifier(from: params, appContext: appContext)
     }
 
+    register("id") { params, appContext, _ in
+      return try IDModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollTargetBehavior") { params, appContext, _ in
+      return try ScrollTargetBehaviorModifier(from: params, appContext: appContext)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }

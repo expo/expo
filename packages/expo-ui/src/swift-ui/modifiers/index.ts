@@ -567,7 +567,7 @@ export const scrollDismissesKeyboard = (
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
-type UnitPointValue =
+export type UnitPointValue =
   | 'zero'
   | 'topLeading'
   | 'top'
@@ -604,6 +604,24 @@ export const defaultScrollAnchorForRole = (
   anchor: UnitPointValue | null,
   role: 'initialOffset' | 'sizeChanges' | 'alignment'
 ) => createModifier('defaultScrollAnchorForRole', { anchor, role });
+
+/**
+ * Sets a stable identity for a view, used by `scrollPosition` to track visible items.
+ * @param id - The string identifier for this view.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/id(_:)).
+ */
+export const id = (id: string) => createModifier('id', { id });
+
+/**
+ * Sets the scroll snapping behavior for scrollable views.
+ * Use with `scrollTargetLayout` on the content container.
+ * @param behavior - `'paging'` for container-aligned snapping, `'viewAligned'` for view-aligned snapping.
+ * @platform ios 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolltargetbehavior(_:)).
+ */
+export const scrollTargetBehavior = (behavior: 'paging' | 'viewAligned') =>
+  createModifier('scrollTargetBehavior', { behavior });
 
 /**
  * Disables the move action for a view in a list.
