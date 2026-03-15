@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add check for trustedDependencies with bun/pnpm ([#42455](https://github.com/expo/expo/pull/42455) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
