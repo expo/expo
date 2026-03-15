@@ -23,6 +23,7 @@ internal enum HorizontalAlignmentOptions: String, Enumerable {
 public final class VStackViewProps: UIBaseViewProps {
   @Field var spacing: Double?
   @Field var alignment: HorizontalAlignmentOptions?
+  @Field var scrollTargetLayout: Bool = false
 }
 
 public struct VStackView: ExpoSwiftUI.View {
@@ -33,10 +34,15 @@ public struct VStackView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    VStack(
+    let stack = VStack(
       alignment: props.alignment?.toHorizontalAlignment() ?? .center,
       spacing: CGFloat(props.spacing ?? 0)) {
         Children()
+    }
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *), props.scrollTargetLayout {
+      stack.scrollTargetLayout()
+    } else {
+      stack
     }
   }
 }

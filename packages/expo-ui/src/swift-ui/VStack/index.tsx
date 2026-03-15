@@ -13,6 +13,11 @@ export type VStackProps = {
    * The spacing between children.
    */
   spacing?: number;
+  /**
+   * Marks this stack as a scroll target layout for `scrollPosition` tracking.
+   * @platform ios 17.0+
+   */
+  scrollTargetLayout?: boolean;
 } & CommonViewModifierProps;
 
 const VStackNativeView: React.ComponentType<VStackProps> = requireNativeView(
