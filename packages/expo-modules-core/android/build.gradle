@@ -63,7 +63,22 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
-def enableWorkletsIntegration = !isTests
+def reactNativeVersion = project.extensions.getByType(ExpoModuleExtension).reactNativeVersion
+def precompiledDir = file("${projectDir}/precompiled/${reactNativeVersion.toString()}")
+
+def usePrecompiledCore = {
+  if (!precompiledDir.exists()) {
+    return false
+  }
+  def archs = reactNativeArchitectures()
+  return archs.every { abi ->
+    def releaseExists = new File(precompiledDir, "release/${abi}/libexpo-modules-core.so").exists()
+    def debugExists = new File(precompiledDir, "debug/${abi}/libexpo-modules-core.so").exists()
+    return releaseExists && debugExists
+  }
+}.call()
+
+def enableWorkletsIntegration = !isTests && !usePrecompiledCore
 def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
 
 if (workletsProject != null) {
@@ -102,30 +117,34 @@ android {
 
     testInstrumentationRunner "expo.modules.TestRunner"
 
-    externalNativeBuild {
-      cmake {
-        def cppArguments = [
-          "-DANDROID_STL=c++_shared",
-          "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
-          "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
-          "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
-          "-DUSE_HERMES=${USE_HERMES}",
-          "-DUNIT_TEST=${isExpoModulesCoreTests}"
-        ]
+    if (!usePrecompiledCore) {
+      externalNativeBuild {
+        cmake {
+          def cppArguments = [
+            "-DANDROID_STL=c++_shared",
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
+            "-DREACT_NATIVE_DIR=${expoModuleExtension.reactNativeDir}",
+            "-DREACT_NATIVE_TARGET_VERSION=${expoModuleExtension.reactNativeVersion.minor}",
+            "-DUSE_HERMES=${USE_HERMES}",
+            "-DUNIT_TEST=${isExpoModulesCoreTests}"
+          ]
 
-        if (reactNativeWorkletsRootDir != null) {
-          cppArguments += "-DREACT_NATIVE_WORKLETS_DIR=${reactNativeWorkletsRootDir.absolutePath}"
+          if (reactNativeWorkletsRootDir != null) {
+            cppArguments += "-DREACT_NATIVE_WORKLETS_DIR=${reactNativeWorkletsRootDir.absolutePath}"
+          }
+
+          abiFilters(*reactNativeArchitectures())
+          arguments(*cppArguments)
         }
-
-        abiFilters(*reactNativeArchitectures())
-        arguments(*cppArguments)
       }
     }
   }
 
-  externalNativeBuild {
-    cmake {
-      path "CMakeLists.txt"
+  if (!usePrecompiledCore) {
+    externalNativeBuild {
+      cmake {
+        path "CMakeLists.txt"
+      }
     }
   }
 
@@ -135,48 +154,50 @@ android {
     compose shouldIncludeCompose
   }
 
-  packagingOptions {
-    // Gradle will add cmake target dependencies into packaging.
-    // Theses files are intermediated linking files to build modules-core and should not be in final package.
-    def sharedLibraries = [
-      "**/libc++_shared.so",
-      "**/libfabricjni.so",
-      "**/libfbjni.so",
-      "**/libfolly_json.so",
-      "**/libfolly_runtime.so",
-      "**/libglog.so",
-      "**/libhermesvm.so",
-      "**/libjscexecutor.so",
-      "**/libjsi.so",
-      "**/libreactnative.so",
-      "**/libreactnativejni.so",
-      "**/libreact_debug.so",
-      "**/libreact_nativemodule_core.so",
-      "**/libreact_utils.so",
-      "**/libreact_render_debug.so",
-      "**/libreact_render_graphics.so",
-      "**/libreact_render_core.so",
-      "**/libreact_render_componentregistry.so",
-      "**/libreact_render_mapbuffer.so",
-      "**/librrc_view.so",
-      "**/libruntimeexecutor.so",
-      "**/libyoga.so",
-    ]
-
-    // Required or mockk will crash
-    resources {
-      excludes += [
-        "META-INF/LICENSE.md",
-        "META-INF/LICENSE-notice.md"
+  if (!usePrecompiledCore) {
+    packagingOptions {
+      // Gradle will add cmake target dependencies into packaging.
+      // Theses files are intermediated linking files to build modules-core and should not be in final package.
+      def sharedLibraries = [
+        "**/libc++_shared.so",
+        "**/libfabricjni.so",
+        "**/libfbjni.so",
+        "**/libfolly_json.so",
+        "**/libfolly_runtime.so",
+        "**/libglog.so",
+        "**/libhermesvm.so",
+        "**/libjscexecutor.so",
+        "**/libjsi.so",
+        "**/libreactnative.so",
+        "**/libreactnativejni.so",
+        "**/libreact_debug.so",
+        "**/libreact_nativemodule_core.so",
+        "**/libreact_utils.so",
+        "**/libreact_render_debug.so",
+        "**/libreact_render_graphics.so",
+        "**/libreact_render_core.so",
+        "**/libreact_render_componentregistry.so",
+        "**/libreact_render_mapbuffer.so",
+        "**/librrc_view.so",
+        "**/libruntimeexecutor.so",
+        "**/libyoga.so",
       ]
-    }
 
-    // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
-    // Otherwise, those files should be excluded, because will be loaded by the application.
-    if (isExpoModulesCoreTests) {
-      pickFirsts += sharedLibraries
-    } else {
-      excludes += sharedLibraries
+      // Required or mockk will crash
+      resources {
+        excludes += [
+          "META-INF/LICENSE.md",
+          "META-INF/LICENSE-notice.md"
+        ]
+      }
+
+      // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
+      // Otherwise, those files should be excluded, because will be loaded by the application.
+      if (isExpoModulesCoreTests) {
+        pickFirsts += sharedLibraries
+      } else {
+        excludes += sharedLibraries
+      }
     }
   }
 
@@ -188,6 +209,16 @@ android {
         } else {
           srcDirs += 'src/withoutCompose'
         }
+      }
+
+      if (usePrecompiledCore) {
+        jniLibs.srcDirs = [file("${precompiledDir}/release")]
+      }
+    }
+
+    debug {
+      if (usePrecompiledCore) {
+        jniLibs.srcDirs = [file("${precompiledDir}/debug")]
       }
     }
   }
@@ -311,7 +342,63 @@ def generatePCHTask = tasks.register("generatePCH") {
   }
 }
 
-// This task will run on the IDE project sync, ensuring the PCH file is generated early enough
-tasks.register("prepareKotlinBuildScriptModel") {
-  dependsOn(generatePCHTask)
+if (!usePrecompiledCore) {
+  // This task will run on the IDE project sync, ensuring the PCH file is generated early enough
+  tasks.register("prepareKotlinBuildScriptModel") {
+    dependsOn(generatePCHTask)
+  }
+}
+
+tasks.register("buildNativeLibs") {
+  description = "Builds release native libraries and copies them to prebuilt/release directory"
+  group = "build"
+
+  dependsOn("buildCMakeRelWithDebInfo")
+
+  doLast {
+    reactNativeArchitectures().each { abi ->
+      def targetDir = file("${precompiledDir}/release/${abi}")
+      targetDir.mkdirs()
+
+      copy {
+        from(fileTree("${buildDir}/intermediates/cxx/RelWithDebInfo") {
+          include "**/obj/${abi}/libexpo-modules-core.so"
+        })
+        into targetDir
+        eachFile { it.path = it.name }
+        includeEmptyDirs = false
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+      }
+
+      println("Copied release libexpo-modules-core.so for ${abi}")
+    }
+    println("Precompiled release libraries saved to: ${precompiledDir}/release")
+  }
+}
+
+tasks.register("buildNativeLibsDebug") {
+  description = "Builds debug native libraries and copies them to precompiled/debug directory"
+  group = "build"
+
+  dependsOn("buildCMakeDebug")
+
+  doLast {
+    reactNativeArchitectures().each { abi ->
+      def targetDir = file("${precompiledDir}/debug/${abi}")
+      targetDir.mkdirs()
+
+      copy {
+        from(fileTree("${buildDir}/intermediates/cxx/Debug") {
+          include "**/obj/${abi}/libexpo-modules-core.so"
+        })
+        into targetDir
+        eachFile { it.path = it.name }
+        includeEmptyDirs = false
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+      }
+
+      println("Copied debug libexpo-modules-core.so for ${abi}")
+    }
+    println("Precompiled debug libraries saved to: ${precompiledDir}/debug")
+  }
 }
