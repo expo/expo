@@ -10,9 +10,9 @@ export type StepperProps = {
    */
   label: string;
   /**
-   * The initial/default value of the stepper.
+   * The current value of the stepper.
    */
-  defaultValue?: number;
+  value?: number;
   /**
    * The step value for increment/decrement operations.
    */

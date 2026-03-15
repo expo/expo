@@ -12,25 +12,21 @@ final class ColorPickerProps: UIBaseViewProps {
 
 struct ColorPickerView: ExpoSwiftUI.View {
   @ObservedObject var props: ColorPickerProps
-  @State private var previousHex: String = ""
   @State private var selection: Color = .clear
-
-  init(props: ColorPickerProps) {
-    self.props = props
-    _selection = State(initialValue: props.selection)
-    _previousHex = State(initialValue: Self.colorToHex(props.selection, supportsOpacity: props.supportsOpacity))
-  }
 
   var body: some View {
 #if !os(tvOS)
     ColorPicker(props.label ?? "", selection: $selection, supportsOpacity: props.supportsOpacity)
+      .onAppear {
+        selection = props.selection
+      }
+      .onChange(of: props.selection) { newValue in
+        selection = newValue
+      }
       .onChange(of: selection) { newValue in
+        if props.selection == newValue { return }
         let newHex = Self.colorToHex(newValue, supportsOpacity: props.supportsOpacity)
-        if newHex != previousHex {
-          previousHex = newHex
-          let payload = ["value": newHex]
-          props.onSelectionChange(payload)
-        }
+        props.onSelectionChange(["value": newHex])
       }
 #else
     EmptyView()
