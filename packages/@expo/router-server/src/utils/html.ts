@@ -27,3 +27,72 @@ const ESCAPED_CHARACTERS: { [match: string]: string } = {
 export function escapeUnsafeCharacters(str: string): string {
   return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match]);
 }
+
+/**
+ * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
+ * CSS href.
+ *
+ * Used by both `renderStaticContent()` and `serializeHtml()` to inject CSS bundles into the HTML
+ * document's `<body>` element.
+ */
+export function createInjectedCssElements(hrefs: string[]): string {
+  return hrefs
+    .flatMap((href) => [
+      `<link rel="preload" href="${href}" as="style">`,
+      `<link rel="stylesheet" href="${href}">`,
+    ])
+    .join('\n');
+}
+
+/**
+ * Returns newline-separated `<script defer>` HTML strings for each JavaScript source URL.
+ *
+ * Used by both `renderStaticContent()` and `serializeHtml()` to inject JavaScript bundles into the
+ * HTML document's `<body>` element.
+ */
+export function createInjectedScriptElements(srcs: string[]): string {
+  return srcs.map((src) => `<script src="${src}" defer></script>`).join('\n');
+}
+
+/**
+ * Returns a module script that sets the `__EXPO_ROUTER_HYDRATE__` global flag, which tells the
+ * client-side Expo Router entrypoint to hydrate the server-rendered markup instead of performing
+ * a full client render.
+ *
+ * @see packages/expo/src/launch/registerRootComponent.tsx
+ */
+export function getHydrationFlagScript(): string {
+  return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+}
+
+const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;
+
+/**
+ * Extracts head tags and document attributes from a `react-helmet-async` helmet instance.
+ *
+ * `<head>` keys are serialized in document order: title, priority, meta, link, script, style.
+ * Returns empty strings when `helmet` is `null`/`undefined`.
+ */
+export function serializeHelmetToHtml(helmet: any): {
+  headTags: string;
+  htmlAttributes: string;
+  bodyAttributes: string;
+} {
+  if (!helmet) {
+    return { headTags: '', htmlAttributes: '', bodyAttributes: '' };
+  }
+
+  const headParts: string[] = [];
+  for (const key of HELMET_HEAD_KEYS) {
+    const result = helmet[key]?.toString();
+    if (result) {
+      headParts.push(result);
+    }
+  }
+
+  return {
+    headTags: headParts.join(''),
+    htmlAttributes: helmet.htmlAttributes?.toString() ?? '',
+    bodyAttributes: helmet.bodyAttributes?.toString() ?? '',
+  };
+}
