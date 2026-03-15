@@ -34,4 +34,4 @@ export { UnavailabilityError } from './errors/UnavailabilityError';
 export { LegacyEventEmitter } from './LegacyEventEmitter';
 export { default as NativeModulesProxy } from './NativeModulesProxy';
 
-export { installOnUIRuntime } from './worklets';
+export { installOnUIRuntime, createWorkletCallback } from './worklets';

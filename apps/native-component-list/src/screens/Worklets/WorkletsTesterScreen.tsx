@@ -1,9 +1,9 @@
 import { installOnUIRuntime } from 'expo';
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { runOnJS } from 'react-native-worklets';
 import 'react-native-reanimated';
-import { WorkletsTester } from 'worklets-tester';
+import { WorkletsTester, WorkletsTesterView } from 'worklets-tester';
 
 installOnUIRuntime();
 
@@ -124,6 +124,25 @@ export default function WorkletsTesterScreen() {
         </TouchableOpacity>
       </View>
 
+      <Text style={styles.resultsTitle}>Worklet Callback View:</Text>
+      {Platform.OS === 'ios' ? (
+        <WorkletsTesterView
+          style={styles.nativeView}
+          onPressSync={(message: string) => {
+            'worklet';
+            runOnJS(addResult)({
+              name: 'workletCallback',
+              success: true,
+              message: `Callback from native view: ${message}`,
+            });
+          }}
+        />
+      ) : (
+        <Text style={styles.noResults}>
+          Worklet Callback View is not supported on this platform
+        </Text>
+      )}
+
       <View style={styles.resultsSection}>
         <Text style={styles.resultsTitle}>Results:</Text>
         {results.length === 0 ? (
@@ -171,6 +190,10 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     backgroundColor: '#666',
+  },
+  nativeView: {
+    height: 50,
+    marginBottom: 20,
   },
   buttonText: {
     color: '#fff',

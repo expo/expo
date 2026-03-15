@@ -8,3 +8,6 @@ export function installOnUIRuntime() {
 
   installOnUIRuntimeNative();
 }
+
+export const createWorkletCallback: ((serializedWorklet: unknown) => any) | undefined =
+  globalThis?.expo?.createWorkletCallback;

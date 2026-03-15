@@ -2,6 +2,8 @@ import { createSerializable } from 'react-native-worklets';
 
 import WorkletsTesterModule from './WorkletsTesterModule';
 
+export { WorkletsTesterView } from './WorkletsTesterView';
+
 export const WorkletsTester = {
   scheduleWorklet: (worklet: () => void) => {
     WorkletsTesterModule?.scheduleWorklet?.(createSerializable(worklet));
