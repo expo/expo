@@ -10,6 +10,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.UnknownProjectException
 import org.gradle.api.initialization.Settings
 import org.gradle.internal.cc.base.logger
+import org.gradle.plugins.ide.eclipse.model.EclipseModel
 import java.io.File
 import java.util.Properties
 
@@ -45,6 +46,7 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
     }
 
     configureMaxSdkOverridePlugin(settings)
+    configureEclipseResourceFilters(settings)
   }
 
   private fun getExpoGradlePluginsFile(settings: Settings): File {
@@ -76,6 +78,45 @@ open class ExpoAutolinkingSettingsPlugin : Plugin<Settings> {
             + "'expo-max-sdk-override-plugin'".withColor(Colors.GREEN)
             + ". Plugin has failed to find the ':app' project. It will not be applied.".withColor(Colors.RESET)
         )
+      }
+    }
+  }
+
+  /**
+   * Configures Eclipse resource filters to exclude package manager directories from IDE scanning.
+   * This prevents IDEs (VSCode with Gradle extension, Android Studio, Eclipse) from creating
+   * `.project` metadata files in nested node_modules paths, which can cause autolinking to
+   * resolve incomplete package directories.
+   */
+  private fun configureEclipseResourceFilters(settings: Settings) {
+    settings.gradle.afterProject { project ->
+      // Only configure for root project to avoid duplicate filters
+      if (project != project.rootProject) {
+        return@afterProject
+      }
+
+      try {
+        project.pluginManager.apply("eclipse")
+
+        project.extensions.configure(EclipseModel::class.java) { eclipse ->
+          eclipse.project { eclipseProject ->
+            // Exclude package manager directories using regex filter
+            // This prevents IDE from scanning inside these folders and creating .project files
+            eclipseProject.resourceFilter {
+              it.appliesTo = "FOLDERS"
+              it.type = "EXCLUDE_ALL"
+              it.recursive = true
+              it.matcher { matcher ->
+                matcher.id = "org.eclipse.core.resources.regexFilterMatcher"
+                // Exclude: node_modules (all), .bun, .yarn (berry), .pnpm
+                matcher.arguments = "node_modules|\\.bun|\\.yarn|\\.pnpm"
+              }
+            }
+          }
+        }
+      } catch (e: Exception) {
+        // Silently ignore if eclipse plugin is not available or fails
+        // This is not critical functionality
       }
     }
   }
