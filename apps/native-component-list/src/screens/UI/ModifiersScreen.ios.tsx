@@ -689,8 +689,8 @@ export default function ModifiersScreen() {
               ))}
             </HStack>
             <Stepper
-              onValueChanged={setContainerRelativeFrameCount}
-              defaultValue={containerRelativeFrameCount}
+              onValueChange={setContainerRelativeFrameCount}
+              value={containerRelativeFrameCount}
               label={`Items count: ${containerRelativeFrameCount}`}
             />
           </Section>

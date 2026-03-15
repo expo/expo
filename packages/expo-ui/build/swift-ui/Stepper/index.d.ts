@@ -23,7 +23,7 @@ export type StepperProps = {
     /**
      * Called when the stepper value changes.
      */
-    onValueChanged: (value: number) => void;
+    onValueChange: (value: number) => void;
 } & CommonViewModifierProps;
 export declare function Stepper(props: StepperProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

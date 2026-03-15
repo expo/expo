@@ -9,7 +9,7 @@ final class StepperProps: UIBaseViewProps {
   @Field var min: Int = 0
   @Field var max: Int = 100
   @Field var step: Int = 1
-  var onValueChanged = EventDispatcher()
+  var onValueChange = EventDispatcher()
 }
 
 struct StepperView: ExpoSwiftUI.View {
@@ -31,7 +31,7 @@ struct StepperView: ExpoSwiftUI.View {
       }
       .onChange(of: value) { newValue in
         if props.value != newValue {
-          props.onValueChanged(["value": Int(newValue)])
+          props.onValueChange(["value": Int(newValue)])
         }
       }
 #else

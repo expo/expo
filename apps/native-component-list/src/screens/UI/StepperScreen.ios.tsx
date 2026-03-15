@@ -36,7 +36,7 @@ export default function StepperScreen() {
               min={0}
               max={50}
               step={1}
-              onValueChanged={setQuantity}
+              onValueChange={setQuantity}
               modifiers={modifiers}
             />
           </Host>
@@ -49,7 +49,7 @@ export default function StepperScreen() {
               min={-10}
               max={50}
               step={5}
-              onValueChanged={setTemperature}
+              onValueChange={setTemperature}
               modifiers={modifiers}
             />
           </Host>
@@ -62,7 +62,7 @@ export default function StepperScreen() {
               min={0}
               max={100}
               step={10}
-              onValueChanged={setVolume}
+              onValueChange={setVolume}
               modifiers={modifiers}
             />
           </Host>
@@ -78,7 +78,7 @@ export default function StepperScreen() {
               min={1}
               max={10}
               step={1}
-              onValueChanged={setSpeed}
+              onValueChange={setSpeed}
               modifiers={modifiers}
             />
           </Host>
@@ -91,7 +91,7 @@ export default function StepperScreen() {
               min={1}
               max={5}
               step={1}
-              onValueChanged={setRating}
+              onValueChange={setRating}
               modifiers={modifiers}
             />
           </Host>
@@ -104,7 +104,7 @@ export default function StepperScreen() {
               min={0}
               max={20}
               step={2}
-              onValueChanged={setItems}
+              onValueChange={setItems}
               modifiers={modifiers}
             />
           </Host>
@@ -120,7 +120,7 @@ export default function StepperScreen() {
               min={0}
               max={50}
               step={1}
-              onValueChanged={setQuantity}
+              onValueChange={setQuantity}
               modifiers={modifiers}
             />
           </Host>
