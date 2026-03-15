@@ -10,7 +10,7 @@ export interface LinkAppleZoomProps extends PropsWithChildren {
         y: number;
         width: number;
         height: number;
-    };
+    } | undefined;
 }
 /**
  * When this component is used inside a Link, [zoom transition](https://developer.apple.com/documentation/uikit/enhancing-your-app-with-fluid-transitions?language=objc)

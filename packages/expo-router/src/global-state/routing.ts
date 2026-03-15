@@ -197,27 +197,27 @@ export function setParams(
 }
 
 export type LinkToOptions = {
-  event?: string;
+  event?: string | undefined;
 
   /**
    * Relative URL references are either relative to the directory or the document. By default, relative paths are relative to the document.
    * @see: [MDN's documentation on Resolving relative references to a URL](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
-  relativeToDirectory?: boolean;
+  relativeToDirectory?: boolean | undefined;
 
   /**
    * Include the anchor when navigating to a new navigator
    */
-  withAnchor?: boolean;
+  withAnchor?: boolean | undefined;
 
   /**
    * When navigating in a Stack, remove all screen from the history that match the singular condition
    *
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
-  dangerouslySingular?: SingularOptions;
+  dangerouslySingular?: SingularOptions | undefined;
 
-  __internal__PreviewKey?: string;
+  __internal__PreviewKey?: string | undefined;
 };
 
 export function linkTo(originalHref: Href, options: LinkToOptions = {}) {

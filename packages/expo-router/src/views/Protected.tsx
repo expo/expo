@@ -2,7 +2,7 @@ import { FunctionComponent, isValidElement, ReactElement, ReactNode } from 'reac
 
 import { Group } from '../primitives';
 
-export type ProtectedProps = { guard: boolean; children?: ReactNode };
+export type ProtectedProps = { guard: boolean; children?: ReactNode | undefined };
 
 export const Protected = Group as FunctionComponent<ProtectedProps>;
 

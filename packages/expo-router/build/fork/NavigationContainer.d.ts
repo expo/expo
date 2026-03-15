@@ -6,10 +6,10 @@ declare global {
     }>;
 }
 type Props<ParamList extends object> = NavigationContainerProps & {
-    direction?: LocaleDirection;
-    linking?: LinkingOptions<ParamList>;
-    fallback?: React.ReactNode;
-    documentTitle?: DocumentTitleOptions;
+    direction?: LocaleDirection | undefined;
+    linking?: LinkingOptions<ParamList> | undefined;
+    fallback?: React.ReactNode | undefined;
+    documentTitle?: DocumentTitleOptions | undefined;
 };
 export declare const NavigationContainer: <RootParamList extends object = ReactNavigation.RootParamList>(props: Props<RootParamList> & {
     ref?: React.Ref<NavigationContainerRef<RootParamList>>;

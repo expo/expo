@@ -30,7 +30,7 @@ export type WebAnchorProps = {
    * <Link href="https://expo.dev" target="_blank">Go to Expo in new tab</Link>
    * ```
    */
-  target?: '_self' | '_blank' | '_parent' | '_top' | (string & object);
+  target?: '_self' | '_blank' | '_parent' | '_top' | (string & object) | undefined;
 
   /**
    * Specifies the relationship between the [`href`](#href) and the current route.
@@ -57,7 +57,7 @@ export type WebAnchorProps = {
    * <Link href="https://expo.dev" rel="nofollow">Go to Expo</Link>
    * ```
    */
-  rel?: string;
+  rel?: string | undefined;
 
   /**
    * Specifies that the [`href`](#href) should be downloaded when the user clicks on the
@@ -72,7 +72,7 @@ export type WebAnchorProps = {
    * <Link href="/image.jpg" download="my-image.jpg">Download image</Link>
    * ```
    */
-  download?: string;
+  download?: string | undefined;
 };
 
 // @docsMissing
@@ -132,7 +132,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    *}
    * ```
    */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 
   /**
    * Removes the current route from the history and replace it with the
@@ -152,7 +152,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    *}
    * ```
    */
-  replace?: boolean;
+  replace?: boolean | undefined;
   /**
    * Always pushes a new route, and never pops or replaces to existing route.
    * You can push the current route multiple times or with new parameters.
@@ -171,7 +171,7 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    *}
    * ```
    */
-  push?: boolean;
+  push?: boolean | undefined;
   /**
    * While in a stack, this will dismiss screens until the provided `href` is reached. If the href is not found,
    * it will instead replace the current screen with the provided `href`.
@@ -190,15 +190,15 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    *}
    * ```
    */
-  dismissTo?: boolean;
+  dismissTo?: boolean | undefined;
 
   /**
    * On native, this can be used with CSS interop tools like Nativewind.
    * On web, this sets the HTML `class` directly.
    */
-  className?: string;
+  className?: string | undefined;
 
-  onPress?: (event: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void;
+  onPress?: ((event: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => void) | undefined;
 
   /**
    * Relative URL references are either relative to the directory or the document.
@@ -206,12 +206,12 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    *
    * @see [Resolving relative references in Mozilla's documentation](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
    */
-  relativeToDirectory?: boolean;
+  relativeToDirectory?: boolean | undefined;
 
   /**
    * Replaces the initial screen with the current route.
    */
-  withAnchor?: boolean;
+  withAnchor?: boolean | undefined;
 
   /**
    * When navigating in a Stack, if the target is valid then screens in the history that matches
@@ -219,14 +219,14 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    *
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
-  dangerouslySingular?: SingularOptions;
+  dangerouslySingular?: SingularOptions | undefined;
 
   /**
    * Prefetches the route when the component is rendered on a focused screen.
    */
-  prefetch?: boolean;
+  prefetch?: boolean | undefined;
 
-  ref?: Ref<Text>;
+  ref?: Ref<Text> | undefined;
 }
 
 // Mutate the style prop to add the className on web.

@@ -17,64 +17,64 @@ export type NativeTabNavigationEventMap = {
 };
 export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'tabKey' | 'isFocused'>>;
 export interface NativeTabOptions extends DefaultRouterOptions {
-    icon?: SymbolOrImageSource;
-    selectedIcon?: SymbolOrImageSource;
-    title?: string;
-    badgeValue?: string;
-    selectedLabelStyle?: NativeTabsLabelStyle;
-    labelStyle?: NativeTabsLabelStyle;
-    role?: NativeTabsTabBarItemRole;
-    selectedIconColor?: ColorValue;
-    selectedBadgeBackgroundColor?: ColorValue;
-    badgeBackgroundColor?: ColorValue;
-    badgeTextColor?: ColorValue;
-    backgroundColor?: ColorValue;
-    blurEffect?: NativeTabsBlurEffect;
-    shadowColor?: ColorValue;
-    iconColor?: ColorValue;
-    disableTransparentOnScrollEdge?: boolean;
+    icon?: SymbolOrImageSource | undefined;
+    selectedIcon?: SymbolOrImageSource | undefined;
+    title?: string | undefined;
+    badgeValue?: string | undefined;
+    selectedLabelStyle?: NativeTabsLabelStyle | undefined;
+    labelStyle?: NativeTabsLabelStyle | undefined;
+    role?: NativeTabsTabBarItemRole | undefined;
+    selectedIconColor?: ColorValue | undefined;
+    selectedBadgeBackgroundColor?: ColorValue | undefined;
+    badgeBackgroundColor?: ColorValue | undefined;
+    badgeTextColor?: ColorValue | undefined;
+    backgroundColor?: ColorValue | undefined;
+    blurEffect?: NativeTabsBlurEffect | undefined;
+    shadowColor?: ColorValue | undefined;
+    iconColor?: ColorValue | undefined;
+    disableTransparentOnScrollEdge?: boolean | undefined;
     titlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
-    };
+    } | undefined;
     selectedTitlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
-    };
-    indicatorColor?: ColorValue;
-    hidden?: boolean;
-    specialEffects?: TabsScreenProps['specialEffects'];
-    nativeProps?: NativeScreenProps;
-    disableAutomaticContentInsets?: boolean;
-    contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'>;
+    } | undefined;
+    indicatorColor?: ColorValue | undefined;
+    hidden?: boolean | undefined;
+    specialEffects?: TabsScreenProps['specialEffects'] | undefined;
+    nativeProps?: NativeScreenProps | undefined;
+    disableAutomaticContentInsets?: boolean | undefined;
+    contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'> | undefined;
 }
 export type SymbolOrImageSource = {
     /**
      * The name of the SF Symbol to use as an icon.
      * @platform iOS
      */
-    sf?: SFSymbol;
+    sf?: SFSymbol | undefined;
     /**
      * The name of the iOS asset catalog image to use as an icon.
      * @platform iOS
      */
-    xcasset?: string;
+    xcasset?: string | undefined;
     /**
      * The name of the drawable resource to use as an icon.
      * @platform android
      */
-    drawable?: string;
+    drawable?: string | undefined;
 } | {
     /**
      * The image source to use as an icon.
      */
-    src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
+    src?: ImageSourcePropType | Promise<ImageSourcePropType | null> | undefined;
     /**
      * Controls how the icon is rendered on iOS.
      * @platform ios
      * @default 'template'
      */
-    renderingMode?: 'template' | 'original';
+    renderingMode?: 'template' | 'original' | undefined;
 };
 export type NativeTabsLabelStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'color'>;
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];
@@ -89,34 +89,34 @@ export interface NativeTabsProps extends PropsWithChildren {
     labelStyle?: StyleProp<NativeTabsLabelStyle> | {
         default?: StyleProp<NativeTabsLabelStyle>;
         selected?: StyleProp<NativeTabsLabelStyle>;
-    };
+    } | undefined;
     /**
      * The color of every tab icon in the tab bar.
      */
     iconColor?: ColorValue | {
         default?: ColorValue;
         selected?: ColorValue;
-    };
+    } | undefined;
     /**
      * The tint color of the tab icon.
      *
      * Can be overridden by icon color and label color for each tab individually.
      */
-    tintColor?: ColorValue;
+    tintColor?: ColorValue | undefined;
     /**
      * The background color of the tab bar.
      */
-    backgroundColor?: ColorValue;
+    backgroundColor?: ColorValue | undefined;
     /**
      * The background color of every badge in the tab bar.
      */
-    badgeBackgroundColor?: ColorValue;
+    badgeBackgroundColor?: ColorValue | undefined;
     /**
      * When set to `true`, hides the tab bar.
      *
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * Specifies the minimize behavior for the tab bar.
      *
@@ -137,13 +137,13 @@ export interface NativeTabsProps extends PropsWithChildren {
      *
      * @platform iOS 26+
      */
-    minimizeBehavior?: NativeTabsTabBarMinimizeBehavior;
+    minimizeBehavior?: NativeTabsTabBarMinimizeBehavior | undefined;
     /**
      * The blur effect applied to the tab bar.
      *
      * @platform iOS
      */
-    blurEffect?: NativeTabsBlurEffect;
+    blurEffect?: NativeTabsBlurEffect | undefined;
     /**
      * The color of the shadow.
      *
@@ -151,7 +151,7 @@ export interface NativeTabsProps extends PropsWithChildren {
      *
      * @platform iOS
      */
-    shadowColor?: ColorValue;
+    shadowColor?: ColorValue | undefined;
     /**
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/titlepositionadjustment)
      *
@@ -160,31 +160,31 @@ export interface NativeTabsProps extends PropsWithChildren {
     titlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
-    };
+    } | undefined;
     /**
      * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
      *
      * @platform iOS
      */
-    disableTransparentOnScrollEdge?: boolean;
+    disableTransparentOnScrollEdge?: boolean | undefined;
     /**
      * When set to `true`, enables the sidebarAdaptable tab bar style on iPadOS and macOS. This prop has no effect on iPhone.
      *
      * @platform iOS 18+
      */
-    sidebarAdaptable?: boolean;
+    sidebarAdaptable?: boolean | undefined;
     /**
      * Disables the active indicator for the tab bar.
      *
      * @platform android
      */
-    disableIndicator?: boolean;
+    disableIndicator?: boolean | undefined;
     /**
      * The behavior when navigating back with the back button.
      *
      * @platform android
      */
-    backBehavior?: 'none' | 'initialRoute' | 'history';
+    backBehavior?: 'none' | 'initialRoute' | 'history' | undefined;
     /**
      * The visibility mode of the tab item label.
      *
@@ -192,27 +192,27 @@ export interface NativeTabsProps extends PropsWithChildren {
      *
      * @platform android
      */
-    labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode;
+    labelVisibilityMode?: NativeTabsTabBarItemLabelVisibilityMode | undefined;
     /**
      * The color of the ripple effect when the tab is pressed.
      *
      * @platform android
      */
-    rippleColor?: ColorValue;
+    rippleColor?: ColorValue | undefined;
     /**
      * The color of the tab indicator.
      *
      * @platform android
      * @platform web
      */
-    indicatorColor?: ColorValue;
+    indicatorColor?: ColorValue | undefined;
     /**
      * The color of the badge text.
      *
      * @platform android
      * @platform web
      */
-    badgeTextColor?: ColorValue;
+    badgeTextColor?: ColorValue | undefined;
     /**
      * Listeners for navigation events on all tabs.
      *
@@ -236,10 +236,10 @@ export interface NativeTabsProps extends PropsWithChildren {
      */
     screenListeners?: ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap> | ((prop: {
         route: RouteProp<ParamListBase, string>;
-    }) => ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>);
+    }) => ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>) | undefined;
 }
 export interface InternalNativeTabsProps extends NativeTabsProps {
-    nonTriggerChildren?: React.ReactNode;
+    nonTriggerChildren?: React.ReactNode | undefined;
 }
 export interface NativeTabsViewProps extends Omit<InternalNativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
     focusedIndex: number;
@@ -274,7 +274,7 @@ export interface NativeTabTriggerProps {
      *
      * When used in a route it has no effect.
      */
-    name?: string;
+    name?: string | undefined;
     /**
      * If true, the tab will be hidden from the tab bar.
      *
@@ -282,7 +282,7 @@ export interface NativeTabTriggerProps {
      *
      * > **Note**: Dynamically hiding tabs will remount the navigator and the state will be reset.
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * Props passed to the underlying native tab screen implementation.
      * Use this to configure props not directly exposed by Expo Router, but available in `react-native-screens`.
@@ -294,27 +294,27 @@ export interface NativeTabTriggerProps {
      * @platform android
      * @platform iOS
      */
-    unstable_nativeProps?: NativeScreenProps;
+    unstable_nativeProps?: NativeScreenProps | undefined;
     /**
      * If true, the tab will not pop stack to the root when selected again.
      *
      * @default false
      * @platform iOS
      */
-    disablePopToTop?: boolean;
+    disablePopToTop?: boolean | undefined;
     /**
      * If true, the tab will not scroll to the top when selected again.
      * @default false
      *
      * @platform iOS
      */
-    disableScrollToTop?: boolean;
+    disableScrollToTop?: boolean | undefined;
     /**
      * The children of the trigger.
      *
      * Use `Icon`, `Label`, and `Badge` components to customize the tab.
      */
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     /**
      * System-provided tab bar item with predefined icon and title
      *
@@ -326,7 +326,7 @@ export interface NativeTabTriggerProps {
      * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
      * @platform ios
      */
-    role?: NativeTabsTabBarItemRole;
+    role?: NativeTabsTabBarItemRole | undefined;
     /**
      * The default behavior differs between iOS and Android.
      *
@@ -343,13 +343,13 @@ export interface NativeTabTriggerProps {
      * @platform android
      * @platform ios
      */
-    disableAutomaticContentInsets?: boolean;
+    disableAutomaticContentInsets?: boolean | undefined;
     /**
      * The style applied to the content of the tab
      *
      * Note: Only certain style properties are supported.
      */
-    contentStyle?: NativeTabOptions['contentStyle'];
+    contentStyle?: NativeTabOptions['contentStyle'] | undefined;
     /**
      * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
      *
@@ -357,7 +357,7 @@ export interface NativeTabTriggerProps {
      *
      * @platform iOS
      */
-    disableTransparentOnScrollEdge?: boolean;
+    disableTransparentOnScrollEdge?: boolean | undefined;
     /**
      * Listeners for navigation events on this tab.
      *
@@ -380,7 +380,7 @@ export interface NativeTabTriggerProps {
      */
     listeners?: ScreenListeners<NavigationState, EventMapBase> | ((prop: {
         route: RouteProp<ParamListBase, string>;
-    }) => ScreenListeners<NavigationState, EventMapBase>);
+    }) => ScreenListeners<NavigationState, EventMapBase>) | undefined;
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];

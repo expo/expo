@@ -19,6 +19,7 @@ it('can render a custom navigator', () => {
         initialRouteName: 'two',
       },
       default: () => (
+        // @ts-expect-error — eopt: Mock<Router> not assignable to RouterFactory
         <Navigator router={customRouter} routerOptions={{ backBehavior: 'history' }}>
           <Slot />
         </Navigator>

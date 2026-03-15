@@ -39,10 +39,10 @@ export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = Lin
     getStateFromPath: typeof getStateFromPath;
 };
 export type LinkingConfigOptions = {
-    metaOnly?: boolean;
-    serverUrl?: string;
-    getInitialURL?: typeof getInitialURL;
-    redirects?: StoreRedirects[];
+    metaOnly?: boolean | undefined;
+    serverUrl?: string | undefined;
+    getInitialURL?: typeof getInitialURL | undefined;
+    redirects?: StoreRedirects[] | undefined;
 };
 interface RouterOptions {
     skipGenerated: boolean;

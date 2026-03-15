@@ -106,6 +106,7 @@ function StackScreenTitle({ children, asChild, style, largeStyle, large, }) {
 function appendStackScreenTitlePropsToOptions(options, props) {
     const flattenedStyle = react_native_1.StyleSheet.flatten(props.style);
     const flattenedLargeStyle = react_native_1.StyleSheet.flatten(props.largeStyle);
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     let titleOptions = props.asChild
         ? { headerTitle: () => <>{props.children}</> }
         : { title: props.children };
@@ -134,6 +135,7 @@ function appendStackScreenTitlePropsToOptions(options, props) {
                 }
                 : {}),
         },
+        // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
         headerLargeTitleStyle: {
             ...flattenedLargeStyle,
             ...(flattenedLargeStyle?.fontWeight

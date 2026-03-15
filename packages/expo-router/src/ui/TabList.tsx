@@ -5,7 +5,7 @@ import { ViewSlot } from './common';
 
 export type TabListProps = ViewProps & {
   /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
 };
 
 /**

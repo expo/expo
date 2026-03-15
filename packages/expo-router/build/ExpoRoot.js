@@ -77,6 +77,7 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
     const wrapper = (0, react_1.useMemo)(() => ({ children }) => {
         return (<ParentWrapper>
             <LinkPreviewContext_1.LinkPreviewContextProvider>
+              {/* @ts-expect-error — eopt: react-native-safe-area-context SafeAreaProviderProps not compatible */}
               <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
@@ -144,6 +145,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     return (<storeContext_1.StoreContext.Provider value={store}>
+      {/* @ts-expect-error — eopt: @react-navigation NavigationContainerProps not compatible */}
       <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
@@ -161,6 +163,7 @@ function Content() {
     if ((0, utils_1.shouldAppendSitemap)()) {
         children.push(<primitives_1.Screen name={constants_1.SITEMAP_ROUTE_NAME} component={Sitemap_1.Sitemap}/>);
     }
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         children,
         id: constants_1.INTERNAL_SLOT_NAME,

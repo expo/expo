@@ -47,6 +47,7 @@ const getActiveRoute = (state) => {
     if (route.state) {
         return getActiveRoute(route.state);
     }
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     return route;
 };
 let cachedNormalizedConfigs = [
@@ -217,6 +218,7 @@ function getPathDataFromState(state, options) {
         }
         if (currentOptions[route.name] !== undefined) {
             // START FORK
+            // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
             path += expo.getPathWithConventionsCollapsed({
                 ...options,
                 pattern,

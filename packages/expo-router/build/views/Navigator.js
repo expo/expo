@@ -58,6 +58,7 @@ if (process.env.NODE_ENV !== 'production') {
  *
  * @hidden
  */
+// @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
 function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
@@ -67,6 +68,7 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
     });
     const sortedScreens = (0, useScreens_1.useSortedScreens)(screens ?? [], protectedScreens);
     router ||= StackClient_1.StackRouter;
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     const navigation = (0, native_1.useNavigationBuilder)(router, {
         // Used for getting the parent with navigation.getParent('/normalized/path')
         ...routerOptions,
@@ -104,6 +106,7 @@ function SlotNavigator(props) {
     const { screens, protectedScreens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
         contextKey,
     });
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(StackClient_1.StackRouter, {
         ...props,
         id: contextKey,

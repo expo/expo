@@ -87,6 +87,7 @@ function getLinkingConfig(routes, context, getRouteInfo, { metaOnly = true, serv
             return initialUrl;
         },
         subscribe: (0, linking_1.subscribe)(nativeLinking, redirects),
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         getStateFromPath: (path, options) => {
             return (0, linking_1.getStateFromPath)(path, options, getRouteInfo().segments);
         },

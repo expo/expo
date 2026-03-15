@@ -24,13 +24,13 @@ export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconCol
 
 type AwaitedIcon =
   | {
-      sf?: SFSymbol;
-      xcasset?: string;
-      drawable?: string;
+      sf?: SFSymbol | undefined;
+      xcasset?: string | undefined;
+      drawable?: string | undefined;
     }
   | {
-      src?: ImageSourcePropType;
-      renderingMode?: 'template' | 'original';
+      src?: ImageSourcePropType | undefined;
+      renderingMode?: 'template' | 'original' | undefined;
     };
 
 export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
@@ -68,6 +68,7 @@ export function convertOptionsIconToRNScreensPropsIcon(
   if (!icon) {
     return undefined;
   }
+  // @ts-expect-error — eopt: react-native-screens PlatformIcon not compatible
   return {
     ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
     android: convertOptionsIconToAndroidPropsIcon(icon),

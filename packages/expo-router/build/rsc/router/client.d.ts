@@ -35,14 +35,14 @@ export declare function Router({ routerData }: {
     fetchCache?: {
         e?: [input: string, params: unknown, elements: Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
-        }];
-        s?: (updater: (Promise<Record<string, ReactNode>> & {
+        }] | undefined;
+        s?: ((updater: (Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
         }) | ((prev: Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
         }) => Promise<Record<string, ReactNode>> & {
             prev?: Record<string, ReactNode> | undefined;
-        })) => void;
+        })) => void) | undefined;
         o?: ((data: unknown) => void) | undefined;
     };
     unstable_onFetchData?: (data: unknown) => void;

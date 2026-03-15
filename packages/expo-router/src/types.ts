@@ -43,10 +43,9 @@ export type NativeIntent = {
    *
    * @see For usage information, see [Redirecting system paths](/router/advanced/native-intent/#redirectsystempath).
    */
-  redirectSystemPath?: (event: {
-    path: string;
-    initial: boolean;
-  }) => Promise<string | null> | string | null;
+  redirectSystemPath?:
+    | ((event: { path: string; initial: boolean }) => Promise<string | null> | string | null)
+    | undefined;
   /**
    * > **warning** Experimentally available in SDK 52.
    *
@@ -58,7 +57,9 @@ export type NativeIntent = {
    * [Static Rendering](/router/reference/static-rendering/), and can become challenging to manage while offline or in a low network environment.
    *
    */
-  legacy_subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);
+  legacy_subscribe?:
+    | ((listener: (url: string) => void) => undefined | void | (() => void))
+    | undefined;
 };
 
 export type * from './typed-routes/types';

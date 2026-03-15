@@ -97,6 +97,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
       disabled: {},
       focused: {},
     };
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenAppearance
     const expectedAppearance: TabsScreenAppearance = {
       stacked: expectedItemAppearance,
       inline: expectedItemAppearance,
@@ -149,6 +150,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
         },
         disabled: {},
       };
+      // @ts-expect-error — eopt: string | undefined not assignable to react-native-screens TabsScreenAppearance
       const expectedAppearance: TabsScreenAppearance = {
         stacked: expectedItemAppearance,
         inline: expectedItemAppearance,
@@ -269,6 +271,7 @@ describe(appendStyleToAppearance, () => {
             ...newStateAppearance,
           }
         : item.focused;
+      // @ts-expect-error — eopt: conditional undefined not assignable to react-native-screens TabsScreenItemAppearance
       const expectedItem: TabsScreenItemAppearance = {
         normal,
         selected,

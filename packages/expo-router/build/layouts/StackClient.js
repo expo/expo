@@ -120,10 +120,13 @@ const stackRouterOverride = (original) => {
                     const getId = getIdFunction();
                     // const getId = options.routeGetIdList[action.payload.name];
                     // END FORK
+                    // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                     const id = getId?.({ params: action.payload.params });
                     let route;
                     if (id !== undefined) {
-                        route = state.routes.findLast((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                        route = state.routes.findLast((route) => 
+                        // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
+                        route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
                     else if (action.type === 'NAVIGATE') {
                         const currentRoute = state.routes[state.index];
@@ -143,7 +146,9 @@ const stackRouterOverride = (original) => {
                     }
                     // END FORK
                     if (!route) {
-                        route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                        route = state.preloadedRoutes.find((route) => 
+                        // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
+                        route.name === action.payload.name && id === getId?.({ params: route.params }));
                         // START FORK
                         isPreloadedRoute = !!route;
                         // END FORK
@@ -176,6 +181,7 @@ const stackRouterOverride = (original) => {
                             // Get all routes until the matching one
                             for (const r of state.routes) {
                                 if (r.key === route.key) {
+                                    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                                     routes.push({
                                         ...route,
                                         path: action.payload.path !== undefined ? action.payload.path : route.path,
@@ -213,6 +219,7 @@ const stackRouterOverride = (original) => {
                             const key = routes.length === state.routes.length && !isPreloadedRoute
                                 ? `${action.payload.name}-${(0, non_secure_1.nanoid)()}`
                                 : route.key;
+                            // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                             routes.push({
                                 ...route,
                                 key,
@@ -235,7 +242,9 @@ const stackRouterOverride = (original) => {
                     }
                     else {
                         routes = [
+                            // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                             ...state.routes,
+                            // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                             {
                                 key: `${action.payload.name}-${(0, non_secure_1.nanoid)()}`,
                                 name: action.payload.name,
@@ -290,10 +299,13 @@ const stackRouterOverride = (original) => {
                     }
                     // END FORK
                     const getId = options.routeGetIdList[action.payload.name];
+                    // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                     const id = getId?.({ params: action.payload.params });
                     let route;
                     if (id !== undefined) {
-                        route = state.routes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                        route = state.routes.find((route) => 
+                        // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
+                        route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
                     const preloadZoomTransitionId = getZoomTransitionIdFromAction(action);
                     if (route) {
@@ -349,7 +361,9 @@ const stackRouterOverride = (original) => {
                             // and when navigation will happen, there will be no reshuffling
                             // This is a workaround for the link preview navigation issue, when screen would freeze after navigation from native side
                             // and reshuffling from react-navigation
-                            preloadedRoutes: [currentPreloadedRoute].concat(state.preloadedRoutes.filter((r) => r.name !== action.payload.name || id !== getId?.({ params: r.params }))),
+                            preloadedRoutes: [currentPreloadedRoute].concat(state.preloadedRoutes.filter(
+                            // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
+                            (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params }))),
                             // preloadedRoutes: state.preloadedRoutes
                             //   .filter(
                             //     (r) =>
@@ -402,6 +416,7 @@ function filterSingular(state, getId) {
     const currentIndex = state.index || state.routes.length - 1;
     const current = state.routes[currentIndex];
     const name = current.name;
+    // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
     const id = getId?.({ params: current.params });
     if (!id) {
         return state;
@@ -414,6 +429,7 @@ function filterSingular(state, getId) {
             return true;
         }
         // Remove all other routes with the same name and id.
+        // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
         return name !== route.name || id !== getId?.({ params: route.params });
     });
     return {
@@ -461,7 +477,9 @@ const Stack = Object.assign((props) => {
         return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
     }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
     const rnChildren = (0, react_1.useMemo)(() => (0, stack_utils_1.mapProtectedScreen)({ guard: true, children: props.children }).children, [props.children]);
-    return (<RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
+    return (
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
+    <RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
     Screen: stack_utils_1.StackScreen,
     Protected: Protected_1.Protected,
@@ -497,10 +515,12 @@ function shouldDisableAnimationBasedOnParams(route) {
     return !!expoParams[navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }
 exports.default = Stack;
+// @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
 const StackRouter = (options) => {
     const router = (0, native_1.StackRouter)(options);
     return {
         ...router,
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         ...(0, exports.stackRouterOverride)(router),
     };
 };

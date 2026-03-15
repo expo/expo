@@ -170,6 +170,7 @@ describe('base url relative links', () => {
   });
 
   afterAll(() => {
+    // @ts-expect-error — eopt: old_base_url is string | undefined
     process.env.EXPO_BASE_URL = old_base_url;
   });
 

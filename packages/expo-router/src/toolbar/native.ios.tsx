@@ -52,5 +52,6 @@ export function RouterToolbarItem(props: RouterToolbarItemProps) {
         }
       | undefined
   )?.__expo_shared_object_id__;
+  // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
   return <RouterToolbarItemView {...props} image={imageObjectId} />;
 }

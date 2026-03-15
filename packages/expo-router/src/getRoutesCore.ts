@@ -13,29 +13,29 @@ import type { RequireContext } from './types';
 import { shouldLinkExternally } from './utils/url';
 
 export type Options = {
-  ignore?: RegExp[];
-  preserveApiRoutes?: boolean;
-  ignoreRequireErrors?: boolean;
-  ignoreEntryPoints?: boolean;
+  ignore?: RegExp[] | undefined;
+  preserveApiRoutes?: boolean | undefined;
+  ignoreRequireErrors?: boolean | undefined;
+  ignoreEntryPoints?: boolean | undefined;
   /* Used to simplify testing for toEqual() comparison */
-  internal_stripLoadRoute?: boolean;
+  internal_stripLoadRoute?: boolean | undefined;
   /* Used to simplify by skipping the generated routes */
-  skipGenerated?: boolean;
+  skipGenerated?: boolean | undefined;
   /** Skip routes created by `generateStaticParams()` */
-  skipStaticParams?: boolean;
+  skipStaticParams?: boolean | undefined;
   /* Skip the generated not found route  */
-  notFound?: boolean;
+  notFound?: boolean | undefined;
   /* Enable experimental server middleware support */
-  unstable_useServerMiddleware?: boolean;
-  importMode?: string;
-  platformRoutes?: boolean;
-  sitemap?: boolean;
-  platform?: string;
-  redirects?: RedirectConfig[];
-  rewrites?: RewriteConfig[];
-  headers?: Record<string, string | string[]>;
+  unstable_useServerMiddleware?: boolean | undefined;
+  importMode?: string | undefined;
+  platformRoutes?: boolean | undefined;
+  sitemap?: boolean | undefined;
+  platform?: string | undefined;
+  redirects?: RedirectConfig[] | undefined;
+  rewrites?: RewriteConfig[] | undefined;
+  headers?: Record<string, string | string[]> | undefined;
   /* Keep redirects as valid routes within the RouteConfig tree */
-  preserveRedirectAndRewrites?: boolean;
+  preserveRedirectAndRewrites?: boolean | undefined;
 
   /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
   getSystemRoute: (
@@ -48,7 +48,7 @@ export type Options = {
 };
 
 type DirectoryNode = {
-  layout?: RouteNode[];
+  layout?: RouteNode[] | undefined;
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
@@ -57,16 +57,16 @@ export type RedirectConfig = {
   source: string;
   destination: string;
   destinationContextKey: string;
-  permanent?: boolean;
-  methods?: string[];
-  external?: boolean;
+  permanent?: boolean | undefined;
+  methods?: string[] | undefined;
+  external?: boolean | undefined;
 };
 
 export type RewriteConfig = {
   source: string;
   destination: string;
   destinationContextKey: string;
-  methods?: string[];
+  methods?: string[] | undefined;
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);

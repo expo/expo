@@ -7,12 +7,14 @@ function ExpoTabRouter(options) {
     const router = {
         ...rnTabRouter,
         getStateForAction(state, action, options) {
+            // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
             if (isReplaceAction(action)) {
                 action = {
                     ...action,
                     type: 'JUMP_TO',
                 };
                 // Generate the state as if we were using JUMP_TO
+                // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                 const nextState = rnTabRouter.getStateForAction(state, action, options);
                 if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
                     return null;
@@ -53,6 +55,7 @@ function ExpoTabRouter(options) {
                 };
                 state = {
                     ...state,
+                    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                     routes: state.routes.map((r) => {
                         if (r.key !== route.key) {
                             return r;
@@ -60,6 +63,7 @@ function ExpoTabRouter(options) {
                         return { ...r, state: undefined };
                     }),
                 };
+                // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                 return rnTabRouter.getStateForAction(state, action, options);
             }
             else {

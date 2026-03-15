@@ -49,6 +49,7 @@ function StackScreenBackButton({ children, style, withMenu, displayMode, hidden,
     return null;
 }
 function appendStackScreenBackButtonPropsToOptions(options, props) {
+    // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
     return {
         ...options,
         headerBackTitle: props.children,

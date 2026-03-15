@@ -97,6 +97,7 @@ describe('hash support', () => {
       },
     };
 
+    // @ts-expect-error — eopt: test state has explicit undefined route properties
     expect(getPathFromState(state, config)).toBe('/hello-world?query=true#a');
   });
 });

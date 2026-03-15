@@ -2,7 +2,7 @@ import { ReactElement, ComponentProps } from 'react';
 import { ViewProps } from 'react-native';
 export type TabListProps = ViewProps & {
     /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
-    asChild?: boolean;
+    asChild?: boolean | undefined;
 };
 /**
  * Wrapper component for `TabTriggers`. `TabTriggers` within the `TabList` define the tabs.

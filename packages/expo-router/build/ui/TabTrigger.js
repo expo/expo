@@ -83,6 +83,7 @@ function useTabTrigger(options) {
                 return imperative_api_1.router.navigate(config.href);
             }
             else {
+                // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                 return navigation?.dispatch({
                     ...config.action,
                     type: 'JUMP_TO',
@@ -144,7 +145,9 @@ function useTabTrigger(options) {
     };
     return {
         switchTab,
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         getTrigger,
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         trigger,
         triggerProps,
     };

@@ -9,11 +9,11 @@ export declare const NavigatorContext: React.Context<NavigatorContextValue | nul
 type UseNavigationBuilderRouter = Parameters<typeof useNavigationBuilder>[0];
 type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
 export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
-    initialRouteName?: UseNavigationBuilderOptions['initialRouteName'];
-    screenOptions?: UseNavigationBuilderOptions['screenOptions'];
-    children?: UseNavigationBuilderOptions['children'];
-    router?: T;
-    routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
+    initialRouteName?: UseNavigationBuilderOptions['initialRouteName'] | undefined;
+    screenOptions?: UseNavigationBuilderOptions['screenOptions'] | undefined;
+    children?: UseNavigationBuilderOptions['children'] | undefined;
+    router?: T | undefined;
+    routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'> | undefined;
 };
 /**
  * An unstyled custom navigator. Good for basic web layouts.

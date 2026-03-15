@@ -8,8 +8,8 @@ type ReplaceAction = Extract<StackActionType, {
 }>;
 export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | ReplaceAction | {
     type: 'JUMP_TO';
-    source?: string;
-    target?: string;
+    source?: string | undefined;
+    target?: string | undefined;
     payload: {
         name: string;
         resetOnFocus?: boolean;
@@ -103,8 +103,8 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
     target?: string;
 } | RNTabActionType | {
     type: "JUMP_TO";
-    source?: string;
-    target?: string;
+    source?: string | undefined;
+    target?: string | undefined;
     payload: {
         name: string;
         resetOnFocus?: boolean;

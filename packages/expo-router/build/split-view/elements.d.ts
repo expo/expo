@@ -1,5 +1,5 @@
 export interface SplitViewColumnProps {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
 }
 export declare function SplitViewColumn(props: SplitViewColumnProps): import("react").JSX.Element;
 /**

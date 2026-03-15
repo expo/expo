@@ -3,15 +3,15 @@ import { DefaultNavigatorOptions, NavigationAction, NavigationProp, ParamListBas
 import { TriggerMap } from './common';
 export type ExpoTabsProps = ExpoTabsNavigatorOptions;
 export type ExpoTabsNavigatorScreenOptions = {
-    detachInactiveScreens?: boolean;
-    unmountOnBlur?: boolean;
-    freezeOnBlur?: boolean;
-    lazy?: boolean;
+    detachInactiveScreens?: boolean | undefined;
+    unmountOnBlur?: boolean | undefined;
+    freezeOnBlur?: boolean | undefined;
+    lazy?: boolean | undefined;
 };
 export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<ParamListBase, string | undefined, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap, ExpoTabsNavigationProp<ParamListBase>> & Omit<TabRouterOptions, 'initialRouteName'> & ExpoTabsNavigatorScreenOptions;
 export type ExpoTabsNavigationProp<ParamList extends ParamListBase, RouteName extends keyof ParamList = keyof ParamList, NavigatorID extends string | undefined = undefined> = NavigationProp<ParamList, RouteName, NavigatorID, TabNavigationState<ParamListBase>, ExpoTabsScreenOptions, TabNavigationEventMap>;
 export type ExpoTabsScreenOptions = Pick<BottomTabNavigationOptions, 'title' | 'lazy' | 'freezeOnBlur'> & {
-    params?: object;
+    params?: object | undefined;
     title: string;
     action: NavigationAction;
 };

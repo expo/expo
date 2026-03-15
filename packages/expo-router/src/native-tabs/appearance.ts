@@ -88,15 +88,17 @@ export function createScrollEdgeAppearanceFromOptions(
 }
 
 export interface AppearanceStyle extends NativeTabsLabelStyle {
-  iconColor?: ColorValue;
-  backgroundColor?: ColorValue | null;
-  blurEffect?: NativeTabsBlurEffect;
-  badgeBackgroundColor?: ColorValue;
-  shadowColor?: ColorValue;
-  titlePositionAdjustment?: {
-    horizontal?: number;
-    vertical?: number;
-  };
+  iconColor?: ColorValue | undefined;
+  backgroundColor?: ColorValue | null | undefined;
+  blurEffect?: NativeTabsBlurEffect | undefined;
+  badgeBackgroundColor?: ColorValue | undefined;
+  shadowColor?: ColorValue | undefined;
+  titlePositionAdjustment?:
+    | {
+        horizontal?: number;
+        vertical?: number;
+      }
+    | undefined;
 }
 
 export function appendSelectedStyleToAppearance(
@@ -136,6 +138,7 @@ export function appendStyleToAppearance(
     ...baseItemAppearance,
     ...Object.fromEntries(newAppearances.map(({ key, appearance }) => [key, appearance])),
   };
+  // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
   return {
     stacked: itemAppearance,
     inline: itemAppearance,
@@ -160,6 +163,7 @@ export function convertStyleToAppearance(style: AppearanceStyle | undefined): Ta
     focused: stateAppearance,
     disabled: {},
   };
+  // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
   return {
     inline: itemAppearance,
     stacked: itemAppearance,
@@ -176,6 +180,7 @@ export function convertStyleToItemStateAppearance(
   if (!style) {
     return {};
   }
+  // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
   const stateAppearance: TabsScreenItemStateAppearance = {
     tabBarItemBadgeBackgroundColor: style.badgeBackgroundColor,
     tabBarItemTitlePositionAdjustment: style.titlePositionAdjustment,

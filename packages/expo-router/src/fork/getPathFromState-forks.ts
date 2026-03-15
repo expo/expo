@@ -5,14 +5,14 @@ import type { Options, State, StringifyConfig } from './getPathFromState';
 import { matchDynamicName, matchGroupName } from '../matchers';
 
 export type ExpoOptions = {
-  preserveDynamicRoutes?: boolean;
-  preserveGroups?: boolean;
-  shouldEncodeURISegment?: boolean;
+  preserveDynamicRoutes?: boolean | undefined;
+  preserveGroups?: boolean | undefined;
+  shouldEncodeURISegment?: boolean | undefined;
 };
 
 export type ExpoConfigItem = {
   // Used as fallback for groups
-  initialRouteName?: string;
+  initialRouteName?: string | undefined;
 };
 
 export function validatePathConfig<ParamList extends object>({

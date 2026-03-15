@@ -1,7 +1,7 @@
 import { FunctionComponent, ReactElement, ReactNode } from 'react';
 export type ProtectedProps = {
     guard: boolean;
-    children?: ReactNode;
+    children?: ReactNode | undefined;
 };
 export declare const Protected: FunctionComponent<ProtectedProps>;
 export declare function isProtectedReactElement(child: ReactNode): child is ReactElement<ProtectedProps>;

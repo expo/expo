@@ -7,14 +7,14 @@ import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import { parseUrlUsingCustomBase } from '../utils/url';
 
 export type ExpoOptions = {
-  previousSegments?: string[];
+  previousSegments?: string[] | undefined;
 };
 
 export type ExpoRouteConfig = {
   type: 'static' | 'dynamic' | 'layout';
   userReadableName: string;
   isIndex: boolean;
-  isInitial?: boolean;
+  isInitial?: boolean | undefined;
   hasChildren: boolean;
   expandedRouteNames: string[];
   parts: string[];

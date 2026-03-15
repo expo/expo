@@ -9,6 +9,7 @@ import { createContext } from 'react';
 export type NativeStackDescriptor = Descriptor<
   NativeStackNavigationOptions,
   NativeStackNavigationProp<ParamListBase>,
+  // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   RouteProp<ParamListBase>
 >;
 

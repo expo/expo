@@ -13,8 +13,8 @@ import {
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 
 export type ModalStackNavigatorProps = {
-  initialRouteName?: string;
-  screenOptions?: ExtendedStackNavigationOptions;
+  initialRouteName?: string | undefined;
+  screenOptions?: ExtendedStackNavigationOptions | undefined;
   children: React.ReactNode;
 };
 

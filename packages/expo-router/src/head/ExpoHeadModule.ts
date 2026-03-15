@@ -2,32 +2,32 @@
 // https://developer.apple.com/documentation/foundation/nsuseractivity/2980674-iseligibleforprediction
 
 export type UserActivity = {
-  id?: string;
+  id?: string | undefined;
   /**
    * The activity title should be clear and concise. This text describes the content of the link, like “Photo taken on July 27, 2020” or “Conversation with Maria”. Use nouns for activity titles.
    */
-  title?: string;
-  description?: string;
-  webpageURL?: string;
-  keywords?: string[];
+  title?: string | undefined;
+  description?: string | undefined;
+  webpageURL?: string | undefined;
+  keywords?: string[] | undefined;
   // TODO: Get this automatically somehow
   activityType: string;
   // TODO: Maybe something like robots.txt?
-  phrase?: string;
+  phrase?: string | undefined;
 
-  thumbnailURL?: string;
+  thumbnailURL?: string | undefined;
 
-  userInfo?: Record<string, string>;
+  userInfo?: Record<string, string> | undefined;
 
-  isEligibleForHandoff?: boolean;
-  isEligibleForPrediction?: boolean;
-  isEligibleForSearch?: boolean;
+  isEligibleForHandoff?: boolean | undefined;
+  isEligibleForPrediction?: boolean | undefined;
+  isEligibleForSearch?: boolean | undefined;
 
   /** Local file path for an image */
-  imageUrl?: string;
-  darkImageUrl?: string;
-  dateModified?: Date;
-  expirationDate?: Date;
+  imageUrl?: string | undefined;
+  darkImageUrl?: string | undefined;
+  dateModified?: Date | undefined;
+  expirationDate?: Date | undefined;
 };
 
 let ExpoHead: {

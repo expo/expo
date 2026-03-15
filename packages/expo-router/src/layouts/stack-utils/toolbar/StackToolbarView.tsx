@@ -9,13 +9,13 @@ export interface StackToolbarViewProps {
   /**
    * Can be any React node.
    */
-  children?: NativeStackHeaderItemCustom['element'];
+  children?: NativeStackHeaderItemCustom['element'] | undefined;
   /**
    * Whether the view should be hidden.
    *
    * @default false
    */
-  hidden?: boolean;
+  hidden?: boolean | undefined;
   /**
    * Whether to hide the shared background.
    *
@@ -23,7 +23,7 @@ export interface StackToolbarViewProps {
    *
    * @platform iOS 26+
    */
-  hidesSharedBackground?: boolean;
+  hidesSharedBackground?: boolean | undefined;
   // TODO(@ubax): implement missing props in react-native-screens
   /**
    * Whether to separate the background of this item from other items.
@@ -32,7 +32,7 @@ export interface StackToolbarViewProps {
    *
    * @default false
    */
-  separateBackground?: boolean;
+  separateBackground?: boolean | undefined;
 }
 
 /**
@@ -88,6 +88,7 @@ export function convertStackToolbarViewPropsToRNHeaderItem(
     );
   }
   const element = children ? children : <></>;
+  // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
   return {
     type: 'custom',
     element,
@@ -98,10 +99,10 @@ export function convertStackToolbarViewPropsToRNHeaderItem(
 // #region NativeToolbarView
 
 interface NativeToolbarViewProps {
-  children?: ReactNode;
-  hidden?: boolean;
-  hidesSharedBackground?: boolean;
-  separateBackground?: boolean;
+  children?: ReactNode | undefined;
+  hidden?: boolean | undefined;
+  hidesSharedBackground?: boolean | undefined;
+  separateBackground?: boolean | undefined;
 }
 
 /**
