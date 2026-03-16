@@ -6,9 +6,14 @@
 
 ### 🎉 New features
 
+- Add `style` and `hidden` properties to config plugin, replacing `barStyle` and `visibility`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Deprecated `NavigationBarButtonStyle` type.
+- Deprecated `barStyle` and `visibility` config plugin properties in favor of `style` and `hidden`.
 
 ## 55.0.8 — 2026-02-25
 
