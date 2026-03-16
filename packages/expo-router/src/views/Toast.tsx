@@ -40,8 +40,8 @@ export function Toast({
   filename,
   warning,
 }: PropsWithChildren<{
-  filename?: string;
-  warning?: boolean;
+  filename?: string | undefined;
+  warning?: boolean | undefined;
 }>) {
   const filenamePretty = React.useMemo(() => {
     if (!filename) return undefined;

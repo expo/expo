@@ -232,6 +232,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
                     const action = getActionFromStateRef.current(state, configRef.current);
                     if (action !== undefined) {
                         try {
+                            // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                             navigation.dispatch(action);
                         }
                         catch (e) {

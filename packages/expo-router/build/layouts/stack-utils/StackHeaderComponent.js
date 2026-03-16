@@ -85,9 +85,11 @@ function appendStackHeaderPropsToOptions(options, props) {
         ...(shouldBeTransparent && { headerTransparent: true }),
         ...(props.transparent === false && { headerTransparent: false }),
         ...(flattenedStyle?.color && { headerTintColor: flattenedStyle.color }),
+        // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
         headerStyle: {
             backgroundColor: flattenedStyle?.backgroundColor,
         },
+        // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
         headerLargeStyle: {
             backgroundColor: flattenedLargeStyle?.backgroundColor,
         },

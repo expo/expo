@@ -6,7 +6,7 @@ export type StackScreenTitleProps = {
      * The title content. Pass a string for a plain text title,
      * or a custom component when `asChild` is enabled.
      */
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
     /**
      * Use this to render a custom component as the header title.
      *
@@ -17,14 +17,14 @@ export type StackScreenTitleProps = {
      * </Stack.Screen.Title>
      * ```
      */
-    asChild?: boolean;
+    asChild?: boolean | undefined;
     style?: StyleProp<{
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
         fontWeight?: Exclude<TextStyle['fontWeight'], number>;
         color?: string;
         textAlign?: 'left' | 'center';
-    }>;
+    }> | undefined;
     /**
      * Style properties for the large title header.
      *
@@ -35,13 +35,13 @@ export type StackScreenTitleProps = {
         fontSize?: TextStyle['fontSize'];
         fontWeight?: Exclude<TextStyle['fontWeight'], number>;
         color?: string;
-    }>;
+    }> | undefined;
     /**
      * Enables large title mode.
      *
      * @platform ios
      */
-    large?: boolean;
+    large?: boolean | undefined;
 };
 /**
  * Component to set the screen title.

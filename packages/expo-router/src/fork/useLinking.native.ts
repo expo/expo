@@ -185,6 +185,7 @@ export function useLinking(
 
         if (action !== undefined) {
           try {
+            // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
             navigation.dispatch(action);
           } catch (e) {
             // Ignore any errors from deep linking.

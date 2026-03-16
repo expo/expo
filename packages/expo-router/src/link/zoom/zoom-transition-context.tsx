@@ -23,19 +23,19 @@ export interface DismissalBoundsRect {
   /**
    * Minimum X coordinate (left edge) where dismissal gestures are allowed.
    */
-  minX?: number;
+  minX?: number | undefined;
   /**
    * Maximum X coordinate (right edge) where dismissal gestures are allowed.
    */
-  maxX?: number;
+  maxX?: number | undefined;
   /**
    * Minimum Y coordinate (top edge) where dismissal gestures are allowed.
    */
-  minY?: number;
+  minY?: number | undefined;
   /**
    * Maximum Y coordinate (bottom edge) where dismissal gestures are allowed.
    */
-  maxY?: number;
+  maxY?: number | undefined;
 }
 
 export interface ZoomTransitionTargetContextValueType {

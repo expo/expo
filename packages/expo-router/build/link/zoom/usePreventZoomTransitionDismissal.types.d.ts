@@ -9,6 +9,6 @@ export interface UsePreventZoomTransitionDismissalOptions {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiviewcontroller/transition/zoomoptions/interactivedismissshouldbegin) for more information.
      */
-    unstable_dismissalBoundsRect?: DismissalBoundsRect;
+    unstable_dismissalBoundsRect?: DismissalBoundsRect | undefined;
 }
 //# sourceMappingURL=usePreventZoomTransitionDismissal.types.d.ts.map

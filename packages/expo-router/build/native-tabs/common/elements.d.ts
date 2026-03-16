@@ -7,13 +7,13 @@ export interface NativeTabsTriggerLabelProps {
     /**
      * The text to display as the label for the tab.
      */
-    children?: string;
-    selectedStyle?: StyleProp<NativeTabsLabelStyle>;
+    children?: string | undefined;
+    selectedStyle?: StyleProp<NativeTabsLabelStyle> | undefined;
     /**
      * If true, the label will be hidden.
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
 }
 export declare const NativeTabsTriggerLabel: React.FC<NativeTabsTriggerLabelProps>;
 export interface SrcIcon {
@@ -44,7 +44,7 @@ export interface SrcIcon {
     src?: ImageSourcePropType | React.ReactElement | {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
-    };
+    } | undefined;
     /**
      * Controls how the image icon is rendered on iOS.
      *
@@ -59,7 +59,7 @@ export interface SrcIcon {
      *
      * @platform ios
      */
-    renderingMode?: 'template' | 'original';
+    renderingMode?: 'template' | 'original' | undefined;
 }
 export interface SFSymbolIcon {
     /**
@@ -84,7 +84,7 @@ export interface SFSymbolIcon {
     sf?: SFSymbol | {
         default?: SFSymbol;
         selected: SFSymbol;
-    };
+    } | undefined;
 }
 export interface XcassetIcon {
     /**
@@ -116,14 +116,14 @@ export interface XcassetIcon {
     xcasset?: string | {
         default?: string;
         selected: string;
-    };
+    } | undefined;
 }
 export interface DrawableIcon {
     /**
      * The name of the drawable resource to use as an icon.
      * @platform android
      */
-    drawable?: string;
+    drawable?: string | undefined;
 }
 /**
  * Material icon name for Android native tabs.
@@ -137,7 +137,7 @@ export interface MaterialIcon {
     md: AndroidSymbol;
 }
 export type NativeTabsTriggerIconProps = {
-    selectedColor?: ColorValue;
+    selectedColor?: ColorValue | undefined;
 } & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (XcassetIcon & DrawableIcon) | (XcassetIcon & MaterialIcon) | (XcassetIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
@@ -188,17 +188,17 @@ export interface NativeTabsTriggerBadgeProps {
      * The text to display as the badge for the tab.
      * If not provided, the badge will not be displayed.
      */
-    children?: string;
+    children?: string | undefined;
     /**
      * If true, the badge will be hidden.
      * @default false
      */
-    hidden?: boolean;
-    selectedBackgroundColor?: ColorValue;
+    hidden?: boolean | undefined;
+    selectedBackgroundColor?: ColorValue | undefined;
 }
 export declare const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps>;
 export interface NativeTabsBottomAccessoryProps {
-    children?: React.ReactNode;
+    children?: React.ReactNode | undefined;
 }
 /**
  * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.

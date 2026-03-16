@@ -8,8 +8,8 @@ import { removeInternalExpoRouterParams } from '../navigationParams';
 
 // START FORK
 export type Options<ParamList extends object> = ExpoOptions & {
-  path?: string;
-  initialRouteName?: string;
+  path?: string | undefined;
+  initialRouteName?: string | undefined;
   screens: PathConfigMap<ParamList>;
 };
 // END FORK
@@ -20,9 +20,9 @@ export type StringifyConfig = Record<string, (value: any) => string>;
 
 // START FORK
 type ConfigItem = ExpoConfigItem & {
-  pattern?: string;
-  stringify?: StringifyConfig;
-  screens?: Record<string, ConfigItem>;
+  pattern?: string | undefined;
+  stringify?: StringifyConfig | undefined;
+  screens?: Record<string, ConfigItem> | undefined;
 };
 // END FORK
 
@@ -36,6 +36,7 @@ const getActiveRoute = (state: State): { name: string; params?: object } => {
     return getActiveRoute(route.state);
   }
 
+  // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   return route;
 };
 
@@ -242,6 +243,7 @@ export function getPathDataFromState<ParamList extends object>(
 
     if (currentOptions[route.name] !== undefined) {
       // START FORK
+      // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
       path += expo.getPathWithConventionsCollapsed({
         ...options,
         pattern,

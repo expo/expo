@@ -4,15 +4,15 @@ import { type NativeTabOptions, type NativeTabsBlurEffect, type NativeTabsLabelS
 export declare function createStandardAppearanceFromOptions(options: NativeTabOptions): TabsScreenAppearance;
 export declare function createScrollEdgeAppearanceFromOptions(options: NativeTabOptions): TabsScreenAppearance;
 export interface AppearanceStyle extends NativeTabsLabelStyle {
-    iconColor?: ColorValue;
-    backgroundColor?: ColorValue | null;
-    blurEffect?: NativeTabsBlurEffect;
-    badgeBackgroundColor?: ColorValue;
-    shadowColor?: ColorValue;
+    iconColor?: ColorValue | undefined;
+    backgroundColor?: ColorValue | null | undefined;
+    blurEffect?: NativeTabsBlurEffect | undefined;
+    badgeBackgroundColor?: ColorValue | undefined;
+    shadowColor?: ColorValue | undefined;
     titlePositionAdjustment?: {
         horizontal?: number;
         vertical?: number;
-    };
+    } | undefined;
 }
 export declare function appendSelectedStyleToAppearance(selectedStyle: AppearanceStyle, appearance: TabsScreenAppearance): TabsScreenAppearance;
 export declare function appendStyleToAppearance(style: AppearanceStyle, appearance: TabsScreenAppearance, states: ('selected' | 'focused' | 'disabled' | 'normal')[]): TabsScreenAppearance;

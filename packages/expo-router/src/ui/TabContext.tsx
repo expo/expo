@@ -16,10 +16,10 @@ import { TriggerMap } from './common';
 export type ExpoTabsProps = ExpoTabsNavigatorOptions;
 
 export type ExpoTabsNavigatorScreenOptions = {
-  detachInactiveScreens?: boolean;
-  unmountOnBlur?: boolean;
-  freezeOnBlur?: boolean;
-  lazy?: boolean;
+  detachInactiveScreens?: boolean | undefined;
+  unmountOnBlur?: boolean | undefined;
+  freezeOnBlur?: boolean | undefined;
+  lazy?: boolean | undefined;
 };
 
 export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<
@@ -51,7 +51,7 @@ export type ExpoTabsScreenOptions = Pick<
   BottomTabNavigationOptions,
   'title' | 'lazy' | 'freezeOnBlur'
 > & {
-  params?: object;
+  params?: object | undefined;
   title: string;
   action: NavigationAction;
 };

@@ -161,6 +161,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
                 const action = getActionFromStateRef.current(state, configRef.current);
                 if (action !== undefined) {
                     try {
+                        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                         navigation.dispatch(action);
                     }
                     catch (e) {

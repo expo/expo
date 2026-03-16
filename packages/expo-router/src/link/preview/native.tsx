@@ -14,40 +14,40 @@ const areNativeViewsAvailable =
 export interface NativeLinkPreviewActionProps {
   identifier: string;
   title: string;
-  label?: string;
-  icon?: string;
-  xcassetName?: string;
-  image?: ImageRef | null;
-  imageRenderingMode?: 'template' | 'original';
-  children?: React.ReactNode;
-  disabled?: boolean;
-  destructive?: boolean;
-  discoverabilityLabel?: string;
-  subtitle?: string;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
+  label?: string | undefined;
+  icon?: string | undefined;
+  xcassetName?: string | undefined;
+  image?: ImageRef | null | undefined;
+  imageRenderingMode?: 'template' | 'original' | undefined;
+  children?: React.ReactNode | undefined;
+  disabled?: boolean | undefined;
+  destructive?: boolean | undefined;
+  discoverabilityLabel?: string | undefined;
+  subtitle?: string | undefined;
+  accessibilityLabel?: string | undefined;
+  accessibilityHint?: string | undefined;
   // This may lead to race conditions, when two menu actions are on at the same time.
   // The logic should be enforced in the JS code, rather than in the native code.
   // singleSelection?: boolean;
-  displayAsPalette?: boolean;
-  displayInline?: boolean;
-  preferredElementSize?: 'auto' | 'small' | 'medium' | 'large';
-  isOn?: boolean;
+  displayAsPalette?: boolean | undefined;
+  displayInline?: boolean | undefined;
+  preferredElementSize?: 'auto' | 'small' | 'medium' | 'large' | undefined;
+  isOn?: boolean | undefined;
   // There are issues with menu state updates when keep presented is set to true.
   // When updating the context menu state, it will either not update or it will recreate the menu. The latter is a problem,
   // because it will close all opened submenus and reset the scroll position.
   // TODO: (@ubax) find a way to fix this.
-  keepPresented?: boolean;
-  hidden?: boolean;
-  tintColor?: ColorValue;
-  barButtonItemStyle?: 'plain' | 'prominent';
+  keepPresented?: boolean | undefined;
+  hidden?: boolean | undefined;
+  tintColor?: ColorValue | undefined;
+  barButtonItemStyle?: 'plain' | 'prominent' | undefined;
 
   // These properties are for UIBarButtonItem compatibility but don't apply to context menus.
   // They're included for API consistency with toolbar items.
-  sharesBackground?: boolean;
-  hidesSharedBackground?: boolean;
+  sharesBackground?: boolean | undefined;
+  hidesSharedBackground?: boolean | undefined;
   onSelected: () => void;
-  titleStyle?: BasicTextStyle;
+  titleStyle?: BasicTextStyle | undefined;
 }
 const LinkPreviewNativeActionView: React.ComponentType<
   Omit<NativeLinkPreviewActionProps, 'image'> & { image?: number }
@@ -66,6 +66,7 @@ export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
         }
       | undefined
   )?.__expo_shared_object_id__;
+  // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
   return <LinkPreviewNativeActionView {...props} image={imageObjectId} />;
 }
 // #endregion
@@ -82,13 +83,13 @@ export interface NativeLinkPreviewProps extends ViewProps {
         path: TabPath[];
       }
     | undefined;
-  disableForceFlatten?: boolean;
-  onWillPreviewOpen?: () => void;
-  onDidPreviewOpen?: () => void;
-  onPreviewWillClose?: () => void;
-  onPreviewDidClose?: () => void;
-  onPreviewTapped?: () => void;
-  onPreviewTappedAnimationCompleted?: () => void;
+  disableForceFlatten?: boolean | undefined;
+  onWillPreviewOpen?: (() => void) | undefined;
+  onDidPreviewOpen?: (() => void) | undefined;
+  onPreviewWillClose?: (() => void) | undefined;
+  onPreviewDidClose?: (() => void) | undefined;
+  onPreviewTapped?: (() => void) | undefined;
+  onPreviewTappedAnimationCompleted?: (() => void) | undefined;
   children: React.ReactNode;
 }
 const NativeLinkPreviewView: React.ComponentType<NativeLinkPreviewProps> | null =
@@ -105,7 +106,7 @@ export function NativeLinkPreview(props: NativeLinkPreviewProps) {
 
 // #region Preview Content View
 export interface NativeLinkPreviewContentProps extends ViewProps {
-  preferredContentSize?: { width: number; height: number };
+  preferredContentSize?: { width: number; height: number } | undefined;
 }
 const NativeLinkPreviewContentView: React.ComponentType<NativeLinkPreviewContentProps> | null =
   areNativeViewsAvailable
@@ -130,10 +131,10 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
 
 // #region Zoom transition enabler
 interface DismissalBoundsRect {
-  minX?: number;
-  maxX?: number;
-  minY?: number;
-  maxY?: number;
+  minX?: number | undefined;
+  maxX?: number | undefined;
+  minY?: number | undefined;
+  maxY?: number | undefined;
 }
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
   ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
@@ -167,12 +168,12 @@ interface LinkSourceAlignmentRect {
 
 interface LinkZoomTransitionSourceProps extends PropsWithChildren {
   identifier: string;
-  alignment?: LinkSourceAlignmentRect;
-  animateAspectRatioChange?: boolean;
+  alignment?: LinkSourceAlignmentRect | undefined;
+  animateAspectRatioChange?: boolean | undefined;
 }
 
 interface LinkZoomTransitionSourceNativeProps extends ViewProps, LinkZoomTransitionSourceProps {
-  disableForceFlatten?: boolean;
+  disableForceFlatten?: boolean | undefined;
 }
 
 const LinkZoomTransitionSourceNativeView: React.ComponentType<LinkZoomTransitionSourceNativeProps> | null =

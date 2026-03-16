@@ -25,11 +25,11 @@ export type RedirectProps = {
      *
      * @see [Resolving relative references in Mozilla's documentation](https://developer.mozilla.org/en-US/docs/Web/API/URL_API/Resolving_relative_references).
      */
-    relativeToDirectory?: boolean;
+    relativeToDirectory?: boolean | undefined;
     /**
      * Replaces the initial screen with the current route.
      */
-    withAnchor?: boolean;
+    withAnchor?: boolean | undefined;
 };
 /**
  * Redirects to the `href` as soon as the component is mounted.

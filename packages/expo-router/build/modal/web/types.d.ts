@@ -2,8 +2,8 @@ import { ParamListBase, StackActionHelpers, StackNavigationState, StackRouterOpt
 import { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 export type ModalStackNavigatorProps = {
-    initialRouteName?: string;
-    screenOptions?: ExtendedStackNavigationOptions;
+    initialRouteName?: string | undefined;
+    screenOptions?: ExtendedStackNavigationOptions | undefined;
     children: React.ReactNode;
 };
 export type ModalStackViewProps = Omit<ReturnType<typeof useNavigationBuilder<StackNavigationState<ParamListBase>, StackRouterOptions, StackActionHelpers<ParamListBase>, NativeStackNavigationOptions, NativeStackNavigationEventMap>>, 'NavigationContent'>;

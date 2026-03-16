@@ -55,8 +55,8 @@ Object.defineProperty(exports, 'screen', {
 });
 
 export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] & {
-  initialUrl?: any;
-  linking?: Partial<ExpoLinkingOptions>;
+  initialUrl?: any | undefined;
+  linking?: Partial<ExpoLinkingOptions> | undefined;
 };
 
 type Result = ReturnType<typeof rnTestingLibrary.render> & {

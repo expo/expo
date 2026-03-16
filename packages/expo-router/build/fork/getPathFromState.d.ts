@@ -2,8 +2,8 @@ import { PathConfigMap } from '@react-navigation/native';
 import type { NavigationState, PartialState } from '@react-navigation/routers';
 import type { ExpoOptions } from './getPathFromState-forks';
 export type Options<ParamList extends object> = ExpoOptions & {
-    path?: string;
-    initialRouteName?: string;
+    path?: string | undefined;
+    initialRouteName?: string | undefined;
     screens: PathConfigMap<ParamList>;
 };
 export type State = NavigationState | Omit<PartialState<NavigationState>, 'stale'>;

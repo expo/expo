@@ -5,7 +5,7 @@ export interface StackToolbarSpacerProps {
      *
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * The width of the spacing element.
      *
@@ -13,7 +13,7 @@ export interface StackToolbarSpacerProps {
      * In Bottom placement, if width is not provided, the spacer will be flexible
      * and expand to fill available space.
      */
-    width?: number;
+    width?: number | undefined;
     /**
      * Whether this spacer shares background with adjacent items.
      *
@@ -21,7 +21,7 @@ export interface StackToolbarSpacerProps {
      *
      * @platform iOS 26+
      */
-    sharesBackground?: boolean;
+    sharesBackground?: boolean | undefined;
 }
 /**
  * A spacing helper used inside `Stack.Toolbar` to create empty space between toolbar items.

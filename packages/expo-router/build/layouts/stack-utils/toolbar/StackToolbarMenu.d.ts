@@ -5,8 +5,8 @@ import { type ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { type StackHeaderItemSharedProps } from './shared';
 export interface StackToolbarMenuProps {
-    accessibilityLabel?: string;
-    accessibilityHint?: string;
+    accessibilityLabel?: string | undefined;
+    accessibilityHint?: string | undefined;
     /**
      * Menu content - can include icons, labels, badges and menu actions.
      *
@@ -19,20 +19,20 @@ export interface StackToolbarMenuProps {
      * </Stack.Toolbar.Menu>
      * ```
      */
-    children?: ReactNode;
+    children?: ReactNode | undefined;
     /**
      * If `true`, the menu item will be displayed as destructive.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
      */
-    destructive?: boolean;
-    disabled?: boolean;
+    destructive?: boolean | undefined;
+    disabled?: boolean | undefined;
     /**
      * Image to display for the menu item.
      *
      * > **Note**: This prop is only supported in toolbar with `placement="bottom"`.
      */
-    image?: ImageRef;
+    image?: ImageRef | undefined;
     /**
      * Whether to hide the shared background.
      *
@@ -40,13 +40,13 @@ export interface StackToolbarMenuProps {
      *
      * @platform iOS 26+
      */
-    hidesSharedBackground?: boolean;
+    hidesSharedBackground?: boolean | undefined;
     /**
      * Whether the menu should be hidden.
      *
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * Icon for the menu item.
      *
@@ -54,7 +54,7 @@ export interface StackToolbarMenuProps {
      *
      * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
      */
-    icon?: StackHeaderItemSharedProps['icon'];
+    icon?: StackHeaderItemSharedProps['icon'] | undefined;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -71,7 +71,7 @@ export interface StackToolbarMenuProps {
      *
      * @platform ios
      */
-    iconRenderingMode?: 'template' | 'original';
+    iconRenderingMode?: 'template' | 'original' | undefined;
     /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
@@ -80,7 +80,7 @@ export interface StackToolbarMenuProps {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
      */
-    inline?: boolean;
+    inline?: boolean | undefined;
     /**
      * If `true`, the menu will be displayed as a palette.
      * This means that the menu will be displayed as one row
@@ -89,31 +89,31 @@ export interface StackToolbarMenuProps {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
      */
-    palette?: boolean;
+    palette?: boolean | undefined;
     /**
      * Whether to separate the background of this item from other header items.
      *
      * @default false
      */
-    separateBackground?: boolean;
+    separateBackground?: boolean | undefined;
     /**
      * Style for the label of the header item.
      */
-    style?: StackHeaderItemSharedProps['style'];
+    style?: StackHeaderItemSharedProps['style'] | undefined;
     /**
      * The tint color to apply to the button item
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/tintcolor) for more information.
      */
-    tintColor?: StackHeaderItemSharedProps['tintColor'];
+    tintColor?: StackHeaderItemSharedProps['tintColor'] | undefined;
     /**
      * Optional title to show on top of the menu.
      */
-    title?: string;
+    title?: string | undefined;
     /**
      * @default 'plain'
      */
-    variant?: StackHeaderItemSharedProps['variant'];
+    variant?: StackHeaderItemSharedProps['variant'] | undefined;
     /**
      * The preferred size of the menu elements.
      *
@@ -123,7 +123,7 @@ export interface StackToolbarMenuProps {
      *
      * @platform iOS 16.0+
      */
-    elementSize?: 'auto' | 'small' | 'medium' | 'large';
+    elementSize?: 'auto' | 'small' | 'medium' | 'large' | undefined;
 }
 /**
  * Use as `Stack.Toolbar.Menu` to provide menus in iOS toolbar.
@@ -162,20 +162,20 @@ export interface StackToolbarMenuActionProps {
     /**
      * Can be an Icon, Label or string title.
      */
-    children?: ReactNode;
+    children?: ReactNode | undefined;
     /**
      * If `true`, the menu item will be disabled and not selectable.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled) for more information.
      */
-    disabled?: boolean;
-    icon?: SFSymbol | ImageSourcePropType;
+    disabled?: boolean | undefined;
+    icon?: SFSymbol | ImageSourcePropType | undefined;
     /**
      * Image to display for the menu action.
      *
      * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
      */
-    image?: ImageRef;
+    image?: ImageRef | undefined;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -192,13 +192,13 @@ export interface StackToolbarMenuActionProps {
      *
      * @platform ios
      */
-    iconRenderingMode?: 'template' | 'original';
+    iconRenderingMode?: 'template' | 'original' | undefined;
     /**
      * If `true`, the menu item will be displayed as destructive.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
      */
-    destructive?: boolean;
+    destructive?: boolean | undefined;
     /**
      * If `true`, the menu will be kept presented after the action is selected.
      *
@@ -207,23 +207,23 @@ export interface StackToolbarMenuActionProps {
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented) for more information.
      */
-    unstable_keepPresented?: boolean;
+    unstable_keepPresented?: boolean | undefined;
     /**
      * If `true`, the menu item will be displayed as selected.
      */
-    isOn?: boolean;
-    onPress?: () => void;
+    isOn?: boolean | undefined;
+    onPress?: (() => void) | undefined;
     /**
      * An elaborated title that explains the purpose of the action.
      */
-    discoverabilityLabel?: string;
+    discoverabilityLabel?: string | undefined;
     /**
      * An optional subtitle for the menu item.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
      */
-    subtitle?: string;
-    hidden?: boolean;
+    subtitle?: string | undefined;
+    hidden?: boolean | undefined;
 }
 /**
  * An action item for a `Stack.Toolbar.Menu`.

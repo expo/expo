@@ -41,6 +41,7 @@ function ModalStackNavigator({
     StackActionHelpers<ParamListBase>,
     NativeStackNavigationOptions,
     NativeStackNavigationEventMap
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   >(StackRouter, {
     children,
     screenOptions,
@@ -127,6 +128,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
             : ModalStackRouteDrawer;
 
           return (
+            // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
             <ModalComponent
               key={route.key}
               routeKey={route.key}

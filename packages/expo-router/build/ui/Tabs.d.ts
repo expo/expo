@@ -11,12 +11,12 @@ export * from './TabTrigger';
  * Options to provide to the Tab Router.
  */
 export type UseTabsOptions = Omit<DefaultNavigatorOptions<ParamListBase, any, TabNavigationState<any>, ExpoTabsScreenOptions, TabNavigationEventMap, any>, 'children'> & {
-    backBehavior?: TabRouterOptions['backBehavior'];
+    backBehavior?: TabRouterOptions['backBehavior'] | undefined;
 };
 export type TabsProps = ViewProps & {
     /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
-    asChild?: boolean;
-    options?: UseTabsOptions;
+    asChild?: boolean | undefined;
+    options?: UseTabsOptions | undefined;
 };
 /**
  * Root component for the headless tabs.

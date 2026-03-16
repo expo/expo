@@ -8,15 +8,15 @@ import { getFirstChildOfType } from '../../../utils/children';
 import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../../utils/font';
 
 export interface StackHeaderItemSharedProps {
-  children?: ReactNode;
-  style?: StyleProp<BasicTextStyle>;
-  hidesSharedBackground?: boolean;
-  separateBackground?: boolean;
-  accessibilityLabel?: string;
-  accessibilityHint?: string;
-  disabled?: boolean;
-  tintColor?: ColorValue;
-  icon?: SFSymbol | ImageSourcePropType;
+  children?: ReactNode | undefined;
+  style?: StyleProp<BasicTextStyle> | undefined;
+  hidesSharedBackground?: boolean | undefined;
+  separateBackground?: boolean | undefined;
+  accessibilityLabel?: string | undefined;
+  accessibilityHint?: string | undefined;
+  disabled?: boolean | undefined;
+  tintColor?: ColorValue | undefined;
+  icon?: SFSymbol | ImageSourcePropType | undefined;
   /**
    * Controls how image-based icons are rendered on iOS.
    *
@@ -33,11 +33,11 @@ export interface StackHeaderItemSharedProps {
    *
    * @platform ios
    */
-  iconRenderingMode?: 'template' | 'original';
+  iconRenderingMode?: 'template' | 'original' | undefined;
   /**
    * @default 'plain'
    */
-  variant?: 'plain' | 'done' | 'prominent';
+  variant?: 'plain' | 'done' | 'prominent' | undefined;
 }
 
 // We need to pick these properties, as the SharedHeaderItem is not exported by React Navigation
@@ -131,6 +131,7 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
       name: iconComponentProps.sf,
     };
   })();
+  // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
   const item: RNSharedHeaderItem = {
     ...rest,
     label: label?.props.children ?? stringChildren,
@@ -138,6 +139,7 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
   };
   if (style) {
     const convertedStyle = convertTextStyleToRNTextStyle(style) ?? {};
+    // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
     item.labelStyle = convertedStyle;
   }
   if (badgeComponent) {
@@ -146,6 +148,7 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
     };
     const badgeStyle = convertTextStyleToRNTextStyle(badgeComponent.props.style);
     if (badgeStyle) {
+      // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
       item.badge.style = badgeStyle;
     }
   }

@@ -3,13 +3,13 @@ export interface StackToolbarViewProps {
     /**
      * Can be any React node.
      */
-    children?: NativeStackHeaderItemCustom['element'];
+    children?: NativeStackHeaderItemCustom['element'] | undefined;
     /**
      * Whether the view should be hidden.
      *
      * @default false
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * Whether to hide the shared background.
      *
@@ -17,7 +17,7 @@ export interface StackToolbarViewProps {
      *
      * @platform iOS 26+
      */
-    hidesSharedBackground?: boolean;
+    hidesSharedBackground?: boolean | undefined;
     /**
      * Whether to separate the background of this item from other items.
      *
@@ -25,7 +25,7 @@ export interface StackToolbarViewProps {
      *
      * @default false
      */
-    separateBackground?: boolean;
+    separateBackground?: boolean | undefined;
 }
 /**
  * A wrapper to render custom content in the toolbar.

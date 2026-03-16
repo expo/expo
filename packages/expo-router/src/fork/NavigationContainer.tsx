@@ -38,10 +38,10 @@ declare global {
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 
 type Props<ParamList extends object> = NavigationContainerProps & {
-  direction?: LocaleDirection;
-  linking?: LinkingOptions<ParamList>;
-  fallback?: React.ReactNode;
-  documentTitle?: DocumentTitleOptions;
+  direction?: LocaleDirection | undefined;
+  linking?: LinkingOptions<ParamList> | undefined;
+  fallback?: React.ReactNode | undefined;
+  documentTitle?: DocumentTitleOptions | undefined;
 };
 
 /**
@@ -163,7 +163,9 @@ function NavigationContainerInner(
   return (
     <LocaleDirContext.Provider value={direction}>
       <UnhandledLinkingContext.Provider value={unhandledLinkingContext}>
+        {/* @ts-expect-error — eopt: @react-navigation LinkingContext type not compatible */}
         <LinkingContext.Provider value={linkingContext}>
+          {/* @ts-expect-error — eopt: @react-navigation NavigationContainerProps not compatible */}
           <BaseNavigationContainer
             {...rest}
             theme={theme}

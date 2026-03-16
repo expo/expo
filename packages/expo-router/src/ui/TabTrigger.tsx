@@ -25,15 +25,15 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
   /**
    * Name of tab. Required when used within a `TabList`.
    */
-  href?: Href;
+  href?: Href | undefined;
   /**
    * Forward props to child component. Useful for custom wrappers.
    */
-  asChild?: boolean;
+  asChild?: boolean | undefined;
   /**
    * Resets the route when switching to a tab.
    */
-  resetOnFocus?: boolean;
+  resetOnFocus?: boolean | undefined;
 };
 
 export type TabTriggerOptions = {
@@ -43,8 +43,8 @@ export type TabTriggerOptions = {
 
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
   React.RefAttributes<View> & {
-    isFocused?: boolean;
-    href?: string;
+    isFocused?: boolean | undefined;
+    href?: string | undefined;
   };
 
 const TabTriggerSlot = Slot as React.ForwardRefExoticComponent<TabTriggerSlotProps>;
@@ -112,7 +112,7 @@ export type SwitchToOptions = {
   /**
    * Navigate and reset the history on route focus.
    */
-  resetOnFocus?: boolean;
+  resetOnFocus?: boolean | undefined;
 };
 
 export type Trigger = TriggerMap[string] & {
@@ -124,7 +124,7 @@ export type Trigger = TriggerMap[string] & {
 export type UseTabTriggerResult = {
   switchTab: (name: string, options: SwitchToOptions) => void;
   getTrigger: (name: string) => Trigger | undefined;
-  trigger?: Trigger;
+  trigger?: Trigger | undefined;
   triggerProps: TriggerProps;
 };
 
@@ -170,6 +170,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         if (config.type === 'external') {
           return router.navigate(config.href);
         } else {
+          // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
           return navigation?.dispatch({
             ...config.action,
             type: 'JUMP_TO',
@@ -242,7 +243,9 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
   return {
     switchTab,
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     getTrigger,
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     trigger,
     triggerProps,
   };

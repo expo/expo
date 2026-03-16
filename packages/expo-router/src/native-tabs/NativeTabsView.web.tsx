@@ -53,7 +53,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
 interface TabItemProps {
   title: string;
-  badgeValue?: string;
+  badgeValue?: string | undefined;
   routeKey: string;
 }
 

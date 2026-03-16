@@ -106,6 +106,7 @@ it('can pass options via elements', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
+  // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     icon: { android: { type: 'drawableResource', name: 'test' } },
     selectedIcon: undefined,
@@ -124,6 +125,7 @@ it('when no options are passed, default ones are used', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
+  // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
@@ -196,6 +198,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       icon: { android: { type: 'drawableResource', name: 'homepod' } },
       selectedIcon: undefined,
@@ -855,6 +858,7 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
@@ -866,6 +870,7 @@ describe('Dynamic options', () => {
       icon: undefined,
       selectedIcon: undefined,
     } as TabsScreenProps);
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
@@ -898,6 +903,7 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
@@ -908,6 +914,7 @@ describe('Dynamic options', () => {
       selectedIcon: undefined,
       freezeContents: false,
     } as TabsScreenProps);
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
@@ -1103,6 +1110,7 @@ describe('Dynamic options', () => {
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
@@ -1113,6 +1121,7 @@ describe('Dynamic options', () => {
       selectedIcon: undefined,
       freezeContents: false,
     } as TabsScreenProps);
+    // @ts-expect-error — eopt: explicit undefined not assignable to react-native-screens TabsScreenProps
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Second',
       hidden: false,

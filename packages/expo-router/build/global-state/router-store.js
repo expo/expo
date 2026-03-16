@@ -180,6 +180,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
             if (!initialPath.startsWith('/'))
                 initialPath = '/' + initialPath;
             initialState = linking.getStateFromPath(initialPath, linking.config);
+            // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
             const initialRouteInfo = (0, routeInfo_1.getRouteInfoFromState)(initialState);
             routeInfoCache.set(initialState, initialRouteInfo);
             routeInfoValuesCache.set(JSON.stringify(initialRouteInfo), initialRouteInfo);
@@ -246,6 +247,7 @@ function useRouteInfo() {
 function getCachedRouteInfo(state) {
     let routeInfo = routeInfoCache.get(state);
     if (!routeInfo) {
+        // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
         routeInfo = (0, routeInfo_1.getRouteInfoFromState)(state);
         const routeInfoString = JSON.stringify(routeInfo);
         // Using cached values to avoid re-renders, to increase the chance that the object reference is the same

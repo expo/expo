@@ -7,7 +7,7 @@ export interface StackToolbarProps {
      * Stack.Toolbar.Menu, Stack.Toolbar.View, Stack.Toolbar.Spacer, and
      * Stack.Toolbar.SearchBarSlot (bottom only) components.
      */
-    children?: ReactNode;
+    children?: ReactNode | undefined;
     /**
      * The placement of the toolbar.
      *
@@ -17,7 +17,7 @@ export interface StackToolbarProps {
      *
      * @default 'bottom'
      */
-    placement?: ToolbarPlacement;
+    placement?: ToolbarPlacement | undefined;
     /**
      * When `true`, renders children as a custom component in the header area,
      * replacing the default header layout.
@@ -26,7 +26,7 @@ export interface StackToolbarProps {
      *
      * @default false
      */
-    asChild?: boolean;
+    asChild?: boolean | undefined;
 }
 /**
  * The component used to configure the stack toolbar.

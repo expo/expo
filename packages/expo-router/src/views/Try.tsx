@@ -18,9 +18,9 @@ export class Try extends Component<
   PropsWithChildren<{
     catch: ComponentType<ErrorBoundaryProps>;
   }>,
-  { error?: Error }
+  { error?: Error | undefined }
 > {
-  state = { error: undefined };
+  state: { error?: Error | undefined } = { error: undefined };
 
   static getDerivedStateFromError(error: Error) {
     // Force hide the splash screen if an error occurs.

@@ -15,23 +15,23 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
     /**
      * Name of tab. Required when used within a `TabList`.
      */
-    href?: Href;
+    href?: Href | undefined;
     /**
      * Forward props to child component. Useful for custom wrappers.
      */
-    asChild?: boolean;
+    asChild?: boolean | undefined;
     /**
      * Resets the route when switching to a tab.
      */
-    resetOnFocus?: boolean;
+    resetOnFocus?: boolean | undefined;
 };
 export type TabTriggerOptions = {
     name: string;
     href: Href;
 };
 export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.RefAttributes<View> & {
-    isFocused?: boolean;
-    href?: string;
+    isFocused?: boolean | undefined;
+    href?: string | undefined;
 };
 /**
  * Creates a trigger to navigate to a tab. When used as child of `TabList`, its
@@ -62,7 +62,7 @@ export type SwitchToOptions = {
     /**
      * Navigate and reset the history on route focus.
      */
-    resetOnFocus?: boolean;
+    resetOnFocus?: boolean | undefined;
 };
 export type Trigger = TriggerMap[string] & {
     isFocused: boolean;
@@ -72,7 +72,7 @@ export type Trigger = TriggerMap[string] & {
 export type UseTabTriggerResult = {
     switchTab: (name: string, options: SwitchToOptions) => void;
     getTrigger: (name: string) => Trigger | undefined;
-    trigger?: Trigger;
+    trigger?: Trigger | undefined;
     triggerProps: TriggerProps;
 };
 export type TriggerProps = {

@@ -9,7 +9,7 @@ export type FileStub = (Record<string, unknown> & {
     loader?: LoaderFunction;
 }) | ReactComponent;
 export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
-    '+native-intent'?: NativeIntentStub;
+    '+native-intent'?: NativeIntentStub | undefined;
 };
 export { requireContext };
 export declare function inMemoryContext(context: MemoryContext): ((id: string) => NativeIntent | ReactComponent | (Record<string, unknown> & {

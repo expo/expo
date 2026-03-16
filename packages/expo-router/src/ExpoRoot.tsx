@@ -30,16 +30,18 @@ import { Unmatched } from './views/Unmatched';
 
 export type ExpoRootProps = {
   context: RequireContext;
-  location?: URL | string;
-  wrapper?: ComponentType<PropsWithChildren>;
-  linking?: Partial<ExpoLinkingOptions>;
+  location?: URL | string | undefined;
+  wrapper?: ComponentType<PropsWithChildren> | undefined;
+  linking?: Partial<ExpoLinkingOptions> | undefined;
 };
 
 export type NativeIntent = {
-  redirectSystemPath?: (event: {
-    path: string | null;
-    initial: boolean;
-  }) => Promise<string | null | undefined> | string | null | undefined;
+  redirectSystemPath?:
+    | ((event: {
+        path: string | null;
+        initial: boolean;
+      }) => Promise<string | null | undefined> | string | null | undefined)
+    | undefined;
 };
 
 const isTestEnv = process.env.NODE_ENV === 'test';
@@ -72,6 +74,7 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
         return (
           <ParentWrapper>
             <LinkPreviewContextProvider>
+              {/* @ts-expect-error — eopt: react-native-safe-area-context SafeAreaProviderProps not compatible */}
               <SafeAreaProvider
                 // SSR support
                 initialMetrics={INITIAL_METRICS}>
@@ -160,6 +163,7 @@ function ContextNavigator({
 
   return (
     <StoreContext.Provider value={store}>
+      {/* @ts-expect-error — eopt: @react-navigation NavigationContainerProps not compatible */}
       <UpstreamNavigationContainer
         ref={store.navigationRef}
         initialState={store.state}
@@ -186,6 +190,7 @@ function Content() {
   if (shouldAppendSitemap()) {
     children.push(<Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
   }
+  // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children,
     id: INTERNAL_SLOT_NAME,

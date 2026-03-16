@@ -13,6 +13,7 @@ describe('modal route filtering on web', () => {
   const ORIGINAL_OS = process.env.EXPO_OS;
 
   afterEach(() => {
+    // @ts-expect-error — eopt: ORIGINAL_OS is string | undefined
     process.env.EXPO_OS = ORIGINAL_OS; // restore
   });
 

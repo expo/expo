@@ -5,31 +5,31 @@ export interface StackScreenBackButtonProps {
     /**
      * The title to display for the back button.
      */
-    children?: string;
+    children?: string | undefined;
     /**
      * Style for the back button title.
      */
-    style?: NativeStackNavigationOptions['headerBackTitleStyle'];
+    style?: NativeStackNavigationOptions['headerBackTitleStyle'] | undefined;
     /**
      * Whether to show a context menu when long pressing the back button.
      *
      * @platform ios
      */
-    withMenu?: boolean;
+    withMenu?: boolean | undefined;
     /**
      * The display mode for the back button.
      *
      * @platform ios
      */
-    displayMode?: ScreenStackHeaderConfigProps['backButtonDisplayMode'];
+    displayMode?: ScreenStackHeaderConfigProps['backButtonDisplayMode'] | undefined;
     /**
      * Whether to hide the back button.
      */
-    hidden?: boolean;
+    hidden?: boolean | undefined;
     /**
      * Custom image source for the back button.
      */
-    src?: ImageSourcePropType;
+    src?: ImageSourcePropType | undefined;
 }
 /**
  * Component to configure the back button.

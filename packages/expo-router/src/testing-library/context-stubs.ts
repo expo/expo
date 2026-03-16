@@ -15,7 +15,7 @@ export type FileStub =
   | ReactComponent;
 
 export type MemoryContext = Record<string, FileStub | NativeIntentStub> & {
-  '+native-intent'?: NativeIntentStub;
+  '+native-intent'?: NativeIntentStub | undefined;
 };
 
 export { requireContext };

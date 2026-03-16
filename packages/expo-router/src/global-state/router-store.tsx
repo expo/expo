@@ -37,12 +37,12 @@ type StoreRef = {
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   routeNode: RouteNode | null;
   rootComponent: ComponentType<any>;
-  state?: ReactNavigationState;
-  linking?: ExpoLinkingOptions;
+  state?: ReactNavigationState | undefined;
+  linking?: ExpoLinkingOptions | undefined;
   config: any;
   redirects: StoreRedirects[];
-  routeInfo?: UrlObject;
-  context?: RequireContext;
+  routeInfo?: UrlObject | undefined;
+  context?: RequireContext | undefined;
 };
 
 const storeRef = {
@@ -195,6 +195,7 @@ export function useStore(
       if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
 
       initialState = linking.getStateFromPath(initialPath, linking.config);
+      // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
       const initialRouteInfo = getRouteInfoFromState(initialState);
       routeInfoCache.set(initialState as any, initialRouteInfo);
       routeInfoValuesCache.set(JSON.stringify(initialRouteInfo), initialRouteInfo);
@@ -275,6 +276,7 @@ function getCachedRouteInfo(state: ReactNavigationState) {
   let routeInfo = routeInfoCache.get(state);
 
   if (!routeInfo) {
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     routeInfo = getRouteInfoFromState(state);
 
     const routeInfoString = JSON.stringify(routeInfo);

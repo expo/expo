@@ -4,7 +4,7 @@ export interface StackToolbarLabelProps {
     /**
      * The text to display as the label for the tab.
      */
-    children?: string;
+    children?: string | undefined;
 }
 export declare const StackToolbarLabel: React.FC<StackToolbarLabelProps>;
 export type StackToolbarIconProps = {
@@ -21,7 +21,7 @@ export type StackToolbarIconProps = {
      *
      * @platform ios
      */
-    renderingMode?: 'template' | 'original';
+    renderingMode?: 'template' | 'original' | undefined;
 } | {
     sf: SFSymbol;
 } | {
@@ -43,15 +43,15 @@ export type StackToolbarIconProps = {
      *
      * @platform ios
      */
-    renderingMode?: 'template' | 'original';
+    renderingMode?: 'template' | 'original' | undefined;
 };
 export declare const StackToolbarIcon: React.FC<StackToolbarIconProps>;
 export interface StackToolbarBadgeProps {
     /**
      * The text to display as the badge
      */
-    children?: string;
-    style?: StyleProp<Pick<TextStyle, 'fontFamily' | 'fontSize' | 'color' | 'fontWeight' | 'backgroundColor'>>;
+    children?: string | undefined;
+    style?: StyleProp<Pick<TextStyle, 'fontFamily' | 'fontSize' | 'color' | 'fontWeight' | 'backgroundColor'>> | undefined;
 }
 export declare const StackToolbarBadge: React.FC<StackToolbarBadgeProps>;
 //# sourceMappingURL=toolbar-primitives.d.ts.map

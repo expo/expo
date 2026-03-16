@@ -67,6 +67,7 @@ export function StackSearchBar({
       appendStackSearchBarPropsToOptions(
         {},
         // satisfies ensures every prop is listed here
+        // @ts-expect-error -- react-native-screens types are not exactOptionalPropertyTypes-compatible
         {
           ref,
           autoCapitalize,

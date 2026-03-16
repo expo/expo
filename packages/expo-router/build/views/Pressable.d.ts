@@ -12,12 +12,12 @@ export type WebPressableProps = {
      * Either children or a render prop that receives a boolean reflecting whether
      * the component is currently pressed.
      */
-    children?: React.ReactNode | ((state: PressableStateCallbackType) => React.ReactNode);
+    children?: React.ReactNode | ((state: PressableStateCallbackType) => React.ReactNode) | undefined;
     /**
      * Either view styles or a function that receives a boolean reflecting whether
      * the component is currently pressed and returns view styles.
      */
-    style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+    style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>) | undefined;
 };
 export type PressableProps = Omit<NativePressableProps, 'children' | 'style'> & WebPressableProps;
 export declare const Pressable: ComponentType<PressableProps>;

@@ -1,3 +1,3 @@
 export interface ZoomTransitionEnablerProps {
-  route?: unknown;
+  route?: unknown | undefined;
 }

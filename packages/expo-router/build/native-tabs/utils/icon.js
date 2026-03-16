@@ -48,6 +48,7 @@ function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
     if (!icon) {
         return undefined;
     }
+    // @ts-expect-error — eopt: react-native-screens PlatformIcon not compatible
     return {
         ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
         android: convertOptionsIconToAndroidPropsIcon(icon),

@@ -7,17 +7,17 @@ import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import { type ErrorBoundaryProps } from './views/Try';
 
-export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
+export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean | undefined };
 
 type Params = Record<string, string | string[]>;
 
 export type LoadedRoute = {
-  ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
-  default?: ComponentType<any>;
-  unstable_settings?: Record<string, any>;
-  getNavOptions?: (args: any) => any;
-  generateStaticParams?: (props: { params?: Params }) => Params[];
-  loader?: LoaderFunction;
+  ErrorBoundary?: ComponentType<ErrorBoundaryProps> | undefined;
+  default?: ComponentType<any> | undefined;
+  unstable_settings?: Record<string, any> | undefined;
+  getNavOptions?: ((args: any) => any) | undefined;
+  generateStaticParams?: ((props: { params?: Params }) => Params[]) | undefined;
+  loader?: LoaderFunction | undefined;
 };
 
 export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'>;
@@ -35,7 +35,7 @@ export type RouteNode = {
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => Partial<LoadedRoute>;
   /** Loaded initial route name. */
-  initialRouteName?: string;
+  initialRouteName?: string | undefined;
   /** Nested routes */
   children: RouteNode[];
   /** Is the route a dynamic path */
@@ -45,21 +45,21 @@ export type RouteNode = {
   /** Context Module ID, used for matching children. */
   contextKey: string;
   /** Redirect Context Module ID, used for matching children. */
-  destinationContextKey?: string;
+  destinationContextKey?: string | undefined;
   /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
-  parentContextKey?: string;
+  parentContextKey?: string | undefined;
   /** Is the redirect permanent. */
-  permanent?: boolean;
+  permanent?: boolean | undefined;
   /** Added in-memory */
-  generated?: boolean;
+  generated?: boolean | undefined;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
-  internal?: boolean;
+  internal?: boolean | undefined;
   /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
-  entryPoints?: string[];
+  entryPoints?: string[] | undefined;
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
-  methods?: string[];
+  methods?: string[] | undefined;
   /** Middleware function for server-side request processing. Only present on the root route node. */
-  middleware?: MiddlewareNode;
+  middleware?: MiddlewareNode | undefined;
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);

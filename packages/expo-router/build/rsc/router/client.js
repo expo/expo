@@ -347,6 +347,7 @@ relativeToDirectory, asChild, rel, target, download,
 // unstable_prefetchOnView,
 children, ...props }, ref) {
     // Mutate the style prop to add the className on web.
+    // @ts-expect-error -- react-native types are not exactOptionalPropertyTypes-compatible
     const style = (0, useLinkHooks_1.useInteropClassName)(props);
     // If not passing asChild, we need to forward the props to the anchor tag using React Native Web's `hrefAttrs`.
     const hrefAttrs = (0, useLinkHooks_1.useHrefAttrs)({ asChild, rel, target, download });

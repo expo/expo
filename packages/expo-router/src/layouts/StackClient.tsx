@@ -53,43 +53,45 @@ const NativeStackNavigator = createNativeStackNavigator().Navigator;
  * to allow for several extra props to be used on web, like modalWidth
  */
 export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
-  webModalStyle?: {
-    /**
-     * Override the width of the modal (px or percentage). Only applies on web platform.
-     * @platform web
-     */
-    width?: number | string;
-    /**
-     * Override the height of the modal (px or percentage). Applies on web desktop.
-     * @platform web
-     */
-    height?: number | string;
-    /**
-     * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
-     * @platform web
-     */
-    minHeight?: number | string;
-    /**
-     * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
-     * @platform web
-     */
-    minWidth?: number | string;
-    /**
-     * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
-     * @platform web
-     */
-    border?: string;
-    /**
-     * Override the overlay background color (any valid CSS color or rgba/hsla value).
-     * @platform web
-     */
-    overlayBackground?: string;
-    /**
-     * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
-     * @platform web
-     */
-    shadow?: string;
-  };
+  webModalStyle?:
+    | {
+        /**
+         * Override the width of the modal (px or percentage). Only applies on web platform.
+         * @platform web
+         */
+        width?: number | string;
+        /**
+         * Override the height of the modal (px or percentage). Applies on web desktop.
+         * @platform web
+         */
+        height?: number | string;
+        /**
+         * Minimum height of the desktop modal (px or percentage). Overrides the default 640px clamp.
+         * @platform web
+         */
+        minHeight?: number | string;
+        /**
+         * Minimum width of the desktop modal (px or percentage). Overrides the default 580px.
+         * @platform web
+         */
+        minWidth?: number | string;
+        /**
+         * Override the border of the desktop modal (any valid CSS border value, e.g. '1px solid #ccc' or 'none').
+         * @platform web
+         */
+        border?: string;
+        /**
+         * Override the overlay background color (any valid CSS color or rgba/hsla value).
+         * @platform web
+         */
+        overlayBackground?: string;
+        /**
+         * Override the modal shadow filter (any valid CSS filter value, e.g. 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none').
+         * @platform web
+         */
+        shadow?: string;
+      }
+    | undefined;
 };
 
 const RNStack = withLayoutContext<
@@ -204,6 +206,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           const getId = getIdFunction();
           // const getId = options.routeGetIdList[action.payload.name];
           // END FORK
+          // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
           const id = getId?.({ params: action.payload.params });
 
           let route: Route<string> | undefined;
@@ -211,6 +214,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           if (id !== undefined) {
             route = state.routes.findLast(
               (route) =>
+                // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
           } else if (action.type === 'NAVIGATE') {
@@ -237,6 +241,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           if (!route) {
             route = state.preloadedRoutes.find(
               (route) =>
+                // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
             // START FORK
@@ -275,6 +280,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               // Get all routes until the matching one
               for (const r of state.routes) {
                 if (r.key === route.key) {
+                  // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
                   routes.push({
                     ...route,
                     path: action.payload.path !== undefined ? action.payload.path : route.path,
@@ -314,6 +320,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                   ? `${action.payload.name}-${nanoid()}`
                   : route.key;
 
+              // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
               routes.push({
                 ...route,
                 key,
@@ -337,7 +344,9 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             }
           } else {
             routes = [
+              // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
               ...state.routes,
+              // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
               {
                 key: `${action.payload.name}-${nanoid()}`,
                 name: action.payload.name,
@@ -398,6 +407,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           }
           // END FORK
           const getId = options.routeGetIdList[action.payload.name];
+          // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
           const id = getId?.({ params: action.payload.params });
 
           let route: Route<string> | undefined;
@@ -405,6 +415,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           if (id !== undefined) {
             route = state.routes.find(
               (route) =>
+                // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
           }
@@ -467,6 +478,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               // and reshuffling from react-navigation
               preloadedRoutes: [currentPreloadedRoute].concat(
                 state.preloadedRoutes.filter(
+                  // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
                   (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
                 )
               ),
@@ -534,6 +546,7 @@ function filterSingular<
   const current = state.routes[currentIndex];
   const name = current.name;
 
+  // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
   const id = getId?.({ params: current.params });
 
   if (!id) {
@@ -549,6 +562,7 @@ function filterSingular<
     }
 
     // Remove all other routes with the same name and id.
+    // @ts-expect-error -- external library types are not exactOptionalPropertyTypes-compatible
     return name !== route.name || id !== getId?.({ params: route.params });
   });
 
@@ -608,6 +622,7 @@ const Stack = Object.assign(
     );
 
     return (
+      // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
       <RNStack
         {...props}
         children={rnChildren}
@@ -661,10 +676,12 @@ function shouldDisableAnimationBasedOnParams(route: RouteProp<ParamListBase, str
 
 export default Stack;
 
+// @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
 export const StackRouter: typeof RNStackRouter = (options) => {
   const router = RNStackRouter(options);
   return {
     ...router,
+    // @ts-expect-error -- @react-navigation types are not exactOptionalPropertyTypes-compatible
     ...stackRouterOverride(router),
   };
 };

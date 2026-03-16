@@ -12,7 +12,7 @@ export type HrefObject = {
     /** The path of the route. */
     pathname: string;
     /** Optional parameters for the route. */
-    params?: UnknownInputParams;
+    params?: UnknownInputParams | undefined;
 };
 /**
  * @hidden
@@ -21,7 +21,7 @@ export type HrefInputParamsObject = {
     /** The path of the route. */
     pathname: string;
     /** Optional input parameters for the route. */
-    params?: UnknownInputParams;
+    params?: UnknownInputParams | undefined;
 };
 /**
  * @hidden
@@ -30,7 +30,7 @@ export type HrefOutputParamsObject = {
     /** The path of the route */
     pathname: string;
     /** Optional output parameters for the route */
-    params?: UnknownOutputParams;
+    params?: UnknownOutputParams | undefined;
 };
 export type RelativePathString = `./${string}` | `../${string}` | '..';
 export type SearchOrHash = `?${string}` | `#${string}`;

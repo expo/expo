@@ -2,13 +2,13 @@ import { InitialState } from '@react-navigation/native';
 import * as queryString from 'query-string';
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 export type ExpoOptions = {
-    previousSegments?: string[];
+    previousSegments?: string[] | undefined;
 };
 export type ExpoRouteConfig = {
     type: 'static' | 'dynamic' | 'layout';
     userReadableName: string;
     isIndex: boolean;
-    isInitial?: boolean;
+    isInitial?: boolean | undefined;
     hasChildren: boolean;
     expandedRouteNames: string[];
     parts: string[];
@@ -42,18 +42,18 @@ export declare function matchForEmptyPath(configs: RouteConfig[]): {
     type: "static" | "dynamic" | "layout";
     userReadableName: string;
     isIndex: boolean;
-    isInitial?: boolean;
+    isInitial?: boolean | undefined;
     hasChildren: boolean;
     expandedRouteNames: string[];
     parts: string[];
     staticPartCount: number;
     screen: string;
-    regex?: RegExp;
+    regex?: RegExp | undefined;
     pattern: string;
     routeNames: string[];
     parse?: {
         [x: string]: (value: string) => any;
-    };
+    } | undefined;
 } | undefined;
 export declare function appendIsInitial(initialRoutes: InitialRouteConfig[]): (config: RouteConfig) => RouteConfig;
 export declare function getRouteConfigSorter(previousSegments?: string[]): (a: RouteConfig, b: RouteConfig) => number;

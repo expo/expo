@@ -7,20 +7,20 @@ export declare function convertIconColorPropToObject(iconColor: NativeTabsProps[
     selected?: ColorValue;
 };
 type AwaitedIcon = {
-    sf?: SFSymbol;
-    xcasset?: string;
-    drawable?: string;
+    sf?: SFSymbol | undefined;
+    xcasset?: string | undefined;
+    drawable?: string | undefined;
 } | {
-    src?: ImageSourcePropType;
-    renderingMode?: 'template' | 'original';
+    src?: ImageSourcePropType | undefined;
+    renderingMode?: 'template' | 'original' | undefined;
 };
 export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
-    sf?: SFSymbol;
-    xcasset?: string;
-    drawable?: string;
+    sf?: SFSymbol | undefined;
+    xcasset?: string | undefined;
+    drawable?: string | undefined;
 } | {
-    src?: ImageSourcePropType;
-    renderingMode?: "template" | "original";
+    src?: ImageSourcePropType | undefined;
+    renderingMode?: "template" | "original" | undefined;
 } | undefined;
 export declare function convertOptionsIconToRNScreensPropsIcon(icon: AwaitedIcon | undefined, iconColor?: ColorValue): TabsScreenProps['icon'];
 export declare function convertOptionsIconToIOSPropsIcon(icon: AwaitedIcon | undefined, iconColor?: ColorValue): PlatformIconIOS | undefined;

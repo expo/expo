@@ -3,15 +3,15 @@ import { ExpoLinkingOptions } from './getLinkingConfig';
 import { RequireContext } from './types';
 export type ExpoRootProps = {
     context: RequireContext;
-    location?: URL | string;
-    wrapper?: ComponentType<PropsWithChildren>;
-    linking?: Partial<ExpoLinkingOptions>;
+    location?: URL | string | undefined;
+    wrapper?: ComponentType<PropsWithChildren> | undefined;
+    linking?: Partial<ExpoLinkingOptions> | undefined;
 };
 export type NativeIntent = {
-    redirectSystemPath?: (event: {
+    redirectSystemPath?: ((event: {
         path: string | null;
         initial: boolean;
-    }) => Promise<string | null | undefined> | string | null | undefined;
+    }) => Promise<string | null | undefined> | string | null | undefined) | undefined;
 };
 /**
  * @hidden
