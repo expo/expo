@@ -1,6 +1,6 @@
 import type { ImageRef } from 'expo-image';
 import type { ReactNode } from 'react';
-import type { ColorValue, StyleProp, TextStyle } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { BasicTextStyle } from '../../../../utils/font';
@@ -89,10 +89,13 @@ export interface StackToolbarButtonProps {
    * - If `tintColor` is specified, defaults to `'template'`
    * - If no `tintColor`, defaults to `'original'`
    *
+   * On Android, this prop defaults to `'template'`.
+   *
    * This prop only affects image-based icons (not SF Symbols).
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
    *
+   * @platform android
    * @platform ios
    */
   iconRenderingMode?: 'template' | 'original';
@@ -143,4 +146,6 @@ export interface NativeToolbarButtonProps {
   tintColor?: ColorValue;
   variant?: 'plain' | 'done' | 'prominent';
   label?: string;
+  /* @platform android */
+  source?: ImageSourcePropType;
 }

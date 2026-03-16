@@ -27,6 +27,15 @@ export interface StackToolbarProps {
      * @default false
      */
     asChild?: boolean;
+    /**
+     * When `true`, disables automatic keyboard (IME) padding on the bottom toolbar.
+     *
+     * Only applies to `placement="bottom"` on Android.
+     *
+     * @default false
+     * @platform android
+     */
+    disableImePadding?: boolean;
 }
 /**
  * The component used to configure the stack toolbar.
