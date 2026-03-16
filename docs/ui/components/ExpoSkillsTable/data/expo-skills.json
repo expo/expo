@@ -1,0 +1,65 @@
+{
+  "source": {
+    "repo": "expo/skills",
+    "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
+    "fetchedAt": "2026-03-16T09:49:24.248Z"
+  },
+  "totalSkills": 11,
+  "skills": [
+    {
+      "name": "building-native-ui",
+      "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/building-native-ui/SKILL.md"
+    },
+    {
+      "name": "expo-api-routes",
+      "description": "Guidelines for creating API routes in Expo Router with EAS Hosting.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-api-routes/SKILL.md"
+    },
+    {
+      "name": "expo-cicd-workflows",
+      "description": "Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-cicd-workflows/SKILL.md"
+    },
+    {
+      "name": "expo-deployment",
+      "description": "Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and API routes.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-deployment/SKILL.md"
+    },
+    {
+      "name": "expo-dev-client",
+      "description": "Build and distribute Expo development clients locally or via TestFlight.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-dev-client/SKILL.md"
+    },
+    {
+      "name": "expo-tailwind-setup",
+      "description": "Set up Tailwind CSS v4 in Expo with react-native-css and NativeWind v5 for universal styling.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-tailwind-setup/SKILL.md"
+    },
+    {
+      "name": "expo-ui-jetpack-compose",
+      "description": "`@expo/ui/jetpack-compose` package lets you use Jetpack Compose Views and modifiers in your app.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-jetpack-compose/SKILL.md"
+    },
+    {
+      "name": "expo-ui-swift-ui",
+      "description": "`@expo/ui/swift-ui` package lets you use SwiftUI Views and modifiers in your app.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-swift-ui/SKILL.md"
+    },
+    {
+      "name": "native-data-fetching",
+      "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders (useLoaderData).",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/native-data-fetching/SKILL.md"
+    },
+    {
+      "name": "upgrading-expo",
+      "description": "Guidelines for upgrading Expo SDK versions and fixing dependency issues.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/upgrading-expo/SKILL.md"
+    },
+    {
+      "name": "use-dom",
+      "description": "Use Expo DOM components to run web code in a webview on native and as-is on web. Migrate web code to native incrementally.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/use-dom/SKILL.md"
+    }
+  ]
+}

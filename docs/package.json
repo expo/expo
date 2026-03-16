@@ -28,6 +28,7 @@
     "versions-schema-sync": "node ./scripts/fetch-versions-schema.js",
     "react-navigation-docs-sync": "node ./scripts/fetch-react-navigation-options.js",
     "eas-cli-sync": "node ./ui/components/EASCLIReference/eas-cli-rerference.js",
+    "expo-skills-sync": "node ./ui/components/ExpoSkillsTable/sync-expo-skills.js",
     "postinstall": "yarn copy-latest && yarn generate-static-resources"
   },
   "packageManager": "yarn@4.9.1",
