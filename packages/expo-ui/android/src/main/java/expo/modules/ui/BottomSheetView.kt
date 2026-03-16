@@ -46,11 +46,11 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
   val sheetState = rememberModalBottomSheetState(props.skipPartiallyExpanded)
   var showSheet by remember { mutableStateOf(props.isPresented) }
 
-  // Animate hide when isPresented changes to false
+  // Animate hide when isPresented changes from true to false
   LaunchedEffect(props.isPresented) {
     if (props.isPresented) {
       showSheet = true
-    } else {
+    } else if (showSheet) {
       sheetState.hide()
       showSheet = false
       onIsPresentedChange(false)
