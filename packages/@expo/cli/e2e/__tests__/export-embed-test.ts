@@ -315,6 +315,8 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
     'drawable-mdpi/__packages_exporouter_assets_arrow_down.png',
+    'drawable-mdpi/__packages_exporouter_assets_arrow_right.xml',
+    'drawable-mdpi/__packages_exporouter_assets_checkmark.xml',
     'drawable-mdpi/__packages_exporouter_assets_error.png',
     'drawable-mdpi/__packages_exporouter_assets_file.png',
     'drawable-mdpi/__packages_exporouter_assets_forward.png',

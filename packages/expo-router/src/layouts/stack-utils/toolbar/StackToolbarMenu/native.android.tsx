@@ -1,12 +1,171 @@
 'use client';
-import type { NativeToolbarMenuProps } from './types';
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  Divider,
+  Icon,
+  IconButton,
+  Text as ComposeText,
+} from '@expo/ui/jetpack-compose';
+import { background } from '@expo/ui/jetpack-compose/modifiers';
+import { createContext, use, useCallback, useState } from 'react';
+
+import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
+import { Color } from '../../../../color';
+import { Label } from '../../../../primitives';
+import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
+import { getFirstChildOfType } from '../../../../utils/children';
+
+const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
+const checkmarkIcon = require('../../../../../assets/checkmark.xml');
 
 /**
- * Toolbar menus are not supported on Android.
+ * Context for propagating menu close callbacks from root to nested menus.
+ * - `null` means root level (no parent menu)
+ * - A function means nested level (call to close entire menu chain)
  */
-export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = () => null;
+const ToolbarMenuCloseContext = createContext<(() => void) | null>(null);
+
+const DEFAULT_BACKGROUND_COLOR = () => Color.android.dynamic.surfaceContainer as string;
+const DEFAULT_TINT_COLOR = () => Color.android.dynamic.onSurface as string;
 
 /**
- * Toolbar menu actions are not supported on Android.
+ * Native toolbar menu component for Android bottom toolbar.
+ * Renders as a DropdownMenu with IconButton trigger (root) or DropdownMenuItem trigger (nested).
  */
-export const NativeToolbarMenuAction = (_props: unknown) => null;
+export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
+  const [expanded, setExpanded] = useState(false);
+  const parentClose = use(ToolbarMenuCloseContext);
+  const isNested = parentClose !== null;
+
+  const tintColor =
+    props.imageRenderingMode === 'original' ? undefined : (props.tintColor ?? DEFAULT_TINT_COLOR());
+
+  const closeMenu = useCallback(() => {
+    setExpanded(false);
+    parentClose?.();
+  }, [parentClose]);
+
+  // Inline nested: render children directly with a divider separator
+  if (isNested && props.inline) {
+    return (
+      <>
+        <Divider />
+        {props.children}
+      </>
+    );
+  }
+
+  // Non-inline nested: DropdownMenu with DropdownMenuItem trigger
+  if (isNested) {
+    const trailingIcon = (
+      <DropdownMenuItem.TrailingIcon>
+        <Icon source={arrowRightIcon} tintColor={tintColor} size={24} />
+      </DropdownMenuItem.TrailingIcon>
+    );
+    const leadingIcon = props.source ? (
+      <DropdownMenuItem.LeadingIcon>
+        <Icon source={props.source} tintColor={tintColor} size={24} />
+      </DropdownMenuItem.LeadingIcon>
+    ) : null;
+    return (
+      <DropdownMenu
+        expanded={expanded}
+        onDismissRequest={() => setExpanded(false)}
+        modifiers={[background(DEFAULT_BACKGROUND_COLOR())]}>
+        <DropdownMenu.Trigger>
+          <DropdownMenuItem
+            onClick={() => {
+              if (!props.disabled) setExpanded(true);
+            }}
+            enabled={!props.disabled}>
+            {leadingIcon}
+            <DropdownMenuItem.Text>
+              <ComposeText
+                color={
+                  typeof props.tintColor === 'string' ? props.tintColor : DEFAULT_TINT_COLOR()
+                }>
+                {props.label}
+              </ComposeText>
+            </DropdownMenuItem.Text>
+            {trailingIcon}
+          </DropdownMenuItem>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    );
+  }
+
+  // Root: AnimatedItemContainer + IconButton trigger + DropdownMenu
+  if (!props.source) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        'Stack.Toolbar.Menu on Android requires an ImageSourcePropType icon. SF Symbols and xcasset icons are not supported. Use the `icon` prop with a require() or { uri } source, or use <Stack.Toolbar.Icon src={...} />.'
+      );
+    }
+    return null;
+  }
+
+  return (
+    <AnimatedItemContainer visible={!props.hidden}>
+      <DropdownMenu
+        expanded={expanded}
+        onDismissRequest={() => setExpanded(false)}
+        modifiers={[background(DEFAULT_BACKGROUND_COLOR())]}>
+        <DropdownMenu.Trigger>
+          <IconButton onClick={() => setExpanded(true)} enabled={!props.disabled}>
+            <Icon source={props.source} tintColor={tintColor} size={24} />
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </AnimatedItemContainer>
+  );
+};
+
+/**
+ * Native toolbar menu action component for Android.
+ * Renders as a DropdownMenuItem.
+ */
+export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (props) => {
+  const closeMenu = use(ToolbarMenuCloseContext);
+  const tintColor = props.destructive
+    ? (Color.android.material.error as string)
+    : DEFAULT_TINT_COLOR();
+
+  const handleClick = useCallback(() => {
+    props.onPress?.();
+    if (!props.unstable_keepPresented) {
+      closeMenu?.();
+    }
+  }, [props.onPress, props.unstable_keepPresented, closeMenu]);
+
+  const areChildrenString = typeof props.children === 'string';
+  const label = areChildrenString
+    ? props.children
+    : (getFirstChildOfType(props.children, Label)?.props.children ?? '');
+
+  if (props.hidden) return null;
+
+  return (
+    <DropdownMenuItem onClick={handleClick} enabled={!props.disabled}>
+      <DropdownMenuItem.Text>
+        <ComposeText color={tintColor}>{label}</ComposeText>
+      </DropdownMenuItem.Text>
+      {props.source && (
+        <DropdownMenuItem.LeadingIcon>
+          <Icon source={props.source} tintColor={tintColor} size={24} />
+        </DropdownMenuItem.LeadingIcon>
+      )}
+      {props.isOn && (
+        <DropdownMenuItem.TrailingIcon>
+          <Icon source={checkmarkIcon} tintColor={tintColor} size={24} />
+        </DropdownMenuItem.TrailingIcon>
+      )}
+    </DropdownMenuItem>
+  );
+};

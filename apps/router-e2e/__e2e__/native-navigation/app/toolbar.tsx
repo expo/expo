@@ -351,6 +351,17 @@ export default function ToolbarScreen() {
           </Pressable>
         </Stack.Toolbar.View>
 
+        <ActionsMenu
+          hidden={!showMenu}
+          image={image2}
+          emailsArchived={emailsArchived}
+          onArchiveToggle={handleArchiveToggle}
+          notificationsEnabled={notificationsEnabled}
+          onNotificationsToggle={handleNotificationsToggle}
+          favoriteColors={favoriteColors}
+          onColorSelect={handleColorSelect}
+        />
+
         {/* Xcasset button */}
         <Stack.Toolbar.Button
           hidden={!showXcassetButton}
@@ -373,17 +384,6 @@ export default function ToolbarScreen() {
         )}
 
         {/* Nested menu with dynamic content */}
-        {showMenu && (
-          <ActionsMenu
-            image={image2}
-            emailsArchived={emailsArchived}
-            onArchiveToggle={handleArchiveToggle}
-            notificationsEnabled={notificationsEnabled}
-            onNotificationsToggle={handleNotificationsToggle}
-            favoriteColors={favoriteColors}
-            onColorSelect={handleColorSelect}
-          />
-        )}
 
         {/* Flexible spacer at the end */}
         <Stack.Toolbar.Spacer />
@@ -400,6 +400,7 @@ function ActionsMenu({
   onNotificationsToggle,
   favoriteColors,
   onColorSelect,
+  hidden,
 }: {
   image: ReturnType<typeof useImage>;
   emailsArchived: boolean;
@@ -408,17 +409,34 @@ function ActionsMenu({
   onNotificationsToggle: () => void;
   favoriteColors: ('red' | 'blue' | 'green')[];
   onColorSelect: (color: 'red' | 'blue' | 'green') => void;
+  hidden?: boolean;
 }) {
   return (
-    <Stack.Toolbar.Menu icon="ellipsis.circle" title="Actions" tintColor={Color.ios.systemBrown}>
+    <Stack.Toolbar.Menu
+      hidden={hidden}
+      icon={
+        process.env.EXPO_OS === 'ios'
+          ? 'ellipsis.circle'
+          : require('../../../assets/android-icons/more_vert.xml')
+      }
+      title="Actions"
+      tintColor={Color.ios.systemBrown}>
       {/* Simple actions */}
       <Stack.Toolbar.MenuAction
-        icon="paperplane"
+        icon={
+          process.env.EXPO_OS === 'ios'
+            ? 'paperplane'
+            : require('../../../assets/android-icons/send.xml')
+        }
         onPress={() => Alert.alert('Send Email', 'Email sent succesiconully!')}>
         Send email
       </Stack.Toolbar.MenuAction>
       <Stack.Toolbar.MenuAction
-        icon="trash"
+        icon={
+          process.env.EXPO_OS === 'ios'
+            ? 'trash'
+            : require('../../../assets/android-icons/delete.xml')
+        }
         destructive
         onPress={() => Alert.alert('Delete Email', 'Email deleted!')}>
         Delete email
