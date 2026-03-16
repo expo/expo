@@ -33,9 +33,11 @@ import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
@@ -181,7 +183,8 @@ class UpdatesDevLauncherController(
       databaseHolder.database,
       fileDownloader,
       updatesDirectory,
-      null
+      null,
+      controllerScope
     )
     controllerScope.launch {
       val progressJob = launch {
@@ -213,6 +216,8 @@ class UpdatesDevLauncherController(
           return@launch
         }
         launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, callback)
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         // reset controller's configuration to what it was before this request
         updatesConfiguration = previousUpdatesConfiguration
@@ -307,6 +312,8 @@ class UpdatesDevLauncherController(
           get() = launcher.launchAssetFile!!
       })
       runReaper()
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       // reset controller's configuration to what it was before this request
       updatesConfiguration = previousUpdatesConfiguration
@@ -383,7 +390,7 @@ class UpdatesDevLauncherController(
   }
 
   override fun shutdown() {
-    // no-op
+    controllerScope.cancel()
   }
 
   companion object {
