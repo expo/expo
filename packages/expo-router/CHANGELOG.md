@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix xcasset icon handling in native tabs to return the correct `xcasset` type instead of wrapping as `imageSource` ([#XXXX](https://github.com/expo/expo/pull/XXXX) by [@kaarl77](https://github.com/kaarl77))
+- Fix xcasset icon handling in native tabs to return the correct `xcasset` type instead of wrapping as `imageSource` ([#43976](https://github.com/expo/expo/pull/43976) by [@kaarl77](https://github.com/kaarl77))
 - Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
 - Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
 - Fix `Stack.Protected` guard not applying to index routes. ([#43769](https://github.com/expo/expo/pull/43769) by [@alanjhughes](https://github.com/alanjhughes))
