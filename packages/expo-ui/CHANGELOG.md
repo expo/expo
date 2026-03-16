@@ -4,10 +4,10 @@
 
 ### 🛠 Breaking changes
 
+- [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43896](https://github.com/expo/expo/pull/43896) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `Button` into separate M3 components: `Button`, `FilledTonalButton`, `OutlinedButton`, `ElevatedButton`, `TextButton`. Removed `variant`, `text`, `leadingIcon`, `trailingIcon`, `color`, `elementColors`, `disabled` props. ([#43859](https://github.com/expo/expo/pull/43859) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `IconButton` into separate M3 components: `IconButton`, `FilledIconButton`, `FilledTonalIconButton`, `OutlinedIconButton`. Removed `variant`, `color`, `elementColors`, `disabled`, `onPress` props. ([#43859](https://github.com/expo/expo/pull/43859) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Chip` to match native Material3 API: split into `AssistChip`/`FilterChip`/`InputChip`/`SuggestionChip` with slot-based content, added `colors`/`elevation`/`border` props. Merged `FilterChip` into `Chip` module. ([#43900](https://github.com/expo/expo/pull/43900) by [@nishan](https://github.com/intergalacticspacehighway))
-- [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
