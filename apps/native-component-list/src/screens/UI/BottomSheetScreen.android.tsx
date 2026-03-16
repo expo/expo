@@ -43,80 +43,129 @@ export default function BottomSheetScreen() {
     <Host style={{ flex: 1 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
         <Card modifiers={[fillMaxWidth()]}>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
-            <ComposeText>Configurable Sheet</ComposeText>
-            <ComposeText>Toggle props below, then open the sheet.</ComposeText>
+          <Column verticalArrangement={{ spacedBy: 4 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText style={{ typography: 'titleMedium' }}>Configurable Sheet</ComposeText>
+            <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
+              Toggle props below, then open the sheet.
+            </ComposeText>
 
-            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
-              <ComposeText>skipPartiallyExpanded</ComposeText>
-              <Switch
-                variant="switch"
-                value={skipPartiallyExpanded}
-                onValueChange={setSkipPartiallyExpanded}
-              />
-            </Row>
-            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
-              <ComposeText>showDragHandle</ComposeText>
-              <Switch variant="switch" value={showDragHandle} onValueChange={setShowDragHandle} />
-            </Row>
-            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
-              <ComposeText>useCustomDragHandle</ComposeText>
-              <Switch
-                variant="switch"
-                value={useCustomDragHandle}
-                onValueChange={setUseCustomDragHandle}
-              />
-            </Row>
-            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
-              <ComposeText>sheetGesturesEnabled</ComposeText>
-              <Switch
-                variant="switch"
-                value={sheetGesturesEnabled}
-                onValueChange={setSheetGesturesEnabled}
-              />
-            </Row>
-            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
-              <ComposeText>shouldDismissOnBackPress</ComposeText>
-              <Switch
-                variant="switch"
-                value={shouldDismissOnBackPress}
-                onValueChange={setShouldDismissOnBackPress}
-              />
-            </Row>
-            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
-              <ComposeText>shouldDismissOnClickOutside</ComposeText>
-              <Switch
-                variant="switch"
-                value={shouldDismissOnClickOutside}
-                onValueChange={setShouldDismissOnClickOutside}
-              />
-            </Row>
-            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
-              <ComposeText>useCustomColors</ComposeText>
-              <Switch variant="switch" value={useCustomColors} onValueChange={setUseCustomColors} />
-            </Row>
+            <Column verticalArrangement={{ spacedBy: 0 }} modifiers={[padding(0, 8, 0, 0)]}>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>
+                  Skip partially expanded
+                </ComposeText>
+                <Switch
+                  variant="switch"
+                  value={skipPartiallyExpanded}
+                  onValueChange={setSkipPartiallyExpanded}
+                />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>Show drag handle</ComposeText>
+                <Switch
+                  variant="switch"
+                  value={showDragHandle}
+                  onValueChange={setShowDragHandle}
+                />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>
+                  Use custom drag handle
+                </ComposeText>
+                <Switch
+                  variant="switch"
+                  value={useCustomDragHandle}
+                  onValueChange={setUseCustomDragHandle}
+                />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>
+                  Sheet gestures enabled
+                </ComposeText>
+                <Switch
+                  variant="switch"
+                  value={sheetGesturesEnabled}
+                  onValueChange={setSheetGesturesEnabled}
+                />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>
+                  Dismiss on back press
+                </ComposeText>
+                <Switch
+                  variant="switch"
+                  value={shouldDismissOnBackPress}
+                  onValueChange={setShouldDismissOnBackPress}
+                />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>
+                  Dismiss on click outside
+                </ComposeText>
+                <Switch
+                  variant="switch"
+                  value={shouldDismissOnClickOutside}
+                  onValueChange={setShouldDismissOnClickOutside}
+                />
+              </Row>
+              <Row
+                modifiers={[fillMaxWidth()]}
+                horizontalArrangement="spaceBetween"
+                verticalAlignment="center">
+                <ComposeText style={{ typography: 'bodyMedium' }}>Use custom colors</ComposeText>
+                <Switch
+                  variant="switch"
+                  value={useCustomColors}
+                  onValueChange={setUseCustomColors}
+                />
+              </Row>
+            </Column>
 
-            <Button onClick={() => setShowSheet(true)}>
+            <Button onClick={() => setShowSheet(true)} modifiers={[fillMaxWidth()]}>
               <ComposeText>Open Sheet</ComposeText>
             </Button>
           </Column>
         </Card>
 
         <Card modifiers={[fillMaxWidth()]}>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
-            <ComposeText>React Native Content</ComposeText>
-            <ComposeText>Sheet with interactive RN views inside.</ComposeText>
-            <Button onClick={() => setShowRNContent(true)}>
+          <Column verticalArrangement={{ spacedBy: 4 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText style={{ typography: 'titleMedium' }}>React Native Content</ComposeText>
+            <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
+              Sheet with interactive RN views inside.
+            </ComposeText>
+            <Button onClick={() => setShowRNContent(true)} modifiers={[fillMaxWidth()]}>
               <ComposeText>Open RN Content Sheet</ComposeText>
             </Button>
           </Column>
         </Card>
 
         <Card modifiers={[fillMaxWidth()]}>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
-            <ComposeText>React Native Content with flex: 1</ComposeText>
-            <ComposeText>Sheet with RN views that fill available space.</ComposeText>
-            <Button onClick={() => setShowRNContentWithFlex(true)}>
+          <Column verticalArrangement={{ spacedBy: 4 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText style={{ typography: 'titleMedium' }}>
+              React Native Content with flex: 1
+            </ComposeText>
+            <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
+              Sheet with RN views that fill available space.
+            </ComposeText>
+            <Button onClick={() => setShowRNContentWithFlex(true)} modifiers={[fillMaxWidth()]}>
               <ComposeText>Open Flex Content Sheet</ComposeText>
             </Button>
           </Column>
