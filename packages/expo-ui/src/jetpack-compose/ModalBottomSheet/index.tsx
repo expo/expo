@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import React from 'react';
 import { type ColorValue, type NativeSyntheticEvent } from 'react-native';
 
-import { type ModifierConfig, type ViewEvent } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotNativeViewProps = {

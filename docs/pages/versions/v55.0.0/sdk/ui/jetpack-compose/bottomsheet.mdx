@@ -29,12 +29,16 @@ export default function BasicBottomSheetExample() {
 
   return (
     <Host matchContents>
-      <Button onPress={() => setVisible(true)}>Open Sheet</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Sheet</Text>
+      </Button>
       <ModalBottomSheet isPresented={visible} onIsPresentedChange={setVisible}>
         <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
           <Text>Hello from bottom sheet!</Text>
           <Text>You can add more content here.</Text>
-          <Button onPress={() => setVisible(false)}>Close</Button>
+          <Button onClick={() => setVisible(false)}>
+            <Text>Close</Text>
+          </Button>
         </Column>
       </ModalBottomSheet>
     </Host>
@@ -54,7 +58,9 @@ export default function FullScreenBottomSheetExample() {
 
   return (
     <Host matchContents>
-      <Button onPress={() => setVisible(true)}>Open Full Sheet</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Full Sheet</Text>
+      </Button>
       <ModalBottomSheet
         isPresented={visible}
         onIsPresentedChange={setVisible}
@@ -73,7 +79,9 @@ export default function FullScreenBottomSheetExample() {
           <Text>Item 8</Text>
           <Text>Item 9</Text>
           <Text>Item 10</Text>
-          <Button onPress={() => setVisible(false)}>Close</Button>
+          <Button onClick={() => setVisible(false)}>
+            <Text>Close</Text>
+          </Button>
         </Column>
       </ModalBottomSheet>
     </Host>
@@ -95,7 +103,9 @@ export default function CustomColorsExample() {
 
   return (
     <Host matchContents>
-      <Button onPress={() => setVisible(true)}>Open Colored Sheet</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Colored Sheet</Text>
+      </Button>
       <ModalBottomSheet
         isPresented={visible}
         onIsPresentedChange={setVisible}
@@ -105,7 +115,9 @@ export default function CustomColorsExample() {
         <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
           <Text>Custom styled bottom sheet.</Text>
           <Text>Dark container with a purple scrim overlay.</Text>
-          <Button onPress={() => setVisible(false)}>Close</Button>
+          <Button onClick={() => setVisible(false)}>
+            <Text>Close</Text>
+          </Button>
         </Column>
       </ModalBottomSheet>
     </Host>
@@ -119,7 +131,7 @@ Use `ModalBottomSheet.DragHandle` slot to provide a custom drag handle, or set `
 
 ```tsx CustomDragHandleExample.tsx
 import { useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, Box } from '@expo/ui/jetpack-compose';
+import { Host, ModalBottomSheet, Button, Column, Box, Text } from '@expo/ui/jetpack-compose';
 import {
   background,
   clip,
@@ -135,7 +147,9 @@ export default function CustomDragHandleExample() {
 
   return (
     <Host matchContents>
-      <Button onPress={() => setVisible(true)}>Open Custom Handle Sheet</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Custom Handle Sheet</Text>
+      </Button>
       <ModalBottomSheet isPresented={visible} onIsPresentedChange={setVisible}>
         <ModalBottomSheet.DragHandle>
           <Column horizontalAlignment="center" modifiers={[fillMaxWidth(), padding(0, 12, 0, 8)]}>
@@ -143,7 +157,9 @@ export default function CustomDragHandleExample() {
           </Column>
         </ModalBottomSheet.DragHandle>
         <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
-          <Button onPress={() => setVisible(false)}>Close</Button>
+          <Button onClick={() => setVisible(false)}>
+            <Text>Close</Text>
+          </Button>
         </Column>
       </ModalBottomSheet>
     </Host>
@@ -165,7 +181,9 @@ export default function NonDismissibleExample() {
 
   return (
     <Host matchContents>
-      <Button onPress={() => setVisible(true)}>Open Non-Dismissible Sheet</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Non-Dismissible Sheet</Text>
+      </Button>
       <ModalBottomSheet
         isPresented={visible}
         onIsPresentedChange={setVisible}
@@ -177,7 +195,9 @@ export default function NonDismissibleExample() {
         <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
           <Text>This sheet cannot be dismissed by swiping, back press, or tapping outside.</Text>
           <Text>Only the button below will close it.</Text>
-          <Button onPress={() => setVisible(false)}>Close</Button>
+          <Button onClick={() => setVisible(false)}>
+            <Text>Close</Text>
+          </Button>
         </Column>
       </ModalBottomSheet>
     </Host>
