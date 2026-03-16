@@ -68,11 +68,7 @@ export default function BottomSheetScreen() {
                 horizontalArrangement="spaceBetween"
                 verticalAlignment="center">
                 <ComposeText style={{ typography: 'bodyMedium' }}>Show drag handle</ComposeText>
-                <Switch
-                  variant="switch"
-                  value={showDragHandle}
-                  onValueChange={setShowDragHandle}
-                />
+                <Switch variant="switch" value={showDragHandle} onValueChange={setShowDragHandle} />
               </Row>
               <Row
                 modifiers={[fillMaxWidth()]}
