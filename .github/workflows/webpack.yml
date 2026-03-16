@@ -1,28 +1,196 @@
-name: NodeJS with Webpack
+# =====================================================
+# nodejs-webpack.yml - Workflow CI/CD pour projet Node.js + Webpack (Bulonet)
+# Auteur : Équipe Bulonet
+# Date : 2025
+# =====================================================
 
+name: Node.js with Webpack CI/CD
+
+# 🌍 Déclencheurs
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch: {}  # Permet un déclenchement manuel
+
+# ⏳ Annulation des runs en cours sur la même branche/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 📦 Variables d'environnement globales
+env:
+  NODE_VERSION: 22          # Version par défaut pour les jobs non matriciels
+  CACHE_KEY_PREFIX: node_modules
 
 jobs:
-  build:
+  # ------------------------------------------------------------------
+  # Job 1 : Analyse statique et linting
+  # ------------------------------------------------------------------
+  lint:
+    name: 🔍 Lint
     runs-on: ubuntu-latest
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
 
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('package-lock.json') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: 🧹 Run linter
+        run: npm run lint          # Assurez-vous que "lint" est défini dans package.json
+
+  # ------------------------------------------------------------------
+  # Job 2 : Tests unitaires avec couverture
+  # ------------------------------------------------------------------
+  test:
+    name: 🧪 Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]   # 📌 Versions de Node à tester
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: ♻️ Restore cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('package-lock.json') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: 🧪 Run tests with coverage
+        run: npm run test:coverage    # Commande personnalisée : ex. jest --coverage
+
+      - name: 📊 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info  # Chemin du rapport de couverture
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+  # ------------------------------------------------------------------
+  # Job 3 : Build avec Webpack
+  # ------------------------------------------------------------------
+  build:
+    name: 🏗️ Build (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    needs: [lint, test]        # Attend que lint et test réussissent
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-
     steps:
-    - uses: actions/checkout@v4
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: ⬢ Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Build
-      run: |
-        npm install
-        npx webpack
+      - name: ♻️ Restore cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('package-lock.json') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: 🔨 Build with Webpack
+        run: npm run build          # Commande définie dans package.json (ex: webpack --mode production)
+
+      - name: 📦 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webpack-bundle-${{ matrix.node-version }}
+          path: dist/               # Dossier de sortie de Webpack (à adapter)
+          retention-days: 7
+
+  # ------------------------------------------------------------------
+  # Job 4 : Analyse de sécurité (npm audit)
+  # ------------------------------------------------------------------
+  security:
+    name: 🛡️ Security Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 🔍 Run npm audit
+        run: npm audit --production
+        continue-on-error: true     # Ne pas bloquer le workflow, mais notifier
+
+  # ------------------------------------------------------------------
+  # Job 5 : Déploiement (exemple sur GitHub Pages)
+  # ------------------------------------------------------------------
+  deploy:
+    name: 🚀 Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'   # Déploiement uniquement sur main
+    steps:
+      - name: 📦 Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: webpack-bundle-22.x        # On prend le build avec Node 22 (par exemple)
+          path: dist
+
+      - name: 🌐 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          keep_files: false
+
+  # ------------------------------------------------------------------
+  # Job 6 : Notification Slack en cas d'échec sur main
+  # ------------------------------------------------------------------
+  notify:
+    name: 🔔 Notify Slack
+    runs-on: ubuntu-latest
+    needs: [lint, test, build, security, deploy]
+    if: failure() && github.ref == 'refs/heads/main'
+    steps:
+      - name: 💬 Send Slack notification
+        uses: 8398a/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}  # À configurer
