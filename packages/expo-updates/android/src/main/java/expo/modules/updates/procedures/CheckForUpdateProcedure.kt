@@ -43,6 +43,8 @@ class CheckForUpdateProcedure(
     try {
       val updateResponse = downloadRemoteUpdate(extraHeaders)
       processUpdatesResponse(updateResponse, procedureContext, embeddedUpdate)
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))
       callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e))

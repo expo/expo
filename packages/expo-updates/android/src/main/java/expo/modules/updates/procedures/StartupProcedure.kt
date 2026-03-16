@@ -21,6 +21,7 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import expo.modules.updates.statemachine.UpdatesStateValue
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -242,7 +243,7 @@ class StartupProcedure(
           return
         }
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
-        val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate)
+        val remoteLoader = RemoteLoader(context, updatesConfiguration, logger, databaseHolder.database, fileDownloader, updatesDirectory, launchedUpdate, procedureScope)
         procedureScope.launch {
           try {
             val loaderResult = remoteLoader.load { updateResponse ->
@@ -267,6 +268,8 @@ class StartupProcedure(
                 ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               }
             )
+          } catch (e: CancellationException) {
+            throw e
           } catch (e: Exception) {
             logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)

@@ -14,6 +14,7 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import java.io.File
 
 class FetchUpdateProcedure(
@@ -25,6 +26,7 @@ class FetchUpdateProcedure(
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val launchedUpdate: UpdateEntity?,
+  private val scope: CoroutineScope,
   private val callback: (IUpdatesController.FetchUpdateResult) -> Unit
 ) : StateMachineProcedure() {
   override val loggerTimerLabel = "timer-fetch-update"
@@ -36,6 +38,8 @@ class FetchUpdateProcedure(
     try {
       val loaderResult = startRemoteLoader(database, procedureContext)
       processSuccessLoaderResult(loaderResult, procedureContext)
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       logger.error("Failed to download new update", e)
       procedureContext.processStateEvent(
@@ -55,7 +59,8 @@ class FetchUpdateProcedure(
       database,
       fileDownloader,
       updatesDirectory,
-      launchedUpdate
+      launchedUpdate,
+      scope
     )
 
     remoteLoader.assetLoadProgressBlock = { progress ->
