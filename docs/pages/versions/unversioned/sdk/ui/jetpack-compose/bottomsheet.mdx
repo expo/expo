@@ -167,6 +167,98 @@ export default function CustomDragHandleExample() {
 }
 ```
 
+### React Native content inside a bottom sheet
+
+Use `RNHostView` to embed interactive React Native views inside a Compose bottom sheet. This lets you mix Compose layout with RN components like `Pressable` and `Text`.
+
+```tsx RNContentBottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import { padding } from '@expo/ui/jetpack-compose/modifiers';
+import { Pressable, Text as RNText, View } from 'react-native';
+
+export default function RNContentBottomSheetExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open RN Content Sheet</Text>
+      </Button>
+      <ModalBottomSheet
+        isPresented={visible}
+        onIsPresentedChange={setVisible}
+        skipPartiallyExpanded={false}>
+        <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+          <Text>Mixing Compose + RN in a Bottom Sheet</Text>
+          <RNHostView matchContents>
+            <View>
+              <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                React Native Content
+              </RNText>
+              <Pressable
+                style={{
+                  backgroundColor: '#007AFF',
+                  padding: 12,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                }}
+                onPress={() => setVisible(false)}>
+                <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+              </Pressable>
+            </View>
+          </RNHostView>
+        </Column>
+      </ModalBottomSheet>
+    </Host>
+  );
+}
+```
+
+### React Native content with flex
+
+Use `RNHostView` without `matchContents` to let the RN view fill the remaining space inside the sheet. Combine with a fixed `height` modifier on the parent `Column` to control the sheet size.
+
+```tsx FlexRNContentExample.tsx
+import { useState } from 'react';
+import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import { height, padding } from '@expo/ui/jetpack-compose/modifiers';
+import { Text as RNText, View } from 'react-native';
+
+export default function FlexRNContentExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Flex Content Sheet</Text>
+      </Button>
+      <ModalBottomSheet
+        isPresented={visible}
+        onIsPresentedChange={setVisible}
+        skipPartiallyExpanded>
+        <Column modifiers={[height(400), padding(16, 16, 16, 16)]}>
+          <Text>RN View with flex: 1</Text>
+          <RNHostView>
+            <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+              <RNText
+                style={{
+                  color: 'white',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  padding: 16,
+                }}>
+                React Native Content (flex: 1)
+              </RNText>
+            </View>
+          </RNHostView>
+        </Column>
+      </ModalBottomSheet>
+    </Host>
+  );
+}
+```
+
 ### Non-dismissible sheet
 
 Combine `properties`, `sheetGesturesEnabled` to create a sheet that can only be closed programmatically.
