@@ -166,6 +166,8 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/latest/sdk/ui/jetpack-compose/segmentedbutton/',
   '/versions/unversioned/sdk/ui/jetpack-compose/picker/':
     '/versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/picker/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton/',
 
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
