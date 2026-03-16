@@ -1,13 +1,31 @@
 import { requireNativeView } from 'expo';
-import { ColorValue } from 'react-native';
+import { type ColorValue } from 'react-native';
 
-import { ModifierConfig } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * Stroke cap style for progress indicators.
  */
 export type StrokeCap = 'round' | 'butt' | 'square';
+
+function transformProps<T extends { modifiers?: ModifierConfig[] }>(props: T): T {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  } as T;
+}
+
+function createProgressComponent<P extends { modifiers?: ModifierConfig[] }>(
+  viewName: string
+): React.ComponentType<P> {
+  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  return function ProgressComponent(props: P) {
+    return <NativeView {...transformProps(props)} />;
+  };
+}
 
 // region LinearProgressIndicator
 
@@ -39,26 +57,13 @@ export type LinearProgressIndicatorProps = {
   modifiers?: ModifierConfig[];
 };
 
-const LinearProgressIndicatorNativeView: React.ComponentType<LinearProgressIndicatorProps> =
-  requireNativeView('ExpoUI', 'LinearProgressIndicatorView');
-
-function transformLinearProps(props: LinearProgressIndicatorProps): LinearProgressIndicatorProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
-}
-
 /**
  * A linear progress indicator that displays progress in a horizontal bar.
  *
  * Matches the Jetpack Compose `LinearProgressIndicator`.
  */
-export function LinearProgressIndicator(props: LinearProgressIndicatorProps) {
-  return <LinearProgressIndicatorNativeView {...transformLinearProps(props)} />;
-}
+export const LinearProgressIndicator =
+  createProgressComponent<LinearProgressIndicatorProps>('LinearProgressIndicatorView');
 
 // endregion
 
@@ -96,28 +101,13 @@ export type CircularProgressIndicatorProps = {
   modifiers?: ModifierConfig[];
 };
 
-const CircularProgressIndicatorNativeView: React.ComponentType<CircularProgressIndicatorProps> =
-  requireNativeView('ExpoUI', 'CircularProgressIndicatorView');
-
-function transformCircularProps(
-  props: CircularProgressIndicatorProps
-): CircularProgressIndicatorProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
-}
-
 /**
  * A circular progress indicator that displays progress in a circular format.
  *
  * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
-export function CircularProgressIndicator(props: CircularProgressIndicatorProps) {
-  return <CircularProgressIndicatorNativeView {...transformCircularProps(props)} />;
-}
+export const CircularProgressIndicator =
+  createProgressComponent<CircularProgressIndicatorProps>('CircularProgressIndicatorView');
 
 // endregion
 
@@ -142,28 +132,13 @@ export type LinearWavyProgressIndicatorProps = {
   modifiers?: ModifierConfig[];
 };
 
-const LinearWavyProgressIndicatorNativeView: React.ComponentType<LinearWavyProgressIndicatorProps> =
-  requireNativeView('ExpoUI', 'LinearWavyProgressIndicatorView');
-
-function transformLinearWavyProps(
-  props: LinearWavyProgressIndicatorProps
-): LinearWavyProgressIndicatorProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
-}
-
 /**
  * A linear progress indicator with wavy animation style.
  *
  * Matches the Jetpack Compose `LinearWavyProgressIndicator`.
  */
-export function LinearWavyProgressIndicator(props: LinearWavyProgressIndicatorProps) {
-  return <LinearWavyProgressIndicatorNativeView {...transformLinearWavyProps(props)} />;
-}
+export const LinearWavyProgressIndicator =
+  createProgressComponent<LinearWavyProgressIndicatorProps>('LinearWavyProgressIndicatorView');
 
 // endregion
 
@@ -188,27 +163,12 @@ export type CircularWavyProgressIndicatorProps = {
   modifiers?: ModifierConfig[];
 };
 
-const CircularWavyProgressIndicatorNativeView: React.ComponentType<CircularWavyProgressIndicatorProps> =
-  requireNativeView('ExpoUI', 'CircularWavyProgressIndicatorView');
-
-function transformCircularWavyProps(
-  props: CircularWavyProgressIndicatorProps
-): CircularWavyProgressIndicatorProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
-}
-
 /**
  * A circular progress indicator with wavy animation style.
  *
  * Matches the Jetpack Compose `CircularWavyProgressIndicator`.
  */
-export function CircularWavyProgressIndicator(props: CircularWavyProgressIndicatorProps) {
-  return <CircularWavyProgressIndicatorNativeView {...transformCircularWavyProps(props)} />;
-}
+export const CircularWavyProgressIndicator =
+  createProgressComponent<CircularWavyProgressIndicatorProps>('CircularWavyProgressIndicatorView');
 
 // endregion

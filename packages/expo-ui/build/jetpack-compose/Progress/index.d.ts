@@ -1,5 +1,5 @@
-import { ColorValue } from 'react-native';
-import { ModifierConfig } from '../../types';
+import { type ColorValue } from 'react-native';
+import { type ModifierConfig } from '../../types';
 /**
  * Stroke cap style for progress indicators.
  */
@@ -36,7 +36,7 @@ export type LinearProgressIndicatorProps = {
  *
  * Matches the Jetpack Compose `LinearProgressIndicator`.
  */
-export declare function LinearProgressIndicator(props: LinearProgressIndicatorProps): import("react").JSX.Element;
+export declare const LinearProgressIndicator: import("react").ComponentType<LinearProgressIndicatorProps>;
 export type CircularProgressIndicatorProps = {
     /**
      * The current progress value between `0` and `1`. Omit for indeterminate.
@@ -73,7 +73,7 @@ export type CircularProgressIndicatorProps = {
  *
  * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
-export declare function CircularProgressIndicator(props: CircularProgressIndicatorProps): import("react").JSX.Element;
+export declare const CircularProgressIndicator: import("react").ComponentType<CircularProgressIndicatorProps>;
 export type LinearWavyProgressIndicatorProps = {
     /**
      * The current progress value between `0` and `1`. Omit for indeterminate.
@@ -97,7 +97,7 @@ export type LinearWavyProgressIndicatorProps = {
  *
  * Matches the Jetpack Compose `LinearWavyProgressIndicator`.
  */
-export declare function LinearWavyProgressIndicator(props: LinearWavyProgressIndicatorProps): import("react").JSX.Element;
+export declare const LinearWavyProgressIndicator: import("react").ComponentType<LinearWavyProgressIndicatorProps>;
 export type CircularWavyProgressIndicatorProps = {
     /**
      * The current progress value between `0` and `1`. Omit for indeterminate.
@@ -121,5 +121,5 @@ export type CircularWavyProgressIndicatorProps = {
  *
  * Matches the Jetpack Compose `CircularWavyProgressIndicator`.
  */
-export declare function CircularWavyProgressIndicator(props: CircularWavyProgressIndicatorProps): import("react").JSX.Element;
+export declare const CircularWavyProgressIndicator: import("react").ComponentType<CircularWavyProgressIndicatorProps>;
 //# sourceMappingURL=index.d.ts.map
