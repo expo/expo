@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Automatically add `target` for `expo-widgets` `Button`.
-
 ### 🐛 Bug fixes
 
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
