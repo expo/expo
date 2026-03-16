@@ -8,6 +8,7 @@ export { EventEmitter, type EventSubscription } from './EventEmitter';
 export { NativeModule } from './NativeModule';
 export { SharedObject } from './SharedObject';
 export { SharedRef } from './SharedRef';
+export type { Callback } from './Callback';
 
 export { default as Platform } from './Platform';
 export { default as uuid } from './uuid';

@@ -28,6 +28,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::READABLE_ARRAY, ReadableNativeArrayFrontendConverter);
   RegisterConverter(CppType::VIEW_TAG, ViewTagFrontendConverter);
   RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
+  RegisterConverter(CppType::JS_CALLBACK, JSCallbackFrontendConverter);
   RegisterConverter(CppType::ANY, AnyFrontendConvert);
 
 #if WORKLETS_ENABLED

@@ -18,6 +18,13 @@ export const ModulesCoreScreens = [
       return optionalRequire(() => require('./ExpoModulesScreen'));
     },
   },
+  {
+    name: 'JSCallback',
+    route: 'modulescore/jscallback',
+    getComponent() {
+      return optionalRequire(() => require('./JSCallbackScreen'));
+    },
+  },
 ];
 
 if (!isRunningInExpoGo()) {
