@@ -45,8 +45,8 @@ You can configure `expo-status-bar` using its built-in [config plugin](/config-p
       [
         "expo-status-bar",
         {
-          "style": "dark",
-          "hidden": false
+          "hidden": false,
+          "style": "dark"
         }
       ]
     ]
@@ -59,15 +59,15 @@ You can configure `expo-status-bar` using its built-in [config plugin](/config-p
 <ConfigPluginProperties
   properties={[
     {
-      name: 'style',
-      description:
-        'Determines which style the status bar starts with. Accepts `light` and `dark` as values.',
-      default: 'undefined',
-    },
-    {
       name: 'hidden',
       description:
         'Determines whether the status bar starts hidden. Accepts `true` and `false` as values.',
+      default: 'undefined',
+    },
+    {
+      name: 'style',
+      description:
+        'Determines which style the status bar starts with. Accepts `light` and `dark` as values.',
       default: 'undefined',
     },
   ]}
