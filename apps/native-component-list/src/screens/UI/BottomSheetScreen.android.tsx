@@ -96,7 +96,9 @@ export default function BottomSheetScreen() {
               <Switch variant="switch" value={useCustomColors} onValueChange={setUseCustomColors} />
             </Row>
 
-            <Button onPress={() => setShowSheet(true)}>Open Sheet</Button>
+            <Button onClick={() => setShowSheet(true)}>
+              <ComposeText>Open Sheet</ComposeText>
+            </Button>
           </Column>
         </Card>
 
@@ -104,7 +106,9 @@ export default function BottomSheetScreen() {
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>React Native Content</ComposeText>
             <ComposeText>Sheet with interactive RN views inside.</ComposeText>
-            <Button onPress={() => setShowRNContent(true)}>Open RN Content Sheet</Button>
+            <Button onClick={() => setShowRNContent(true)}>
+              <ComposeText>Open RN Content Sheet</ComposeText>
+            </Button>
           </Column>
         </Card>
 
@@ -112,7 +116,9 @@ export default function BottomSheetScreen() {
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>React Native Content with flex: 1</ComposeText>
             <ComposeText>Sheet with RN views that fill available space.</ComposeText>
-            <Button onPress={() => setShowRNContentWithFlex(true)}>Open Flex Content Sheet</Button>
+            <Button onClick={() => setShowRNContentWithFlex(true)}>
+              <ComposeText>Open Flex Content Sheet</ComposeText>
+            </Button>
           </Column>
         </Card>
       </LazyColumn>
@@ -134,19 +140,17 @@ export default function BottomSheetScreen() {
         })}>
         {useCustomDragHandle && (
           <ModalBottomSheet.DragHandle>
-            <Column
-              horizontalAlignment="center"
-              modifiers={[fillMaxWidth(), padding(0, 12, 0, 8)]}>
-              <Box
-                modifiers={[width(60), height(6), clip(Shapes.Circle), background('#6200EE')]}
-              />
+            <Column horizontalAlignment="center" modifiers={[fillMaxWidth(), padding(0, 12, 0, 8)]}>
+              <Box modifiers={[width(60), height(6), clip(Shapes.Circle), background('#6200EE')]} />
             </Column>
           </ModalBottomSheet.DragHandle>
         )}
         <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
           <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
             <ComposeText modifiers={[weight(1)]}>Bottom Sheet</ComposeText>
-            <Button onPress={() => setShowSheet(false)}>✕</Button>
+            <Button onClick={() => setShowSheet(false)}>
+              <ComposeText>✕</ComposeText>
+            </Button>
           </Row>
           <ComposeText>This sheet reflects the toggled props above.</ComposeText>
           <ComposeText>When skipPartiallyExpanded is off, drag up to expand.</ComposeText>
@@ -166,7 +170,9 @@ export default function BottomSheetScreen() {
           <ComposeText>Item 13</ComposeText>
           <ComposeText>Item 14</ComposeText>
           <ComposeText>Item 15</ComposeText>
-          <Button onPress={() => setShowSheet(false)}>Close</Button>
+          <Button onClick={() => setShowSheet(false)}>
+            <ComposeText>Close</ComposeText>
+          </Button>
         </Column>
       </ModalBottomSheet>
 

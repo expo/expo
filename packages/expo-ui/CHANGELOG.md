@@ -4,8 +4,10 @@
 
 ### 🛠 Breaking changes
 
+- [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43896](https://github.com/expo/expo/pull/43896) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Split `Button` into separate M3 components: `Button`, `FilledTonalButton`, `OutlinedButton`, `ElevatedButton`, `TextButton`. Removed `variant`, `text`, `leadingIcon`, `trailingIcon`, `color`, `elementColors`, `disabled` props. ([#43859](https://github.com/expo/expo/pull/43859) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Split `IconButton` into separate M3 components: `IconButton`, `FilledIconButton`, `FilledTonalIconButton`, `OutlinedIconButton`. Removed `variant`, `color`, `elementColors`, `disabled`, `onPress` props. ([#43859](https://github.com/expo/expo/pull/43859) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Chip` to match native Material3 API: split into `AssistChip`/`FilterChip`/`InputChip`/`SuggestionChip` with slot-based content, added `colors`/`elevation`/`border` props. Merged `FilterChip` into `Chip` module. ([#43900](https://github.com/expo/expo/pull/43900) by [@nishan](https://github.com/intergalacticspacehighway))
-- [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Slider` to match native Material3 API: renamed `elementColors` to `colors`, removed `color` convenience prop. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
@@ -13,11 +15,13 @@
 
 ### 🎉 New features
 
+- [Android] Added `DatePickerDialog` and `TimePickerDialog` components, and `selectableDates` prop to `DateTimePicker`. ([#43895](https://github.com/expo/expo/pull/43895) by [@vonovak](https://github.com/vonovak))
 - [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `enabled`, `onValueChangeFinished`, and `Slider.Thumb`/`Slider.Track` slot support to `Slider` component. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added `graphicsLayer` modifier and animation helpers for per-value animation in it. Added `indication` option to `clickable` modifier to control ripple effects. ([#43655](https://github.com/expo/expo/pull/43655) by [@vonovak](https://github.com/vonovak))
 - [Android] Added border color customization for `Switch` and `Checkbox` components. ([#43770](https://github.com/expo/expo/pull/43770) by [@liestig](https://github.com/liestig))
 - [iOS] Added `defaultScrollAnchor` modifier for controlling initial scroll position (iOS 17+). ([#43914](https://github.com/expo/expo/pull/43914) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Added `defaultScrollAnchorForRole` modifier for per-role scroll anchor control (iOS 18+). ([#43923](https://github.com/expo/expo/pull/43923) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added `rotation3DEffect` modifier for 3D rotation transforms ([#43640](https://github.com/expo/expo/pull/43640) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `ControlGroup` component. ([#43581](https://github.com/expo/expo/pull/43581) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] detect FAB in HorizontalFloatingToolbar ([#43601](https://github.com/expo/expo/pull/43601) by [@Ubax](https://github.com/Ubax))

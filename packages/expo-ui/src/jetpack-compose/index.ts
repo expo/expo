@@ -19,7 +19,6 @@ export * from './Progress';
 export * from './Slider';
 export * from './Spacer';
 export * from './Switch';
-export * from './TextButton';
 export * from './TextInput';
 export * from './ToggleButton';
 export * from './Shape';

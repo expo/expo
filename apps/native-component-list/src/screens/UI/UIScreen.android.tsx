@@ -19,11 +19,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Card component',
+    route: 'ui/card',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CardScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ButtonScreen'));
+    },
+  },
+  {
+    name: 'IconButton component',
+    route: 'ui/icon-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./IconButtonScreen'));
     },
   },
   {

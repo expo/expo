@@ -12,10 +12,16 @@ import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.ButtonContent
 import expo.modules.ui.button.ButtonPressedEvent
 import expo.modules.ui.button.ButtonProps
+import expo.modules.ui.button.ElevatedButtonContent
+import expo.modules.ui.button.FilledTonalButtonContent
+import expo.modules.ui.button.OutlinedButtonContent
+import expo.modules.ui.button.TextButtonContent
 import expo.modules.ui.button.FloatingActionButtonContent
 import expo.modules.ui.button.FloatingActionButtonProps
 import expo.modules.ui.button.IconButtonContent
-import expo.modules.ui.button.IconButtonProps
+import expo.modules.ui.button.FilledIconButtonContent
+import expo.modules.ui.button.FilledTonalIconButtonContent
+import expo.modules.ui.button.OutlinedIconButtonContent
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
@@ -117,11 +123,60 @@ class ExpoUIModule : Module() {
       ButtonContent(props) { onButtonPressed(it) }
     }
 
+    ExpoUIView("FilledTonalButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      FilledTonalButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("OutlinedButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      OutlinedButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("ElevatedButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      ElevatedButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("TextButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      TextButtonContent(props) { onButtonPressed(it) }
+    }
+
     ExpoUIView("IconButton", events = {
       Events("onButtonPressed")
-    }) { props: IconButtonProps ->
+    }) { props: ButtonProps ->
       val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
       IconButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("FilledIconButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      FilledIconButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("FilledTonalIconButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      FilledTonalIconButtonContent(props) { onButtonPressed(it) }
+    }
+
+    ExpoUIView("OutlinedIconButton", events = {
+      Events("onButtonPressed")
+    }) { props: ButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
+      OutlinedIconButtonContent(props) { onButtonPressed(it) }
     }
 
     ExpoUIView("SliderView", events = {
@@ -143,6 +198,22 @@ class ExpoUIModule : Module() {
     }) { props: DateTimePickerProps ->
       val onDateSelected by remember { EventDispatcher<DatePickerResult>() }
       DateTimePickerContent(props) { onDateSelected(it) }
+    }
+
+    ExpoUIView("DatePickerDialogView", events = {
+      Events("onDateSelected", "onDismissRequest")
+    }) { props: DatePickerDialogProps ->
+      val onDateSelected by remember { EventDispatcher<DatePickerResult>() }
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ExpoDatePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
+    }
+
+    ExpoUIView("TimePickerDialogView", events = {
+      Events("onDateSelected", "onDismissRequest")
+    }) { props: TimePickerDialogProps ->
+      val onDateSelected by remember { EventDispatcher<DatePickerResult>() }
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ExpoTimePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
     }
 
     ExpoUIView("DropdownMenuView", events = {
@@ -255,13 +326,6 @@ class ExpoUIModule : Module() {
       FilterChipContent(props) { onNativeClick(it) }
     }
 
-    ExpoUIView("TextButtonView", events = {
-      Events("onButtonPressed")
-    }) { props: TextButtonProps ->
-      val onButtonPressed by remember { EventDispatcher<expo.modules.ui.button.ButtonPressedEvent>() }
-      TextButtonContent(props) { onButtonPressed(it) }
-    }
-
     ExpoUIView("ToggleButtonView", events = {
       Events("onCheckedChange")
     }) { props: ToggleButtonProps ->
@@ -271,6 +335,14 @@ class ExpoUIModule : Module() {
 
     ExpoUIView("CardView") { props: CardProps ->
       CardContent(props)
+    }
+
+    ExpoUIView("ElevatedCardView") { props: ElevatedCardProps ->
+      ElevatedCardContent(props)
+    }
+
+    ExpoUIView("OutlinedCardView") { props: OutlinedCardProps ->
+      OutlinedCardContent(props)
     }
 
     ExpoUIView("ListItemView") { props: ListItemProps ->
