@@ -10,6 +10,7 @@
 
 - Add support for `after(date)` dismissal policy, final content state, and `contentDate` when ending a Live Activity. ([#43472](https://github.com/expo/expo/pull/43472) by [@jakex7](https://github.com/jakex7))
 - [plugin] Add `contentMarginsDisabled`. ([#43799](https://github.com/expo/expo/pull/43799) by [@jakex7](https://github.com/jakex7))
+- Pass environment to AppIntent ([#43925](https://github.com/expo/expo/pull/43925) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -23,6 +24,7 @@
 ### 💡 Others
 
 - Remove extraneous `@expo/config-plugins` dependency ([#43452](https://github.com/expo/expo/pull/43452) by [@kitten](https://github.com/kitten))
+- Fixed build error from nightly tests. ([#43849](https://github.com/expo/expo/pull/43849) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-02-25
 

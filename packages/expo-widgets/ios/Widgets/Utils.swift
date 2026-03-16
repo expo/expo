@@ -9,7 +9,7 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
     if let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] {
       return WidgetsTimelineEntry(
         date: Date(timeIntervalSince1970: Double(timestamp) / 1000),
-        source: name,
+        name: name,
         props: props,
         entryIndex: index
       )

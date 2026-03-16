@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'AnimatedVisibility component',
+    route: 'ui/animated-visibility',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AnimatedVisibilityScreen'));
+    },
+  },
+  {
     name: 'AlertDialog component',
     route: 'ui/alert-dialog',
     options: {},
@@ -11,11 +19,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Card component',
+    route: 'ui/card',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CardScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ButtonScreen'));
+    },
+  },
+  {
+    name: 'IconButton component',
+    route: 'ui/icon-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./IconButtonScreen'));
     },
   },
   {
@@ -168,6 +192,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HorizontalFloatingToolbarScreen'));
+    },
+  },
+  {
+    name: 'Modifiers',
+    route: 'ui/modifiers',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ModifiersScreen'));
     },
   },
 ];
