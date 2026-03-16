@@ -1,6 +1,7 @@
 package expo.modules.ui
 
 import android.graphics.Color
+import android.util.Log
 import android.view.ViewGroup
 import androidx.compose.material3.MultiChoiceSegmentedButtonRowScope
 import androidx.compose.material3.SegmentedButton
@@ -104,6 +105,11 @@ fun FunctionalComposableScope.SegmentedButtonContent(
 
   val singleScope = composableScope.rowScope as? SingleChoiceSegmentedButtonRowScope
   val multiScope = composableScope.rowScope as? MultiChoiceSegmentedButtonRowScope
+
+  if (singleScope == null && multiScope == null) {
+    Log.w("ExpoUI", "SegmentedButton must be used within a SingleChoiceSegmentedButtonRow or MultiChoiceSegmentedButtonRow. It will not render on its own.")
+    return
+  }
 
   if (singleScope != null) {
     with(singleScope) {
