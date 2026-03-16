@@ -1,11 +1,13 @@
-name: Docs Website
+# =====================================================
+# docs.yml - Workflow de build, test et déploiement du site de documentation Bulonet
+# Auteur : Équipe Bulonet
+# Date : 2025
+# =====================================================
 
-defaults:
-  run:
-    shell: bash
+name: Documentation Website
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: {}                      # 🔄 Déclenchement manuel
   push:
     branches: [main]
     paths:
@@ -13,24 +15,43 @@ on:
       - '.github/workflows/docs.yml'
   pull_request:
     paths:
+      - 'docs/**'                             # 📄 Inclure les PR qui modifient la doc
       - '.github/workflows/docs.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: 22
+  AWS_DEFAULT_REGION: 'us-east-2'
+  # 🪣 Bucket principal de production
+  AWS_BUCKET_PROD: 'docs.bulonet.dev'
+  # 🧪 Bucket de preview (pour les PR)
+  AWS_BUCKET_PREVIEW: 'preview.docs.bulonet.dev'
+  # 🌐 Option pour utiliser GitHub Pages (mettre à 'true' pour activer)
+  USE_GITHUB_PAGES: false
+
 jobs:
-  docs:
+  # ------------------------------------------------------------------
+  # Job 1 : Build du site (commun à tous les déploiements)
+  # ------------------------------------------------------------------
+  build:
+    name: 🏗️ Build
     runs-on: ubuntu-22.04
+    outputs:
+      build-path: ${{ steps.set-output.outputs.build-path }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 30000
+
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -38,22 +59,28 @@ jobs:
           yarn-docs: 'true'
           yarn-tools: 'true'
           yarn-workspace: 'true'
+
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
       - name: 📝 Regenerate `unversioned` data for Docs
         run: expotools generate-docs-api-data
+
       - name: 🧶 Yarn install
         working-directory: docs
         if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
         run: yarn install --immutable
+
       - name: 🧪 Run Docs tests
         working-directory: docs
         run: yarn test
+
       - name: 🚨 Lint Docs website code
         working-directory: docs
         env:
           NODE_ENV: production
         run: yarn lint --max-warnings 0
+
       - name: 💬 Lint Docs website content
         uses: errata-ai/vale-action@reviewdog
         with:
@@ -62,25 +89,161 @@ jobs:
           files: 'docs/pages'
           vale_flags: '--config=./docs/.vale.ini'
           fail_on_error: true
-      - name: 🏗️ Build Docs website for deploy
+
+      - name: 🏗️ Build Docs website
         working-directory: docs
         run: yarn export
         timeout-minutes: 20
+
       - name: 🔗 Lint pages links
         working-directory: docs
         run: yarn lint-links --quiet
-      - name: 🚀 Deploy Docs website
-        working-directory: docs
-        if: ${{ github.event.ref == 'refs/heads/main' }}
-        run: ./deploy.sh
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-2'
-          AWS_BUCKET: 'docs.expo.dev'
-      - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
-        if: failure() && github.event.ref == 'refs/heads/main'
+
+      # 📦 Sauvegarde du site généré pour les jobs suivants
+      - name: 📦 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-build
+          path: docs/out          # Chemin de sortie du build (à adapter si nécessaire)
+          retention-days: 7
+
+      - name: 📍 Set output path
+        id: set-output
+        run: echo "build-path=docs/out" >> $GITHUB_OUTPUT
+
+  # ------------------------------------------------------------------
+  # Job 2 : Déploiement preview (uniquement pour les PR)
+  # ------------------------------------------------------------------
+  deploy-preview:
+    name: 🚀 Deploy Preview
+    needs: build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-build
+          path: ${{ needs.build.outputs.build-path }}
+
+      # 🔐 Configuration AWS (si on utilise S3)
+      - name: 🔐 Configure AWS credentials
+        if: env.USE_GITHUB_PAGES == 'false'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      # 🪣 Déploiement sur S3 preview
+      - name: 🪣 Deploy to S3 preview
+        if: env.USE_GITHUB_PAGES == 'false'
+        working-directory: ${{ needs.build.outputs.build-path }}
+        run: |
+          aws s3 sync . s3://${{ env.AWS_BUCKET_PREVIEW }}/pr-${{ github.event.number }}/ \
+            --delete --cache-control max-age=300
+
+      # 🌐 Alternative GitHub Pages
+      - name: 🌐 Deploy to GitHub Pages preview
+        if: env.USE_GITHUB_PAGES == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ needs.build.outputs.build-path }}
+          destination_dir: pr-${{ github.event.number }}
+          keep_files: true
+
+      # 💬 Commenter la PR avec l'URL de preview
+      - name: 💬 Comment PR with preview URL
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            🚀 **Preview de la documentation** déployée avec succès !
+            - 🌐 **URL** : ${{ env.USE_GITHUB_PAGES == 'true' && format('https://{0}.github.io/{1}/pr-{2}', github.repository_owner, github.event.repository.name, github.event.number) || format('http://{0}.s3-website.{1}.amazonaws.com/pr-{2}', env.AWS_BUCKET_PREVIEW, env.AWS_DEFAULT_REGION, github.event.number) }}
+            - ⏱️ Expiration : 7 jours (configuration actuelle)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ------------------------------------------------------------------
+  # Job 3 : Audit Lighthouse (performances, SEO, accessibilité)
+  # ------------------------------------------------------------------
+  lighthouse:
+    name: 🔦 Lighthouse Audit
+    needs: [build, deploy-preview]
+    if: always() && github.event_name == 'pull_request'   # Sur PR après déploiement preview
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 🔍 Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            ${{ env.USE_GITHUB_PAGES == 'true' && format('https://{0}.github.io/{1}/pr-{2}', github.repository_owner, github.event.repository.name, github.event.number) || format('http://{0}.s3-website.{1}.amazonaws.com/pr-{2}', env.AWS_BUCKET_PREVIEW, env.AWS_DEFAULT_REGION, github.event.number) }}
+          budgetPath: ./docs/lighthouse-budget.json   # 📊 Fichier de budget (optionnel)
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 3
+          configPath: ./docs/lighthouserc.json        # ⚙️ Configuration personnalisée
+
+      - name: 📝 Comment PR with Lighthouse results
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            📊 **Rapport Lighthouse** pour la preview :
+            Consultez les résultats détaillés sur [Lighthouse Report](${{ steps.lighthouse.outputs.links }})
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ------------------------------------------------------------------
+  # Job 4 : Déploiement production (uniquement sur main)
+  # ------------------------------------------------------------------
+  deploy-production:
+    name: 🚀 Deploy Production
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docs-build
+          path: ${{ needs.build.outputs.build-path }}
+
+      - name: 🔐 Configure AWS credentials (S3)
+        if: env.USE_GITHUB_PAGES == 'false'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      - name: 🪣 Deploy to S3 production
+        if: env.USE_GITHUB_PAGES == 'false'
+        working-directory: ${{ needs.build.outputs.build-path }}
+        run: |
+          aws s3 sync . s3://${{ env.AWS_BUCKET_PROD }}/ \
+            --delete --cache-control max-age=3600
+
+      - name: 🌐 Deploy to GitHub Pages production
+        if: env.USE_GITHUB_PAGES == 'true'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ needs.build.outputs.build-path }}
+          publish_branch: gh-pages  # Branche cible pour GitHub Pages
+          keep_files: false
+
+      - name: 🔔 Notify on Slack (échec)
+        uses: 8398a/action-slack@v3
+        if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_docs }}
@@ -88,4 +251,63 @@ jobs:
           channel: '#docs'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
-          author_name: Docs
+          author_name: Docs Team
+
+  # ------------------------------------------------------------------
+  # Job 5 : Build multiplateforme (différentes versions)
+  # ------------------------------------------------------------------
+  build-matrix:
+    name: 🏗️ Build (version ${{ matrix.version }})
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        version: [v1, v2, latest]   # 📌 À adapter selon les versions de la doc
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        with:
+          yarn-docs: 'true'
+          yarn-tools: 'true'
+          yarn-workspace: 'true'
+
+      - name: 📝 Generate data for version ${{ matrix.version }}
+        run: expotools generate-docs-api-data --version ${{ matrix.version }}
+
+      - name: 🧶 Yarn install
+        working-directory: docs
+        run: yarn install --immutable
+
+      - name: 🏗️ Build for version ${{ matrix.version }}
+        working-directory: docs
+        env:
+          DOCS_VERSION: ${{ matrix.version }}
+        run: yarn export --prefixPaths --pathPrefix /${{ matrix.version }}
+
+      - name: 📦 Upload versioned artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-build-${{ matrix.version }}
+          path: docs/out
+          retention-days: 7
+
+      # Optionnel : déploiement dans un sous-dossier versionné
+      - name: 🚀 Deploy version ${{ matrix.version }} to S3
+        if: env.USE_GITHUB_PAGES == 'false'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+      - run: |
+          aws s3 sync docs/out s3://${{ env.AWS_BUCKET_PROD }}/${{ matrix.version }}/ \
+            --delete --cache-control max-age=3600
+        working-directory: docs/out
