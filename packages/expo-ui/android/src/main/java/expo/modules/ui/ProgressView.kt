@@ -10,13 +10,22 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
+import androidx.compose.material3.WavyProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
 // region LinearProgressIndicator
+
+class DrawStopIndicatorConfig : Record {
+  @Field val color: Color? = null
+  @Field val strokeCap: String? = null
+  @Field val stopSize: Float? = null
+}
 
 data class LinearProgressIndicatorProps(
   val progress: Float? = null,
@@ -24,6 +33,7 @@ data class LinearProgressIndicatorProps(
   val trackColor: Color? = null,
   val strokeCap: String? = null,
   val gapSize: Float? = null,
+  val drawStopIndicator: DrawStopIndicatorConfig? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -36,15 +46,34 @@ fun FunctionalComposableScope.LinearProgressIndicatorContent(props: LinearProgre
   val gapSize = props.gapSize?.dp ?: ProgressIndicatorDefaults.LinearIndicatorTrackGapSize
 
   if (props.progress != null) {
-    LinearProgressIndicator(
-      progress = { props.progress },
-      color = color,
-      trackColor = trackColor,
-      strokeCap = strokeCap,
-      gapSize = gapSize,
-      drawStopIndicator = {},
-      modifier = modifier
-    )
+    val stopIndicatorConfig = props.drawStopIndicator
+    if (stopIndicatorConfig != null) {
+      LinearProgressIndicator(
+        progress = { props.progress },
+        color = color,
+        trackColor = trackColor,
+        strokeCap = strokeCap,
+        gapSize = gapSize,
+        drawStopIndicator = {
+          ProgressIndicatorDefaults.drawStopIndicator(
+            drawScope = this,
+            stopSize = stopIndicatorConfig.stopSize?.dp ?: ProgressIndicatorDefaults.LinearTrackStopIndicatorSize,
+            color = stopIndicatorConfig.color.composeOrNull ?: color,
+            strokeCap = stopIndicatorConfig.strokeCap.toStrokeCap() ?: strokeCap
+          )
+        },
+        modifier = modifier
+      )
+    } else {
+      LinearProgressIndicator(
+        progress = { props.progress },
+        color = color,
+        trackColor = trackColor,
+        strokeCap = strokeCap,
+        gapSize = gapSize,
+        modifier = modifier
+      )
+    }
   } else {
     LinearProgressIndicator(
       color = color,
@@ -112,20 +141,23 @@ data class LinearWavyProgressIndicatorProps(
   val progress: Float? = null,
   val color: Color? = null,
   val trackColor: Color? = null,
+  val stopSize: Float? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
 fun FunctionalComposableScope.LinearWavyProgressIndicatorContent(props: LinearWavyProgressIndicatorProps) {
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
-  val color = props.color.composeOrNull ?: ProgressIndicatorDefaults.linearColor
-  val trackColor = props.trackColor.composeOrNull ?: ProgressIndicatorDefaults.linearTrackColor
+  val color = props.color.composeOrNull ?: WavyProgressIndicatorDefaults.indicatorColor
+  val trackColor = props.trackColor.composeOrNull ?: WavyProgressIndicatorDefaults.trackColor
+  val stopSize = props.stopSize?.dp ?: WavyProgressIndicatorDefaults.LinearTrackStopIndicatorSize
 
   if (props.progress != null) {
     LinearWavyProgressIndicator(
       progress = { props.progress },
       color = color,
       trackColor = trackColor,
+      stopSize = stopSize,
       modifier = modifier
     )
   } else {

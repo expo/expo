@@ -4,7 +4,10 @@ import { type ModifierConfig } from '../../types';
  * Stroke cap style for progress indicators.
  */
 export type StrokeCap = 'round' | 'butt' | 'square';
-export type LinearProgressIndicatorProps = {
+/**
+ * Common props shared by all progress indicator variants.
+ */
+type BaseProgressProps = {
     /**
      * The current progress value between `0` and `1`. Omit for indeterminate.
      */
@@ -17,6 +20,30 @@ export type LinearProgressIndicatorProps = {
      * Track (background) color.
      */
     trackColor?: ColorValue;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+};
+/**
+ * Configuration for the stop indicator dot at the end of the determinate linear progress track.
+ * When provided, draws a stop indicator with the given options. Omit to use the Compose default.
+ */
+export type DrawStopIndicatorConfig = {
+    /**
+     * Color of the stop indicator. Defaults to the indicator's color.
+     */
+    color?: ColorValue;
+    /**
+     * Stroke cap style for the stop indicator. Defaults to the indicator's strokeCap.
+     */
+    strokeCap?: StrokeCap;
+    /**
+     * Size of the stop indicator in dp. Defaults to the Material 3 default.
+     */
+    stopSize?: number;
+};
+export type LinearProgressIndicatorProps = BaseProgressProps & {
     /**
      * Stroke cap style for the indicator ends.
      * @default 'round'
@@ -27,9 +54,9 @@ export type LinearProgressIndicatorProps = {
      */
     gapSize?: number;
     /**
-     * Modifiers for the component.
+     * Configuration for the stop indicator dot at the end of the determinate progress track.
      */
-    modifiers?: ModifierConfig[];
+    drawStopIndicator?: DrawStopIndicatorConfig;
 };
 /**
  * A linear progress indicator that displays progress in a horizontal bar.
@@ -37,19 +64,7 @@ export type LinearProgressIndicatorProps = {
  * Matches the Jetpack Compose `LinearProgressIndicator`.
  */
 export declare const LinearProgressIndicator: import("react").ComponentType<LinearProgressIndicatorProps>;
-export type CircularProgressIndicatorProps = {
-    /**
-     * The current progress value between `0` and `1`. Omit for indeterminate.
-     */
-    progress?: number | null;
-    /**
-     * Progress indicator color.
-     */
-    color?: ColorValue;
-    /**
-     * Track (background) color.
-     */
-    trackColor?: ColorValue;
+export type CircularProgressIndicatorProps = BaseProgressProps & {
     /**
      * Width of the circular stroke in dp.
      */
@@ -63,10 +78,6 @@ export type CircularProgressIndicatorProps = {
      * Gap size between the indicator and track in dp.
      */
     gapSize?: number;
-    /**
-     * Modifiers for the component.
-     */
-    modifiers?: ModifierConfig[];
 };
 /**
  * A circular progress indicator that displays progress in a circular format.
@@ -74,23 +85,11 @@ export type CircularProgressIndicatorProps = {
  * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
 export declare const CircularProgressIndicator: import("react").ComponentType<CircularProgressIndicatorProps>;
-export type LinearWavyProgressIndicatorProps = {
+export type LinearWavyProgressIndicatorProps = BaseProgressProps & {
     /**
-     * The current progress value between `0` and `1`. Omit for indeterminate.
+     * Size of the stop indicator in dp at the end of the determinate progress track.
      */
-    progress?: number | null;
-    /**
-     * Progress indicator color.
-     */
-    color?: ColorValue;
-    /**
-     * Track (background) color.
-     */
-    trackColor?: ColorValue;
-    /**
-     * Modifiers for the component.
-     */
-    modifiers?: ModifierConfig[];
+    stopSize?: number;
 };
 /**
  * A linear progress indicator with wavy animation style.
@@ -98,28 +97,12 @@ export type LinearWavyProgressIndicatorProps = {
  * Matches the Jetpack Compose `LinearWavyProgressIndicator`.
  */
 export declare const LinearWavyProgressIndicator: import("react").ComponentType<LinearWavyProgressIndicatorProps>;
-export type CircularWavyProgressIndicatorProps = {
-    /**
-     * The current progress value between `0` and `1`. Omit for indeterminate.
-     */
-    progress?: number | null;
-    /**
-     * Progress indicator color.
-     */
-    color?: ColorValue;
-    /**
-     * Track (background) color.
-     */
-    trackColor?: ColorValue;
-    /**
-     * Modifiers for the component.
-     */
-    modifiers?: ModifierConfig[];
-};
+export type CircularWavyProgressIndicatorProps = BaseProgressProps;
 /**
  * A circular progress indicator with wavy animation style.
  *
  * Matches the Jetpack Compose `CircularWavyProgressIndicator`.
  */
-export declare const CircularWavyProgressIndicator: import("react").ComponentType<CircularWavyProgressIndicatorProps>;
+export declare const CircularWavyProgressIndicator: import("react").ComponentType<BaseProgressProps>;
+export {};
 //# sourceMappingURL=index.d.ts.map

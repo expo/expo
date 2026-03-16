@@ -9,27 +9,10 @@ import { createViewModifierEventListener } from '../modifiers/utils';
  */
 export type StrokeCap = 'round' | 'butt' | 'square';
 
-function transformProps<T extends { modifiers?: ModifierConfig[] }>(props: T): T {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  } as T;
-}
-
-function createProgressComponent<P extends { modifiers?: ModifierConfig[] }>(
-  viewName: string
-): React.ComponentType<P> {
-  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
-  return function ProgressComponent(props: P) {
-    return <NativeView {...transformProps(props)} />;
-  };
-}
-
-// region LinearProgressIndicator
-
-export type LinearProgressIndicatorProps = {
+/**
+ * Common props shared by all progress indicator variants.
+ */
+type BaseProgressProps = {
   /**
    * The current progress value between `0` and `1`. Omit for indeterminate.
    */
@@ -43,6 +26,52 @@ export type LinearProgressIndicatorProps = {
    */
   trackColor?: ColorValue;
   /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+};
+
+function transformProps<T extends BaseProgressProps>(props: T): T {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  } as T;
+}
+
+function createProgressComponent<P extends BaseProgressProps>(
+  viewName: string
+): React.ComponentType<P> {
+  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  return function ProgressComponent(props: P) {
+    return <NativeView {...transformProps(props)} />;
+  };
+}
+
+// region LinearProgressIndicator
+
+/**
+ * Configuration for the stop indicator dot at the end of the determinate linear progress track.
+ * When provided, draws a stop indicator with the given options. Omit to use the Compose default.
+ */
+export type DrawStopIndicatorConfig = {
+  /**
+   * Color of the stop indicator. Defaults to the indicator's color.
+   */
+  color?: ColorValue;
+  /**
+   * Stroke cap style for the stop indicator. Defaults to the indicator's strokeCap.
+   */
+  strokeCap?: StrokeCap;
+  /**
+   * Size of the stop indicator in dp. Defaults to the Material 3 default.
+   */
+  stopSize?: number;
+};
+
+export type LinearProgressIndicatorProps = BaseProgressProps & {
+  /**
    * Stroke cap style for the indicator ends.
    * @default 'round'
    */
@@ -52,9 +81,9 @@ export type LinearProgressIndicatorProps = {
    */
   gapSize?: number;
   /**
-   * Modifiers for the component.
+   * Configuration for the stop indicator dot at the end of the determinate progress track.
    */
-  modifiers?: ModifierConfig[];
+  drawStopIndicator?: DrawStopIndicatorConfig;
 };
 
 /**
@@ -70,19 +99,7 @@ export const LinearProgressIndicator = createProgressComponent<LinearProgressInd
 
 // region CircularProgressIndicator
 
-export type CircularProgressIndicatorProps = {
-  /**
-   * The current progress value between `0` and `1`. Omit for indeterminate.
-   */
-  progress?: number | null;
-  /**
-   * Progress indicator color.
-   */
-  color?: ColorValue;
-  /**
-   * Track (background) color.
-   */
-  trackColor?: ColorValue;
+export type CircularProgressIndicatorProps = BaseProgressProps & {
   /**
    * Width of the circular stroke in dp.
    */
@@ -96,10 +113,6 @@ export type CircularProgressIndicatorProps = {
    * Gap size between the indicator and track in dp.
    */
   gapSize?: number;
-  /**
-   * Modifiers for the component.
-   */
-  modifiers?: ModifierConfig[];
 };
 
 /**
@@ -115,23 +128,11 @@ export const CircularProgressIndicator = createProgressComponent<CircularProgres
 
 // region LinearWavyProgressIndicator
 
-export type LinearWavyProgressIndicatorProps = {
+export type LinearWavyProgressIndicatorProps = BaseProgressProps & {
   /**
-   * The current progress value between `0` and `1`. Omit for indeterminate.
+   * Size of the stop indicator in dp at the end of the determinate progress track.
    */
-  progress?: number | null;
-  /**
-   * Progress indicator color.
-   */
-  color?: ColorValue;
-  /**
-   * Track (background) color.
-   */
-  trackColor?: ColorValue;
-  /**
-   * Modifiers for the component.
-   */
-  modifiers?: ModifierConfig[];
+  stopSize?: number;
 };
 
 /**
@@ -146,24 +147,7 @@ export const LinearWavyProgressIndicator =
 
 // region CircularWavyProgressIndicator
 
-export type CircularWavyProgressIndicatorProps = {
-  /**
-   * The current progress value between `0` and `1`. Omit for indeterminate.
-   */
-  progress?: number | null;
-  /**
-   * Progress indicator color.
-   */
-  color?: ColorValue;
-  /**
-   * Track (background) color.
-   */
-  trackColor?: ColorValue;
-  /**
-   * Modifiers for the component.
-   */
-  modifiers?: ModifierConfig[];
-};
+export type CircularWavyProgressIndicatorProps = BaseProgressProps;
 
 /**
  * A circular progress indicator with wavy animation style.
