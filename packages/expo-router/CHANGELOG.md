@@ -8,9 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
+- Fix regex for routes with multiple spaces in file name ([#43935](https://github.com/expo/expo/pull/43935) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
-- Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.5 — 2026-03-11
 
