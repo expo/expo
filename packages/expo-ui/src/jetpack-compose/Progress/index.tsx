@@ -62,8 +62,9 @@ export type LinearProgressIndicatorProps = {
  *
  * Matches the Jetpack Compose `LinearProgressIndicator`.
  */
-export const LinearProgressIndicator =
-  createProgressComponent<LinearProgressIndicatorProps>('LinearProgressIndicatorView');
+export const LinearProgressIndicator = createProgressComponent<LinearProgressIndicatorProps>(
+  'LinearProgressIndicatorView'
+);
 
 // endregion
 
@@ -106,8 +107,9 @@ export type CircularProgressIndicatorProps = {
  *
  * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
-export const CircularProgressIndicator =
-  createProgressComponent<CircularProgressIndicatorProps>('CircularProgressIndicatorView');
+export const CircularProgressIndicator = createProgressComponent<CircularProgressIndicatorProps>(
+  'CircularProgressIndicatorView'
+);
 
 // endregion
 
