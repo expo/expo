@@ -324,11 +324,32 @@ class ExpoUIModule : Module() {
       FilterChipContent(props) { onNativeClick(it) }
     }
 
-    ExpoUIView("ToggleButtonView", events = {
+    ExpoUIView("ToggleButton", events = {
       Events("onCheckedChange")
     }) { props: ToggleButtonProps ->
       val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
       ToggleButtonContent(props) { onCheckedChange(it) }
+    }
+
+    ExpoUIView("IconToggleButton", events = {
+      Events("onCheckedChange")
+    }) { props: ToggleButtonProps ->
+      val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
+      IconToggleButtonContent(props) { onCheckedChange(it) }
+    }
+
+    ExpoUIView("FilledIconToggleButton", events = {
+      Events("onCheckedChange")
+    }) { props: ToggleButtonProps ->
+      val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
+      FilledIconToggleButtonContent(props) { onCheckedChange(it) }
+    }
+
+    ExpoUIView("OutlinedIconToggleButton", events = {
+      Events("onCheckedChange")
+    }) { props: ToggleButtonProps ->
+      val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
+      OutlinedIconToggleButtonContent(props) { onCheckedChange(it) }
     }
 
     ExpoUIView("CardView") { props: CardProps ->
