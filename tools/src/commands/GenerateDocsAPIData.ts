@@ -71,7 +71,6 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/card': ['jetpack-compose/Card/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/carousel': ['jetpack-compose/Carousel/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/dropdownmenu': ['jetpack-compose/DropdownMenu/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/divider': ['jetpack-compose/Divider/index.tsx', 'expo-ui'],
@@ -96,7 +95,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/flowrow': ['jetpack-compose/FlowRow/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/lazycolumn': ['jetpack-compose/LazyColumn/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/segmentedbutton': [
@@ -116,7 +115,6 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/surface': ['jetpack-compose/Surface/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/text': ['jetpack-compose/Text/index.tsx', 'expo-ui'],
-  'expo-ui/jetpack-compose/textbutton': ['jetpack-compose/TextButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
 };

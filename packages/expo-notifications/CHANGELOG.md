@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fix unhandled promise rejection in `getRegistrationInfoAsync`, relax keychain accessibility to allow access after device unlocked. ([#43829](https://github.com/expo/expo/pull/43829) by [@jmalmo](https://github.com/jmalmo))
 - [ios] Fixed `requestPermissionsAsync` returning raw permission result without several documented fields ([#43555](https://github.com/expo/expo/pull/43555) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others

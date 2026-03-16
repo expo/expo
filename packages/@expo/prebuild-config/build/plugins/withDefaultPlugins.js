@@ -43,30 +43,9 @@ function _withIosIcons() {
   };
   return data;
 }
-function _ReactNative77CompatPlugin() {
-  const data = require("./sdk52/ReactNative77CompatPlugin");
-  _ReactNative77CompatPlugin = function () {
-    return data;
-  };
-  return data;
-}
-function _ReactNative78CompatPlugin() {
-  const data = require("./sdk52/ReactNative78CompatPlugin");
-  _ReactNative78CompatPlugin = function () {
-    return data;
-  };
-  return data;
-}
 function _withEdgeToEdge() {
   const data = _interopRequireDefault(require("./unversioned/edge-to-edge/withEdgeToEdge"));
   _withEdgeToEdge = function () {
-    return data;
-  };
-  return data;
-}
-function _expoAdsAdmob() {
-  const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
-  _expoAdsAdmob = function () {
     return data;
   };
   return data;
@@ -95,13 +74,6 @@ function _expoDocumentPicker() {
 function _withInlineModules() {
   const data = _interopRequireDefault(require("./unversioned/expo-inline-modules/withInlineModules"));
   _withInlineModules = function () {
-    return data;
-  };
-  return data;
-}
-function _expoNavigationBar() {
-  const data = _interopRequireDefault(require("./unversioned/expo-navigation-bar/expo-navigation-bar"));
-  _expoNavigationBar = function () {
     return data;
   };
   return data;
@@ -195,7 +167,7 @@ const withAndroidExpoPlugins = (config, props) => {
   // strings.xml
   _configPlugins().AndroidConfig.Name.withName, _configPlugins().AndroidConfig.Locales.withLocales,
   // Dangerous -- these plugins run in reverse order.
-  _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile, _ReactNative77CompatPlugin().withSdk52ReactNative77CompatAndroid, _ReactNative78CompatPlugin().withSdk52ReactNative78CompatAndroid,
+  _configPlugins().AndroidConfig.GoogleServices.withGoogleServicesFile,
   // Modify colors.xml and styles.xml
   _configPlugins().AndroidConfig.StatusBar.withStatusBar, _configPlugins().AndroidConfig.PrimaryColor.withPrimaryColor, _withEdgeToEdge().default, _withAndroidIcons().withAndroidIcons,
   // If we renamed the package, we should also move it around and rename it in source files
@@ -207,10 +179,10 @@ const withAndroidExpoPlugins = (config, props) => {
 exports.withAndroidExpoPlugins = withAndroidExpoPlugins;
 const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui', 'expo-inline-modules'];
 const withVersionedExpoSDKPlugins = config => {
-  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default,
+  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, _expoUpdates().default, _expoDocumentPicker().default,
   // System UI must come before splash screen as they overlap
   // and splash screen will warn about conflicting rules.
-  _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default, _withInlineModules().default]);
+  _expoSystemUi().default, _expoSplashScreen().default, _withInlineModules().default]);
 };
 exports.withVersionedExpoSDKPlugins = withVersionedExpoSDKPlugins;
 function getAutoPlugins() {
