@@ -84,11 +84,11 @@ export function convertOptionsIconToIOSPropsIcon(
       name: icon.sf,
     };
   }
-  if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
-    const imageSource =
-      'xcasset' in icon && icon.xcasset
-        ? { uri: icon.xcasset }
-        : (icon as { src: ImageSourcePropType }).src;
+  if (icon && 'xcasset' in icon && icon.xcasset) {
+    return { type: 'xcasset', name: icon.xcasset };
+  }
+  if (icon && 'src' in icon && icon.src) {
+    const imageSource = (icon as { src: ImageSourcePropType }).src;
     const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
     const effectiveRenderingMode =
       renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
