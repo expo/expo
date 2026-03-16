@@ -5,6 +5,7 @@
   "main": "src/StatusBar",
   "types": "build/StatusBar.d.ts",
   "exports": {
+    "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json",
     ".": {
       "types": "./build/StatusBar.d.ts",
@@ -47,6 +48,7 @@
     "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   },

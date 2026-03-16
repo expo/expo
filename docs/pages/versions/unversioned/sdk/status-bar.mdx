@@ -10,6 +10,11 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
@@ -26,6 +31,69 @@ import { SnackInline } from '~/ui/components/Snippet';
 ## Installation
 
 <APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-status-bar` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-status-bar",
+        {
+          "style": "dark",
+          "hidden": false
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'style',
+      description:
+        'Determines which style the status bar starts with. Accepts `light` and `dark` as values.',
+      default: 'undefined',
+    },
+    {
+      name: 'hidden',
+      description:
+        'Determines whether the status bar starts hidden. Accepts `true` and `false` as values.',
+      default: 'undefined',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native project manually, then you need to add the following configuration to your native project:
+
+- To hide the status bar on **Android**, add `expo_status_bar_visibility` to **android/app/src/main/res/values/strings.xml**:
+
+  ```xml
+  <resources>
+    <!-- ... -->
+    <string name="expo_status_bar_visibility" translatable="false">hidden</string>
+  </resources>
+  ```
+
+- To hide the status bar on **iOS**, set the following keys in your **ios/&lt;project&gt;/Info.plist**:
+
+  ```xml
+  <key>UIStatusBarHidden</key>
+  <true/>
+  ```
+
+</ConfigReactNative>
 
 ## Usage
 
