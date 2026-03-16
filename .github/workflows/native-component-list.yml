@@ -1,14 +1,21 @@
-name: Native Component List app
+# =====================================================
+# native-component-list.yml - Workflow CI/CD pour l'application Native Component List
+# Projet : Bulonet
+# Auteur : Équipe Bulonet
+# Date : 2025
+# =====================================================
+
+name: Native Component List CI/CD
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: {}                     # 🔄 Déclenchement manuel
   pull_request:
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
       - packages/**
       - yarn.lock
-      - '!packages/@expo/cli/**'
+      - '!packages/@expo/cli/**'            # 🚫 Exclure le CLI d'Expo
   push:
     branches: [main]
     paths:
@@ -22,40 +29,414 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: 22
+  WORKING_DIRECTORY: apps/native-component-list
+  CACHE_KEY_PREFIX: ncl-node-modules
+  # 📦 Variables pour Sentry (à adapter)
+  SENTRY_ORG: bulonet
+  SENTRY_PROJECT: native-component-list
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
 jobs:
-  build:
+  # ------------------------------------------------------------------
+  # Job 1 : Lint et TypeScript (validation rapide)
+  # ------------------------------------------------------------------
+  lint-and-typecheck:
+    name: 🔍 Lint & TypeCheck
     runs-on: ubuntu-22.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
+
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore node_modules cache
+        uses: actions/cache@v4
+        id: cache
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('yarn.lock') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🛠 Compile NCL sources
-        run: yarn tsc
-        working-directory: apps/native-component-list
-      - name: 🚨 Lint NCL app
+
+      - name: 🧹 Lint
+        working-directory: ${{ env.WORKING_DIRECTORY }}
         run: yarn lint --max-warnings 0
-        working-directory: apps/native-component-list
-      - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/main')
+
+      - name: ✅ TypeScript check
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn tsc --noEmit
+
+  # ------------------------------------------------------------------
+  # Job 2 : Tests unitaires (si existants)
+  # ------------------------------------------------------------------
+  test:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-22.04
+    needs: lint-and-typecheck
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore node_modules cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('yarn.lock') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: 🧪 Run tests with coverage
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn test --coverage
+
+      - name: 📊 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ${{ env.WORKING_DIRECTORY }}/coverage
+          flags: ncl-tests
+
+  # ------------------------------------------------------------------
+  # Job 3 : Build avec Webpack / Metro et upload des source maps Sentry
+  # ------------------------------------------------------------------
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-22.04
+    needs: lint-and-typecheck
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore node_modules cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('yarn.lock') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: 🏗️ Build with Webpack (ou Expo)
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn build   # Commande à adapter (ex: expo export:web, ou webpack)
+
+      - name: 📤 Upload source maps to Sentry
+        if: github.ref == 'refs/heads/main'  # En production uniquement
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          npx @sentry/cli releases new ${{ github.sha }}
+          npx @sentry/cli releases files ${{ github.sha }} upload-sourcemaps ./dist --url-prefix '~/'
+          npx @sentry/cli releases set-commits ${{ github.sha }} --auto
+          npx @sentry/cli releases finalize ${{ github.sha }}
         env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ env.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ env.SENTRY_PROJECT }}
+
+      - name: 📦 Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ncl-build
+          path: ${{ env.WORKING_DIRECTORY }}/dist
+          retention-days: 7
+
+  # ------------------------------------------------------------------
+  # Job 4 : Tests end-to-end avec Detox (iOS)
+  # ------------------------------------------------------------------
+  e2e-ios:
+    name: 📱 E2E (iOS)
+    runs-on: macos-14  # Nécessaire pour les simulateurs iOS
+    needs: build       # On attend que le build soit prêt
+    if: github.event_name == 'pull_request'  # Lancer uniquement sur PR
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore node_modules cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('yarn.lock') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: 📲 Install CocoaPods
+        run: |
+          cd ${{ env.WORKING_DIRECTORY }}/ios
+          pod install --repo-update
+
+      - name: 📱 Build Detox (iOS)
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn detox build --configuration ios.sim.release
+
+      - name: 🧪 Run Detox tests
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: yarn detox test --configuration ios.sim.release --cleanup
+
+      - name: 📎 Upload Detox artifacts (logs, screenshots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detox-artifacts-ios
+          path: ${{ env.WORKING_DIRECTORY }}/artifacts
+
+  # ------------------------------------------------------------------
+  # Job 5 : Preview EAS Update pour chaque PR
+  # ------------------------------------------------------------------
+  eas-preview:
+    name: 🚀 EAS Preview
+    runs-on: ubuntu-22.04
+    needs: build
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore node_modules cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('yarn.lock') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: 📦 Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: 🚀 Publish EAS Update
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          eas update --branch pr-${{ github.event.number }} \
+            --message "Preview for PR #${{ github.event.number }}" \
+            --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 💬 Comment PR with preview link
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            📱 **Preview disponible** via EAS Update !
+            - Branche : `pr-${{ github.event.number }}`
+            - Pour tester : `expo start --tunnel` ou scannez le QR code sur [Expo Dev](https://expo.dev)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
+
+  # ------------------------------------------------------------------
+  # Job 6 : Comparaison de la taille du bundle
+  # ------------------------------------------------------------------
+  bundle-size:
+    name: 📦 Bundle Size
+    runs-on: ubuntu-22.04
+    needs: build
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: 👀 Checkout (branche actuelle)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Pour récupérer le commit précédent
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Download build artifact (PR)
+        uses: actions/download-artifact@v4
+        with:
+          name: ncl-build
+          path: pr-build
+
+      - name: 📏 Get bundle size (PR)
+        id: pr-size
+        run: |
+          SIZE=$(du -sb pr-build | cut -f1)
+          echo "PR_SIZE=$SIZE" >> $GITHUB_OUTPUT
+          echo "PR size: $SIZE bytes"
+
+      - name: 👀 Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-code
+
+      - name: 📦 Build on main (simulation)
+        working-directory: main-code/${{ env.WORKING_DIRECTORY }}
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+          SIZE=$(du -sb dist | cut -f1)
+          echo "MAIN_SIZE=$SIZE" >> $GITHUB_OUTPUT
+        id: main-size
+
+      - name: 📊 Compare sizes
+        id: compare
+        run: |
+          PR=${{ steps.pr-size.outputs.PR_SIZE }}
+          MAIN=${{ steps.main-size.outputs.MAIN_SIZE }}
+          DIFF=$((PR - MAIN))
+          PERCENT=$(echo "scale=2; ($DIFF/$MAIN)*100" | bc)
+          if [ $DIFF -gt 0 ]; then
+            EMOJI="📈"
+          else
+            EMOJI="📉"
+          fi
+          echo "DIFF=$DIFF" >> $GITHUB_OUTPUT
+          echo "PERCENT=$PERCENT" >> $GITHUB_OUTPUT
+          echo "EMOJI=$EMOJI" >> $GITHUB_OUTPUT
+
+      - name: 💬 Comment PR with size diff
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ${{ steps.compare.outputs.EMOJI }} **Variation de taille du bundle** :
+            - PR : ${{ steps.pr-size.outputs.PR_SIZE }} octets
+            - Main : ${{ steps.main-size.outputs.MAIN_SIZE }} octets
+            - Différence : ${{ steps.compare.outputs.DIFF }} octets (${{ steps.compare.outputs.PERCENT }}%)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ------------------------------------------------------------------
+  # Job 7 : Déploiement iOS avec Fastlane
+  # ------------------------------------------------------------------
+  deploy-ios:
+    name: 🍎 Deploy iOS (Fastlane)
+    runs-on: macos-14
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: ♻️ Restore node_modules cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ env.CACHE_KEY_PREFIX }}-${{ hashFiles('yarn.lock') }}
+
+      - name: 📦 Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: 💎 Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: ${{ env.WORKING_DIRECTORY }}/ios
+
+      - name: 🔐 Import Apple certificates (via match)
+        working-directory: ${{ env.WORKING_DIRECTORY }}/ios
+        run: bundle exec fastlane match appstore --readonly
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
+
+      - name: 📦 Build and upload to TestFlight
+        working-directory: ${{ env.WORKING_DIRECTORY }}/ios
+        run: bundle exec fastlane beta
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+
+      - name: 🔔 Notify Slack (succès)
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          fields: repo,message,commit,author
+          text: '✅ Déploiement iOS réussi !'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_API }}
+
+  # ------------------------------------------------------------------
+  # Job 8 : Analyse de sécurité
+  # ------------------------------------------------------------------
+  security:
+    name: 🛡️ Security Audit
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 🔍 Run yarn audit
+        run: yarn audit --groups dependencies
+        continue-on-error: true
+
+      - name: 🔬 Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript
+
+      - name: 🔬 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # ------------------------------------------------------------------
+  # Job 9 : Notification Slack globale
+  # ------------------------------------------------------------------
+  notify:
+    name: 🔔 Notify Slack
+    runs-on: ubuntu-22.04
+    needs: [lint-and-typecheck, test, build, e2e-ios, eas-preview, bundle-size, deploy-ios, security]
+    if: always() && github.ref == 'refs/heads/main'
+    steps:
+      - name: 💬 Send Slack notification
+        uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
-          author_name: Build Native Component List
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_API }}
