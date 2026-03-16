@@ -72,6 +72,11 @@ export type ModalBottomSheetProps = {
    */
   sheetGesturesEnabled?: boolean;
   /**
+   * Callback function that is called when the user dismisses the bottom sheet
+   * (via swipe, back press, or tapping outside the scrim).
+   */
+  onDismissRequest?: () => void;
+  /**
    * Properties for the modal window behavior.
    */
   properties?: ModalBottomSheetProperties;
@@ -81,15 +86,19 @@ export type ModalBottomSheetProps = {
   modifiers?: ModifierConfig[];
 };
 
-type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onIsPresentedChange'> & {
+type NativeModalBottomSheetProps = Omit<
+  ModalBottomSheetProps,
+  'onIsPresentedChange' | 'onDismissRequest'
+> & {
   onIsPresentedChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
+  onDismissRequest?: () => void;
 };
 
 const ModalBottomSheetNativeView: React.ComponentType<NativeModalBottomSheetProps> =
   requireNativeView('ExpoUI', 'ModalBottomSheetView');
 
 function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetProps {
-  const { modifiers, onIsPresentedChange, ...restProps } = props;
+  const { modifiers, onIsPresentedChange, onDismissRequest, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
@@ -98,6 +107,11 @@ function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetPro
     onIsPresentedChange: ({ nativeEvent: { value } }) => {
       onIsPresentedChange?.(value);
     },
+    onDismissRequest: onDismissRequest
+      ? () => {
+          onDismissRequest();
+        }
+      : undefined,
   };
 }
 

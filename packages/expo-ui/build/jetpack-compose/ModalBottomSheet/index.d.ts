@@ -57,6 +57,11 @@ export type ModalBottomSheetProps = {
      */
     sheetGesturesEnabled?: boolean;
     /**
+     * Callback function that is called when the user dismisses the bottom sheet
+     * (via swipe, back press, or tapping outside the scrim).
+     */
+    onDismissRequest?: () => void;
+    /**
      * Properties for the modal window behavior.
      */
     properties?: ModalBottomSheetProperties;

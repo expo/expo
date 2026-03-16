@@ -41,7 +41,8 @@ data class ModalBottomSheetProps(
 @Composable
 fun FunctionalComposableScope.ModalBottomSheetContent(
   props: ModalBottomSheetProps,
-  onIsPresentedChange: (Boolean) -> Unit
+  onIsPresentedChange: (Boolean) -> Unit,
+  onDismissRequest: () -> Unit = {}
 ) {
   val sheetState = rememberModalBottomSheetState(props.skipPartiallyExpanded)
   var showSheet by remember { mutableStateOf(props.isPresented) }
@@ -69,6 +70,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
     onDismissRequest = {
       showSheet = false
       onIsPresentedChange(false)
+      onDismissRequest()
     },
     containerColor = resolvedContainerColor,
     contentColor = resolvedContentColor,
