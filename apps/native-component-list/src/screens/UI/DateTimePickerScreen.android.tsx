@@ -10,7 +10,7 @@ import {
   Host,
 } from '@expo/ui/jetpack-compose';
 import * as React from 'react';
-import { Alert, Button, ScrollView, Text } from 'react-native';
+import { Alert, Button, ScrollView, Switch, Text } from 'react-native';
 
 import { Page, Section } from '../../components/Page';
 
@@ -29,6 +29,7 @@ export default function DatePickerScreen() {
 
   const [showDateDialog, setShowDateDialog] = React.useState(false);
   const [showTimeDialog, setShowTimeDialog] = React.useState(false);
+  const [is24Hour, setIs24Hour] = React.useState(true);
 
   const [ticking, setTicking] = React.useState(false);
   React.useEffect(() => {
@@ -47,6 +48,10 @@ export default function DatePickerScreen() {
   return (
     <ScrollView>
       <Page>
+        <Section title="24-mode">
+          <Switch value={is24Hour} onValueChange={setIs24Hour} />
+        </Section>
+
         <Section title="Auto-advance">
           <Button
             title={ticking ? 'Stop' : 'Start (+1 min/s)'}
@@ -98,7 +103,7 @@ export default function DatePickerScreen() {
                 initialDate={selectedDate.toISOString()}
                 variant={displayOptions[selectedIndex] as DateTimePickerProps['variant']}
                 showVariantToggle
-                is24Hour
+                is24Hour={is24Hour}
               />
             </Column>
           </Host>
@@ -145,7 +150,7 @@ export default function DatePickerScreen() {
             <Host>
               <TimePickerDialog
                 initialDate={selectedDate.toISOString()}
-                is24Hour
+                is24Hour={is24Hour}
                 confirmButtonLabel="Set"
                 dismissButtonLabel="Nope"
                 onDateSelected={(date) => {
@@ -161,6 +166,17 @@ export default function DatePickerScreen() {
               />
             </Host>
           )}
+        </Section>
+
+        <Section title="Colored date picker">
+          <Host matchContents={{ vertical: true }}>
+            <DateTimePicker
+              onDateSelected={(date) => setSelectedDate(date)}
+              displayedComponents="date"
+              initialDate={selectedDate.toISOString()}
+              color="#E040FB"
+            />
+          </Host>
         </Section>
       </Page>
     </ScrollView>
