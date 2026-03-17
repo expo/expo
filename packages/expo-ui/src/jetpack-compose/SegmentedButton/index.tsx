@@ -65,7 +65,7 @@ type NativeSlotViewProps = {
 
 type NativeSegmentedButtonProps = Omit<SegmentedButtonProps, 'onClick' | 'onCheckedChange'> &
   ViewEvent<'onButtonPressed', void> &
-  ViewEvent<'onCheckedChange', { checked: boolean }>;
+  ViewEvent<'onCheckedChange', { value: boolean }>;
 
 const SegmentedButtonNativeView: React.ComponentType<NativeSegmentedButtonProps> =
   requireNativeView('ExpoUI', 'SegmentedButtonView');
@@ -94,7 +94,7 @@ function SegmentedButtonComponent(props: SegmentedButtonProps) {
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
       onButtonPressed={() => onClick?.()}
-      onCheckedChange={(e) => onCheckedChange?.(e.nativeEvent.checked)}>
+      onCheckedChange={(e) => onCheckedChange?.(e.nativeEvent.value)}>
       {children}
     </SegmentedButtonNativeView>
   );

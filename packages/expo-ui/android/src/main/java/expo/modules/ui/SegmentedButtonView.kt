@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
+
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -37,15 +38,11 @@ data class SegmentedButtonProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
-data class CheckedChangeEvent(
-  @Field val checked: Boolean
-) : Record
-
 @Composable
 fun FunctionalComposableScope.SegmentedButtonContent(
   props: SegmentedButtonProps,
   onClick: () -> Unit,
-  onCheckedChange: (CheckedChangeEvent) -> Unit
+  onCheckedChange: (GenericEventPayload1<Boolean>) -> Unit
 ) {
   val colors = props.colors
   val labelSlotView = findChildSlotView(view, "label")
@@ -106,7 +103,7 @@ fun FunctionalComposableScope.SegmentedButtonContent(
     with(multiScope) {
       SegmentedButton(
         checked = props.checked,
-        onCheckedChange = { onCheckedChange(CheckedChangeEvent(it)) },
+        onCheckedChange = { onCheckedChange(GenericEventPayload1(it)) },
         shape = shape,
         enabled = props.enabled,
         colors = segmentedColors,

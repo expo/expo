@@ -111,7 +111,7 @@ class ExpoUIModule : Module() {
       Events("onButtonPressed", "onCheckedChange")
     }) { props: SegmentedButtonProps ->
       val onButtonPressed by remember { EventDispatcher<Unit>() }
-      val onCheckedChange by remember { EventDispatcher<CheckedChangeEvent>() }
+      val onCheckedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
       SegmentedButtonContent(props, { onButtonPressed(Unit) }, { onCheckedChange(it) })
     }
 
