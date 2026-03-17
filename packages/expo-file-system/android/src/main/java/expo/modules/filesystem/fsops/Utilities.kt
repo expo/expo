@@ -2,6 +2,8 @@ package expo.modules.filesystem.fsops
 
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.exception.Exceptions
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -24,6 +26,44 @@ internal fun copyFileViaStream(
     dest.outputStream().use { output ->
       input.copyTo(output, bufferSize = 65_536) // 64KB — reduces syscall overhead vs 8KB default
     }
+  }
+}
+
+/**
+ * Attempt to copy a file using FileChannel.transferTo() for zero-copy.
+ * Returns true if the channel-based copy succeeded, false if either side
+ * doesn't support file descriptors (caller should fall back to streams).
+ */
+internal fun copyFileViaChannel(
+  source: UnifiedFileInterface,
+  dest: UnifiedFileInterface
+): Boolean {
+  val srcPfd = source.openFileDescriptor("r") ?: return false
+  val dstPfd = dest.openFileDescriptor("w")
+    ?: run { srcPfd.close(); return false }
+
+  srcPfd.use { src ->
+    dstPfd.use { dst ->
+      FileInputStream(src.fileDescriptor).channel.use { inCh ->
+        FileOutputStream(dst.fileDescriptor).channel.use { outCh ->
+          inCh.transferTo(0, inCh.size(), outCh)
+        }
+      }
+    }
+  }
+  return true
+}
+
+/**
+ * Copy a file using FileChannel if possible, falling back to stream-based copy.
+ * Drop-in replacement for [copyFileViaStream] at all non-NIO call sites.
+ */
+internal fun copyFileWithChannelFallback(
+  source: UnifiedFileInterface,
+  dest: UnifiedFileInterface
+) {
+  if (!copyFileViaChannel(source, dest)) {
+    copyFileViaStream(source, dest)
   }
 }
 
