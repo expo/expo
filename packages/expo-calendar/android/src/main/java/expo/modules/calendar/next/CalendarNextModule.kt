@@ -7,19 +7,28 @@ import expo.modules.calendar.dialogs.CreatedEventOptions
 import expo.modules.calendar.dialogs.ViewEventContract
 import expo.modules.calendar.dialogs.ViewEventIntentResult
 import expo.modules.calendar.dialogs.ViewedEventOptions
-import expo.modules.calendar.next.ExpoCalendar.Companion.findExpoCalendarById
-import expo.modules.calendar.next.ExpoCalendar.Companion.findExpoCalendars
-import expo.modules.calendar.next.ExpoCalendar.Companion.listEvents
-import expo.modules.calendar.next.exceptions.CalendarCouldNotBeDeletedException
-import expo.modules.calendar.next.exceptions.EventNotFoundException
+import expo.modules.calendar.extensions.DateTimeInput
+import expo.modules.calendar.next.domain.repositories.event.EventRepository
+import expo.modules.calendar.next.domain.repositories.instance.InstanceRepository
+import expo.modules.calendar.next.domain.repositories.attendee.AttendeeRepository
+import expo.modules.calendar.next.domain.repositories.reminder.ReminderRepository
+import expo.modules.calendar.next.domain.repositories.calendar.CalendarRepository
+import expo.modules.calendar.next.mappers.AttendeeMapper
 import expo.modules.calendar.next.records.AttendeeRecord
+import expo.modules.calendar.next.mappers.CalendarMapper
+import expo.modules.calendar.next.mappers.EventMapper
+import expo.modules.calendar.next.mappers.ReminderMapper
 import expo.modules.calendar.next.records.CalendarRecord
 import expo.modules.calendar.next.records.EventRecord
+import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurringEventOptions
 import expo.modules.calendar.next.permissions.CalendarPermissionsDelegate
+import expo.modules.calendar.next.records.AttendeeUpdateRecord
+import expo.modules.calendar.next.records.CalendarUpdateRecord
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -28,9 +37,64 @@ class CalendarNextModule : Module() {
   private lateinit var createEventLauncher: AppContextActivityResultLauncher<CreatedEventOptions, CreateEventIntentResult>
   private lateinit var viewEventLauncher: AppContextActivityResultLauncher<ViewedEventOptions, ViewEventIntentResult>
 
+  private val context
+    get() = appContext.reactContext
+      ?: throw Exceptions.ReactContextLost()
+
   private val permissionsDelegate by lazy {
     CalendarPermissionsDelegate(appContext)
   }
+
+  private val calendarMapper = CalendarMapper()
+  private val eventMapper = EventMapper()
+  private val attendeeMapper = AttendeeMapper()
+  private val reminderMapper = ReminderMapper()
+
+  private val calendarRepository by lazy {
+    CalendarRepository(context.contentResolver)
+  }
+
+  private val eventRepository by lazy {
+    EventRepository(context.contentResolver)
+  }
+
+  private val instanceRepository by lazy {
+    InstanceRepository(context.contentResolver)
+  }
+
+  private val attendeeRepository by lazy {
+    AttendeeRepository(context.contentResolver)
+  }
+
+  private val reminderRepository by lazy {
+    ReminderRepository(context.contentResolver)
+  }
+
+  private val expoCalendarFactory by lazy {
+    ExpoCalendarFactory(
+      calendarRepository = calendarRepository,
+      eventRepository = eventRepository,
+      instanceRepository = instanceRepository,
+      reminderRepository = reminderRepository,
+      eventFactory = expoCalendarEventFactory,
+      eventMapper = eventMapper,
+      reminderMapper = reminderMapper,
+      calendarMapper = calendarMapper
+    )
+  }
+
+  private val expoCalendarEventFactory by lazy {
+    ExpoCalendarEventFactory(
+      eventRepository = eventRepository,
+      instanceRepository = instanceRepository,
+      attendeeRepository = attendeeRepository,
+      eventMapper = eventMapper,
+      attendeeMapper = attendeeMapper,
+      reminderMapper = reminderMapper,
+      reminderRepository = reminderRepository
+    )
+  }
+
   override fun definition() = ModuleDefinition {
     Name("CalendarNext")
 
@@ -44,13 +108,11 @@ class CalendarNextModule : Module() {
     }
 
     AsyncFunction("getCalendars") Coroutine { type: String? ->
-      permissionsDelegate.requireSystemPermissions(false)
-      findExpoCalendars(appContext, type)
+      ExpoCalendar.getAll(type, calendarRepository, expoCalendarFactory)
     }
 
     AsyncFunction("getCalendarById") Coroutine { calendarId: String ->
-      permissionsDelegate.requireSystemPermissions(false)
-      findExpoCalendarById(appContext, calendarId)
+      ExpoCalendar.getById(calendarId, calendarRepository, expoCalendarFactory)
     }
 
     AsyncFunction("requestCalendarPermissions") { promise: Promise ->
@@ -62,202 +124,192 @@ class CalendarNextModule : Module() {
       )
     }
 
-    AsyncFunction("listEvents") Coroutine { calendarIds: List<String>, startDate: String, endDate: String ->
-      permissionsDelegate.requireSystemPermissions(false)
-      listEvents(appContext, calendarIds, startDate, endDate)
+    AsyncFunction("listEvents") Coroutine { calendarIds: List<String>, startDate: DateTimeInput, endDate: DateTimeInput ->
+      ExpoCalendarEvent.findAll(instanceRepository, startDate, endDate, calendarIds, reminderRepository, expoCalendarEventFactory)
     }
 
-    AsyncFunction("createCalendar") Coroutine { calendarRecord: CalendarRecord ->
+    AsyncFunction("createCalendar") Coroutine { calendarRecord: CalendarRecord.New ->
       permissionsDelegate.requireSystemPermissions(true)
-      val calendarId = ExpoCalendar.updateCalendar(appContext, calendarRecord, isNew = true)
-      val newCalendarRecord = calendarRecord.copy(id = calendarId.toString())
-      ExpoCalendar(appContext, newCalendarRecord)
+      ExpoCalendar.create(calendarRecord, calendarMapper, calendarRepository, expoCalendarFactory)
     }
 
     AsyncFunction("getEventById") Coroutine { eventId: String ->
-      permissionsDelegate.requireSystemPermissions(false)
-      ExpoCalendarEvent.findEventById(eventId, appContext)
+      ExpoCalendarEvent.findById(eventId, eventRepository, reminderRepository, eventMapper, expoCalendarEventFactory)
     }
 
     Class(ExpoCalendar::class) {
-      Constructor { calendarRecord: CalendarRecord ->
-        ExpoCalendar(appContext, calendarRecord)
+      Constructor { calendarRecord: CalendarRecord.Existing ->
+        val existingCalendarEntity = calendarMapper.toDomain(calendarRecord)
+        expoCalendarFactory.create(existingCalendarEntity)
       }
 
       Property("id") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.id
+        expoCalendar.id
       }
 
       Property("title") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.title
+        expoCalendar.title
       }
 
       Property("name") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.name
+        expoCalendar.name
       }
 
       Property("source") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.source
+        expoCalendar.source
       }
 
       Property("color") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.color?.let { colorInt ->
-          String.format("#%06X", 0xFFFFFF and colorInt)
-        }
+        expoCalendar.color
       }
 
       Property("isVisible") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.isVisible
+        expoCalendar.isVisible
       }
 
       Property("isSynced") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.isSynced
+        expoCalendar.isSynced
       }
 
       Property("timeZone") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.timeZone
+        expoCalendar.timeZone
       }
 
       Property("isPrimary") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.isPrimary
+        expoCalendar.isPrimary
       }
 
       Property("allowsModifications") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.allowsModifications
+        expoCalendar.allowsModifications
       }
 
       Property("allowedAvailabilities") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.allowedAvailabilities
+        expoCalendar.allowedAvailabilities
       }
 
       Property("allowedReminders") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.allowedReminders
+        expoCalendar.allowedReminders
       }
 
       Property("allowedAttendeeTypes") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.allowedAttendeeTypes
+        expoCalendar.allowedAttendeeTypes
       }
 
       Property("ownerAccount") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.ownerAccount
+        expoCalendar.ownerAccount
       }
 
       Property("accessLevel") { expoCalendar: ExpoCalendar ->
-        expoCalendar.calendarRecord?.accessLevel
+        expoCalendar.accessLevel
       }
 
-      AsyncFunction("listEvents") Coroutine { expoCalendar: ExpoCalendar, startDate: String, endDate: String ->
-        permissionsDelegate.requireSystemPermissions(false)
+      AsyncFunction("listEvents") Coroutine { expoCalendar: ExpoCalendar, startDate: DateTimeInput, endDate: DateTimeInput ->
         expoCalendar.getEvents(startDate, endDate)
       }
 
-      AsyncFunction("createEvent") Coroutine { expoCalendar: ExpoCalendar, record: EventRecord ->
+      AsyncFunction("createEvent") Coroutine { expoCalendar: ExpoCalendar, record: EventRecord.New ->
         permissionsDelegate.requireSystemPermissions(true)
         expoCalendar.createEvent(record)
       }
 
-      AsyncFunction("update") Coroutine { expoCalendar: ExpoCalendar, details: CalendarRecord ->
+      AsyncFunction("update") Coroutine { expoCalendar: ExpoCalendar, updateCalendarInput: CalendarUpdateRecord ->
         permissionsDelegate.requireSystemPermissions(true)
-        val updatedRecord = expoCalendar.getUpdatedRecord(details)
-        ExpoCalendar.updateCalendar(appContext, updatedRecord, isNew = false)
-        expoCalendar.calendarRecord = updatedRecord
+        expoCalendar.update(updateCalendarInput)
       }
 
       AsyncFunction("delete") Coroutine { expoCalendar: ExpoCalendar ->
         permissionsDelegate.requireSystemPermissions(true)
-        if (!expoCalendar.deleteCalendar()) {
-          throw CalendarCouldNotBeDeletedException("An error occurred while deleting calendar")
-        }
+        expoCalendar.delete()
       }
     }
 
     Class(ExpoCalendarEvent::class) {
-      Constructor { id: String ->
-        ExpoCalendarEvent(appContext)
+      Constructor { eventRecord: EventRecord.Existing ->
+        expoCalendarEventFactory.create(eventMapper.toInstanceEntity(eventRecord))
       }
 
       Property("id") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.id
+        expoCalendarEvent.id
       }
 
       Property("calendarId") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.calendarId
+        expoCalendarEvent.calendarId
       }
 
       Property("title") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.title
+        expoCalendarEvent.title
       }
 
       Property("notes") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.notes
+        expoCalendarEvent.notes
       }
 
       Property("alarms") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.alarms
+        expoCalendarEvent.alarms
       }
 
       Property("recurrenceRule") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.recurrenceRule
+        expoCalendarEvent.recurrenceRule
       }
 
       Property("startDate") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.startDate
+        expoCalendarEvent.startDate
       }
 
       Property("endDate") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.endDate
+        expoCalendarEvent.endDate
       }
 
       Property("allDay") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.allDay
+        expoCalendarEvent.allDay
       }
 
       Property("location") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.location
+        expoCalendarEvent.location
       }
 
       Property("timeZone") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.timeZone
+        expoCalendarEvent.timeZone
       }
 
       Property("endTimeZone") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.endTimeZone
+        expoCalendarEvent.endTimeZone
       }
 
       Property("availability") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.availability?.value
+        expoCalendarEvent.availability
       }
 
       Property("status") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.status?.value
+        expoCalendarEvent.status
       }
 
       Property("organizerEmail") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.organizerEmail
+        expoCalendarEvent.organizerEmail
       }
 
       Property("accessLevel") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.accessLevel?.value
+        expoCalendarEvent.accessLevel
       }
 
       Property("guestsCanModify") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.guestsCanModify
+        expoCalendarEvent.guestsCanModify
       }
 
       Property("guestsCanInviteOthers") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.guestsCanInviteOthers
+        expoCalendarEvent.guestsCanInviteOthers
       }
 
       Property("guestsCanSeeGuests") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.guestsCanSeeGuests
+        expoCalendarEvent.guestsCanSeeGuests
       }
 
       Property("originalId") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.originalId
+        expoCalendarEvent.originalId
       }
 
       Property("instanceId") { expoCalendarEvent: ExpoCalendarEvent ->
-        expoCalendarEvent.eventRecord?.instanceId
+        expoCalendarEvent.instanceId
       }
 
       AsyncFunction("createAttendee") Coroutine { expoCalendarEvent: ExpoCalendarEvent, record: AttendeeRecord ->
@@ -266,8 +318,7 @@ class CalendarNextModule : Module() {
       }
 
       AsyncFunction("openInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions ->
-        val eventId = expoCalendarEvent.eventRecord?.id
-          ?: throw EventNotFoundException("Event id is null")
+        val eventId = expoCalendarEvent.instanceId?.toString() ?: ""
 
         val params = ViewedEventOptions(
           id = eventId,
@@ -279,8 +330,7 @@ class CalendarNextModule : Module() {
       }
 
       AsyncFunction("editInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions? ->
-        val eventId = expoCalendarEvent.eventRecord?.id
-          ?: throw EventNotFoundException("Event id is null")
+        val eventId = expoCalendarEvent.instanceId?.toString() ?: ""
         val params = ViewedEventOptions(
           id = eventId,
           startNewActivityTask = rawParams?.startNewActivityTask ?: true
@@ -300,56 +350,58 @@ class CalendarNextModule : Module() {
         expoCalendarEvent.getOccurrence(options)
       }
 
-      AsyncFunction("update") Coroutine { expoCalendarEvent: ExpoCalendarEvent, eventRecord: EventRecord, nullableFields: List<String> ->
+      AsyncFunction("update") Coroutine { expoCalendarEvent: ExpoCalendarEvent, eventUpdate: EventUpdateRecord, nullableFields: List<String> ->
         permissionsDelegate.requireSystemPermissions(true)
-        expoCalendarEvent.saveEvent(eventRecord, nullableFields = nullableFields)
-        expoCalendarEvent.reloadEvent()
+        expoCalendarEvent.update(eventUpdate)
       }
 
       AsyncFunction("delete") Coroutine { expoCalendarEvent: ExpoCalendarEvent ->
-        permissionsDelegate.requireSystemPermissions(true)
-        expoCalendarEvent.deleteEvent()
+        permissionsDelegate.requireWritePermissions()
+        expoCalendarEvent.delete()
       }
     }
 
     Class(ExpoCalendarAttendee::class) {
-      Constructor { id: String ->
-        ExpoCalendarAttendee(appContext)
+      Constructor { attendeeRecord: AttendeeRecord ->
+        ExpoCalendarAttendee(
+          attendeeMapper.toDomain(attendeeRecord),
+          attendeeMapper,
+          attendeeRepository
+        )
       }
 
       Property("id") { expoCalendarAttendee: ExpoCalendarAttendee ->
-        expoCalendarAttendee.attendeeRecord?.id
+        expoCalendarAttendee.id
       }
 
       Property("name") { expoCalendarAttendee: ExpoCalendarAttendee ->
-        expoCalendarAttendee.attendeeRecord?.name
+        expoCalendarAttendee.name
       }
 
       Property("role") { expoCalendarAttendee: ExpoCalendarAttendee ->
-        expoCalendarAttendee.attendeeRecord?.role?.value
+        expoCalendarAttendee.role
       }
 
       Property("status") { expoCalendarAttendee: ExpoCalendarAttendee ->
-        expoCalendarAttendee.attendeeRecord?.status?.value
+        expoCalendarAttendee.status
       }
 
       Property("type") { expoCalendarAttendee: ExpoCalendarAttendee ->
-        expoCalendarAttendee.attendeeRecord?.type?.value
+        expoCalendarAttendee.type
       }
 
       Property("email") { expoCalendarAttendee: ExpoCalendarAttendee ->
-        expoCalendarAttendee.attendeeRecord?.email
+        expoCalendarAttendee.email
       }
 
-      AsyncFunction("update") Coroutine { expoCalendarAttendee: ExpoCalendarAttendee, attendeeRecord: AttendeeRecord, nullableFields: List<String> ->
-        permissionsDelegate.requireSystemPermissions(true)
-        expoCalendarAttendee.saveAttendee(attendeeRecord, nullableFields = nullableFields)
-        expoCalendarAttendee.reloadAttendee()
+      AsyncFunction("update") Coroutine { expoCalendarAttendee: ExpoCalendarAttendee, attendeeUpdateRecord: AttendeeUpdateRecord, nullableFields: List<String> ->
+        permissionsDelegate.requireWritePermissions()
+        expoCalendarAttendee.update(attendeeUpdateRecord)
       }
 
       AsyncFunction("delete") Coroutine { expoCalendarAttendee: ExpoCalendarAttendee ->
-        permissionsDelegate.requireSystemPermissions(true)
-        expoCalendarAttendee.deleteAttendee()
+        permissionsDelegate.requireWritePermissions()
+        expoCalendarAttendee.delete()
       }
     }
 

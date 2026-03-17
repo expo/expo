@@ -3,41 +3,48 @@ package expo.modules.calendar.next.records
 import android.provider.CalendarContract
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.Required
+import expo.modules.kotlin.types.Enumerable
+import java.util.EnumMap
 
-data class CalendarRecord(
-  @Field
-  var id: String? = null,
-  @Field
-  val title: String? = null,
-  @Field
-  val name: String? = null,
-  @Field
-  val source: Source? = null,
-  @Field
-  val color: Int? = null,
-  @Field
-  val isVisible: Boolean = true,
-  @Field
-  val isSynced: Boolean = true,
-  @Field
-  val timeZone: String? = null,
-  @Field
-  val isPrimary: Boolean = false,
-  @Field
-  val allowsModifications: Boolean = true,
-  @Field
-  val allowedAvailabilities: List<String> = emptyList(),
-  @Field
-  val allowedReminders: List<AlarmMethod> = emptyList(),
-  @Field
-  val allowedAttendeeTypes: List<AttendeeType> = emptyList(),
-  @Field
-  var ownerAccount: String? = null,
-  @Field
-  val accessLevel: CalendarAccessLevel? = null
-) : Record
+sealed interface CalendarRecord : Record {
+  data class New(
+    @Required @Field var title: String,
+    @Field val name: String?,
+    @Field val source: Source?,
+    @Field val color: Int?,
+    @Field val isVisible: Boolean?,
+    @Field val isSynced: Boolean?,
+    @Field val timeZone: String?,
+    @Field val isPrimary: Boolean?,
+    @Field val allowsModifications: Boolean?,
+    @Field val allowedAvailabilities: List<String>?,
+    @Field val allowedReminders: List<AlarmMethod>?,
+    @Field val allowedAttendeeTypes: List<AttendeeType>?,
+    @Field var ownerAccount: String?,
+    @Field val accessLevel: CalendarAccessLevel?
+  ) : CalendarRecord
 
-enum class CalendarAccessLevel(val value: String) {
+  data class Existing(
+    @Required @Field var id: String,
+    @Required @Field val title: String,
+    @Field val name: String?,
+    @Field val source: Source?,
+    @Field val color: Int?,
+    @Field val isVisible: Boolean?,
+    @Field val isSynced: Boolean?,
+    @Field val timeZone: String?,
+    @Field val isPrimary: Boolean?,
+    @Field val allowsModifications: Boolean?,
+    @Field val allowedAvailabilities: List<String>?,
+    @Field val allowedReminders: List<AlarmMethod>?,
+    @Field val allowedAttendeeTypes: List<AttendeeType>?,
+    @Field var ownerAccount: String?,
+    @Field val accessLevel: CalendarAccessLevel?
+  ) : CalendarRecord
+}
+
+enum class CalendarAccessLevel(val value: String) : Enumerable {
   CONTRIBUTOR("contributor"),
   EDITOR("editor"),
   FREEBUSY("freebusy"),
@@ -59,12 +66,6 @@ enum class CalendarAccessLevel(val value: String) {
       OVERRIDE -> CalendarContract.Calendars.CAL_ACCESS_OVERRIDE
       ROOT -> CalendarContract.Calendars.CAL_ACCESS_ROOT
       NONE -> CalendarContract.Calendars.CAL_ACCESS_NONE
-    }
-  }
-
-  companion object {
-    fun fromAccessLevelString(accessLevelString: String?): CalendarAccessLevel {
-      return entries.find { it.value == accessLevelString } ?: NONE
     }
   }
 }

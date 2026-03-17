@@ -1,296 +1,150 @@
 package expo.modules.calendar.next
 
-import android.content.ContentUris
-import android.content.ContentValues
-import android.content.Context
-import android.database.Cursor
-import android.provider.CalendarContract
-import expo.modules.calendar.domain.calendar.CalendarRepository
-import expo.modules.calendar.domain.event.enums.Availability
-import expo.modules.calendar.next.exceptions.CalendarCouldNotBeUpdatedException
-import expo.modules.calendar.next.exceptions.CalendarNotFoundException
+import expo.modules.calendar.extensions.DateTimeInput
+import expo.modules.calendar.extensions.getTimeInMillis
+import expo.modules.calendar.next.domain.model.calendar.CalendarEntity
+import expo.modules.calendar.next.domain.repositories.calendar.CalendarRepository
+import expo.modules.calendar.next.domain.wrappers.CalendarId
+import expo.modules.calendar.next.domain.repositories.event.EventRepository
+import expo.modules.calendar.next.domain.repositories.instance.InstanceRepository
+import expo.modules.calendar.next.domain.dto.event.EventInput
+import expo.modules.calendar.next.domain.repositories.reminder.ReminderRepository
+import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.exceptions.CalendarNotSupportedException
-import expo.modules.calendar.next.exceptions.EventNotFoundException
 import expo.modules.calendar.next.exceptions.EventsCouldNotBeCreatedException
-import expo.modules.calendar.next.extensions.toCalendarRecord
-import expo.modules.calendar.next.extensions.toEventRecord
+import expo.modules.calendar.next.mappers.CalendarMapper
+import expo.modules.calendar.next.mappers.EventMapper
+import expo.modules.calendar.next.mappers.ReminderMapper
+import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.CalendarRecord
+import expo.modules.calendar.next.domain.dto.calendar.CalendarUpdate
+import expo.modules.calendar.next.records.CalendarUpdateRecord
 import expo.modules.calendar.next.records.EventRecord
-import expo.modules.calendar.next.utils.findEvents
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.util.TimeZone
 
 class ExpoCalendar(
-  context: AppContext,
-  var calendarRecord: CalendarRecord? = CalendarRecord()
-) : SharedObject(context) {
+  calendarEntity: CalendarEntity,
+  private val calendarRepository: CalendarRepository,
+  private val eventRepository: EventRepository,
+  private val reminderRepository: ReminderRepository,
+  private val instanceRepository: InstanceRepository,
+  private val eventFactory: ExpoCalendarEventFactory,
+  private val eventMapper: EventMapper,
+  private val calendarMapper: CalendarMapper,
+  private val reminderMapper: ReminderMapper
+) : SharedObject() {
+  val id get() = data?.id
+  val title get() = data?.title
+  val name get() = data?.name
+  val source get() = data?.source
+  val color get() = data?.color
+  val isVisible get() = data?.isVisible
+  val isSynced get() = data?.isSynced
+  val timeZone get() = data?.timeZone
+  val isPrimary get() = data?.isPrimary
+  val allowsModifications get() = data?.allowsModifications
+  val allowedAvailabilities get() = data?.allowedAvailabilities
+  val allowedReminders get() = data?.allowedReminders
+  val allowedAttendeeTypes get() = data?.allowedAttendeeTypes
+  val ownerAccount get() = data?.ownerAccount
+  val accessLevel get() = data?.accessLevel
 
-  val reactContext: Context
-    get() = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
+  private val calendarId = calendarEntity.id
 
-  suspend fun getEvents(startDate: String, endDate: String): List<ExpoCalendarEvent> {
-    try {
-      if (calendarRecord?.id == null) {
-        throw EventNotFoundException("Calendar id is null")
-      }
-      val contentResolver = reactContext.contentResolver
+  // Grouped data object to avoid manual reassignment of each field on update, reload or clear
+  private var data: ExpoCalendarData? = calendarMapper.toExpoCalendarData(calendarEntity)
 
-      return findEvents(
-        contentResolver,
-        startDate,
-        endDate,
-        listOf(calendarRecord?.id ?: "")
-      ).use { serializeExpoCalendarEvents(it) }
-    } catch (e: Exception) {
-      throw EventNotFoundException("Events could not be found", e)
-    }
+  suspend fun getEvents(startDate: DateTimeInput, endDate: DateTimeInput): List<ExpoCalendarEvent> =
+    instanceRepository.findAll(
+      startDate = startDate.getTimeInMillis(),
+      endDate = endDate.getTimeInMillis(),
+      calendars = listOf(calendarId)
+    ).map { eventFactory.create(it) }
+
+  suspend fun delete() {
+    calendarRepository.delete(calendarId)
+    data = null
   }
 
-  suspend fun deleteCalendar(): Boolean {
-    return withContext(Dispatchers.IO) {
-      val calendarID = calendarRecord?.id?.toLongOrNull()
-        ?: throw EventNotFoundException("Calendar id is null")
-      val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID)
-      val contentResolver = reactContext.contentResolver
-      val rows = contentResolver.delete(uri, null, null)
-      calendarRecord = null
-      rows > 0
-    }
-  }
-
-  suspend fun createEvent(record: EventRecord): ExpoCalendarEvent? {
+  suspend fun createEvent(record: EventRecord.New): ExpoCalendarEvent {
     try {
-      val event = ExpoCalendarEvent(
-        appContext
-          ?: throw Exceptions.AppContextLost(),
-        record
-      )
-      val calendarId = calendarRecord?.id
-        ?: throw EventsCouldNotBeCreatedException("Calendar id is null")
-      val newEventId = event.saveEvent(record, calendarId)
-      event.reloadEvent(newEventId.toString())
-      return event
+      val eventInput = eventMapper.toDomainEventInput(calendarId, record)
+      val eventId = EventId(eventRepository.insert(eventInput))
+      insertReminders(eventId, record.alarms)
+      return buildExpoCalendarEvent(eventId, eventInput)
     } catch (e: Exception) {
       throw EventsCouldNotBeCreatedException("Event could not be created", e)
     }
   }
 
-  fun getUpdatedRecord(other: CalendarRecord, nullableFields: List<String>? = null): CalendarRecord {
-    val nullableSet = nullableFields?.toSet() ?: emptySet()
-    val current = calendarRecord ?: CalendarRecord()
+  private suspend fun insertReminders(eventId: EventId, alarms: List<AlarmRecord>?) {
+    alarms?.forEach { alarm ->
+      val reminderInput = reminderMapper.toDomain(alarm)
+      reminderRepository.create(eventId, reminderInput)
+    }
+  }
 
-    fun <T> getValue(fieldName: String, otherValue: T?, currentValue: T): T =
-      if (fieldName in nullableSet) currentValue else otherValue ?: currentValue
-
-    fun <T> getNullableValue(fieldName: String, otherValue: T?, currentValue: T?): T? =
-      if (fieldName in nullableSet) null else otherValue ?: currentValue
-
-    return CalendarRecord(
-      id = getNullableValue("id", other.id, current.id),
-      title = getNullableValue("title", other.title, current.title),
-      name = getNullableValue("name", other.name, current.name),
-      source = getNullableValue("source", other.source, current.source),
-      color = getNullableValue("color", other.color, current.color),
-      isVisible = getValue("isVisible", other.isVisible, current.isVisible),
-      isSynced = getValue("isSynced", other.isSynced, current.isSynced),
-      timeZone = getNullableValue("timeZone", other.timeZone, current.timeZone),
-      isPrimary = getValue("isPrimary", other.isPrimary, current.isPrimary),
-      allowsModifications = getValue("allowsModifications", other.allowsModifications, current.allowsModifications),
-      allowedAvailabilities = getValue("allowedAvailabilities", other.allowedAvailabilities, current.allowedAvailabilities),
-      allowedReminders = getValue("allowedReminders", other.allowedReminders, current.allowedReminders),
-      allowedAttendeeTypes = getValue("allowedAttendeeTypes", other.allowedAttendeeTypes, current.allowedAttendeeTypes),
-      ownerAccount = getNullableValue("ownerAccount", other.ownerAccount, current.ownerAccount),
-      accessLevel = getNullableValue("accessLevel", other.accessLevel, current.accessLevel)
+  private suspend fun buildExpoCalendarEvent(eventId: EventId, eventInput: EventInput): ExpoCalendarEvent {
+    val reminders = reminderRepository.findAllByEventId(eventId)
+    val instanceEntity = eventMapper.toInstanceEntity(eventInput.toExistingEntity(eventId))
+    return eventFactory.create(
+      instanceEntity = instanceEntity,
+      reminders = reminders
     )
   }
 
-  private fun serializeExpoCalendarEvents(cursor: Cursor): List<ExpoCalendarEvent> {
-    val results = mutableListOf<ExpoCalendarEvent>()
-    val contentResolver = reactContext.contentResolver
-    while (cursor.moveToNext()) {
-      results.add(
-        ExpoCalendarEvent(
-          appContext ?: throw Exceptions.AppContextLost(),
-          eventRecord = cursor.toEventRecord(contentResolver)
-        )
-      )
-    }
-    return results
+  suspend fun update(updateRecord: CalendarUpdateRecord) {
+
+    calendarRepository.update(calendarId, CalendarUpdate(
+      name = updateRecord.name,
+      calendarDisplayName = updateRecord.title,
+      calendarColor = updateRecord.color,
+      visible = updateRecord.isVisible,
+      syncEvents = updateRecord.isSynced,
+      calendarTimeZone = updateRecord.timeZone
+    ))
+    reloadProperties()
+  }
+
+  private suspend fun reloadProperties() {
+    data = calendarRepository.findById(calendarId)?.let { calendarMapper.toExpoCalendarData(it) }
+      ?: throw IllegalStateException("Calendar not found during reload")
   }
 
   companion object {
-    suspend fun updateCalendar(appContext: AppContext, calendarRecord: CalendarRecord, isNew: Boolean = false): Long {
-      return withContext(Dispatchers.IO) {
-        if (isNew) {
-          if (calendarRecord.title == null) {
-            throw CalendarCouldNotBeUpdatedException("new calendars require `title`")
-          }
-          if (calendarRecord.name == null) {
-            throw CalendarCouldNotBeUpdatedException("new calendars require `name`")
-          }
-          if (calendarRecord.source == null) {
-            throw CalendarCouldNotBeUpdatedException("new calendars require `source`")
-          }
-          if (calendarRecord.color == null) {
-            throw CalendarCouldNotBeUpdatedException("new calendars require `color`")
-          }
-        }
-
-        val source = calendarRecord.source
-        if (isNew && source?.name == null) {
-          throw CalendarCouldNotBeUpdatedException("new calendars require a `source` object with a `name`")
-        }
-
-        val values = ContentValues().apply {
-          put(CalendarContract.Calendars.NAME, calendarRecord.name)
-          put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, calendarRecord.title)
-          put(CalendarContract.Calendars.VISIBLE, calendarRecord.isVisible)
-          put(CalendarContract.Calendars.SYNC_EVENTS, calendarRecord.isSynced)
-          put(CalendarContract.Calendars.CALENDAR_COLOR, calendarRecord.color)
-
-          if (isNew) {
-            put(CalendarContract.Calendars.ACCOUNT_NAME, source?.name)
-            put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calendarRecord.accessLevel?.toAndroidValue())
-            put(CalendarContract.Calendars.OWNER_ACCOUNT, calendarRecord.ownerAccount)
-            put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, calendarRecord.timeZone ?: TimeZone.getDefault().id)
-            put(
-              CalendarContract.Calendars.ACCOUNT_TYPE,
-              if (source != null && source.isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source?.type
-            )
-          }
-
-          if (calendarRecord.allowedAvailabilities.isNotEmpty()) {
-            val availabilityValues = calendarRecord.allowedAvailabilities.map { availability ->
-              Availability.fromString(availability).contentProviderValue
-            }
-            if (availabilityValues.isNotEmpty()) {
-              put(
-                CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-                availabilityValues.joinToString(separator = ",")
-              )
-            }
-          }
-
-          if (calendarRecord.allowedReminders.isNotEmpty()) {
-            put(
-              CalendarContract.Calendars.ALLOWED_REMINDERS,
-              calendarRecord.allowedReminders.joinToString(separator = ",")
-            )
-          }
-
-          if (calendarRecord.allowedAttendeeTypes.isNotEmpty()) {
-            put(
-              CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
-              calendarRecord.allowedAttendeeTypes.joinToString(separator = ",")
-            )
-          }
-        }
-
-        val contentResolver = (
-          appContext.reactContext
-            ?: throw Exceptions.ReactContextLost()
-          ).contentResolver
-
-        if (isNew) {
-          val uriBuilder = CalendarContract.Calendars.CONTENT_URI
-            .buildUpon()
-            .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-            .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source!!.name)
-            .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, if (source.isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.type)
-
-          val calendarsUri = uriBuilder.build()
-          val calendarUri = contentResolver.insert(calendarsUri, values)
-          val calendarId = calendarUri?.lastPathSegment!!.toLong()
-          calendarId
-        } else {
-          val uri = CalendarContract.Calendars.CONTENT_URI.buildUpon().appendPath(calendarRecord.id).build()
-          val rowsUpdated = contentResolver.update(uri, values, null, null)
-          if (rowsUpdated == 0) {
-            throw CalendarCouldNotBeUpdatedException("Failed to update calendar")
-          }
-          calendarRecord.id!!.toLong()
-        }
-      }
+    suspend fun create(
+      calendarRecord: CalendarRecord.New,
+      calendarMapper: CalendarMapper,
+      calendarRepository: CalendarRepository,
+      calendarFactory: ExpoCalendarFactory
+    ): ExpoCalendar {
+      val calendarInput = calendarMapper.toCalendarInput(calendarRecord)
+      val calendarId = calendarRepository.insert(calendarInput)
+      val existingCalendarEntity = calendarInput.toCalendarEntity(calendarId)
+      return calendarFactory.create(existingCalendarEntity)
     }
 
-    suspend fun findExpoCalendars(context: AppContext, type: String?): List<ExpoCalendar> {
-      return withContext(Dispatchers.IO) {
-        try {
-          if (type != null && type == "reminder") {
-            throw CalendarNotSupportedException("Calendars of type `reminder` are not supported on Android")
-          }
-          val contentResolver = (
-            context.reactContext
-              ?: throw Exceptions.ReactContextLost()
-            ).contentResolver
-          val uri = CalendarContract.Calendars.CONTENT_URI
-          val projection = CalendarRepository.findCalendarsQueryParameters
-          val cursor = contentResolver.query(uri, projection, null, null, null)
-          requireNotNull(cursor) { "Cursor shouldn't be null" }
-          cursor.use { serializeExpoCalendars(context, it) }
-        } catch (e: Exception) {
-          throw CalendarNotFoundException("Calendars could not be found", e)
-        }
+    suspend fun getAll(
+      type: String?,
+      calendarRepository: CalendarRepository,
+      expoCalendarFactory: ExpoCalendarFactory
+    ): List<ExpoCalendar> {
+      if (type == "reminder") {
+        throw CalendarNotSupportedException("Calendars of type `reminder` are not supported on Android")
       }
+      return calendarRepository
+        .findAll()
+        .map { calendarEntity -> expoCalendarFactory.create(calendarEntity) }
     }
 
-    suspend fun findExpoCalendarById(context: AppContext, calendarID: String): ExpoCalendar? {
-      return withContext(Dispatchers.IO) {
-        val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
-        val contentResolver = (
-          context.reactContext
-            ?: throw Exceptions.ReactContextLost()
-          ).contentResolver
-        val projection = CalendarRepository.findCalendarByIdQueryFields
-        val cursor = contentResolver.query(
-          uri,
-          projection,
-          null,
-          null,
-          null
-        )
-        requireNotNull(cursor) { "Cursor shouldn't be null" }
-        cursor.use {
-          if (it.count > 0) {
-            it.moveToFirst()
-            ExpoCalendar(context, calendarRecord = cursor.toCalendarRecord())
-          } else {
-            null
-          }
-        } ?: throw CalendarNotFoundException("Calendar with id $calendarID not found")
-      }
-    }
-
-    suspend fun listEvents(context: AppContext, calendarIds: List<String>, startDate: String, endDate: String): List<ExpoCalendarEvent> {
-      try {
-        val contentResolver = (
-          context.reactContext
-            ?: throw Exceptions.ReactContextLost()
-          ).contentResolver
-        val allEvents = mutableListOf<ExpoCalendarEvent>()
-        val cursor = findEvents(contentResolver, startDate, endDate, calendarIds)
-        cursor.use {
-          while (it.moveToNext()) {
-            val event = ExpoCalendarEvent(context, eventRecord = cursor.toEventRecord(contentResolver))
-            allEvents.add(event)
-          }
-        }
-        return allEvents
-      } catch (e: Exception) {
-        throw EventNotFoundException("Events could not be found", e)
-      }
-    }
-
-    private fun serializeExpoCalendars(context: AppContext, cursor: Cursor): List<ExpoCalendar> {
-      val results = mutableListOf<ExpoCalendar>()
-      while (cursor.moveToNext()) {
-        results.add(ExpoCalendar(context, calendarRecord = cursor.toCalendarRecord()))
-      }
-      return results
+    suspend fun getById(
+      calendarId: String,
+      calendarRepository: CalendarRepository,
+      calendarFactory: ExpoCalendarFactory
+    ): ExpoCalendar? {
+      val calendarEntity = calendarRepository.findById(CalendarId(calendarId.toLong()))
+        ?: return null
+      return calendarFactory.create(calendarEntity)
     }
   }
 }

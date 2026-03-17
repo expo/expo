@@ -7,53 +7,57 @@ import expo.modules.calendar.next.utils.rrFormat
 import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.Enumerable
 import java.util.Locale
 
-data class EventRecord(
-  @Field
-  val id: String? = null,
-  @Field
-  val calendarId: String? = null,
-  @Field
-  val title: String? = null,
-  @Field
-  val location: String? = null,
-  @Field
-  val timeZone: String? = null,
-  @Field
-  val endTimeZone: String? = null,
-  @Field
-  val notes: String? = null,
-  @Field
-  val alarms: List<AlarmRecord>? = null,
-  @Field
-  val recurrenceRule: RecurrenceRuleRecord? = null,
-  @Field
-  val startDate: String? = null,
-  @Field
-  val endDate: String? = null,
-  @Field
-  val allDay: Boolean? = null,
-  @Field
-  val availability: EventAvailability? = null,
-  @Field
-  val status: EventStatus? = null,
-  @Field
-  val organizerEmail: String? = null,
-  @Field
-  val accessLevel: EventAccessLevel? = null,
-  @Field
-  val guestsCanModify: Boolean? = null,
-  @Field
-  val guestsCanInviteOthers: Boolean? = null,
-  @Field
-  val guestsCanSeeGuests: Boolean? = null,
-  @Field
-  val originalId: String? = null,
-  @Field
-  val instanceId: String? = null
-) : Record
+sealed interface EventRecord : Record {
+  data class New(
+    @Field val startDate: String,
+    @Field val endDate: String,
+    @Field val title: String? = null,
+    @Field val location: String? = null,
+    @Field val timeZone: String? = null,
+    @Field val endTimeZone: String? = null,
+    @Field val notes: String? = null,
+    @Field val alarms: List<AlarmRecord>? = null,
+    @Field val recurrenceRule: RecurrenceRuleRecord? = null,
+    @Field val allDay: Boolean? = null,
+    @Field val availability: EventAvailability? = null,
+    @Field val status: EventStatus? = null,
+    @Field val organizerEmail: String? = null,
+    @Field val accessLevel: EventAccessLevel? = null,
+    @Field val guestsCanModify: Boolean? = null,
+    @Field val guestsCanInviteOthers: Boolean? = null,
+    @Field val guestsCanSeeGuests: Boolean? = null,
+    @Field val originalId: String? = null,
+    @Field val instanceId: String? = null
+  ) : EventRecord
+
+  data class Existing(
+    @Required @Field val id: String,
+    @Field val startDate: String,
+    @Field val endDate: String,
+    @Field val calendarId: String? = null,
+    @Field val title: String? = null,
+    @Field val location: String? = null,
+    @Field val timeZone: String? = null,
+    @Field val endTimeZone: String? = null,
+    @Field val notes: String? = null,
+    @Field val alarms: List<AlarmRecord>? = null,
+    @Field val recurrenceRule: RecurrenceRuleRecord? = null,
+    @Field val allDay: Boolean? = null,
+    @Field val availability: EventAvailability? = null,
+    @Field val status: EventStatus? = null,
+    @Field val organizerEmail: String? = null,
+    @Field val accessLevel: EventAccessLevel? = null,
+    @Field val guestsCanModify: Boolean? = null,
+    @Field val guestsCanInviteOthers: Boolean? = null,
+    @Field val guestsCanSeeGuests: Boolean? = null,
+    @Field val originalId: String? = null,
+    @Field val instanceId: String? = null
+  ) : EventRecord
+}
 
 data class AlarmRecord(
   @Field
