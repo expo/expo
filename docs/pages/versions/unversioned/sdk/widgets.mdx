@@ -155,13 +155,13 @@ Start by creating a Widget using the `createWidget` function and pass the widget
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
 import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
-import { createWidget, WidgetBase } from 'expo-widgets';
+import { createWidget, Widget } from 'expo-widgets';
 
 type MyWidgetProps = {
   count: number;
 };
 
-const MyWidget = (props: WidgetBase<MyWidgetProps>) => {
+const MyWidget = (props: Widget<MyWidgetProps>) => {
   'widget';
   return (
     <VStack>
@@ -213,14 +213,14 @@ Widget component receives a `family` prop indicating which size is being rendere
 
 ```tsx
 import { HStack, Text, VStack } from '@expo/ui/swift-ui';
-import { createWidget, WidgetBase } from 'expo-widgets';
+import { createWidget, Widget } from 'expo-widgets';
 
 type WeatherWidgetProps = {
   temperature: number;
   condition: string;
 };
 
-const WeatherWidget = (props: WidgetBase<WeatherWidgetProps>) => {
+const WeatherWidget = (props: Widget<WeatherWidgetProps>) => {
   'widget';
   // Render different layouts based on size
   if (props.family === 'systemSmall') {
