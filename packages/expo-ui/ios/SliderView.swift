@@ -7,15 +7,21 @@ struct SliderView: ExpoSwiftUI.View {
   @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
   @State var isEditing: Bool = false
-
+  
   init(props: SliderProps) {
     self.props = props
-    _value = State(initialValue: props.value ?? 0.0)
   }
 
   var body: some View {
 #if !os(tvOS)
     sliderContent
+      .onAppear {
+        value = props.value ?? 0.0
+      }
+      .onChange(of: props.value) { newValue in
+        guard !isEditing else { return }
+        value = newValue ?? 0.0
+      }
       .onChange(of: value) { newValue in
         if props.value != newValue {
           props.onValueChanged([
@@ -23,10 +29,6 @@ struct SliderView: ExpoSwiftUI.View {
           ])
         }
       }
-      .onReceive(props.value.publisher, perform: { newValue in
-        guard !isEditing else { return }
-        value = newValue
-      })
 #else
     Text("Slider is not supported on tvOS")
 #endif
