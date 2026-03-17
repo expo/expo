@@ -25,13 +25,16 @@ const exportedConfigWithPopsCommon = (modName: string = 'styles') => ({
 });
 
 describe(resolveProps, () => {
-  it(`resolves no props`, () => {
+  it(`resolves no legacy props`, () => {
     expect(resolveProps({})).toStrictEqual({
-      barStyle: undefined,
       enforceContrast: undefined,
+      hidden: undefined,
+      style: undefined,
+      visible: undefined,
     });
   });
-  it(`resolves props`, () => {
+
+  it(`resolves legacy props`, () => {
     expect(
       resolveProps({
         androidNavigationBar: {
@@ -39,11 +42,14 @@ describe(resolveProps, () => {
         },
       })
     ).toStrictEqual({
-      barStyle: 'light',
       enforceContrast: undefined,
+      hidden: undefined,
+      style: 'light',
+      visible: undefined,
     });
   });
-  it(`skips props if any config plugin props are provided`, () => {
+
+  it(`skips legacy props if any config plugin props are provided`, () => {
     expect(
       resolveProps(
         {
@@ -54,21 +60,29 @@ describe(resolveProps, () => {
         // config plugin props
         {}
       )
-    ).toStrictEqual({});
+    ).toStrictEqual({
+      enforceContrast: undefined,
+      hidden: undefined,
+      style: undefined,
+      visible: undefined,
+    });
   });
+
   it(`resolves config plugin props`, () => {
     expect(
       resolveProps(
         {},
         // config plugin props
         {
-          barStyle: 'dark',
-          visibility: 'hidden',
+          style: 'dark',
+          hidden: true,
         }
       )
     ).toStrictEqual({
-      barStyle: 'dark',
-      visibility: 'hidden',
+      enforceContrast: undefined,
+      hidden: true,
+      style: 'dark',
+      visible: 'leanback',
     });
   });
 });
@@ -79,8 +93,8 @@ describe(setStrings, () => {
       {},
       // config plugin props
       {
-        barStyle: 'dark',
-        visibility: 'hidden',
+        style: 'dark',
+        hidden: true,
       }
     );
   }
@@ -117,6 +131,7 @@ describe(setStrings, () => {
       },
     });
   });
+
   it(`unsets string`, () => {
     // Set all strings
     const strings = setStrings({ resources: {} }, getAllProps());
@@ -127,9 +142,10 @@ describe(setStrings, () => {
       },
     });
   });
+
   it(`redefines duplicates`, () => {
     // Set all strings
-    const strings = setStrings({ resources: {} }, { visibility: 'hidden' });
+    const strings = setStrings({ resources: {} }, { hidden: true });
 
     expect(strings.resources.string).toStrictEqual([
       {
@@ -138,15 +154,15 @@ describe(setStrings, () => {
         _: 'hidden',
       },
     ]);
-    expect(
-      setStrings(strings, resolveProps({}, { visibility: 'visible' })).resources.string
-    ).toStrictEqual([
-      {
-        $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
-        // Test a redefined value
-        _: 'visible',
-      },
-    ]);
+    expect(setStrings(strings, resolveProps({}, { hidden: false })).resources.string).toStrictEqual(
+      [
+        {
+          $: { name: 'expo_navigation_bar_visibility', translatable: 'false' },
+          // Test a redefined value
+          _: 'visible',
+        },
+      ]
+    );
   });
 });
 
@@ -155,17 +171,14 @@ describe(withAndroidNavigationBarExpoGoManifest, () => {
     expect(
       withAndroidNavigationBarExpoGoManifest(
         { name: '', slug: '' },
-        {
-          barStyle: 'dark',
-          visibility: 'hidden',
-        }
+        resolveProps({}, { hidden: true, style: 'dark' })
       )
     ).toStrictEqual({
       name: expect.any(String),
       slug: expect.any(String),
       androidNavigationBar: {
-        // Ensure `content` is added
         barStyle: 'dark-content',
+        visible: 'leanback',
       },
     });
   });

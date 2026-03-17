@@ -3,6 +3,8 @@
  *
  * - `dark` makes buttons **darker** to adjust for a mostly light nav bar.
  * - `light` makes buttons **lighter** to adjust for a mostly dark nav bar.
+ *
+ * @deprecated This will be removed in a future release.
  */
 export type NavigationBarButtonStyle = 'light' | 'dark';
 /**

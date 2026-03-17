@@ -19,11 +19,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Card component',
+    route: 'ui/card',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CardScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ButtonScreen'));
+    },
+  },
+  {
+    name: 'Checkbox component',
+    route: 'ui/checkbox',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CheckboxScreen'));
     },
   },
   {
@@ -160,6 +176,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'ToggleButton component',
+    route: 'ui/toggle-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleButtonScreen'));
     },
   },
   {

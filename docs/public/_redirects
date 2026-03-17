@@ -337,3 +337,11 @@
 /versions/unversioned/sdk/ui/jetpack-compose/textbutton /versions/unversioned/sdk/ui/jetpack-compose/button 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/textbutton /versions/v55.0.0/sdk/ui/jetpack-compose/button 301
 /versions/latest/sdk/ui/jetpack-compose/textbutton /versions/latest/sdk/ui/jetpack-compose/button 301
+
+# After merging LinearProgress and CircularProgress into Progress in expo-ui (Android)
+/versions/unversioned/sdk/ui/jetpack-compose/linearprogress /versions/unversioned/sdk/ui/jetpack-compose/progress 301
+/versions/unversioned/sdk/ui/jetpack-compose/circularprogress /versions/unversioned/sdk/ui/jetpack-compose/progress 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/linearprogress /versions/v55.0.0/sdk/ui/jetpack-compose/progress 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/circularprogress /versions/v55.0.0/sdk/ui/jetpack-compose/progress 301
+/versions/latest/sdk/ui/jetpack-compose/linearprogress /versions/latest/sdk/ui/jetpack-compose/progress 301
+/versions/latest/sdk/ui/jetpack-compose/circularprogress /versions/latest/sdk/ui/jetpack-compose/progress 301

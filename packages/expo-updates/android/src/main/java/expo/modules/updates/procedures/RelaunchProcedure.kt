@@ -14,6 +14,7 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,6 +59,8 @@ class RelaunchProcedure(
     )
     try {
       launchWith(newLauncher)
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       logger.error("Error launching new launcher", e, UpdatesErrorCode.Unknown)
       callback.onFailure(e)
@@ -92,6 +95,8 @@ class RelaunchProcedure(
           getCurrentLauncher().launchedUpdate,
           selectionPolicy
         )
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         logger.error("Could not run Reaper.", e, UpdatesErrorCode.Unknown)
       }

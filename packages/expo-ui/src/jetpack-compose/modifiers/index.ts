@@ -276,6 +276,20 @@ export const clickable = (handler: () => void, options?: { indication?: boolean 
 export const selectable = (selected: boolean, handler: () => void) =>
   createModifierWithEventListener('selectable', handler, { selected });
 
+/**
+ * Makes the view toggleable with accessibility semantics.
+ * Use this to make a row containing a checkbox or switch tappable as a whole.
+ * @param value - The current toggle state.
+ * @param handler - Function to call when toggled.
+ * @param options - Optional configuration.
+ * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`, `'switch'`, or `'tab'`.
+ */
+export const toggleable = (
+  value: boolean,
+  handler: () => void,
+  options?: { role?: 'checkbox' | 'radioButton' | 'switch' | 'tab' }
+) => createModifierWithEventListener('toggleable', handler, { value, role: options?.role });
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================
