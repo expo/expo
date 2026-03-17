@@ -47,7 +47,7 @@ class ReminderRepositoryTest {
       mapOf(
         CalendarContract.Reminders._ID to 5L,
         CalendarContract.Reminders.METHOD to CalendarContract.Reminders.METHOD_EMAIL,
-        CalendarContract.Reminders.MINUTES to 15,
+        CalendarContract.Reminders.MINUTES to 15
       )
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
@@ -86,7 +86,7 @@ class ReminderRepositoryTest {
     // Given
     val cursor = cursorWithRows(
       minimalRow(id = 1L, minutes = 10),
-      minimalRow(id = 2L, minutes = 30),
+      minimalRow(id = 2L, minutes = 30)
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
 
@@ -204,7 +204,7 @@ class ReminderRepositoryTest {
     id: Long = 1L,
     minutes: Int = 10,
     method: Int = CalendarContract.Reminders.METHOD_DEFAULT,
-    includeMethod: Boolean = true,
+    includeMethod: Boolean = true
   ): Map<String, Any?> = buildMap {
     put(CalendarContract.Reminders._ID, id)
     put(CalendarContract.Reminders.MINUTES, minutes)
