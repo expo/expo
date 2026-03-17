@@ -22,7 +22,7 @@ public final class TextViewProps: UIBaseViewProps {
   @Field public var markdownEnabled: Bool = false
   @Field public var date: Date?
   @Field public var dateStyle: TextDateStyle?
-  @Field var timerInterval: ClosedRangeDate?
+  @Field public var timerInterval: ClosedRangeDate?
   @Field public var countsDown: Bool?
   @Field public var pauseTime: Date?
 
