@@ -42,16 +42,24 @@ internal fun copyFileViaChannel(
   val dstPfd = dest.openFileDescriptor("w")
     ?: run { srcPfd.close(); return false }
 
-  srcPfd.use { src ->
-    dstPfd.use { dst ->
-      FileInputStream(src.fileDescriptor).channel.use { inCh ->
-        FileOutputStream(dst.fileDescriptor).channel.use { outCh ->
-          inCh.transferTo(0, inCh.size(), outCh)
+  return try {
+    srcPfd.use { src ->
+      dstPfd.use { dst ->
+        FileInputStream(src.fileDescriptor).channel.use { inCh ->
+          FileOutputStream(dst.fileDescriptor).channel.use { outCh ->
+            var position = 0L
+            val size = inCh.size()
+            while (position < size) {
+              position += inCh.transferTo(position, size - position, outCh)
+            }
+          }
         }
       }
     }
+    true
+  } catch (_: Exception) {
+    false
   }
-  return true
 }
 
 /**
@@ -107,7 +115,7 @@ internal fun copyDirectoryViaStream(
  *
  * @param source Source directory
  * @param dest Destination directory (must exist)
- * @param copyFile Function to copy a single file. Defaults to [copyFileViaStream].
+ * @param copyFile Function to copy a single file. Defaults to [copyFileWithChannelFallback].
  *   Callers can pass an NIO-based alternative for local-to-local copies.
  * @param parallelism Maximum number of concurrent file copies
  */
