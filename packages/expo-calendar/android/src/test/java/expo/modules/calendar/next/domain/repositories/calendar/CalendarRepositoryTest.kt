@@ -63,7 +63,7 @@ class CalendarRepositoryTest {
         CalendarContract.Calendars.NAME to "work_calendar",
         CalendarContract.Calendars.OWNER_ACCOUNT to "owner@example.com",
         CalendarContract.Calendars.SYNC_EVENTS to 1,
-        CalendarContract.Calendars.VISIBLE to 1,
+        CalendarContract.Calendars.VISIBLE to 1
       )
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
@@ -287,7 +287,7 @@ class CalendarRepositoryTest {
 
   private fun minimalRow(
     id: Long = 1L,
-    displayName: String = "My Calendar",
+    displayName: String = "My Calendar"
   ): Map<String, Any?> = mapOf(
     CalendarContract.Calendars._ID to id,
     CalendarContract.Calendars.ACCOUNT_NAME to null,
@@ -303,7 +303,7 @@ class CalendarRepositoryTest {
     CalendarContract.Calendars.NAME to null,
     CalendarContract.Calendars.OWNER_ACCOUNT to null,
     CalendarContract.Calendars.SYNC_EVENTS to 1,
-    CalendarContract.Calendars.VISIBLE to 1,
+    CalendarContract.Calendars.VISIBLE to 1
   )
 
   // endregion

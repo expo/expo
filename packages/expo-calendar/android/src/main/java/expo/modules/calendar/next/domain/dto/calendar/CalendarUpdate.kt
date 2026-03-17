@@ -1,8 +1,5 @@
 package expo.modules.calendar.next.domain.dto.calendar
 
-import android.content.ContentValues
-import android.provider.CalendarContract
-import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.ValueOrUndefined
 
 /**
@@ -18,5 +15,4 @@ data class CalendarUpdate(
   val visible: ValueOrUndefined<Boolean?> = ValueOrUndefined.Undefined(),
   val syncEvents: ValueOrUndefined<Boolean?> = ValueOrUndefined.Undefined(),
   val calendarTimeZone: ValueOrUndefined<String?> = ValueOrUndefined.Undefined()
-) {
-}
+)
