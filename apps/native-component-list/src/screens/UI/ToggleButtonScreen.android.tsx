@@ -72,7 +72,7 @@ export default function ToggleButtonScreen() {
               <IconToggleButton checked={false} enabled={false}>
                 <Icon source={starIcon} size={24} />
               </IconToggleButton>
-              <FilledIconToggleButton checked={true} enabled={false}>
+              <FilledIconToggleButton checked enabled={false}>
                 <Icon source={starIcon} size={24} />
               </FilledIconToggleButton>
             </Row>
