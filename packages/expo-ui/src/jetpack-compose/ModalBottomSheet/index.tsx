@@ -129,13 +129,3 @@ function ModalBottomSheetComponent(props: ModalBottomSheetProps) {
 ModalBottomSheetComponent.DragHandle = DragHandle;
 
 export const ModalBottomSheet = ModalBottomSheetComponent;
-
-/**
- * @deprecated Use `ModalBottomSheet` instead.
- */
-export const BottomSheet = ModalBottomSheet;
-
-/**
- * @deprecated Use `ModalBottomSheetProps` instead.
- */
-export type BottomSheetProps = ModalBottomSheetProps;

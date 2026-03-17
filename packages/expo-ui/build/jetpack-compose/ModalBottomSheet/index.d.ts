@@ -82,13 +82,5 @@ declare namespace ModalBottomSheetComponent {
     }) => React.JSX.Element;
 }
 export declare const ModalBottomSheet: typeof ModalBottomSheetComponent;
-/**
- * @deprecated Use `ModalBottomSheet` instead.
- */
-export declare const BottomSheet: typeof ModalBottomSheetComponent;
-/**
- * @deprecated Use `ModalBottomSheetProps` instead.
- */
-export type BottomSheetProps = ModalBottomSheetProps;
 export {};
 //# sourceMappingURL=index.d.ts.map

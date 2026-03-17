@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import expo.modules.kotlin.AppContext
@@ -54,8 +55,13 @@ class ModalBottomSheetView(context: Context, appContext: AppContext) :
   suspend fun hide() {
     val scope = composeScope ?: return
     val state = sheetState ?: return
-    withContext(scope.coroutineContext) {
-      state.hide()
+    try {
+      withContext(scope.coroutineContext) {
+        state.hide()
+      }
+    } catch (_: CancellationException) {
+      // Swipe-dismiss may cancel the coroutine scope while hide() is in-flight.
+      // Swallowing the exception avoids an unhandled promise rejection on the JS side.
     }
   }
 

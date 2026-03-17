@@ -45,7 +45,6 @@ export default function BottomSheetScreen() {
   const [useCustomColors, setUseCustomColors] = React.useState(false);
 
   const hideSheet = async () => {
-    console.log('hideSheet');
     await sheetRef.current?.hide();
     setShowSheet(false);
   };
