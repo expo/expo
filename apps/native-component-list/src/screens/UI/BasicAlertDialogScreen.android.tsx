@@ -46,11 +46,7 @@ export default function BasicAlertDialogScreen() {
         <BasicAlertDialog onDismissRequest={() => setDialogVisible(false)}>
           <Surface
             tonalElevation={6}
-            modifiers={[
-              wrapContentWidth(),
-              wrapContentHeight(),
-              clip(Shapes.RoundedCorner(28)),
-            ]}>
+            modifiers={[wrapContentWidth(), wrapContentHeight(), clip(Shapes.RoundedCorner(28))]}>
             <Column modifiers={[padding(16, 16, 16, 16)]}>
               <ComposeText>
                 This area typically contains the supportive text which presents the details

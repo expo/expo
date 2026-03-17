@@ -1,7 +1,7 @@
 import './MaterialSymbolsAssetsTransformer.fx';
 
 export * from './AlertDialog';
-export * from './BasicAlertDialog';
+export { BasicAlertDialog, type BasicAlertDialogProps } from './BasicAlertDialog';
 export * from './Card';
 export * from './Checkbox';
 export * from './Chip';
