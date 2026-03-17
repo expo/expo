@@ -161,6 +161,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
+  // Picker replaced by SegmentedButton
+  '/versions/latest/sdk/ui/jetpack-compose/picker/':
+    '/versions/latest/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/picker/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/picker/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton/',
+
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
@@ -570,4 +578,26 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/v55.0.0/sdk/ui/jetpack-compose/chip/',
   '/versions/latest/sdk/ui/jetpack-compose/filterchip/':
     '/versions/latest/sdk/ui/jetpack-compose/chip/',
+
+  // After removing TextButton and merging into Button in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/button/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/button/',
+  '/versions/latest/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/latest/sdk/ui/jetpack-compose/button/',
+
+  // After merging LinearProgress and CircularProgress into Progress in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
 };

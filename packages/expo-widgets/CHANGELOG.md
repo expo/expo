@@ -10,6 +10,9 @@
 
 - Add support for `after(date)` dismissal policy, final content state, and `contentDate` when ending a Live Activity. ([#43472](https://github.com/expo/expo/pull/43472) by [@jakex7](https://github.com/jakex7))
 - [plugin] Add `contentMarginsDisabled`. ([#43799](https://github.com/expo/expo/pull/43799) by [@jakex7](https://github.com/jakex7))
+- Pass environment to AppIntent ([#43925](https://github.com/expo/expo/pull/43925) by [@jakex7](https://github.com/jakex7))
+- Automatically add `target` for `Button`. ([#43977](https://github.com/expo/expo/pull/43977) by [@jakex7](https://github.com/jakex7))
+- Add support for `Link` view from `@expo/ui`. ([#43985](https://github.com/expo/expo/pull/43985) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -19,6 +22,7 @@
 - Filter out invalid children. ([#43720](https://github.com/expo/expo/pull/43720) by [@jakex7](https://github.com/jakex7))
 - Add support for `React.Fragment`. ([#43833](https://github.com/expo/expo/pull/43833) by [@jakex7](https://github.com/jakex7))
 - Add Button children support. ([#43832](https://github.com/expo/expo/pull/43832) by [@jakex7](https://github.com/jakex7))
+- Remove unused `Compression` related code. ([#43981](https://github.com/expo/expo/pull/43981) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '55.0.8'
+
+android {
+  namespace "expo.modules.statusbar"
+  defaultConfig {
+    versionCode 1
+    versionName '55.0.8'
+  }
+}
+
+dependencies {
+  implementation 'androidx.core:core:1.17.0'
+  implementation 'androidx.appcompat:appcompat:1.7.1'
+}

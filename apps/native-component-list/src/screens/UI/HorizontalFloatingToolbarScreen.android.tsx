@@ -41,10 +41,10 @@ export default function HorizontalFloatingToolbarScreen() {
             onPress={() => Alert.alert('FAB pressed')}>
             <Icon source={addIcon} />
           </HorizontalFloatingToolbar.FloatingActionButton>
-          <IconButton onPress={() => Alert.alert('Edit pressed')}>
+          <IconButton onClick={() => Alert.alert('Edit pressed')}>
             <Icon source={editIcon} />
           </IconButton>
-          <IconButton onPress={() => Alert.alert('Add pressed')}>
+          <IconButton onClick={() => Alert.alert('Add pressed')}>
             <Icon source={addIcon} />
           </IconButton>
         </HorizontalFloatingToolbar>

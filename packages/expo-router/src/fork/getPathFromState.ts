@@ -287,7 +287,7 @@ export function getPathDataFromState<ParamList extends object>(
     // END FORK
 
     if (!focusedParams) {
-      focusedParams = focusedRoute.params;
+      focusedParams = focusedRoute.params ? { ...focusedRoute.params } : undefined;
     }
 
     if (route.state) {
