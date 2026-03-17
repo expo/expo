@@ -43,6 +43,7 @@ module Pod
             project_targets = targets.select { |target| target.user_project.equal?(project) }
 
             Expo::ProjectIntegrator::integrate_targets_in_project(project_targets, project)
+            Expo::ProjectIntegrator::integrate_local_modules(project, project_targets)
             Expo::ProjectIntegrator::remove_nils_from_source_files(project)
             Expo::ProjectIntegrator::set_autolinking_configuration(project)
 

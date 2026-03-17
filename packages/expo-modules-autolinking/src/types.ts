@@ -70,6 +70,16 @@ export interface ModuleIosConfig {
   name: string | null;
   class: string;
 }
+/**
+ * Describes where a module originates from.
+ *
+ * - `local` — lives inside the app directory (typically `modules/`).
+ *   If it has a podspec, it's installed as a development pod.
+ *   If it has no podspec, its sources are compiled directly in the app project.
+ * - `external` — from node_modules or outside the app directory, always a pod dependency.
+ */
+export type ModuleIosIntegrationType = 'local' | 'external';
+
 export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
   modules: ModuleIosConfig[];
   pods: ModuleIosPodspecInfo[];
@@ -78,6 +88,21 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
   appDelegateSubscribers: string[];
   reactDelegateHandlers: string[];
   debugOnly: boolean;
+  /**
+   * Where the module originates from.
+   * `'local'` modules live inside the app directory. If `pods` is non-empty,
+   * they are installed as development pods; if `pods` is empty (no podspec),
+   * their sources are compiled directly in the app project.
+   * `'external'` modules come from node_modules or outside the app directory.
+   * Defaults to `'external'` when not set.
+   */
+  type?: ModuleIosIntegrationType;
+  /**
+   * Absolute path to the module directory.
+   * Used by the Ruby side to locate iOS source files for local modules
+   * that are integrated directly in the app project.
+   */
+  path?: string;
 }
 
 export interface ModuleDescriptorDevTools {
