@@ -8,6 +8,7 @@
   },
   "exports": {
     "./package.json": "./package.json",
+    "./static/template/*": "./static/template/*",
     ".": "./build/bin/cli",
     "./*": "./*.js",
     "./*.js": "./*.js"
