@@ -29,11 +29,11 @@ sealed class CopyMoveStrategy(
   protected open val file: UnifiedFileInterface
 ) {
 
-  open fun copyTo(spec: DestinationSpec) {
+  open suspend fun copyTo(spec: DestinationSpec) {
     spec.resolve(file).receiveFrom(file)
   }
 
-  open fun moveTo(spec: DestinationSpec): Uri {
+  open suspend fun moveTo(spec: DestinationSpec): Uri {
     val resolved = spec.resolve(file)
     return tryNativeMove(resolved) ?: run {
       resolved.receiveFrom(file).also {
@@ -170,7 +170,7 @@ sealed class CopyMoveStrategy(
       return DestinationSink.ContentResource(spec)
     }
 
-    override fun moveTo(spec: DestinationSpec): Uri {
+    override suspend fun moveTo(spec: DestinationSpec): Uri {
       throw UnableToMoveException("Content provider file cannot be moved (provider-dependent)")
     }
   }
@@ -181,7 +181,7 @@ sealed class CopyMoveStrategy(
       return DestinationSink.Asset(spec)
     }
 
-    override fun moveTo(spec: DestinationSpec): Uri {
+    override suspend fun moveTo(spec: DestinationSpec): Uri {
       throw UnableToMoveException("Assets cannot be moved (provider-dependent)")
     }
   }

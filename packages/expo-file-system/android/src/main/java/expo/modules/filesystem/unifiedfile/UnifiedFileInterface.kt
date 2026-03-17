@@ -27,6 +27,6 @@ interface UnifiedFileInterface {
   fun walkTopDown(): Sequence<UnifiedFileInterface>
 
   val copyMoveStrategy: CopyMoveStrategy
-  fun copyTo(dest: DestinationSpec) = copyMoveStrategy.copyTo(dest)
-  fun moveTo(dest: DestinationSpec): Uri = copyMoveStrategy.moveTo(dest)
+  suspend fun copyTo(dest: DestinationSpec) = copyMoveStrategy.copyTo(dest)
+  suspend fun moveTo(dest: DestinationSpec): Uri = copyMoveStrategy.moveTo(dest)
 }
