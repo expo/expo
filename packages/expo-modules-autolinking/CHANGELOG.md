@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Add `package.json:exports` with no-op reexport paths ([#44002](https://github.com/expo/expo/pull/44002) by [@kitten](https://github.com/kitten), [@hassankhan](https://github.com/hassankhan))
+
 ## 55.0.8 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

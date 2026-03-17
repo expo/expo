@@ -6,6 +6,13 @@
   "bin": {
     "expo-internal": "build/bin/cli"
   },
+  "exports": {
+    "./package.json": "./package.json",
+    "./static/template/*": "./static/template/*",
+    ".": "./build/bin/cli",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
   "files": [
     "add-module.js",
     "internal",
