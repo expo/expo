@@ -179,6 +179,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ToggleButton component',
+    route: 'ui/toggle-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleButtonScreen'));
+    },
+  },
+  {
     name: 'FloatingActionButton component',
     route: 'ui/floating-action-button',
     options: {},
