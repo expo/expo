@@ -1,5 +1,4 @@
-export const REACT_ELEMENT_TYPE: symbol = Symbol.for('react.transitional.element');
-export const REACT_FRAGMENT_TYPE: symbol = Symbol.for('react.fragment');
+import { Fragment } from './react-stub';
 
 function ReactElement(type: typeof ReactElement, key: string | null, props: Record<string, any>) {
   if (typeof type === 'function') {
@@ -45,7 +44,8 @@ function hasValidKey(config: any) {
 
 const jsxFileName = 'widget';
 export {
-  REACT_FRAGMENT_TYPE as Fragment,
+  Fragment,
+  Fragment as _Fragment,
   jsxFileName as _jsxFileName,
   jsxProd,
   jsxProd as jsx,

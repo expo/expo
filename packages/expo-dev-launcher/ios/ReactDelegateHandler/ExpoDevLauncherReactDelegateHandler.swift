@@ -120,10 +120,20 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     let targetVC: UIViewController
 #if !os(macOS)
     let windowRootVC = rootViewController?.view?.window?.rootViewController
-    if let windowRootVC, windowRootVC.view is DevLauncherWrapperView {
-      // Greenfield: set root view on the window's root VC so react-native-screens parents its
-      // UINavigationController to a VC in the containment hierarchy with correct layout margins.
-      targetVC = windowRootVC
+
+    if let windowRootVC, let rootViewController {
+      // Greenfield: add DevLauncherViewController as a child of the window's root VC
+      // so react-native-screens finds a VC in the containment hierarchy with correct
+      // layout margins.
+      rootViewController.view = rootView
+      if rootViewController.parent != windowRootVC {
+        windowRootVC.addChild(rootViewController)
+      }
+      rootViewController.view.frame = windowRootVC.view.bounds
+      rootViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+      windowRootVC.view.addSubview(rootViewController.view)
+      rootViewController.didMove(toParent: windowRootVC)
+      return
     } else if let rootViewController {
       // Brownfield: the wrapper is embedded in a custom hierarchy, fall back to
       // DevLauncherViewController to avoid replacing the host app's root view.

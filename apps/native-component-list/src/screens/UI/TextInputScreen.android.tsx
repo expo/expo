@@ -1,4 +1,10 @@
-import { TextInput, TextInputRef, Button, Host } from '@expo/ui/jetpack-compose';
+import {
+  TextInput,
+  TextInputRef,
+  Button,
+  Host,
+  Text as ComposeText,
+} from '@expo/ui/jetpack-compose';
 import * as React from 'react';
 import { Text } from 'react-native';
 
@@ -14,10 +20,10 @@ export default function TextInputScreen() {
       </Section>
       <Host matchContents>
         <Button
-          onPress={async () => {
+          onClick={async () => {
             textRef.current?.setText('Hello there!');
           }}>
-          Set text
+          <ComposeText>Set text</ComposeText>
         </Button>
       </Host>
       <Section title="Text Input">

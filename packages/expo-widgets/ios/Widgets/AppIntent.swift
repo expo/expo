@@ -15,11 +15,15 @@ struct WidgetUserInteraction: AppIntent {
   @Parameter(title: "entryIndex")
   var entryIndex: Int?
 
+  @Parameter(title: "environmentString")
+  var environmentString: String?
+
   init() {}
-  init(source: String?, target: String?, entryIndex: Int?) {
+  init(source: String?, target: String?, entryIndex: Int?, environmentString: String?) {
     self.source = source
     self.target = target
     self.entryIndex = entryIndex
+    self.environmentString = environmentString
   }
 
   func perform() async throws -> some IntentResult {
@@ -34,12 +38,15 @@ struct WidgetUserInteraction: AppIntent {
           let entryIndex,
           let entry = timeline[entryIndex] as? [String: Any],
           let props = entry["props"] as? [String: Any],
-          let context = createWidgetContext(layout: layout, props: props) else {
+          let context = createWidgetContext(layout: layout),
+          let environmentData = environmentString?.data(using: .utf8),
+          var environment = try? JSONSerialization.jsonObject(with: environmentData) as? [String: Any] else {
       return .result()
     }
-    let familyKey: String? = "systemSmall"
+    environment["target"] = target
+
     let result = context.objectForKeyedSubscript("__expoWidgetHandlePress")?.call(
-      withArguments: [Int(Date.now.timeIntervalSince1970 * 1000), familyKey as Any, target as Any]
+      withArguments: [props, environment]
     )
     if let newProps = result?.toObject() as? [String: Any] {
       var newEntry = entry

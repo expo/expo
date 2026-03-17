@@ -19,7 +19,6 @@ import expo.modules.devmenu.compose.primitives.RoundedSurface
 
 @Composable
 fun DevelopmentSessionSection(
-  isFetching: Boolean = false,
   onAction: (HomeAction) -> Unit = {}
 ) {
   RoundedSurface(
@@ -32,7 +31,7 @@ fun DevelopmentSessionSection(
     ) {
       DevelopmentSessionHelp()
 
-      DevelopmentSessionActions(isFetching, onAction)
+      DevelopmentSessionActions(onAction)
     }
   }
 }
@@ -76,7 +75,7 @@ fun DevelopmentSessionHelp() {
 }
 
 @Composable
-fun DevelopmentSessionActions(isFetching: Boolean, onAction: (HomeAction) -> Unit) {
+fun DevelopmentSessionActions(onAction: (HomeAction) -> Unit) {
   Column(
     verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
   ) {
@@ -84,20 +83,6 @@ fun DevelopmentSessionActions(isFetching: Boolean, onAction: (HomeAction) -> Uni
       openApp = { urlValue ->
         onAction(HomeAction.OpenApp(urlValue))
       }
-    )
-
-    NewText(
-      "Or",
-      color = NewAppTheme.colors.text.secondary,
-      style = NewAppTheme.font.sm.merge(
-        textAlign = TextAlign.Center
-      ),
-      modifier = Modifier.fillMaxWidth()
-    )
-
-    FetchDevelopmentServersButton(
-      isFetching,
-      onAction
     )
 
     if (!EmulatorUtilities.isRunningOnEmulator()) {

@@ -27,6 +27,7 @@ const IGNORED_TEST_PACKAGES_ON_WINDOWS = [
   '@expo/router-server',
   'babel-preset-expo',
   'create-expo',
+  'expo-brownfield',
   'expo-doctor',
   'expo-modules-autolinking',
   'install-expo-modules',

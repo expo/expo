@@ -6,10 +6,13 @@
 
 ### 🎉 New features
 
+- [Android] Add NDS service discovery.
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix issue when using `fullScreenModal` with `expo-router`. ([#43520](https://github.com/expo/expo/pull/43520) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix missing navigation bar padding ([#43672](https://github.com/expo/expo/pull/43672) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix orientation change regression. ([#43847](https://github.com/expo/expo/pull/43847) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

@@ -20,9 +20,9 @@ public final class ExpoUIModule: Module {
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
-    // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
+    // MARK: - Expo UI Views with AsyncFunctions
 
-    View(SecureFieldView.self) {
+    ExpoUIView(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
@@ -33,7 +33,7 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
     }
-    View(TextFieldView.self) {
+    ExpoUIView(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
       }
@@ -47,7 +47,7 @@ public final class ExpoUIModule: Module {
         view.setSelection(start: start, end: end)
       }
     }
-    View(ShareLinkView.self) {
+    ExpoUIView(ShareLinkView.self) {
       AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in
         guard let url, let validURL = URL(string: url) else {
           view.rejectContinuation()
@@ -115,5 +115,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(GridView.self)
+    ExpoUIView(AccessoryWidgetBackgroundView.self)
   }
 }

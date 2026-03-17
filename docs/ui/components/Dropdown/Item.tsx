@@ -33,9 +33,9 @@ export function Item({
     <DropdownMenu.Item
       aria-disabled={disabled}
       className={mergeClasses(
-        'group relative z-40 flex cursor-pointer select-none items-center justify-between rounded-sm px-2 py-1 transition-colors',
-        'hover:outline-0 hocus:bg-hover',
-        disabled && 'cursor-default opacity-60 hocus:bg-default'
+        'group relative z-40 flex cursor-pointer items-center justify-between rounded-sm px-2 py-1 transition-colors select-none',
+        'hocus:bg-hover hover:outline-0',
+        disabled && 'hocus:bg-default cursor-default opacity-60'
       )}
       onSelect={event => {
         // prevent default behavior of closing the menu without using pointer-events-none on the
@@ -90,7 +90,7 @@ export function Item({
           )}
         </div>
         {description && typeof description === 'string' ? (
-          <FOOTNOTE theme="tertiary" className="!leading-[18px]">
+          <FOOTNOTE theme="tertiary" className="leading-[18px]!">
             {description}
           </FOOTNOTE>
         ) : null}

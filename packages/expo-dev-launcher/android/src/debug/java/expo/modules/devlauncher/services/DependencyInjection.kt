@@ -32,13 +32,16 @@ object DependencyInjection {
   var devLauncherController: DevLauncherController? = null
     private set
 
-  var packagerService: PackagerService = PackagerService(httpClientService)
+  var packagerService: PackagerService? = null
     private set
 
   var devMenuPreferences: DevMenuPreferences? = null
     private set
 
   var appService: AppService? = null
+    private set
+
+  var nsdPreferences: NsdPreferences? = null
     private set
 
   var errorRegistryService: ErrorRegistryService? = null
@@ -51,6 +54,7 @@ object DependencyInjection {
 
     val application = context.applicationContext as Application
     devMenuPreferences = DevMenuDefaultPreferences(application)
+    nsdPreferences = NsdPreferences(application)
     appService = AppService(application)
 
     this.devLauncherController = devLauncherController
@@ -68,6 +72,8 @@ object DependencyInjection {
 
     errorRegistryService = ErrorRegistryService(context.applicationContext)
 
+    packagerService = PackagerService(application, httpClientService.httpClient)
+
     wasInitialized = true
   }
 }
@@ -76,6 +82,7 @@ object DependencyInjection {
 internal inline fun <reified T> injectService(): T {
   return when (T::class) {
     DevMenuPreferences::class -> DependencyInjection.devMenuPreferences
+    NsdPreferences::class -> DependencyInjection.nsdPreferences
     SessionService::class -> DependencyInjection.sessionService
     ApolloClientService::class -> DependencyInjection.apolloClientService
     ImageLoaderService::class -> DependencyInjection.imageLoaderService

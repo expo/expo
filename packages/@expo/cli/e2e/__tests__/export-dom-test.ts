@@ -34,7 +34,13 @@ describe('Export DOM Components', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
+    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom', {
+      // TODO(@hassankhan, @krystofwoldrich, @kitten): remove all linked after publishing
+      linkExpoPackages: [
+        // Without this, the hermes-parser install a version that is incompatible with flow Readonly / ReadonlyArray
+        'babel-preset-expo',
+      ],
+    });
   });
 
   it('runs `npx expo export`', async () => {

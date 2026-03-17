@@ -160,7 +160,7 @@ export function getParamValue(p: string, value: string) {
 
 function formatRegexPattern(it: string): string {
   // Allow spaces in file path names.
-  it = it.replace(' ', '%20');
+  it = it.replace(/ /g, '%20');
 
   if (it.startsWith(':')) {
     // TODO: Remove unused match group

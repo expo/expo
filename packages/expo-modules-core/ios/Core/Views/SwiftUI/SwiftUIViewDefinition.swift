@@ -88,6 +88,15 @@ extension ExpoSwiftUI {
       self.init(viewType, elements: [nameDefinitionElement])
     }
 
+    /**
+     Used by wrapper patterns (e.g., `ExpoUIView`)
+     */
+    public convenience init(_ viewType: ViewType.Type, name: String, elements: [AnyViewDefinitionElement]) {
+      var allElements: [AnyViewDefinitionElement] = [ViewNameDefinition(name: name)]
+      allElements.append(contentsOf: elements)
+      self.init(viewType, elements: allElements)
+    }
+
     public override func createView(appContext: AppContext) -> AppleView? {
       // It's assumed that this function is called only from the main thread.
       // In the ideal scenario it would be marked as `@MainActor`, but then `ViewModuleWrapper`

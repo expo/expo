@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'AnimatedVisibility component',
+    route: 'ui/animated-visibility',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AnimatedVisibilityScreen'));
+    },
+  },
+  {
     name: 'AlertDialog component',
     route: 'ui/alert-dialog',
     options: {},
@@ -11,11 +19,35 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Card component',
+    route: 'ui/card',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CardScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ButtonScreen'));
+    },
+  },
+  {
+    name: 'Checkbox component',
+    route: 'ui/checkbox',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CheckboxScreen'));
+    },
+  },
+  {
+    name: 'IconButton component',
+    route: 'ui/icon-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./IconButtonScreen'));
     },
   },
   {
@@ -67,11 +99,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'ContextMenu component',
-    route: 'ui/context-menu',
+    name: 'DropdownMenu component',
+    route: 'ui/dropdown-menu',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./ContextMenuScreen'));
+      return optionalRequire(() => require('./DropdownMenuScreen'));
     },
   },
   {
@@ -144,6 +176,46 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'ToggleButton component',
+    route: 'ui/toggle-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleButtonScreen'));
+    },
+  },
+  {
+    name: 'FloatingActionButton component',
+    route: 'ui/floating-action-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./FloatingActionButtonScreen'));
+    },
+  },
+  {
+    name: 'graphicsLayer modifier',
+    route: 'ui/graphics-layer',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GraphicsLayerScreen'));
+    },
+  },
+  {
+    name: 'HorizontalFloatingToolbar component',
+    route: 'ui/horizontal-floating-toolbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HorizontalFloatingToolbarScreen'));
+    },
+  },
+  {
+    name: 'Modifiers',
+    route: 'ui/modifiers',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ModifiersScreen'));
     },
   },
 ];
