@@ -6,6 +6,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.remember
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.viewevent.getValue
@@ -92,11 +93,11 @@ class ExpoUIModule : Module() {
 
     //region Expo UI views
 
-    ExpoUIView("ModalBottomSheetView", events = {
+    View(ModalBottomSheetView::class) {
       Events("onDismissRequest")
-    }) { props: ModalBottomSheetProps ->
-      val onDismissRequest by remember { EventDispatcher<Unit>() }
-      ModalBottomSheetContent(props) { onDismissRequest(Unit) }
+      AsyncFunction("hide") Coroutine { view: ModalBottomSheetView ->
+        view.hide()
+      }
     }
 
     ExpoUIView("SingleChoiceSegmentedButtonRowView") { props: SingleChoiceSegmentedButtonRowProps ->
