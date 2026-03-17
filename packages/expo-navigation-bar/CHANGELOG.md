@@ -6,9 +6,14 @@
 
 ### 🎉 New features
 
+- Add `style` and `hidden` properties to config plugin, replacing `barStyle` and `visibility`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Deprecated `NavigationBarButtonStyle` type. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
+- Deprecated `barStyle` and `visibility` config plugin properties in favor of `style` and `hidden`. ([#43978](https://github.com/expo/expo/pull/43978) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.8 — 2026-02-25
 

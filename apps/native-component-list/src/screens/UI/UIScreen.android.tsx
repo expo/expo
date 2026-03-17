@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Checkbox component',
+    route: 'ui/checkbox',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CheckboxScreen'));
+    },
+  },
+  {
     name: 'IconButton component',
     route: 'ui/icon-button',
     options: {},
