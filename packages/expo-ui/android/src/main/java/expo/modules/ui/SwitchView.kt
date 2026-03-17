@@ -15,24 +15,24 @@ open class CheckedChangeEvent(
   @Field open val value: Boolean = false
 ) : Record, Serializable
 
-class SwitchColors : Record {
-  @Field val checkedThumbColor: Color? = null
-  @Field val checkedTrackColor: Color? = null
-  @Field val checkedBorderColor: Color? = null
-  @Field val checkedIconColor: Color? = null
-  @Field val uncheckedThumbColor: Color? = null
-  @Field val uncheckedTrackColor: Color? = null
-  @Field val uncheckedBorderColor: Color? = null
-  @Field val uncheckedIconColor: Color? = null
-  @Field val disabledCheckedThumbColor: Color? = null
-  @Field val disabledCheckedTrackColor: Color? = null
-  @Field val disabledCheckedBorderColor: Color? = null
-  @Field val disabledCheckedIconColor: Color? = null
-  @Field val disabledUncheckedThumbColor: Color? = null
-  @Field val disabledUncheckedTrackColor: Color? = null
-  @Field val disabledUncheckedBorderColor: Color? = null
+data class SwitchColors(
+  @Field val checkedThumbColor: Color? = null,
+  @Field val checkedTrackColor: Color? = null,
+  @Field val checkedBorderColor: Color? = null,
+  @Field val checkedIconColor: Color? = null,
+  @Field val uncheckedThumbColor: Color? = null,
+  @Field val uncheckedTrackColor: Color? = null,
+  @Field val uncheckedBorderColor: Color? = null,
+  @Field val uncheckedIconColor: Color? = null,
+  @Field val disabledCheckedThumbColor: Color? = null,
+  @Field val disabledCheckedTrackColor: Color? = null,
+  @Field val disabledCheckedBorderColor: Color? = null,
+  @Field val disabledCheckedIconColor: Color? = null,
+  @Field val disabledUncheckedThumbColor: Color? = null,
+  @Field val disabledUncheckedTrackColor: Color? = null,
+  @Field val disabledUncheckedBorderColor: Color? = null,
   @Field val disabledUncheckedIconColor: Color? = null
-}
+) : Record
 
 data class SwitchProps(
   val value: Boolean = false,
@@ -44,13 +44,13 @@ data class SwitchProps(
 @Composable
 fun FunctionalComposableScope.SwitchContent(
   props: SwitchProps,
-  onCheckedChange: (CheckedChangeEvent) -> Unit
+  onCheckedChange: (Boolean) -> Unit
 ) {
   val thumbContentSlotView = findChildSlotView(view, "thumbContent")
 
   Switch(
     checked = props.value,
-    onCheckedChange = { newChecked -> onCheckedChange(CheckedChangeEvent(newChecked)) },
+    onCheckedChange = onCheckedChange,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     enabled = props.enabled,
     thumbContent = thumbContentSlotView?.let {

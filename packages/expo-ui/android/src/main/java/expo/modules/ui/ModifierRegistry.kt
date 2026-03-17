@@ -535,18 +535,11 @@ object ModifierRegistry {
         SemanticRoleType.TAB -> Role.Tab
         null -> null
       }
-      if (role != null) {
-        Modifier.toggleable(
-          value = params.value,
-          role = role,
-          onValueChange = { eventDispatcher("toggleable", emptyMap()) }
-        )
-      } else {
-        Modifier.toggleable(
-          value = params.value,
-          onValueChange = { eventDispatcher("toggleable", emptyMap()) }
-        )
-      }
+      Modifier.toggleable(
+        value = params.value,
+        role = role,
+        onValueChange = { eventDispatcher("toggleable", emptyMap()) }
+      )
     }
   }
 }

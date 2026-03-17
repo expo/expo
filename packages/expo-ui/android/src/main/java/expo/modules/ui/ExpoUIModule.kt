@@ -105,21 +105,21 @@ class ExpoUIModule : Module() {
       Events("onCheckedChange")
     }) { props: SwitchProps ->
       val onCheckedChange by remember { EventDispatcher<CheckedChangeEvent>() }
-      SwitchContent(props) { onCheckedChange(it) }
+      SwitchContent(props) { value -> onCheckedChange(CheckedChangeEvent(value)) }
     }
 
     ExpoUIView("CheckboxView", events = {
       Events("onCheckedChange")
     }) { props: CheckboxProps ->
       val onCheckedChange by remember { EventDispatcher<CheckedChangeEvent>() }
-      CheckboxContent(props) { onCheckedChange(it) }
+      CheckboxContent(props) { value -> onCheckedChange(CheckedChangeEvent(value)) }
     }
 
     ExpoUIView("TriStateCheckboxView", events = {
       Events("onNativeClick")
     }) { props: TriStateCheckboxProps ->
-      val onNativeClick by remember { EventDispatcher<ClickEvent>() }
-      TriStateCheckboxContent(props) { onNativeClick(it) }
+      val onNativeClick by remember { EventDispatcher<Unit>() }
+      TriStateCheckboxContent(props) { onNativeClick(Unit) }
     }
 
     ExpoUIView("Button", events = {
