@@ -12,7 +12,6 @@ import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.records.EventAccessLevel
 import expo.modules.calendar.next.records.EventAvailability
 import expo.modules.calendar.next.records.EventRecord
-import expo.modules.calendar.next.records.EventStatus
 import expo.modules.calendar.next.records.EventUpdateRecord
 import expo.modules.calendar.next.records.RecurrenceRuleRecord
 import expo.modules.calendar.next.utils.dateToMilliseconds
@@ -82,8 +81,9 @@ class EventMapper {
       }
     },
     begin = dateToMilliseconds(eventRecord.startDate) ?: 0L,
-    calendarId = CalendarId(eventRecord.calendarId?.toLong() ?:
-      throw IllegalStateException("calendarId must not be null for existing event record")
+    calendarId = CalendarId(
+      eventRecord.calendarId?.toLong()
+        ?: throw IllegalStateException("calendarId must not be null for existing event record")
     ),
     description = eventRecord.notes,
     end = dateToMilliseconds(eventRecord.endDate) ?: 0L,

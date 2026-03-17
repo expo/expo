@@ -119,7 +119,7 @@ class ExpoCalendarEvent(
       instanceRepository,
       reminderRepository,
       options,
-      initialInstanceEntity,
+      initialInstanceEntity
     )
   }
 

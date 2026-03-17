@@ -2,7 +2,6 @@ package expo.modules.calendar.next.mappers
 
 import expo.modules.calendar.next.domain.model.instance.InstanceEntity
 import expo.modules.calendar.next.domain.model.reminder.ReminderEntity
-import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.records.AlarmRecord
 import expo.modules.calendar.next.records.EventAccessLevel
 import expo.modules.calendar.next.records.EventAvailability

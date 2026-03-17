@@ -26,8 +26,9 @@ class AttendeeMapper {
   )
 
   fun toDomain(record: AttendeeRecord) = DomainAttendeeEntity(
-    id = AttendeeId(record.id?.toLong()
-      ?: throw IllegalStateException("Attendee ID must not be null")
+    id = AttendeeId(
+      record.id?.toLong()
+        ?: throw IllegalStateException("Attendee ID must not be null")
     ),
     email = record.email,
     name = record.name,

@@ -5,7 +5,6 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.Enumerable
-import java.util.EnumMap
 
 sealed interface CalendarRecord : Record {
   data class New(

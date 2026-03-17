@@ -94,15 +94,17 @@ class ExpoCalendar(
   }
 
   suspend fun update(updateRecord: CalendarUpdateRecord) {
-
-    calendarRepository.update(calendarId, CalendarUpdate(
-      name = updateRecord.name,
-      calendarDisplayName = updateRecord.title,
-      calendarColor = updateRecord.color,
-      visible = updateRecord.isVisible,
-      syncEvents = updateRecord.isSynced,
-      calendarTimeZone = updateRecord.timeZone
-    ))
+    calendarRepository.update(
+      calendarId,
+      CalendarUpdate(
+        name = updateRecord.name,
+        calendarDisplayName = updateRecord.title,
+        calendarColor = updateRecord.color,
+        visible = updateRecord.isVisible,
+        syncEvents = updateRecord.isSynced,
+        calendarTimeZone = updateRecord.timeZone
+      )
+    )
     reloadProperties()
   }
 

@@ -101,4 +101,3 @@ class CalendarMapper {
     title = entity.calendarDisplayName
   )
 }
-
