@@ -17,14 +17,14 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
-class ToggleButtonColors : Record {
-  @Field val containerColor: Color? = null
-  @Field val contentColor: Color? = null
-  @Field val checkedContainerColor: Color? = null
-  @Field val checkedContentColor: Color? = null
-  @Field val disabledContainerColor: Color? = null
+data class ToggleButtonColors(
+  @Field val containerColor: Color? = null,
+  @Field val contentColor: Color? = null,
+  @Field val checkedContainerColor: Color? = null,
+  @Field val checkedContentColor: Color? = null,
+  @Field val disabledContainerColor: Color? = null,
   @Field val disabledContentColor: Color? = null
-}
+) : Record
 
 data class ToggleButtonProps(
   val checked: Boolean = false,
