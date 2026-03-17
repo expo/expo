@@ -2,6 +2,7 @@ package expo.modules.filesystem.fsops
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.provider.DocumentsContract
 import androidx.core.net.toUri
 import expo.modules.filesystem.CopyOrMoveDirectoryToFileException
@@ -93,9 +94,20 @@ sealed class CopyMoveStrategy(
     }
 
     override fun tryNativeMove(resolved: DestinationSink): Uri? {
-      if (resolved is DestinationSink.LocalFile) {
-        if (file.renameTo(resolved.target)) return resolved.target.uri
+      if (resolved !is DestinationSink.LocalFile) return null
+
+      // Fast path: atomic rename (same filesystem)
+      if (file.renameTo(resolved.target)) return resolved.target.uri
+
+      // NIO fallback: Files.move handles cross-filesystem moves internally
+      // (copy+delete under the hood, but lets the JVM pick the optimal strategy)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        return runCatching {
+          moveFileNio(file.toPath(), resolved.target.toPath())
+          resolved.target.uri
+        }.getOrNull()
       }
+
       return null
     }
   }
