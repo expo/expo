@@ -2,7 +2,7 @@
   "name": "notification-tester",
   "main": "index.ts",
   "version": "1.0.0",
-  "private": true
+  "private": true,
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
