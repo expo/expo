@@ -14,6 +14,7 @@ public/static/constants
 .next
 .swc
 out
+next-env.d.ts
 
 # worker test temp dir
 .worker-test

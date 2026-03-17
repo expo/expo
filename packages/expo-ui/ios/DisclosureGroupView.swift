@@ -13,11 +13,6 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
   @ObservedObject var props: DisclosureGroupViewProps
   @State private var isExpanded: Bool = false
 
-  init(props: DisclosureGroupViewProps) {
-    self.props = props
-    _isExpanded = State(initialValue: props.isExpanded)
-  }
-
   var body: some View {
 #if os(tvOS)
     Text("DisclosureGroupView is not supported on tvOS")
@@ -26,11 +21,14 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
       Children()
     }
     .onChange(of: isExpanded) { newValue in
-      let payload = ["isExpanded": newValue]
-      props.onIsExpandedChange(payload)
+      if newValue == props.isExpanded { return }
+      props.onIsExpandedChange(["isExpanded": newValue])
     }
     .onChange(of: props.isExpanded) { newValue in
       isExpanded = newValue
+    }
+    .onAppear {
+      isExpanded = props.isExpanded
     }
 #endif
   }

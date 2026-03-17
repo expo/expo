@@ -100,6 +100,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       }
     case "react.fragment":
       render(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
+    case "LinkView":
+      render(LinkView.self, LinkViewProps.self, updateProps: updateChildren)
     default:
       ZStack {
         Color.red.opacity(0.5)

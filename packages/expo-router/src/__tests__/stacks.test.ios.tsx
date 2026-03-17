@@ -187,6 +187,10 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
+              params: {
+                params: {},
+                screen: 'index',
+              },
               path: undefined,
               state: {
                 index: 3,
@@ -215,6 +219,10 @@ test('dismissAll nested', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
+                    params: {
+                      params: {},
+                      screen: 'index',
+                    },
                     path: undefined,
                     state: {
                       index: 2,
@@ -304,6 +312,10 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
+              params: {
+                params: {},
+                screen: 'index',
+              },
               path: undefined,
               state: {
                 index: 3,
@@ -332,6 +344,10 @@ test('dismissAll nested', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
+                    params: {
+                      params: {},
+                      screen: 'index',
+                    },
                     path: undefined,
                     state: {
                       index: 0,
@@ -409,6 +425,10 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
+              params: {
+                params: {},
+                screen: 'index',
+              },
               path: undefined,
               state: {
                 index: 0,
@@ -468,8 +488,7 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
   testRouter.push('/one/two/a');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
-  // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-  expect(NestedNestedLayout).toHaveBeenCalledTimes(2);
+  expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
 });
 
 test('can preserve the nested initialRouteName when navigating to a nested stack', () => {
