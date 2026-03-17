@@ -235,6 +235,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Link component',
+    route: 'ui/link',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LinkScreen'));
+    },
+  },
+  {
     name: 'Popover component',
     route: 'ui/popover',
     options: {},
