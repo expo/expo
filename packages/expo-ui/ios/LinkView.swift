@@ -5,7 +5,7 @@ import SwiftUI
 
 public final class LinkViewProps: UIBaseViewProps {
   @Field var label: String?
-  @Field var destination: String
+  @Field var destination: URL?
 }
 
 public struct LinkView: ExpoSwiftUI.View {
@@ -16,7 +16,7 @@ public struct LinkView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    if let url = URL(string: props.destination) {
+    if let url = props.destination {
       if let label = props.label {
         Link(label, destination: url)
       } else {
