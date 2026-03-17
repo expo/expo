@@ -35,6 +35,7 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "^55.0.2"
   },
   "publishConfig": {
