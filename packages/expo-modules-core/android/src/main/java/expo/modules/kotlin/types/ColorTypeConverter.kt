@@ -14,6 +14,11 @@ import expo.modules.kotlin.jni.SingleType
 import androidx.core.graphics.toColorInt
 import com.facebook.react.bridge.ReadableArray
 
+private val rgbColorRegex = Regex(
+  pattern = """^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*([0-9]*\.?[0-9]+)\s*)?\)$""",
+  options = setOf(RegexOption.IGNORE_CASE)
+)
+
 /**
  * Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
  * and additionally the transparent color.
@@ -211,7 +216,8 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   }
 
   private fun colorFromString(value: String): Color {
-    val colorFromString = namedColors[value]
+    val normalizedValue = value.trim().lowercase()
+    val colorFromString = namedColors[normalizedValue]
     if (colorFromString != null) {
       return Color.valueOf(
         colorFromString[0],
@@ -221,7 +227,28 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       )
     }
 
-    return Color.valueOf(value.toColorInt())
+    val rgbMatch = rgbColorRegex.matchEntire(normalizedValue)
+    if (rgbMatch != null) {
+      val red = rgbMatch.groupValues[1].toInt()
+      val green = rgbMatch.groupValues[2].toInt()
+      val blue = rgbMatch.groupValues[3].toInt()
+      require(red in 0..255 && green in 0..255 && blue in 0..255) {
+        "rgb() color component out of range"
+      }
+
+      val alphaGroup = rgbMatch.groupValues.getOrNull(4).orEmpty()
+      val alpha = if (alphaGroup.isNotEmpty()) {
+        val parsed = alphaGroup.toFloat()
+        require(parsed in 0f..1f) { "rgba() alpha out of range" }
+        parsed
+      } else {
+        1f
+      }
+
+      return Color.valueOf(red / 255f, green / 255f, blue / 255f, alpha)
+    }
+
+    return Color.valueOf(normalizedValue.toColorInt())
   }
 
   override fun getCppRequiredTypes(): ExpectedType =
