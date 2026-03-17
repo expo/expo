@@ -15,7 +15,7 @@
 
 ### 🎉 New features
 
-- [android] Added `isPresented`, `onIsPresentedChange`, and more configurable props to `BottomSheet`. ([#43972](https://github.com/expo/expo/pull/43972) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `ref.hide()` for animated dismiss and more configurable props (`containerColor`, `contentColor`, `scrimColor`, `showDragHandle`, `sheetGesturesEnabled`, `properties`, `DragHandle` slot) to `BottomSheet`. ([#43972](https://github.com/expo/expo/pull/43972) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added `DatePickerDialog` and `TimePickerDialog` components, and `selectableDates` prop to `DateTimePicker`. ([#43895](https://github.com/expo/expo/pull/43895) by [@vonovak](https://github.com/vonovak))
 - [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `enabled`, `onValueChangeFinished`, and `Slider.Thumb`/`Slider.Track` slot support to `Slider` component. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
