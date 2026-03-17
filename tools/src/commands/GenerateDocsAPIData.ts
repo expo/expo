@@ -42,6 +42,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/label': ['swift-ui/Label/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/linearprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/link': ['swift-ui/Link/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/list': ['swift-ui/List/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
@@ -98,7 +99,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
-  'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/segmentedbutton': [
+    'jetpack-compose/SegmentedButton/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/pulltorefreshbox': [
     'jetpack-compose/PullToRefreshBox/index.tsx',
     'expo-ui',

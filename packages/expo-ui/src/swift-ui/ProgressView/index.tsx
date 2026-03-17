@@ -1,9 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
-
-export type ClosedRangeDate = { lower: Date; upper: Date };
+import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 
 export type ProgressViewProps = {
   /**
