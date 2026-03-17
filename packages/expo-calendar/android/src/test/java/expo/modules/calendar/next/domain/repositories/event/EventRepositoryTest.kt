@@ -61,7 +61,7 @@ class EventRepositoryTest {
         CalendarContract.Events.ORIGINAL_ID to null,
         CalendarContract.Events.RRULE to null,
         CalendarContract.Events.STATUS to CalendarContract.Events.STATUS_CONFIRMED,
-        CalendarContract.Events.TITLE to "Standup",
+        CalendarContract.Events.TITLE to "Standup"
       )
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
@@ -135,7 +135,7 @@ class EventRepositoryTest {
 
     val input = EventInput(
       dtStart = 1_000_000L,
-      dtEnd = 2_000_000L,
+      dtEnd = 2_000_000L
     )
 
     // When
@@ -213,7 +213,7 @@ class EventRepositoryTest {
 
   private fun minimalRow(
     id: Long = 1L,
-    rrule: String? = null,
+    rrule: String? = null
   ): Map<String, Any?> = mapOf(
     CalendarContract.Events._ID to id,
     CalendarContract.Events.ALL_DAY to 0,
@@ -232,7 +232,7 @@ class EventRepositoryTest {
     CalendarContract.Events.ORIGINAL_ID to null,
     CalendarContract.Events.RRULE to rrule,
     CalendarContract.Events.STATUS to null,
-    CalendarContract.Events.TITLE to null,
+    CalendarContract.Events.TITLE to null
   )
 
   // endregion

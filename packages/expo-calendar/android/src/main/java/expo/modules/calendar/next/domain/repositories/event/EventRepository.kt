@@ -147,4 +147,3 @@ class EventRepository(private val contentResolver: ContentResolver) {
     )
   }
 }
-

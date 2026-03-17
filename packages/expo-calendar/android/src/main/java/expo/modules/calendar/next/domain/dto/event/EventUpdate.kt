@@ -1,7 +1,5 @@
 package expo.modules.calendar.next.domain.dto.event
 
-import android.content.ContentValues
-import android.provider.CalendarContract
 import expo.modules.calendar.next.domain.model.event.AccessLevel
 import expo.modules.calendar.next.domain.model.event.Availability
 import expo.modules.calendar.next.domain.model.event.RecurrenceRule
@@ -23,5 +21,4 @@ class EventUpdate(
   val eventEndTimezone: ValueOrUndefined<String?> = ValueOrUndefined.Undefined(),
   val accessLevel: ValueOrUndefined<AccessLevel?> = ValueOrUndefined.Undefined(),
   val rrule: ValueOrUndefined<RecurrenceRule?> = ValueOrUndefined.Undefined()
-) {
-}
+)
