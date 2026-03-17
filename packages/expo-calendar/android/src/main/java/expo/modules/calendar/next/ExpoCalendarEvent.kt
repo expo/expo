@@ -25,13 +25,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ExpoCalendarEvent(
-  val eventRepository: EventRepository,
-  val attendeeRepository: AttendeeRepository,
-  val attendeeMapper: AttendeeMapper,
-  val eventMapper: EventMapper,
-  val reminderMapper: ReminderMapper,
-  val instanceRepository: InstanceRepository,
-  val reminderRepository: ReminderRepository,
+  private val eventRepository: EventRepository,
+  private val attendeeRepository: AttendeeRepository,
+  private val attendeeMapper: AttendeeMapper,
+  private val eventMapper: EventMapper,
+  private val reminderMapper: ReminderMapper,
+  private val instanceRepository: InstanceRepository,
+  private val reminderRepository: ReminderRepository,
   val options: RecurringEventOptions? = RecurringEventOptions(),
   private val initialInstanceEntity: InstanceEntity,
   reminders: List<ReminderEntity> = emptyList()

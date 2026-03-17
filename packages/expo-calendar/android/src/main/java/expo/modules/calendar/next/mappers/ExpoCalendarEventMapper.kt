@@ -13,7 +13,7 @@ class ExpoCalendarEventMapper(private val reminderMapper: ReminderMapper) {
   fun toData(instanceEntity: InstanceEntity, reminders: List<ReminderEntity> = emptyList()) = ExpoCalendarEventData(
     id = instanceEntity.eventId.value.toString(),
     alarms = reminders.map { reminderMapper.toRecord(it) },
-    calendarId = instanceEntity.calendarId?.value.toString(),
+    calendarId = instanceEntity.calendarId?.value?.toString(),
     title = instanceEntity.title,
     notes = instanceEntity.description,
     startDate = sdf.format(instanceEntity.begin),
@@ -28,7 +28,7 @@ class ExpoCalendarEventMapper(private val reminderMapper: ReminderMapper) {
     guestsCanModify = instanceEntity.guestsCanModify,
     guestsCanInviteOthers = instanceEntity.guestsCanInviteOthers,
     guestsCanSeeGuests = instanceEntity.guestsCanSeeGuests,
-    originalId = instanceEntity.originalId?.value.toString(),
+    originalId = instanceEntity.originalId?.value?.toString(),
     instanceId = instanceEntity.id,
     recurrenceRule = instanceEntity.rrule?.let { RecurrenceRuleRecord.fromRrFormat(it.toRuleString()) },
     status = instanceEntity.status?.let { EventStatus.fromAndroidValue(it.value) }
