@@ -71,6 +71,10 @@ typedef enum EXReactAppManagerStatus {
 - (NSDictionary<NSString *, NSString *> *)devMenuItems;
 - (void)selectDevMenuItemWithKey:(NSString *)key;
 
+- (BOOL)isHotLoadingEnabled;
+- (BOOL)isHotLoadingAvailable;
+- (BOOL)isPerfMonitorAvailable;
+
 @end
 
 @interface EXReactAppManager () <RCTReloadListener>

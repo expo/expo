@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   blurView: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     paddingTop: 20,
   },

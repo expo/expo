@@ -1,12 +1,12 @@
 import { type EventSubscription } from 'expo-modules-core';
-import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, PushTokenEvent, WidgetBase, WidgetTimelineEntry } from './Widgets.types';
+import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, PushTokenEvent, WidgetEnvironment, WidgetTimelineEntry } from './Widgets.types';
 /**
  * Represents a widget instance. Provides methods to manage the widget's timeline.
  */
 export declare class Widget<T extends object = object> {
     /** @hidden */
     private nativeWidgetObject;
-    constructor(name: string, layout: (p: WidgetBase<T>) => React.JSX.Element);
+    constructor(name: string, layout: (props: T, environment: WidgetEnvironment) => React.JSX.Element);
     /**
      * Force reloads the widget, causing it to refresh its content and timeline.
      */
@@ -91,7 +91,7 @@ export declare function after(date: Date): {
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
  * @param widget The widget component, marked with the `'widget'` directive.
  */
-export declare function createWidget<T extends object = object>(name: string, widget: (props: WidgetBase<T>) => React.JSX.Element): Widget<T>;
+export declare function createWidget<T extends object = object>(name: string, widget: (props: T, context: WidgetEnvironment) => React.JSX.Element): Widget<T>;
 /**
  * Creates a Live Activity Factory for managing Live Activities of a specific type.
  * @param name The Live Activity name. Must match the `'name'` field in your widget configuration in the app config.

@@ -93,7 +93,7 @@
 	</dict>
 	<key>NSBonjourServices</key>
 	<array>
-		<string>_preflight_check._tcp</string>
+		<string>_expo._tcp</string>
 	</array>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Allow Expo projects to access your calendar</string>

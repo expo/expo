@@ -257,7 +257,7 @@ function getPathDataFromState(state, options) {
         }
         // END FORK
         if (!focusedParams) {
-            focusedParams = focusedRoute.params;
+            focusedParams = focusedRoute.params ? { ...focusedRoute.params } : undefined;
         }
         if (route.state) {
             path += '/';

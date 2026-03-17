@@ -412,7 +412,20 @@ describe(scanDependenciesRecursively, () => {
 
     const result = await scanDependenciesRecursively(projectRoot, { limitDepth: 1 });
 
-    expect(result).toMatchInlineSnapshot(`{}`);
+    // limitDepth: 1 finds direct dependencies of the root but does not recurse into them
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "react-native-third-party": {
+          "depth": 0,
+          "duplicates": null,
+          "name": "react-native-third-party",
+          "originPath": "/fake/project/node_modules/react-native-third-party",
+          "path": "/fake/project/node_modules/react-native-third-party",
+          "source": 0,
+          "version": "0.0.1",
+        },
+      }
+    `);
   });
 
   itWithMemoize('discovers transitive peer dependencies', async () => {
@@ -784,10 +797,10 @@ describe(scanDependenciesRecursively, () => {
       projectRoot
     );
 
-    // limitDepth: 2 prevents recurse from visiting shared-dep (discovered at depth 1).
-    // Without the eager-version fix in resolveDependency, version would be ''.
+    // limitDepth: 2 finds shared-dep (discovered at depth 1) but does not recurse into it.
+    // Its version should be properly populated via loadPackageJson.
     const result = await scanDependenciesRecursively(projectRoot, { limitDepth: 2 });
 
-    expect(result['shared-dep']).toBe(undefined);
+    expect(result['shared-dep']?.version).toBe('6.0.0');
   });
 });

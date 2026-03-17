@@ -106,7 +106,7 @@ struct ${widget.name}: Widget {
     }
     .configurationDisplayName("${widget.displayName}")
     .description("${widget.description}")
-    .supportedFamilies([.${widget.supportedFamilies.join(', .')}])
+    .supportedFamilies([.${widget.supportedFamilies.join(', .')}])${widget.contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
 

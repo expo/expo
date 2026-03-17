@@ -9,7 +9,6 @@ import Debug from 'debug';
 import * as fs from 'fs';
 import { Socket } from 'net';
 import * as path from 'path';
-import { promisify } from 'util';
 
 import { ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
@@ -108,18 +107,17 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
   protected async uploadFile(srcPath: string, destPath: string): Promise<void> {
     debug(`uploadFile: ${srcPath}, ${destPath}`);
 
-    // read local file and get fd of destination
-    const [srcFile, destFile] = await Promise.all([
-      await promisify(fs.readFile)(srcPath),
-      await this.openFile(destPath),
-    ]);
+    const destFile = await this.openFile(destPath);
 
     try {
-      await this.writeFile(destFile, srcFile);
+      // fs.readFile cannot handle files >= 2 GiB due to Node.js Buffer limitations.
+      // Stream the file in chunks to support large files (e.g. ML models).
+      const stream = fs.createReadStream(srcPath, { highWaterMark: 8 * 1024 * 1024 });
+      for await (const chunk of stream) {
+        await this.writeFile(destFile, chunk);
+      }
+    } finally {
       await this.closeFile(destFile);
-    } catch (err) {
-      await this.closeFile(destFile);
-      throw err;
     }
   }
 

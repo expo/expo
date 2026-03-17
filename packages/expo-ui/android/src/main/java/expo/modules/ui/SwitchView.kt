@@ -26,10 +26,46 @@ class SwitchColors : Record {
   val checkedTrackColor: Color? = null
 
   @Field
+  val checkedBorderColor: Color? = null
+
+  @Field
+  val checkedIconColor: Color? = null
+
+  @Field
   val uncheckedThumbColor: Color? = null
 
   @Field
   val uncheckedTrackColor: Color? = null
+
+  @Field
+  val uncheckedBorderColor: Color? = null
+
+  @Field
+  val uncheckedIconColor: Color? = null
+
+  @Field
+  val disabledCheckedThumbColor: Color? = null
+
+  @Field
+  val disabledCheckedTrackColor: Color? = null
+
+  @Field
+  val disabledCheckedBorderColor: Color? = null
+
+  @Field
+  val disabledCheckedIconColor: Color? = null
+
+  @Field
+  val disabledUncheckedThumbColor: Color? = null
+
+  @Field
+  val disabledUncheckedTrackColor: Color? = null
+
+  @Field
+  val disabledUncheckedBorderColor: Color? = null
+
+  @Field
+  val disabledUncheckedIconColor: Color? = null
 
   @Field
   val checkedColor: Color? = null
@@ -52,6 +88,7 @@ class SwitchColors : Record {
 
 data class SwitchProps(
   val value: Boolean = false,
+  val enabled: Boolean = true,
   val variant: String = "switch",
   val elementColors: SwitchColors = SwitchColors(),
   val modifiers: ModifierList = emptyList()
@@ -63,12 +100,14 @@ fun SwitchComposable(
   onCheckedChange: ((Boolean) -> Unit)?,
   colors: SwitchColors,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   thumbContent: (@Composable () -> Unit)? = null
 ) {
   Switch(
     checked = checked,
     onCheckedChange = onCheckedChange,
     modifier = modifier,
+    enabled = enabled,
     thumbContent = thumbContent,
     colors = SwitchDefaults.colors(
       // For some reason the default way of passing colors using `compose` results in a transparent view
@@ -76,20 +115,45 @@ fun SwitchComposable(
         ?: SwitchDefaults.colors().checkedThumbColor,
       checkedTrackColor = colors.checkedTrackColor.composeOrNull
         ?: SwitchDefaults.colors().checkedTrackColor,
+      checkedBorderColor = colors.checkedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedBorderColor,
+      checkedIconColor = colors.checkedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().checkedIconColor,
       uncheckedThumbColor = colors.uncheckedThumbColor.composeOrNull
         ?: SwitchDefaults.colors().uncheckedThumbColor,
       uncheckedTrackColor = colors.uncheckedTrackColor.composeOrNull
-        ?: SwitchDefaults.colors().uncheckedTrackColor
+        ?: SwitchDefaults.colors().uncheckedTrackColor,
+      uncheckedBorderColor = colors.uncheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedBorderColor,
+      uncheckedIconColor = colors.uncheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().uncheckedIconColor,
+      disabledCheckedBorderColor = colors.disabledCheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedBorderColor,
+      disabledCheckedThumbColor = colors.disabledCheckedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedThumbColor,
+      disabledCheckedTrackColor = colors.disabledCheckedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedTrackColor,
+      disabledCheckedIconColor = colors.disabledCheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledCheckedIconColor,
+      disabledUncheckedBorderColor = colors.disabledUncheckedBorderColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedBorderColor,
+      disabledUncheckedThumbColor = colors.disabledUncheckedThumbColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedThumbColor,
+      disabledUncheckedTrackColor = colors.disabledUncheckedTrackColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedTrackColor,
+      disabledUncheckedIconColor = colors.disabledUncheckedIconColor.composeOrNull
+        ?: SwitchDefaults.colors().disabledUncheckedIconColor
     )
   )
 }
 
 @Composable
-fun CheckboxComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier) {
+fun CheckboxComposable(checked: Boolean, onCheckedChange: ((Boolean) -> Unit)?, colors: SwitchColors, modifier: Modifier, enabled: Boolean = true) {
   Checkbox(
     checked = checked,
     onCheckedChange = onCheckedChange,
     modifier = modifier,
+    enabled = enabled,
     colors = CheckboxDefaults.colors(
       checkedColor = colors.checkedColor.compose,
       disabledCheckedColor = colors.disabledCheckedColor.compose,
@@ -108,11 +172,12 @@ fun ThemedHybridSwitch(
   onCheckedChange: ((Boolean) -> Unit)?,
   colors: SwitchColors,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   thumbContent: (@Composable () -> Unit)? = null
 ) {
   when (variant) {
-    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier, thumbContent)
-    else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
+    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier, enabled, thumbContent)
+    else -> CheckboxComposable(checked, onCheckedChange, colors, modifier, enabled)
   }
 }
 
@@ -129,6 +194,7 @@ fun FunctionalComposableScope.SwitchContent(
     { newChecked -> onValueChange(ValueChangeEvent(newChecked)) },
     props.elementColors,
     ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    props.enabled,
     thumbContent = thumbContentSlotView?.let {
       {
         with(ComposableScope()) {

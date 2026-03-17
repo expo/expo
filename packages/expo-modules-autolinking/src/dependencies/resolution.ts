@@ -137,7 +137,7 @@ export async function scanDependenciesRecursively(
       resolution.version = packageJson.version || '';
     }
 
-    if (!hasVisitedPath && depth + 1 < maxDepth) {
+    if (!hasVisitedPath && depth < maxDepth) {
       const modules = await resolveDependencies(
         packageJson,
         nodeModulePaths,

@@ -72,6 +72,79 @@ export default function SteppedSliderExample() {
 }
 ```
 
+### Custom colors
+
+Use the `colors` prop to override the default Material3 colors for the slider's thumb, track, and tick marks.
+
+```tsx CustomColorsSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorsSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <Slider
+        value={value}
+        colors={{
+          thumbColor: '#6200EE',
+          activeTrackColor: '#6200EE',
+          inactiveTrackColor: '#E0E0E0',
+        }}
+        onValueChange={setValue}
+      />
+    </Host>
+  );
+}
+```
+
+### Custom thumb and track
+
+Use both `Slider.Thumb` and `Slider.Track` slots for a fully custom slider appearance.
+
+```tsx FullyCustomSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider, Shape, Row, Box } from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  height,
+  weight,
+  size,
+  clip,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function FullyCustomSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} onValueChange={setValue}>
+        <Slider.Thumb>
+          <Box modifiers={[size(24, 24), clip(Shapes.Circle), background('#6200EE')]} />
+        </Slider.Thumb>
+        <Slider.Track>
+          <Row modifiers={[fillMaxWidth(), height(8)]}>
+            <Shape.RoundedCorner
+              color="#6200EE"
+              cornerRadii={{ topStart: 4, bottomStart: 4 }}
+              modifiers={[weight(Math.max(value, 0.01)), height(8)]}
+            />
+            <Shape.RoundedCorner
+              color="#BDBDBD"
+              cornerRadii={{ topEnd: 4, bottomEnd: 4 }}
+              modifiers={[weight(Math.max(1 - value, 0.01)), height(8)]}
+            />
+          </Row>
+        </Slider.Track>
+      </Slider>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
