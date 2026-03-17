@@ -1893,5 +1893,9 @@ extension ViewModifierRegistry {
     register("contentTransition") { params, appContext, _ in
       return try ContentTransitionModifier(from: params, appContext: appContext)
     }
+
+    register("widgetURL") { params, appContext, _ in
+      return try WidgetURLModifier(from: params, appContext: appContext)
+    }
   }
 }
