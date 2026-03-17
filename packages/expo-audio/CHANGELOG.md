@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 55.0.9 — 2026-03-17
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.8 — 2026-02-25
 

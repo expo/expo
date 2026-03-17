@@ -1,6 +1,6 @@
 {
   "name": "expo-print",
-  "version": "55.0.8",
+  "version": "55.0.9",
   "description": "Provides an API for Android and iOS (AirPrint) printing functionality.",
   "main": "build/Print.js",
   "types": "build/Print.d.ts",

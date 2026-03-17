@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Prevent `.js` transform from discovering project Babel config ([#43726](https://github.com/expo/expo/pull/43726) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 55.0.3 — 2026-03-17
+
+### 🐛 Bug fixes
+
+- Prevent `.js` transform from discovering project Babel config ([#43726](https://github.com/expo/expo/pull/43726) by [@kitten](https://github.com/kitten))
 
 ## 55.0.2 — 2026-02-25
 

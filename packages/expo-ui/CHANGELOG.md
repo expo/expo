@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.3 — 2026-03-17
+
+### 🛠 Breaking changes
+
 - [iOS] Renamed Stepper `defaultValue` to `value` and `onValueChanged` to `onValueChange`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Replace `Picker` with `SingleChoiceSegmentedButtonRow`, `MultiChoiceSegmentedButtonRow`, and `SegmentedButton` components. Replace `RadioButton` `nativeClickable` prop with `onClick` event. ([#43809](https://github.com/expo/expo/pull/43809) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `ToggleButton` into separate M3 components: `ToggleButton`, `IconToggleButton`, `FilledIconToggleButton`, `OutlinedIconToggleButton`. Removed `variant`, `text`, `color`, `disabled` props. Added `colors` with checked/unchecked variants. ([#43974](https://github.com/expo/expo/pull/43974) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -26,10 +36,6 @@
 - [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `enabled`, `onValueChangeFinished`, and `Slider.Thumb`/`Slider.Track` slot support to `Slider` component. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] add AnimatedVisibility transition API ([#43632](https://github.com/expo/expo/pull/43632) by [@Ubax](https://github.com/Ubax))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 55.0.2 — 2026-03-11
 

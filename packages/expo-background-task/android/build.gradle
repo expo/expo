@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '55.0.9'
+version = '55.0.10'
 
 android {
   namespace "expo.modules.backgroundtask"
   defaultConfig {
     versionCode 23
-    versionName "55.0.9"
+    versionName "55.0.10"
     consumerProguardFiles("proguard-rules.pro")
   }
 }

@@ -34,11 +34,11 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
-    "expo-application": "~55.0.9",
-    "expo-constants": "~55.0.7",
-    "expo-crypto": "~55.0.9",
+    "expo-application": "~55.0.10",
+    "expo-constants": "~55.0.8",
+    "expo-crypto": "~55.0.10",
     "expo-linking": "~55.0.7",
-    "expo-web-browser": "~55.0.9",
+    "expo-web-browser": "~55.0.10",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

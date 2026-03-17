@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.16 — 2026-03-17
+
+### 🎉 New features
+
 - [iOS] Added `Equatable` conformance to `Either` type. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
 - [iOS] Fixed compilation issues due to missing fallthrough case in `EXJavaScriptSerializable`. ([#43634](https://github.com/expo/expo/pull/43634) by [@tjzel](https://github.com/tjzel))
-
-### 💡 Others
 
 ## 55.0.15 — 2026-03-11
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] fix unhandled promise rejection in `getRegistrationInfoAsync`, relax keychain accessibility to allow access after device unlocked. ([#43829](https://github.com/expo/expo/pull/43829) by [@jmalmo](https://github.com/jmalmo))
-
 ### 💡 Others
+
+## 55.0.13 — 2026-03-17
+
+### 🐛 Bug fixes
+
+- [ios] fix unhandled promise rejection in `getRegistrationInfoAsync`, relax keychain accessibility to allow access after device unlocked. ([#43829](https://github.com/expo/expo/pull/43829) by [@jmalmo](https://github.com/jmalmo))
 
 ## 55.0.12 — 2026-03-11
 
