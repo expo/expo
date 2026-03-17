@@ -24,7 +24,7 @@ class SymbolView: ExpoView {
   }
 
   func reloadSymbol() {
-    guard let image = UIImage(systemName: name) else {
+    guard let image = UIImage(named: name) ?? UIImage(systemName: name) else {
       return
     }
     imageView.image = image
