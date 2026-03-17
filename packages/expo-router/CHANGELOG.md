@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
+
 ## 55.0.6 — 2026-03-17
 
 ### 🐛 Bug fixes
