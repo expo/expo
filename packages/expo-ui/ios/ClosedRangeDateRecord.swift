@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-final class ClosedRangeDate: Record {
-  @Field var lower: Date?
-  @Field var upper: Date?
+public final class ClosedRangeDate: Record {
+  @Field public var lower: Date?
+  @Field public var upper: Date?
 }
