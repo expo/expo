@@ -33,12 +33,13 @@ export function verifyCommand(cli: commander.CommanderStatic) {
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .option(
       '-p, --platform [platform]',
-      `The platform to validate native modules for. Available options: ${[...AUTOLINKING_PLATFORMS, 'both', 'all'].map((x) => `"${x}"`).join(', ')}`,
+      `The platform to validate native modules for. Available options: ${[...AUTOLINKING_PLATFORMS, 'native', 'all'].map((x) => `"${x}"`).join(', ')}`,
       'all'
     )
     .action(async (commandArguments: VerifyArguments) => {
       let platforms: readonly string[];
-      if (commandArguments.platform === 'both') {
+      // NOTE(@kitten): Preserve `both` for backwards-compatibility
+      if (commandArguments.platform === 'both' || commandArguments.platform === 'native') {
         platforms = ['android', 'ios'];
       } else if (commandArguments.platform === 'all') {
         platforms = AUTOLINKING_PLATFORMS;
