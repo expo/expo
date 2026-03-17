@@ -206,6 +206,10 @@ class FileSystemModule : Module() {
         file.modificationTime
       }
 
+      Property("lastModified") { file: FileSystemFile ->
+        file.modificationTime
+      }
+
       Property("creationTime") { file: FileSystemFile ->
         file.creationTime
       }

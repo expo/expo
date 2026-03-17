@@ -1,6 +1,5 @@
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
-import * as DocumentPicker from 'expo-document-picker';
 import { File, Directory, Paths, FileMode } from 'expo-file-system';
 import type { FileHandle } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
@@ -12,7 +11,9 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Image,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -70,6 +71,7 @@ export default function FileSystemScreen() {
           <AndroidIntentsSection currentFile={currentFile} withCurrentFile={withCurrentFile} />
         )}
         <FileLifecycleSection setCurrentFile={setCurrentFile} withCurrentFile={withCurrentFile} />
+        <FilePickerSection setCurrentFile={setCurrentFile} />
       </View>
     </ScrollView>
   );
@@ -104,27 +106,10 @@ function FileSourcesSection({ setCurrentFile }: { setCurrentFile: (f: File) => v
       <ListButton
         title="File.pickFileAsync"
         onPress={async () => {
-          const result = await File.pickFileAsync();
+          const result = (await File.pickFileAsync({ multipleFiles: false })).result;
           const file = Array.isArray(result) ? result[0] : result;
           setCurrentFile(file as File);
           Alert.alert('Picked SAF file', file.uri);
-        }}
-      />
-      <ListButton
-        title="Pick via DocumentPicker"
-        onPress={async () => {
-          try {
-            const result = await DocumentPicker.getDocumentAsync({
-              copyToCacheDirectory: false,
-            });
-            if (!result.canceled && result.assets?.length > 0) {
-              const file = new File(result.assets[0].uri);
-              setCurrentFile(file);
-              Alert.alert('DocumentPicker file', file.uri);
-            }
-          } catch (e: any) {
-            Alert.alert('Error', e.message);
-          }
         }}
       />
       <ListButton
@@ -693,6 +678,121 @@ function FileLifecycleSection({
           return { deleted: true, existsAfter: file.exists };
         })}
       />
+    </>
+  );
+}
+
+// ===== Section: File Lifecycle =====
+function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => void }) {
+  const { width } = useWindowDimensions();
+  const [multiple, setMultiple] = useState(false);
+  const [pdfMime, setPdfMime] = useState(false);
+  const [allMime, setAllMime] = useState(true);
+  const [imageMime, setPngMime] = useState(false);
+  const [pickerResult, setPickerResult] = useState<File | File[] | null>(null);
+  const mimeTypes = (): string[] => {
+    const mimeTypesArr: string[] = [];
+    if (pdfMime) mimeTypesArr.push('application/pdf');
+    if (allMime) mimeTypesArr.push('*/*');
+    if (imageMime) mimeTypesArr.push('image/*');
+    return mimeTypesArr;
+  };
+
+  const openPicker = async () => {
+    try {
+      const multipleFiles = multiple;
+      const { result, canceled } = multiple
+        ? await File.pickFileAsync({
+            multipleFiles: true,
+            mimeTypes: mimeTypes(),
+          })
+        : await File.pickFileAsync({ multipleFiles: false, mimeTypes: mimeTypes() });
+
+      if (!canceled) {
+        if (!multipleFiles) {
+          setCurrentFile(result as File);
+        }
+        setPickerResult(result);
+      } else {
+        setTimeout(() => {
+          if (Platform.OS === 'web') {
+            alert('canceled');
+          } else {
+            Alert.alert('canceled');
+          }
+        }, 100);
+      }
+    } catch (err) {
+      console.error('Error picking file:', err);
+      setTimeout(() => {
+        Alert.alert('error', `Error picking file: ${err}`);
+      }, 150);
+    }
+  };
+  return (
+    <>
+      <HeadingText>File Picker</HeadingText>
+      <View style={styles.optionRow}>
+        <Checkbox value={multiple} onValueChange={setMultiple} style={styles.checkbox} />
+        <Text style={styles.optionLabel}>multiple files</Text>
+      </View>
+      <Text>Mime types</Text>
+      <View style={styles.optionRow}>
+        <Checkbox value={imageMime} onValueChange={setPngMime} style={styles.checkbox} />
+        <Text style={styles.optionLabel}>images</Text>
+      </View>
+      <View style={styles.optionRow}>
+        <Checkbox value={pdfMime} onValueChange={setPdfMime} style={styles.checkbox} />
+        <Text style={styles.optionLabel}>pdf files</Text>
+      </View>
+      <View style={styles.optionRow}>
+        <Checkbox value={allMime} onValueChange={setAllMime} style={styles.checkbox} />
+        <Text style={styles.optionLabel}>all files</Text>
+      </View>
+      <Text> Selected mime types: {JSON.stringify(mimeTypes())}</Text>
+      <SimpleActionDemo
+        title={multiple ? 'Pick multiple files' : 'Pick a single file'}
+        action={async () => {
+          await openPicker();
+        }}
+      />
+      <View
+        style={{
+          padding: 20,
+          maxWidth: width - 40,
+          width: '100%',
+          justifyContent: 'flex-start',
+        }}>
+        {Array.of(pickerResult)
+          .flat()
+          .map((file, index) => {
+            if (!file) return null;
+
+            return (
+              <View
+                key={`${index}-${file?.contentUri}`}
+                style={{ marginBottom: 20, width: '100%', flex: 1 }}>
+                {file?.name!.match(/\.(png|jpg)$/gi) ? (
+                  <Image
+                    source={{ uri: file.uri }}
+                    resizeMode="cover"
+                    style={{ width: 100, height: 100 }}
+                  />
+                ) : null}
+                <Text numberOfLines={1} ellipsizeMode="middle">
+                  {file?.name} ({file?.size! / 1000} KB)
+                </Text>
+                <Text numberOfLines={1} ellipsizeMode="middle">
+                  URI: {file?.uri}
+                </Text>
+                <Text numberOfLines={1} ellipsizeMode="middle">
+                  Mime type: {file?.type}
+                </Text>
+                <Text>Last modified: {file?.lastModified}</Text>
+              </View>
+            );
+          })}
+      </View>
     </>
   );
 }

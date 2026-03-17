@@ -233,6 +233,10 @@ public final class FileSystemModule: Module {
         try? file.modificationTime
       }
 
+      Property("lastModified") { file in
+        try? file.modificationTime
+      }
+
       Property("creationTime") { file in
         try? file.creationTime
       }
