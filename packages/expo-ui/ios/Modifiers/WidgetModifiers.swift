@@ -44,3 +44,15 @@ internal struct WidgetAccentedRenderingModeModifier: Record {
 #endif
   }
 }
+
+internal struct WidgetURLModifier: ViewModifier, Record {
+  @Field var url: URL?
+
+  func body(content: Content) -> some View {
+#if !os(tvOS)
+    content.widgetURL(url)
+#else
+    content
+#endif
+  }
+}

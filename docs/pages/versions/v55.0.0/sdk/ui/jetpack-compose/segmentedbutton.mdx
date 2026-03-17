@@ -1,0 +1,153 @@
+---
+title: SegmentedButton
+description: Jetpack Compose Segmented Button components for single or multi-choice selection.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Segmented buttons let app users choose from a small set of options displayed side by side in a row. They map to the official Jetpack Compose [Segmented Button](https://developer.android.com/develop/ui/compose/components/segmented-button) API.
+
+There are two container types:
+
+- **`SingleChoiceSegmentedButtonRow`**: only one button can be selected at a time (like radio buttons).
+- **`MultiChoiceSegmentedButtonRow`**: multiple buttons can be toggled independently (like checkboxes).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Single-choice segmented button
+
+Use `SingleChoiceSegmentedButtonRow` when only one option can be active at a time. Each `SegmentedButton` takes `selected` and `onClick` props.
+
+```tsx SingleChoiceExample.tsx
+import { useState } from 'react';
+import {
+  Host,
+  SingleChoiceSegmentedButtonRow,
+  SegmentedButton,
+  Text,
+} from '@expo/ui/jetpack-compose';
+
+export default function SingleChoiceExample() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const options = ['Day', 'Week', 'Month', 'Year'];
+
+  return (
+    <Host matchContents>
+      <SingleChoiceSegmentedButtonRow>
+        {options.map((label, index) => (
+          <SegmentedButton
+            key={label}
+            selected={index === selectedIndex}
+            onClick={() => setSelectedIndex(index)}>
+            <SegmentedButton.Label>
+              <Text>{label}</Text>
+            </SegmentedButton.Label>
+          </SegmentedButton>
+        ))}
+      </SingleChoiceSegmentedButtonRow>
+    </Host>
+  );
+}
+```
+
+### Multi-choice segmented button
+
+Use `MultiChoiceSegmentedButtonRow` when multiple options can be toggled independently. Each `SegmentedButton` takes `checked` and `onCheckedChange` props.
+
+```tsx MultiChoiceExample.tsx
+import { useState } from 'react';
+import {
+  Host,
+  MultiChoiceSegmentedButtonRow,
+  SegmentedButton,
+  Text,
+} from '@expo/ui/jetpack-compose';
+
+export default function MultiChoiceExample() {
+  const [checkedItems, setCheckedItems] = useState([false, false, false, false]);
+  const options = ['Wi-Fi', 'Bluetooth', 'NFC', 'GPS'];
+
+  return (
+    <Host matchContents>
+      <MultiChoiceSegmentedButtonRow>
+        {options.map((label, index) => (
+          <SegmentedButton
+            key={label}
+            checked={checkedItems[index]}
+            onCheckedChange={checked => {
+              setCheckedItems(prev => {
+                const next = [...prev];
+                next[index] = checked;
+                return next;
+              });
+            }}>
+            <SegmentedButton.Label>
+              <Text>{label}</Text>
+            </SegmentedButton.Label>
+          </SegmentedButton>
+        ))}
+      </MultiChoiceSegmentedButtonRow>
+    </Host>
+  );
+}
+```
+
+### Custom colors
+
+Use the `colors` prop on `SegmentedButton` to customize its appearance across active, inactive, and disabled states.
+
+```tsx CustomColorsExample.tsx
+import { useState } from 'react';
+import {
+  Host,
+  SingleChoiceSegmentedButtonRow,
+  SegmentedButton,
+  Text,
+} from '@expo/ui/jetpack-compose';
+
+export default function CustomColorsExample() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const options = ['$', '$$', '$$$', '$$$$'];
+
+  return (
+    <Host matchContents>
+      <SingleChoiceSegmentedButtonRow>
+        {options.map((label, index) => (
+          <SegmentedButton
+            key={label}
+            selected={index === selectedIndex}
+            onClick={() => setSelectedIndex(index)}
+            colors={{
+              activeContainerColor: '#6200EE',
+              activeContentColor: '#FFFFFF',
+            }}>
+            <SegmentedButton.Label>
+              <Text>{label}</Text>
+            </SegmentedButton.Label>
+          </SegmentedButton>
+        ))}
+      </SingleChoiceSegmentedButtonRow>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import {
+  SingleChoiceSegmentedButtonRow,
+  MultiChoiceSegmentedButtonRow,
+  SegmentedButton,
+} from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/segmentedbutton" apiName="SegmentedButton" />

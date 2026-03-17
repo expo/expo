@@ -1,4 +1,4 @@
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 export type RadioButtonProps = {
     /**
      * Whether the radio button is selected.
@@ -11,7 +11,7 @@ export type RadioButtonProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * A Material Design radio button.
