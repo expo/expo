@@ -9,6 +9,8 @@ import {
   Row,
   Switch,
   Text as ComposeText,
+  FilledTonalButton,
+  OutlinedButton,
 } from '@expo/ui/jetpack-compose';
 import { background } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
@@ -59,10 +61,9 @@ export default function DropdownMenuScreen() {
               color={themeBackgroundColor}>
               <DropdownMenu.Trigger>
                 <Button
-                  elementColors={{ containerColor: 'transparent', contentColor: 'blue' }}
-                  trailingIcon="filled.ArrowDropDown"
-                  onPress={() => setThemeMenuExpanded(true)}>
-                  {selectedTheme}
+                  colors={{ containerColor: 'transparent', contentColor: 'blue' }}
+                  onClick={() => setThemeMenuExpanded(true)}>
+                  <ComposeText>{selectedTheme}</ComposeText>
                 </Button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Items>
@@ -129,9 +130,9 @@ export default function DropdownMenuScreen() {
             onDismissRequest={() => setColorfulMenuExpanded(false)}
             color="#e3b7ff">
             <DropdownMenu.Trigger>
-              <Button variant="bordered" onPress={() => setColorfulMenuExpanded(true)}>
-                Show Colorful Menu
-              </Button>
+              <FilledTonalButton onClick={() => setColorfulMenuExpanded(true)}>
+                <ComposeText>Show Colorful Menu</ComposeText>
+              </FilledTonalButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Items>
               <DropdownMenuItem
@@ -203,9 +204,9 @@ export default function DropdownMenuScreen() {
             expanded={sectionsMenuExpanded}
             onDismissRequest={() => setSectionsMenuExpanded(false)}>
             <DropdownMenu.Trigger>
-              <Button variant="outlined" onPress={() => setSectionsMenuExpanded(true)}>
-                Show Menu with Sections
-              </Button>
+              <OutlinedButton onClick={() => setSectionsMenuExpanded(true)}>
+                <ComposeText>Show Menu with Sections</ComposeText>
+              </OutlinedButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Items>
               <DropdownMenuItem

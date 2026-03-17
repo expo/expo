@@ -9,6 +9,9 @@ import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.utils.AndroidResourceAssetUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.AssertionError
@@ -32,14 +35,16 @@ class EmbeddedLoader internal constructor(
   database: UpdatesDatabase,
   updatesDirectory: File,
   private val loaderFiles: LoaderFiles,
-  private val shouldCopyEmbeddedAssets: Boolean = BuildConfig.EX_UPDATES_COPY_EMBEDDED_ASSETS
+  private val shouldCopyEmbeddedAssets: Boolean = BuildConfig.EX_UPDATES_COPY_EMBEDDED_ASSETS,
+  scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 ) : Loader(
   context,
   configuration,
   logger,
   database,
   updatesDirectory,
-  loaderFiles
+  loaderFiles,
+  scope
 ) {
 
   constructor(
@@ -47,8 +52,9 @@ class EmbeddedLoader internal constructor(
     configuration: UpdatesConfiguration,
     logger: UpdatesLogger,
     database: UpdatesDatabase,
-    updatesDirectory: File
-  ) : this(context, configuration, logger, database, updatesDirectory, LoaderFiles())
+    updatesDirectory: File,
+    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  ) : this(context, configuration, logger, database, updatesDirectory, LoaderFiles(), scope = scope)
 
   override suspend fun loadRemoteUpdate(
     database: UpdatesDatabase,

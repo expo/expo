@@ -10,7 +10,6 @@
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXRootViewController.h"
-#import "EXDevMenu-Swift.h"
 #import "EXUtil.h"
 
 #import "Expo_Go-Swift.h"
@@ -21,15 +20,12 @@
 
 NSString * const kEXHomeDisableNuxDefaultsKey = @"EXKernelDisableNuxDefaultsKey";
 NSString * const kEXHomeIsNuxFinishedDefaultsKey = @"EXHomeIsNuxFinishedDefaultsKey";
-NSString * const kEXIsLocalNetworkAccessGrantedKey = @"EXIsLocalNetworkAccessGranted";
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXRootViewController () <EXAppBrowserController>
 
 @property (nonatomic, assign) BOOL isAnimatingAppTransition;
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
-@property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
 @property (nonatomic, strong) HomeViewController *homeViewController;
 @property (nonatomic, strong) NSURL *pendingInitialHomeURL;
 
@@ -55,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidAppear:animated];
   [self becomeFirstResponder];
+
+  // Attach three-finger long press gesture recognizer for dev menu
+  if (self.view.window) {
+    [[DevMenuManager shared] attachGestureRecognizerToWindow:self.view.window];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -76,14 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldAutorotate
 {
   return YES;
-}
-
-- (BOOL)isLocalNetworkAccessGranted {
-  if ([[NSUserDefaults standardUserDefaults] objectForKey:kEXIsLocalNetworkAccessGrantedKey] != nil) {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kEXIsLocalNetworkAccessGrantedKey];
-  } else {
-    return NO;
-  }
 }
 
 /**
@@ -133,39 +126,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)moveAppToVisible:(EXKernelAppRecord *)appRecord
 {
-  if ([EXUtil isExpoHostedUrl:appRecord.appLoader.manifestUrl] || [self isLocalNetworkAccessGranted]) {
-    [self foregroundApp:appRecord];
-    return;
-  }
-
-  [EXLocalNetworkAccessManager requestAccessWithCompletion:^(BOOL success) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (success) {
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        [userDefaults setBool:YES forKey:kEXIsLocalNetworkAccessGrantedKey];
-        [self foregroundApp:appRecord];
-      } else {
-        [self createLocalNetworkDeniedAlert];
-      }
-    });
-  }];
+  [self foregroundApp:appRecord];
 }
 
 - (void)foregroundApp:(EXKernelAppRecord *)appRecord
 {
   [self _foregroundAppRecord:appRecord];
 }
-
-- (void)createLocalNetworkDeniedAlert
-{
-  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Local network access required"
-                                                                 message:@"Local network access has been denied. This permission is required to run projects in Expo Go. Enable \"Local Network\" for Expo Go from the Settings app."
-                                                          preferredStyle:UIAlertControllerStyleAlert];
-  UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-  [alert addAction:okAction];
-  [self presentViewController:alert animated:YES completion:nil];
-}
-
 
 - (void)moveHomeToVisible
 {
@@ -351,22 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentViewController = viewController;
 
     if (isShowingApp && appRecord.appManager.reactHost) {
-      [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
-
-      DevMenuConfiguration *config = [DevMenuManager shared].configuration;
-
-      BOOL isDev = appRecord.appLoader.manifest.isDevelopmentMode || appRecord.appLoader.manifest.isUsingDeveloperTool;
-      BOOL isSnack = [self _isSnackURL:appRecord.appLoader.manifestUrl];
-
-      if (!isDev) {
-        config.showDebuggingTip = NO;
-        config.showFastRefresh = NO;
-        config.showHostUrl = isSnack;
-      } else {
-        config.showDebuggingTip = YES;
-        config.showFastRefresh = YES;
-        config.showHostUrl = NO;
-      }
+      [[DevMenuManager shared] notifyManifestChanged];
     }
   }
 

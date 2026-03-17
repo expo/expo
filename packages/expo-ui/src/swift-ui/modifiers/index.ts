@@ -567,6 +567,44 @@ export const scrollDismissesKeyboard = (
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
+type UnitPointValue =
+  | 'zero'
+  | 'topLeading'
+  | 'top'
+  | 'topTrailing'
+  | 'leading'
+  | 'center'
+  | 'trailing'
+  | 'bottomLeading'
+  | 'bottom'
+  | 'bottomTrailing';
+
+/**
+ * Sets the default anchor point for a scroll view's content.
+ * @param anchor - The anchor point for initial scroll position and content size changes, or `null` to reset.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:)).
+ */
+export const defaultScrollAnchor = (anchor: UnitPointValue | null) =>
+  createModifier('defaultScrollAnchor', { anchor });
+
+/**
+ * Sets the default anchor point for a scroll view for a specific role.
+ * Pass `null` to opt out of a specific role while keeping anchors for other roles.
+ * @param anchor - The anchor point, or `null` to opt out of this role.
+ * @param role - The scroll anchor role: `'initialOffset'`, `'sizeChanges'`, or `'alignment'`.
+ * @platform ios 18.0+
+ * @platform tvos 18.0+
+ * @platform macos 15.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/defaultscrollanchor(_:for:)).
+ */
+export const defaultScrollAnchorForRole = (
+  anchor: UnitPointValue | null,
+  role: 'initialOffset' | 'sizeChanges' | 'alignment'
+) => createModifier('defaultScrollAnchorForRole', { anchor, role });
+
 /**
  * Disables the move action for a view in a list.
  * Apply to items within a `ForEach` to prevent them from being moved.
@@ -1097,6 +1135,8 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof defaultScrollAnchor>
+  | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>

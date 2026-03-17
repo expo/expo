@@ -105,6 +105,16 @@ export const wrapContentHeight = (alignment?: 'top' | 'centerVertically' | 'bott
   createModifier('wrapContentHeight', alignment ? { alignment } : {});
 
 // =============================================================================
+// Inset Modifiers
+// =============================================================================
+
+/**
+ * Adds padding to avoid the software keyboard (IME).
+ * When the keyboard is visible, padding is added to keep content above it.
+ */
+export const imePadding = () => createModifier('imePadding');
+
+// =============================================================================
 // Position Modifiers
 // =============================================================================
 
