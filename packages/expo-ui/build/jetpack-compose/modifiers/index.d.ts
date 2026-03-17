@@ -188,6 +188,17 @@ export declare const selectable: (selected: boolean, handler: () => void, role?:
  */
 export declare const selectableGroup: () => import("./createModifier").ModifierConfig;
 /**
+ * Makes the view toggleable with accessibility semantics.
+ * Use this to make a row containing a checkbox or switch tappable as a whole.
+ * @param value - The current toggle state.
+ * @param handler - Function to call when toggled.
+ * @param options - Optional configuration.
+ * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`, `'switch'`, or `'tab'`.
+ */
+export declare const toggleable: (value: boolean, handler: () => void, options?: {
+    role?: "checkbox" | "radioButton" | "switch" | "tab";
+}) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */

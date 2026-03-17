@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Checkbox component',
+    route: 'ui/checkbox',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CheckboxScreen'));
+    },
+  },
+  {
     name: 'IconButton component',
     route: 'ui/icon-button',
     options: {},
@@ -176,6 +184,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'ToggleButton component',
+    route: 'ui/toggle-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleButtonScreen'));
     },
   },
   {
