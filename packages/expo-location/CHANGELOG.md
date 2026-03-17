@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Ignore [`locationUnknown`](https://developer.apple.com/documentation/corelocation/clerror-swift.struct/locationunknown) errors in `watchPositionAsync`.
+
 ### 💡 Others
 
 ### ⚠️ Notices
