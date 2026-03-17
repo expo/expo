@@ -11,6 +11,11 @@
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
+    "./exports": {
+      "types": "./build/exports.d.ts",
+      "require": "./build/exports.js",
+      "default": "./build/exports.js"
+    },
     "./*": "./*.js",
     "./*.js": "./*.js"
   },
