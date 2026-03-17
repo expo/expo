@@ -30,9 +30,8 @@ const silent = (fromDirectory: string, request: string) => {
 module.exports = jest.fn((fromDirectory, request) => {
   const path = silent(fromDirectory, request);
   if (!path) {
-    const err: any = new Error(`Cannot find module '${request}'`);
-    err.code = 'MODULE_NOT_FOUND';
-    throw err;
+    const err = new Error(`Cannot find module '${request}'`);
+    throw Object.assign(err, { code: 'MODULE_NOT_FOUND' });
   }
   return path;
 });
