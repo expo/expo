@@ -18,7 +18,7 @@ internal fun copyFileViaStream(
 
   source.inputStream().use { input ->
     dest.outputStream().use { output ->
-      input.copyTo(output)
+      input.copyTo(output, bufferSize = 65_536) // 64KB — reduces syscall overhead vs 8KB default
     }
   }
 }
