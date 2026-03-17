@@ -1,5 +1,36 @@
----
-title: Introduction to Expo Router
+app/(tabs)/ai-workbench.tsx
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, ScrollView, StyleSheet, Button } from 'react-native';
+import { useRouter } from 'expo-router';
+
+export default function AIWorkbench() {
+  const [idea, setIdea] = useState('');
+  const [output, setOutput] = useState('');
+  const router = useRouter();
+
+  const generatePlaceholder = () => {
+    if (!idea.trim()) return;
+    // Simple placeholder logic
+    setOutput(`💡 You imagined: "${idea}"\n\nPreview of your app interface:\n\n[Header]\n[Content for "${idea}"]\n[Footer]`);
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>AI Workbench</Text>
+      <Text style={styles.subtitle}>Type your app idea and see a live placeholder preview!</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your app idea..."
+        value={idea}
+        onChangeText={setIdea}
+      />
+
+      <Button title="Generate Preview" onPress={generatePlaceholder} />
+
+      {output ? (
+        <View sty
 description: Expo Router is an open-source routing library for Universal React Native applications built with Expo.
 sidebar_title: Introduction
 searchRank: 15
