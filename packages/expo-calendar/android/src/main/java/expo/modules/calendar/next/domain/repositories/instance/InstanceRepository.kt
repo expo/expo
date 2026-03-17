@@ -62,7 +62,6 @@ class InstanceRepository(private val contentResolver: ContentResolver) {
     val selectionArgs: Array<String>?
   )
 
-
   companion object {
     val FULL_PROJECTION = arrayOf(
       CalendarContract.Instances._ID,

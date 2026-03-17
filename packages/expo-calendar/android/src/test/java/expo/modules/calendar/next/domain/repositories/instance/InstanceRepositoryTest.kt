@@ -8,7 +8,6 @@ import expo.modules.calendar.next.domain.model.event.AccessLevel
 import expo.modules.calendar.next.domain.model.event.Availability
 import expo.modules.calendar.next.domain.model.event.Status
 import expo.modules.calendar.next.domain.wrappers.CalendarId
-import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.exceptions.CouldNotExecuteQueryException
 import expo.modules.calendar.next.exceptions.PermissionException
 import io.mockk.every
@@ -64,7 +63,7 @@ class InstanceRepositoryTest {
         CalendarContract.Instances.RRULE to null,
         CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS to 1,
         CalendarContract.Instances.GUESTS_CAN_MODIFY to 0,
-        CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to 1,
+        CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to 1
       )
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
@@ -131,7 +130,7 @@ class InstanceRepositoryTest {
     val cursor = cursorWithRows(
       minimalRow(id = 1L, eventId = 10L),
       minimalRow(id = 2L, eventId = 20L),
-      minimalRow(id = 3L, eventId = 30L),
+      minimalRow(id = 3L, eventId = 30L)
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
 
@@ -261,7 +260,7 @@ class InstanceRepositoryTest {
     begin: Long = 1_000_000L,
     end: Long = 2_000_000L,
     allDay: Int = 0,
-    rrule: String? = null,
+    rrule: String? = null
   ): Map<String, Any?> = mapOf(
     CalendarContract.Instances._ID to id,
     CalendarContract.Instances.EVENT_ID to eventId,
@@ -282,7 +281,7 @@ class InstanceRepositoryTest {
     CalendarContract.Instances.RRULE to rrule,
     CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS to 0,
     CalendarContract.Instances.GUESTS_CAN_MODIFY to 0,
-    CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to 0,
+    CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to 0
   )
 
   // endregion
