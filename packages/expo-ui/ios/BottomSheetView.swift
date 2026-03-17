@@ -59,13 +59,8 @@ private struct BottomSheetSizeReader<Content: View>: View {
 
 struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
-  @State private var isPresented: Bool
+  @State private var isPresented: Bool = false
   @State private var childrenSize: CGSize = .zero
-
-  init(props: BottomSheetProps) {
-    self.props = props
-    self._isPresented = State(initialValue: props.isPresented)
-  }
 
   private func handleSizeChange(_ size: CGSize) {
     guard childrenSize != size else { return }

@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Renamed Stepper `defaultValue` to `value` and `onValueChanged` to `onValueChange`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Replace `Picker` with `SingleChoiceSegmentedButtonRow`, `MultiChoiceSegmentedButtonRow`, and `SegmentedButton` components. Replace `RadioButton` `nativeClickable` prop with `onClick` event. ([#43809](https://github.com/expo/expo/pull/43809) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `ToggleButton` into separate M3 components: `ToggleButton`, `IconToggleButton`, `FilledIconToggleButton`, `OutlinedIconToggleButton`. Removed `variant`, `text`, `color`, `disabled` props. Added `colors` with checked/unchecked variants. ([#43974](https://github.com/expo/expo/pull/43974) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `Switch` API to native: removed `variant` prop and split into separate `Switch` and `Checkbox` components matching native M3 APIs. Renamed `elementColors` to `colors`, `onValueChange` to `onCheckedChange`, removed `color` convenience prop. ([#43887](https://github.com/expo/expo/pull/43887) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -41,6 +42,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix initial prop values not being applied since `init` runs before `updateProps`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix prop syncing race condition where stale values override user interactions. Replace `onReceive(Sequence.publisher)` with `onAppear` + `onChange` across all SwiftUI views. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `Slider` thumb snapping back during drag by guarding `.onReceive` with `isEditing` state. ([#43701](https://github.com/expo/expo/issues/43701) by [@fedeciancaglini](https://github.com/fedeciancaglini)) ([#43797](https://github.com/expo/expo/pull/43797) by [@fedeciancaglini](https://github.com/fedeciancaglini))
 - [Android] Fix touch events for RN views inside Compose BottomSheet. ([#43716](https://github.com/expo/expo/pull/43716) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `RNHostView` child parent related crash. ([#43691](https://github.com/expo/expo/pull/43691) by [@nishan](https://github.com/intergalacticspacehighway))
