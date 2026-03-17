@@ -77,18 +77,14 @@ export default function BottomSheetScreen() {
                 <ComposeText style={{ typography: 'bodyMedium' }}>
                   Skip partially expanded
                 </ComposeText>
-                <Switch
-                  variant="switch"
-                  value={skipPartiallyExpanded}
-                  onValueChange={setSkipPartiallyExpanded}
-                />
+                <Switch value={skipPartiallyExpanded} onCheckedChange={setSkipPartiallyExpanded} />
               </Row>
               <Row
                 modifiers={[fillMaxWidth()]}
                 horizontalArrangement="spaceBetween"
                 verticalAlignment="center">
                 <ComposeText style={{ typography: 'bodyMedium' }}>Show drag handle</ComposeText>
-                <Switch variant="switch" value={showDragHandle} onValueChange={setShowDragHandle} />
+                <Switch value={showDragHandle} onCheckedChange={setShowDragHandle} />
               </Row>
               <Row
                 modifiers={[fillMaxWidth()]}
@@ -97,11 +93,7 @@ export default function BottomSheetScreen() {
                 <ComposeText style={{ typography: 'bodyMedium' }}>
                   Use custom drag handle
                 </ComposeText>
-                <Switch
-                  variant="switch"
-                  value={useCustomDragHandle}
-                  onValueChange={setUseCustomDragHandle}
-                />
+                <Switch value={useCustomDragHandle} onCheckedChange={setUseCustomDragHandle} />
               </Row>
               <Row
                 modifiers={[fillMaxWidth()]}
@@ -110,11 +102,7 @@ export default function BottomSheetScreen() {
                 <ComposeText style={{ typography: 'bodyMedium' }}>
                   Sheet gestures enabled
                 </ComposeText>
-                <Switch
-                  variant="switch"
-                  value={sheetGesturesEnabled}
-                  onValueChange={setSheetGesturesEnabled}
-                />
+                <Switch value={sheetGesturesEnabled} onCheckedChange={setSheetGesturesEnabled} />
               </Row>
               <Row
                 modifiers={[fillMaxWidth()]}
@@ -124,9 +112,8 @@ export default function BottomSheetScreen() {
                   Dismiss on back press
                 </ComposeText>
                 <Switch
-                  variant="switch"
                   value={shouldDismissOnBackPress}
-                  onValueChange={setShouldDismissOnBackPress}
+                  onCheckedChange={setShouldDismissOnBackPress}
                 />
               </Row>
               <Row
@@ -137,9 +124,8 @@ export default function BottomSheetScreen() {
                   Dismiss on click outside
                 </ComposeText>
                 <Switch
-                  variant="switch"
                   value={shouldDismissOnClickOutside}
-                  onValueChange={setShouldDismissOnClickOutside}
+                  onCheckedChange={setShouldDismissOnClickOutside}
                 />
               </Row>
               <Row
@@ -147,11 +133,7 @@ export default function BottomSheetScreen() {
                 horizontalArrangement="spaceBetween"
                 verticalAlignment="center">
                 <ComposeText style={{ typography: 'bodyMedium' }}>Use custom colors</ComposeText>
-                <Switch
-                  variant="switch"
-                  value={useCustomColors}
-                  onValueChange={setUseCustomColors}
-                />
+                <Switch value={useCustomColors} onCheckedChange={setUseCustomColors} />
               </Row>
             </Column>
 
