@@ -93,7 +93,7 @@ internal fun copyDirectoryViaStream(
     } else {
       val childDest = dest.createFile(child.type ?: "*/*", childName)
         ?: throw Exceptions.IllegalStateException("Failed to create file: $childName")
-      copyFileViaStream(child, childDest)
+      copyFileWithChannelFallback(child, childDest)
     }
   }
 }
@@ -114,7 +114,7 @@ internal fun copyDirectoryViaStream(
 internal suspend fun copyDirectoryParallel(
   source: UnifiedFileInterface,
   dest: UnifiedFileInterface,
-  copyFile: (UnifiedFileInterface, UnifiedFileInterface) -> Unit = ::copyFileViaStream,
+  copyFile: (UnifiedFileInterface, UnifiedFileInterface) -> Unit = ::copyFileWithChannelFallback,
   parallelism: Int = 4
 ) = coroutineScope {
   require(source.isDirectory()) { "Source must be directory" }
