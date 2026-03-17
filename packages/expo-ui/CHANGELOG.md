@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `Link` view. ([#43983](https://github.com/expo/expo/pull/43983) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
