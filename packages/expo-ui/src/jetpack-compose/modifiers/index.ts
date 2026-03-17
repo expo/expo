@@ -272,9 +272,19 @@ export const clickable = (handler: () => void, options?: { indication?: boolean 
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
  * @param handler - Function to call when the item is clicked.
+ * @param role - Optional semantic role for accessibility: 'radioButton', 'checkbox', 'switch', or 'tab'.
  */
-export const selectable = (selected: boolean, handler: () => void) =>
-  createModifierWithEventListener('selectable', handler, { selected });
+export const selectable = (
+  selected: boolean,
+  handler: () => void,
+  role?: 'radioButton' | 'checkbox' | 'switch' | 'tab'
+) => createModifierWithEventListener('selectable', handler, { selected, role });
+
+/**
+ * Marks a column/row as a selectable group for accessibility.
+ * Screen readers will treat the children as a group of selectable items.
+ */
+export const selectableGroup = () => createModifier('selectableGroup');
 
 /**
  * Makes the view toggleable with accessibility semantics.

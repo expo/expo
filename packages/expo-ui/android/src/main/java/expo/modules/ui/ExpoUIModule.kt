@@ -100,12 +100,20 @@ class ExpoUIModule : Module() {
       }
     }
 
-    // Defines a single view for now – a single choice segmented control
-    ExpoUIView("PickerView", events = {
-      Events("onOptionSelected")
-    }) { props: PickerProps ->
-      val onOptionSelected by remember { EventDispatcher<PickerOptionSelectedEvent>() }
-      PickerContent(props) { onOptionSelected(it) }
+    ExpoUIView("SingleChoiceSegmentedButtonRowView") { props: SingleChoiceSegmentedButtonRowProps ->
+      SingleChoiceSegmentedButtonRowContent(props)
+    }
+
+    ExpoUIView("MultiChoiceSegmentedButtonRowView") { props: MultiChoiceSegmentedButtonRowProps ->
+      MultiChoiceSegmentedButtonRowContent(props)
+    }
+
+    ExpoUIView("SegmentedButtonView", events = {
+      Events("onButtonPressed", "onCheckedChange")
+    }) { props: SegmentedButtonProps ->
+      val onButtonPressed by remember { EventDispatcher<Unit>() }
+      val onCheckedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      SegmentedButtonContent(props, { onButtonPressed(Unit) }, { onCheckedChange(it) })
     }
 
     ExpoUIView("SwitchView", events = {
@@ -351,11 +359,32 @@ class ExpoUIModule : Module() {
       FilterChipContent(props) { onNativeClick(it) }
     }
 
-    ExpoUIView("ToggleButtonView", events = {
+    ExpoUIView("ToggleButton", events = {
       Events("onCheckedChange")
     }) { props: ToggleButtonProps ->
       val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
       ToggleButtonContent(props) { onCheckedChange(it) }
+    }
+
+    ExpoUIView("IconToggleButton", events = {
+      Events("onCheckedChange")
+    }) { props: ToggleButtonProps ->
+      val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
+      IconToggleButtonContent(props) { onCheckedChange(it) }
+    }
+
+    ExpoUIView("FilledIconToggleButton", events = {
+      Events("onCheckedChange")
+    }) { props: ToggleButtonProps ->
+      val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
+      FilledIconToggleButtonContent(props) { onCheckedChange(it) }
+    }
+
+    ExpoUIView("OutlinedIconToggleButton", events = {
+      Events("onCheckedChange")
+    }) { props: ToggleButtonProps ->
+      val onCheckedChange by remember { EventDispatcher<ToggleButtonValueChangeEvent>() }
+      OutlinedIconToggleButtonContent(props) { onCheckedChange(it) }
     }
 
     ExpoUIView("CardView") { props: CardProps ->
@@ -394,10 +423,11 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("RadioButtonView", events = {
-      Events("onNativeClick")
+      Events("onButtonPressed")
     }) { props: RadioButtonProps ->
-      val onNativeClick by remember { EventDispatcher<Unit>() }
-      RadioButtonContent(props) { onNativeClick(Unit) }
+      val onButtonPressed by remember { EventDispatcher<Unit>() }
+      val clickHandler = if (props.clickable) { { onButtonPressed(Unit) } } else null
+      RadioButtonContent(props, clickHandler)
     }
 
     ExpoUIView("FloatingActionButtonView", events = {

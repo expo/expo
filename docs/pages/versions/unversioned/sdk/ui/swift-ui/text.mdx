@@ -205,6 +205,43 @@ export default function MarkdownTextExample() {
 }
 ```
 
+### Auto-updating date
+
+Use the `date` and `dateStyle` props to display a date that automatically updates as time passes. This is especially useful in widgets and Live Activities.
+
+```tsx DateTextExample.tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+
+export default function DateTextExample() {
+  return (
+    <Host matchContents>
+      <Text date={new Date(Date.now() + 300000)} dateStyle="timer" />
+    </Host>
+  );
+}
+```
+
+### Timer interval
+
+Use `timerInterval` to display a live countdown or count-up timer. This requires iOS/tvOS 16+.
+
+```tsx TimerIntervalExample.tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+
+export default function TimerIntervalExample() {
+  return (
+    <Host matchContents>
+      <Text
+        timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}
+        countsDown
+      />
+    </Host>
+  );
+}
+```
+
+> **Note:** `timerInterval`, `countsDown`, and `pauseTime` require iOS 16.0+ / tvOS 16.0+. On older versions, the timer interval will not render.
+
 ## API
 
 ```tsx

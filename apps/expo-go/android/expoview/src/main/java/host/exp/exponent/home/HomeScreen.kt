@@ -48,7 +48,15 @@ fun HomeScreen(
   val snacks by viewModel.snacks.dataFlow.collectAsStateWithLifecycle()
 
   val account by viewModel.account.dataFlow.collectAsStateWithLifecycle()
-  val isRefreshing by viewModel.account.loadingFlow.collectAsStateWithLifecycle()
+  val isAccountRefreshing by viewModel.account.loadingFlow.collectAsStateWithLifecycle()
+  val isNsdRefreshing by viewModel.isNsdRefreshing.collectAsStateWithLifecycle()
+  var userTriggeredRefresh by remember { mutableStateOf(false) }
+  val isRefreshing = userTriggeredRefresh && (isAccountRefreshing || isNsdRefreshing)
+
+  // Clear the flag once loading finishes
+  if (!isAccountRefreshing && !isNsdRefreshing) {
+    userTriggeredRefresh = false
+  }
   val apps by viewModel.apps.dataFlow.collectAsStateWithLifecycle()
   val developmentServers by viewModel.developmentServers.collectAsStateWithLifecycle()
 
@@ -62,8 +70,10 @@ fun HomeScreen(
 
   val state = rememberPullToRefreshState()
   val onRefresh: () -> Unit = {
+    userTriggeredRefresh = true
     viewModel.account.refresh()
     viewModel.apps.refresh()
+    viewModel.refreshNsd()
   }
 
   var showHelpDialog by remember { mutableStateOf(false) }

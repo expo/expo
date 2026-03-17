@@ -1,9 +1,11 @@
 import {
   DateTimePicker,
   DateTimePickerProps,
+  SingleChoiceSegmentedButtonRow,
+  SegmentedButton,
+  Text as ComposeText,
   DatePickerDialog,
   TimePickerDialog,
-  Picker,
   Column,
   Host,
 } from '@expo/ui/jetpack-compose';
@@ -60,23 +62,31 @@ export default function DatePickerScreen() {
         <Section title={getPickerType()}>
           <Host matchContents={{ vertical: true }}>
             <Column>
-              <Picker
-                options={displayOptions}
-                selectedIndex={selectedIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setSelectedIndex(index);
-                }}
-                variant="segmented"
-              />
+              <SingleChoiceSegmentedButtonRow>
+                {displayOptions.map((label, index) => (
+                  <SegmentedButton
+                    key={label}
+                    selected={index === selectedIndex}
+                    onClick={() => setSelectedIndex(index)}>
+                    <SegmentedButton.Label>
+                      <ComposeText>{label}</ComposeText>
+                    </SegmentedButton.Label>
+                  </SegmentedButton>
+                ))}
+              </SingleChoiceSegmentedButtonRow>
 
-              <Picker
-                options={typeOptions}
-                selectedIndex={typeIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setTypeIndex(index);
-                }}
-                variant="segmented"
-              />
+              <SingleChoiceSegmentedButtonRow>
+                {typeOptions.map((label, index) => (
+                  <SegmentedButton
+                    key={label}
+                    selected={index === typeIndex}
+                    onClick={() => setTypeIndex(index)}>
+                    <SegmentedButton.Label>
+                      <ComposeText>{label}</ComposeText>
+                    </SegmentedButton.Label>
+                  </SegmentedButton>
+                ))}
+              </SingleChoiceSegmentedButtonRow>
 
               <DateTimePicker
                 onDateSelected={(date) => {

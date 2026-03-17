@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [android] Replace `Picker` with `SingleChoiceSegmentedButtonRow`, `MultiChoiceSegmentedButtonRow`, and `SegmentedButton` components. Replace `RadioButton` `nativeClickable` prop with `onClick` event. ([#43809](https://github.com/expo/expo/pull/43809) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Split `ToggleButton` into separate M3 components: `ToggleButton`, `IconToggleButton`, `FilledIconToggleButton`, `OutlinedIconToggleButton`. Removed `variant`, `text`, `color`, `disabled` props. Added `colors` with checked/unchecked variants. ([#43974](https://github.com/expo/expo/pull/43974) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `Switch` API to native: removed `variant` prop and split into separate `Switch` and `Checkbox` components matching native M3 APIs. Renamed `elementColors` to `colors`, `onValueChange` to `onCheckedChange`, removed `color` convenience prop. ([#43887](https://github.com/expo/expo/pull/43887) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored Progress Indicators to match native Compose API: split into `LinearProgressIndicator`, `CircularProgressIndicator`, `LinearWavyProgressIndicator`, `CircularWavyProgressIndicator`. Flattened `elementColors.trackColor` to `trackColor`. Added `strokeCap`, `gapSize`, `strokeWidth` props. ([#43907](https://github.com/expo/expo/pull/43907) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43896](https://github.com/expo/expo/pull/43896) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -18,6 +20,7 @@
 ### 🎉 New features
 
 - [android] Added `ref.hide()` for animated dismiss and more configurable props (`containerColor`, `contentColor`, `scrimColor`, `showDragHandle`, `sheetGesturesEnabled`, `properties`, `DragHandle` slot) to `BottomSheet`. ([#43972](https://github.com/expo/expo/pull/43972) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `date`, `dateStyle`, `timerInterval`, `countsDown`, and `pauseTime` props to `Text` component for displaying auto-updating dates, timers, and countdowns using SwiftUI's `Text.DateStyle`. ([#43552](https://github.com/expo/expo/pull/43552) by [@LouisRaverdy](https://github.com/LouisRaverdy))
 - [android] Added `Checkbox` and `TriStateCheckbox` components. ([#43887](https://github.com/expo/expo/pull/43887) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added `DatePickerDialog` and `TimePickerDialog` components, and `selectableDates` prop to `DateTimePicker`. ([#43895](https://github.com/expo/expo/pull/43895) by [@vonovak](https://github.com/vonovak))
 - [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
@@ -34,6 +37,8 @@
 - [iOS] Add support for local image uri ([#43707](https://github.com/expo/expo/pull/43707) by [@jakex7](https://github.com/jakex7))
 - [android] add AnimatedVisibility transition API ([#43632](https://github.com/expo/expo/pull/43632) by [@Ubax](https://github.com/Ubax))
 - [android] add `imePadding` modifier ([#43652](https://github.com/expo/expo/pull/43652) by [@Ubax](https://github.com/Ubax))
+- [iOS] Add `Link` view. ([#43983](https://github.com/expo/expo/pull/43983) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add `widgetURL` modifier. ([#43984](https://github.com/expo/expo/pull/43984) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
