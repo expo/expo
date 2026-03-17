@@ -51,7 +51,7 @@ class AttendeeRepositoryTest {
         CalendarContract.Attendees.ATTENDEE_NAME to "Alice",
         CalendarContract.Attendees.ATTENDEE_RELATIONSHIP to CalendarContract.Attendees.RELATIONSHIP_ATTENDEE,
         CalendarContract.Attendees.ATTENDEE_STATUS to CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED,
-        CalendarContract.Attendees.ATTENDEE_TYPE to CalendarContract.Attendees.TYPE_REQUIRED,
+        CalendarContract.Attendees.ATTENDEE_TYPE to CalendarContract.Attendees.TYPE_REQUIRED
       )
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
@@ -98,7 +98,7 @@ class AttendeeRepositoryTest {
     // Given
     val cursor = cursorWithRows(
       minimalRow(id = 1L, email = "a@example.com"),
-      minimalRow(id = 2L, email = "b@example.com"),
+      minimalRow(id = 2L, email = "b@example.com")
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
 
@@ -154,7 +154,7 @@ class AttendeeRepositoryTest {
 
     val input = AttendeeInput(
       eventId = EventId(1L),
-      email = "new@example.com",
+      email = "new@example.com"
     )
 
     // When
@@ -254,14 +254,14 @@ class AttendeeRepositoryTest {
 
   private fun minimalRow(
     id: Long = 1L,
-    email: String? = null,
+    email: String? = null
   ): Map<String, Any?> = mapOf(
     CalendarContract.Attendees._ID to id,
     CalendarContract.Attendees.ATTENDEE_EMAIL to email,
     CalendarContract.Attendees.ATTENDEE_NAME to null,
     CalendarContract.Attendees.ATTENDEE_RELATIONSHIP to null,
     CalendarContract.Attendees.ATTENDEE_STATUS to null,
-    CalendarContract.Attendees.ATTENDEE_TYPE to null,
+    CalendarContract.Attendees.ATTENDEE_TYPE to null
   )
 
   // endregion
