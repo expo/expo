@@ -18,8 +18,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@react-navigation/bottom-tabs": "^7.7.3",
-    "@react-navigation/native": "^7.1.28",
+    "@react-navigation/bottom-tabs": "^7.15.5",
+    "@react-navigation/native": "^7.1.33",
     "expo": "~55.0.6",
     "expo-font": "55.0.4",
     "expo-linking": "55.0.7",

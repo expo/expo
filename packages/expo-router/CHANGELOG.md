@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.5 — 2026-03-11
 
