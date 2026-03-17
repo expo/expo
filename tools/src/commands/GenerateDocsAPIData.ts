@@ -99,7 +99,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/progress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/listitem': ['jetpack-compose/ListItem/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/modifiers': ['jetpack-compose/modifiers/index.ts', 'expo-ui'],
-  'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/segmentedbutton': [
+    'jetpack-compose/SegmentedButton/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/pulltorefreshbox': [
     'jetpack-compose/PullToRefreshBox/index.tsx',
     'expo-ui',

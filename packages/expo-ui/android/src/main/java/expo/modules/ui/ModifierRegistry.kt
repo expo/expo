@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.shape.CircleShape
@@ -180,7 +181,8 @@ internal data class ClipParams(
 ) : Record
 
 internal data class SelectableParams(
-  @Field val selected: Boolean = false
+  @Field val selected: Boolean = false,
+  @Field val role: String? = null
 ) : Record
 
 internal data class ClickableParams(
@@ -528,8 +530,19 @@ object ModifierRegistry {
       val params = recordFromMap<SelectableParams>(map)
       Modifier.selectable(
         selected = params.selected,
+        role = when (params.role) {
+          "radioButton" -> androidx.compose.ui.semantics.Role.RadioButton
+          "checkbox" -> androidx.compose.ui.semantics.Role.Checkbox
+          "switch" -> androidx.compose.ui.semantics.Role.Switch
+          "tab" -> androidx.compose.ui.semantics.Role.Tab
+          else -> null
+        },
         onClick = { eventDispatcher("selectable", emptyMap()) }
       )
+    }
+
+    register("selectableGroup") { _, _, _, _ ->
+      Modifier.selectableGroup()
     }
 
     register("toggleable") { map, _, _, eventDispatcher ->
