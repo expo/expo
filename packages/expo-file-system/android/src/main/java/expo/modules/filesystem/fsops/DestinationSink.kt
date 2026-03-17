@@ -1,6 +1,7 @@
 package expo.modules.filesystem.fsops
 
 import android.net.Uri
+import android.os.Build
 import expo.modules.filesystem.UnableToCopyException
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
@@ -29,7 +30,28 @@ sealed class DestinationSink(val spec: DestinationSpec) {
   class LocalFile(spec: DestinationSpec, val target: JavaFile) : DestinationSink(spec) {
     override suspend fun receiveFrom(source: UnifiedFileInterface): Uri {
       when {
-        source is JavaFile -> source.copyRecursively(target, overwrite = spec.overwrite)
+        source is JavaFile -> {
+          if (source.isDirectory()) {
+            target.mkdir()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+              copyDirectoryParallel(source, target, copyFile = { src, dst ->
+                copyFileNio((src as JavaFile).toPath(), (dst as JavaFile).toPath())
+              })
+            } else {
+              copyDirectoryParallel(source, target)
+            }
+          } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+              copyFileNio(source.toPath(), target.toPath())
+            } else {
+              copyFileViaStream(source, target)
+            }
+          }
+        }
+        // Non-local sources (SAF, ContentProvider, Asset): keep sequential.
+        // SAF ContentResolver operations are provider-dependent and may not be
+        // thread-safe for parallel reads. Parallel non-local source copies can
+        // be explored in a future follow-up after testing with common providers.
         source.isDirectory() -> {
           target.mkdir()
           copyDirectoryViaStream(source, target)
