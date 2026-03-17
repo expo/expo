@@ -81,6 +81,7 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
     executeExpoAsync(projectRoot, ['prebuild', '--no-install'], {
       verbose: false,
       env: {
+        ...process.env,
         // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
         NODE_PATH: '',
       },

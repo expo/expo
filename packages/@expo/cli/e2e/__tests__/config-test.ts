@@ -58,6 +58,7 @@ it('runs `npx expo config --json`', async () => {
 
   const results = await executeExpoAsync(projectRoot, ['config', '--json'], {
     env: {
+      ...process.env,
       // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
       NODE_PATH: '',
     },
@@ -88,6 +89,7 @@ it('runs `npx expo config --json` with a warning', async () => {
 
   const results = await executeExpoAsync(projectRoot, ['config', '--json'], {
     env: {
+      ...process.env,
       // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
       NODE_PATH: '',
     },
@@ -105,6 +107,7 @@ it('throws on invalid project root', async () => {
     executeExpoAsync(projectRoot, ['config', 'very---invalid', '--json'], {
       verbose: false,
       env: {
+        ...process.env,
         // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
         NODE_PATH: '',
       },
