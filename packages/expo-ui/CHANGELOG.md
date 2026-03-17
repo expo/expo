@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [android] Match `Switch` API to native: removed `variant` prop and split into separate `Switch` and `Checkbox` components matching native M3 APIs. Renamed `elementColors` to `colors`, `onValueChange` to `onCheckedChange`, removed `color` convenience prop. ([#43887](https://github.com/expo/expo/pull/43887) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored Progress Indicators to match native Compose API: split into `LinearProgressIndicator`, `CircularProgressIndicator`, `LinearWavyProgressIndicator`, `CircularWavyProgressIndicator`. Flattened `elementColors.trackColor` to `trackColor`. Added `strokeCap`, `gapSize`, `strokeWidth` props. ([#43907](https://github.com/expo/expo/pull/43907) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Refactored `Card` to match native Material3 API: split into `Card`/`ElevatedCard`/`OutlinedCard` with type-specific props (`elevation`, `border`). ([#43896](https://github.com/expo/expo/pull/43896) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `Button` into separate M3 components: `Button`, `FilledTonalButton`, `OutlinedButton`, `ElevatedButton`, `TextButton`. Removed `variant`, `text`, `leadingIcon`, `trailingIcon`, `color`, `elementColors`, `disabled` props. ([#43859](https://github.com/expo/expo/pull/43859) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -16,6 +17,7 @@
 
 ### 🎉 New features
 
+- [android] Added `Checkbox` and `TriStateCheckbox` components. ([#43887](https://github.com/expo/expo/pull/43887) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added `DatePickerDialog` and `TimePickerDialog` components, and `selectableDates` prop to `DateTimePicker`. ([#43895](https://github.com/expo/expo/pull/43895) by [@vonovak](https://github.com/vonovak))
 - [android] Added `FloatingActionButton` component. ([#43738](https://github.com/expo/expo/pull/43738) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `enabled`, `onValueChangeFinished`, and `Slider.Thumb`/`Slider.Track` slot support to `Slider` component. ([#43840](https://github.com/expo/expo/pull/43840) by [@nishan](https://github.com/intergalacticspacehighway))

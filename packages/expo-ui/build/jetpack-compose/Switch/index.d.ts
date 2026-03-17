@@ -1,9 +1,9 @@
 import { type ColorValue } from 'react-native';
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 /**
- * Only for switch.
+ * Colors for switch core elements.
  */
-type SwitchElementColors = {
+export type SwitchColors = {
     checkedThumbColor?: ColorValue;
     checkedTrackColor?: ColorValue;
     checkedBorderColor?: ColorValue;
@@ -21,70 +21,33 @@ type SwitchElementColors = {
     disabledUncheckedBorderColor?: ColorValue;
     disabledUncheckedIconColor?: ColorValue;
 };
-/**
- * Only for checkbox.
- */
-type CheckboxElementColors = {
-    checkedColor?: ColorValue;
-    disabledCheckedColor?: ColorValue;
-    uncheckedColor?: ColorValue;
-    disabledUncheckedColor?: ColorValue;
-    checkmarkColor?: ColorValue;
-    disabledIndeterminateColor?: ColorValue;
-};
 export type SwitchProps = {
     /**
      * Indicates whether the switch is checked.
      */
     value: boolean;
     /**
-     * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
-     * @default 'switch'
-     */
-    variant?: 'checkbox' | 'switch' | 'button';
-    /**
      * Whether the switch is enabled.
      * @default true
-     * @platform android
      */
     enabled?: boolean;
     /**
      * Callback function that is called when the checked state changes.
      */
-    onValueChange?: (value: boolean) => void;
+    onCheckedChange?: (value: boolean) => void;
     /**
-     * Picker color.
+     * Colors for switch core elements.
      */
-    color?: ColorValue;
+    colors?: SwitchColors;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
     /**
      * Children containing ThumbContent slot.
      * @platform android
      */
     children?: React.ReactNode;
-} & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
-export type SwitchSwitchVariantProps = {
-    variant?: 'switch';
-    /**
-     * Colors for switch's core elements.
-     * @platform android
-     */
-    elementColors?: SwitchElementColors;
-};
-export type SwitchCheckboxVariantProps = {
-    variant: 'checkbox';
-    /**
-     * Colors for checkbox core elements.
-     * @platform android
-     */
-    elementColors?: CheckboxElementColors;
-};
-export type SwitchButtonVariantProps = {
-    variant: 'button';
-    elementColors?: undefined;
 };
 type ThumbContentProps = {
     children: React.ReactNode;
@@ -94,6 +57,9 @@ type ThumbContentProps = {
  * @platform android
  */
 export declare function SwitchThumbContent(props: ThumbContentProps): import("react").JSX.Element;
+/**
+ * A switch component.
+ */
 declare function SwitchComponent(props: SwitchProps): import("react").JSX.Element;
 declare namespace SwitchComponent {
     var ThumbContent: typeof SwitchThumbContent;
