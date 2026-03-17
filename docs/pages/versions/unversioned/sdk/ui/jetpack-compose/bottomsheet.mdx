@@ -19,6 +19,8 @@ Expo UI ModalBottomSheet matches the official Jetpack Compose [Bottom Sheet API]
 
 ### Basic bottom sheet
 
+Use `ref.hide()` to programmatically dismiss the sheet with an animation before unmounting it.
+
 ```tsx BasicBottomSheetExample.tsx
 import { useRef, useState } from 'react';
 import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
@@ -55,15 +57,17 @@ export default function BasicBottomSheetExample() {
 }
 ```
 
-### Full-screen bottom sheet
+### Skip partially expanded state
 
-```tsx FullScreenBottomSheetExample.tsx
+When `skipPartiallyExpanded` is set, the sheet opens directly in the fully expanded state instead of stopping at the half-height position first.
+
+```tsx SkipPartiallyExpandedExample.tsx
 import { useRef, useState } from 'react';
 import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
-export default function FullScreenBottomSheetExample() {
+export default function SkipPartiallyExpandedExample() {
   const [visible, setVisible] = useState(false);
   const sheetRef = useRef<ModalBottomSheetRef>(null);
 
@@ -75,7 +79,7 @@ export default function FullScreenBottomSheetExample() {
   return (
     <Host matchContents>
       <Button onClick={() => setVisible(true)}>
-        <Text>Open Full Sheet</Text>
+        <Text>Open Sheet</Text>
       </Button>
       {visible && (
         <ModalBottomSheet
@@ -83,9 +87,8 @@ export default function FullScreenBottomSheetExample() {
           onDismissRequest={() => setVisible(false)}
           skipPartiallyExpanded>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
-            <Text>This sheet expands to full screen.</Text>
-            <Text>It skips the partially expanded state entirely.</Text>
-            <Text>Use this for content that needs the full viewport.</Text>
+            <Text>This sheet skips the partially expanded state.</Text>
+            <Text>It opens directly in the fully expanded position.</Text>
             <Button onClick={hideSheet}>
               <Text>Close</Text>
             </Button>
