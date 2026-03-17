@@ -22,6 +22,10 @@ class PackagerService(
     nsdDiscovery.start()
   }
 
+  fun restart() {
+    nsdDiscovery.restart()
+  }
+
   fun resumeHealthCheck() {
     nsdDiscovery.resumeHealthCheck()
   }

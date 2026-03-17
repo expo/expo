@@ -10,6 +10,7 @@ interface NsdDiscovery {
   val discoveredPackagers: StateFlow<Set<PackagerInfo>>
 
   fun start()
+  fun restart()
   fun resumeHealthCheck()
   fun pauseHealthCheck()
   fun stop()

@@ -19,6 +19,7 @@ import expo.modules.devlauncher.services.NsdPreferences
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
 import expo.modules.devlauncher.services.inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -29,13 +30,15 @@ sealed interface HomeAction {
   class NavigateToCrashReport(val crashReport: DevLauncherErrorInstance) : HomeAction
   object ScanQRCode : HomeAction
   object ClearLoadingError : HomeAction
+  object RefreshServers : HomeAction
 }
 
 data class HomeState(
   val runningPackagers: Set<PackagerInfo> = emptySet(),
   val recentlyOpenedApps: List<DevLauncherAppEntry> = emptyList(),
   val crashReport: DevLauncherErrorInstance? = null,
-  val loadingError: String? = null
+  val loadingError: String? = null,
+  val isRefreshing: Boolean = false
 )
 
 class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
@@ -130,9 +133,22 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
 
       is HomeAction.ClearLoadingError -> _state.value = _state.value.copy(loadingError = null)
 
+      is HomeAction.RefreshServers -> refreshServers()
+
       is HomeAction.NavigateToCrashReport -> throw IllegalStateException("Navigation action should be handled by the UI layer, not the ViewModel.")
 
       is HomeAction.ScanQRCode -> throw IllegalStateException("QR code scanning should be handled by the UI layer, not the ViewModel.")
+    }
+  }
+
+  private fun refreshServers() {
+    if (_state.value.isRefreshing) return
+    _state.value = _state.value.copy(isRefreshing = true)
+
+    viewModelScope.launch {
+      packagerService.restart()
+      delay(2000)
+      _state.value = _state.value.copy(isRefreshing = false)
     }
   }
 
