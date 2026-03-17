@@ -6,6 +6,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.remember
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.viewevent.getValue
@@ -92,14 +93,11 @@ class ExpoUIModule : Module() {
 
     //region Expo UI views
 
-    ExpoUIView("ModalBottomSheetView", events = {
-      Events("onIsPresentedChange", "onDismissRequest")
-    }) { props: ModalBottomSheetProps ->
-      val onIsPresentedChange by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
-      val onDismissRequest by remember { EventDispatcher<Unit>() }
-      ModalBottomSheetContent(props, { isPresented ->
-        onIsPresentedChange(GenericEventPayload1(isPresented))
-      }, { onDismissRequest(Unit) })
+    View(ModalBottomSheetView::class) {
+      Events("onDismissRequest")
+      AsyncFunction("hide") Coroutine { view: ModalBottomSheetView ->
+        view.hide()
+      }
     }
 
     // Defines a single view for now – a single choice segmented control

@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { Ref } from 'react';
 import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
+export type ModalBottomSheetRef = {
+    /**
+     * Programmatically hides the bottom sheet with an animation.
+     * The returned promise resolves after the dismiss animation completes.
+     */
+    hide: () => Promise<void>;
+};
 export type ModalBottomSheetProperties = {
     /**
      * Whether the bottom sheet can be dismissed by pressing the back button.
@@ -20,14 +27,14 @@ export type ModalBottomSheetProps = {
      */
     children: React.ReactNode;
     /**
-     * Whether the `ModalBottomSheet` is presented.
+     * Can be used to imperatively hide the bottom sheet with an animation.
      */
-    isPresented: boolean;
+    ref?: Ref<ModalBottomSheetRef>;
     /**
-     * Callback function that is called when the presentation state changes.
-     * The sheet animates its dismiss before calling this with `false`.
+     * Callback function that is called when the user dismisses the bottom sheet
+     * (via swipe, back press, or tapping outside the scrim).
      */
-    onIsPresentedChange: (isPresented: boolean) => void;
+    onDismissRequest: () => void;
     /**
      * Immediately opens the bottom sheet in full screen.
      * @default false
@@ -56,11 +63,6 @@ export type ModalBottomSheetProps = {
      * @default true
      */
     sheetGesturesEnabled?: boolean;
-    /**
-     * Callback function that is called when the user dismisses the bottom sheet
-     * (via swipe, back press, or tapping outside the scrim).
-     */
-    onDismissRequest?: () => void;
     /**
      * Properties for the modal window behavior.
      */

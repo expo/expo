@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
-import React from 'react';
-import { type ColorValue, type NativeSyntheticEvent } from 'react-native';
+import React, { Ref } from 'react';
+import { type ColorValue } from 'react-native';
 
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -14,6 +14,14 @@ const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeVi
   'ExpoUI',
   'SlotView'
 );
+
+export type ModalBottomSheetRef = {
+  /**
+   * Programmatically hides the bottom sheet with an animation.
+   * The returned promise resolves after the dismiss animation completes.
+   */
+  hide: () => Promise<void>;
+};
 
 export type ModalBottomSheetProperties = {
   /**
@@ -35,14 +43,14 @@ export type ModalBottomSheetProps = {
    */
   children: React.ReactNode;
   /**
-   * Whether the `ModalBottomSheet` is presented.
+   * Can be used to imperatively hide the bottom sheet with an animation.
    */
-  isPresented: boolean;
+  ref?: Ref<ModalBottomSheetRef>;
   /**
-   * Callback function that is called when the presentation state changes.
-   * The sheet animates its dismiss before calling this with `false`.
+   * Callback function that is called when the user dismisses the bottom sheet
+   * (via swipe, back press, or tapping outside the scrim).
    */
-  onIsPresentedChange: (isPresented: boolean) => void;
+  onDismissRequest: () => void;
   /**
    * Immediately opens the bottom sheet in full screen.
    * @default false
@@ -72,11 +80,6 @@ export type ModalBottomSheetProps = {
    */
   sheetGesturesEnabled?: boolean;
   /**
-   * Callback function that is called when the user dismisses the bottom sheet
-   * (via swipe, back press, or tapping outside the scrim).
-   */
-  onDismissRequest?: () => void;
-  /**
    * Properties for the modal window behavior.
    */
   properties?: ModalBottomSheetProperties;
@@ -86,32 +89,23 @@ export type ModalBottomSheetProps = {
   modifiers?: ModifierConfig[];
 };
 
-type NativeModalBottomSheetProps = Omit<
-  ModalBottomSheetProps,
-  'onIsPresentedChange' | 'onDismissRequest'
-> & {
-  onIsPresentedChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
-  onDismissRequest?: () => void;
+type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onDismissRequest'> & {
+  onDismissRequest: () => void;
 };
 
 const ModalBottomSheetNativeView: React.ComponentType<NativeModalBottomSheetProps> =
   requireNativeView('ExpoUI', 'ModalBottomSheetView');
 
 function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetProps {
-  const { modifiers, onIsPresentedChange, onDismissRequest, ...restProps } = props;
+  const { modifiers, onDismissRequest, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     skipPartiallyExpanded: props.skipPartiallyExpanded ?? false,
-    onIsPresentedChange: ({ nativeEvent: { value } }) => {
-      onIsPresentedChange?.(value);
+    onDismissRequest: () => {
+      onDismissRequest?.();
     },
-    onDismissRequest: onDismissRequest
-      ? () => {
-          onDismissRequest();
-        }
-      : undefined,
   };
 }
 
