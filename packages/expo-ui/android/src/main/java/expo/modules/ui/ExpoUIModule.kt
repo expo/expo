@@ -316,18 +316,10 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("AlertDialogView", events = {
-      Events(
-        "onDismissPressed",
-        "onConfirmPressed"
-      )
+      Events("onDismissRequest")
     }) { props: AlertDialogProps ->
-      val onDismissPressed by remember { EventDispatcher<AlertDialogButtonPressedEvent>() }
-      val onConfirmPressed by remember { EventDispatcher<AlertDialogButtonPressedEvent>() }
-      AlertDialogContent(
-        props,
-        { onDismissPressed(it) },
-        { onConfirmPressed(it) }
-      )
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      AlertDialogContent(props) { onDismissRequest(Unit) }
     }
 
     ExpoUIView("AssistChipView", events = {
