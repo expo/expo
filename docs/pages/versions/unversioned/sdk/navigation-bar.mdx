@@ -36,8 +36,8 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
         "expo-navigation-bar",
         {
           "enforceContrast": true,
-          "barStyle": "light",
-          "visibility": "visible"
+          "hidden": false,
+          "style": "light"
         }
       ]
     ]
@@ -54,33 +54,35 @@ You can configure `expo-navigation-bar` using its built-in [config plugin](/conf
       description:
         'Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content.',
       default: 'true',
+      platform: 'android',
     },
     {
-      name: 'barStyle',
+      name: 'hidden',
       description:
-        'Controls whether Android renders light or dark navigation bar buttons. Accepts `light` and `dark` as values.',
+        'Determines whether the status bar starts hidden. Accepts `true` and `false` as values.',
       default: 'undefined',
+      platform: 'android',
     },
     {
-      name: 'visibility',
+      name: 'style',
       description:
-        'Determines whether the navigation bar starts visible or hidden. Accepts `visible` to show the bar immediately and `hidden` to hide it until the user reveals it with a system gesture.',
+        'Determines which style the navigation bar starts with. Accepts `light` and `dark` as values.',
       default: 'undefined',
+      platform: 'android',
     },
-
-]}
+  ]}
 />
 
 <ConfigReactNative>
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add the following configuration to your native project:
 
-- To apply `visibility` to the navigation bar, add `expo_navigation_bar_visibility` to **android/app/src/main/res/values/strings.xml**:
+- To hide the status bar on **Android**, add `expo_navigation_bar_visibility` to **android/app/src/main/res/values/strings.xml**:
 
   ```xml
   <resources>
     <!-- ... -->
-    <string name="expo_navigation_bar_visibility" translatable="false">visible</string>
+    <string name="expo_navigation_bar_visibility" translatable="false">hidden</string>
   </resources>
   ```
 

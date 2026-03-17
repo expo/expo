@@ -445,6 +445,23 @@ it(`handles query params`, () => {
   });
 });
 
+it(`matches routes with multiple spaces in path`, () => {
+  expect(
+    getStateFromPath('/hello%20beautiful%20world', {
+      screens: {
+        'hello beautiful world': 'hello beautiful world',
+      },
+    } as any)
+  ).toEqual({
+    routes: [
+      {
+        name: 'hello beautiful world',
+        path: '/hello%20beautiful%20world',
+      },
+    ],
+  });
+});
+
 it(`prioritizes hoisted index routes over dynamic groups`, () => {
   expect(
     getStateFromPath('/(one)', getMockConfig(['(one,two)/index.tsx', '(one,two)/[slug].tsx']))

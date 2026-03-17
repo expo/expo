@@ -109,10 +109,24 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView("SwitchView", events = {
-      Events("onValueChange")
+      Events("onCheckedChange")
     }) { props: SwitchProps ->
-      val onValueChange by remember { EventDispatcher<ValueChangeEvent>() }
-      SwitchContent(props) { onValueChange(it) }
+      val onCheckedChange by remember { EventDispatcher<CheckedChangeEvent>() }
+      SwitchContent(props) { value -> onCheckedChange(CheckedChangeEvent(value)) }
+    }
+
+    ExpoUIView("CheckboxView", events = {
+      Events("onCheckedChange")
+    }) { props: CheckboxProps ->
+      val onCheckedChange by remember { EventDispatcher<CheckedChangeEvent>() }
+      CheckboxContent(props) { value -> onCheckedChange(CheckedChangeEvent(value)) }
+    }
+
+    ExpoUIView("TriStateCheckboxView", events = {
+      Events("onNativeClick")
+    }) { props: TriStateCheckboxProps ->
+      val onNativeClick by remember { EventDispatcher<Unit>() }
+      TriStateCheckboxContent(props) { onNativeClick(Unit) }
     }
 
     ExpoUIView("Button", events = {
@@ -229,8 +243,20 @@ class ExpoUIModule : Module() {
       DropdownMenuItemContent(props) { onItemPressed(it) }
     }
 
-    ExpoUIView("ProgressView") { props: ProgressProps ->
-      ProgressContent(props)
+    ExpoUIView("LinearProgressIndicatorView") { props: LinearProgressIndicatorProps ->
+      LinearProgressIndicatorContent(props)
+    }
+
+    ExpoUIView("CircularProgressIndicatorView") { props: CircularProgressIndicatorProps ->
+      CircularProgressIndicatorContent(props)
+    }
+
+    ExpoUIView("LinearWavyProgressIndicatorView") { props: LinearWavyProgressIndicatorProps ->
+      LinearWavyProgressIndicatorContent(props)
+    }
+
+    ExpoUIView("CircularWavyProgressIndicatorView") { props: CircularWavyProgressIndicatorProps ->
+      CircularWavyProgressIndicatorContent(props)
     }
 
     ExpoUIView("BoxView") { props: LayoutProps ->

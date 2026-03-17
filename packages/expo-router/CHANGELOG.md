@@ -11,6 +11,8 @@
 - Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
 - Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
 - Fix `Stack.Protected` guard not applying to index routes. ([#43769](https://github.com/expo/expo/pull/43769) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix regex for routes with multiple spaces in file name ([#43935](https://github.com/expo/expo/pull/43935) by [@Ubax](https://github.com/Ubax))
+- Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

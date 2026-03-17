@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   DropdownMenu,
   Divider,
   DropdownMenuItem,
@@ -163,16 +164,15 @@ export default function DropdownMenuScreen() {
                 <DropdownMenuItem.Text>
                   <Row verticalAlignment="center">
                     <ComposeText>I'm very colorful!</ComposeText>
-                    <Switch
+                    <Checkbox
                       value={switchChecked}
-                      variant="checkbox"
-                      elementColors={{
+                      colors={{
                         checkedColor: '#ff0000',
                         disabledCheckedColor: '#00ff00',
                         uncheckedColor: '#0000ff',
                         checkmarkColor: '#ffff00',
                       }}
-                      onValueChange={setSwitchChecked}
+                      onCheckedChange={setSwitchChecked}
                     />
                   </Row>
                 </DropdownMenuItem.Text>
@@ -183,9 +183,8 @@ export default function DropdownMenuScreen() {
                     <ComposeText>Switches can be colorful too!</ComposeText>
                     <Switch
                       value={switch2Checked}
-                      variant="switch"
-                      onValueChange={setSwitch2Checked}
-                      elementColors={{
+                      onCheckedChange={setSwitch2Checked}
+                      colors={{
                         checkedThumbColor: '#ff0000',
                         checkedTrackColor: '#00ff00',
                         uncheckedThumbColor: '#0000ff',
