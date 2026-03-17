@@ -1,10 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#if !__building_module(ExpoModulesCore)
-#import <React/RCTBridgeModule.h>
-#else
+// Note: This file must NOT import <React/RCTBridgeModule.h> — adding a new React import
+// to a header that never had one breaks Xcode's module validation for prebuilt React.xcframework.
+// The RCTBridgeModule protocol is resolved from other umbrella headers (EXNativeModulesProxy.h).
 @class RCTBridge;
-#endif
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
