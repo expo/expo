@@ -21,6 +21,7 @@
 - Add support for `React.Fragment`. ([#43833](https://github.com/expo/expo/pull/43833) by [@jakex7](https://github.com/jakex7))
 - Add Button children support. ([#43832](https://github.com/expo/expo/pull/43832) by [@jakex7](https://github.com/jakex7))
 - Remove unused `Compression` related code. ([#43981](https://github.com/expo/expo/pull/43981) by [@jakex7](https://github.com/jakex7))
+- Fix `projectRoot` for widgets bundle. ([#43987](https://github.com/expo/expo/pull/43987) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
