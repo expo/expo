@@ -32,7 +32,7 @@ suspend fun ContentResolver.safeDelete(
   try {
     delete(uri, where, selectionArgs)
   } catch (e: SecurityException) {
-    throw PermissionException(Manifest.permission.READ_CALENDAR, e)
+    throw PermissionException(Manifest.permission.WRITE_CALENDAR, e)
   }
 }
 
@@ -45,7 +45,7 @@ suspend fun ContentResolver.safeUpdate(
   try {
     update(uri, values, where, selectionArgs)
   } catch (e: SecurityException) {
-    throw PermissionException(Manifest.permission.READ_CALENDAR, e)
+    throw PermissionException(Manifest.permission.WRITE_CALENDAR, e)
   }
 }
 

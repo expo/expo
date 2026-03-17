@@ -24,7 +24,7 @@ internal fun Cursor.getOptionalInt(columnName: String): Int? {
 }
 
 internal fun Cursor.getOptionalString(columnName: String): String? {
-  val index = getColumnIndexOrThrow(columnName)
+  val index = getColumnIndex(columnName)
   if (index == -1) {
     return null
   }
