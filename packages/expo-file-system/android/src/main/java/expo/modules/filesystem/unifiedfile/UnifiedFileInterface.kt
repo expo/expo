@@ -1,6 +1,7 @@
 package expo.modules.filesystem.unifiedfile
 
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import expo.modules.filesystem.fsops.DestinationSpec
 import expo.modules.filesystem.fsops.CopyMoveStrategy
 import expo.modules.kotlin.AppContext
@@ -23,6 +24,15 @@ interface UnifiedFileInterface {
   fun getContentUri(appContext: AppContext): Uri
   fun outputStream(append: Boolean = false): java.io.OutputStream
   fun inputStream(): java.io.InputStream
+
+  /**
+   * Opens a [ParcelFileDescriptor] for this file.
+   * Returns `null` if the backend does not support file descriptors.
+   *
+   * @param mode "r" for read, "w" for write (follows ContentResolver conventions)
+   */
+  fun openFileDescriptor(mode: String): ParcelFileDescriptor? = null
+
   fun length(): Long
   fun walkTopDown(): Sequence<UnifiedFileInterface>
 
