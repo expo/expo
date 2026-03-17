@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Checkbox component',
+    route: 'ui/checkbox',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CheckboxScreen'));
+    },
+  },
+  {
     name: 'IconButton component',
     route: 'ui/icon-button',
     options: {},
@@ -43,11 +51,19 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Picker component',
-    route: 'ui/picker',
+    name: 'Radio Button component',
+    route: 'ui/radio-button',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./PickerScreen'));
+      return optionalRequire(() => require('./RadioButtonScreen'));
+    },
+  },
+  {
+    name: 'Segmented Control component',
+    route: 'ui/segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SegmentedControlScreen'));
     },
   },
   {
@@ -168,6 +184,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'ToggleButton component',
+    route: 'ui/toggle-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleButtonScreen'));
     },
   },
   {

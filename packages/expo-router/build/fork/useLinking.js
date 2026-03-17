@@ -153,7 +153,9 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
         let value;
         if (enabledRef.current) {
             const location = server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
-            const path = location ? location.pathname + location.search : undefined;
+            const path = location
+                ? location.pathname + location.search + (location.hash ?? '')
+                : undefined;
             if (path) {
                 value = getStateFromPathRef.current(path, configRef.current);
             }
