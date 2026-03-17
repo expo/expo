@@ -1,8 +1,4 @@
-import { type CommonViewModifierProps } from '../types';
-export type ClosedRangeDate = {
-    lower: Date;
-    upper: Date;
-};
+import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 export type ProgressViewProps = {
     /**
      * The current progress value. A value between `0` and `1`.
