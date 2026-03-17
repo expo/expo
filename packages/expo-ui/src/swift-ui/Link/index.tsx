@@ -11,7 +11,7 @@ export type LinkProps = {
   /**
    * The URL for the link.
    */
-  destination?: string;
+  destination: string;
   /**
    * Custom content for the link label. Use this for custom label views.
    * Only nested elements are supported, not plain strings.
