@@ -14,43 +14,20 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
-class SegmentedButtonColors : Record {
-  @Field
-  val activeBorderColor: Color? = null
-
-  @Field
-  val activeContentColor: Color? = null
-
-  @Field
-  val inactiveBorderColor: Color? = null
-
-  @Field
-  val inactiveContentColor: Color? = null
-
-  @Field
-  val disabledActiveBorderColor: Color? = null
-
-  @Field
-  val disabledActiveContentColor: Color? = null
-
-  @Field
-  val disabledInactiveBorderColor: Color? = null
-
-  @Field
-  val disabledInactiveContentColor: Color? = null
-
-  @Field
-  val activeContainerColor: Color? = null
-
-  @Field
-  val inactiveContainerColor: Color? = null
-
-  @Field
-  val disabledActiveContainerColor: Color? = null
-
-  @Field
-  val disabledInactiveContainerColor: Color? = null
-}
+data class SegmentedButtonColors(
+  @Field val activeBorderColor: Color? = null,
+  @Field val activeContentColor: Color? = null,
+  @Field val inactiveBorderColor: Color? = null,
+  @Field val inactiveContentColor: Color? = null,
+  @Field val disabledActiveBorderColor: Color? = null,
+  @Field val disabledActiveContentColor: Color? = null,
+  @Field val disabledInactiveBorderColor: Color? = null,
+  @Field val disabledInactiveContentColor: Color? = null,
+  @Field val activeContainerColor: Color? = null,
+  @Field val inactiveContainerColor: Color? = null,
+  @Field val disabledActiveContainerColor: Color? = null,
+  @Field val disabledInactiveContainerColor: Color? = null
+) : Record
 
 data class SegmentedButtonProps(
   val selected: Boolean = false,
@@ -107,7 +84,9 @@ fun FunctionalComposableScope.SegmentedButtonContent(
   val multiScope = composableScope.rowScope as? MultiChoiceSegmentedButtonRowScope
 
   if (singleScope == null && multiScope == null) {
-    Log.w("ExpoUI", "SegmentedButton must be used within a SingleChoiceSegmentedButtonRow or MultiChoiceSegmentedButtonRow. It will not render on its own.")
+    if (BuildConfig.DEBUG) {
+      Log.w("ExpoUI", "SegmentedButton must be used within a SingleChoiceSegmentedButtonRow or MultiChoiceSegmentedButtonRow. It will not render on its own.")
+    }
     return
   }
 

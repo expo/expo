@@ -390,7 +390,8 @@ class ExpoUIModule : Module() {
       Events("onButtonPressed")
     }) { props: RadioButtonProps ->
       val onButtonPressed by remember { EventDispatcher<Unit>() }
-      RadioButtonContent(props, if (props.clickable) { { onButtonPressed(Unit) } } else null)
+      val clickHandler = if (props.clickable) { { onButtonPressed(Unit) } } else null
+      RadioButtonContent(props, clickHandler)
     }
 
     ExpoUIView("FloatingActionButtonView", events = {
