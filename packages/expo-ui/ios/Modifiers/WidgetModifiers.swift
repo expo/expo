@@ -49,6 +49,10 @@ internal struct WidgetURLModifier: ViewModifier, Record {
   @Field var url: String
 
   func body(content: Content) -> some View {
+#if !os(tvOS)
     content.widgetURL(URL(string: url))
+#else
+    content
+#endif
   }
 }
