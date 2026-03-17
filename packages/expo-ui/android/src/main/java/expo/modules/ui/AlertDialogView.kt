@@ -4,6 +4,8 @@ import android.graphics.Color
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
@@ -17,8 +19,17 @@ data class AlertDialogColors(
   @Field val textContentColor: Color? = null
 ) : Record
 
+data class ExpoDialogProperties(
+  @Field val dismissOnBackPress: Boolean = true,
+  @Field val dismissOnClickOutside: Boolean = true,
+  @Field val usePlatformDefaultWidth: Boolean = true,
+  @Field val decorFitsSystemWindows: Boolean = true
+) : Record
+
 data class AlertDialogProps(
   val colors: AlertDialogColors = AlertDialogColors(),
+  val tonalElevation: Double? = null,
+  val properties: ExpoDialogProperties = ExpoDialogProperties(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -77,6 +88,13 @@ fun FunctionalComposableScope.AlertDialogContent(
     titleContentColor = props.colors.titleContentColor.composeOrNull
       ?: AlertDialogDefaults.titleContentColor,
     textContentColor = props.colors.textContentColor.composeOrNull
-      ?: AlertDialogDefaults.textContentColor
+      ?: AlertDialogDefaults.textContentColor,
+    tonalElevation = props.tonalElevation?.dp ?: AlertDialogDefaults.TonalElevation,
+    properties = DialogProperties(
+      dismissOnBackPress = props.properties.dismissOnBackPress,
+      dismissOnClickOutside = props.properties.dismissOnClickOutside,
+      usePlatformDefaultWidth = props.properties.usePlatformDefaultWidth,
+      decorFitsSystemWindows = props.properties.decorFitsSystemWindows
+    )
   )
 }

@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { type ViewEvent, type ModifierConfig } from '../../types';
+import { type ViewEvent, type ModifierConfig, type DialogProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
@@ -31,6 +31,15 @@ export type AlertDialogProps = {
    * Colors for the alert dialog.
    */
   colors?: AlertDialogColors;
+  /**
+   * The tonal elevation of the dialog in dp, which affects its background color
+   * based on the color scheme.
+   */
+  tonalElevation?: number;
+  /**
+   * Properties for the dialog window.
+   */
+  properties?: DialogProperties;
   /**
    * Callback that is called when the user tries to dismiss the dialog
    * (e.g. by tapping outside of it or pressing the back button).
@@ -122,3 +131,6 @@ AlertDialogComponent.DismissButton = AlertDialogDismissButton;
 AlertDialogComponent.Icon = AlertDialogIcon;
 
 export { AlertDialogComponent as AlertDialog };
+
+// Re-exported so the docs generator includes DialogProperties on the AlertDialog API page.
+export type { DialogProperties };
