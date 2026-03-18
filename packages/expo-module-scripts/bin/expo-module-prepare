@@ -3,8 +3,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { packageManagerExecAsync } from '../utils/commandUtils.js';
 import { commandRunner } from '../utils/commandUtils.js';
-import { directoryExistsAsync } from '../utils/fileUtils.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -12,17 +12,8 @@ process.env.EXPO_NONINTERACTIVE = 1;
 
 async function runAsync() {
   console.log('Configuring module');
-  await commandRunner(path.join(dirname, 'expo-module-clean'));
+  await packageManagerExecAsync(['proofread']);
   await commandRunner(path.join(dirname, 'expo-module-configure'));
-  await commandRunner(path.join(dirname, 'expo-module-build'));
-
-  for (const target of ['plugin', 'cli', 'utils', 'scripts']) {
-    if (await directoryExistsAsync(path.join(process.cwd(), target))) {
-      console.log(`Configuring ${target}`);
-      await commandRunner(path.join(dirname, 'expo-module-clean'), [target]);
-      await commandRunner(path.join(dirname, 'expo-module-build'), [target]);
-    }
-  }
 }
 
 (async () => {
