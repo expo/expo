@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type PaddingValuesRecord = {
@@ -10,42 +10,59 @@ export type PaddingValuesRecord = {
   bottom?: number;
 };
 
-export type CarouselVariant = 'multiBrowse' | 'unconstrained';
 export type FlingBehaviorType = 'singleAdvance' | 'noSnap';
 
-export type CarouselProps = {
+export type HorizontalCenteredHeroCarouselProps = {
+  /**
+   * Maximum width of the hero item in dp.
+   * When unspecified, the hero item will be as wide as possible.
+   */
+  maxItemWidth?: number;
+  /**
+   * Spacing between items in dp.
+   * @default 0
+   */
+  itemSpacing?: number;
+  /**
+   * Padding for carousel content (dp or object).
+   */
+  contentPadding?: number | PaddingValuesRecord;
+  /**
+   * Minimum width of small peek items in dp.
+   * @default CarouselDefaults.MinSmallItemSize
+   */
+  minSmallItemWidth?: number;
+  /**
+   * Maximum width of small peek items in dp.
+   * @default CarouselDefaults.MaxSmallItemSize
+   */
+  maxSmallItemWidth?: number;
+  /**
+   * Fling behavior type.
+   * @default 'singleAdvance'
+   */
+  flingBehavior?: FlingBehaviorType;
+  /**
+   * Whether the user can scroll the carousel.
+   * @default true
+   */
+  userScrollEnabled?: boolean;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
-  /** Carousel variant */
-  variant?: CarouselVariant;
-  /** Spacing between items (dp) */
-  itemSpacing?: number;
-  /** Padding for carousel content (dp or object) */
-  contentPadding?: number | PaddingValuesRecord;
-  /** Minimum small item width (dp) */
-  minSmallItemWidth?: number;
-  /** Maximum small item width (dp) */
-  maxSmallItemWidth?: number;
-  /** Fling behavior type */
-  flingBehavior?: FlingBehaviorType;
-  /** Preferred item width (dp) for multiBrowse variant */
-  preferredItemWidth?: number;
-  /** Item width (dp) for unconstrained variant */
-  itemWidth?: number;
-  /** Children to render */
+  modifiers?: ModifierConfig[];
+  /**
+   * Children to render as carousel items.
+   */
   children: React.ReactNode;
 };
 
-type NativeCarouselProps = CarouselProps;
+const HorizontalCenteredHeroCarouselNativeView: React.ComponentType<HorizontalCenteredHeroCarouselProps> =
+  requireNativeView('ExpoUI', 'HorizontalCenteredHeroCarouselView');
 
-const CarouselNativeView: React.ComponentType<NativeCarouselProps> = requireNativeView(
-  'ExpoUI',
-  'CarouselView'
-);
-
-export function transformCarouselProps(props: CarouselProps): NativeCarouselProps {
+function transformProps(
+  props: HorizontalCenteredHeroCarouselProps
+): HorizontalCenteredHeroCarouselProps {
   const { modifiers, ...restProps } = props;
   return {
     modifiers,
@@ -54,6 +71,10 @@ export function transformCarouselProps(props: CarouselProps): NativeCarouselProp
   };
 }
 
-export function Carousel(props: CarouselProps) {
-  return <CarouselNativeView {...transformCarouselProps(props)} />;
+/**
+ * A hero carousel that centers one large item between two small peek items,
+ * matching Compose's `HorizontalCenteredHeroCarousel`.
+ */
+export function HorizontalCenteredHeroCarousel(props: HorizontalCenteredHeroCarouselProps) {
+  return <HorizontalCenteredHeroCarouselNativeView {...transformProps(props)} />;
 }

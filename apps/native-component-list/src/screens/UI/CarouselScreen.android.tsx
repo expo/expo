@@ -1,60 +1,46 @@
-import { Host, Carousel, Box } from '@expo/ui/jetpack-compose';
-import { background, size } from '@expo/ui/jetpack-compose/modifiers';
-import { Image } from 'expo-image';
+import {
+  HorizontalCenteredHeroCarousel,
+  Box,
+  Host,
+  Card,
+  Column,
+  LazyColumn,
+  Text as ComposeText,
+} from '@expo/ui/jetpack-compose';
+import { background, fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-import { View } from 'react-native';
 
 export default function CarouselScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Host style={{ backgroundColor: 'blue', width: '100%', height: 300 }}>
-        <Carousel
-          variant="multiBrowse"
-          itemSpacing={30}
-          minSmallItemWidth={10}
-          maxSmallItemWidth={300}
-          flingBehavior="noSnap">
-          <Image
-            source={{ uri: 'https://picsum.photos/400' }}
-            style={{ width: 200, height: 200 }}
-          />
-          <Image
-            source={{ uri: 'https://picsum.photos/401' }}
-            style={{ width: 200, height: 200 }}
-          />
-          <Image
-            source={{ uri: 'https://picsum.photos/403' }}
-            style={{ width: 200, height: 200 }}
-          />
-          <Image
-            source={{ uri: 'https://picsum.photos/404' }}
-            style={{ width: 200, height: 200 }}
-          />
-          <Image
-            source={{ uri: 'https://picsum.photos/405' }}
-            style={{ width: 200, height: 200 }}
-          />
-          <Image
-            source={{ uri: 'https://picsum.photos/406' }}
-            style={{ width: 200, height: 200 }}
-          />
-        </Carousel>
-      </Host>
-      <Host style={{ backgroundColor: 'blue', width: '100%', height: 300 }}>
-        <Carousel
-          itemSpacing={30}
-          variant="unconstrained"
-          minSmallItemWidth={10}
-          maxSmallItemWidth={300}>
-          <Box modifiers={[size(200, 200), background('#f00000')]} />
-          <Box modifiers={[size(200, 200), background('#f0f000')]} />
-          <Box modifiers={[size(200, 200), background('#00f000')]} />
-          <Box modifiers={[size(200, 200), background('#00f000')]} />
-          <Box modifiers={[size(200, 200), background('#00f000')]} />
-          <Box modifiers={[size(200, 200), background('#00f000')]} />
-        </Carousel>
-      </Host>
-    </View>
+    <Host style={{ flex: 1 }}>
+      <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText style={{ typography: 'titleMedium' }}>Centered Hero</ComposeText>
+            <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
+              One large centered item with small peek items on each side.
+            </ComposeText>
+            <HorizontalCenteredHeroCarousel itemSpacing={8} modifiers={[fillMaxWidth()]}>
+              <Box modifiers={[size(300, 200), background('#6200EE')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">1</ComposeText>
+              </Box>
+              <Box modifiers={[size(300, 200), background('#03DAC5')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">2</ComposeText>
+              </Box>
+              <Box modifiers={[size(300, 200), background('#FF5722')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">3</ComposeText>
+              </Box>
+              <Box modifiers={[size(300, 200), background('#4CAF50')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">4</ComposeText>
+              </Box>
+              <Box modifiers={[size(300, 200), background('#2196F3')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">5</ComposeText>
+              </Box>
+            </HorizontalCenteredHeroCarousel>
+          </Column>
+        </Card>
+      </LazyColumn>
+    </Host>
   );
 }
 
