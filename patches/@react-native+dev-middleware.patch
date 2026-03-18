@@ -1,7 +1,7 @@
-diff --git a/node_modules/@react-native/dev-middleware/dist/types/ReadonlyURL.d.ts b/node_modules/@react-native/dev-middleware/dist/types/ReadonlyURL.d.ts
+diff --git a/dist/types/ReadonlyURL.d.ts b/dist/types/ReadonlyURL.d.ts
 index 2fe7bbe..bb616e7 100644
---- a/node_modules/@react-native/dev-middleware/dist/types/ReadonlyURL.d.ts
-+++ b/node_modules/@react-native/dev-middleware/dist/types/ReadonlyURL.d.ts
+--- a/dist/types/ReadonlyURL.d.ts
++++ b/dist/types/ReadonlyURL.d.ts
 @@ -29,7 +29,7 @@ export interface ReadonlyURLSearchParams {
      thisArg: This,
    ): void;

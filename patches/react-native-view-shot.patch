@@ -1,7 +1,7 @@
-diff --git a/node_modules/react-native-view-shot/ios/RNViewShot.mm b/node_modules/react-native-view-shot/ios/RNViewShot.mm
+diff --git a/ios/RNViewShot.mm b/ios/RNViewShot.mm
 index 2cf632f..c8b04e1 100644
---- a/node_modules/react-native-view-shot/ios/RNViewShot.mm
-+++ b/node_modules/react-native-view-shot/ios/RNViewShot.mm
+--- a/ios/RNViewShot.mm
++++ b/ios/RNViewShot.mm
 @@ -80,13 +80,12 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
      UIView* rendered;
      UIScrollView* scrollView;

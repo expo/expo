@@ -1,7 +1,7 @@
-diff --git a/node_modules/react-native-worklets/RNWorklets.podspec b/node_modules/react-native-worklets/RNWorklets.podspec
+diff --git a/RNWorklets.podspec b/RNWorklets.podspec
 index d658b49..7462f91 100644
---- a/node_modules/react-native-worklets/RNWorklets.podspec
-+++ b/node_modules/react-native-worklets/RNWorklets.podspec
+--- a/RNWorklets.podspec
++++ b/RNWorklets.podspec
 @@ -44,6 +44,7 @@ Pod::Spec.new do |s|
    install_modules_dependencies(s)
  
