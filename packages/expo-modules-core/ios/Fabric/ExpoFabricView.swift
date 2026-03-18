@@ -192,7 +192,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   internal static func inject(appContext: AppContext) {
     // Keep it weak so we don't leak the app context.
-    weak var weakAppContext = appContext
+    weak let weakAppContext = appContext
     let appContextBlock: @convention(block) () -> AppContext? = { weakAppContext }
     let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)
     class_replaceMethod(object_getClass(ExpoFabricView.self), #selector(appContextFromClass), appContextBlockImp, "@@:")
