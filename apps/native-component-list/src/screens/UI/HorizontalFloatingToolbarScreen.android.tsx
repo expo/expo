@@ -26,7 +26,10 @@ export default function HorizontalFloatingToolbarScreen() {
       <Box modifiers={[fillMaxSize()]} floatingToolbarExitAlwaysScrollBehavior="bottom">
         <LazyColumn modifiers={[fillMaxSize()]}>
           {items.map((item) => (
-            <ListItem key={item.id} headline={item.title} modifiers={[fillMaxWidth()]}>
+            <ListItem key={item.id} modifiers={[fillMaxWidth()]}>
+              <ListItem.HeadlineContent>
+                <ComposeText>{item.title}</ComposeText>
+              </ListItem.HeadlineContent>
               <ListItem.SupportingContent>
                 <ComposeText>{item.subtitle}</ComposeText>
               </ListItem.SupportingContent>

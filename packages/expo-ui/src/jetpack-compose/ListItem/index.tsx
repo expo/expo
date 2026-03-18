@@ -18,10 +18,6 @@ export type ListItemColors = {
 
 export type ListItemProps = {
   /**
-   * The main text content. Used when `HeadlineContent` slot is not provided.
-   */
-  headline?: string;
-  /**
    * Colors for list item elements.
    */
   colors?: ListItemColors;

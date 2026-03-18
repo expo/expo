@@ -18,30 +18,46 @@ export default function ListScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn modifiers={[fillMaxWidth()]}>
-        <ListItem headline="Basic List Item" modifiers={[fillMaxWidth()]} />
+        <ListItem modifiers={[fillMaxWidth()]}>
+          <ListItem.HeadlineContent>
+            <ComposeText>Basic List Item</ComposeText>
+          </ListItem.HeadlineContent>
+        </ListItem>
 
-        <ListItem headline="With Leading Icon" modifiers={[fillMaxWidth()]}>
+        <ListItem modifiers={[fillMaxWidth()]}>
+          <ListItem.HeadlineContent>
+            <ComposeText>With Leading Icon</ComposeText>
+          </ListItem.HeadlineContent>
           <ListItem.LeadingContent>
             <Icon source={settingsIcon} size={24} />
           </ListItem.LeadingContent>
         </ListItem>
 
-        <ListItem headline="With Supporting Text" modifiers={[fillMaxWidth()]}>
+        <ListItem modifiers={[fillMaxWidth()]}>
+          <ListItem.HeadlineContent>
+            <ComposeText>With Supporting Text</ComposeText>
+          </ListItem.HeadlineContent>
           <ListItem.SupportingContent>
             <ComposeText>Secondary line of text</ComposeText>
           </ListItem.SupportingContent>
         </ListItem>
 
-        <ListItem headline="With Overline" modifiers={[fillMaxWidth()]}>
+        <ListItem modifiers={[fillMaxWidth()]}>
           <ListItem.OverlineContent>
             <ComposeText>CATEGORY</ComposeText>
           </ListItem.OverlineContent>
+          <ListItem.HeadlineContent>
+            <ComposeText>With Overline</ComposeText>
+          </ListItem.HeadlineContent>
           <ListItem.SupportingContent>
             <ComposeText>Supporting text below</ComposeText>
           </ListItem.SupportingContent>
         </ListItem>
 
-        <ListItem headline="Wi-Fi" modifiers={[fillMaxWidth()]}>
+        <ListItem modifiers={[fillMaxWidth()]}>
+          <ListItem.HeadlineContent>
+            <ComposeText>Wi-Fi</ComposeText>
+          </ListItem.HeadlineContent>
           <ListItem.LeadingContent>
             <Icon source={settingsIcon} size={24} />
           </ListItem.LeadingContent>
@@ -53,7 +69,10 @@ export default function ListScreen() {
           </ListItem.TrailingContent>
         </ListItem>
 
-        <ListItem headline="Bluetooth" modifiers={[fillMaxWidth()]}>
+        <ListItem modifiers={[fillMaxWidth()]}>
+          <ListItem.HeadlineContent>
+            <ComposeText>Bluetooth</ComposeText>
+          </ListItem.HeadlineContent>
           <ListItem.LeadingContent>
             <Icon source={settingsIcon} size={24} />
           </ListItem.LeadingContent>
@@ -75,13 +94,15 @@ export default function ListScreen() {
         </ListItem>
 
         <ListItem
-          headline="Custom Colors"
           modifiers={[fillMaxWidth()]}
           colors={{
             containerColor: '#1E1E2E',
             contentColor: '#CDD6F4',
             supportingContentColor: '#BAC2DE',
           }}>
+          <ListItem.HeadlineContent>
+            <ComposeText>Custom Colors</ComposeText>
+          </ListItem.HeadlineContent>
           <ListItem.SupportingContent>
             <ComposeText>Dark themed list item</ComposeText>
           </ListItem.SupportingContent>

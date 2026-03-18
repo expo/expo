@@ -22,7 +22,6 @@ data class ListItemColors(
 ) : Record
 
 data class ListItemProps(
-  val headline: String? = null,
   val tonalElevation: Float? = null,
   val shadowElevation: Float? = null,
   val colors: ListItemColors? = null,
@@ -56,13 +55,13 @@ fun FunctionalComposableScope.ListItemContent(props: ListItemProps) {
   val trailingSlotView = findChildSlotView(view, "trailingContent")
 
   ListItem(
-    headlineContent = headlineSlotView?.let {
-      {
+    headlineContent = {
+      headlineSlotView?.let {
         with(ComposableScope()) {
           with(it) { Content() }
         }
       }
-    } ?: { props.headline?.let { Text(text = it) } },
+    },
     modifier = modifier,
     overlineContent = overlineSlotView?.let {
       {
