@@ -94,7 +94,7 @@ function createMetroOpenStackFrameMiddleware(
     }
 
     const root = getMetroServerRoot(metroConfig.projectRoot!);
-    const file = await ensureFileInRootDirectory(root, absolute);
+    const file = await ensureFileInRootDirectory(root, frame.file);
     if (!file) {
       res.statusCode = 400;
       return res.end('Open stack frame requires target file to be in server root');
