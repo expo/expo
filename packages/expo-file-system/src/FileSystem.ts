@@ -550,9 +550,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     if (!state.resumeData) {
       throw new Error('Cannot restore task: DownloadPauseState has no resumeData');
     }
-    const dest = state.isDirectory
-      ? new Directory(state.fileUri)
-      : new File(state.fileUri);
+    const dest = state.isDirectory ? new Directory(state.fileUri) : new File(state.fileUri);
     const mergedOptions: DownloadTaskOptions | undefined =
       options || state.headers
         ? { ...options, headers: { ...state.headers, ...options?.headers } }
