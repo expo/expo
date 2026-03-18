@@ -16,6 +16,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URI
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -32,18 +33,24 @@ class DownloadTaskOptions : Record {
  */
 class FileSystemDownloadTask : SharedObject() {
   companion object {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+      .connectTimeout(60, TimeUnit.SECONDS)
+      .readTimeout(60, TimeUnit.SECONDS)
+      .writeTimeout(60, TimeUnit.SECONDS)
+      .build()
   }
 
   private var call: Call? = null
 
   @Volatile private var isPausing = false
+  @Volatile private var isCancelling = false
   private var destinationFile: File? = null
   private var lastProgressTime: Long = 0
   private val progressThrottleInterval: Long = 100 // 100ms
 
   suspend fun start(url: URI, to: FileSystemPath, options: DownloadTaskOptions?): String? {
     isPausing = false
+    isCancelling = false
 
     val destination = determineDestination(to, url)
     destinationFile = destination
@@ -69,6 +76,7 @@ class FileSystemDownloadTask : SharedObject() {
 
   suspend fun resume(url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?): String? {
     isPausing = false
+    isCancelling = false
 
     val offset = try {
       resumeData.toLong()
@@ -95,6 +103,7 @@ class FileSystemDownloadTask : SharedObject() {
 
   fun cancel() {
     isPausing = false
+    isCancelling = true
     call?.cancel()
   }
 
@@ -129,80 +138,83 @@ class FileSystemDownloadTask : SharedObject() {
         override fun onFailure(call: Call, e: IOException) {
           if (isPausing) {
             safeResume(null)
+          } else if (isCancelling) {
+            safeResumeWithException(DownloadCancelledException())
           } else {
             safeResumeWithException(UnableToDownloadException(e.message ?: "Download failed"))
           }
         }
 
         override fun onResponse(call: Call, response: Response) {
-          try {
-            if (!response.isSuccessful) {
-              response.close()
-              safeResumeWithException(UnableToDownloadException("HTTP ${response.code}"))
-              return
-            }
-
-            val responseBody = response.body
-              ?: throw UnableToDownloadException("Empty response body")
-
-            // 206 = server supports Range, 200 = server ignored it (sends full content)
-            val isPartial = response.code == 206
-            val effectiveOffset = if (isResume && isPartial) offset else 0L
-
-            val totalBytes = if (isPartial) {
-              // Partial content: total is offset + remaining content length
-              offset + (responseBody.contentLength())
-            } else {
-              responseBody.contentLength()
-            }
-
-            val input = BufferedInputStream(responseBody.byteStream())
-            destination.parentFile?.mkdirs()
-
-            // For resume: truncate file to offset to discard any extra bytes
-            // written after pause, then append from there
-            if (isResume && isPartial) {
-              java.io.RandomAccessFile(destination, "rw").use { raf ->
-                raf.setLength(effectiveOffset)
-              }
-            }
-            val output = FileOutputStream(destination, isResume && isPartial)
-
-            val buffer = ByteArray(8192)
-            var bytesRead: Int
-            var totalBytesWritten = effectiveOffset // Start from offset if truly resuming
-
-            while (input.read(buffer).also { bytesRead = it } != -1) {
-              if (isPausing) {
-                // Paused during download
-                input.close()
-                output.close()
-                safeResume(null)
+          response.use { resp ->
+            try {
+              if (!resp.isSuccessful) {
+                safeResumeWithException(UnableToDownloadException("HTTP ${resp.code}"))
                 return
               }
 
-              output.write(buffer, 0, bytesRead)
-              totalBytesWritten += bytesRead
+              val responseBody = resp.body
+                ?: throw UnableToDownloadException("Empty response body")
 
-              emitProgress(totalBytesWritten, totalBytes)
-            }
+              // 206 = server supports Range, 200 = server ignored it (sends full content)
+              val isPartial = resp.code == 206
+              val effectiveOffset = if (isResume && isPartial) offset else 0L
 
-            input.close()
-            output.close()
+              val totalBytes = if (isPartial) {
+                // Partial content: total is offset + remaining content length
+                offset + (responseBody.contentLength())
+              } else {
+                responseBody.contentLength()
+              }
 
-            // Reset throttle to guarantee final progress fires
-            lastProgressTime = 0
-            emitProgress(totalBytesWritten, totalBytesWritten)
+              val input = BufferedInputStream(responseBody.byteStream())
+              destination.parentFile?.mkdirs()
 
-            safeResume(android.net.Uri.fromFile(destination).toString())
-          } catch (e: IOException) {
-            if (isPausing) {
-              safeResume(null)
-            } else {
+              // For resume: truncate file to offset to discard any extra bytes
+              // written after pause, then append from there
+              if (isResume && isPartial) {
+                java.io.RandomAccessFile(destination, "rw").use { raf ->
+                  raf.setLength(effectiveOffset)
+                }
+              }
+              val output = FileOutputStream(destination, isResume && isPartial)
+
+              val buffer = ByteArray(8192)
+              var bytesRead: Int
+              var totalBytesWritten = effectiveOffset // Start from offset if truly resuming
+
+              while (input.read(buffer).also { bytesRead = it } != -1) {
+                if (isPausing) {
+                  // Paused during download — streams are closed by response.use {}
+                  output.close()
+                  safeResume(null)
+                  return
+                }
+
+                output.write(buffer, 0, bytesRead)
+                totalBytesWritten += bytesRead
+
+                emitProgress(totalBytesWritten, totalBytes)
+              }
+
+              output.close()
+
+              // Reset throttle to guarantee final progress fires
+              lastProgressTime = 0
+              emitProgress(totalBytesWritten, totalBytesWritten)
+
+              safeResume(android.net.Uri.fromFile(destination).toString())
+            } catch (e: IOException) {
+              if (isPausing) {
+                safeResume(null)
+              } else if (isCancelling) {
+                safeResumeWithException(DownloadCancelledException())
+              } else {
+                safeResumeWithException(UnableToDownloadException(e.message ?: "Download failed"))
+              }
+            } catch (e: Exception) {
               safeResumeWithException(UnableToDownloadException(e.message ?: "Download failed"))
             }
-          } catch (e: Exception) {
-            safeResumeWithException(UnableToDownloadException(e.message ?: "Download failed"))
           }
         }
       })

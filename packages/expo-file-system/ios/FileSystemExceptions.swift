@@ -145,13 +145,13 @@ internal final class UploadCancelledException: Exception {
   }
 }
 
-internal final class FailedToCreateBodyException2: Exception {
+internal final class UploadFailedToCreateBodyException: Exception {
   override var reason: String {
     "Failed to create multipart body"
   }
 }
 
-internal final class FailedToAccessDirectoryException2: Exception {
+internal final class UploadFailedToAccessCacheException: Exception {
   override var reason: String {
     "Failed to access cache directory for upload temp file"
   }

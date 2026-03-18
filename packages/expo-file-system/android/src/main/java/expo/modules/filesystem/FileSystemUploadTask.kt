@@ -22,6 +22,7 @@ import okio.buffer
 import okio.source
 import java.io.IOException
 import java.net.URLConnection
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -64,7 +65,11 @@ class UploadTaskResult : Record {
  */
 class FileSystemUploadTask : SharedObject() {
   companion object {
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+      .connectTimeout(60, TimeUnit.SECONDS)
+      .readTimeout(60, TimeUnit.SECONDS)
+      .writeTimeout(60, TimeUnit.SECONDS)
+      .build()
   }
 
   private var call: Call? = null

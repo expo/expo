@@ -128,7 +128,7 @@ class FileSystemUploadTask: SharedObject {
 
   private func createLocalUrl(from sourceUrl: URL, uniqueName: String? = nil) throws -> URL {
     guard let cachesDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
-      throw FailedToAccessDirectoryException()
+      throw UploadFailedToAccessCacheException()
     }
     let tempDir = cachesDir.appendingPathComponent("uploads")
     FileSystemUtilities.ensureDirExists(at: tempDir)
@@ -144,7 +144,7 @@ class FileSystemUploadTask: SharedObject {
     let tempURL = try createLocalUrl(from: sourceUrl, uniqueName: UUID().uuidString)
 
     guard let output = OutputStream(url: tempURL, append: false) else {
-      throw FailedToAccessDirectoryException()
+      throw UploadFailedToAccessCacheException()
     }
     output.open()
     defer { output.close() }
@@ -165,7 +165,7 @@ class FileSystemUploadTask: SharedObject {
 
     // Stream file content in 64KB chunks
     guard let input = InputStream(url: sourceUrl) else {
-      throw FailedToCreateBodyException()
+      throw UploadFailedToCreateBodyException()
     }
     input.open()
     defer { input.close() }
@@ -179,7 +179,7 @@ class FileSystemUploadTask: SharedObject {
       if bytesRead > 0 {
         output.write(buffer, maxLength: bytesRead)
       } else if bytesRead < 0 {
-        throw FailedToCreateBodyException()
+        throw UploadFailedToCreateBodyException()
       }
     }
 
