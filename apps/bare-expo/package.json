@@ -44,6 +44,7 @@
     "@babel/runtime": "^7.20.0",
     "@expo/dom-webview": "workspace:*",
     "@expo/styleguide-base": "^1.0.1",
+    "@expo/ui": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "8.6.0",
     "@react-native-community/slider": "5.1.2",
