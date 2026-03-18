@@ -77,18 +77,23 @@ jobs:
           java-version: '17'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
-      - name: 🧶 Install workspace node modules
-        run: yarn install --frozen-lockfile
-      - name: 👷 Build Expo CLI
-        run: yarn workspace @expo/cli prepare
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🤖 Build and publish Android artifacts (apps/brownfield-tester/expo-app)
         run: |
           npx expo prebuild --clean -p android
@@ -152,13 +157,20 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           script: 
             ./packages/expo-brownfield/e2e/scripts/run-e2e-android.sh
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
-      - name: 👷 Build Expo CLI
-        run: yarn workspace @expo/cli prepare
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🚇 Start Metro server
         run: |
-          yarn start --clear &
+          pnpm start --clear &
           npx wait-on http://localhost:8081 --timeout 60000
         working-directory: apps/brownfield-tester/expo-app
       - name: 🧪 Run e2e tests (Debug)
@@ -208,24 +220,28 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ runner.temp }}/.ccache
-          key: ccache-ios-brownfield-${{ hashFiles('yarn.lock', '**/Podfile.lock') }}-${{ github.sha }}
+          key: ccache-ios-brownfield-${{ hashFiles('pnpm-lock.yaml', '**/Podfile.lock') }}-${{ github.sha }}
           restore-keys: |
-            ccache-ios-brownfield-${{ hashFiles('yarn.lock', '**/Podfile.lock') }}-
+            ccache-ios-brownfield-${{ hashFiles('pnpm-lock.yaml', '**/Podfile.lock') }}-
             ccache-ios-brownfield-
       - name: 🔄 Reset ccache statistics
         run: ccache -z
       - name: 💎 Install xcodeproj gem
         run: gem install xcodeproj
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
-      - name: 👷 Build Expo CLI
-        run: yarn workspace @expo/cli prepare
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🍏 Build iOS artifacts (Release)
         run: |
           npx expo prebuild --clean -p ios
