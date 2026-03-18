@@ -4,7 +4,7 @@ import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type DividerProps = {
+export type DividerCommonConfig = {
   /**
    * Thickness of the divider line in dp.
    * Use `StyleSheet.hairlineWidth` for a single-pixel line regardless of density.
@@ -20,7 +20,7 @@ export type DividerProps = {
   modifiers?: ModifierConfig[];
 };
 
-function transformProps(props: DividerProps): DividerProps {
+function transformProps(props: DividerCommonConfig): DividerCommonConfig {
   const { modifiers, ...restProps } = props;
   return {
     modifiers,
@@ -29,9 +29,12 @@ function transformProps(props: DividerProps): DividerProps {
   };
 }
 
-function createDividerComponent(viewName: string): React.ComponentType<DividerProps> {
-  const NativeView: React.ComponentType<DividerProps> = requireNativeView('ExpoUI', viewName);
-  return function DividerComponent(props: DividerProps) {
+function createDividerComponent(viewName: string): React.ComponentType<DividerCommonConfig> {
+  const NativeView: React.ComponentType<DividerCommonConfig> = requireNativeView(
+    'ExpoUI',
+    viewName
+  );
+  return function DividerComponent(props: DividerCommonConfig) {
     return <NativeView {...transformProps(props)} />;
   };
 }

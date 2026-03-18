@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
-export type DividerProps = {
+export type DividerCommonConfig = {
     /**
      * Thickness of the divider line in dp.
      * Use `StyleSheet.hairlineWidth` for a single-pixel line regardless of density.
@@ -19,10 +19,10 @@ export type DividerProps = {
  * A horizontal divider line that groups content in lists and layouts,
  * matching Compose's `HorizontalDivider`.
  */
-export declare const HorizontalDivider: import("react").ComponentType<DividerProps>;
+export declare const HorizontalDivider: import("react").ComponentType<DividerCommonConfig>;
 /**
  * A vertical divider line that groups content in layouts,
  * matching Compose's `VerticalDivider`.
  */
-export declare const VerticalDivider: import("react").ComponentType<DividerProps>;
+export declare const VerticalDivider: import("react").ComponentType<DividerCommonConfig>;
 //# sourceMappingURL=index.d.ts.map
