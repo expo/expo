@@ -6,7 +6,7 @@ import {
   Switch,
   Text as ComposeText,
 } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
 const settingsIcon = require('../../../assets/icons/api/Camera.png');
