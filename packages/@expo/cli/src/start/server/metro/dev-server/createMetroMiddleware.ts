@@ -113,14 +113,14 @@ function createMetroOpenStackFrameMiddleware(
 const ensureFileInRootDirectory = async (root: string, file: string): Promise<string | null> => {
   try {
     file = await fs.promises.realpath(file);
+    // Cannot be accessed using Metro's server API, we need to move the file
+    // into the project root and try again.
+    if (!path.relative(root, file).startsWith('..' + path.sep)) {
+      return file;
+    } else {
+      return null;
+    }
   } catch {
-    return null;
-  }
-  // Cannot be accessed using Metro's server API, we need to move the file
-  // into the project root and try again.
-  if (!path.relative(root, file).startsWith('..' + path.sep)) {
-    return file;
-  } else {
     return null;
   }
 };
