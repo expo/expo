@@ -30,7 +30,7 @@ export function DiscoverMore() {
           />
           <PlanEnterpriseIcon
             className={mergeClasses(
-              'absolute right-6 bottom-6 size-[72px]! rounded-xl border-[6px] p-2',
+              'absolute left-auto right-6 bottom-6 size-[72px]! rounded-xl border-[6px] p-2',
               'border-palette-green5 bg-palette-green4 text-palette-green8'
             )}
           />
@@ -59,7 +59,7 @@ export function DiscoverMore() {
           />
           <RouterLogo
             className={mergeClasses(
-              'absolute right-6 bottom-6 size-[72px]! rounded-xl border-[6px] p-3',
+              'absolute left-auto right-6 bottom-6 size-[72px]! rounded-xl border-[6px] p-3',
               'border-palette-pink5 bg-palette-pink4 stroke-palette-pink8 text-palette-pink8 stroke-[0.01rem]'
             )}
           />
@@ -92,7 +92,7 @@ export function DiscoverMore() {
           </HomeButton>
         </GridCell>
         <GridCell className="from-subtle to-palette-blue3 selection:bg-palette-blue5 bg-linear-to-br from-30%">
-          <div className="bg-palette-blue5 absolute right-6 bottom-6 rounded-full p-4">
+          <div className="bg-palette-blue5 absolute left-auto right-6 bottom-6 rounded-full p-4">
             <DiscordIcon className="text-palette-blue9 dark:text-palette-blue9 size-12!" />
           </div>
           <RawH3 className="text-palette-blue11! font-bold!">Chat with the community</RawH3>

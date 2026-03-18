@@ -88,7 +88,7 @@ export function QuickStart() {
             <div className="bg-palette-purple7 dark:bg-palette-blue7 absolute top-24 right-8 size-1 animate-pulse rounded-full delay-75" />
             <div className="bg-palette-blue9 dark:bg-palette-white absolute right-32 bottom-8 size-0.5 animate-pulse rounded-full delay-300" />
           </div>
-          <Rocket02Icon className="text-palette-blue9 absolute -right-12 -bottom-20 size-80! rotate-12 opacity-[0.08] dark:opacity-[0.03]" />
+          <Rocket02Icon className="text-palette-blue9 absolute left-auto -right-12 -bottom-20 size-80! rotate-12 opacity-[0.08] dark:opacity-[0.03]" />
 
           <div className="relative z-10 flex flex-col gap-4">
             <h2 className="text-palette-gray12! heading-lg dark:text-palette-white! flex items-center gap-3 font-bold!">
