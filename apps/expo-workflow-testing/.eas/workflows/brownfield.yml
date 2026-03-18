@@ -92,6 +92,8 @@ jobs:
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
       - uses: eas/restore_build_cache
+        with:
+          platform: ios
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
       - name: Build iOS artifacts (Release)
@@ -103,6 +105,8 @@ jobs:
         working_directory: ../brownfield-tester/expo-app
         run: npx expo-brownfield build:ios --debug --verbose
       - uses: eas/save_build_cache
+        with:
+          platform: ios
 
   notify_ios_failure:
     if: ${{ failure() && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/sdk-')) }}
