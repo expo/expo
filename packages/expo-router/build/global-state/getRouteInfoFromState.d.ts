@@ -1,4 +1,4 @@
-import type { FocusedRouteState } from './router-store';
+import type { FocusedRouteState } from './types';
 import type { NavigationState, PartialState } from '../react-navigation/native';
 export type UrlObject = {
     unstable_globalHref: string;
@@ -28,4 +28,4 @@ type StrictFocusedRouteParams = Record<string, string | string[]> | {
 };
 export declare function getRouteInfoFromState(state?: StrictState): UrlObject;
 export {};
-//# sourceMappingURL=routeInfo.d.ts.map
+//# sourceMappingURL=getRouteInfoFromState.d.ts.map

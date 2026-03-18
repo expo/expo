@@ -169,4 +169,4 @@ function safeDecodeURIComponent(value) {
         return value;
     }
 }
-//# sourceMappingURL=routeInfo.js.map
+//# sourceMappingURL=getRouteInfoFromState.js.map

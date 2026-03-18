@@ -38,9 +38,7 @@
 - Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
 - Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
 - add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
-- remove use-sync-external-store dependency ([#44221](https://github.com/expo/expo/pull/44221) by [@Ubax](https://github.com/Ubax))
-- remove react-navigation/bottom-tabs/unstable ([#44220](https://github.com/expo/expo/pull/44220) by [@Ubax](https://github.com/Ubax))
-- use React 19 syntax in src/react-navigation ([#44225](https://github.com/expo/expo/pull/44225) by [@Ubax](https://github.com/Ubax))
+- refactor global-state logic ([#44056](https://github.com/expo/expo/pull/44056) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.2 — 2026-02-25
 
