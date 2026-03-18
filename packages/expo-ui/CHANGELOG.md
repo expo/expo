@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [android] Match `Icon` API to native: renamed `tintColor` to `tint`. Match `ListItem` API to native: replaced string props with slot sub-components (`HeadlineContent`, `SupportingContent`, `OverlineContent`, `LeadingContent`, `TrailingContent`). Renamed color props to match `ListItemDefaults.colors()`. Added `tonalElevation`, `shadowElevation`. Removed `color`, `onPress`. ([#44054](https://github.com/expo/expo/pull/44054) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Renamed Stepper `defaultValue` to `value` and `onValueChanged` to `onValueChange`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Replace `Picker` with `SingleChoiceSegmentedButtonRow`, `MultiChoiceSegmentedButtonRow`, and `SegmentedButton` components. Replace `RadioButton` `nativeClickable` prop with `onClick` event. ([#43809](https://github.com/expo/expo/pull/43809) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `ToggleButton` into separate M3 components: `ToggleButton`, `IconToggleButton`, `FilledIconToggleButton`, `OutlinedIconToggleButton`. Removed `variant`, `text`, `color`, `disabled` props. Added `colors` with checked/unchecked variants. ([#43974](https://github.com/expo/expo/pull/43974) by [@nishan](https://github.com/intergalacticspacehighway))
