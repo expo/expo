@@ -14562,7 +14562,7 @@ sharp-cli@^5.2.0:
     sharp "0.34.2"
     yargs "^17.6.2"
 
-sharp@0.34.2:
+sharp@0.34.2, sharp@^0.34.2:
   version "0.34.2"
   resolved "https://registry.yarnpkg.com/sharp/-/sharp-0.34.2.tgz#648bd639854dbe48047b0b420213c186d036b32d"
   integrity sha512-lszvBmB9QURERtyKT2bNmsgxXK0ShJrL/fvqlonCo7e6xBF8nT8xU6pW+PMIbLsz0RxQk3rgH9kd8UmvOzlMJg==
