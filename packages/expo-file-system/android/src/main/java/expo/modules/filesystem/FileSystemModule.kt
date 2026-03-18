@@ -98,7 +98,7 @@ class FileSystemModule : Module() {
 
     AsyncFunction("pickDirectoryAsync") Coroutine { initialUri: Uri? ->
       val result = filePickerLauncher.launch(
-        FilePickerContractOptions(initialUri, listOf(), false, PickerType.DIRECTORY)
+        FilePickerContractOptions(initialUri, emptyList(), false, PickerType.DIRECTORY)
       )
       when (result) {
         is FilePickerContractResult.Success -> result.paths.first() as FileSystemDirectory

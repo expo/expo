@@ -125,7 +125,7 @@ public final class FileSystemModule: Module {
       #endif
     }.runOnQueue(.main)
 
-      AsyncFunction("pickFileAsync") { (options: FilePickingOptions?, promise: Promise) in
+    AsyncFunction("pickFileAsync") { (options: FilePickingOptions?, promise: Promise) in
       #if os(iOS)
       filePickingHandler.presentDocumentPicker(
         picker: createFilePicker(initialUri: options?.initialUri, mimeTypes: options?.mimeTypes ?? []),
@@ -139,7 +139,6 @@ public final class FileSystemModule: Module {
       promise.reject(FeatureNotAvailableOnPlatformException())
       #endif
     }.runOnQueue(.main)
-      
     Function("info") { (url: URL) in
       let output = PathInfo()
       output.exists = false

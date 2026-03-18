@@ -22,11 +22,7 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
   override fun createIntent(context: Context, input: FilePickerContractOptions): Intent =
     if (input.pickerType == PickerType.FILE) {
       Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-        type = if (input.mimeTypes.size >= 1) {
-          input.mimeTypes.first()
-        } else {
-          "*/*"
-        }
+        type = input.mimeTypes.firstOrNull() ?: "*/*"
         if (input.mimeTypes.size > 1) {
           putExtra(Intent.EXTRA_MIME_TYPES, input.mimeTypes.toTypedArray())
         }
@@ -62,8 +58,7 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
           PickerType.FILE -> FilePickerContractResult.Success(uris.map { uri -> FileSystemFile(uri) })
         }
       } else {
-        val uri = intent.data
-        uri?.let {
+        val uri = intent.data?.also {
           contentResolver.takePersistableUriPermission(it, takeFlags)
         }
         when (input.pickerType) {

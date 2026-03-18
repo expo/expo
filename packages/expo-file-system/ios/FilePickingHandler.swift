@@ -67,17 +67,17 @@ internal class FilePickingHandler: FilePickingResultHandler {
 
   func didPickFilesAt(urls: [URL]) {
     handlePickingResult { context in
-        let files = urls.map { url in
-            FileSystemFile(url: url)
-        }
+      let files = urls.map { url in
+          FileSystemFile(url: url)
+      }
       context.promise.resolve(files)
     }
   }
     
   func didPickFileAt(url: URL) {
     handlePickingResult { context in
-        let file = FileSystemFile(url: url)
-        context.promise.resolve(file)
+      let file = FileSystemFile(url: url)
+      context.promise.resolve(file)
     }
   }
 
