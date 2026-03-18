@@ -388,17 +388,6 @@ export declare class File {
   ): Promise<File>;
 
   /**
-   * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
-   *
-   * Selecting multiple files is not supported yet.
-   *
-   * @deprecated Use `pickFileAsync({initialUri, mimeTypes: mimeType})` instead.
-   * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
-   * @param mimeType A mime type that is used to filter out files that can be picked out.
-   * @returns A `File` instance or an array of `File` instances.
-   */
-  static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
-  /**
    * An overload of the `pickFileAsync` method, which picks and returns a single `File`.
    * This overload requires options to have `multipleFiles` flag be `undefined` or `false`.
    * @param options options
@@ -410,6 +399,17 @@ export declare class File {
    * @param options options
    */
   static pickFileAsync(options?: PickMultipleFilesOptions): Promise<PickMultipleFilesResult>;
+  /**
+   * A static method that opens a file picker to select a single file of specified type. On iOS, it returns a temporary copy of the file leaving the original file untouched.
+   *
+   * Selecting multiple files is not supported yet.
+   *
+   * @deprecated Use `pickFileAsync({initialUri, mimeTypes: mimeType})` instead.
+   * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
+   * @param mimeType A mime type that is used to filter out files that can be picked out.
+   * @returns A `File` instance or an array of `File` instances.
+   */
+  static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
 
   /**
    * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
@@ -563,29 +563,30 @@ export type PickFileGeneralOptions = {
    * @default '&ast;/*'
    */
   mimeTypes?: string | string[];
+  /**
+   * Allows multiple files to be selected from the system UI.
+   * @default false
+   */
+  multipleFiles?: boolean;
 };
 
 /**
  * Options for picking a single file.
  */
 export type PickSingleFileOptions = PickFileGeneralOptions & {
-  /**
-   * Allows multiple files to be selected from the system UI.
-   * @default false
-   */
   multipleFiles?: false;
 };
 
+/**
+ * Options for picking multiple files.
+ */
 export type PickMultipleFilesOptions = PickFileGeneralOptions & {
-  /**
-   * Allows multiple files to be selected from the system UI.
-   * @default false
-   */
   multipleFiles: true;
 };
 
 /**
  * Options type for file picking.
+ * @hidden
  */
 export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
 
