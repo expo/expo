@@ -57,6 +57,10 @@ jobs:
       matrix:
         api-level: [36]
     steps:
+      - name: 👀 Check out repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -66,10 +70,6 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
-      - name: 👀 Check out repository
-        uses: actions/checkout@v4
-        with:
-          submodules: true
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
