@@ -60,6 +60,7 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
     "@types/node": "^22.14.0",
+    "expo": "^55.0.2",
     "expo-module-scripts": "^55.0.2",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"
