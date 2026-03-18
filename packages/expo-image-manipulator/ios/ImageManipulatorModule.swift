@@ -4,7 +4,7 @@ import CoreGraphics
 import Photos
 import UIKit
 import ExpoModulesCore
-import SDWebImageWebPCoder
+@_implementationOnly import SDWebImageWebPCoder
 
 public class ImageManipulatorModule: Module {
   public func definition() -> ModuleDefinition {
