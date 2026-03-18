@@ -142,7 +142,7 @@ function generateREADME() {
 const readme = generateREADME();
 const readmePath = path.join(process.cwd(), 'README.md');
 if (fs.existsSync(readmePath)) {
-  console.log('expo-module-scripts: README.md exists, not updating');
+  // console.log('expo-module-scripts: README.md exists, not updating');
 } else {
   fs.writeFileSync(readmePath, readme, { encoding: 'utf8' });
 }

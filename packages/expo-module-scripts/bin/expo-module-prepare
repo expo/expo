@@ -10,7 +10,6 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.EXPO_NONINTERACTIVE = 1;
 
 async function runAsync() {
-  console.log('Configuring module');
   await commandRunner(path.join(dirname, 'expo-module-configure'));
 }
 
