@@ -90,6 +90,9 @@ importers:
       '@expo/styleguide-base':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.3)
+      '@expo/ui':
+        specifier: workspace:*
+        version: link:../../packages/expo-ui
       '@react-native-async-storage/async-storage':
         specifier: 2.2.0
         version: 2.2.0(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))
@@ -232,6 +235,22 @@ importers:
       react-native:
         specifier: 0.85.0-rc.5
         version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+
+  apps/common:
+    dependencies:
+      '@expo/styleguide-base':
+        specifier: ^1.0.1
+        version: 1.0.1(react@19.2.3)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-native:
+        specifier: 0.85.0-rc.5
+        version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+    devDependencies:
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
 
   apps/eas-expo-go:
     dependencies:
