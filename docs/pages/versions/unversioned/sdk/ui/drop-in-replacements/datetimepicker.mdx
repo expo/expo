@@ -9,12 +9,13 @@ platforms: ['android', 'ios']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A `DateTimePicker` component with an API compatible with `@react-native-community/datetimepicker`. It uses Jetpack Compose on Android and SwiftUI on iOS, providing a modern Material 3 and SwiftUI appearance by default (the community module defaults to the older Material Design 2 look on Android).
+A `DateTimePicker` component with an API compatible with `@react-native-community/datetimepicker`. It uses Jetpack Compose on Android and SwiftUI on iOS, providing a modern Material 3 and SwiftUI appearance by default (the community module defaults to the older look on Android).
 
-This component is fully declarative. Use the `presentation` prop to render the picker `'inline'` directly in the view hierarchy or as a `'dialog'` on Android. There is no Android imperative API (`DateTimePickerAndroid.open()`).
+`DateTimePicker` component is fully declarative. Use the `presentation` prop to render the picker `'inline'` directly in the view hierarchy or as a `'dialog'` on Android. There is no Android imperative API (`DateTimePickerAndroid.open()`).
 
 Under the hood this component wraps the platform-specific `@expo/ui` primitives:
-- **Android**: [Jetpack Compose DateTimePicker](../jetpack-compose/datetimepicker#datetimepicker) (inline), [DatePickerDialog / TimePickerDialog](../jetpack-compose/datetimepicker#datepickerdialog) (dialog)
+
+- **Android**: [Jetpack Compose DateTimePicker](../jetpack-compose/datetimepicker#datetimepicker) (inline), [DatePickerDialog/TimePickerDialog](../jetpack-compose/datetimepicker#datepickerdialog) (dialog)
 - **iOS**: [SwiftUI DatePicker](../swift-ui/datepicker)
 
 If you need lower-level control (custom modifiers, styles, or layouts), use those primitives directly.

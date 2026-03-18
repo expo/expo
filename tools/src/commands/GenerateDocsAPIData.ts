@@ -36,7 +36,6 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/datepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/disclosuregroup': ['swift-ui/DisclosureGroup/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/divider': ['swift-ui/Divider/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/foreach': ['swift-ui/ForEach/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/form': ['swift-ui/Form/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/gauge': ['swift-ui/Gauge/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/group': ['swift-ui/Group/index.tsx', 'expo-ui'],
