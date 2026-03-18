@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.6.7 — 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
 ## 3.6.6 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "55.0.6",
+  "version": "55.0.7",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -88,7 +88,7 @@
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",
     "expo-constants": "^55.0.8",
-    "expo-linking": "^55.0.7",
+    "expo-linking": "^55.0.8",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",

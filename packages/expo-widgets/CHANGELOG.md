@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.6 — 2026-03-18
+
+### 🎉 New features
+
 - Pass environment to AppIntent ([#43925](https://github.com/expo/expo/pull/43925) by [@jakex7](https://github.com/jakex7))
 - Automatically add `target` for `Button`. ([#43977](https://github.com/expo/expo/pull/43977) by [@jakex7](https://github.com/jakex7))
 - Add support for `Link` view from `@expo/ui`. ([#43985](https://github.com/expo/expo/pull/43985) by [@jakex7](https://github.com/jakex7))
@@ -15,8 +23,6 @@
 - Add support for `React.Fragment`. ([#43833](https://github.com/expo/expo/pull/43833) by [@jakex7](https://github.com/jakex7))
 - Add Button children support. ([#43832](https://github.com/expo/expo/pull/43832) by [@jakex7](https://github.com/jakex7))
 - Remove unused `Compression` related code. ([#43981](https://github.com/expo/expo/pull/43981) by [@jakex7](https://github.com/jakex7))
-
-### 💡 Others
 
 ## 55.0.5 — 2026-03-17
 

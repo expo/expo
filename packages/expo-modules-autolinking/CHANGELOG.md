@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.11 — 2026-03-18
+
+### 🎉 New features
+
+- Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
 
 ## 55.0.10 — 2026-03-17
 

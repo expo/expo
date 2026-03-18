@@ -6,12 +6,16 @@
 
 ### 🎉 New features
 
-- [iOS] Add `Link` view. ([#43983](https://github.com/expo/expo/pull/43983) by [@jakex7](https://github.com/jakex7))
-- [iOS] Add `widgetURL` modifier. ([#43984](https://github.com/expo/expo/pull/43984) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.4 — 2026-03-18
+
+### 🎉 New features
+
+- [iOS] Add `Link` view. ([#43983](https://github.com/expo/expo/pull/43983) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add `widgetURL` modifier. ([#43984](https://github.com/expo/expo/pull/43984) by [@jakex7](https://github.com/jakex7))
 
 ## 55.0.3 — 2026-03-17
 
