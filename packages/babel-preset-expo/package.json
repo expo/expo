@@ -85,6 +85,7 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@expo/metro": "~54.2.0",
+    "@expo/metro-config": "^55.0.9",
     "@types/babel__core": "^7.20.5",
     "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.2",
