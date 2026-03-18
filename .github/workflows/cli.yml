@@ -190,10 +190,10 @@ jobs:
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
 
-
       - name: 🎭 Get Playwright information
         id: playwright-info
         shell: bash
+        working-directory: packages/@expo/cli
         run: |
           echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
@@ -276,6 +276,7 @@ jobs:
       - name: 🎭 Get Playwright information
         id: playwright-info
         shell: bash
+        working-directory: packages/@expo/cli
         run: |
           echo version="$(pnpm exec playwright --version)" >> $GITHUB_OUTPUT
           echo dir="$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
