@@ -144,3 +144,59 @@ function transformMultiBrowseProps(
 export function HorizontalMultiBrowseCarousel(props: HorizontalMultiBrowseCarouselProps) {
   return <HorizontalMultiBrowseCarouselNativeView {...transformMultiBrowseProps(props)} />;
 }
+
+export type HorizontalUncontainedCarouselProps = {
+  /**
+   * The width of each item in dp.
+   */
+  itemWidth: number;
+  /**
+   * Spacing between items in dp.
+   * @default 0
+   */
+  itemSpacing?: number;
+  /**
+   * Padding for carousel content (dp or object).
+   */
+  contentPadding?: number | PaddingValuesRecord;
+  /**
+   * Fling behavior type.
+   * @default 'noSnap'
+   */
+  flingBehavior?: FlingBehaviorType;
+  /**
+   * Whether the user can scroll the carousel.
+   * @default true
+   */
+  userScrollEnabled?: boolean;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+  /**
+   * Children to render as carousel items.
+   */
+  children: React.ReactNode;
+};
+
+const HorizontalUncontainedCarouselNativeView: React.ComponentType<HorizontalUncontainedCarouselProps> =
+  requireNativeView('ExpoUI', 'HorizontalUncontainedCarouselView');
+
+function transformUncontainedProps(
+  props: HorizontalUncontainedCarouselProps
+): HorizontalUncontainedCarouselProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
+/**
+ * A carousel where each item has a fixed width with free-form scrolling,
+ * matching Compose's `HorizontalUncontainedCarousel`.
+ */
+export function HorizontalUncontainedCarousel(props: HorizontalUncontainedCarouselProps) {
+  return <HorizontalUncontainedCarouselNativeView {...transformUncontainedProps(props)} />;
+}

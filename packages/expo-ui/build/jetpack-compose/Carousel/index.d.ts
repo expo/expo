@@ -103,4 +103,42 @@ export type HorizontalMultiBrowseCarouselProps = {
  * matching Compose's `HorizontalMultiBrowseCarousel`.
  */
 export declare function HorizontalMultiBrowseCarousel(props: HorizontalMultiBrowseCarouselProps): import("react").JSX.Element;
+export type HorizontalUncontainedCarouselProps = {
+    /**
+     * The width of each item in dp.
+     */
+    itemWidth: number;
+    /**
+     * Spacing between items in dp.
+     * @default 0
+     */
+    itemSpacing?: number;
+    /**
+     * Padding for carousel content (dp or object).
+     */
+    contentPadding?: number | PaddingValuesRecord;
+    /**
+     * Fling behavior type.
+     * @default 'noSnap'
+     */
+    flingBehavior?: FlingBehaviorType;
+    /**
+     * Whether the user can scroll the carousel.
+     * @default true
+     */
+    userScrollEnabled?: boolean;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ModifierConfig[];
+    /**
+     * Children to render as carousel items.
+     */
+    children: React.ReactNode;
+};
+/**
+ * A carousel where each item has a fixed width with free-form scrolling,
+ * matching Compose's `HorizontalUncontainedCarousel`.
+ */
+export declare function HorizontalUncontainedCarousel(props: HorizontalUncontainedCarouselProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -6,6 +6,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.material3.carousel.HorizontalCenteredHeroCarousel
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
+import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
@@ -118,6 +119,39 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
     userScrollEnabled = props.userScrollEnabled,
     minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize,
     maxSmallItemWidth = props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize,
+    contentPadding = contentPadding
+  ) { itemIndex ->
+    Child(ComposableScope(), itemIndex)
+  }
+}
+
+data class HorizontalUncontainedCarouselProps(
+  val itemWidth: Float = 0f,
+  val itemSpacing: Float = 0f,
+  val contentPadding: Either<Float, PaddingValuesRecord>? = null,
+  // uncontained carousel default to no snap fling behavior
+  val flingBehavior: FlingBehaviorType = FlingBehaviorType.NO_SNAP,
+  val userScrollEnabled: Boolean = true,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: HorizontalUncontainedCarouselProps) {
+  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val carouselState = rememberCarouselState(0) { view.size }
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior) {
+    FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
+    FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
+  }
+
+  HorizontalUncontainedCarousel(
+    state = carouselState,
+    itemWidth = props.itemWidth.dp,
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
+    itemSpacing = props.itemSpacing.dp,
+    flingBehavior = flingBehavior,
+    userScrollEnabled = props.userScrollEnabled,
     contentPadding = contentPadding
   ) { itemIndex ->
     Child(ComposableScope(), itemIndex)

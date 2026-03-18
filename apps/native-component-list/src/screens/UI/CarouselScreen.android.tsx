@@ -1,6 +1,7 @@
 import {
   HorizontalCenteredHeroCarousel,
   HorizontalMultiBrowseCarousel,
+  HorizontalUncontainedCarousel,
   Box,
   Host,
   Card,
@@ -66,6 +67,34 @@ export default function CarouselScreen() {
                 <ComposeText color="#FFFFFF">5</ComposeText>
               </Box>
             </HorizontalMultiBrowseCarousel>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText style={{ typography: 'titleMedium' }}>Uncontained</ComposeText>
+            <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
+              Fixed-width items that flow past the edge with free scrolling.
+            </ComposeText>
+            <HorizontalUncontainedCarousel
+              itemWidth={150}
+              itemSpacing={8}
+              modifiers={[fillMaxWidth()]}>
+              <Box modifiers={[size(150, 150), background('#FF6F00')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">1</ComposeText>
+              </Box>
+              <Box modifiers={[size(150, 150), background('#FF8F00')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">2</ComposeText>
+              </Box>
+              <Box modifiers={[size(150, 150), background('#FFA000')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">3</ComposeText>
+              </Box>
+              <Box modifiers={[size(150, 150), background('#FFB300')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">4</ComposeText>
+              </Box>
+              <Box modifiers={[size(150, 150), background('#FFC107')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">5</ComposeText>
+              </Box>
+            </HorizontalUncontainedCarousel>
           </Column>
         </Card>
       </LazyColumn>

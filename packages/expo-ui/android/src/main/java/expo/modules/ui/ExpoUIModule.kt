@@ -319,6 +319,10 @@ class ExpoUIModule : Module() {
       HorizontalMultiBrowseCarouselContent(props)
     }
 
+    ExpoUIView("HorizontalUncontainedCarouselView") { props: HorizontalUncontainedCarouselProps ->
+      HorizontalUncontainedCarouselContent(props)
+    }
+
     ExpoUIView("AlertDialogView", events = {
       Events(
         "onDismissPressed",
