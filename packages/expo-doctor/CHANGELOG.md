@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Include `web` platform in duplicate packages check ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
+
 ## 1.18.12 — 2026-03-11
 
 _This version does not introduce any user-facing changes._
