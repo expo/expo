@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Update `pickFileAsync` on iOS and Android, so that it has the options from `expo-document-picker`, deprecate old version. Deprecate `modificationTime` in favor of new `lastModified`, compatible with web `File` interface. Add example section for using `pickFileAsync` in `native-component-list`. ([#43411](https://github.com/expo/expo/pull/43411) by [@HubertBer](https://github.com/HubertBer))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

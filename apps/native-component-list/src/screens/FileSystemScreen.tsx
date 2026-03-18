@@ -707,12 +707,11 @@ function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => vo
             mimeTypes: mimeTypes(),
           })
         : await File.pickFileAsync({ multipleFiles: false, mimeTypes: mimeTypes() });
-
       if (!canceled) {
         if (!multipleFiles) {
           setCurrentFile(result as File);
         }
-        setPickerResult(result);
+        setPickerResult(result as File | File[]);
       } else {
         setTimeout(() => {
           if (Platform.OS === 'web') {
