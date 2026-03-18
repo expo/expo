@@ -4937,6 +4937,9 @@ importers:
       ignore:
         specifier: ^5.3.1
         version: 5.3.2
+      nullthrows:
+        specifier: ^1.1.1
+        version: 1.1.1
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -4992,6 +4995,9 @@ importers:
       picomatch:
         specifier: ^4.0.2
         version: 4.0.3
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@5.9.3)
       xstate:
         specifier: ^4.37.2
         version: 4.38.3

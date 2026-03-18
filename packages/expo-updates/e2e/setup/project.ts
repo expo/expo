@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env pnpm --silent ts-node --transpile-only
 
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
@@ -172,9 +172,8 @@ async function spawnNpmPackAsync({
   outputDir: string;
 }): Promise<string> {
   const { stdout } = await spawnAsync(
-    'npm',
-    // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
-    ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', outputDir],
+    'pnpm',
+    ['pack', '--json', '--pack-destination', outputDir],
     { cwd, stdio: 'pipe' }
   );
 
@@ -711,7 +710,7 @@ async function configureUpdatesSigningAsync(projectRoot: string) {
   console.time('generate and configure code signing');
   // generate and configure code signing
   await spawnAsync(
-    'yarn',
+    'pnpm',
     [
       'expo-updates',
       'codesigning:generate',
@@ -728,7 +727,7 @@ async function configureUpdatesSigningAsync(projectRoot: string) {
   );
 
   await spawnAsync(
-    'yarn',
+    'pnpm',
     [
       'expo-updates',
       'codesigning:configure',
@@ -795,7 +794,7 @@ export async function initAsync(
 
   // initialize project (do not do NPM install, we do that later)
   await spawnAsync(
-    'yarn',
+    'pnpm',
     [
       'create',
       'expo-app',
@@ -835,7 +834,7 @@ export async function initAsync(
   await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
   // Install node modules with local tarballs
-  await spawnAsync('yarn', [], {
+  await spawnAsync('pnpm', [], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
@@ -874,7 +873,7 @@ export async function initAsync(
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
-  await spawnAsync('yarn', [], {
+  await spawnAsync('pnpm', [], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
