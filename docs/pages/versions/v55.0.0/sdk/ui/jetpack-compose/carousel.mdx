@@ -57,11 +57,9 @@ export default function MultiBrowseExample() {
   const colors = ['#6200EE', '#03DAC5', '#FF5722', '#4CAF50', '#2196F3'];
 
   return (
-    <Host style={{ height: 200 }}>
+    <Host matchContents>
       <HorizontalMultiBrowseCarousel
-        preferredItemWidth={280}
-        minSmallItemWidth={40}
-        maxSmallItemWidth={80}
+        preferredItemWidth={200}
         itemSpacing={8}
         flingBehavior="singleAdvance">
         {colors.map((color, index) => (
@@ -90,7 +88,7 @@ export default function UncontainedExample() {
   const items = ['Photo 1', 'Photo 2', 'Photo 3', 'Photo 4', 'Photo 5'];
 
   return (
-    <Host style={{ height: 200 }}>
+    <Host matchContents>
       <HorizontalUncontainedCarousel
         itemWidth={160}
         itemSpacing={12}

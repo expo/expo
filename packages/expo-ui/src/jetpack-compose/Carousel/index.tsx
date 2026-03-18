@@ -3,6 +3,9 @@ import { requireNativeView } from 'expo';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
+/**
+ * Per-side padding values in dp for carousel content.
+ */
 export type PaddingValuesRecord = {
   start?: number;
   top?: number;
@@ -10,6 +13,9 @@ export type PaddingValuesRecord = {
   bottom?: number;
 };
 
+/**
+ * Fling behavior type for controlling carousel snapping.
+ */
 export type FlingBehaviorType = 'singleAdvance' | 'noSnap';
 
 /**
@@ -26,7 +32,8 @@ export type CarouselCommonConfig = {
    */
   contentPadding?: number | PaddingValuesRecord;
   /**
-   * Fling behavior type.
+   * Controls snapping behavior when the user flings the carousel.
+   * `'singleAdvance'` snaps to the next item, `'noSnap'` allows free scrolling.
    */
   flingBehavior?: FlingBehaviorType;
   /**

@@ -74,6 +74,9 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
     FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
   }
 
+  val minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize
+  val maxSmallItemWidth = (props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize).coerceAtLeast(minSmallItemWidth)
+
   HorizontalCenteredHeroCarousel(
     state = carouselState,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
@@ -81,8 +84,8 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
     itemSpacing = (props.itemSpacing ?: 0f).dp,
     flingBehavior = flingBehavior,
     userScrollEnabled = props.userScrollEnabled ?: true,
-    minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize,
-    maxSmallItemWidth = props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize,
+    minSmallItemWidth = minSmallItemWidth,
+    maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
     Child(ComposableScope(), itemIndex)
@@ -90,7 +93,7 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
 }
 
 data class HorizontalMultiBrowseCarouselProps(
-  val preferredItemWidth: Float = 0f,
+  val preferredItemWidth: Float = 200f,
   val itemSpacing: Float? = null,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val minSmallItemWidth: Float? = null,
@@ -110,6 +113,9 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
     FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
   }
 
+  val minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize
+  val maxSmallItemWidth = (props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize).coerceAtLeast(minSmallItemWidth)
+
   HorizontalMultiBrowseCarousel(
     state = carouselState,
     preferredItemWidth = props.preferredItemWidth.dp,
@@ -117,8 +123,8 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
     itemSpacing = (props.itemSpacing ?: 0f).dp,
     flingBehavior = flingBehavior,
     userScrollEnabled = props.userScrollEnabled ?: true,
-    minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize,
-    maxSmallItemWidth = props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize,
+    minSmallItemWidth = minSmallItemWidth,
+    maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
     Child(ComposableScope(), itemIndex)
@@ -126,7 +132,7 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
 }
 
 data class HorizontalUncontainedCarouselProps(
-  val itemWidth: Float = 0f,
+  val itemWidth: Float = 200f,
   val itemSpacing: Float? = null,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val flingBehavior: FlingBehaviorType? = null,

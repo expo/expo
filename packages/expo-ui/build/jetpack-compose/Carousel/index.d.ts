@@ -1,10 +1,16 @@
 import { type ModifierConfig } from '../../types';
+/**
+ * Per-side padding values in dp for carousel content.
+ */
 export type PaddingValuesRecord = {
     start?: number;
     top?: number;
     end?: number;
     bottom?: number;
 };
+/**
+ * Fling behavior type for controlling carousel snapping.
+ */
 export type FlingBehaviorType = 'singleAdvance' | 'noSnap';
 /**
  * Shared props across all carousel components.
@@ -20,7 +26,8 @@ export type CarouselCommonConfig = {
      */
     contentPadding?: number | PaddingValuesRecord;
     /**
-     * Fling behavior type.
+     * Controls snapping behavior when the user flings the carousel.
+     * `'singleAdvance'` snaps to the next item, `'noSnap'` allows free scrolling.
      */
     flingBehavior?: FlingBehaviorType;
     /**
