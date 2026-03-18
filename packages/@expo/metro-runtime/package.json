@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
+    "expo-constants": "^55.0.7",
     "expo-module-scripts": "^55.0.2",
     "react-dom": "19.2.3"
   }
