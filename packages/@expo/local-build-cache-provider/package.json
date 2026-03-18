@@ -40,11 +40,11 @@
     "build"
   ],
   "dependencies": {
-    "@expo/config": "~55.0.8",
+    "@expo/config": "workspace:~55.0.8",
     "chalk": "^4.1.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   }
 }

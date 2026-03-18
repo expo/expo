@@ -37,9 +37,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }

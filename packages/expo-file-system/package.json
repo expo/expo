@@ -49,11 +49,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2",
-    "jest-expo": "~55.0.9"
+    "expo-module-scripts": "workspace:*",
+    "jest-expo": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react-native": "*"
   }
 }

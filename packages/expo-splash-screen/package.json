@@ -34,13 +34,13 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/splash-screen/",
   "dependencies": {
-    "@expo/prebuild-config": "^55.0.7"
+    "@expo/prebuild-config": "workspace:^55.0.7"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }

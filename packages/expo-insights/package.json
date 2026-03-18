@@ -32,12 +32,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-eas-client": "~55.0.2"
+    "expo-eas-client": "workspace:~55.0.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "workspace:*"
   }
 }
