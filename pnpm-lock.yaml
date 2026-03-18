@@ -221,6 +221,18 @@ importers:
         specifier: ^29.3.1
         version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@5.9.3))
 
+  apps/brownfield-tester:
+    dependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../../packages/expo
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-native:
+        specifier: 0.85.0-rc.5
+        version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+
   apps/eas-expo-go:
     dependencies:
       '@expo/config':
