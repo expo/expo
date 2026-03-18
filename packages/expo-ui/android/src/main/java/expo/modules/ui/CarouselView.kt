@@ -55,12 +55,12 @@ fun paddingValuesFromEither(either: Either<Float, PaddingValuesRecord>?): Paddin
 
 data class HorizontalCenteredHeroCarouselProps(
   val maxItemWidth: Float? = null,
-  val itemSpacing: Float = 0f,
+  val itemSpacing: Float? = null,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val minSmallItemWidth: Float? = null,
   val maxSmallItemWidth: Float? = null,
-  val flingBehavior: FlingBehaviorType = FlingBehaviorType.SINGLE_ADVANCE,
-  val userScrollEnabled: Boolean = true,
+  val flingBehavior: FlingBehaviorType? = null,
+  val userScrollEnabled: Boolean? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -69,7 +69,7 @@ data class HorizontalCenteredHeroCarouselProps(
 fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: HorizontalCenteredHeroCarouselProps) {
   val contentPadding = paddingValuesFromEither(props.contentPadding)
   val carouselState = rememberCarouselState(0) { view.size }
-  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior) {
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.SINGLE_ADVANCE) {
     FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
     FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
   }
@@ -78,9 +78,9 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
     state = carouselState,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     maxItemWidth = props.maxItemWidth?.dp ?: Dp.Unspecified,
-    itemSpacing = props.itemSpacing.dp,
+    itemSpacing = (props.itemSpacing ?: 0f).dp,
     flingBehavior = flingBehavior,
-    userScrollEnabled = props.userScrollEnabled,
+    userScrollEnabled = props.userScrollEnabled ?: true,
     minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize,
     maxSmallItemWidth = props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize,
     contentPadding = contentPadding
@@ -91,12 +91,12 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
 
 data class HorizontalMultiBrowseCarouselProps(
   val preferredItemWidth: Float = 0f,
-  val itemSpacing: Float = 0f,
+  val itemSpacing: Float? = null,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val minSmallItemWidth: Float? = null,
   val maxSmallItemWidth: Float? = null,
-  val flingBehavior: FlingBehaviorType = FlingBehaviorType.SINGLE_ADVANCE,
-  val userScrollEnabled: Boolean = true,
+  val flingBehavior: FlingBehaviorType? = null,
+  val userScrollEnabled: Boolean? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -105,7 +105,7 @@ data class HorizontalMultiBrowseCarouselProps(
 fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: HorizontalMultiBrowseCarouselProps) {
   val contentPadding = paddingValuesFromEither(props.contentPadding)
   val carouselState = rememberCarouselState(0) { view.size }
-  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior) {
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.SINGLE_ADVANCE) {
     FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
     FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
   }
@@ -114,9 +114,9 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
     state = carouselState,
     preferredItemWidth = props.preferredItemWidth.dp,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
-    itemSpacing = props.itemSpacing.dp,
+    itemSpacing = (props.itemSpacing ?: 0f).dp,
     flingBehavior = flingBehavior,
-    userScrollEnabled = props.userScrollEnabled,
+    userScrollEnabled = props.userScrollEnabled ?: true,
     minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize,
     maxSmallItemWidth = props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize,
     contentPadding = contentPadding
@@ -127,11 +127,10 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
 
 data class HorizontalUncontainedCarouselProps(
   val itemWidth: Float = 0f,
-  val itemSpacing: Float = 0f,
+  val itemSpacing: Float? = null,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
-  // uncontained carousel default to no snap fling behavior
-  val flingBehavior: FlingBehaviorType = FlingBehaviorType.NO_SNAP,
-  val userScrollEnabled: Boolean = true,
+  val flingBehavior: FlingBehaviorType? = null,
+  val userScrollEnabled: Boolean? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -140,7 +139,8 @@ data class HorizontalUncontainedCarouselProps(
 fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: HorizontalUncontainedCarouselProps) {
   val contentPadding = paddingValuesFromEither(props.contentPadding)
   val carouselState = rememberCarouselState(0) { view.size }
-  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior) {
+  // Uncontained defaults to noSnap, unlike the other two which default to singleAdvance
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.NO_SNAP) {
     FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
     FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
   }
@@ -149,9 +149,9 @@ fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: Horizo
     state = carouselState,
     itemWidth = props.itemWidth.dp,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
-    itemSpacing = props.itemSpacing.dp,
+    itemSpacing = (props.itemSpacing ?: 0f).dp,
     flingBehavior = flingBehavior,
-    userScrollEnabled = props.userScrollEnabled,
+    userScrollEnabled = props.userScrollEnabled ?: true,
     contentPadding = contentPadding
   ) { itemIndex ->
     Child(ComposableScope(), itemIndex)
