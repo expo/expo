@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 
+import { searchIcon, closeIcon, micIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
 import { ToggleRow } from '../components/ToggleRow';
 
 export default function ToolbarScreen() {
@@ -267,11 +268,7 @@ export default function ToolbarScreen() {
         {/* Search button */}
         <Stack.Toolbar.Button
           hidden={!showSearchButton}
-          icon={
-            process.env.EXPO_OS === 'ios'
-              ? 'magnifyingglass'
-              : require('../../../assets/android-icons/search.xml')
-          }
+          icon={process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : searchIcon}
           tintColor={Platform.select({
             ios: Color.ios.systemBlue,
             android: Color.android.dynamic.onSurface,
@@ -281,10 +278,7 @@ export default function ToolbarScreen() {
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
 
-        <Stack.Toolbar.Button
-          image={image}
-          icon={require('../../../assets/android-icons/close.xml')}
-        />
+        <Stack.Toolbar.Button image={image} icon={closeIcon} />
 
         {/* Fixed width spacer */}
         <Stack.Toolbar.Spacer
@@ -311,9 +305,7 @@ export default function ToolbarScreen() {
         {/* Conditional buttons based on search focus */}
         <Stack.Toolbar.Button
           hidden={!showMicButton}
-          icon={
-            process.env.EXPO_OS === 'ios' ? 'mic' : require('../../../assets/android-icons/mic.xml')
-          }
+          icon={process.env.EXPO_OS === 'ios' ? 'mic' : micIcon}
           tintColor={Color.ios.systemGreen}
           onPress={handleMic}
         />
@@ -414,29 +406,17 @@ function ActionsMenu({
   return (
     <Stack.Toolbar.Menu
       hidden={hidden}
-      icon={
-        process.env.EXPO_OS === 'ios'
-          ? 'ellipsis.circle'
-          : require('../../../assets/android-icons/more_vert.xml')
-      }
+      icon={process.env.EXPO_OS === 'ios' ? 'ellipsis.circle' : moreVertIcon}
       title="Actions"
       tintColor={Color.ios.systemBrown}>
       {/* Simple actions */}
       <Stack.Toolbar.MenuAction
-        icon={
-          process.env.EXPO_OS === 'ios'
-            ? 'paperplane'
-            : require('../../../assets/android-icons/send.xml')
-        }
+        icon={process.env.EXPO_OS === 'ios' ? 'paperplane' : sendIcon}
         onPress={() => Alert.alert('Send Email', 'Email sent succesiconully!')}>
         Send email
       </Stack.Toolbar.MenuAction>
       <Stack.Toolbar.MenuAction
-        icon={
-          process.env.EXPO_OS === 'ios'
-            ? 'trash'
-            : require('../../../assets/android-icons/delete.xml')
-        }
+        icon={process.env.EXPO_OS === 'ios' ? 'trash' : deleteIcon}
         destructive
         onPress={() => Alert.alert('Delete Email', 'Email deleted!')}>
         Delete email

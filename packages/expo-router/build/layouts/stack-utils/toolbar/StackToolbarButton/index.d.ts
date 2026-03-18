@@ -37,6 +37,7 @@ export type { StackToolbarButtonProps, NativeToolbarButtonProps } from './types'
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarButton: React.FC<StackToolbarButtonProps>;
