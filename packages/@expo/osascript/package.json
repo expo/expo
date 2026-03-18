@@ -29,8 +29,8 @@
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
-    "watch": "yarn run build --watch --preserveWatchOutput",
-    "prepublishOnly": "yarn run clean && yarn run build"
+    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "engines": {
     "node": ">=12"
