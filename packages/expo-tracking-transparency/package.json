@@ -31,10 +31,10 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/tracking-transparency",
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react-native": "*"
   },
   "jest": {

@@ -66,6 +66,6 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/react": "~19.2.0",
     "@types/invariant": "^2.2.33",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   }
 }

@@ -35,12 +35,12 @@
   "devDependencies": {
     "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.2"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*",
-    "expo-asset": "*"
+    "expo-asset": "workspace:*"
   }
 }
