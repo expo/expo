@@ -33,6 +33,14 @@ export declare function createInjectedScriptElements(srcs: string[]): string;
  */
 export declare function getHydrationFlagScript(): string;
 /**
+ * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
+ * with the given data, safely embedded as JSON.
+ *
+ * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
+ * @see https://v8.dev/blog/cost-of-javascript-2019#json
+ */
+export declare function createLoaderDataScript(data: Record<string, unknown>): string;
+/**
  * Extracts head tags and document attributes from a `react-helmet-async` helmet instance.
  *
  * `<head>` keys are serialized in document order: title, priority, meta, link, script, style.

@@ -1,0 +1,1 @@
+{"version":3,"file":"streams.d.ts","sourceRoot":"","sources":["../../src/utils/streams.ts"],"names":[],"mappings":"AAGA,KAAK,oBAAoB,GAAG;IAC1B,cAAc,EAAE,MAAM,EAAE,CAAC;IACzB,cAAc,CAAC,EAAE,MAAM,CAAC;IACxB,cAAc,CAAC,EAAE,MAAM,CAAC;CACzB,CAAC;AAeF;;;GAGG;AACH,wBAAgB,wCAAwC,CACtD,OAAO,EAAE,oBAAoB,GAC5B,eAAe,CAAC,UAAU,EAAE,UAAU,CAAC,CA4DzC"}

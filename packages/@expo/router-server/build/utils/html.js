@@ -10,6 +10,7 @@ exports.escapeUnsafeCharacters = escapeUnsafeCharacters;
 exports.createInjectedCssElements = createInjectedCssElements;
 exports.createInjectedScriptElements = createInjectedScriptElements;
 exports.getHydrationFlagScript = getHydrationFlagScript;
+exports.createLoaderDataScript = createLoaderDataScript;
 exports.serializeHelmetToHtml = serializeHelmetToHtml;
 // See: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/packages/next-urql/src/htmlescape.ts#L10
 // License: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/LICENSE
@@ -63,6 +64,17 @@ function createInjectedScriptElements(srcs) {
  */
 function getHydrationFlagScript() {
     return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+}
+/**
+ * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
+ * with the given data, safely embedded as JSON.
+ *
+ * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
+ * @see https://v8.dev/blog/cost-of-javascript-2019#json
+ */
+function createLoaderDataScript(data) {
+    const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+    return `<script id="expo-router-data">globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});</script>`;
 }
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'];
 /**
