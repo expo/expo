@@ -4282,6 +4282,9 @@ importers:
       '@expo/ui':
         specifier: workspace:^55.0.0
         version: link:../expo-ui
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@radix-ui/react-slot':
         specifier: ^1.2.0
         version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
@@ -4297,6 +4300,12 @@ importers:
       '@react-navigation/native-stack':
         specifier: ^7.14.5
         version: 7.14.5(@react-native-masked-view/masked-view@0.3.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(@react-navigation/native@7.1.33(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native-safe-area-context@5.6.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native-screens@4.24.0(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@testing-library/jest-dom':
+        specifier: ^6.9.1
+        version: 6.9.1
+      '@testing-library/user-event':
+        specifier: ^14.6.1
+        version: 14.6.1(@testing-library/dom@10.4.1)
       client-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -4427,6 +4436,9 @@ importers:
       react-server-dom-webpack:
         specifier: ~19.0.4
         version: 19.0.4(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
+      tsd:
+        specifier: ^0.28.1
+        version: 0.28.1
 
   packages/expo-screen-capture:
     dependencies:
