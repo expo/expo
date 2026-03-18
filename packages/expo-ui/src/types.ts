@@ -44,7 +44,8 @@ export type DialogProperties = {
    */
   usePlatformDefaultWidth?: boolean;
   /**
-   * Whether the dialog's decor fits system windows.
+   * Whether the dialog's decor fits system windows (status bar, navigation bar, etc.).
+   * When `true`, the dialog's content will be inset to avoid overlapping with system UI.
    * @default true
    */
   decorFitsSystemWindows?: boolean;

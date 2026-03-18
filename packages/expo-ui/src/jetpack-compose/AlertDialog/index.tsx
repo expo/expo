@@ -118,6 +118,8 @@ function AlertDialogIcon(props: { children: React.ReactNode }) {
 
 /**
  * Renders an `AlertDialog` component with slot-based content matching the Compose API.
+ * Content is provided via slot sub-components: `AlertDialog.Title`, `AlertDialog.Text`,
+ * `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, and `AlertDialog.Icon`.
  */
 function AlertDialogComponent(props: AlertDialogProps) {
   const { children, ...restProps } = props;

@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
@@ -47,39 +46,20 @@ fun FunctionalComposableScope.AlertDialogContent(
   AlertDialog(
     onDismissRequest = { onDismissRequest() },
     confirmButton = {
-      confirmButtonSlotView?.let {
-        with(ComposableScope()) {
-          with(it) { Content() }
-        }
-      }
+      confirmButtonSlotView?.renderSlot()
     },
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     dismissButton = dismissButtonSlotView?.let {
-      {
-        with(ComposableScope()) {
-          with(it) { Content() }
-        }
-      }
+      { it.renderSlot() }
     },
     title = titleSlotView?.let {
-      {
-        with(ComposableScope()) {
-          with(it) { Content() }
-        }
-      }
+      { it.renderSlot() }
     },
     text = textSlotView?.let {
-      {
-        with(ComposableScope()) {
-          with(it) { Content() }
-        }
-      }
+      { it.renderSlot() }
     },
     icon = iconSlotView?.let {
-      {
-        with(ComposableScope()) {
-          with(it) { Content() }
-        }
-      }
+      { it.renderSlot() }
     },
     containerColor = props.colors.containerColor.composeOrNull
       ?: AlertDialogDefaults.containerColor,

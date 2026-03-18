@@ -82,6 +82,8 @@ declare function AlertDialogIcon(props: {
 }): import("react").JSX.Element;
 /**
  * Renders an `AlertDialog` component with slot-based content matching the Compose API.
+ * Content is provided via slot sub-components: `AlertDialog.Title`, `AlertDialog.Text`,
+ * `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, and `AlertDialog.Icon`.
  */
 declare function AlertDialogComponent(props: AlertDialogProps): import("react").JSX.Element;
 declare namespace AlertDialogComponent {

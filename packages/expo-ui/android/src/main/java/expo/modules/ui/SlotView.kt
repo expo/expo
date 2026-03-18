@@ -34,6 +34,14 @@ class SlotView(context: Context, appContext: AppContext) :
   }
 }
 
+/**
+ * Renders the slot content within a new [ComposableScope].
+ */
+@Composable
+fun SlotView.renderSlot() {
+  with(ComposableScope()) { with(this@renderSlot) { Content() } }
+}
+
 fun isSlotWithName(view: ExpoComposeView<*>, slotName: String): Boolean {
   return view is SlotView && view.props.slotName.value == slotName
 }
