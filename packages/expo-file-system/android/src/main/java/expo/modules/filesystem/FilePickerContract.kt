@@ -37,46 +37,37 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
       }
     }
 
-  override fun parseResult(input: FilePickerContractOptions, resultCode: Int, intent: Intent?): FilePickerContractResult =
+  override fun parseResult(input: FilePickerContractOptions, resultCode: Int, intent: Intent?): FilePickerContractResult {
     if (resultCode == Activity.RESULT_CANCELED || intent == null) {
-      FilePickerContractResult.Cancelled
-    } else {
-      val uris = mutableListOf<Uri>()
-      val takeFlags = (intent.flags.and((Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)))
-      if (intent.clipData != null) {
-        val count = intent.clipData!!.itemCount
-        for (i in 0 until count) {
-          intent.clipData!!.getItemAt(i).uri?.let { uris.add(it) }
-        }
+      return FilePickerContractResult.Cancelled
+    }
 
-        for (uri in uris) {
-          contentResolver.takePersistableUriPermission(uri, takeFlags)
-        }
+    val takeFlags = (intent.flags.and((Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)))
+    if (intent.clipData == null) {
+      val uri = intent.data?.also {
+        contentResolver.takePersistableUriPermission(it, takeFlags)
+      }
+      val pickedPath = when (input.pickerType) {
+        PickerType.DIRECTORY -> FileSystemDirectory(uri ?: Uri.EMPTY)
+        PickerType.FILE -> FileSystemFile(uri ?: Uri.EMPTY)
+      }
+      return FilePickerContractResult.Success(listOf(pickedPath))
+    }
 
-        when (input.pickerType) {
-          PickerType.DIRECTORY -> FilePickerContractResult.Success(uris.map { uri -> FileSystemDirectory(uri) })
-          PickerType.FILE -> FilePickerContractResult.Success(uris.map { uri -> FileSystemFile(uri) })
-        }
-      } else {
-        val uri = intent.data?.also {
-          contentResolver.takePersistableUriPermission(it, takeFlags)
-        }
-        when (input.pickerType) {
-          PickerType.DIRECTORY -> FilePickerContractResult.Success(
-            listOf(
-              FileSystemDirectory(
-                uri
-                  ?: Uri.EMPTY
-              )
-            )
-          )
-
-          PickerType.FILE -> {
-            FilePickerContractResult.Success(listOf(FileSystemFile(uri ?: Uri.EMPTY)))
-          }
-        }
+    val pickedPaths = mutableListOf<FileSystemPath>()
+    val count = intent.clipData!!.itemCount
+    for (i in 0 until count) {
+      intent.clipData!!.getItemAt(i).uri?.let {
+        contentResolver.takePersistableUriPermission(it, takeFlags)
+        pickedPaths.add(when (input.pickerType) {
+          PickerType.FILE -> FileSystemFile(it)
+          PickerType.DIRECTORY -> FileSystemDirectory(it)
+        })
       }
     }
+
+    return FilePickerContractResult.Success(pickedPaths)
+  }
 }
 
 internal data class FilePickerContractOptions(val initialUri: Uri?, val mimeTypes: List<String>, val multipleFiles: Boolean, val pickerType: PickerType = PickerType.FILE) : Serializable

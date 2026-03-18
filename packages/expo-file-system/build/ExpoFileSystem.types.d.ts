@@ -343,6 +343,7 @@ export declare class File extends Blob {
      *
      * Selecting multiple files is not supported yet.
      *
+     * @deprecated
      * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
      * @returns A `File` instance or an array of `File` instances.

@@ -69,31 +69,14 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
 }
 
 internal func createFilePicker(initialUri: URL?, mimeTypes: [String]) -> UIDocumentPickerViewController {
-  if #available(iOS 14.0, *) {
-    var utTypes: [UTType] = mimeTypes.map { mimeType in
-      UTType(mimeType: mimeType) ?? UTType.item
-    }
-    if utTypes.isEmpty {
-      utTypes = [UTType.item]
-    }
-
-    let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: true)
-
-    if let initialUri = initialUri {
-      picker.directoryURL = initialUri
-    }
-
-    return picker
+  var utTypes: [UTType] = mimeTypes.map { mimeType in
+    UTType(mimeType: mimeType) ?? UTType.item
+  }
+  if utTypes.isEmpty {
+    utTypes = [UTType.item]
   }
 
-  let utiTypes: [String]
-  if !mimeTypes.isEmpty {
-    utiTypes = mimeTypes
-  } else {
-    utiTypes = [kUTTypeItem as String]
-  }
-
-  let picker = UIDocumentPickerViewController(documentTypes: utiTypes, in: .import)
+  let picker = UIDocumentPickerViewController(forOpeningContentTypes: utTypes, asCopy: true)
 
   if let initialUri = initialUri {
     picker.directoryURL = initialUri
