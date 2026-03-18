@@ -22,14 +22,14 @@ function convertIconColorPropToObject(iconColor) {
 }
 function useAwaitedScreensIcon(icon) {
     const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+    const renderingMode = icon && typeof icon === 'object' && 'renderingMode' in icon ? icon.renderingMode : undefined;
     const [awaitedIcon, setAwaitedIcon] = (0, react_1.useState)(undefined);
     (0, react_1.useEffect)(() => {
         const loadIcon = async () => {
             if (src && src instanceof Promise) {
                 const awaitedSrc = await src;
                 if (awaitedSrc) {
-                    const currentAwaitedIcon = { src: awaitedSrc };
-                    setAwaitedIcon(currentAwaitedIcon);
+                    setAwaitedIcon({ src: awaitedSrc });
                 }
             }
         };
@@ -39,7 +39,13 @@ function useAwaitedScreensIcon(icon) {
         // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
         // So we should be safe with promise resolving
     }, [src]);
-    return (0, react_1.useMemo)(() => (isAwaitedIcon(icon) ? icon : awaitedIcon), [awaitedIcon, icon]);
+    return (0, react_1.useMemo)(() => {
+        const resolved = isAwaitedIcon(icon) ? icon : awaitedIcon;
+        if (resolved && renderingMode && 'src' in resolved) {
+            return { ...resolved, renderingMode };
+        }
+        return resolved;
+    }, [awaitedIcon, icon, renderingMode]);
 }
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
@@ -85,17 +91,22 @@ function convertOptionsIconToAndroidPropsIcon(icon) {
     }
     return undefined;
 }
-function convertComponentSrcToImageSource(src) {
+function convertComponentSrcToImageSource(src, renderingMode) {
+    let result;
     if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerVectorIcon)) {
         const props = src.props;
-        return { src: props.family.getImageSource(props.name, 24, 'white') };
+        result = { src: props.family.getImageSource(props.name, 24, 'white') };
     }
     else if ((0, children_1.isChildOfType)(src, elements_1.NativeTabsTriggerPromiseIcon)) {
-        return { src: src.props.loader() };
+        result = { src: src.props.loader() };
     }
     else {
         console.warn('Only VectorIcon is supported as a React element in Icon.src');
+        return undefined;
     }
-    return undefined;
+    if (renderingMode) {
+        result = { ...result, renderingMode };
+    }
+    return result;
 }
 //# sourceMappingURL=icon.js.map

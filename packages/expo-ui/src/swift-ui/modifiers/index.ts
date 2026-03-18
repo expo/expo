@@ -15,6 +15,7 @@ import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
+import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
@@ -1056,15 +1057,6 @@ export const resizable = (
   resizingMode?: 'stretch' | 'tile'
 ) => createModifier('resizable', { ...capInsets, resizingMode });
 
-/**
- * Specifies the how to render an Image when using the WidgetKit/WidgetRenderingMode/accented mode.
- * @param renderingMode - A constant describing how the Image should be rendered.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/widgetaccentedrenderingmode(_:)).
- */
-export const widgetAccentedRenderingMode = (
-  renderingMode: 'fullColor' | 'accented' | 'desaturated' | 'accentedDesaturated'
-) => createModifier('widgetAccentedRenderingMode', { renderingMode });
-
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -1169,7 +1161,8 @@ export type BuiltInModifier =
   | ReturnType<typeof listStyle>
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
-  | ReturnType<typeof widgetAccentedRenderingMode>;
+  | ReturnType<typeof widgetAccentedRenderingMode>
+  | ReturnType<typeof widgetURL>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1214,6 +1207,7 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export * from './widgets';
 export type {
   TimingAnimationParams,
   SpringAnimationParams,

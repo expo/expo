@@ -19,6 +19,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Card component',
+    route: 'ui/card',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CardScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},
@@ -27,11 +35,35 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Picker component',
-    route: 'ui/picker',
+    name: 'Checkbox component',
+    route: 'ui/checkbox',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./PickerScreen'));
+      return optionalRequire(() => require('./CheckboxScreen'));
+    },
+  },
+  {
+    name: 'IconButton component',
+    route: 'ui/icon-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./IconButtonScreen'));
+    },
+  },
+  {
+    name: 'Radio Button component',
+    route: 'ui/radio-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RadioButtonScreen'));
+    },
+  },
+  {
+    name: 'Segmented Control component',
+    route: 'ui/segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SegmentedControlScreen'));
     },
   },
   {
@@ -40,6 +72,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./DateTimePickerScreen'));
+    },
+  },
+  {
+    name: 'Community DateTimePicker replacement',
+    route: 'ui/community-datetimepicker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityDateTimePickerScreen'));
     },
   },
   {
@@ -152,6 +192,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'ToggleButton component',
+    route: 'ui/toggle-button',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleButtonScreen'));
     },
   },
   {

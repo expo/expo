@@ -99,6 +99,28 @@ export default function TextScreen() {
           <Text modifiers={[font({ size: 24, weight: 'regular' })]}>24pt Font Size</Text>
         </Section>
 
+        <Section title="Date (style: date)">
+          <Text date={new Date(Date.now() + 3600000)} dateStyle="date" />
+        </Section>
+        <Section title="Date (style: timer)">
+          <Text date={new Date(Date.now() + 300000)} dateStyle="timer" />
+        </Section>
+        <Section title="Date (style: relative)">
+          <Text date={new Date(Date.now() + 300000)} dateStyle="relative" />
+        </Section>
+        <Section title="Timer Interval (countdown)">
+          <Text
+            timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}
+            countsDown
+          />
+        </Section>
+        <Section title="Timer Interval (count up)">
+          <Text
+            timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}
+            countsDown={false}
+          />
+        </Section>
+
         <Section title="Markdown Text">
           <Text markdownEnabled>Regular text.</Text>
           <Text markdownEnabled>

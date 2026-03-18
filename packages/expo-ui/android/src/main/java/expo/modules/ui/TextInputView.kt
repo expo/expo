@@ -3,6 +3,7 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 data class TextInputProps(
   val defaultValue: MutableState<String> = mutableStateOf(""),
   val placeholder: MutableState<String> = mutableStateOf(""),
+  val variant: MutableState<String> = mutableStateOf("filled"),
   val multiline: MutableState<Boolean> = mutableStateOf(false),
   val numberOfLines: MutableState<Int?> = mutableStateOf(null),
   val keyboardType: MutableState<String> = mutableStateOf("default"),
@@ -70,21 +72,41 @@ class TextInputView(context: Context, appContext: AppContext) :
 
   @Composable
   override fun ComposableScope.Content() {
-    TextField(
-      value = textState.value ?: props.defaultValue.value,
-      onValueChange = {
-        textState.value = it
-        onValueChanged(mapOf("value" to it))
-      },
-      placeholder = { Text(props.placeholder.value) },
-      maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
-      singleLine = !props.multiline.value,
-      keyboardOptions = KeyboardOptions.Default.copy(
-        keyboardType = props.keyboardType.value.keyboardType(),
-        autoCorrectEnabled = props.autocorrection.value,
-        capitalization = props.autoCapitalize.value.autoCapitalize()
-      ),
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
+    val value = textState.value ?: props.defaultValue.value
+    val onValueChange: (String) -> Unit = {
+      textState.value = it
+      onValueChanged(mapOf("value" to it))
+    }
+    val placeholder: @Composable () -> Unit = { Text(props.placeholder.value) }
+    val maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1
+    val singleLine = !props.multiline.value
+    val keyboardOptions = KeyboardOptions.Default.copy(
+      keyboardType = props.keyboardType.value.keyboardType(),
+      autoCorrectEnabled = props.autocorrection.value,
+      capitalization = props.autoCapitalize.value.autoCapitalize()
     )
+    val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
+
+    if (props.variant.value == "outlined") {
+      OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        maxLines = maxLines,
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        modifier = modifier
+      )
+    } else {
+      TextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        maxLines = maxLines,
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        modifier = modifier
+      )
+    }
   }
 }
