@@ -5,6 +5,7 @@ import ExpoModulesCore
 @testable import EXUpdates
 
 @Suite("UpdatesLogReader", .serialized)
+@MainActor
 struct UpdatesLogReaderTests {
   init() async {
     await clearLogAsync()

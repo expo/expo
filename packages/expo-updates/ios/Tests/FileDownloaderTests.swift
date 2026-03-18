@@ -108,8 +108,8 @@ class FileDownloaderTests {
 
   init() throws {
     let applicationSupportDir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).last
-    testDatabaseDir = applicationSupportDir!.appendingPathComponent("UpdatesDatabaseTests")
-    testUpdatesDir = applicationSupportDir!.appendingPathComponent("UpdatesDirectoryTests")
+    testDatabaseDir = applicationSupportDir!.appendingPathComponent("FileDownloaderTests")
+    testUpdatesDir = applicationSupportDir!.appendingPathComponent("FileDownloaderTests")
 
     try? FileManager.default.removeItem(atPath: testDatabaseDir.path)
     try? FileManager.default.removeItem(atPath: testUpdatesDir.path)
