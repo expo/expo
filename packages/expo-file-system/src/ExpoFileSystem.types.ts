@@ -858,7 +858,10 @@ export declare class UploadTask {
   /**
    * Adds a listener for upload progress events.
    */
-  addListener(eventName: 'progress', listener: (data: UploadProgress) => void): { remove: () => void };
+  addListener(
+    eventName: 'progress',
+    listener: (data: UploadProgress) => void
+  ): { remove: () => void };
 }
 
 /**

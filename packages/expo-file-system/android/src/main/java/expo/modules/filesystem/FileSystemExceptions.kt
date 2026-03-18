@@ -73,7 +73,7 @@ internal class UnableToUploadException(reason: String) :
   )
 
 internal class UploadCancelledException :
-  CodedException( "Upload was cancelled")
+  CodedException("Upload was cancelled")
 
 internal class InvalidResumeDataException :
   CodedException(
@@ -84,4 +84,3 @@ internal class DownloadCancelledException :
   CodedException(
     "Download was cancelled"
   )
-

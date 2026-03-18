@@ -36,6 +36,7 @@ class FileSystemDownloadTask : SharedObject() {
   }
 
   private var call: Call? = null
+
   @Volatile private var isPausing = false
   private var destinationFile: File? = null
   private var lastProgressTime: Long = 0
@@ -234,10 +235,13 @@ class FileSystemDownloadTask : SharedObject() {
 
     if (shouldEmit) {
       lastProgressTime = currentTime
-      emit("progress", mapOf(
-        "bytesWritten" to bytesWritten,
-        "totalBytes" to totalBytes
-      ))
+      emit(
+        "progress",
+        mapOf(
+          "bytesWritten" to bytesWritten,
+          "totalBytes" to totalBytes
+        )
+      )
     }
   }
 }

@@ -3,13 +3,18 @@
 import ExpoModulesCore
 import UniformTypeIdentifiers
 
+enum UploadType: Int, Enumerable {
+  case binaryContent = 0
+  case multipart = 1
+}
+
 /**
  * A record type for upload options.
  */
-struct UploadOptionsRecord: Record {
+struct UploadTaskOptions: Record {
   @Field var headers: [String: String]?
   @Field var httpMethod: String = "POST"
-  @Field var uploadType: Int = 0
+  @Field var uploadType: UploadType = .binaryContent
   @Field var fieldName: String?
   @Field var mimeType: String?
   @Field var parameters: [String: String]?
@@ -18,7 +23,7 @@ struct UploadOptionsRecord: Record {
 /**
  * A record type for upload result.
  */
-struct UploadResultRecord: Record {
+struct UploadTaskResult: Record {
   @Field var body: String
   @Field var status: Int
   @Field var headers: [String: String]
@@ -33,8 +38,10 @@ class FileSystemUploadTask: SharedObject {
   private var delegate: UploadTaskDelegate?
   private var cancelled = false
   private var tempFileURL: URL?
+  private var lastProgressTime: TimeInterval = 0
+  private let progressThrottleInterval: TimeInterval = 0.1 // 100ms
 
-  func start(url: URL, file: FileSystemFile, options: UploadOptionsRecord, promise: Promise) {
+  func start(url: URL, file: FileSystemFile, options: UploadTaskOptions, promise: Promise) {
     let sourceUrl = file.url
 
     do {
@@ -45,7 +52,7 @@ class FileSystemUploadTask: SharedObject {
       let configuration = URLSessionConfiguration.default
       configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
       configuration.urlCache = nil
-      session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: .main)
+      session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
 
       guard let session = session else {
         promise.reject(UnableToUploadException("Failed to create URLSession"))
@@ -63,7 +70,7 @@ class FileSystemUploadTask: SharedObject {
       }
 
       // Create upload task based on upload type
-      if options.uploadType == 1 { // Multipart
+      if options.uploadType == .multipart {
         let boundaryString = UUID().uuidString
         let bodyFileURL = try createMultipartBody(boundary: boundaryString, sourceUrl: sourceUrl, options: options)
 
@@ -93,6 +100,19 @@ class FileSystemUploadTask: SharedObject {
     cleanup()
   }
 
+  fileprivate func emitProgress(bytesSent: Int64, totalBytes: Int64) {
+    let currentTime = Date().timeIntervalSince1970
+    let shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval || bytesSent == totalBytes
+
+    if shouldEmit {
+      lastProgressTime = currentTime
+      emit(event: "progress", arguments: [
+        "bytesSent": bytesSent,
+        "totalBytes": totalBytes
+      ])
+    }
+  }
+
   private func cleanup() {
     delegate = nil
     uploadTask = nil
@@ -116,7 +136,7 @@ class FileSystemUploadTask: SharedObject {
     return tempDir.appendingPathComponent(filename)
   }
 
-  private func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadOptionsRecord) throws -> URL {
+  private func createMultipartBody(boundary: String, sourceUrl: URL, options: UploadTaskOptions) throws -> URL {
     let fieldName = options.fieldName ?? sourceUrl.lastPathComponent
     let mimeType = options.mimeType ?? findMimeType(forAttachment: sourceUrl)
 
@@ -182,8 +202,6 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
   private weak var sharedObject: FileSystemUploadTask?
   private let promise: Promise
   private var responseBody = Data()
-  private var lastProgressTime: TimeInterval = 0
-  private let progressThrottleInterval: TimeInterval = 0.1 // 100ms
   private var settled = false
 
   init(sharedObject: FileSystemUploadTask, promise: Promise) {
@@ -193,23 +211,12 @@ class UploadTaskDelegate: NSObject, URLSessionTaskDelegate, URLSessionDataDelega
   }
 
   // Progress tracking
-  func urlSession(
-    _ session: URLSession,
-    task: URLSessionTask,
-    didSendBodyData bytesSent: Int64,
-    totalBytesSent: Int64,
-    totalBytesExpectedToSend: Int64
-  ) {
-    let currentTime = Date().timeIntervalSince1970
-    let shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval || totalBytesSent == totalBytesExpectedToSend
-
-    if shouldEmit {
-      lastProgressTime = currentTime
-      sharedObject?.emit(event: "progress", arguments: [
-        "bytesSent": totalBytesSent,
-        "totalBytes": totalBytesExpectedToSend
-      ])
-    }
+  func urlSession(_ session: URLSession,
+                  task: URLSessionTask,
+                  didSendBodyData bytesSent: Int64,
+                  totalBytesSent: Int64,
+                  totalBytesExpectedToSend: Int64) {
+    sharedObject?.emitProgress(bytesSent: totalBytesSent, totalBytes: totalBytesExpectedToSend)
   }
 
   // Collect response body

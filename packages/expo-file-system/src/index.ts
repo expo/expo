@@ -5,6 +5,7 @@ export {
   type DirectoryCreateOptions,
   type FileHandle,
   type FileInfo,
+  type FileWriteOptions,
   type InfoOptions,
   type PathInfo,
   type DirectoryInfo,

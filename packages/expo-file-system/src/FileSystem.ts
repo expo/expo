@@ -371,6 +371,17 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
 
       const result = await super.start(this._url, this._file, nativeOpts);
       this._state = 'completed';
+
+      // Emit a synthetic final progress to guarantee 100% is reported.
+      // Native progress events may not fire for small files, and even when they do,
+      // the event can race with promise resolution (listener removed before delivery).
+      if (this._options?.onProgress && this._file.exists) {
+        const size = this._file.size ?? 0;
+        if (size > 0) {
+          this._options.onProgress({ bytesSent: size, totalBytes: size });
+        }
+      }
+
       return result;
     } catch (error) {
       this._state = this._options?.signal?.aborted ? 'cancelled' : 'error';
@@ -485,7 +496,9 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
   async resumeAsync(): Promise<File | null> {
     this._assertState(['paused'], 'resumeAsync');
     if (!this._resumeData) {
-      throw new Error('No resume data available. Was the download paused before any data was received?');
+      throw new Error(
+        'No resume data available. Was the download paused before any data was received?'
+      );
     }
     this._state = 'active';
     try {
@@ -496,12 +509,7 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
         headers: this._options?.headers,
       };
 
-      const result = await super.resume(
-        this._url,
-        this._destination,
-        this._resumeData,
-        nativeOpts
-      );
+      const result = await super.resume(this._url, this._destination, this._resumeData, nativeOpts);
       if (result) {
         this._state = 'completed';
         this._resumeData = undefined;
@@ -541,7 +549,9 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     if (!state.resumeData) {
       throw new Error('Cannot restore task: DownloadPauseState has no resumeData');
     }
-    const dest = state.fileUri.endsWith('/') ? new Directory(state.fileUri) : new File(state.fileUri);
+    const dest = state.fileUri.endsWith('/')
+      ? new Directory(state.fileUri)
+      : new File(state.fileUri);
     const mergedOptions: DownloadTaskOptions | undefined =
       options || state.headers
         ? { ...options, headers: { ...state.headers, ...options?.headers } }
@@ -592,7 +602,6 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
         this._options.onProgress({ bytesWritten: fileSize, totalBytes: fileSize });
       }
     }
-
   }
 }
 

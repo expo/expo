@@ -13,7 +13,7 @@ type DownloadTaskEvents = {
     progress: (data: DownloadProgress) => void;
 };
 declare class FileSystemUploadTask extends SharedObject<UploadTaskEvents> {
-    start(url: string, fileUri: string, options: Record<string, any>): Promise<UploadResult>;
+    start(url: string, file: File, options: Record<string, any>): Promise<UploadResult>;
     cancel(): void;
 }
 declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEvents> {

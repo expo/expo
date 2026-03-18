@@ -352,7 +352,7 @@ class FileSystemModule : Module() {
 
       Events("progress")
 
-      AsyncFunction("start") Coroutine { task: FileSystemUploadTask, url: String, file: FileSystemFile, options: UploadOptionsRecord ->
+      AsyncFunction("start") Coroutine { task: FileSystemUploadTask, url: String, file: FileSystemFile, options: UploadTaskOptions ->
         task.start(url, file, options)
       }
 

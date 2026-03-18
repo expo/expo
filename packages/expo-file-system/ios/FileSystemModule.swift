@@ -356,7 +356,7 @@ public final class FileSystemModule: Module {
 
       // Events("progress")
 
-      AsyncFunction("start") { (task: FileSystemUploadTask, url: URL, file: FileSystemFile, options: UploadOptionsRecord, promise: Promise) in
+      AsyncFunction("start") { (task: FileSystemUploadTask, url: URL, file: FileSystemFile, options: UploadOptions, promise: Promise) in
         task.start(url: url, file: file, options: options, promise: promise)
       }
 
