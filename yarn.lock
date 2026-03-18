@@ -117,7 +117,7 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.28.0.tgz#9fc6fd58c2a6a15243cd13983224968392070790"
   integrity sha512-60X7qkglvrap8mn1lh2ebxXdZYtUcpd7gsmy9kLaBJ4i/WdY8PqTSdxyA8qraikqKQK5C1KRBKXqznrVapyNaw==
 
-"@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.12.9", "@babel/core@^7.14.0", "@babel/core@^7.15.5", "@babel/core@^7.20.0", "@babel/core@^7.23.7", "@babel/core@^7.23.9", "@babel/core@^7.25.2", "@babel/core@^7.26.0":
+"@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.12.9", "@babel/core@^7.14.0", "@babel/core@^7.20.0", "@babel/core@^7.23.7", "@babel/core@^7.23.9", "@babel/core@^7.25.2", "@babel/core@^7.26.0":
   version "7.26.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.26.0.tgz#d78b6023cc8f3114ccf049eb219613f74a747b40"
   integrity sha512-i1SLeK+DzNnQ3LL/CswPCa/E5u4lh1k6IAEphON8F+cXt0t9euTshDru0q7/IqMa1PMPz5RnHuHscF8/ZJsStg==
@@ -1290,9 +1290,9 @@
     "@types/hammerjs" "^2.0.36"
 
 "@emnapi/runtime@^1.4.3":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@emnapi/runtime/-/runtime-1.4.5.tgz#c67710d0661070f38418b6474584f159de38aba9"
-  integrity sha512-++LApOtY0pEEz1zrd9vy1/zXVaVJJ/EbAF3u0fXIzPJEDtnITsBGbbK0EkM72amhl/R5b+5xx0Y/QhcVOpuulg==
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@emnapi/runtime/-/runtime-1.9.0.tgz#91c54a6e77c36154c125e873409472e2b70efd5b"
+  integrity sha512-QN75eB0IH2ywSpRpNddCRfQIhmJYBCJ1x5Lb3IscKAL8bMnVAKnRg8dCoXbHzVLLH7P38N2Z3mtulB7W0J0FKw==
   dependencies:
     tslib "^2.4.0"
 
@@ -3771,19 +3771,19 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@^7.10.1", "@react-navigation/bottom-tabs@^7.3.10", "@react-navigation/bottom-tabs@^7.7.3":
-  version "7.10.1"
-  resolved "https://registry.npmjs.org/@react-navigation/bottom-tabs/-/bottom-tabs-7.10.1.tgz#8d28e623f1f503c0e66b55837fa03a78a20ea2a8"
-  integrity sha512-MirOzKEe/rRwPSE9HMrS4niIo0LyUhewlvd01TpzQ1ipuXjH2wJbzAM9gS/r62zriB6HMHz2OY6oIRduwQJtTw==
+"@react-navigation/bottom-tabs@^7.15.5":
+  version "7.15.5"
+  resolved "https://registry.npmjs.org/@react-navigation/bottom-tabs/-/bottom-tabs-7.15.5.tgz#a858b88d0d23f0f57eac6204752adfdbb16380cc"
+  integrity sha512-wQHredlCrRmShWQ1vF4HUcLdaiJ8fUgnbaeQH7BJ7MQVQh4mdzab0IOY/4QSmUyNRB350oyu1biTycyQ5FKWMQ==
   dependencies:
-    "@react-navigation/elements" "^2.9.5"
+    "@react-navigation/elements" "^2.9.10"
     color "^4.2.3"
     sf-symbols-typescript "^2.1.0"
 
-"@react-navigation/core@^7.14.0":
-  version "7.14.0"
-  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.14.0.tgz#d24f93d424ab33f645262dc4775e4708aa3d9a8b"
-  integrity sha512-tMpzskBzVp0E7CRNdNtJIdXjk54Kwe/TF9ViXAef+YFM1kSfGv4e/B2ozfXE+YyYgmh4WavTv8fkdJz1CNyu+g==
+"@react-navigation/core@^7.16.1":
+  version "7.16.1"
+  resolved "https://registry.npmjs.org/@react-navigation/core/-/core-7.16.1.tgz#a8f6799a7b18f6d5c45616cbf792ec8f08d1aadc"
+  integrity sha512-xhquoyhKdqDfiL7LuupbwYnmauUGfVFGDEJO34m26k8zSN1eDjQ2stBZcHN8ILOI1PrG9885nf8ZmfaQxPS0ww==
   dependencies:
     "@react-navigation/routers" "^7.5.3"
     escape-string-regexp "^4.0.0"
@@ -3794,41 +3794,41 @@
     use-latest-callback "^0.2.4"
     use-sync-external-store "^1.5.0"
 
-"@react-navigation/drawer@^7.7.2":
-  version "7.7.2"
-  resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.7.2.tgz#86f0fcf7065d8754d7532bebd4800a8fa17afde2"
-  integrity sha512-393VoJLiQe1wMw6FxP+ajCgJRRI3PuEX+OA1YQG1my1BB2AbrbBld6e5uyvU5eoYykIpkQ5D1mxDmZ5MhF4yPA==
+"@react-navigation/drawer@^7.9.4":
+  version "7.9.4"
+  resolved "https://registry.npmjs.org/@react-navigation/drawer/-/drawer-7.9.4.tgz#bb26943e0430a740e9904cc22c2d0d3ebc3908bc"
+  integrity sha512-Af2dQZiiHiw/FoP+houLdYn0WYQrkVXVZwOMT+RK8juY4Sn9KLRWg/ZsT1Z5Qml8W/poI06is32PXQXZNjk3YQ==
   dependencies:
-    "@react-navigation/elements" "^2.8.1"
+    "@react-navigation/elements" "^2.9.10"
     color "^4.2.3"
-    react-native-drawer-layout "^4.2.0"
+    react-native-drawer-layout "^4.2.2"
     use-latest-callback "^0.2.4"
 
-"@react-navigation/elements@^2.8.1", "@react-navigation/elements@^2.8.3", "@react-navigation/elements@^2.9.5":
-  version "2.9.5"
-  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.9.5.tgz#29f68c4975351724dcfe1d3bdc76c4d6dc65fc33"
-  integrity sha512-iHZU8rRN1014Upz73AqNVXDvSMZDh5/ktQ1CMe21rdgnOY79RWtHHBp9qOS3VtqlUVYGkuX5GEw5mDt4tKdl0g==
+"@react-navigation/elements@^2.9.10":
+  version "2.9.10"
+  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-2.9.10.tgz#8cde92a7b4d088a46efb931e6edb2644eddd630c"
+  integrity sha512-N8tuBekzTRb0pkMHFJGvmC6Q5OisSbt6gzvw7RHMnp4NDo5auVllT12sWFaTXf8mTduaLKNSrD/NZNaOqThCBg==
   dependencies:
     color "^4.2.3"
     use-latest-callback "^0.2.4"
     use-sync-external-store "^1.5.0"
 
-"@react-navigation/native-stack@^7.10.1":
-  version "7.10.1"
-  resolved "https://registry.npmjs.org/@react-navigation/native-stack/-/native-stack-7.10.1.tgz#de6551286a5e9e2b0c466daa83e0f9bf0321815b"
-  integrity sha512-8jt7olKysn07HuKKSjT/ahZZTV+WaZa96o9RI7gAwh7ATlUDY02rIRttwvCyjovhSjD9KCiuJ+Hd4kwLidHwJw==
+"@react-navigation/native-stack@^7.14.5":
+  version "7.14.5"
+  resolved "https://registry.npmjs.org/@react-navigation/native-stack/-/native-stack-7.14.5.tgz#330819064b4f2bb6e9161adc6d966d26c43105d1"
+  integrity sha512-NuyMf21kKk3jODvYgpcDA+HwyWr/KEj72ciqquyEupZlsmQ3WNUGgdaixEB3A19+iPOvHLQzDLcoTrrqZk8Leg==
   dependencies:
-    "@react-navigation/elements" "^2.9.5"
+    "@react-navigation/elements" "^2.9.10"
     color "^4.2.3"
     sf-symbols-typescript "^2.1.0"
     warn-once "^0.1.1"
 
-"@react-navigation/native@^7.1.28", "@react-navigation/native@^7.1.6":
-  version "7.1.28"
-  resolved "https://registry.npmjs.org/@react-navigation/native/-/native-7.1.28.tgz#1ee75cf3a8b3e4365f94c5d657bb3c015e387720"
-  integrity sha512-d1QDn+KNHfHGt3UIwOZvupvdsDdiHYZBEj7+wL2yDVo3tMezamYy60H9s3EnNVE1Ae1ty0trc7F2OKqo/RmsdQ==
+"@react-navigation/native@^7.1.33":
+  version "7.1.33"
+  resolved "https://registry.npmjs.org/@react-navigation/native/-/native-7.1.33.tgz#a9910b51b42373e8977cf8d76ac960077ad4a2fc"
+  integrity sha512-DpFdWGcgLajKZ1TuIvDNQsblN2QaUFWpTQaB8v7WRP9Mix8H/6TFoIrZd93pbymI2hybd6UYrD+lI408eWVcfw==
   dependencies:
-    "@react-navigation/core" "^7.14.0"
+    "@react-navigation/core" "^7.16.1"
     escape-string-regexp "^4.0.0"
     fast-deep-equal "^3.1.3"
     nanoid "^3.3.11"
@@ -3841,12 +3841,12 @@
   dependencies:
     nanoid "^3.3.11"
 
-"@react-navigation/stack@^7.6.7":
-  version "7.6.7"
-  resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.6.7.tgz#8cd599681964ba930a15b70134bcbe38bf96424d"
-  integrity sha512-8NZWKTBYRVl8oSvhLKs26C6Dw5a3OhyfRc8ITS9A0kRSYaaX/KcZpObbAxp8kCJfTaJ7ZmghyX2NCGwnKw6V7A==
+"@react-navigation/stack@^7.8.5":
+  version "7.8.5"
+  resolved "https://registry.npmjs.org/@react-navigation/stack/-/stack-7.8.5.tgz#cc62f4647e666d364eab9241c70ccdbcd83b7a93"
+  integrity sha512-ZOD1gUhWpbI+1PD5mKZFnLBh3Vfq2bqhO5/NeEruaQwNdXkiiHpi59OUKMnFRQURjjYXf/skTM9hJa6zHdiyFw==
   dependencies:
-    "@react-navigation/elements" "^2.8.3"
+    "@react-navigation/elements" "^2.9.10"
     color "^4.2.3"
     use-latest-callback "^0.2.4"
 
@@ -4158,7 +4158,7 @@
   resolved "https://registry.yarnpkg.com/@types/aria-query/-/aria-query-5.0.4.tgz#1a31c3d378850d2778dabb6374d036dcba4ba708"
   integrity sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==
 
-"@types/babel__code-frame@^7.27.0":
+"@types/babel__code-frame@^7.0.1", "@types/babel__code-frame@^7.27.0":
   version "7.27.0"
   resolved "https://registry.yarnpkg.com/@types/babel__code-frame/-/babel__code-frame-7.27.0.tgz#4799f597ec9e7bbdd39e1374f43423742dcffa99"
   integrity sha512-Dwlo+LrxDx/0SpfmJ/BKveHf7QXWvLBLc+x03l5sbzykj3oB9nHygCpSECF1a+s+QIxbghe+KHqC90vGtxLRAA==
@@ -4720,10 +4720,10 @@
   resolved "https://registry.yarnpkg.com/@types/rtl-detect/-/rtl-detect-1.0.3.tgz#2b9849ece923d767712e95efa01ca75724de0de5"
   integrity sha512-qpstuHivwg/HoXxRrBo5/r/OVx5M2SkqJpVu2haasdLctt+jMGHWjqdbI0LL7Rk2wRmN/UHdHK4JZg9RUMcvKA==
 
-"@types/semver@^7.0.0", "@types/semver@^7.5.8":
-  version "7.7.0"
-  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.7.0.tgz#64c441bdae033b378b6eef7d0c3d77c329b9378e"
-  integrity sha512-k107IF4+Xr7UHjwDc7Cfd6PRQfbdkiRabXGRjo07b4WyPahFBZCZ1sE+BNxYIJPPg73UkfOsVOLwqVc/6ETrIA==
+"@types/semver@^7.0.0", "@types/semver@^7.5.8", "@types/semver@^7.7.0":
+  version "7.7.1"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.7.1.tgz#3ce3af1a5524ef327d2da9e4fd8b6d95c8d70528"
+  integrity sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==
 
 "@types/send@*", "@types/send@^0.17.1":
   version "0.17.1"
@@ -6140,7 +6140,7 @@ caniuse-lite@^1.0.30001718:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001723.tgz#c4f3174f02089720736e1887eab345e09bb10944"
   integrity sha512-1R/elMjtehrFejxwmexeXAtae5UO9iSyFn6G/I806CYC/BLyyBk1EPhrKBkWhy6wM6Xnm47dSJQec+tLJ39WHw==
 
-canvaskit-wasm@0.40.0:
+canvaskit-wasm@0.40.0, canvaskit-wasm@^0.40.0:
   version "0.40.0"
   resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.40.0.tgz#61a77657259fddfc0025ad1c3f57ac8d4d5850ff"
   integrity sha512-Od2o+ZmoEw9PBdN/yCGvzfu0WVqlufBPEWNG452wY7E9aT8RBE+ChpZF526doOlg7zumO4iCS+RAeht4P0Gbpw==
@@ -7205,9 +7205,9 @@ detect-libc@^1.0.3:
   integrity sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==
 
 detect-libc@^2.0.0, detect-libc@^2.0.3, detect-libc@^2.0.4:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.1.1.tgz#9f1e511ace6bb525efea4651345beac424dac7b9"
-  integrity sha512-ecqj/sy1jcK1uWrwpR67UhYrIFQ+5WlGxth34WquCbamhFA6hkkwiu37o6J5xCHdo1oixJRfVRw+ywV+Hq/0Aw==
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.1.2.tgz#689c5dcdc1900ef5583a4cb9f6d7b473742074ad"
+  integrity sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==
 
 detect-newline@^3.0.0:
   version "3.1.0"
@@ -13481,10 +13481,10 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-drawer-layout@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-4.2.0.tgz#8b178c883aa6496b8259b2b7e72e296308dcf975"
-  integrity sha512-XFGK5RMcVhEqr2F4iH/cTXrcTm1uK3gIBNFPqHNO7rCXuXZTPBbQYA5yc9/Lqgw2KNQ3sAeHKvW6/WoTURo/eA==
+react-native-drawer-layout@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-4.2.2.tgz#57832c186158e1ce1df78eca5f024fc9fc53bb80"
+  integrity sha512-UG/PTTeyyr43KahbgoGyXri8LMO5USHY3/RUpeKBKwCc7xLVGnDLOVNSRrJw0dDc7YmPbmAyJ4oxp8nKboKKuw==
   dependencies:
     color "^4.2.3"
     use-latest-callback "^0.2.4"
@@ -14379,10 +14379,15 @@ semver@7.5.4:
   dependencies:
     lru-cache "^6.0.0"
 
-semver@7.7.3, semver@7.x, semver@^7.1.3, semver@^7.3.4, semver@^7.3.5, semver@^7.5.0, semver@^7.5.3, semver@^7.5.4, semver@^7.6.0, semver@^7.6.3, semver@^7.7.2:
+semver@7.7.3:
   version "7.7.3"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.3.tgz#4b5f4143d007633a8dc671cd0a6ef9147b8bb946"
   integrity sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==
+
+semver@7.x, semver@^7.1.3, semver@^7.3.4, semver@^7.3.5, semver@^7.5.0, semver@^7.5.3, semver@^7.5.4, semver@^7.6.0, semver@^7.6.3, semver@^7.7.2:
+  version "7.7.4"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.4.tgz#28464e36060e991fa7a11d0279d2d3f3b57a7e8a"
+  integrity sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==
 
 semver@^6.0.0, semver@^6.1.0, semver@^6.3.0, semver@^6.3.1:
   version "6.3.1"

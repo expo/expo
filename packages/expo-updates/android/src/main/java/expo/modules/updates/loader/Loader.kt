@@ -23,6 +23,7 @@ import kotlinx.coroutines.SupervisorJob
 import java.io.File
 import java.io.IOException
 import java.util.*
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -44,9 +45,9 @@ abstract class Loader protected constructor(
   private var updateResponse: UpdateResponse? = null
   private var updateEntity: UpdateEntity? = null
   private var assetTotal = 0
-  private var erroredAssetList = mutableListOf<AssetEntity>()
-  private var existingAssetList = mutableListOf<AssetEntity>()
-  private var finishedAssetList = mutableListOf<AssetEntity>()
+  private var erroredAssetList: MutableList<AssetEntity> = Collections.synchronizedList(mutableListOf())
+  private var existingAssetList: MutableList<AssetEntity> = Collections.synchronizedList(mutableListOf())
+  private var finishedAssetList: MutableList<AssetEntity> = Collections.synchronizedList(mutableListOf())
   private val _progressFlow = MutableSharedFlow<AssetLoadProgress>()
   private var assetProgressMap: MutableMap<AssetEntity, Double> = ConcurrentHashMap()
 
@@ -115,9 +116,9 @@ abstract class Loader protected constructor(
     updateResponse = null
     updateEntity = null
     assetTotal = 0
-    erroredAssetList = mutableListOf()
-    existingAssetList = mutableListOf()
-    finishedAssetList = mutableListOf()
+    erroredAssetList = Collections.synchronizedList(mutableListOf())
+    existingAssetList = Collections.synchronizedList(mutableListOf())
+    finishedAssetList = Collections.synchronizedList(mutableListOf())
     assetProgressMap = ConcurrentHashMap()
     assetLoadProgressBlock = null
   }

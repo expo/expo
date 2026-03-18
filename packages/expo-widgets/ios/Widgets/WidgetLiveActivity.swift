@@ -65,7 +65,7 @@ private struct LiveActivitySectionView: View {
       environment: environment
     )
     if let node = nodes[sectionName] as? [String: Any] {
-      WidgetsDynamicView(source: context.activityID, kind: .liveActivity, node: node)
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
     } else {
       EmptyView()
     }
@@ -86,7 +86,7 @@ private struct LiveActivityBannerView: View {
     if #available(iOS 18.0, *) {
       LiveActivityBanner(context: context, nodes: nodes)
     } else if let node = nodes["banner"] as? [String: Any] {
-      WidgetsDynamicView(source: context.activityID, kind: .liveActivity, node: node)
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
     } else {
       EmptyView()
     }

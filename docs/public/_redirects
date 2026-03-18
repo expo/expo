@@ -319,6 +319,12 @@
 /versions/unversioned/sdk/router-ui /versions/unversioned/sdk/router/ui 301
 /versions/unversioned/sdk/router-native-tabs /versions/unversioned/sdk/router/native-tabs 301
 /versions/unversioned/sdk/router-split-view /versions/unversioned/sdk/router/split-view 301
+/versions/v55.0.0/sdk/router-ui /versions/v55.0.0/sdk/router/ui 301
+/versions/v55.0.0/sdk/router-native-tabs /versions/v55.0.0/sdk/router/native-tabs 301
+/versions/v55.0.0/sdk/router-split-view /versions/v55.0.0/sdk/router/split-view 301
+/versions/latest/sdk/router-ui /versions/latest/sdk/router/ui 301
+/versions/latest/sdk/router-native-tabs /versions/latest/sdk/router/native-tabs 301
+/versions/latest/sdk/router-split-view /versions/latest/sdk/router/split-view 301
 
 # After merging get-started/introduction into get-started/create-a-project
 /get-started/introduction /get-started/create-a-project 301
@@ -332,3 +338,21 @@
 /versions/unversioned/sdk/ui/jetpack-compose/filterchip /versions/unversioned/sdk/ui/jetpack-compose/chip 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/filterchip /versions/v55.0.0/sdk/ui/jetpack-compose/chip 301
 /versions/latest/sdk/ui/jetpack-compose/filterchip /versions/latest/sdk/ui/jetpack-compose/chip 301
+
+# After removing TextButton and merging into Button in expo-ui (Android)
+/versions/unversioned/sdk/ui/jetpack-compose/textbutton /versions/unversioned/sdk/ui/jetpack-compose/button 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/textbutton /versions/v55.0.0/sdk/ui/jetpack-compose/button 301
+/versions/latest/sdk/ui/jetpack-compose/textbutton /versions/latest/sdk/ui/jetpack-compose/button 301
+
+# After merging LinearProgress and CircularProgress into Progress in expo-ui (Android)
+/versions/unversioned/sdk/ui/jetpack-compose/linearprogress /versions/unversioned/sdk/ui/jetpack-compose/progress 301
+/versions/unversioned/sdk/ui/jetpack-compose/circularprogress /versions/unversioned/sdk/ui/jetpack-compose/progress 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/linearprogress /versions/v55.0.0/sdk/ui/jetpack-compose/progress 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/circularprogress /versions/v55.0.0/sdk/ui/jetpack-compose/progress 301
+/versions/latest/sdk/ui/jetpack-compose/linearprogress /versions/latest/sdk/ui/jetpack-compose/progress 301
+/versions/latest/sdk/ui/jetpack-compose/circularprogress /versions/latest/sdk/ui/jetpack-compose/progress 301
+
+# Picker replaced by SegmentedButton
+/versions/latest/sdk/ui/jetpack-compose/picker /versions/latest/sdk/ui/jetpack-compose/segmentedbutton 301
+/versions/unversioned/sdk/ui/jetpack-compose/picker /versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton 301
+/versions/v55.0.0/sdk/ui/jetpack-compose/picker /versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton 301
