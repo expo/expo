@@ -10,7 +10,7 @@
     "react-native",
     "react"
   ],
-  "bin": "build/index.js",
+  "bin": "bin/install-expo-modules.js",
   "main": "build/index.js",
   "files": [
     "build"

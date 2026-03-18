@@ -21,7 +21,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "Expo",
-  "bin": "build/index.js",
+  "bin": "bin/create-expo-module.js",
   "main": "build/index.js",
   "files": [
     "bin",
