@@ -343,20 +343,20 @@ export declare class File {
      *
      * Selecting multiple files is not supported yet.
      *
-     * @deprecated
+     * @deprecated Use `pickFileAsync({initialUri, mimeTypes: mimeType})` instead.
      * @param initialUri An optional URI pointing to an initial folder on which the file picker is opened.
      * @param mimeType A mime type that is used to filter out files that can be picked out.
      * @returns A `File` instance or an array of `File` instances.
      */
     static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
     /**
-     * An overload of pickFileAsync method which picks and returns a single `File`.
+     * An overload of the `pickFileAsync` method, which picks and returns a single `File`.
      * This overload requires options to have `multipleFiles` flag be `undefined` or `false`.
      * @param options options
      */
     static pickFileAsync(options?: PickSingleFileOptions): Promise<PickSingleFileResult>;
     /**
-     * An overload of pickFileAsync method which picks and returns a list of `File`'s.
+     * An overload of the `pickFileAsync` method, which picks and returns a list of `File`'s.
      * This overload requires options to have `multipleFiles` flag be `true`.
      * @param options options
      */
@@ -370,16 +370,16 @@ export declare class File {
      */
     md5: string | null;
     /**
-     * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
-     * @deprecated in favor of `lastModified` to be more in line with web [File](https://developer.mozilla.org/en-US/docs/Web/API/File)
+     * A last modification time of the file expressed in milliseconds since the epoch. Returns a `null` if the file does not exist, or if it cannot be read.
+     * @deprecated In favor of `lastModified` to be more in line with web [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File)
      */
     modificationTime: number | null;
     /**
-     * A last modification time of the file expressed in milliseconds since epoch. Returns a Null if the file does not exist, or it cannot be read.
+     * A last modification time of the file expressed in milliseconds since the epoch. Returns a `null` if the file does not exist, or if it cannot be read.
      */
     lastModified: number | null;
     /**
-     * A creation time of the file expressed in milliseconds since epoch. Returns null if the file does not exist, cannot be read or the Android version is earlier than API 26.
+     * A creation time of the file expressed in milliseconds since the epoch. Returns a `null` if the file does not exist, cannot be read or the Android version is earlier than API 26.
      */
     creationTime: number | null;
     /**
@@ -472,7 +472,7 @@ export type DirectoryInfo = {
 };
 export type PickFileGeneralOptions = {
     /**
-     * A uri pointing to an initial folder in which the file picker is opened.
+     * A URI pointing to an initial folder in which the file picker is opened.
      */
     initialUri?: string;
     /**
@@ -484,7 +484,7 @@ export type PickFileGeneralOptions = {
     mimeTypes?: string | string[];
 };
 /**
- * Options for picking a single file
+ * Options for picking a single file.
  */
 export type PickSingleFileOptions = PickFileGeneralOptions & {
     /**
@@ -501,7 +501,7 @@ export type PickMultipleFilesOptions = PickFileGeneralOptions & {
     multipleFiles: true;
 };
 /**
- * Options type for file picking
+ * Options type for file picking.
  */
 export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
 /**
