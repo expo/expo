@@ -29,23 +29,23 @@ public final class SharedObjectRegistry {
    The counter of IDs to assign to the shared object pairs.
    The next pair added to the registry will be saved using this ID.
    */
-  internal var nextId: SharedObjectId = 1
+  internal /* visible for testing */ var nextId: SharedObjectId = 1
 
   /**
    A dictionary of shared object pairs.
    */
-  internal var pairs = [SharedObjectId: SharedObjectPair]()
+  private var pairs = [SharedObjectId: SharedObjectPair]()
 
   /**
-   The lock queue to keep thread safety for internal data structures.
+   The lock to keep thread safety for internal data structures.
    */
-  private static let lockQueue = DispatchQueue(label: "expo.modules.core.SharedObjectRegistry")
+  private let lock = NSLock()
 
   /**
    A number of all pairs stored in the registry.
    */
   internal var size: Int {
-    return Self.lockQueue.sync {
+    return lock.withLock {
       return pairs.count
     }
   }
@@ -69,7 +69,7 @@ public final class SharedObjectRegistry {
    */
   @discardableResult
   internal func pullNextId() -> SharedObjectId {
-    return Self.lockQueue.sync {
+    return lock.withLock {
       let id = nextId
       nextId += 1
       return id
@@ -80,7 +80,7 @@ public final class SharedObjectRegistry {
    Returns a pair of shared objects with given ID or `nil` when there is no such pair in the registry.
    */
   internal func get(_ id: SharedObjectId) -> SharedObjectPair? {
-    return Self.lockQueue.sync {
+    return lock.withLock {
       return pairs[id]
     }
   }
@@ -117,7 +117,7 @@ public final class SharedObjectRegistry {
 
     // Save the pair in the dictionary.
     let jsWeakObject = jsObject.createWeak()
-    Self.lockQueue.async {
+    lock.withLock {
       self.pairs[id] = (native: nativeObject, javaScript: jsWeakObject)
     }
 
@@ -128,7 +128,7 @@ public final class SharedObjectRegistry {
    Deletes the shared objects pair with a given ID.
    */
   internal func delete(_ id: SharedObjectId) {
-    Self.lockQueue.async {
+    lock.withLock {
       if let pair = self.pairs[id] {
         pair.native.sharedObjectWillRelease()
         // Reset an ID on the objects.
@@ -146,7 +146,7 @@ public final class SharedObjectRegistry {
    */
   internal func toNativeObject(_ jsObject: JavaScriptObject) -> SharedObject? {
     if let objectId = try? jsObject.getProperty(sharedObjectIdPropertyName).asInt() {
-      return Self.lockQueue.sync {
+      return lock.withLock {
         return pairs[objectId]?.native
       }
     }
@@ -158,7 +158,7 @@ public final class SharedObjectRegistry {
    */
   internal func toJavaScriptObject(_ nativeObject: SharedObject) -> JavaScriptObject? {
     let objectId = nativeObject.sharedObjectId
-    return Self.lockQueue.sync {
+    return lock.withLock {
       return pairs[objectId]?.javaScript.lock()
     }
   }
@@ -184,7 +184,7 @@ public final class SharedObjectRegistry {
   }
 
   internal func clear() {
-    Self.lockQueue.async {
+    lock.withLock {
       self.pairs.removeAll()
     }
   }
