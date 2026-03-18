@@ -2,6 +2,8 @@
 
 process.env.EXPO_NONINTERACTIVE = 1;
 
+import { commandRunner } from '../utils/commandUtils.js';
+
 async function runAsync() {
   console.log('Preparing module for publishing');
   await commandRunner(path.join(dirname, 'expo-module-clean'));
