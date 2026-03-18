@@ -113,7 +113,7 @@
     "expo-screen-orientation": "~55.0.9",
     "expo-secure-store": "~55.0.9",
     "expo-sensors": "~55.0.9",
-    "expo-sharing": "~55.0.12",
+    "expo-sharing": "~55.0.13",
     "expo-sms": "~55.0.9",
     "expo-speech": "~55.0.9",
     "expo-splash-screen": "^55.0.11",
