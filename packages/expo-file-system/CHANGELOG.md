@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix copy/move support for SAF and content provider URIs. ([#42887](https://github.com/expo/expo/pull/42887) by [@barthap](https://github.com/barthap))
+- Fix out-of-memory errors when calculating file `md5` hash.
 
 ### 💡 Others
 

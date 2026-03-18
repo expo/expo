@@ -149,9 +149,13 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   val md5: String get() {
     validatePermission(FilePermissionService.Permission.READ)
     val md = MessageDigest.getInstance("MD5")
-    file.inputStream().use {
-      val digest = md.digest(it.readBytes())
-      return digest.toHexString()
+    file.inputStream().use { stream ->
+      val buffer = ByteArray(8192)
+      var bytesRead: Int
+      while (stream.read(buffer).also { bytesRead = it } != -1) {
+        md.update(buffer, 0, bytesRead)
+      }
+      return md.digest().toHexString()
     }
   }
 
