@@ -190,14 +190,14 @@ File.pickFileAsync = async function (
   try {
     if (options.multipleFiles) {
       const files = await ExpoFileSystem.pickFileAsync(options);
-      return { result: files.map((file) => new File(file)), canceled: false };
+      return { result: files.map((file) => new File(file.uri)), canceled: false };
     }
     const file = await ExpoFileSystem.pickFileAsync(options);
     if (usingOldAPI) {
-      return new File(file);
+      return new File(file.uri);
     }
     return {
-      result: new File(file),
+      result: new File(file.uri),
       canceled: false,
     };
   } catch (e) {

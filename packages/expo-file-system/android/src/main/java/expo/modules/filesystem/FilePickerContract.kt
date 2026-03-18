@@ -59,10 +59,12 @@ internal class FilePickerContract(private val appContextProvider: AppContextProv
     for (i in 0 until count) {
       intent.clipData!!.getItemAt(i).uri?.let {
         contentResolver.takePersistableUriPermission(it, takeFlags)
-        pickedPaths.add(when (input.pickerType) {
-          PickerType.FILE -> FileSystemFile(it)
-          PickerType.DIRECTORY -> FileSystemDirectory(it)
-        })
+        pickedPaths.add(
+          when (input.pickerType) {
+            PickerType.FILE -> FileSystemFile(it)
+            PickerType.DIRECTORY -> FileSystemDirectory(it)
+          }
+        )
       }
     }
 

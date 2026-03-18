@@ -228,7 +228,7 @@ export type DownloadOptions = {
 /**
  * Represents a file on the file system.
  */
-export declare class File extends Blob {
+export declare class File {
   /**
    * Creates an instance of File.
    *
