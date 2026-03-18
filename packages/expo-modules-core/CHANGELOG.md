@@ -19,6 +19,7 @@
 - [iOS] Fixed compilation issues due to missing fallthrough case in `EXJavaScriptSerializable`. ([#43634](https://github.com/expo/expo/pull/43634) by [@tjzel](https://github.com/tjzel))
 - [iOS] Fix crash that can occur when reloading JavaScript bundle due to object deallocating off the JavaScript thread. ([#43937](https://github.com/expo/expo/pull/43937) by [@cltnschlosser](https://github.com/cltnschlosser))
 - [iOS] Fixed `PersistentFileLog.readEntries` race condition by serializing reads on the dispatch queue. ([#43958](https://github.com/expo/expo/pull/43958) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Make access to module registry thread safe. ([#44042](https://github.com/expo/expo/pull/44042) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
