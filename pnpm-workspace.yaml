@@ -3,6 +3,7 @@ packages:
   - packages/*
   - packages/@expo/*
   - tools
+  - apps/bare-expo/e2e/image-comparison
 
 ignoreWorkspaceCycles: true
 
