@@ -28,7 +28,6 @@
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js",
     "test:playwright": "playwright test --config e2e/playwright.config.ts",
-    "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "repository": {
