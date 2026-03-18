@@ -9,12 +9,13 @@ import {
   withAndroidStyles,
   withStringsXml,
 } from 'expo/config-plugins';
+
 import {
   NavigationBarBehavior,
   NavigationBarButtonStyle,
   NavigationBarPosition,
   NavigationBarVisibility,
-} from 'expo-navigation-bar';
+} from '../..';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
