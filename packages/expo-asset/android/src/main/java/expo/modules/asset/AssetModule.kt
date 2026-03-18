@@ -12,9 +12,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileInputStream
 import java.net.URI
-import java.security.DigestInputStream
 import java.security.MessageDigest
 
 internal class UnableToDownloadAssetException(url: String) :
@@ -27,22 +25,6 @@ class AssetModule : Module() {
   private fun getMD5HashOfFilePath(uri: URI): String {
     val md = MessageDigest.getInstance("MD5")
     return md.digest(uri.toString().toByteArray()).joinToString("") { "%02x".format(it) }
-  }
-
-  private fun getMD5HashOfFileContent(file: File): String? {
-    return try {
-      FileInputStream(file).use { inputStream ->
-        DigestInputStream(
-          inputStream,
-          MessageDigest.getInstance("MD5")
-        ).use { digestInputStream ->
-          digestInputStream.messageDigest.digest().joinToString(separator = "") { "%02x".format(it) }
-        }
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-      null
-    }
   }
 
   private suspend fun downloadAsset(appContext: AppContext, uri: URI, localUrl: File): Uri {
