@@ -9,14 +9,14 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 
-data class HorizontalDividerProps(
+data class DividerProps(
   val thickness: Float? = null,
   val color: Color? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun FunctionalComposableScope.HorizontalDividerContent(props: HorizontalDividerProps) {
+fun FunctionalComposableScope.HorizontalDividerContent(props: DividerProps) {
   HorizontalDivider(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     thickness = props.thickness?.dp ?: DividerDefaults.Thickness,
@@ -24,14 +24,8 @@ fun FunctionalComposableScope.HorizontalDividerContent(props: HorizontalDividerP
   )
 }
 
-data class VerticalDividerProps(
-  val thickness: Float? = null,
-  val color: Color? = null,
-  val modifiers: ModifierList = emptyList()
-) : ComposeProps
-
 @Composable
-fun FunctionalComposableScope.VerticalDividerContent(props: VerticalDividerProps) {
+fun FunctionalComposableScope.VerticalDividerContent(props: DividerProps) {
   VerticalDivider(
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     thickness = props.thickness?.dp ?: DividerDefaults.Thickness,

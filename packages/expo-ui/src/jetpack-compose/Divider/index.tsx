@@ -34,9 +34,11 @@ function createDividerComponent(viewName: string): React.ComponentType<DividerCo
     'ExpoUI',
     viewName
   );
-  return function DividerComponent(props: DividerCommonConfig) {
+  function Component(props: DividerCommonConfig) {
     return <NativeView {...transformProps(props)} />;
-  };
+  }
+  Component.displayName = viewName;
+  return Component;
 }
 
 /**
