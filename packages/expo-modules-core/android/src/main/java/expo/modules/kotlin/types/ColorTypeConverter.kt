@@ -14,11 +14,6 @@ import expo.modules.kotlin.jni.SingleType
 import androidx.core.graphics.toColorInt
 import com.facebook.react.bridge.ReadableArray
 
-private val rgbColorRegex = Regex(
-  pattern = """^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*([0-9]*\.?[0-9]+)\s*)?\)$""",
-  options = setOf(RegexOption.IGNORE_CASE)
-)
-
 /**
  * Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
  * and additionally the transparent color.
@@ -177,6 +172,188 @@ private val namedColors = mapOf(
   value.map { it.toFloat() / 255f }
 }
 
+// region CSS color function parsing
+
+// Matches signed/unsigned numbers with optional decimal, e.g. "255", "-120", "+0.5", ".5"
+private const val NUM = """[-+]?\d*\.?\d+"""
+
+private val rgbCommaSeparated = Regex(
+  """rgba?\(\s*($NUM%?)\s*,\s*($NUM%?)\s*,\s*($NUM%?)\s*(?:,\s*($NUM%?)\s*)?\)""",
+  RegexOption.IGNORE_CASE
+)
+
+private val rgbSpaceSeparated = Regex(
+  """rgba?\(\s*($NUM%?)\s+($NUM%?)\s+($NUM%?)\s*(?:/\s*($NUM%?)\s*)?\)""",
+  RegexOption.IGNORE_CASE
+)
+
+private val hslCommaSeparated = Regex(
+  """hsla?\(\s*($NUM)\s*,\s*($NUM)%\s*,\s*($NUM)%\s*(?:,\s*($NUM%?)\s*)?\)""",
+  RegexOption.IGNORE_CASE
+)
+
+private val hslSpaceSeparated = Regex(
+  """hsla?\(\s*($NUM)\s+($NUM)%\s+($NUM)%\s*(?:/\s*($NUM%?)\s*)?\)""",
+  RegexOption.IGNORE_CASE
+)
+
+private val hwbPattern = Regex(
+  """hwb\(\s*($NUM)\s+($NUM)%\s+($NUM)%\s*(?:/\s*($NUM%?)\s*)?\)""",
+  RegexOption.IGNORE_CASE
+)
+
+private val hex3 = Regex("""^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$""")
+private val hex4 = Regex("""^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$""")
+private val hex8 = Regex("""^#([0-9a-fA-F]{8})$""")
+
+/**
+ * Parse a color component value that can be either 0-255 integer or 0-100%.
+ * Returns a float in 0..1 range.
+ */
+private fun parseRgbComponent(value: String): Float {
+  return if (value.endsWith("%")) {
+    value.dropLast(1).toFloat() / 100f
+  } else {
+    value.toFloat() / 255f
+  }.coerceIn(0f, 1f)
+}
+
+/**
+ * Parse an alpha value that can be either 0-1 float or 0-100%.
+ * Returns a float in 0..1 range.
+ */
+private fun parseAlpha(value: String?): Float {
+  if (value == null) return 1f
+  return if (value.endsWith("%")) {
+    value.dropLast(1).toFloat() / 100f
+  } else {
+    value.toFloat()
+  }.coerceIn(0f, 1f)
+}
+
+private fun hueToRgb(p: Float, q: Float, t: Float): Float {
+  val tt = when {
+    t < 0f -> t + 1f
+    t > 1f -> t - 1f
+    else -> t
+  }
+  return when {
+    tt < 1f / 6f -> p + (q - p) * 6f * tt
+    tt < 1f / 2f -> q
+    tt < 2f / 3f -> p + (q - p) * (2f / 3f - tt) * 6f
+    else -> p
+  }
+}
+
+private fun hslToColor(h: Float, s: Float, l: Float, a: Float): Color {
+  val hue = ((h % 360f) + 360f) % 360f / 360f
+  val r: Float
+  val g: Float
+  val b: Float
+  if (s == 0f) {
+    r = l
+    g = l
+    b = l
+  } else {
+    val q = if (l < 0.5f) l * (1f + s) else l + s - l * s
+    val p = 2f * l - q
+    r = hueToRgb(p, q, hue + 1f / 3f)
+    g = hueToRgb(p, q, hue)
+    b = hueToRgb(p, q, hue - 1f / 3f)
+  }
+  return Color.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), b.coerceIn(0f, 1f), a)
+}
+
+private fun hwbToColor(h: Float, w: Float, b: Float, a: Float): Color {
+  val ww = w.coerceIn(0f, 1f)
+  val bb = b.coerceIn(0f, 1f)
+  val sum = ww + bb
+  val white = if (sum > 1f) ww / sum else ww
+  val black = if (sum > 1f) bb / sum else bb
+  val rgb = hslToColor(h, 1f, 0.5f, 1f)
+  val r = rgb.red() * (1f - white - black) + white
+  val g = rgb.green() * (1f - white - black) + white
+  val bl = rgb.blue() * (1f - white - black) + white
+  return Color.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), bl.coerceIn(0f, 1f), a)
+}
+
+/**
+ * Attempts to parse a CSS color function string (rgb, rgba, hsl, hsla, hwb).
+ * Returns null if the string doesn't match any known CSS color function pattern.
+ */
+/**
+ * Parses shorthand and CSS-ordered hex color strings that [toColorInt] does not handle:
+ * `#RGB`, `#RGBA`, and `#RRGGBBAA` (CSS byte order where alpha is last).
+ */
+private fun parseHexColor(value: String): Color? {
+  // #RGB → #RRGGBB
+  hex3.matchEntire(value)?.let { match ->
+    val r = match.groupValues[1].repeat(2).toInt(16)
+    val g = match.groupValues[2].repeat(2).toInt(16)
+    val b = match.groupValues[3].repeat(2).toInt(16)
+    return Color.valueOf(r / 255f, g / 255f, b / 255f, 1f)
+  }
+
+  // #RGBA → #RRGGBBAA
+  hex4.matchEntire(value)?.let { match ->
+    val r = match.groupValues[1].repeat(2).toInt(16)
+    val g = match.groupValues[2].repeat(2).toInt(16)
+    val b = match.groupValues[3].repeat(2).toInt(16)
+    val a = match.groupValues[4].repeat(2).toInt(16)
+    return Color.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
+  }
+
+  // #RRGGBBAA (CSS byte order: alpha is last, unlike Android's #AARRGGBB)
+  hex8.matchEntire(value)?.let { match ->
+    val hex = match.groupValues[1].toLong(16)
+    val r = ((hex shr 24) and 0xFF).toInt()
+    val g = ((hex shr 16) and 0xFF).toInt()
+    val b = ((hex shr 8) and 0xFF).toInt()
+    val a = (hex and 0xFF).toInt()
+    return Color.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
+  }
+
+  return null
+}
+
+/**
+ * Parses CSS color function strings: rgb(), rgba(), hsl(), hsla(), hwb().
+ */
+private fun parseCssColorFunction(value: String): Color? {
+  val trimmed = value.trim().lowercase()
+
+  // rgb/rgba
+  (rgbCommaSeparated.matchEntire(trimmed) ?: rgbSpaceSeparated.matchEntire(trimmed))?.let { match ->
+    val r = parseRgbComponent(match.groupValues[1])
+    val g = parseRgbComponent(match.groupValues[2])
+    val b = parseRgbComponent(match.groupValues[3])
+    val a = parseAlpha(match.groupValues[4].ifEmpty { null })
+    return Color.valueOf(r, g, b, a)
+  }
+
+  // hsl/hsla
+  (hslCommaSeparated.matchEntire(trimmed) ?: hslSpaceSeparated.matchEntire(trimmed))?.let { match ->
+    val h = match.groupValues[1].toFloat()
+    val s = match.groupValues[2].toFloat() / 100f
+    val l = match.groupValues[3].toFloat() / 100f
+    val a = parseAlpha(match.groupValues[4].ifEmpty { null })
+    return hslToColor(h, s.coerceIn(0f, 1f), l.coerceIn(0f, 1f), a)
+  }
+
+  // hwb
+  hwbPattern.matchEntire(trimmed)?.let { match ->
+    val h = match.groupValues[1].toFloat()
+    val w = match.groupValues[2].toFloat() / 100f
+    val b = match.groupValues[3].toFloat() / 100f
+    val a = parseAlpha(match.groupValues[4].ifEmpty { null })
+    return hwbToColor(h, w, b, a)
+  }
+
+  return null
+}
+
+// endregion
+
 @RequiresApi(Build.VERSION_CODES.O)
 class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
@@ -227,26 +404,13 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       )
     }
 
-    val rgbMatch = rgbColorRegex.matchEntire(normalizedValue)
-    if (rgbMatch != null) {
-      val red = rgbMatch.groupValues[1].toInt()
-      val green = rgbMatch.groupValues[2].toInt()
-      val blue = rgbMatch.groupValues[3].toInt()
-      require(red in 0..255 && green in 0..255 && blue in 0..255) {
-        "rgb() color component out of range"
-      }
-
-      val alphaGroup = rgbMatch.groupValues.getOrNull(4).orEmpty()
-      val alpha = if (alphaGroup.isNotEmpty()) {
-        val parsed = alphaGroup.toFloat()
-        require(parsed in 0f..1f) { "rgba() alpha out of range" }
-        parsed
-      } else {
-        1f
-      }
-
-      return Color.valueOf(red / 255f, green / 255f, blue / 255f, alpha)
+    if (normalizedValue.startsWith('#')) {
+      parseHexColor(normalizedValue)?.let { return it }
+      // Fall through to toColorInt() for standard #RRGGBB / #AARRGGBB
+      return Color.valueOf(normalizedValue.toColorInt())
     }
+
+    parseCssColorFunction(normalizedValue)?.let { return it }
 
     return Color.valueOf(normalizedValue.toColorInt())
   }
