@@ -67,15 +67,22 @@ jobs:
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           bare-expo-macos-pods: 'true'
-      - name: 🧶 Install node modules in root dir
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/macos
