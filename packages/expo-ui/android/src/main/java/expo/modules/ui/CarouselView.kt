@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.material3.carousel.HorizontalCenteredHeroCarousel
+import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
@@ -76,6 +77,42 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
     state = carouselState,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     maxItemWidth = props.maxItemWidth?.dp ?: Dp.Unspecified,
+    itemSpacing = props.itemSpacing.dp,
+    flingBehavior = flingBehavior,
+    userScrollEnabled = props.userScrollEnabled,
+    minSmallItemWidth = props.minSmallItemWidth?.dp ?: CarouselDefaults.MinSmallItemSize,
+    maxSmallItemWidth = props.maxSmallItemWidth?.dp ?: CarouselDefaults.MaxSmallItemSize,
+    contentPadding = contentPadding
+  ) { itemIndex ->
+    Child(ComposableScope(), itemIndex)
+  }
+}
+
+data class HorizontalMultiBrowseCarouselProps(
+  val preferredItemWidth: Float = 0f,
+  val itemSpacing: Float = 0f,
+  val contentPadding: Either<Float, PaddingValuesRecord>? = null,
+  val minSmallItemWidth: Float? = null,
+  val maxSmallItemWidth: Float? = null,
+  val flingBehavior: FlingBehaviorType = FlingBehaviorType.SINGLE_ADVANCE,
+  val userScrollEnabled: Boolean = true,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: HorizontalMultiBrowseCarouselProps) {
+  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val carouselState = rememberCarouselState(0) { view.size }
+  val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior) {
+    FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
+    FlingBehaviorType.NO_SNAP -> CarouselDefaults.noSnapFlingBehavior()
+  }
+
+  HorizontalMultiBrowseCarousel(
+    state = carouselState,
+    preferredItemWidth = props.preferredItemWidth.dp,
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     itemSpacing = props.itemSpacing.dp,
     flingBehavior = flingBehavior,
     userScrollEnabled = props.userScrollEnabled,

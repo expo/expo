@@ -1,5 +1,6 @@
 import {
   HorizontalCenteredHeroCarousel,
+  HorizontalMultiBrowseCarousel,
   Box,
   Host,
   Card,
@@ -37,6 +38,34 @@ export default function CarouselScreen() {
                 <ComposeText color="#FFFFFF">5</ComposeText>
               </Box>
             </HorizontalCenteredHeroCarousel>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText style={{ typography: 'titleMedium' }}>Multi-Browse</ComposeText>
+            <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
+              Large item with smaller peek items alongside for browsing.
+            </ComposeText>
+            <HorizontalMultiBrowseCarousel
+              preferredItemWidth={200}
+              itemSpacing={8}
+              modifiers={[fillMaxWidth()]}>
+              <Box modifiers={[size(200, 200), background('#E91E63')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">1</ComposeText>
+              </Box>
+              <Box modifiers={[size(200, 200), background('#9C27B0')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">2</ComposeText>
+              </Box>
+              <Box modifiers={[size(200, 200), background('#673AB7')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">3</ComposeText>
+              </Box>
+              <Box modifiers={[size(200, 200), background('#3F51B5')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">4</ComposeText>
+              </Box>
+              <Box modifiers={[size(200, 200), background('#2196F3')]} contentAlignment="center">
+                <ComposeText color="#FFFFFF">5</ComposeText>
+              </Box>
+            </HorizontalMultiBrowseCarousel>
           </Column>
         </Card>
       </LazyColumn>

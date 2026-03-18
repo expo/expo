@@ -78,3 +78,69 @@ function transformProps(
 export function HorizontalCenteredHeroCarousel(props: HorizontalCenteredHeroCarouselProps) {
   return <HorizontalCenteredHeroCarouselNativeView {...transformProps(props)} />;
 }
+
+export type HorizontalMultiBrowseCarouselProps = {
+  /**
+   * The preferred width of the large item in dp.
+   */
+  preferredItemWidth: number;
+  /**
+   * Spacing between items in dp.
+   * @default 0
+   */
+  itemSpacing?: number;
+  /**
+   * Padding for carousel content (dp or object).
+   */
+  contentPadding?: number | PaddingValuesRecord;
+  /**
+   * Minimum width of small peek items in dp.
+   * @default CarouselDefaults.MinSmallItemSize
+   */
+  minSmallItemWidth?: number;
+  /**
+   * Maximum width of small peek items in dp.
+   * @default CarouselDefaults.MaxSmallItemSize
+   */
+  maxSmallItemWidth?: number;
+  /**
+   * Fling behavior type.
+   * @default 'singleAdvance'
+   */
+  flingBehavior?: FlingBehaviorType;
+  /**
+   * Whether the user can scroll the carousel.
+   * @default true
+   */
+  userScrollEnabled?: boolean;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+  /**
+   * Children to render as carousel items.
+   */
+  children: React.ReactNode;
+};
+
+const HorizontalMultiBrowseCarouselNativeView: React.ComponentType<HorizontalMultiBrowseCarouselProps> =
+  requireNativeView('ExpoUI', 'HorizontalMultiBrowseCarouselView');
+
+function transformMultiBrowseProps(
+  props: HorizontalMultiBrowseCarouselProps
+): HorizontalMultiBrowseCarouselProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
+/**
+ * A carousel that shows a large item alongside smaller peek items,
+ * matching Compose's `HorizontalMultiBrowseCarousel`.
+ */
+export function HorizontalMultiBrowseCarousel(props: HorizontalMultiBrowseCarouselProps) {
+  return <HorizontalMultiBrowseCarouselNativeView {...transformMultiBrowseProps(props)} />;
+}
