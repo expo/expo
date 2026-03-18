@@ -23,7 +23,6 @@
     "test": "expo-module test",
     "test:e2e-cli": "expo-module test --config e2e/cli/jest.config.js",
     "test:e2e-plugin": "expo-module test --config e2e/plugin/jest.config.js",
-    "prepare": "expo-module prepare",
     "prepack": "node scripts/resolve-symlinks.js resolve",
     "postpack": "node scripts/resolve-symlinks.js restore",
     "prepublishOnly": "expo-module prepublishOnly",
