@@ -1,7 +1,7 @@
 {
   "name": "create-expo",
   "version": "3.6.6",
-  "bin": "./bin/index.js",
+  "bin": "./bin/create-expo.js",
   "main": "build",
   "description": "Create universal Expo apps",
   "license": "BSD-3-Clause",
