@@ -18,6 +18,7 @@
   },
   "author": "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)",
   "files": [
+    "bin",
     "build",
     "template"
   ],

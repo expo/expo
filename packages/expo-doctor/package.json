@@ -19,6 +19,7 @@
   "license": "MIT",
   "bin": "./bin/expo-doctor.js",
   "files": [
+    "bin",
     "build"
   ],
   "scripts": {
