@@ -17,5 +17,5 @@ export type EnvironmentConfig = {
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/environment(_:_:)).
  */
 export declare function environment(config: EnvironmentConfig): ReturnType<typeof createModifier>;
-export declare function environment(key: string, value: string): ReturnType<typeof createModifier>;
+export declare function environment(key: EnvironmentConfig['key'], value: string): ReturnType<typeof createModifier>;
 //# sourceMappingURL=environment.d.ts.map

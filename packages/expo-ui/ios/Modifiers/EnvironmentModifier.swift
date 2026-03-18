@@ -61,7 +61,11 @@ internal struct EnvironmentModifier: ViewModifier, Record {
         content
       }
     case .locale:
-      content.environment(\.locale, Locale(identifier: value))
+      if Locale.availableIdentifiers.contains(value) {
+        content.environment(\.locale, Locale(identifier: value))
+      } else {
+        content
+      }
     case .timeZone:
       if let tz = TimeZone(identifier: value) {
         content.environment(\.timeZone, tz)
