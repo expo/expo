@@ -5,8 +5,8 @@ import resolveFrom from 'resolve-from';
 import { PluginError } from './errors';
 import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 import { fileExists } from './modules';
-// Default plugin entry file name.
-export const pluginFileName = 'app.plugin.js';
+// Default plugin entry file names.
+export const pluginFileNames = ['app.plugin.js', 'app.plugin.cjs'] as const;
 
 /**
  * Resolve the config plugin from a node module or package.
@@ -15,7 +15,7 @@ export const pluginFileName = 'app.plugin.js';
  *   1. Is the reference a relative file path or an import specifier with file path? e.g. `./file.js`, `pkg/file.js` or `@org/pkg/file.js`?
  *     - Resolve the config plugin as-is
  *   2. If the reference a module? e.g. `expo-font`
- *     - Resolve the root `app.plugin.js` file within the module, e.g. `expo-font/app.plugin.js`
+ *     - Resolve the root `app.plugin.js` or `app.plugin.cjs` file within the module, e.g. `expo-font/app.plugin.js`
  *   3. Does the module have a valid config plugin in the `main` field?
  *     - Resolve the `main` entry point as config plugin
  */
@@ -29,20 +29,31 @@ export function resolvePluginForModule(
     if (pluginScriptFile) {
       return {
         // NOTE(cedric): `path.sep` is required here, we are resolving the absolute path, not the plugin reference
-        isPluginFile: pluginScriptFile.endsWith(path.sep + pluginFileName),
+        isPluginFile: pluginFileNames.some((name) => pluginScriptFile.endsWith(path.sep + name)),
         filePath: pluginScriptFile,
       };
     }
   } else if (moduleNameIsPackageReference(pluginReference)) {
-    // Only resolve `package -> package/app.plugin.js`, `@org/package -> @org/package/app.plugin.js`
-    const pluginPackageFile = resolveFrom.silent(
-      projectRoot,
-      `${pluginReference}/${pluginFileName}`
-    );
-    if (pluginPackageFile && fileExists(pluginPackageFile)) {
-      return { isPluginFile: true, filePath: pluginPackageFile };
+    // Only resolve `package -> package/app.plugin.{js,cjs}`, `@org/package -> @org/package/app.plugin.{js,cjs}`
+    const resolved = pluginFileNames
+      .map((name) => ({
+        name,
+        filePath: resolveFrom.silent(projectRoot, `${pluginReference}/${name}`),
+      }))
+      .filter((entry) => entry.filePath && fileExists(entry.filePath));
+
+    if (resolved.length > 1) {
+      throw new PluginError(
+        `Found both "app.plugin.js" and "app.plugin.cjs" in "${pluginReference}". Remove one to avoid ambiguity.`,
+        'AMBIGUOUS_PLUGIN'
+      );
     }
-    // Try to resole the `main` entry as config plugin
+
+    if (resolved.length === 1) {
+      return { isPluginFile: true, filePath: resolved[0].filePath! };
+    }
+
+    // Try to resolve the `main` entry as config plugin
     const packageMainEntry = resolveFrom.silent(projectRoot, pluginReference);
     if (packageMainEntry) {
       return { isPluginFile: false, filePath: packageMainEntry };
@@ -131,7 +142,7 @@ export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginR
     let errorMessage = `Unable to resolve a valid config plugin for ${pluginReference}.\n`;
 
     if (!isPluginFile) {
-      errorMessage += `• No "${pluginFileName}" file found in ${pluginReference}: config plugins are typically exported from an "${pluginFileName}" file in the package root.\n`;
+      errorMessage += `• No "${pluginFileNames.join('" or "')}" file found in ${pluginReference}: config plugins are typically exported from an "${pluginFileNames[0]}" file in the package root.\n`;
     }
 
     errorMessage += `• main export of ${pluginReference} does not appear to be a config plugin: the following error was thrown when importing ${pluginFile}: ${underlyingError}\n`;
@@ -163,7 +174,7 @@ export function resolveConfigPluginFunctionWithInfo(projectRoot: string, pluginR
  * @param props.plugin plugin results
  * @param props.pluginFile plugin file path
  * @param props.pluginReference the string used to reference the plugin
- * @param props.isPluginFile is file path from the app.plugin.js module root
+ * @param props.isPluginFile is file path from the app.plugin.js or app.plugin.cjs module root
  */
 export function resolveConfigPluginExport({
   plugin,

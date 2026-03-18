@@ -108,9 +108,9 @@ The next step is to add TypeScript support within the **plugins** directory. Ope
 }
 ```
 
-You also need to define the main entry point for your config plugin in the **app.plugin.js** file, which exports the compiled plugin code from the **plugin/build** directory:
+You also need to define the main entry point for your config plugin in the **app.plugin.js** (or **app.plugin.cjs**) file, which exports the compiled plugin code from the **plugin/build** directory:
 
-```js app.plugin.js
+```js app.plugin.js or app.plugin.cjs
 module.exports = require('./plugin/build');
 ```
 

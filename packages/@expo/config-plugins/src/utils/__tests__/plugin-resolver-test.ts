@@ -100,6 +100,28 @@ describe('plugin resolver', () => {
           isPluginFile: false,
         });
       });
+
+      it('./testPlugin.cjs direct file reference', () => {
+        expect(resolvePluginForModule(projectRoot, './testPlugin.cjs')).toStrictEqual({
+          filePath: `${projectRoot}/testPlugin.cjs`,
+          isPluginFile: false,
+        });
+      });
+
+      it('test-lib-cjs library with app.plugin.cjs', () => {
+        expect(resolvePluginForModule(projectRoot, 'test-lib-cjs')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib-cjs/app.plugin.cjs`,
+          isPluginFile: true,
+        });
+      });
+    });
+
+    describe('throws when ambiguous', () => {
+      it('test-lib-cjs-and-js has both app.plugin.js and app.plugin.cjs', () => {
+        expect(() => resolvePluginForModule(projectRoot, 'test-lib-cjs-and-js')).toThrow(
+          'Found both "app.plugin.js" and "app.plugin.cjs" in "test-lib-cjs-and-js". Remove one to avoid ambiguity.'
+        );
+      });
     });
   });
 });

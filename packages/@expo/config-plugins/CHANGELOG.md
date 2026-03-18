@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for `app.config.cjs` ([#43427](https://github.com/expo/expo/pull/43427) by [@monholm](https://github.com/monholm))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
