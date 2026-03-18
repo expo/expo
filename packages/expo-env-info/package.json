@@ -5,6 +5,7 @@
   "type": "module",
   "bin": "./bin/expo-env-info.js",
   "files": [
+    "bin",
     "build"
   ],
   "keywords": [
