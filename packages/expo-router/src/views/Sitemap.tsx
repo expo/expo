@@ -232,11 +232,11 @@ function ArrowIcon({ rotation = 0 }: { rotation?: number }) {
 
 function SystemInfo() {
   const getHermesVersion = () => {
-    if (!global.HermesInternal) {
+    if (!(global as any).HermesInternal) {
       return null;
     }
 
-    const HERMES_RUNTIME = global.HermesInternal?.getRuntimeProperties?.() ?? {};
+    const HERMES_RUNTIME = (global as any).HermesInternal?.getRuntimeProperties?.() ?? {};
     const HERMES_VERSION = HERMES_RUNTIME['OSS Release Version'];
     const isStaticHermes = HERMES_RUNTIME['Static Hermes'];
 
