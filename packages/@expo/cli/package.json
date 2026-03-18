@@ -2,9 +2,9 @@
   "name": "@expo/cli",
   "version": "55.0.12",
   "description": "The Expo CLI",
-  "main": "build/bin/cli",
+  "main": "main.js",
   "bin": {
-    "expo-internal": "build/bin/cli"
+    "expo-internal": "main.js"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -14,6 +14,7 @@
     "./*.js": "./*.js"
   },
   "files": [
+    "main.js",
     "add-module.js",
     "internal",
     "static",
