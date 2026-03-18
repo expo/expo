@@ -43,7 +43,7 @@ export function ExpoMCPToolsTable() {
           </Cell>
           <Cell>{renderDescription(tool.description)}</Cell>
           <Cell>"{tool.examplePrompt}"</Cell>
-          <Cell>{formatAvailability(tool)}</Cell>
+          <Cell>{renderDescription(formatAvailability(tool))}</Cell>
         </Row>
       ))}
     </Table>
@@ -59,7 +59,7 @@ export function ExpoMCPPromptsTable() {
             <CODE>{prompt.name}</CODE>
           </Cell>
           <Cell>{renderDescription(prompt.description)}</Cell>
-          <Cell>{formatAvailability(prompt)}</Cell>
+          <Cell>{renderDescription(formatAvailability(prompt))}</Cell>
         </Row>
       ))}
     </Table>
