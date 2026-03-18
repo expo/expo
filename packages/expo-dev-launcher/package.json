@@ -15,15 +15,15 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "@expo/schema-utils": "^55.0.2",
-    "expo-dev-menu": "55.0.9",
-    "expo-manifests": "~55.0.9"
+    "@expo/schema-utils": "workspace:^55.0.2",
+    "expo-dev-menu": "workspace:55.0.9",
+    "expo-manifests": "workspace:~55.0.9"
   },
   "devDepecencies": {
     "@types/node": "^22.14.0"
   },
   "peerDependencies": {
-    "expo": "*",
+    "expo": "workspace:*",
     "react-native": "*"
   }
 }

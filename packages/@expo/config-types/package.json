@@ -36,7 +36,7 @@
     "build"
   ],
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2",
+    "expo-module-scripts": "workspace:*",
     "json-schema-to-typescript": "^15.0.0"
   },
   "publishConfig": {
