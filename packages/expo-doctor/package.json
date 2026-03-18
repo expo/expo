@@ -24,13 +24,12 @@
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "prepare": "yarn run clean && yarn run build:prod",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "watch": "yarn run build -w",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "prepublishOnly": "yarn run clean && yarn run build:prod"
   },
   "devDependencies": {
     "@expo/cli": "55.0.12",
