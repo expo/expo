@@ -3,6 +3,7 @@ import type { MetroConfig } from '@expo/metro/metro';
 import type MetroBundler from '@expo/metro/metro/Bundler';
 import connect from 'connect';
 import { Body } from 'fetch-nodeshim';
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { compression } from './compression';
@@ -93,13 +94,14 @@ function createMetroOpenStackFrameMiddleware(
     }
 
     const root = getMetroServerRoot(metroConfig.projectRoot!);
-    if (!isFileInRootDirectory(root, frame.file)) {
+    const file = await ensureFileInRootDirectory(root, frame.file);
+    if (!file) {
       res.statusCode = 400;
       return res.end('Open stack frame requires target file to be in server root');
     }
 
     try {
-      await openInEditorAsync(frame.file, frame.lineNumber);
+      await openInEditorAsync(file, frame.lineNumber);
       return res.end('OK');
     } catch {
       res.statusCode = 5006;
@@ -108,8 +110,17 @@ function createMetroOpenStackFrameMiddleware(
   };
 }
 
-const isFileInRootDirectory = (root: string, otherFile: string) => {
+const ensureFileInRootDirectory = async (root: string, file: string): Promise<string | null> => {
+  try {
+    file = await fs.promises.realpath(file);
+  } catch {
+    return null;
+  }
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
-  return !path.relative(root, otherFile).startsWith('..' + path.sep);
+  if (!path.relative(root, file).startsWith('..' + path.sep)) {
+    return file;
+  } else {
+    return null;
+  }
 };
