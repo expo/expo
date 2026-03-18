@@ -12,13 +12,24 @@ const autolinkingOptions_1 = require("./autolinkingOptions");
 const dependencies_1 = require("../dependencies");
 // NOTE(@kitten): These are excluded explicitly, but we want to include them for the verify command explicitly
 const INCLUDE_PACKAGES = ['react-native', 'react-native-tvos'];
+const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'];
 function verifyCommand(cli) {
     return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('verify'))
         .option('-v, --verbose', 'Output all results instead of just warnings.', () => true, false)
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
-        .option('-p, --platform [platform]', 'The platform to validate native modules for. Available options: "android", "ios", "both"', 'both')
+        .option('-p, --platform [platform]', `The platform to validate native modules for. Available options: ${[...AUTOLINKING_PLATFORMS, 'native', 'all'].map((x) => `"${x}"`).join(', ')}`, 'all')
         .action(async (commandArguments) => {
-        const platforms = commandArguments.platform === 'both' ? ['android', 'ios'] : [commandArguments.platform];
+        let platforms;
+        // NOTE(@kitten): Preserve `both` for backwards-compatibility
+        if (commandArguments.platform === 'both' || commandArguments.platform === 'native') {
+            platforms = ['android', 'ios'];
+        }
+        else if (commandArguments.platform === 'all') {
+            platforms = AUTOLINKING_PLATFORMS;
+        }
+        else {
+            platforms = [commandArguments.platform];
+        }
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)(commandArguments);
         const appRoot = await autolinkingOptionsLoader.getAppRoot();
         const linker = (0, dependencies_1.makeCachedDependenciesLinker)({ projectRoot: appRoot });

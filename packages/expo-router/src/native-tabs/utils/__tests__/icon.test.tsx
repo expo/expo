@@ -1,8 +1,11 @@
 import { renderHook, act } from '@testing-library/react-native';
+import React from 'react';
 import type { ImageSourcePropType } from 'react-native';
 
+import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../../common/elements';
 import type { NativeTabsProps, SymbolOrImageSource } from '../../types';
 import {
+  convertComponentSrcToImageSource,
   convertIconColorPropToObject,
   convertOptionsIconToRNScreensPropsIcon,
   useAwaitedScreensIcon,
@@ -209,6 +212,13 @@ describe('useAwaitedScreensIcon', () => {
       expect(result.current).toEqual({ src });
     });
 
+    it('returns src with renderingMode immediately when both are provided', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const icon = { src, renderingMode: 'template' as const };
+      const { result } = renderHook(() => useAwaitedScreensIcon(icon));
+      expect(result.current).toEqual({ src, renderingMode: 'template' });
+    });
+
     it('returns drawable immediately when drawable is provided', () => {
       const drawableOnly = { drawable: 'ic_launcher' } as const;
       const { result } = renderHook(() => useAwaitedScreensIcon(drawableOnly));
@@ -244,6 +254,35 @@ describe('useAwaitedScreensIcon', () => {
       expect(result.current).toBeUndefined();
     });
 
+    it('preserves renderingMode when resolving a promise src', async () => {
+      const asyncSrc = Promise.resolve({ uri: 'https://async.example/icon.png' });
+      const { result } = renderHook(() =>
+        useAwaitedScreensIcon({ src: asyncSrc, renderingMode: 'template' })
+      );
+      expect(result.current).toBeUndefined();
+      await act(async () => {
+        await asyncSrc;
+      });
+      expect(result.current).toEqual({
+        src: { uri: 'https://async.example/icon.png' },
+        renderingMode: 'template',
+      });
+    });
+
+    it('preserves renderingMode "original" when resolving a promise src', async () => {
+      const asyncSrc = Promise.resolve({ uri: 'https://async.example/icon.png' });
+      const { result } = renderHook(() =>
+        useAwaitedScreensIcon({ src: asyncSrc, renderingMode: 'original' })
+      );
+      await act(async () => {
+        await asyncSrc;
+      });
+      expect(result.current).toEqual({
+        src: { uri: 'https://async.example/icon.png' },
+        renderingMode: 'original',
+      });
+    });
+
     it('ignores late resolution of previous async src when icon prop changes', async () => {
       let resolveFirst: (value: any) => void;
       const firstPromise = new Promise((res) => {
@@ -272,6 +311,52 @@ describe('useAwaitedScreensIcon', () => {
       });
 
       expect(result.current).toEqual({ src: nowSrc });
+    });
+  });
+});
+
+describe(convertComponentSrcToImageSource, () => {
+  const mockGetImageSource = jest.fn().mockReturnValue(Promise.resolve({ uri: 'resolved' }));
+  const mockFamily = { getImageSource: mockGetImageSource };
+
+  beforeEach(() => {
+    mockGetImageSource.mockClear();
+  });
+
+  it('forwards renderingMode for VectorIcon elements', () => {
+    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
+    const result = convertComponentSrcToImageSource(element, 'template');
+    expect(result).toEqual({
+      src: expect.any(Promise),
+      renderingMode: 'template',
+    });
+  });
+
+  it('forwards renderingMode "original" for VectorIcon elements', () => {
+    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
+    const result = convertComponentSrcToImageSource(element, 'original');
+    expect(result).toEqual({
+      src: expect.any(Promise),
+      renderingMode: 'original',
+    });
+  });
+
+  it('omits renderingMode when undefined for VectorIcon elements', () => {
+    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
+    const result = convertComponentSrcToImageSource(element);
+    expect(result).toEqual({
+      src: expect.any(Promise),
+    });
+    expect(result).not.toHaveProperty('renderingMode');
+  });
+
+  it('forwards renderingMode for PromiseIcon elements', () => {
+    const loader = () => Promise.resolve({ uri: 'loaded' } as ImageSourcePropType);
+    const element = <NativeTabsTriggerPromiseIcon loader={loader} />;
+    const result = convertComponentSrcToImageSource(element, 'template');
+    expect(result).toEqual({
+      src: expect.any(Promise),
+      renderingMode: 'template',
     });
   });
 });

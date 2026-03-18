@@ -3,12 +3,7 @@ import ExpoModulesCore
 
 internal struct ConfirmationDialogView: ExpoSwiftUI.View {
   @ObservedObject var props: ConfirmationDialogProps
-  @State private var isPresented: Bool
-
-  init(props: ConfirmationDialogProps) {
-    self.props = props
-    _isPresented = State(initialValue: props.isPresented)
-  }
+  @State private var isPresented: Bool = false
 
   var body: some View {
     triggerContent
@@ -20,6 +15,9 @@ internal struct ConfirmationDialogView: ExpoSwiftUI.View {
         actionsContent
       } message: {
         messageContent
+      }
+      .onAppear {
+        isPresented = props.isPresented
       }
       .onChange(of: isPresented) { newValue in
         if props.isPresented != newValue {
