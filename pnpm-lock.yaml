@@ -1514,8 +1514,8 @@ importers:
         specifier: ^3.11.0
         version: 3.11.6(debug@4.4.3)
       '@types/wrap-ansi':
-        specifier: ^8.0.1
-        version: 8.1.0
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/ws':
         specifier: ^8.5.4
         version: 8.18.1
@@ -8576,9 +8576,8 @@ packages:
   '@types/webpack@4.41.40':
     resolution: {integrity: sha512-u6kMFSBM9HcoTpUXnL6mt2HSzftqb3JgYV6oxIgL2dl6sX6aCa5k6SOkzv5DuZjBTPUE/dJltKtwwuqrkZHpfw==}
 
-  '@types/wrap-ansi@8.1.0':
-    resolution: {integrity: sha512-Pt0qXwu5s9KKODY8bB93mwgOsUvkCOGt//kvHGMaUZi0u//Yge5X5/iME08eSU+Oxf9sZlwAFaJwORDSIjd8pw==}
-    deprecated: This is a stub types definition. wrap-ansi provides its own type definitions, so you do not need this installed.
+  '@types/wrap-ansi@3.0.0':
+    resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -18767,9 +18766,7 @@ snapshots:
       anymatch: 3.1.3
       source-map: 0.6.1
 
-  '@types/wrap-ansi@8.1.0':
-    dependencies:
-      wrap-ansi: 7.0.0
+  '@types/wrap-ansi@3.0.0': {}
 
   '@types/ws@8.18.1':
     dependencies:
