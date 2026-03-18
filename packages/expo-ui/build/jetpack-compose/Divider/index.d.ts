@@ -1,12 +1,32 @@
-import { ExpoModifier } from '../../types';
-export type DividerProps = {
+import { type ColorValue } from 'react-native';
+import { type ModifierConfig } from '../../types';
+export type DividerCommonConfig = {
+    /**
+     * Thickness of the divider line in dp.
+     * Use `StyleSheet.hairlineWidth` for a single-pixel line regardless of density.
+     * @default DividerDefaults.Thickness
+     */
+    thickness?: number;
+    /**
+     * Color of the divider line.
+     * @default DividerDefaults.color
+     */
+    color?: ColorValue;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
+export type HorizontalDividerProps = DividerCommonConfig;
 /**
- * A visual element that can be used to separate other content.
+ * A horizontal divider line that groups content in lists and layouts,
+ * matching Compose's `HorizontalDivider`.
  */
-export declare function Divider(props: DividerProps): import("react").JSX.Element;
+export declare const HorizontalDivider: import("react").ComponentType<DividerCommonConfig>;
+export type VerticalDividerProps = DividerCommonConfig;
+/**
+ * A vertical divider line that groups content in layouts,
+ * matching Compose's `VerticalDivider`.
+ */
+export declare const VerticalDivider: import("react").ComponentType<DividerCommonConfig>;
 //# sourceMappingURL=index.d.ts.map

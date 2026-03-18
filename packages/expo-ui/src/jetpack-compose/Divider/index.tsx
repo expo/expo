@@ -1,33 +1,66 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type DividerProps = {
+export type DividerCommonConfig = {
+  /**
+   * Thickness of the divider line in dp.
+   * Use `StyleSheet.hairlineWidth` for a single-pixel line regardless of density.
+   * @default DividerDefaults.Thickness
+   */
+  thickness?: number;
+  /**
+   * Color of the divider line.
+   * @default DividerDefaults.color
+   */
+  color?: ColorValue;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
-type NativeDividerProps = DividerProps;
-const DividerNativeView: React.ComponentType<NativeDividerProps> = requireNativeView(
-  'ExpoUI',
-  'DividerView'
-);
-
-function transformProps(props: DividerProps): NativeDividerProps {
+function transformProps<T extends { modifiers?: ModifierConfig[] }>(props: T): T {
   const { modifiers, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+  } as T;
+}
+
+function createDividerComponent<P extends { modifiers?: ModifierConfig[] }>(
+  viewName: string
+): React.ComponentType<P> {
+  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  return function DividerComponent(props: P) {
+    return <NativeView {...transformProps(props)} />;
   };
 }
 
+// region HorizontalDivider
+
+export type HorizontalDividerProps = DividerCommonConfig;
+
 /**
- * A visual element that can be used to separate other content.
+ * A horizontal divider line that groups content in lists and layouts,
+ * matching Compose's `HorizontalDivider`.
  */
-export function Divider(props: DividerProps) {
-  return <DividerNativeView {...transformProps(props)} />;
-}
+export const HorizontalDivider =
+  createDividerComponent<HorizontalDividerProps>('HorizontalDividerView');
+
+// endregion
+
+// region VerticalDivider
+
+export type VerticalDividerProps = DividerCommonConfig;
+
+/**
+ * A vertical divider line that groups content in layouts,
+ * matching Compose's `VerticalDivider`.
+ */
+export const VerticalDivider = createDividerComponent<VerticalDividerProps>('VerticalDividerView');
+
+// endregion

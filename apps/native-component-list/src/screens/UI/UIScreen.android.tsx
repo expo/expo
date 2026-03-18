@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Divider component',
+    route: 'ui/divider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DividerScreen'));
+    },
+  },
+  {
     name: 'Slider component',
     route: 'ui/slider',
     options: {},
