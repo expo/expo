@@ -94,7 +94,7 @@ function createMetroOpenStackFrameMiddleware(
     }
 
     const root = getMetroServerRoot(metroConfig.projectRoot!);
-    const file = await ensureFileInRootDirectory(root, frame.file);
+    const file = await ensureFileInRootDirectory(root, absolute);
     if (!file) {
       res.statusCode = 400;
       return res.end('Open stack frame requires target file to be in server root');
@@ -112,6 +112,7 @@ function createMetroOpenStackFrameMiddleware(
 
 const ensureFileInRootDirectory = async (root: string, file: string): Promise<string | null> => {
   try {
+    file = path.resolve(root, file);
     file = await fs.promises.realpath(file);
     // Cannot be accessed using Metro's server API, we need to move the file
     // into the project root and try again.
