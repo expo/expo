@@ -91,9 +91,7 @@ describe('ProvisioningProfile module', () => {
           codeSignIdentity: 'Apple Development: Test User',
         });
         const pbxprojContents = fs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
-        expect(pbxprojContents).toMatch(
-          /CODE_SIGN_IDENTITY = "Apple Development: Test User"/
-        );
+        expect(pbxprojContents).toMatch(/CODE_SIGN_IDENTITY = "Apple Development: Test User"/);
         expect(pbxprojContents).not.toMatch(/CODE_SIGN_IDENTITY = "iPhone Distribution"/);
       });
       it('throws descriptive error when target name does not exist', () => {
