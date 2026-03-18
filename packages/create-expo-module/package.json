@@ -38,8 +38,8 @@
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
-    "watch": "yarn run build --watch",
-    "prepublishOnly": "yarn run clean && yarn run build:prod"
+    "watch": "pnpm run build --watch",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
     "@expo/json-file": "workspace:*",

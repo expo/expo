@@ -32,8 +32,8 @@
     "lint": "expo-module lint",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
-    "watch": "yarn run build --watch",
-    "prepublishOnly": "yarn run clean && yarn run build:prod"
+    "watch": "pnpm run build --watch",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
     "@expo/config-plugins": "workspace:*",
