@@ -1,7 +1,7 @@
-diff --git a/node_modules/react-native-reanimated/RNReanimated.podspec b/node_modules/react-native-reanimated/RNReanimated.podspec
+diff --git a/RNReanimated.podspec b/RNReanimated.podspec
 index dba0fad..4f96ced 100644
---- a/node_modules/react-native-reanimated/RNReanimated.podspec
-+++ b/node_modules/react-native-reanimated/RNReanimated.podspec
+--- a/RNReanimated.podspec
++++ b/RNReanimated.podspec
 @@ -61,6 +61,7 @@ Pod::Spec.new do |s|
        '"$(PODS_ROOT)/Headers/Private/React-Core"',
        '"$(PODS_ROOT)/Headers/Private/Yoga"',
