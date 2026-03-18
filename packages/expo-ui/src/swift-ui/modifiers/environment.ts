@@ -11,7 +11,10 @@ export type EnvironmentConfig =
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/environment(_:_:)).
  */
 export function environment(config: EnvironmentConfig): ReturnType<typeof createModifier>;
-export function environment(key: string, value: string): ReturnType<typeof createModifier>;
+export function environment(
+  key: EnvironmentConfig['key'],
+  value: string
+): ReturnType<typeof createModifier>;
 export function environment(configOrKey: EnvironmentConfig | string, value?: string) {
   if (typeof configOrKey === 'string') {
     return createModifier('environment', { key: configOrKey, value });
