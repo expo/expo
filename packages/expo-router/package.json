@@ -122,7 +122,9 @@
     }
   },
   "devDependencies": {
+    "@react-navigation/core": "^7.16.1",
     "@react-navigation/drawer": "^7.9.4",
+    "@react-navigation/routers": "^7.5.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.3.0",
@@ -133,6 +135,11 @@
     "@types/react-test-renderer": "^19.1.0",
     "@types/node": "^22.14.0",
     "immer": "^10.1.1",
+    "react-native-gesture-handler": "~2.30.0",
+    "react-native-reanimated": "~4.2.2",
+    "react-native-safe-area-context": "~5.6.2",
+    "react-native-screens": "~4.24.0",
+    "react-native-web": "~0.21.0",
     "react-server-dom-webpack": "~19.0.4"
   },
   "dependencies": {
