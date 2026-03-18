@@ -300,11 +300,11 @@ These are commands to run as part of [the npm scripts lifecycle](https://docs.np
 
 ### prepare (npm lifecycle)
 
-Runs `clean` and `build`.
+Runs `configure`
 
 ### prepublishOnly (npm lifecycle)
 
-Runs `npm-proofread`, which ensures a [dist-tag](https://docs.npmjs.com/cli/dist-tag) is specified when publishing a prerelease version.
+Runs `clean` and `build`.
 
 ## Excluding Files from npm
 

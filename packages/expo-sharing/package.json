@@ -40,6 +40,8 @@
     "@expo/config-types": "^55.0.5"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {

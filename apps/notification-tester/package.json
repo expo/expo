@@ -2,6 +2,7 @@
   "name": "notification-tester",
   "main": "index.ts",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -39,13 +40,7 @@
     "react-native-screens": "4.24.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
     "@types/jest": "^29.5.12",
     "@types/react": "~19.2.0"
-  },
-  "resolutions": {
-    "react-test-renderer": "19.2.3"
-  },
-  "expo": {},
-  "private": true
+  }
 }
