@@ -3,7 +3,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { packageManagerExecAsync } from '../utils/commandUtils.js';
 import { commandRunner } from '../utils/commandUtils.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -12,7 +11,6 @@ process.env.EXPO_NONINTERACTIVE = 1;
 
 async function runAsync() {
   console.log('Configuring module');
-  await packageManagerExecAsync(['proofread']);
   await commandRunner(path.join(dirname, 'expo-module-configure'));
 }
 
