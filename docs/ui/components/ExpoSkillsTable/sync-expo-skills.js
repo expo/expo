@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { ensureTrailingPeriod } from '../utils/syncUtils.ts';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_FILE = path.join(__dirname, 'data/expo-skills.json');
 
@@ -44,13 +46,6 @@ function parseFrontmatter(content) {
     frontmatter[key] = value;
   }
   return frontmatter;
-}
-
-function ensureTrailingPeriod(text) {
-  if (!text) {
-    return '';
-  }
-  return text.endsWith('.') ? text : `${text}.`;
 }
 
 async function fetchSkillMetadata(skillName) {

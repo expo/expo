@@ -1,5 +1,6 @@
 # general
 node_modules
+.env
 *.tsbuildinfo
 .eslintcache
 

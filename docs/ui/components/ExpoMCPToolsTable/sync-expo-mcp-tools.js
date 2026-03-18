@@ -2,9 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { Client } from '@modelcontextprotocol/sdk/client';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+
+import { ensureTrailingPeriod } from '../utils/syncUtils.ts';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_FILE = path.join(__dirname, 'data/expo-mcp-tools.json');
-const SERVER_TOOLS_FILE = path.join(__dirname, 'data/expo-mcp-server-tools.json');
+
+const EXPO_MCP_URL = 'https://mcp.expo.dev/mcp';
 
 const GITHUB_RAW_BASE =
   'https://raw.githubusercontent.com/expo/expo-mcp/main/packages/expo-mcp/src/mcp';
@@ -14,6 +20,40 @@ const GITHUB_RAW_BASE =
  */
 const TOOL_SOURCE_FILES = ['tools.ts', 'tools/automation.ts'];
 const PROMPT_SOURCE_FILES = ['prompts.ts'];
+
+/**
+ * Requirements for local tools that need specific libraries.
+ * Keyed by tool name.
+ */
+const LOCAL_REQUIREMENTS = {
+  expo_router_sitemap: 'requires `expo-router` library',
+};
+
+/**
+ * Example prompts for server tools (docs-only, not from MCP server).
+ * Keyed by tool name.
+ */
+const SERVER_EXAMPLE_PROMPTS = {
+  learn: 'learn how to use expo-router',
+  search_documentation: 'search documentation for CNG',
+  read_documentation: 'read the Expo Router docs page',
+  add_library: 'add sqlite and basic CRUD to the app',
+  build_info: 'get the status of my latest iOS build',
+  build_list: 'list the recent builds for this project',
+  build_logs: 'show me the logs for the failed build',
+  build_run: 'run a production build for iOS',
+  build_cancel: 'cancel the build that is currently in progress',
+  build_submit: 'submit the latest build to the App Store',
+  testflight_crashes: 'show me recent TestFlight crashes',
+  testflight_feedback: 'show TestFlight feedback for my app',
+  workflow_create: 'create a CI/CD workflow for building and deploying',
+  workflow_info: 'get the status of the latest workflow run',
+  workflow_list: 'list the recent workflow runs',
+  workflow_logs: 'show me the logs for the build job in the workflow',
+  workflow_run: 'run the build-and-deploy workflow',
+  workflow_cancel: 'cancel the running workflow',
+  workflow_validate: 'validate my workflow file',
+};
 
 /**
  * Example prompts for local tools (docs-only, not in source code).
@@ -28,6 +68,15 @@ const LOCAL_EXAMPLE_PROMPTS = {
   automation_find_view: "dump properties for testID 'button-123'",
 };
 
+/**
+ * Server tools that are internal/not user-facing and should be excluded from docs.
+ */
+const SERVER_TOOLS_EXCLUDE = new Set([
+  'generate_agents_md',
+  'generate_claude_md',
+  'expo_mcp_diagnostics',
+]);
+
 async function fetchText(url) {
   const response = await fetch(url);
   if (!response.ok) {
@@ -36,23 +85,48 @@ async function fetchText(url) {
   return response.text();
 }
 
-function ensureTrailingPeriod(text) {
-  if (!text) {
-    return '';
-  }
-  return text.endsWith('.') ? text : `${text}.`;
-}
-
 /**
- * Reads server tools from the manually maintained JSON file.
+ * Fetches server tools from the Expo MCP server using the MCP client SDK.
+ * Requires EXPO_TOKEN environment variable.
  */
-function readServerTools() {
-  const content = fs.readFileSync(SERVER_TOOLS_FILE, 'utf-8');
-  const data = JSON.parse(content);
-  return data.tools.map(tool => ({
-    ...tool,
-    availability: 'Server',
-  }));
+async function fetchServerTools() {
+  const token = process.env.EXPO_TOKEN;
+  if (!token) {
+    throw new Error(
+      'EXPO_TOKEN environment variable is required to fetch server tools.\n' +
+        'Create a personal access token at https://expo.dev/settings/access-tokens\n' +
+        'and add it to docs/.env as EXPO_TOKEN=<your-token>'
+    );
+  }
+
+  const client = new Client({ name: 'expo-docs-sync', version: '1.0.0' });
+
+  const transport = new StreamableHTTPClientTransport(new URL(EXPO_MCP_URL), {
+    requestInit: {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  });
+
+  await client.connect(transport);
+
+  const allTools = [];
+  let toolCursor;
+  do {
+    const { tools, nextCursor } = await client.listTools({ cursor: toolCursor });
+    allTools.push(...tools);
+    toolCursor = nextCursor;
+  } while (toolCursor);
+
+  await client.close();
+
+  return allTools
+    .filter(tool => !SERVER_TOOLS_EXCLUDE.has(tool.name))
+    .map(tool => ({
+      name: tool.name,
+      description: ensureTrailingPeriod(tool.description),
+      examplePrompt: SERVER_EXAMPLE_PROMPTS[tool.name] || '',
+      availability: 'Server',
+    }));
 }
 
 /**
@@ -102,8 +176,8 @@ function writeOutput(data) {
 
 async function main() {
   try {
-    console.log('Reading server tools from expo-mcp-server-tools.json...');
-    const serverTools = readServerTools();
+    console.log('Fetching server tools from mcp.expo.dev...');
+    const serverTools = await fetchServerTools();
 
     console.log('Fetching local tools from expo/expo-mcp repo...');
     const localToolResults = await Promise.all(
@@ -113,6 +187,7 @@ async function main() {
       ...tool,
       examplePrompt: LOCAL_EXAMPLE_PROMPTS[tool.name] || '',
       availability: 'Local',
+      ...(LOCAL_REQUIREMENTS[tool.name] && { requirements: LOCAL_REQUIREMENTS[tool.name] }),
     }));
 
     console.log('Fetching prompts from expo/expo-mcp repo...');
@@ -128,8 +203,8 @@ async function main() {
 
     writeOutput({
       source: {
-        repo: 'expo/expo-mcp',
-        url: GITHUB_RAW_BASE,
+        server: EXPO_MCP_URL,
+        localRepo: 'expo/expo-mcp',
         fetchedAt: new Date().toISOString(),
       },
       totalTools: allTools.length,

@@ -1,7 +1,6 @@
-import { Fragment } from 'react';
-
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { CODE } from '~/ui/components/Text';
+import { renderDescription } from '~/ui/components/utils/renderDescription';
 
 import mcpData from './data/expo-mcp-tools.json';
 
@@ -26,19 +25,6 @@ type MCPData = {
 };
 
 const data: MCPData = mcpData;
-
-/**
- * Renders inline backtick-wrapped text as <CODE> elements.
- */
-function renderDescription(text: string) {
-  const parts = text.split(/(`[^`]+`)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('`') && part.endsWith('`')) {
-      return <CODE key={i}>{part.slice(1, -1)}</CODE>;
-    }
-    return <Fragment key={i}>{part}</Fragment>;
-  });
-}
 
 function formatAvailability(tool: { availability: string; requirements?: string }) {
   if (tool.requirements) {
