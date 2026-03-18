@@ -1,0 +1,1 @@
+{"version":3,"file":"Picker.web.d.ts","sourceRoot":"","sources":["../../src/picker/Picker.web.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,SAAS,CAAC;AAErC,iBAAS,eAAe,SAEvB;AAED,eAAO,MAAM,MAAM,EAAE,OAAO,eAAe,GAAG;IAAE,IAAI,EAAE,OAAO,UAAU,CAAA;CAGtE,CAAC"}

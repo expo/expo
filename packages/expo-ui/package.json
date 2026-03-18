@@ -26,6 +26,10 @@
     "./datetimepicker": {
       "types": "./build/datetime-picker/index.d.ts",
       "default": "./src/datetime-picker/index.tsx"
+    },
+    "./picker": {
+      "types": "./build/picker/index.d.ts",
+      "default": "./src/picker/index.tsx"
     }
   },
   "scripts": {

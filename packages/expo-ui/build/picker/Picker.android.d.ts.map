@@ -1,0 +1,1 @@
+{"version":3,"file":"Picker.android.d.ts","sourceRoot":"","sources":["../../src/picker/Picker.android.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAE/B,OAAO,EAAsB,UAAU,EAAE,KAAK,WAAW,EAAE,MAAM,SAAS,CAAC;AAM3E;;;GAGG;AACH,iBAAS,eAAe,CAAC,KAAK,EAAE,WAAW,qBAuB1C;AAED,eAAO,MAAM,MAAM,EAAE,OAAO,eAAe,GAAG;IAAE,IAAI,EAAE,OAAO,UAAU,CAAA;CAGtE,CAAC"}
