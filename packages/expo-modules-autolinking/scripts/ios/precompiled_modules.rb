@@ -87,6 +87,73 @@ module Expo
         !resolve_prebuilt_info(pod_name).nil?
       end
 
+      # Returns the set of all SPM dependency framework names that are bundled inside
+      # prebuilt XCFrameworks. These pods should be stubbed (header-only) when they appear
+      # as source pods, to avoid duplicate symbols with the xcframework.
+      #
+      # @return [Set<String>] Framework names bundled across all prebuilt pods
+      def get_all_bundled_frameworks
+        @all_bundled_frameworks ||= begin
+          bundled = Set.new
+          get_pod_lookup_map.each do |pod_name, info|
+            next unless resolve_prebuilt_info(pod_name)
+            (info[:spm_dependency_frameworks] || []).each { |f| bundled.add(f) }
+          end
+          Pod::UI.puts "#{'[Expo-precompiled] '.blue}Bundled SPM frameworks: #{bundled.to_a.join(', ')}" if bundled.any?
+          bundled
+        end
+      end
+
+      # Checks whether a pod should be stubbed because it is bundled inside a prebuilt
+      # xcframework. When stubbed, the pod keeps its headers (so dependents can compile)
+      # but has no implementation files (the symbols come from the xcframework).
+      #
+      # @param name [String] The pod name
+      # @return [Boolean] true if this pod is bundled in a prebuilt xcframework
+      def is_bundled_dependency?(name)
+        return false unless enabled?
+        # Match exact name and root pod name (for subspecs like 'SDWebImage/Core')
+        root_name = name.split('/').first
+        bundled = get_all_bundled_frameworks
+        bundled.include?(name) || bundled.include?(root_name)
+      end
+
+      # Patches a podspec to be header-only, removing implementation files.
+      # The pod's headers remain available so dependent pods can still compile,
+      # but no object files are produced — the symbols live in the prebuilt xcframework.
+      #
+      # @param spec [Pod::Specification] The podspec to stub
+      # @return [Pod::Specification] A new header-only specification
+      def stub_bundled_pod(spec)
+        spec_json = JSON.parse(spec.to_pretty_json)
+
+        Pod::UI.puts "#{'[Expo-precompiled] '.blue}Stubbing '#{spec.name}' — bundled in prebuilt xcframework"
+
+        # Keep only header files in source_files
+        if spec_json['source_files']
+          spec_json['source_files'] = header_only_pattern(spec_json['source_files'])
+        end
+
+        # Clear platform-specific source_files to headers only
+        %w[ios osx tvos watchos visionos].each do |platform|
+          next unless spec_json[platform].is_a?(Hash) && spec_json[platform]['source_files']
+          spec_json[platform]['source_files'] = header_only_pattern(spec_json[platform]['source_files'])
+        end
+
+        # Stub subspecs too — they may contain implementation files
+        (spec_json['subspecs'] || []).each do |subspec|
+          if subspec['source_files']
+            subspec['source_files'] = header_only_pattern(subspec['source_files'])
+          end
+          %w[ios osx tvos watchos visionos].each do |platform|
+            next unless subspec[platform].is_a?(Hash) && subspec[platform]['source_files']
+            subspec[platform]['source_files'] = header_only_pattern(subspec[platform]['source_files'])
+          end
+        end
+
+        Pod::Specification.from_json(spec_json.to_json)
+      end
+
       # Returns external (3rd-party) pods that have prebuilt XCFrameworks.
       # These need to be registered with :podspec before RN CLI's use_native_modules!
       # registers them with :path (which would ignore spec.source).
@@ -189,6 +256,11 @@ module Expo
         spec.source = { :http => URI::File.build(path: default_tarball).to_s, :flatten => false }
         spec.vendored_frameworks = build_vendored_paths(product_name, pod_info)
 
+        # Strip dependencies on libraries bundled in the xcframework.
+        # SPM dependencies (e.g., SDWebImage for ExpoImage) are compiled into the xcframework.
+        # If left as pod dependencies, CocoaPods installs them from source too → duplicate symbols.
+        strip_bundled_dependencies_from_spec(spec, pod_info)
+
         # prepare_command: self-healing extraction if CocoaPods cache was stale
         # NOTE: Artifact copying (flavor tarballs) is handled by ensure_artifacts in post_install,
         # because CocoaPods skips prepare_command when pods are "unchanged" via Manifest.lock.
@@ -282,6 +354,11 @@ module Expo
         # Remove subspecs and testspecs (source file groupings / test files not in tarball)
         spec_json.delete('subspecs')
         spec_json.delete('testspecs')
+
+        # Strip dependencies on libraries bundled in the xcframework.
+        # SPM dependencies (e.g., SDWebImage for ExpoImage) are compiled into the xcframework.
+        # If left as pod dependencies, CocoaPods installs them from source too → duplicate symbols.
+        strip_bundled_dependencies(spec_json, pod_info, spec.name)
 
         # Set prepare_command (self-healing extraction)
         spec_json['prepare_command'] = prepare_command_script(product_name, build_output_dir)
@@ -566,8 +643,28 @@ touch "$STAMP_FILE"
             pod_name = product['podName']
             next unless pod_name
 
-            codegen_name = product['codegenName']
             product_name = product['name'] || pod_name  # Product name is used for xcframework naming
+
+            # Resolve the codegen module name used by React Native's codegen.
+            # For external packages, spm.config.json's codegenName may differ from the actual
+            # codegen output name (e.g., "keyboardcontroller" in spm.config vs "RNKC" from
+            # codegenConfig.name in package.json). The codegen output name determines the
+            # generated file names (e.g., RNKC-generated.mm, RNKC/ directory).
+            codegen_name = product['codegenName']
+            if type == :external && codegen_name
+              ext_pkg_json = File.join(repo_root, 'node_modules', npm_package, 'package.json')
+              if File.exist?(ext_pkg_json)
+                begin
+                  rn_codegen_name = JSON.parse(File.read(ext_pkg_json)).dig('codegenConfig', 'name')
+                  if rn_codegen_name && rn_codegen_name != codegen_name
+                    Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: using codegenConfig.name '#{rn_codegen_name}' instead of '#{codegen_name}'"
+                    codegen_name = rn_codegen_name
+                  end
+                rescue JSON::ParserError
+                  # Fall back to spm.config.json value
+                end
+              end
+            end
 
             # Centralized build output: packages/precompile/.build/<npm_package>/output/
             build_output_dir = File.join(repo_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR, npm_package, 'output')
@@ -718,6 +815,58 @@ touch "$STAMP_FILE"
         end
       end
 
+      # Removes implementation files from compile phases of pod targets that are bundled
+      # inside prebuilt xcframeworks. This handles CDN pods (like SDWebImage) that don't
+      # go through the store_podspec hook.
+      #
+      # Headers are kept so that other source pods can still compile against them,
+      # but the symbols come from the prebuilt xcframework at link time.
+      #
+      # @param installer [Pod::Installer] The CocoaPods installer instance
+      def stub_bundled_pod_targets(installer)
+        return unless enabled?
+
+        bundled = get_all_bundled_frameworks
+        return if bundled.empty?
+
+        stubbed_lib_names = Set.new
+
+        installer.pods_project.targets.each do |target|
+          # Match target name against bundled frameworks (e.g., "SDWebImage", "SDWebImage-Core")
+          target_root = target.name.split('-').first.split('/').first
+          next unless bundled.include?(target.name) || bundled.include?(target_root)
+
+          compile_phase = target.build_phases.find { |p| p.is_a?(Xcodeproj::Project::Object::PBXSourcesBuildPhase) }
+          next unless compile_phase
+
+          files_removed = 0
+          compile_phase.files.to_a.each do |build_file|
+            file_ref = build_file.file_ref
+            next unless file_ref
+
+            path = file_ref.path.to_s
+            # Remove implementation files but keep headers
+            if path.end_with?('.m', '.mm', '.c', '.cpp', '.swift')
+              compile_phase.files.delete(build_file)
+              files_removed += 1
+            end
+          end
+
+          if files_removed > 0
+            stubbed_lib_names.add(target.name)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Stubbed '#{target.name}': removed #{files_removed} source files from compile phase"
+          end
+        end
+
+        # Remove linker flags (-l<lib>) for stubbed libraries from all xcconfig files.
+        # Without source files, no static library is produced, so the linker flags must go.
+        if stubbed_lib_names.any?
+          remove_linker_flags_for_stubbed_libs(installer, stubbed_lib_names)
+        end
+
+        installer.pods_project.save
+      end
+
       # Configures the ReactCodegen target to properly handle prebuilt modules.
       # This removes source file references for prebuilt libraries from the compile sources phase
       # and adds a shell script build phase to clean up regenerated codegen files.
@@ -759,6 +908,54 @@ touch "$STAMP_FILE"
 
       private
 
+      # Removes -l<lib> linker flags for stubbed libraries from all xcconfig files.
+      # When source files are removed from a pod, no static library (.a) is produced,
+      # so the linker flag must be removed or the link will fail with "library not found".
+      #
+      # @param installer [Pod::Installer] The CocoaPods installer instance
+      # @param stubbed_lib_names [Set<String>] Names of stubbed pod targets
+      def remove_linker_flags_for_stubbed_libs(installer, stubbed_lib_names)
+        # Build regex to match -l flags for stubbed libraries
+        # Pod target names may use hyphens but linker flags use the product name
+        lib_flags = stubbed_lib_names.map { |name| "-l\"#{name}\"" } +
+                    stubbed_lib_names.map { |name| "-l#{name}" }
+        return if lib_flags.empty?
+
+        pods_dir = installer.sandbox.root
+        xcconfig_dir = File.join(pods_dir, 'Target Support Files')
+        return unless File.directory?(xcconfig_dir)
+
+        Dir.glob(File.join(xcconfig_dir, '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          original = content.dup
+
+          lib_flags.each do |flag|
+            # Remove the flag (with surrounding spaces handled)
+            content = content.gsub(/\s*#{Regexp.escape(flag)}/, '')
+          end
+
+          if content != original
+            File.write(xcconfig_path, content)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Cleaned linker flags from #{File.basename(File.dirname(xcconfig_path))}/#{File.basename(xcconfig_path)}"
+          end
+        end
+      end
+
+      # Converts source_files patterns to header-only patterns.
+      # Replaces implementation file extensions with just header extensions.
+      #
+      # @param patterns [String, Array<String>] Original source_files patterns
+      # @return [Array<String>] Patterns matching only header files
+      def header_only_pattern(patterns)
+        patterns = [patterns] unless patterns.is_a?(Array)
+        patterns.map do |p|
+          # Replace extension groups like {h,m,mm,swift,cpp,c} with just {h,hpp}
+          # Also handle single-extension patterns like *.m → *.h
+          p.gsub(/\.\{[^}]+\}/, '.{h,hpp}')
+           .gsub(/\*\.(m|mm|swift|c|cpp)$/, '*.{h,hpp}')
+        end.uniq
+      end
+
       # Resolves prebuilt xcframework info for a pod.
       # Returns [pod_info, product_name, tarball_path] or nil if not available.
       #
@@ -773,6 +970,55 @@ touch "$STAMP_FILE"
         return nil unless File.exist?(tarball)
 
         [pod_info, product_name, tarball]
+      end
+
+      # Strips dependencies on SPM packages bundled in the xcframework from a spec JSON hash.
+      # Used by patch_spec_for_prebuilt (JSON-based patching).
+      #
+      # @param spec_json [Hash] The podspec as a parsed JSON hash (modified in place)
+      # @param pod_info [Hash] Package info from spm.config.json lookup
+      # @param pod_name [String] Pod name for logging
+      def strip_bundled_dependencies(spec_json, pod_info, pod_name)
+        bundled = (pod_info[:spm_dependency_frameworks] || []).to_set
+        return if bundled.empty? || !spec_json['dependencies'].is_a?(Hash)
+
+        spec_json['dependencies'].delete_if do |dep_name, _|
+          # Match exact names and subspec references (e.g., 'libavif/libdav1d' → 'libavif')
+          root_name = dep_name.split('/').first
+          if bundled.include?(dep_name) || bundled.include?(root_name)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Stripping bundled dependency '#{dep_name}' from #{pod_name}"
+            true
+          else
+            false
+          end
+        end
+        spec_json.delete('dependencies') if spec_json['dependencies'].empty?
+      end
+
+      # Strips dependencies on SPM packages bundled in the xcframework from a live spec object.
+      # Used by try_link_with_prebuilt_xcframework (DSL-based patching).
+      #
+      # NOTE: Pod::Specification doesn't expose a public API to remove dependencies,
+      # so we modify the attributes_hash directly.
+      #
+      # @param spec [Pod::Specification] The podspec to modify
+      # @param pod_info [Hash] Package info from spm.config.json lookup
+      def strip_bundled_dependencies_from_spec(spec, pod_info)
+        bundled = (pod_info[:spm_dependency_frameworks] || []).to_set
+        return if bundled.empty?
+
+        deps = spec.attributes_hash['dependencies']
+        return unless deps.is_a?(Hash)
+
+        deps.delete_if do |dep_name, _|
+          root_name = dep_name.split('/').first
+          if bundled.include?(dep_name) || bundled.include?(root_name)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Stripping bundled dependency '#{dep_name}' from #{spec.name}"
+            true
+          else
+            false
+          end
+        end
       end
 
       # Builds the vendored_frameworks paths array for a prebuilt pod.

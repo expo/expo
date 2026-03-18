@@ -61,6 +61,11 @@ module Pod
       # Configure ReactCodegen to handle prebuilt modules properly.
       # This removes codegen source files for prebuilt libraries and adds a cleanup script phase.
       Expo::PrecompiledModules.configure_codegen_for_prebuilt_modules(self)
+
+      # Stub pod targets for libraries bundled inside prebuilt xcframeworks.
+      # Removes implementation files from compile phases so only headers remain.
+      # This handles CDN pods (like SDWebImage) that don't go through store_podspec.
+      Expo::PrecompiledModules.stub_bundled_pod_targets(self)
     end
 
     define_method(:run_podfile_pre_install_hooks) do

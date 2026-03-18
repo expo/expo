@@ -36,6 +36,16 @@ module Pod
         patched_spec = Expo::PrecompiledModules.patch_spec_for_prebuilt(spec)
       end
 
+      # Stub pods that are bundled inside prebuilt xcframeworks.
+      # These pods are compiled into the xcframework as SPM dependencies (e.g., SDWebImage
+      # inside ExpoImage.xcframework). If other source pods depend on them, we keep headers
+      # for compilation but remove implementation files to avoid duplicate symbols.
+      # NOTE: This only works for development pods (:path/:podspec). CDN pods are handled
+      # in post_install via stub_bundled_pod_targets.
+      if patched_spec.nil? && Expo::PrecompiledModules.is_bundled_dependency?(name)
+        patched_spec = Expo::PrecompiledModules.stub_bundled_pod(spec)
+      end
+
       if patched_spec != nil
         # Store the patched spec with original checksum and local saved file path
         patched_spec.defined_in_file = spec.defined_in_file
