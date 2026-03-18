@@ -6,6 +6,7 @@ import {
   IconButton,
   LazyColumn,
   ListItem,
+  Text as ComposeText,
 } from '@expo/ui/jetpack-compose';
 import { align, fillMaxSize, fillMaxWidth, offset } from '@expo/ui/jetpack-compose/modifiers';
 import { Alert, StyleSheet } from 'react-native';
@@ -25,12 +26,11 @@ export default function HorizontalFloatingToolbarScreen() {
       <Box modifiers={[fillMaxSize()]} floatingToolbarExitAlwaysScrollBehavior="bottom">
         <LazyColumn modifiers={[fillMaxSize()]}>
           {items.map((item) => (
-            <ListItem
-              key={item.id}
-              headline={item.title}
-              supportingText={item.subtitle}
-              modifiers={[fillMaxWidth()]}
-            />
+            <ListItem key={item.id} headline={item.title} modifiers={[fillMaxWidth()]}>
+              <ListItem.SupportingContent>
+                <ComposeText>{item.subtitle}</ComposeText>
+              </ListItem.SupportingContent>
+            </ListItem>
           ))}
         </LazyColumn>
 

@@ -6,7 +6,7 @@ import {
   Image,
 } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type IconProps = {
@@ -28,11 +28,11 @@ export type IconProps = {
    *
    * @example
    * ```tsx
-   * <Icon source={require('./assets/star.xml')} tintColor="#007AFF" />
-   * <Icon source={require('./assets/star.xml')} tintColor="blue" />
+   * <Icon source={require('./assets/star.xml')} tint="#007AFF" />
+   * <Icon source={require('./assets/star.xml')} tint="blue" />
    * ```
    */
-  tintColor?: ColorValue;
+  tint?: ColorValue;
 
   /**
    * The size of the icon in density-independent pixels (dp).
@@ -74,7 +74,7 @@ export type IconProps = {
    * />
    * ```
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 /**
@@ -121,7 +121,7 @@ function transformIconProps(props: IconProps): NativeIconProps {
  * <Icon
  *   source={require('./assets/settings.xml')}
  *   size={24}
- *   tintColor="#007AFF"
+ *   tint="#007AFF"
  *   contentDescription="Settings icon"
  * />
  * ```
