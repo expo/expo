@@ -1,7 +1,7 @@
-diff --git a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js
+diff --git a/cjs/react-server-dom-webpack-client.browser.development.js b/cjs/react-server-dom-webpack-client.browser.development.js
 index 38e04fb..24cc8ef 100644
---- a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js
-+++ b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.development.js
+--- a/cjs/react-server-dom-webpack-client.browser.development.js
++++ b/cjs/react-server-dom-webpack-client.browser.development.js
 @@ -800,9 +800,9 @@
          return bound
            ? "fulfilled" === bound.status
@@ -15,10 +15,10 @@ index 38e04fb..24cc8ef 100644
            : callServer(id, args);
        }
        var id = metaData.id,
-diff --git a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js
+diff --git a/cjs/react-server-dom-webpack-client.browser.production.js b/cjs/react-server-dom-webpack-client.browser.production.js
 index 7a5db2b..74dbad0 100644
---- a/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js
-+++ b/node_modules/react-server-dom-webpack/cjs/react-server-dom-webpack-client.browser.production.js
+--- a/cjs/react-server-dom-webpack-client.browser.production.js
++++ b/cjs/react-server-dom-webpack-client.browser.production.js
 @@ -512,9 +512,9 @@ function createBoundServerReference(metaData, callServer) {
      return bound
        ? "fulfilled" === bound.status
