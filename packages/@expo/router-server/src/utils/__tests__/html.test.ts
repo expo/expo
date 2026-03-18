@@ -1,6 +1,7 @@
 import {
   createInjectedCssElements,
   createInjectedScriptElements,
+  createLoaderDataScript,
   getHydrationFlagScript,
   serializeHelmetToHtml,
 } from '../html';
@@ -50,6 +51,24 @@ describe(getHydrationFlagScript, () => {
     expect(getHydrationFlagScript()).toBe(
       '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
     );
+  });
+});
+
+describe(createLoaderDataScript, () => {
+  it('returns a script tag with double-serialized JSON', () => {
+    const data = { '/route': { message: 'hello' } };
+    const result = createLoaderDataScript(data);
+    expect(result).toContain('<script id="expo-router-data">');
+    expect(result).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
+    expect(result).toContain('JSON.parse(');
+    expect(result).toContain('</script>');
+  });
+
+  it('escapes unsafe HTML characters', () => {
+    const data = { '/route': '<script>alert("xss")</script>' };
+    const result = createLoaderDataScript(data);
+    // Should not contain raw `<` or `>` inside the JSON
+    expect(result).not.toMatch(/JSON\.parse\([^)]*<script>/);
   });
 });
 
