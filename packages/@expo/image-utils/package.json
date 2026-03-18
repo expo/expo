@@ -7,9 +7,9 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepublishOnly": "yarn run clean && yarn run build",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "expo-module test",
-    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "test:e2e": "pnpm run prepare && expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
