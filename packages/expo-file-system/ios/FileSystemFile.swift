@@ -56,7 +56,7 @@ internal final class FileSystemFile: FileSystemPath {
         let bufferSize = 65536
 
         let handle = try FileHandle(forReadingFrom: url)
-        defer { try? handle.close() } // Modern close throws
+        defer { try? handle.close() }
 
         var hasher = Insecure.MD5()
         while let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty {
