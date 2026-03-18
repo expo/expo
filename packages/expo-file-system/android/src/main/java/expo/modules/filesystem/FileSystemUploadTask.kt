@@ -1,26 +1,26 @@
 package expo.modules.filesystem
 
+import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.Response
 import okio.Buffer
 import okio.BufferedSink
 import okio.ForwardingSink
 import okio.Sink
 import okio.buffer
-import java.io.File
+import okio.source
 import java.io.IOException
-import java.net.URI
 import java.net.URLConnection
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
@@ -60,17 +60,17 @@ class FileSystemUploadTask : SharedObject() {
   private var lastProgressTime: Long = 0
   private val progressThrottleInterval: Long = 100 // 100ms
 
-  suspend fun start(url: String, fileUri: String, options: UploadOptionsRecord): UploadResultRecord {
-    val file = File(URI(fileUri))
+  suspend fun start(url: String, file: FileSystemFile, options: UploadOptionsRecord): UploadResultRecord {
+    val unifiedFile = file.file
 
-    if (!file.exists()) {
+    if (!unifiedFile.exists()) {
       throw UnableToUploadException("File does not exist")
     }
 
     // Build request body
     val requestBody = when (options.uploadType) {
-      1 -> createMultipartBody(file, options) // MULTIPART
-      else -> createBinaryBody(file) // BINARY_CONTENT
+      1 -> createMultipartBody(unifiedFile, options) // MULTIPART
+      else -> createBinaryBody(unifiedFile) // BINARY_CONTENT
     }
 
     // Build request
@@ -141,14 +141,14 @@ class FileSystemUploadTask : SharedObject() {
     call?.cancel()
   }
 
-  private fun createBinaryBody(file: File): RequestBody {
+  private fun createBinaryBody(file: UnifiedFileInterface): RequestBody {
     val baseBody = file.asRequestBody(null)
     return CountingRequestBody(baseBody) { bytesWritten, totalBytes ->
       emitProgress(bytesWritten, totalBytes)
     }
   }
 
-  private fun createMultipartBody(file: File, options: UploadOptionsRecord): RequestBody {
+  private fun createMultipartBody(file: UnifiedFileInterface, options: UploadOptionsRecord): RequestBody {
     val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
 
     // Add form parameters
@@ -157,16 +157,18 @@ class FileSystemUploadTask : SharedObject() {
     }
 
     // Determine MIME type
-    val mimeType = options.mimeType ?: URLConnection.guessContentTypeFromName(file.name) ?: "application/octet-stream"
+    val fileName = file.fileName ?: "upload"
+    val mimeType = options.mimeType ?: file.type ?: URLConnection.guessContentTypeFromName(fileName) ?:
+    "application/octet-stream"
 
     // Add file part with progress tracking
-    val fieldName = options.fieldName ?: file.name
-    val fileBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
+    val fieldName = options.fieldName ?: fileName
+    val fileBody = file.asRequestBody(mimeType)
     val countingFileBody = CountingRequestBody(fileBody) { bytesWritten, totalBytes ->
       emitProgress(bytesWritten, totalBytes)
     }
 
-    bodyBuilder.addFormDataPart(fieldName, file.name, countingFileBody)
+    bodyBuilder.addFormDataPart(fieldName, fileName, countingFileBody)
 
     return bodyBuilder.build()
   }
@@ -218,5 +220,18 @@ private class CountingSink(
     super.write(source, byteCount)
     bytesWritten += byteCount
     progressListener(bytesWritten, requestBody.contentLength())
+  }
+}
+
+private fun UnifiedFileInterface.asRequestBody(contentType: String?): RequestBody {
+  return object : RequestBody() {
+    override fun contentType() = contentType?.toMediaTypeOrNull()
+    override fun contentLength() = length()
+    override fun writeTo(sink: BufferedSink) {
+      inputStream().use { input ->
+        val source = input.source()
+        sink.writeAll(source)
+      }
+    }
   }
 }

@@ -369,7 +369,7 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
         parameters: this._options?.parameters,
       };
 
-      const result = await super.start(this._url, this._file.uri, nativeOpts);
+      const result = await super.start(this._url, this._file, nativeOpts);
       this._state = 'completed';
       return result;
     } catch (error) {

@@ -34,11 +34,8 @@ class FileSystemUploadTask: SharedObject {
   private var cancelled = false
   private var tempFileURL: URL?
 
-  func start(url: URL, fileUri: String, options: UploadOptionsRecord, promise: Promise) {
-    guard let sourceUrl = URL(string: fileUri) else {
-      promise.reject(InvalidUrlException(fileUri))
-      return
-    }
+  func start(url: URL, file: FileSystemFile, options: UploadOptionsRecord, promise: Promise) {
+    let sourceUrl = file.url
 
     do {
       // Create the delegate

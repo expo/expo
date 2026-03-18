@@ -354,10 +354,10 @@ public final class FileSystemModule: Module {
         return FileSystemUploadTask()
       }
 
-      Events("progress")
+      // Events("progress")
 
-      AsyncFunction("start") { (task: FileSystemUploadTask, url: URL, fileUri: String, options: UploadOptionsRecord, promise: Promise) in
-        task.start(url: url, fileUri: fileUri, options: options, promise: promise)
+      AsyncFunction("start") { (task: FileSystemUploadTask, url: URL, file: FileSystemFile, options: UploadOptionsRecord, promise: Promise) in
+        task.start(url: url, file: file, options: options, promise: promise)
       }
 
       Function("cancel") { (task: FileSystemUploadTask) in
@@ -370,7 +370,7 @@ public final class FileSystemModule: Module {
         return FileSystemDownloadTask()
       }
 
-      Events("progress")
+      // Events("progress")
 
       AsyncFunction("start") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) in
         try to.validatePermission(.write)
