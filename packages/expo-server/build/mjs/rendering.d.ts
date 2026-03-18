@@ -6,8 +6,8 @@ import type { AssetInfo, GetStaticContentOptions } from './manifest';
  * {@link import('@expo/router-server/src/static/renderStaticContent')}
  */
 export interface ServerRenderModule {
-    /** {@link import('@expo/router-server/src/static/renderStaticContent').getStaticContent} */
-    getStaticContent(location: URL, options?: GetStaticContentOptions): Promise<string>;
+    /** {@link import('@expo/router-server/src/static/renderStaticContent').getStreamingContent} */
+    getStreamingContent(location: URL, options?: GetStaticContentOptions): Promise<ReadableStream<Uint8Array>>;
 }
 export interface RenderOptions {
     loader?: {
@@ -16,7 +16,7 @@ export interface RenderOptions {
     };
     assets?: AssetInfo;
 }
-export type SsrRenderFn = (request: Request, options?: RenderOptions) => Promise<string>;
+export type SsrRenderFn = (request: Request, options?: RenderOptions) => Promise<ReadableStream<Uint8Array>>;
 /** Module exported from loader bundle, typically `_expo/loaders/[ROUTE].js` */
 export interface LoaderModule {
     loader(request: ImmutableRequest | undefined, params: Record<string, string>): Promise<unknown> | unknown;
