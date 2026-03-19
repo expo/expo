@@ -178,9 +178,6 @@ export declare class Directory {
    */
   list(): (Directory | File)[];
 
-  get parentDirectory(): Directory;
-  get name(): string;
-
   /**
    * Retrieves an object containing properties of a directory.
    *
@@ -240,21 +237,6 @@ export declare class File {
    * Represents the file URI. The field is read-only, but it may change as a result of calling some methods such as `move`.
    */
   get uri(): string;
-  get parentDirectory(): Directory;
-  get extension(): string;
-  /**
-   * Basename of the file.
-   */
-  get name(): string;
-  /**
-   * Creates a readable stream from the file.
-   */
-  readableStream(): ReadableStream;
-
-  /**
-   * Creates a writeable stream to the file.
-   */
-  writableStream(): WritableStream<Uint8Array>;
 
   /**
    * @hidden This method is not meant to be used directly. It is called by the JS constructor.
