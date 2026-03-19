@@ -18,16 +18,11 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.ui.convertibles.ContentAlignment
 
-class PullToRefreshIndicatorProps : Record {
-  @Field
-  val color: Color? = null
-
-  @Field
-  val containerColor: Color? = null
-
-  @Field
-  val modifiers: ModifierList = emptyList()
-}
+data class PullToRefreshIndicatorProps(
+  @Field val color: Color? = null,
+  @Field val containerColor: Color? = null,
+  @Field val modifiers: ModifierList = emptyList()
+) : Record
 
 data class PullToRefreshBoxProps(
   val isRefreshing: Boolean = false,
