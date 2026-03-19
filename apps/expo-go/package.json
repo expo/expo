@@ -30,6 +30,7 @@
     "expo-location": "workspace:*",
     "expo-notifications": "workspace:*",
     "expo-router": "workspace:*",
+    "expo-screen-orientation": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "expo-store-review": "workspace:*",
     "expo-task-manager": "workspace:*",

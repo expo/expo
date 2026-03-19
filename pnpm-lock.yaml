@@ -458,6 +458,9 @@ importers:
       expo-router:
         specifier: workspace:*
         version: link:../../packages/expo-router
+      expo-screen-orientation:
+        specifier: workspace:*
+        version: link:../../packages/expo-screen-orientation
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
