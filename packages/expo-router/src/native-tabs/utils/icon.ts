@@ -91,7 +91,11 @@ export function convertOptionsIconToIOSPropsIcon(
       name: icon.sf,
     };
   }
-  if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
+  if (icon && 'xcasset' in icon && icon.xcasset) {
+      return { type: 'xcasset', name: icon.xcasset };
+  }
+  
+  if (icon && 'src' in icon && icon.src) {
     const imageSource =
       'xcasset' in icon && icon.xcasset
         ? { uri: icon.xcasset }
