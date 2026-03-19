@@ -33,18 +33,10 @@ function getExpoDependencyChunks({
   includeSplashScreen: boolean;
 }) {
   return [
-    ['@expo/config-types', '@expo/env', '@expo/json-file', '@expo/require-utils'],
-    ['@expo/config'],
-    ['@expo/config-plugins'],
-    ['@expo/plist'],
-    ['@expo/local-build-cache-provider'],
-    ['expo-modules-core'],
-    ['unimodules-app-loader'],
     ['expo-task-manager'],
-    ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking', '@expo/inline-modules'],
+    ['expo', 'expo-asset', '@expo/inline-modules'],
     ['expo-manifests'],
-    ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
-    ['@expo/image-utils'],
+    ['expo-constants'],
     ['@expo/dom-webview', '@expo/log-box'],
     [
       'babel-preset-expo',
@@ -100,15 +92,9 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
 
 const expoResolutions: { [key: string]: string } = {};
 
-/**
- * Executes `npm pack` on one of the Expo packages used in updates E2E
- * Adds a dateTime stamp to the version to ensure that it is unique and that
- * only this version will be used when yarn installs dependencies in the test app.
- */
-async function packExpoDependency(
+function linkExpoDependency(
   repoRoot: string,
   projectRoot: string,
-  destPath: string,
   dependencyName: string
 ) {
   // Pack up the named Expo package into the destination folder
@@ -124,44 +110,9 @@ async function packExpoDependency(
   } else {
     dependencyPath = path.resolve(repoRoot, 'packages', dependencyComponents[0]);
   }
-
-  // Save a copy of package.json
-  const packageJsonPath = path.resolve(dependencyPath, 'package.json');
-  const packageJsonCopyPath = `${packageJsonPath}-original`;
-  await fs.copyFile(packageJsonPath, packageJsonCopyPath);
-  // Extract the version from package.json
-  const packageJson = require(packageJsonPath);
-  const originalVersion = packageJson.version;
-  // Add string to the version to ensure that yarn uses the tarball and not the published version
-  const e2eVersion = `${originalVersion}-${new Date().getTime()}`;
-  await fs.writeFile(
-    packageJsonPath,
-    JSON.stringify(
-      {
-        ...packageJson,
-        version: e2eVersion,
-      },
-      null,
-      2
-    )
-  );
-
-  let dependencyTarballPath: string;
-  try {
-    dependencyTarballPath = await spawnNpmPackAsync({ cwd: dependencyPath, outputDir: destPath });
-  } finally {
-    // Restore the original package JSON
-    await fs.copyFile(packageJsonCopyPath, packageJsonPath);
-    await fs.rm(packageJsonCopyPath);
-  }
-
   // Return the dependency in the form needed by package.json, as a relative path
-  const dependency = `.${path.sep}${path.relative(projectRoot, dependencyTarballPath)}`;
-
-  return {
-    dependency,
-    e2eVersion,
-  };
+  const dependency = `link:.${path.sep}${path.relative(projectRoot, dependencyPath)}`;
+  return { dependency };
 }
 
 async function spawnNpmPackAsync({
@@ -305,13 +256,8 @@ async function preparePackageJson(
       dependencyChunk.map(async (dependencyName) => {
         console.log(`Packing ${dependencyName}...`);
         console.time(`Packaged ${dependencyName}`);
-        const result = await packExpoDependency(
-          repoRoot,
-          projectRoot,
-          dependenciesPath,
-          dependencyName
-        );
-        expoResolutions[dependencyName] = result.dependency;
+        const { dependency } = linkExpoDependency(repoRoot, projectRoot, dependencyName);
+        expoResolutions[dependencyName] = dependency;
         console.timeEnd(`Packaged ${dependencyName}`);
       })
     );
@@ -834,7 +780,7 @@ export async function initAsync(
   appJson = transformAppJson(appJson, projectName, runtimeVersion, isTV);
   await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
-  // Install node modules with local tarballs
+  // Install node modules with links
   await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,
     stdio: 'inherit',
