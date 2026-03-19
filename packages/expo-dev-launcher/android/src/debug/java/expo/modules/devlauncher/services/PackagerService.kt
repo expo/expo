@@ -8,7 +8,8 @@ data class PackagerInfo(
   val url: String,
   val description: String,
   val slug: String? = null,
-  val androidPackage: String? = null
+  val androidPackage: String? = null,
+  val username: String? = null
 )
 
 class PackagerService(

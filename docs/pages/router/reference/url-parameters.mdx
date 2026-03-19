@@ -18,7 +18,7 @@ Search parameters (also known as query params) are serializable fields that can 
 
 ## Local versus global URL parameters
 
-In nested apps, you'll often have **multiple pages mounted** at the same time. For example, a stack has the previous page and current page in memory when a new route is pushed. Because of this, Expo Router provides two different hooks for accessing URL parameters:
+In apps with nested navigators, you'll often have **multiple pages mounted** at the same time. For example, a stack has the previous page and current page in memory when a new route is pushed. Because of this, Expo Router provides two different hooks for accessing URL parameters:
 
 - **useLocalSearchParams**: Returns the URL parameters for the current component. It only updates when the global URL conforms to the route.
 - **useGlobalSearchParams**: Returns the global URL regardless of the component. It updates on every URL param change and might cause components to update extraneously in the background.

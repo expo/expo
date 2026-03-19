@@ -1,5 +1,5 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { type ToolbarPlacement } from './context';
 export interface StackToolbarProps {
     /**
@@ -27,6 +27,15 @@ export interface StackToolbarProps {
      * @default false
      */
     asChild?: boolean;
+    /**
+     * When `true`, disables automatic keyboard (IME) padding on the bottom toolbar.
+     *
+     * Only applies to `placement="bottom"` on Android.
+     *
+     * @default false
+     * @platform android
+     */
+    disableImePadding?: boolean;
 }
 /**
  * The component used to configure the stack toolbar.
@@ -91,16 +100,16 @@ export interface StackToolbarProps {
  * @platform ios
  */
 export declare const StackToolbar: {
-    (props: StackToolbarProps): React.JSX.Element;
-    Button: React.FC<import("./StackToolbarButton").StackToolbarButtonProps>;
-    Menu: React.FC<import("./StackToolbarMenu").StackToolbarMenuProps>;
-    MenuAction: React.FC<import("./StackToolbarMenu").StackToolbarMenuActionProps>;
-    SearchBarSlot: React.FC<import("./StackToolbarSearchBarSlot").StackToolbarSearchBarSlotProps>;
-    Spacer: React.FC<import("./StackToolbarSpacer").StackToolbarSpacerProps>;
-    View: React.FC<import("./StackToolbarView").StackToolbarViewProps>;
-    Label: React.FC<import("./toolbar-primitives").StackToolbarLabelProps>;
-    Icon: React.FC<import("./toolbar-primitives").StackToolbarIconProps>;
-    Badge: React.FC<import("./toolbar-primitives").StackToolbarBadgeProps>;
+    (props: StackToolbarProps): import("react").JSX.Element;
+    Button: import("react").FC<import("./StackToolbarButton").StackToolbarButtonProps>;
+    Menu: import("react").FC<import("./StackToolbarMenu").StackToolbarMenuProps>;
+    MenuAction: import("react").FC<import("./StackToolbarMenu").StackToolbarMenuActionProps>;
+    SearchBarSlot: import("react").FC<import("./StackToolbarSearchBarSlot").StackToolbarSearchBarSlotProps>;
+    Spacer: import("react").FC<import("./StackToolbarSpacer").StackToolbarSpacerProps>;
+    View: import("react").FC<import("./StackToolbarView").StackToolbarViewProps>;
+    Label: import("react").FC<import("./toolbar-primitives").StackToolbarLabelProps>;
+    Icon: import("react").FC<import("./toolbar-primitives").StackToolbarIconProps>;
+    Badge: import("react").FC<import("./toolbar-primitives").StackToolbarBadgeProps>;
 };
 export declare function appendStackToolbarPropsToOptions(options: NativeStackNavigationOptions, props: StackToolbarProps): NativeStackNavigationOptions;
 export default StackToolbar;

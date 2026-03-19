@@ -27,6 +27,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community DateTimePicker replacement',
+    route: 'ui/community-datetimepicker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityDateTimePickerScreen'));
+    },
+  },
+  {
     name: 'Toggle component',
     route: 'ui/toggle',
     options: {},

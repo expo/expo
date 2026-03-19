@@ -21,7 +21,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "Expo",
-  "bin": "build/index.js",
+  "bin": "bin/create-expo-module.js",
   "main": "build/index.js",
   "files": [
     "bin",
@@ -33,13 +33,13 @@
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "prepare": "expo-module clean && yarn run build:prod",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
-    "watch": "yarn run build --watch"
+    "watch": "yarn run build --watch",
+    "prepublishOnly": "yarn run clean && yarn run build:prod"
   },
   "devDependencies": {
     "@expo/json-file": "^10.0.12",

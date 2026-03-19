@@ -55,7 +55,7 @@ jobs:
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
       - name: 🛠 Build create-expo
-        run: yarn prepare
+        run: yarn run prepublishOnly
         working-directory: packages/create-expo
       - name: E2E Test create-expo
         run: yarn test:e2e
