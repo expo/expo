@@ -16,37 +16,27 @@ index 1789e54..b6ac31d 100644
 +      ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
  }
 diff --git a/android/app/src/main/java/com/myapp/MainApplication.kt b/android/app/src/main/java/com/myapp/MainApplication.kt
-index 46c8f72..6edfde8 100644
+index 9cb435b..bd46af6 100644
 --- a/android/app/src/main/java/com/myapp/MainApplication.kt
 +++ b/android/app/src/main/java/com/myapp/MainApplication.kt
 @@ -1,4 +1,7 @@
  package com.myapp
 +import android.content.res.Configuration
 +import expo.modules.ApplicationLifecycleDispatcher
-+import expo.modules.ReactNativeHostWrapper
++import expo.modules.ExpoReactHostFactory
 
  import android.app.Application
  import com.facebook.react.PackageList
-@@ -13,7 +16,7 @@ import com.facebook.react.defaults.DefaultReactNativeHost
+@@ -10,7 +13,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
  class MainApplication : Application(), ReactApplication {
 
-   override val reactNativeHost: ReactNativeHost =
--      object : DefaultReactNativeHost(this) {
-+      ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
-         override fun getPackages(): List<ReactPackage> =
-             PackageList(this).packages.apply {
-               // Packages that cannot be autolinked yet can be added manually here, for example:
-@@ -26,13 +29,19 @@ class MainApplication : Application(), ReactApplication {
-
-         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
--      }
-+      })
-
-   override val reactHost: ReactHost
--    get() = getDefaultReactHost(applicationContext, reactNativeHost)
-+    get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
-
+   override val reactHost: ReactHost by lazy {
+-    getDefaultReactHost(
++    ExpoReactHostFactory.getDefaultReactHost(
+       context = applicationContext,
+       packageList =
+         PackageList(this).packages.apply {
+@@ -23,5 +26,11 @@ class MainApplication : Application(), ReactApplication {
    override fun onCreate() {
      super.onCreate()
      loadReactNative(this)

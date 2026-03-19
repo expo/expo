@@ -136,10 +136,9 @@ export interface MaterialIcon {
      */
     md: AndroidSymbol;
 }
-export type BaseNativeTabsTriggerIconProps = {
+export type NativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
-};
-export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (XcassetIcon & DrawableIcon) | (XcassetIcon & MaterialIcon) | (XcassetIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
+} & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (XcassetIcon & DrawableIcon) | (XcassetIcon & MaterialIcon) | (XcassetIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
  *

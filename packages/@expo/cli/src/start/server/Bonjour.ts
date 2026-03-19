@@ -1,5 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 
+import { getSession } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
 
 const debug = require('debug')('expo:start:server:bonjour') as typeof console.log;
@@ -16,9 +17,11 @@ export class Bonjour {
 
   public async announceAsync({
     exp = getConfig(this.projectRoot).exp,
+    username = getSession()?.username,
   }: {
-    exp?: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
-  }) {
+    exp?: ExpoConfig;
+    username?: string;
+  }): Promise<void> {
     if (env.CI || !env.EXPO_UNSTABLE_BONJOUR) {
       return;
     } else if (!this.port) {
@@ -41,6 +44,9 @@ export class Bonjour {
       txt: {
         name: exp.name?.slice(0, 255),
         slug: exp.slug?.slice(0, 255),
+        androidPackage: exp.android?.package?.slice(0, 255),
+        iosBundleIdentifier: exp.ios?.bundleIdentifier?.slice(0, 255),
+        username: username?.slice(0, 255),
       },
     });
   }

@@ -4,12 +4,15 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 @Suppress("DEPRECATION")
-private suspend fun NsdManager.resolveServiceLegacyImpl(
+internal suspend fun NsdManager.resolveServiceCoroutine(
   serviceInfo: NsdServiceInfo
 ): NsdServiceInfo = suspendCancellableCoroutine { cont ->
   this.resolveService(
@@ -33,52 +36,32 @@ private suspend fun NsdManager.resolveServiceLegacyImpl(
 }
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-private suspend fun NsdManager.resolveServiceImpl(
+internal fun NsdManager.serviceInfoFlow(
   serviceInfo: NsdServiceInfo
-): NsdServiceInfo = suspendCancellableCoroutine { cont ->
-  val manger = this
+): Flow<NsdServiceInfo> = callbackFlow {
+  val manager = this@serviceInfoFlow
 
   val callback = object : NsdManager.ServiceInfoCallback {
     override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {
-      if (cont.isActive) {
-        cont.resumeWithException(
-          RuntimeException("Service info callback registration failed: errorCode=$errorCode")
-        )
-      }
+      close(
+        RuntimeException("Service info callback registration failed: errorCode=$errorCode")
+      )
     }
 
     override fun onServiceUpdated(resolvedInfo: NsdServiceInfo) {
-      manger.unregisterServiceInfoCallback(this)
-      if (cont.isActive) {
-        cont.resume(resolvedInfo)
-      }
+      trySend(resolvedInfo)
     }
 
-    override fun onServiceLost() {
-      manger.unregisterServiceInfoCallback(this)
-      if (cont.isActive) {
-        cont.resumeWithException(RuntimeException("Service lost during resolution"))
-      }
-    }
-
+    // The service lost is going to be handle, by the NSD service.
+    override fun onServiceLost() = Unit
     override fun onServiceInfoCallbackUnregistered() = Unit
   }
 
-  cont.invokeOnCancellation {
+  manager.registerServiceInfoCallback(serviceInfo, { it.run() }, callback)
+
+  awaitClose {
     runCatching {
-      manger.unregisterServiceInfoCallback(callback)
+      manager.unregisterServiceInfoCallback(callback)
     }
-  }
-
-  manger.registerServiceInfoCallback(serviceInfo, { it.run() }, callback)
-}
-
-suspend fun NsdManager.resolveServiceCoroutine(
-  serviceInfo: NsdServiceInfo
-): NsdServiceInfo {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-    resolveServiceImpl(serviceInfo)
-  } else {
-    resolveServiceLegacyImpl(serviceInfo)
   }
 }

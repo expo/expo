@@ -251,7 +251,7 @@ function convertSrcOrComponentToSrc(
 ) {
   if (src) {
     if (isValidElement(src)) {
-      return convertComponentSrcToImageSource(src);
+      return convertComponentSrcToImageSource(src, options.renderingMode);
     } else {
       return { src, renderingMode: options.renderingMode };
     }

@@ -28,4 +28,5 @@
 #import "ExpoGoReactNativeFactory.h"
 #import "EXUtil.h"
 #import "EXReactAppManager.h"
+#import "EXAbstractLoader.h"
 #import "EXProgressHUD.h"

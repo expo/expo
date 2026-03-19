@@ -14,8 +14,8 @@ class ExponentDevBundleDownloadListener(private val listener: DevBundleDownloadP
     listener.onSuccess()
   }
 
-  override fun onProgress(status: String?, done: Int?, total: Int?) {
-    listener.onProgress(status, done, total)
+  override fun onProgress(status: String?, done: Int?, total: Int?, percent: Int?) {
+    listener.onProgress(status, done, total, percent)
   }
 
   override fun onFailure(cause: Exception) {

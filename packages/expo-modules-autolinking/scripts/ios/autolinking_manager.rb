@@ -17,6 +17,7 @@ module Expo
       @podfile = podfile
       @target_definition = target_definition
       @options = options
+      @podfile_properties_path = File.join(Pod::Config.instance.project_root, 'Podfile.properties.json')
 
       validate_target_definition()
       resolve_result = resolve()
@@ -25,6 +26,10 @@ module Expo
 
       @packages = resolve_result['modules'].map { |json_package| Package.new(json_package) }
       @extraPods = resolve_result['extraDependencies']
+    end
+
+    public def get_podfile_properties_path
+      return @podfile_properties_path
     end
 
     public def use_expo_modules!
@@ -235,7 +240,7 @@ module Expo
     end
 
     public def generate_modules_provider_command_args(target_path)
-      command_args = ['--target', target_path]
+      command_args = ['--target', target_path, "--podfile-properties-file-path", "\"#{@podfile_properties_path}\""]
 
       if !custom_app_root.nil?
         command_args.concat(['--app-root', custom_app_root])

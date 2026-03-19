@@ -144,6 +144,11 @@ dependencies {
   debugOnly "androidx.compose.ui:ui:$composeVersion"
   debugOnly "androidx.compose.ui:ui-tooling:$composeVersion"
   debugOnly "androidx.navigation:navigation-compose:2.9.4"
+
+  def lifecycleVersion = "2.10.0"
+  debugOnly "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+  debugOnly "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion"
+
   debugOnly "com.google.android.gms:play-services-code-scanner:16.1.0"
   debugOnly "com.google.mlkit:barcode-scanning:17.3.0"
 

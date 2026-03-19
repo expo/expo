@@ -51,6 +51,23 @@ export default function MultilineTextInputExample() {
 }
 ```
 
+### Outlined text input
+
+```tsx OutlinedTextInputExample.tsx
+import { useState } from 'react';
+import { Host, TextInput } from '@expo/ui/jetpack-compose';
+
+export default function OutlinedTextInputExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextInput variant="outlined" defaultValue={value} onChangeText={setValue} />
+    </Host>
+  );
+}
+```
+
 ### Numeric keyboard
 
 ```tsx NumericTextInputExample.tsx

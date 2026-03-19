@@ -25,14 +25,14 @@ export function getRedirectPath(redirectPath: string): string {
 
   // A list of pages we know are renamed and can redirect
   if (RENAMED_PAGES[redirectPath]) {
-    redirectPath = RENAMED_PAGES[redirectPath];
+    return RENAMED_PAGES[redirectPath];
   }
 
   // Catch any unversioned paths which are also renamed
   if (isVersionedPath(redirectPath)) {
     const unversionedPath = removeVersionFromPath(redirectPath);
     if (RENAMED_PAGES[unversionedPath]) {
-      redirectPath = RENAMED_PAGES[unversionedPath];
+      return RENAMED_PAGES[unversionedPath];
     }
   }
 
@@ -160,6 +160,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
+
+  // Picker replaced by SegmentedButton
+  '/versions/latest/sdk/ui/jetpack-compose/picker/':
+    '/versions/latest/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/picker/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/picker/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton/',
 
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
@@ -385,7 +393,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/customizing-webpack': '/archive/customizing-webpack',
 
   // May 2024 home / get started section
-  '/overview/': '/get-started/introduction/',
+  '/overview/': '/get-started/create-a-project/',
   '/get-started/installation/': '/get-started/create-a-project/',
   '/get-started/expo-go/': '/get-started/set-up-your-environment/',
 
@@ -546,4 +554,56 @@ const RENAMED_PAGES: Record<string, string> = {
   // After creating EAS environment variables section
   '/eas/hosting/environment-variables/':
     '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
+
+  // After separating expo-router reference into multiple subsections
+  '/versions/unversioned/sdk/router-ui/': '/versions/unversioned/sdk/router/ui/',
+  '/versions/unversioned/sdk/router-native-tabs/': '/versions/unversioned/sdk/router/native-tabs/',
+  '/versions/unversioned/sdk/router-split-view/': '/versions/unversioned/sdk/router/split-view/',
+  '/versions/v55.0.0/sdk/router-ui/': '/versions/v55.0.0/sdk/router/ui/',
+  '/versions/v55.0.0/sdk/router-native-tabs/': '/versions/v55.0.0/sdk/router/native-tabs/',
+  '/versions/v55.0.0/sdk/router-split-view/': '/versions/v55.0.0/sdk/router/split-view/',
+  '/versions/latest/sdk/router-ui/': '/versions/latest/sdk/router/ui/',
+  '/versions/latest/sdk/router-native-tabs/': '/versions/latest/sdk/router/native-tabs/',
+  '/versions/latest/sdk/router-split-view/': '/versions/latest/sdk/router/split-view/',
+
+  // After merging get-started/introduction into get-started/create-a-project
+  '/get-started/introduction/': '/get-started/create-a-project/',
+
+  // After renaming ContextMenu to DropdownMenu in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/dropdownmenu/',
+  '/versions/latest/sdk/ui/jetpack-compose/contextmenu/':
+    '/versions/latest/sdk/ui/jetpack-compose/dropdownmenu/',
+
+  // After merging FilterChip into Chip in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/chip/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/chip/',
+  '/versions/latest/sdk/ui/jetpack-compose/filterchip/':
+    '/versions/latest/sdk/ui/jetpack-compose/chip/',
+
+  // After removing TextButton and merging into Button in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/button/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/button/',
+  '/versions/latest/sdk/ui/jetpack-compose/textbutton/':
+    '/versions/latest/sdk/ui/jetpack-compose/button/',
+
+  // After merging LinearProgress and CircularProgress into Progress in expo-ui (Android)
+  '/versions/unversioned/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/linearprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
+  '/versions/latest/sdk/ui/jetpack-compose/circularprogress/':
+    '/versions/latest/sdk/ui/jetpack-compose/progress/',
 };

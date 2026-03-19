@@ -105,11 +105,11 @@
     "@expo/metro-runtime": "^55.0.6",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "@types/react-test-renderer": "~19.1.0",
     "expo-module-scripts": "^55.0.2",
+    "expo-updates": "^55.0.11",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.84.1",
+    "react-native": "0.85.0-rc.5",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {

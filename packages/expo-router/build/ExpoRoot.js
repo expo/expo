@@ -101,21 +101,15 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
     //  - linking.getInitialURL is used on native
     const serverContext = (0, react_1.useMemo)(() => {
         let contextType = {};
-        if (initialLocation instanceof URL) {
-            contextType = {
-                location: {
-                    pathname: initialLocation.pathname + initialLocation.hash,
-                    search: initialLocation.search,
-                },
-            };
-        }
-        else if (typeof initialLocation === 'string') {
-            // The initial location is a string, so we need to parse it into a URL.
-            const url = (0, url_1.parseUrlUsingCustomBase)(initialLocation);
+        const url = typeof initialLocation === 'string'
+            ? (0, url_1.parseUrlUsingCustomBase)(initialLocation)
+            : initialLocation;
+        if (url && url instanceof URL) {
             contextType = {
                 location: {
                     pathname: url.pathname,
                     search: url.search,
+                    hash: url.hash,
                 },
             };
         }
@@ -126,7 +120,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
      * e.g Static renders, units tests, etc
      */
     const serverUrl = serverContext.location
-        ? `${serverContext.location.pathname}${serverContext.location.search}`
+        ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
         : undefined;
     const store = (0, router_store_1.useStore)(context, linking, serverUrl);
     (0, useDomComponentNavigation_1.useDomComponentNavigation)();

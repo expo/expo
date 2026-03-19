@@ -211,7 +211,7 @@ function convertIconSrcToIconOption(icon) {
 function convertSrcOrComponentToSrc(src, options) {
     if (src) {
         if ((0, react_1.isValidElement)(src)) {
-            return (0, icon_1.convertComponentSrcToImageSource)(src);
+            return (0, icon_1.convertComponentSrcToImageSource)(src, options.renderingMode);
         }
         else {
             return { src, renderingMode: options.renderingMode };

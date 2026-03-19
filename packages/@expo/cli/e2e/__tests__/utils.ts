@@ -5,7 +5,6 @@ import klawSync from 'klaw-sync';
 import * as htmlParser from 'node-html-parser';
 import assert from 'node:assert';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 
 import { copySync } from '../../src/utils/dir';
@@ -89,7 +88,10 @@ export async function createFromFixtureAsync(
       return projectRoot;
     } else {
       log('Clearing existing fixture project:', projectRoot);
-      await fs.promises.rm(projectRoot, { recursive: true, force: true });
+      // NOTE(@kitten): Rename first to quickly move project out of the way
+      const tempName = getTemporaryPath();
+      await fs.promises.rename(projectRoot, tempName);
+      await fs.promises.rm(tempName, { recursive: true, force: true });
     }
   }
 
@@ -116,11 +118,6 @@ export async function createFromFixtureAsync(
       const dependencies = Object.assign({}, fixturePkg.dependencies, pkg.dependencies);
       const devDependencies = Object.assign({}, fixturePkg.devDependencies, pkg.devDependencies);
       const resolutions = Object.assign({}, fixturePkg.resolutions, pkg.resolutions);
-
-      // hermes-compiler v1+ doesn't ship Windows binaries, pin to 0.14.1 which does
-      if (os.platform() === 'win32') {
-        resolutions['hermes-compiler'] = '0.14.1';
-      }
 
       if (linkExpoPackages) {
         for (const pkg of linkExpoPackages) {

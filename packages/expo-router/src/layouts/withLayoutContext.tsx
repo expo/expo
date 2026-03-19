@@ -91,11 +91,17 @@ export function useFilterScreenChildren(
     // Add an assertion for development
     if (process.env.NODE_ENV !== 'production') {
       // Assert if names are not unique
-      const names = screens?.map(
-        (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
-      );
-      if (names && new Set(names).size !== names.length) {
-        throw new Error('Screen names must be unique: ' + names);
+      const normalizeName = (name: unknown) =>
+        typeof name === 'string' ? name.replace(/\/index$/, '') : name;
+
+      const screenNames =
+        screens?.map(
+          (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
+        ) ?? [];
+      const protectedScreenNames = Array.from(protectedScreens).map(normalizeName);
+      const allNames = [...screenNames.map(normalizeName), ...protectedScreenNames];
+      if (new Set(allNames).size !== allNames.length) {
+        throw new Error('Screen names must be unique: ' + allNames);
       }
     }
 
