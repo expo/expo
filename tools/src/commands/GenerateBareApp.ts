@@ -283,25 +283,6 @@ const path = require('path');
 
 const config = getDefaultConfig('${projectRoot}');
 
-// 1. Watch expo packages within the monorepo
-config.watchFolders = ['${PACKAGES_DIR}'];
-
-// 2. Let Metro know where to resolve packages, and in what order
-config.resolver.nodeModulesPaths = [
-  path.resolve('${projectRoot}', 'node_modules'),
-  path.resolve('${PACKAGES_DIR}'),
-];
-
-// Use Node-style module resolution instead of Haste everywhere
-config.resolver.providesModuleNodeModules = [];
-
-// Ignore test files and JS files in the native Android and Xcode projects
-config.resolver.blockList = [
-  /\\/__tests__\\/.*/,
-  /.*\\/android\\/React(Android|Common)\\/.*/,
-  /.*\\/versioned-react-native\\/.*/,
-];
-
 module.exports = config;
 `;
 
