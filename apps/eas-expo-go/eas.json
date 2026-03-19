@@ -60,7 +60,7 @@
         "EAS_BUILD_PROFILE": "unversioned-client"
       },
       "android": {
-        "gradleCommand": ":app:assembleMobileDebug",
+        "gradleCommand": ":app:assembleMobileDebug -PreactNativeArchitectures=arm64-v8a",
         "withoutCredentials": true
       },
       "ios": {
