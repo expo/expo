@@ -20,12 +20,16 @@ Expo UI ListItem matches the official Jetpack Compose [`ListItem`](<https://deve
 ### Basic list item
 
 ```tsx BasicListItem.tsx
-import { Host, ListItem } from '@expo/ui/jetpack-compose';
+import { Host, ListItem, Text } from '@expo/ui/jetpack-compose';
 
 export default function BasicListItem() {
   return (
     <Host matchContents>
-      <ListItem headline="Settings" />
+      <ListItem>
+        <ListItem.HeadlineContent>
+          <Text>Settings</Text>
+        </ListItem.HeadlineContent>
+      </ListItem>
     </Host>
   );
 }
@@ -41,7 +45,10 @@ import { Host, ListItem, Icon, Text } from '@expo/ui/jetpack-compose';
 export default function ListItemWithSlots() {
   return (
     <Host matchContents>
-      <ListItem headline="Notifications">
+      <ListItem>
+        <ListItem.HeadlineContent>
+          <Text>Notifications</Text>
+        </ListItem.HeadlineContent>
         <ListItem.OverlineContent>
           <Text>ACCOUNT</Text>
         </ListItem.OverlineContent>
@@ -60,9 +67,30 @@ export default function ListItemWithSlots() {
 }
 ```
 
+### Clickable list item
+
+Use the `clickable` modifier to handle tap interactions.
+
+```tsx ClickableListItem.tsx
+import { Host, ListItem, Text } from '@expo/ui/jetpack-compose';
+import { clickable } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ClickableListItem() {
+  return (
+    <Host matchContents>
+      <ListItem modifiers={[clickable(() => console.log('Tapped!'))]}>
+        <ListItem.HeadlineContent>
+          <Text>Tap me</Text>
+        </ListItem.HeadlineContent>
+      </ListItem>
+    </Host>
+  );
+}
+```
+
 ### Custom headline content
 
-Use `ListItem.HeadlineContent` to override the `headline` string prop with custom composable content.
+Use `ListItem.HeadlineContent` for composable headline content like rows with icons.
 
 ```tsx ListItemCustomHeadline.tsx
 import { Host, ListItem, Text, Row, Icon } from '@expo/ui/jetpack-compose';
