@@ -59,7 +59,7 @@
     "expo-splash-screen": "~55.0.12",
     "expo-store-review": "~55.0.9",
     "expo-task-manager": "~55.0.10",
-    "expo-updates": "~55.0.14",
+    "expo-updates": "~55.0.15",
     "expo-web-browser": "~55.0.10",
     "graphql": "^15.3.0",
     "immutable": "^4.0.0",

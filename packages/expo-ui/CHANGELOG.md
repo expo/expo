@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- [android] Split `Carousel` into `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel` matching native Compose components. Added `HorizontalCenteredHeroCarousel`. ([#44034](https://github.com/expo/expo/pull/44034) by [@nishan](https://github.com/intergalacticspacehighway))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.5 — 2026-03-19
+
+### 🛠 Breaking changes
+
+- [android] Split `Carousel` into `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel` matching native Compose components. Added `HorizontalCenteredHeroCarousel`. ([#44034](https://github.com/expo/expo/pull/44034) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 55.0.4 — 2026-03-18
 
