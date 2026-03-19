@@ -14,6 +14,6 @@ class EASClientModule : Module() {
 
     Constant("clientID") { EASClientID(context).uuid.toString() }
 
-    Constant("clientInterval") { EASClientID.uuidToInterval(EASClientID(context).uuid) }
+    Constant("deterministicUniformValue") { EASClientID.deterministicUniformValue(EASClientID(context).uuid) }
   }
 }

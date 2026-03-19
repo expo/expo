@@ -8,6 +8,6 @@ public class EASClientModule: Module {
 
     Constant("clientID") { EASClientID.uuid().uuidString }
 
-    Constant("clientInterval") { EASClientID.uuidToInterval(EASClientID.uuid()) }
+    Constant("deterministicUniformValue") { EASClientID.deterministicUniformValue(EASClientID.uuid()) }
   }
 }

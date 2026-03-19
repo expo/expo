@@ -22,23 +22,31 @@ class EASClientIDTest {
   }
 
   @Test
-  fun testUuidToIntervalKnownValue() {
+  fun testDeterministicUniformValueKnownValue() {
     val uuid = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
-    val interval = EASClientID.uuidToInterval(uuid)
-    // SHA-256 of UUID bytes, first 8 bytes as UInt64 big-endian / UInt64.MAX
-    kotlin.test.assertEquals(0.9211200650509653, interval, 1e-15)
+    val value = EASClientID.deterministicUniformValue(uuid)
+    // leastSignificantBits (unsigned) = 0xABCDEF1234567890 / ULong.MAX
+    org.junit.Assert.assertEquals(0.6711110515064663, value, 1e-15)
   }
 
   @Test
-  fun testUuidToIntervalRange() {
+  fun testDeterministicUniformValueRange() {
     val context = getInstrumentation().targetContext
-    val interval = EASClientID.uuidToInterval(EASClientID(context).uuid)
-    interval shouldBeInRange 0.0..1.0
+    val value = EASClientID.deterministicUniformValue(EASClientID(context).uuid)
+    value shouldBeInRange 0.0..1.0
   }
 
   @Test
-  fun testUuidToIntervalDeterministic() {
+  fun testDeterministicUniformValueDeterministic() {
     val uuid = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
-    EASClientID.uuidToInterval(uuid) shouldBeEqualTo EASClientID.uuidToInterval(uuid)
+    EASClientID.deterministicUniformValue(uuid) shouldBeEqualTo EASClientID.deterministicUniformValue(uuid)
+  }
+
+  @Test
+  fun testUuidIsV4() {
+    val context = getInstrumentation().targetContext
+    val uuid = EASClientID(context).uuid
+    uuid.version() shouldBeEqualTo 4
+    uuid.variant() shouldBeEqualTo 2
   }
 }
