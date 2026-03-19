@@ -42,7 +42,7 @@ export type AlertDialogProps = {
   properties?: DialogProperties;
   /**
    * Callback that is called when the user tries to dismiss the dialog
-   * (e.g. by tapping outside of it or pressing the back button).
+   * (for example, by tapping outside of it or pressing the back button).
    */
   onDismissRequest?: () => void;
   /**
