@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [Android] Bring back the `experimentalLauncherActivity` config plugin option.
+- [Android] Bring back the `experimentalLauncherActivity` config plugin option. ([#44073](https://github.com/expo/expo/pull/44073) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.9 — 2026-02-25
 
