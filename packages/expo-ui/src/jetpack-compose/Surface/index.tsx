@@ -2,8 +2,24 @@ import { requireNativeView } from 'expo';
 import React from 'react';
 import { type ColorValue } from 'react-native';
 
-import { type ExpoModifier } from '../../types';
+import { type ViewEvent, type ModifierConfig } from '../../types';
+import { parseJSXShape, ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+/**
+ * Border stroke configuration.
+ */
+export type SurfaceBorder = {
+  /**
+   * Border width in dp.
+   * @default 1
+   */
+  width?: number;
+  /**
+   * Border color. Defaults to `MaterialTheme.colorScheme.outline`.
+   */
+  color?: ColorValue;
+};
 
 export type SurfaceProps = {
   /**
@@ -34,12 +50,57 @@ export type SurfaceProps = {
    */
   shadowElevation?: number;
   /**
-   * Modifiers for the component.
+   * Shape configuration for clipping the surface.
    */
-  modifiers?: ExpoModifier[];
+  shape?: ShapeJSXElement;
+  /**
+   * Border stroke drawn around the surface.
+   */
+  border?: SurfaceBorder;
+
+  /**
+   * Whether the surface is enabled and responds to user interaction.
+   *
+   * @default true
+   */
+  enabled?: boolean;
+
+  /**
+   * Whether the surface is in a selected state. When provided together with `onClick`,
+   * the surface becomes a selectable surface that visually reflects its selection state.
+   */
+  selected?: boolean;
+
+  /**
+   * Whether the surface is in a checked (toggled on) state. When provided together with
+   * `onCheckedChange`, the surface becomes a toggleable surface.
+   */
+  checked?: boolean;
+
+  /**
+   * Called when the surface is clicked. Providing this callback makes the surface clickable.
+   * When combined with `selected`, the surface becomes a selectable variant.
+   */
+  onClick?: () => void;
+
+  /**
+   * Called when the checked state of a toggleable surface changes.
+   * Providing this callback together with `checked` enables the toggleable variant.
+   */
+  onCheckedChange?: (checked: boolean) => void;
+
+  /**
+   * Jetpack Compose modifiers to apply to the surface.
+   */
+  modifiers?: ModifierConfig[];
 };
 
-type NativeSurfaceProps = SurfaceProps;
+type NativeSurfaceProps = Omit<SurfaceProps, 'onClick' | 'onCheckedChange' | 'shape'> &
+  ViewEvent<'onSurfaceClick', void> &
+  ViewEvent<'onCheckedChange', { onCheckedChange: boolean }> & {
+    clickable?: boolean;
+    shape?: ShapeRecordProps;
+  };
 
 const SurfaceNativeView: React.ComponentType<NativeSurfaceProps> = requireNativeView(
   'ExpoUI',
@@ -47,19 +108,24 @@ const SurfaceNativeView: React.ComponentType<NativeSurfaceProps> = requireNative
 );
 
 function transformProps(props: SurfaceProps): NativeSurfaceProps {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, onClick, onCheckedChange, shape, ...restProps } = props;
+
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    clickable: !!onClick,
+    shape: parseJSXShape(shape),
+    onSurfaceClick: onClick ? () => onClick() : undefined,
+    onCheckedChange: onCheckedChange
+      ? (e: { nativeEvent: { onCheckedChange: boolean } }) =>
+          onCheckedChange(e.nativeEvent.onCheckedChange)
+      : undefined,
   };
 }
 
 /**
- * A Material Design surface container. Surface is responsible for:
- * - Clipping content to the shape
- * - Applying background color based on tonal elevation
- * - Providing content color to its children
+ * A Material Design surface container matching Compose's `Surface`.
  */
 export function Surface(props: SurfaceProps) {
   return <SurfaceNativeView {...transformProps(props)} />;

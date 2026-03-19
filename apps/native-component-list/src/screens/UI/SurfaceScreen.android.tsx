@@ -8,22 +8,20 @@ import {
   Switch,
   Slider,
   Text as ComposeText,
+  Shape,
 } from '@expo/ui/jetpack-compose';
-import type { ShapeConfig } from '@expo/ui/jetpack-compose';
+import type { ShapeJSXElement } from '@expo/ui/jetpack-compose';
 import { padding, fillMaxWidth, size } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
-const shapeEntries: { label: string; shape: ShapeConfig | undefined }[] = [
+const shapeEntries: { label: string; shape: ShapeJSXElement | undefined }[] = [
   { label: 'rectangle', shape: undefined },
   {
     label: 'rounded',
-    shape: {
-      type: 'roundedCorner',
-      cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 },
-    },
+    shape: Shape.RoundedCorner({ cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 } }),
   },
-  { label: 'pill', shape: { type: 'pill' } },
-  { label: 'circle', shape: { type: 'circle', radius: 1 } },
+  { label: 'pill', shape: Shape.Pill({}) },
+  { label: 'circle', shape: Shape.Circle({ radius: 1 }) },
 ];
 
 export default function SurfaceScreen() {
@@ -35,6 +33,7 @@ export default function SurfaceScreen() {
   const [checked, setChecked] = React.useState(false);
 
   const { label: shapeName, shape: currentShape } = shapeEntries[shapeIndex];
+  console.log('currentShape', currentShape);
   const isCircle = shapeName === 'circle';
   const surfaceW = isCircle ? 160 : 280;
   const surfaceH = 160;
@@ -101,10 +100,7 @@ export default function SurfaceScreen() {
         </Column>
 
         <Surface
-          shape={{
-            type: 'roundedCorner',
-            cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 },
-          }}
+          shape={Shape.RoundedCorner({ cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 } })}
           checked={checked}
           onCheckedChange={setChecked}
           color={checked ? '#C8E6C9' : undefined}

@@ -1,4 +1,6 @@
-import { type ExpoModifier } from '../../types';
+import { type ColorValue } from 'react-native';
+import { type ModifierConfig } from '../../types';
+import { type ContentAlignment } from '../layout-types';
 export type PullToRefreshBoxProps = {
     /**
      * Whether the content is refreshing.
@@ -6,26 +8,38 @@ export type PullToRefreshBoxProps = {
      */
     isRefreshing?: boolean;
     /**
-     * Callback to call when the content is refreshed.
+     * Callback that is called when the user pulls to refresh.
      */
     onRefresh?: () => void;
     /**
+     * Alignment of children within the box.
+     * @default 'topStart'
+     */
+    contentAlignment?: ContentAlignment;
+    /**
+     * Color of the loading indicator spinner.
+     */
+    indicatorColor?: ColorValue;
+    /**
+     * Background color of the loading indicator container.
+     */
+    indicatorContainerColor?: ColorValue;
+    /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
     /**
      * Modifiers for the loading indicator.
-     * @default [align('topCenter'), padding(0, 10, 0, 0)]
      */
-    loadingIndicatorModifiers?: ExpoModifier[];
+    loadingIndicatorModifiers?: ModifierConfig[];
     /**
      * The content to refresh.
      */
     children: React.ReactNode;
 };
 /**
- * Renders a `PullToRefreshBox` component.
- * A box that allows the user to pull down to refresh the content.
+ * A pull-to-refresh container that wraps scrollable content and shows a refresh indicator when pulled,
+ * matching Compose's `PullToRefreshBox`.
  */
 export declare function PullToRefreshBox(props: PullToRefreshBoxProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
