@@ -49,16 +49,7 @@ export interface AutolinkingResolutionsCache extends VersionedNativeModuleNamesC
   resolutions?: Promise<Map<string, DependencyResolution>>;
 }
 
-<<<<<<< HEAD
-const AUTOLINKING_PLATFORMS = ['android', 'ios'] as const;
-=======
-// NOTE(@kitten): These are added modules that we know shouldn't be duplicated
-// If you suspect that an npm package (that isn't a native module) should never be duplicated due to singleton state
-// (e.g. `createContext`) add it here
-const EXTRA_BUNDLED_MODULES = ['@react-navigation/core', '@react-navigation/native'];
-
 const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
->>>>>>> 3cd8be96c69 (feat(autolinking): Add `include` option to `package.json:expo.autolinking` and per-platform to include additional packages to verify (#43724))
 
 export const scanNativeModuleResolutions = (
   cache: AutolinkingResolutionsCache,
