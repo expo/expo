@@ -52,7 +52,7 @@ test.describe('router-e2e with spaces', () => {
 
     expoStart = createExpoStart({
       // Use linked version of @expo/cli via `bun expo-internal`:
-      command: (port) => ['bun', 'expo-internal', 'start', `--port=${port}`],
+      command: (port) => ['pnpm', 'expo-internal', 'start', `--port=${port}`],
       cwd: projectRoot,
       env: {
         EXPO_PUBLIC_VALUE_INLINE: 'inlined',
