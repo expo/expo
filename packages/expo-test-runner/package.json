@@ -6,9 +6,7 @@
   "types": "build/index.d.ts",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "bin": {
-    "expo-test-runner": "bin/expo-test-runner.js"
-  },
+  "bin": "bin/expo-test-runner.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/expo/expo-test-runner.git"

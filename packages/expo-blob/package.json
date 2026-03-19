@@ -28,7 +28,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/blob/",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"

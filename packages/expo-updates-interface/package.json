@@ -19,7 +19,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
-  "dependencies": {},
   "peerDependencies": {
     "expo": "workspace:*"
   }
