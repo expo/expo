@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] add toolbar support ([#43970](https://github.com/expo/expo/pull/43970) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))

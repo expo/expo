@@ -50,6 +50,15 @@ export interface StackToolbarProps {
    * @default false
    */
   asChild?: boolean;
+  /**
+   * When `true`, disables automatic keyboard (IME) padding on the bottom toolbar.
+   *
+   * Only applies to `placement="bottom"` on Android.
+   *
+   * @default false
+   * @platform android
+   */
+  disableImePadding?: boolean;
 }
 
 /**
@@ -127,17 +136,22 @@ export const StackToolbar = (props: StackToolbarProps) => {
   return <StackToolbarHeader {...props} key={props.placement} />;
 };
 
-const StackToolbarBottom = ({ children }: StackToolbarProps) => {
+const StackToolbarBottom = ({ children, disableImePadding }: StackToolbarProps) => {
   return (
     <ToolbarPlacementContext.Provider value="bottom">
       <NativeMenuContext value>
-        <RouterToolbarHost>{children}</RouterToolbarHost>
+        <RouterToolbarHost withImePadding={!disableImePadding}>{children}</RouterToolbarHost>
       </NativeMenuContext>
     </ToolbarPlacementContext.Provider>
   );
 };
 
-const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps) => {
+const StackToolbarHeader = ({
+  children,
+  placement,
+  asChild,
+  disableImePadding,
+}: StackToolbarProps) => {
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
       `Invalid placement "${placement}" for Stack.Toolbar. Expected "left" or "right".`
@@ -149,9 +163,12 @@ const StackToolbarHeader = ({ children, placement, asChild }: StackToolbarProps)
       appendStackToolbarPropsToOptions(
         {},
         // satisfies ensures every prop is listed here
-        { children, placement, asChild } satisfies Record<keyof StackToolbarProps, unknown>
+        { children, placement, asChild, disableImePadding } satisfies Record<
+          keyof StackToolbarProps,
+          unknown
+        >
       ),
-    [children, placement, asChild]
+    [children, placement, asChild, disableImePadding]
   );
   useCompositionOption(options);
 

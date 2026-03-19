@@ -2,7 +2,16 @@ import { useImage } from 'expo-image';
 import { Color, Stack, useLocalSearchParams } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState, useRef } from 'react';
-import { View, Text, ScrollView, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Alert,
+  Platform,
+} from 'react-native';
 
 import { ToggleRow } from '../components/ToggleRow';
 
@@ -258,23 +267,31 @@ export default function ToolbarScreen() {
         {/* Search button */}
         <Stack.Toolbar.Button
           hidden={!showSearchButton}
-          icon="magnifyingglass"
-          tintColor={Color.ios.systemBlue}
+          icon={
+            process.env.EXPO_OS === 'ios'
+              ? 'magnifyingglass'
+              : require('../../../assets/android-icons/search.xml')
+          }
+          tintColor={Platform.select({
+            ios: Color.ios.systemBlue,
+            android: Color.android.dynamic.onSurface,
+          })}
           onPress={handleSearch}
           separateBackground={!sharesBackgroundSearchButton}
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
 
-        <Stack.Toolbar.Button image={image} />
+        <Stack.Toolbar.Button
+          image={image}
+          icon={require('../../../assets/android-icons/close.xml')}
+        />
 
         {/* Fixed width spacer */}
-        {showFixedSpacer && (
-          <Stack.Toolbar.Spacer
-            // hidden={!showFixedSpacer}
-            sharesBackground={fixedSpacerShareBackground}
-            width={fixedSpacerWidth}
-          />
-        )}
+        <Stack.Toolbar.Spacer
+          hidden={!showFixedSpacer}
+          sharesBackground={fixedSpacerShareBackground}
+          width={fixedSpacerWidth}
+        />
 
         {/* Custom view with TextInput */}
         <Stack.Toolbar.View hidden={!showCustomView}>
@@ -292,22 +309,22 @@ export default function ToolbarScreen() {
         </Stack.Toolbar.View>
 
         {/* Conditional buttons based on search focus */}
-        {!isSearchFocused && (
-          <Stack.Toolbar.Button
-            hidden={!showMicButton}
-            icon="mic"
-            tintColor={Color.ios.systemGreen}
-            onPress={handleMic}
-          />
-        )}
+        <Stack.Toolbar.Button
+          hidden={!showMicButton}
+          icon={
+            process.env.EXPO_OS === 'ios' ? 'mic' : require('../../../assets/android-icons/mic.xml')
+          }
+          tintColor={Color.ios.systemGreen}
+          onPress={handleMic}
+        />
 
-        {isSearchFocused && (
+        {/* {isSearchFocused && (
           <Stack.Toolbar.Button
             icon="xmark.circle.fill"
             tintColor={Color.ios.systemRed}
             onPress={handleClearSearch}
           />
-        )}
+        )} */}
 
         {/* Custom view with custom component */}
         <Stack.Toolbar.View separateBackground>
@@ -317,13 +334,19 @@ export default function ToolbarScreen() {
             style={styles.customButton}>
             <SymbolView
               size={22}
-              tintColor={Color.ios.label}
+              tintColor={Platform.select({
+                ios: Color.ios.label,
+                android: Color.android.dynamic.onSurface,
+              })}
               style={{
                 width: 22,
                 height: 22,
                 transform: [{ rotate: isSearchFocused ? '45deg' : '0deg' }],
               }}
-              name="plus"
+              name={{
+                ios: 'plus',
+                android: 'add',
+              }}
             />
           </Pressable>
         </Stack.Toolbar.View>
@@ -557,7 +580,7 @@ const styles = StyleSheet.create({
   searchInput: {
     fontSize: 16,
     width: 200,
-    height: 32,
+    height: process.env.EXPO_OS === 'ios' ? 32 : 48,
     paddingLeft: 8,
     color: Color.ios.label,
   },
