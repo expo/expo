@@ -76,9 +76,10 @@ it('runs `npx expo customize`', async () => {
     'App.js',
     'app.json',
     'babel.config.js',
-    'bun.lock',
+    'index.js',
     'metro.config.js',
     'package.json',
+    'pnpm-lock.yaml',
     'public/index.html',
   ]);
 });
