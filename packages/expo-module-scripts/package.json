@@ -75,9 +75,8 @@
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
-    "@expo/npm-proofread": "^1.0.1",
     "@expo/spawn-async": "^1.7.2",
-    "@react-native/jest-preset": "0.85.0-rc.1",
+    "@react-native/jest-preset": "0.85.0-rc.5",
     "@testing-library/react-native": "^13.3.0",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.2.1",
@@ -94,6 +93,7 @@
     "typescript": "^5.9.2"
   },
   "devDependencies": {
+    "@expo/metro": "~54.2.0",
     "@babel/core": "^7.26.0"
   }
 }

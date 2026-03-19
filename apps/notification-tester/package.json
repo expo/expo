@@ -2,6 +2,7 @@
   "name": "notification-tester",
   "main": "index.ts",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -34,18 +35,12 @@
     "expo-task-manager": "55.0.9",
     "react-native-gesture-handler": "~2.30.0",
     "react": "19.2.3",
-    "react-native": "0.85.0-rc.1",
+    "react-native": "0.85.0-rc.5",
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.24.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
     "@types/jest": "^29.5.12",
     "@types/react": "~19.2.0"
-  },
-  "resolutions": {
-    "react-test-renderer": "19.2.3"
-  },
-  "expo": {},
-  "private": true
+  }
 }

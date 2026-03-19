@@ -173,13 +173,15 @@ internal abstract class NsdDiscoveryBase(
     url: String,
     name: String,
     slug: String?,
-    androidPackage: String?
+    androidPackage: String?,
+    username: String?
   ) {
     alivePackagers[serviceName] = PackagerInfo(
       url = url,
       description = name,
       slug = slug,
-      androidPackage = androidPackage
+      androidPackage = androidPackage,
+      username = username
     )
     publishDiscoveredPackagers()
   }

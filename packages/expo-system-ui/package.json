@@ -32,13 +32,14 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/system-ui",
   "dependencies": {
-    "@react-native/normalize-colors": "0.85.0-rc.1",
+    "@react-native/normalize-colors": "0.85.0-rc.5",
     "debug": "^4.3.2"
   },
   "jest": {
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {

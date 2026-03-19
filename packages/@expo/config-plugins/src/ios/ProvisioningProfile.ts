@@ -16,6 +16,7 @@ type ProvisioningProfileSettings = {
   appleTeamId: string;
   profileName: string;
   buildConfiguration?: string;
+  codeSignIdentity?: string;
 };
 
 export function setProvisioningProfileForPbxproj(
@@ -25,6 +26,7 @@ export function setProvisioningProfileForPbxproj(
     profileName,
     appleTeamId,
     buildConfiguration = 'Release',
+    codeSignIdentity = 'iPhone Distribution',
   }: ProvisioningProfileSettings
 ): void {
   const project = getPbxproj(projectRoot);
@@ -41,7 +43,7 @@ export function setProvisioningProfileForPbxproj(
     .forEach(([, item]: ConfigurationSectionEntry) => {
       item.buildSettings.PROVISIONING_PROFILE_SPECIFIER = `"${profileName}"`;
       item.buildSettings.DEVELOPMENT_TEAM = quotedAppleTeamId;
-      item.buildSettings.CODE_SIGN_IDENTITY = '"iPhone Distribution"';
+      item.buildSettings.CODE_SIGN_IDENTITY = `"${codeSignIdentity}"`;
       item.buildSettings.CODE_SIGN_STYLE = 'Manual';
     });
 

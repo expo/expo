@@ -20,6 +20,7 @@ import {
 
 // NOTE(@kitten): These are excluded explicitly, but we want to include them for the verify command explicitly
 const INCLUDE_PACKAGES = ['react-native', 'react-native-tvos'];
+const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
 
 interface VerifyArguments extends AutolinkingCommonArguments {
   verbose?: boolean | null;
@@ -32,12 +33,19 @@ export function verifyCommand(cli: commander.CommanderStatic) {
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
     .option(
       '-p, --platform [platform]',
-      'The platform to validate native modules for. Available options: "android", "ios", "both"',
-      'both'
+      `The platform to validate native modules for. Available options: ${[...AUTOLINKING_PLATFORMS, 'native', 'all'].map((x) => `"${x}"`).join(', ')}`,
+      'all'
     )
     .action(async (commandArguments: VerifyArguments) => {
-      const platforms =
-        commandArguments.platform === 'both' ? ['android', 'ios'] : [commandArguments.platform!];
+      let platforms: readonly string[];
+      // NOTE(@kitten): Preserve `both` for backwards-compatibility
+      if (commandArguments.platform === 'both' || commandArguments.platform === 'native') {
+        platforms = ['android', 'ios'];
+      } else if (commandArguments.platform === 'all') {
+        platforms = AUTOLINKING_PLATFORMS;
+      } else {
+        platforms = [commandArguments.platform!];
+      }
       const autolinkingOptionsLoader = createAutolinkingOptionsLoader(commandArguments);
       const appRoot = await autolinkingOptionsLoader.getAppRoot();
       const linker = makeCachedDependenciesLinker({ projectRoot: appRoot });
