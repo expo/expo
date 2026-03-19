@@ -261,6 +261,100 @@ importers:
         specifier: 0.85.0-rc.5
         version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
 
+  apps/brownfield-tester/expo-app:
+    dependencies:
+      '@expo/vector-icons':
+        specifier: ^15.0.2
+        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@react-navigation/bottom-tabs':
+        specifier: ^7.15.5
+        version: 7.15.5(@react-native-masked-view/masked-view@0.3.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(@react-navigation/native@7.1.33(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native-safe-area-context@5.6.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native-screens@4.24.0(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@react-navigation/elements':
+        specifier: ^2.9.10
+        version: 2.9.10(@react-native-masked-view/masked-view@0.3.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(@react-navigation/native@7.1.33(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native-safe-area-context@5.6.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@react-navigation/native':
+        specifier: ^7.1.33
+        version: 7.1.33(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      expo:
+        specifier: workspace:*
+        version: link:../../../packages/expo
+      expo-brownfield:
+        specifier: workspace:*
+        version: link:../../../packages/expo-brownfield
+      expo-constants:
+        specifier: workspace:*
+        version: link:../../../packages/expo-constants
+      expo-dev-menu:
+        specifier: workspace:*
+        version: link:../../../packages/expo-dev-menu
+      expo-device:
+        specifier: workspace:*
+        version: link:../../../packages/expo-device
+      expo-font:
+        specifier: workspace:*
+        version: link:../../../packages/expo-font
+      expo-glass-effect:
+        specifier: workspace:*
+        version: link:../../../packages/expo-glass-effect
+      expo-image:
+        specifier: workspace:*
+        version: link:../../../packages/expo-image
+      expo-linking:
+        specifier: workspace:*
+        version: link:../../../packages/expo-linking
+      expo-router:
+        specifier: workspace:*
+        version: link:../../../packages/expo-router
+      expo-splash-screen:
+        specifier: workspace:*
+        version: link:../../../packages/expo-splash-screen
+      expo-status-bar:
+        specifier: workspace:*
+        version: link:../../../packages/expo-status-bar
+      expo-symbols:
+        specifier: workspace:*
+        version: link:../../../packages/expo-symbols
+      expo-system-ui:
+        specifier: workspace:*
+        version: link:../../../packages/expo-system-ui
+      expo-web-browser:
+        specifier: workspace:*
+        version: link:../../../packages/expo-web-browser
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      react-native:
+        specifier: 0.85.0-rc.5
+        version: 0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3)
+      react-native-gesture-handler:
+        specifier: ~2.30.0
+        version: 2.30.0(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-reanimated:
+        specifier: ~4.2.2
+        version: 4.2.2(patch_hash=6e8b00440659b2189e126b35ef5e5b3c49c1933c75c3ed90886f5edaceee01b5)(react-native-worklets@0.7.4(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-safe-area-context:
+        specifier: ~5.6.2
+        version: 5.6.2(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-screens:
+        specifier: ~4.24.0
+        version: 4.24.0(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-web:
+        specifier: ~0.21.0
+        version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react-native-worklets:
+        specifier: 0.7.4
+        version: 0.7.4(patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89c5962ecc6f2802f1)(@babel/core@7.29.0)(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+    devDependencies:
+      '@types/react':
+        specifier: ~19.2.2
+        version: 19.2.14
+      typescript:
+        specifier: ~5.9.2
+        version: 5.9.3
+
   apps/common:
     dependencies:
       '@expo/styleguide-base':
