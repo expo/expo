@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DEFAULT_DESTRUCTIVE_COLOR = exports.DEFAULT_TOOLBAR_BACKGROUND_COLOR = exports.DEFAULT_TOOLBAR_TINT_COLOR = void 0;
+const DEFAULT_TOOLBAR_TINT_COLOR = () => undefined;
+exports.DEFAULT_TOOLBAR_TINT_COLOR = DEFAULT_TOOLBAR_TINT_COLOR;
+const DEFAULT_TOOLBAR_BACKGROUND_COLOR = () => undefined;
+exports.DEFAULT_TOOLBAR_BACKGROUND_COLOR = DEFAULT_TOOLBAR_BACKGROUND_COLOR;
+const DEFAULT_DESTRUCTIVE_COLOR = () => undefined;
+exports.DEFAULT_DESTRUCTIVE_COLOR = DEFAULT_DESTRUCTIVE_COLOR;
+//# sourceMappingURL=defaults.js.map

@@ -11,10 +11,15 @@ import { background } from '@expo/ui/jetpack-compose/modifiers';
 import { createContext, use, useCallback, useState } from 'react';
 
 import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
-import { Color } from '../../../../color';
 import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
+import { useToolbarColors } from '../context';
+import {
+  DEFAULT_DESTRUCTIVE_COLOR,
+  DEFAULT_TOOLBAR_BACKGROUND_COLOR,
+  DEFAULT_TOOLBAR_TINT_COLOR,
+} from '../defaults';
 
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
 const checkmarkIcon = require('../../../../../assets/checkmark.xml');
@@ -26,9 +31,6 @@ const checkmarkIcon = require('../../../../../assets/checkmark.xml');
  */
 const ToolbarMenuCloseContext = createContext<(() => void) | null>(null);
 
-const DEFAULT_BACKGROUND_COLOR = () => Color.android.dynamic.surfaceContainer as string;
-const DEFAULT_TINT_COLOR = () => Color.android.dynamic.onSurface as string;
-
 /**
  * Native toolbar menu component for Android bottom toolbar.
  * Renders as a DropdownMenu with IconButton trigger (root) or DropdownMenuItem trigger (nested).
@@ -37,9 +39,15 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   const [expanded, setExpanded] = useState(false);
   const parentClose = use(ToolbarMenuCloseContext);
   const isNested = parentClose !== null;
+  const toolbarColors = useToolbarColors();
 
   const tintColor =
-    props.imageRenderingMode === 'original' ? undefined : (props.tintColor ?? DEFAULT_TINT_COLOR());
+    props.imageRenderingMode === 'original'
+      ? undefined
+      : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
+
+  const backgroundColor = (toolbarColors.backgroundColor ??
+    DEFAULT_TOOLBAR_BACKGROUND_COLOR()) as string;
 
   const closeMenu = useCallback(() => {
     setExpanded(false);
@@ -72,18 +80,21 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
       <DropdownMenu
         expanded={expanded}
         onDismissRequest={() => setExpanded(false)}
-        modifiers={[background(DEFAULT_BACKGROUND_COLOR())]}>
+        color={backgroundColor}>
         <DropdownMenu.Trigger>
           <DropdownMenuItem
             onClick={() => {
               if (!props.disabled) setExpanded(true);
             }}
+            modifiers={[background(backgroundColor)]}
             enabled={!props.disabled}>
             {leadingIcon}
             <DropdownMenuItem.Text>
               <ComposeText
                 color={
-                  typeof props.tintColor === 'string' ? props.tintColor : DEFAULT_TINT_COLOR()
+                  typeof props.tintColor === 'string'
+                    ? props.tintColor
+                    : ((toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR()) as string)
                 }>
                 {props.label}
               </ComposeText>
@@ -113,7 +124,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
       <DropdownMenu
         expanded={expanded}
         onDismissRequest={() => setExpanded(false)}
-        modifiers={[background(DEFAULT_BACKGROUND_COLOR())]}>
+        color={backgroundColor}>
         <DropdownMenu.Trigger>
           <IconButton onClick={() => setExpanded(true)} enabled={!props.disabled}>
             <Icon source={props.source} tintColor={tintColor} size={24} />
@@ -133,9 +144,13 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
  */
 export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (props) => {
   const closeMenu = use(ToolbarMenuCloseContext);
+  const toolbarColors = useToolbarColors();
   const tintColor = props.destructive
-    ? (Color.android.material.error as string)
-    : DEFAULT_TINT_COLOR();
+    ? (DEFAULT_DESTRUCTIVE_COLOR() as string)
+    : ((toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR()) as string);
+
+  const backgroundColor = (toolbarColors.backgroundColor ??
+    DEFAULT_TOOLBAR_BACKGROUND_COLOR()) as string;
 
   const handleClick = useCallback(() => {
     props.onPress?.();
@@ -152,7 +167,10 @@ export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (
   if (props.hidden) return null;
 
   return (
-    <DropdownMenuItem onClick={handleClick} enabled={!props.disabled}>
+    <DropdownMenuItem
+      onClick={handleClick}
+      modifiers={[background(backgroundColor)]}
+      enabled={!props.disabled}>
       <DropdownMenuItem.Text>
         <ComposeText color={tintColor}>{label}</ComposeText>
       </DropdownMenuItem.Text>

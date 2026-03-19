@@ -205,7 +205,7 @@ export default function HeaderItemsScreen() {
         </Stack.Toolbar>
 
         {/* Right header items */}
-        <Stack.Toolbar placement="right">
+        <Stack.Toolbar placement="right" backgroundColor="white" tintColor="black">
           <Stack.Toolbar.Menu
             hidden={!showRightMenu1}
             icon={process.env.EXPO_OS === 'ios' ? 'ellipsis.circle' : moreVertIcon}

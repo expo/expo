@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import type { ColorValue } from 'react-native';
 import { type ToolbarPlacement } from './context';
 import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export interface StackToolbarProps {
@@ -36,6 +37,19 @@ export interface StackToolbarProps {
      * @platform android
      */
     disableImePadding?: boolean;
+    /**
+     * Tint color applied to toolbar items (buttons, menu icons, text).
+     * Individual items can override this with their own `tintColor` prop.
+     *
+     * @platform android
+     */
+    tintColor?: ColorValue;
+    /**
+     * Background color for the toolbar and its menus.
+     *
+     * @platform android
+     */
+    backgroundColor?: ColorValue;
 }
 /**
  * The component used to configure the stack toolbar.
