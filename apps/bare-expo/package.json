@@ -65,6 +65,7 @@
     "expo-notifications": "workspace:*",
     "expo-router": "workspace:*",
     "expo-splash-screen": "workspace:*",
+    "expo-video": "workspace:*",
     "lottie-react-native": "^7.3.4",
     "native-component-list": "workspace:*",
     "react": "19.2.3",
