@@ -136,7 +136,7 @@ describe('Export DOM Components', () => {
               path: expect.pathMatching(/assets\/(?<md5>[0-9a-fA-F]{32})/),
             },
           ]),
-          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc$/),
+          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/index-.*\.hbc$/),
         },
       },
       version: 0,
@@ -178,9 +178,9 @@ describe('Export DOM Components', () => {
     );
     expect(outputFilesWithoutMap).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
         expect.stringMatching(
-          /_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/
+          /_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/
         ),
         'assetmap.json',
 
