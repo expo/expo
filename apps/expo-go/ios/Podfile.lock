@@ -4683,7 +4683,7 @@ SPEC CHECKSUMS:
   React-debug: fe7a30e1f2b15d68e5ec4e107af44e7a13c62905
   React-defaultsnativemodule: 8534932be41174bf5cb4923a3c2be70e60784d0d
   React-domnativemodule: 8200f1a4d46167b74615fd595ff71e6269242154
-  React-Fabric: 826b38c1dca2d911432e0c312a4549be43209e2e
+  React-Fabric: 3bf3662502f4d9ca265784254a72096218091e7d
   React-FabricComponents: 9c350a5b3a4242c83cd7e171a2d034be8baa2d51
   React-FabricImage: 701e0ba6939992f405c02ce5867ee3a976939858
   React-featureflags: eb6c1397cc528018f125d85dd5d6640e8de2c0f8
