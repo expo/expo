@@ -84,7 +84,10 @@ export type SurfaceProps = {
     modifiers?: ModifierConfig[];
 };
 /**
- * A Material Design surface container matching Compose's `Surface`.
+ * A Material Design surface container. Surface is responsible for:
+ * - Clipping content to the shape
+ * - Applying background color based on tonal elevation
+ * - Providing content color to its children
  */
 export declare function Surface(props: SurfaceProps): React.JSX.Element;
 //# sourceMappingURL=index.d.ts.map

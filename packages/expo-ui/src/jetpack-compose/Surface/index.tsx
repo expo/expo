@@ -126,7 +126,10 @@ function transformProps(props: SurfaceProps): NativeSurfaceProps {
 }
 
 /**
- * A Material Design surface container matching Compose's `Surface`.
+ * A Material Design surface container. Surface is responsible for:
+ * - Clipping content to the shape
+ * - Applying background color based on tonal elevation
+ * - Providing content color to its children
  */
 export function Surface(props: SurfaceProps) {
   return <SurfaceNativeView {...transformProps(props)} />;
