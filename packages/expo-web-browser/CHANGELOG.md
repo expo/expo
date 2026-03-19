@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Bring back the `experimentalLauncherActivity` config plugin option.
+
 ## 55.0.9 — 2026-02-25
 
 ### 🎉 New features
