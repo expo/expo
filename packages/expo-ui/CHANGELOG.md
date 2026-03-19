@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [android] Refactored `PullToRefreshBox` indicator props: replaced `loadingIndicatorModifiers` with nested `indicator` prop containing `color`, `containerColor`, and `modifiers`. Added `contentAlignment` prop. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Renamed Stepper `defaultValue` to `value` and `onValueChanged` to `onValueChange`. ([#43954](https://github.com/expo/expo/pull/43954) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Replace `Picker` with `SingleChoiceSegmentedButtonRow`, `MultiChoiceSegmentedButtonRow`, and `SegmentedButton` components. Replace `RadioButton` `nativeClickable` prop with `onClick` event. ([#43809](https://github.com/expo/expo/pull/43809) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Split `ToggleButton` into separate M3 components: `ToggleButton`, `IconToggleButton`, `FilledIconToggleButton`, `OutlinedIconToggleButton`. Removed `variant`, `text`, `color`, `disabled` props. Added `colors` with checked/unchecked variants. ([#43974](https://github.com/expo/expo/pull/43974) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -20,6 +21,7 @@
 
 ### 🎉 New features
 
+- [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `date`, `dateStyle`, `timerInterval`, `countsDown`, and `pauseTime` props to `Text` component for displaying auto-updating dates, timers, and countdowns using SwiftUI's `Text.DateStyle`. ([#43552](https://github.com/expo/expo/pull/43552) by [@LouisRaverdy](https://github.com/LouisRaverdy))
 - [android] Added `Checkbox` and `TriStateCheckbox` components. ([#43887](https://github.com/expo/expo/pull/43887) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Added `DatePickerDialog` and `TimePickerDialog` components, and `selectableDates` prop to `DateTimePicker`. ([#43895](https://github.com/expo/expo/pull/43895) by [@vonovak](https://github.com/vonovak))
