@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,6 +13,7 @@
 		49A036999684C855A5227246 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9B31297D4608C9B205791D /* ExpoModulesProvider.swift */; };
 		4CF4A4AAEC17F4D8B887CB1A /* libPods-BareExpoMain-BareExpo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 01510D8459D36A88D4AFF4A3 /* libPods-BareExpoMain-BareExpo.a */; };
 		827760385250CFC98D41B991 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AF6A6B5FB606A30EC7A219 /* ExpoModulesProvider.swift */; };
+		B0539F172F6BB03D00B388FA /* ExpoModulesPackages in Frameworks */ = {isa = PBXBuildFile; productRef = B0539F162F6BB03D00B388FA /* ExpoModulesPackages */; };
 		BAB229EE80C892F4E31AA0A9 /* libPods-BareExpoMain-BareExpoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 237389905863D373B45B2573 /* libPods-BareExpoMain-BareExpoTests.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		C4646A25A05E494F9DC4A1B3 /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6F906615D6F7426F93226251 /* notification.wav */; };
@@ -46,17 +47,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = "../../native-component-list/src/screens/inlineModules/inlineModulesExamples";
-			sourceTree = SOURCE_ROOT;
-		};
+		A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "../../native-component-list/src/screens/inlineModules/inlineModulesExamples"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CF4A4AAEC17F4D8B887CB1A /* libPods-BareExpoMain-BareExpo.a in Frameworks */,
+				B0539F172F6BB03D00B388FA /* ExpoModulesPackages in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +255,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				B0539F152F6BB03D00B388FA /* XCLocalSwiftPackageReference "../../../packages/expo-modules-autolinking/swiftpm/ExpoModulesPackages" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -898,6 +893,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B0539F152F6BB03D00B388FA /* XCLocalSwiftPackageReference "../../../packages/expo-modules-autolinking/swiftpm/ExpoModulesPackages" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../packages/expo-modules-autolinking/swiftpm/ExpoModulesPackages";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B0539F162F6BB03D00B388FA /* ExpoModulesPackages */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ExpoModulesPackages;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
