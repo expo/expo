@@ -18,7 +18,9 @@ const shapeEntries: { label: string; shape: ShapeJSXElement | undefined }[] = [
   { label: 'rectangle', shape: undefined },
   {
     label: 'rounded',
-    shape: Shape.RoundedCorner({ cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 } }),
+    shape: Shape.RoundedCorner({
+      cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 },
+    }),
   },
   { label: 'pill', shape: Shape.Pill({}) },
   { label: 'circle', shape: Shape.Circle({ radius: 1 }) },
@@ -89,18 +91,22 @@ export default function SurfaceScreen() {
           />
 
           <Row horizontalArrangement={{ spacedBy: 12 }}>
-            <ComposeText style={{ fontWeight: 'bold', fontSize: 14 }}>Border</ComposeText>
-            <Switch value={hasBorder} onCheckedChange={setHasBorder} />
-          </Row>
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText style={{ fontWeight: 'bold', fontSize: 14 }}>Border</ComposeText>
+              <Switch value={hasBorder} onCheckedChange={setHasBorder} />
+            </Row>
 
-          <Row horizontalArrangement={{ spacedBy: 12 }}>
-            <ComposeText style={{ fontWeight: 'bold', fontSize: 14 }}>Checked</ComposeText>
-            <Switch value={checked} onCheckedChange={setChecked} />
+            <Row horizontalArrangement={{ spacedBy: 12 }} verticalAlignment="center">
+              <ComposeText style={{ fontWeight: 'bold', fontSize: 14 }}>Checked</ComposeText>
+              <Switch value={checked} onCheckedChange={setChecked} />
+            </Row>
           </Row>
         </Column>
 
         <Surface
-          shape={Shape.RoundedCorner({ cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 } })}
+          shape={Shape.RoundedCorner({
+            cornerRadii: { topStart: 12, topEnd: 12, bottomStart: 12, bottomEnd: 12 },
+          })}
           checked={checked}
           onCheckedChange={setChecked}
           color={checked ? '#C8E6C9' : undefined}

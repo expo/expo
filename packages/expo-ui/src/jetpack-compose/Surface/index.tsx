@@ -97,7 +97,7 @@ export type SurfaceProps = {
 
 type NativeSurfaceProps = Omit<SurfaceProps, 'onClick' | 'onCheckedChange' | 'shape'> &
   ViewEvent<'onSurfaceClick', void> &
-  ViewEvent<'onCheckedChange', { onCheckedChange: boolean }> & {
+  ViewEvent<'onCheckedChange', { payload: boolean }> & {
     clickable?: boolean;
     shape?: ShapeRecordProps;
   };
@@ -118,8 +118,9 @@ function transformProps(props: SurfaceProps): NativeSurfaceProps {
     shape: parseJSXShape(shape),
     onSurfaceClick: onClick ? () => onClick() : undefined,
     onCheckedChange: onCheckedChange
-      ? (e: { nativeEvent: { onCheckedChange: boolean } }) =>
-          onCheckedChange(e.nativeEvent.onCheckedChange)
+      ? (e: { nativeEvent: { payload: boolean } }) => {
+          onCheckedChange(e.nativeEvent.payload);
+        }
       : undefined,
   };
 }
