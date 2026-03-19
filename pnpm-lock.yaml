@@ -279,9 +279,9 @@ importers:
 
   apps/eas-expo-go:
     dependencies:
-      '@expo/config':
+      expo:
         specifier: workspace:*
-        version: link:../../packages/@expo/config
+        version: link:../../packages/expo
 
   apps/expo-go:
     dependencies:
