@@ -60,6 +60,8 @@
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
     "@types/better-sqlite3": "^7.6.6",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
     "better-sqlite3": "^11.6.0",
     "expo-module-scripts": "^55.0.2",
     "react-error-boundary": "^4.0.11"

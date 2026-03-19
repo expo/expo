@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed incorrect MD5 checksum on Android. ([#43909](https://github.com/expo/expo/pull/43909) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 55.0.7 — 2026-02-25

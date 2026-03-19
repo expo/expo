@@ -8,6 +8,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ExpoSkillsTable } from '~/ui/components/ExpoSkillsTable';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
@@ -66,19 +67,7 @@ Use the [skills CLI](https://skills.sh/docs/cli) to add Expo Skills to any compa
 
 The following skills are available in the `expo` plugin:
 
-| Skill                                                                                                             | Description                                                                                                                                                                          |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`building-native-ui`](https://github.com/expo/skills/tree/main/plugins/expo/skills/building-native-ui)           | Use for building beautiful apps with [Expo Router](/router/introduction/). Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.              |
-| [`native-data-fetching`](https://github.com/expo/skills/tree/main/plugins/expo/skills/native-data-fetching)       | Use to implement or debug a network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders. |
-| [`expo-api-routes`](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-api-routes)                 | Use to create [API routes](/router/web/api-routes/) in Expo Router with EAS Hosting.                                                                                                 |
-| [`expo-dev-client`](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-dev-client)                 | Use to build and distribute [development clients](/develop/development-builds/use-development-builds/) locally or via TestFlight.                                                    |
-| [`expo-tailwind-setup`](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-tailwind-setup)         | Use to set up [Tailwind CSS](/guides/tailwind/) with `react-native-css` and NativeWind for universal styling.                                                                        |
-| [`use-dom`](https://github.com/expo/skills/tree/main/plugins/expo/skills/use-dom)                                 | Use Expo [DOM components](/guides/dom-components/) to run web code in a webview on native or web.                                                                                    |
-| [`expo-ui-jetpack-compose`](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-ui-jetpack-compose) | Use for [Jetpack Compose](/versions/latest/sdk/ui/jetpack-compose/) Views and modifiers in Expo apps.                                                                                |
-| [`expo-ui-swift-ui`](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-ui-swift-ui)               | Use for [SwiftUI](/versions/latest/sdk/ui/swift-ui/) Views and modifiers in Expo apps.                                                                                               |
-| [`expo-deployment`](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-deployment)                 | Use to deploy to Google Play Store, Apple App Store, web hosting, and API routes via [EAS](/eas/).                                                                                   |
-| [`expo-cicd-workflows`](https://github.com/expo/skills/tree/main/plugins/expo/skills/expo-cicd-workflows)         | Use to create [EAS Workflows](/eas/workflows/introduction/) YAML files for CI/CD automation.                                                                                         |
-| [`upgrading-expo`](https://github.com/expo/skills/tree/main/plugins/expo/skills/upgrading-expo)                   | Use to [upgrade Expo SDK versions](/workflow/upgrading-expo-sdk-walkthrough/), fix dependency issues, or handle breaking changes.                                                    |
+<ExpoSkillsTable />
 
 ## Example prompts
 

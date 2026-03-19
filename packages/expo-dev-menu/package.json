@@ -38,10 +38,11 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.3.0",
+    "@types/node": "^22.14.0",
     "babel-preset-expo": "~55.0.8",
     "expo-module-scripts": "^55.0.2",
     "react": "19.2.3",
-    "react-native": "0.85.0-rc.1"
+    "react-native": "0.85.0-rc.5"
   },
   "peerDependencies": {
     "expo": "*"
