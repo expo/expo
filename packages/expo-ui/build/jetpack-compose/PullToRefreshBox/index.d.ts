@@ -1,6 +1,25 @@
 import { type ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
 import { type ContentAlignment } from '../layout-types';
+/**
+ * Configuration for the loading indicator shown during pull-to-refresh.
+ */
+export type PullToRefreshIndicatorProps = {
+    /**
+     * Color of the loading indicator spinner.
+     * Defaults to `MaterialTheme.colorScheme.primary`.
+     */
+    color?: ColorValue;
+    /**
+     * Background color of the loading indicator container.
+     * Defaults to `MaterialTheme.colorScheme.surfaceContainerHigh`.
+     */
+    containerColor?: ColorValue;
+    /**
+     * Modifiers for the loading indicator.
+     */
+    modifiers?: ModifierConfig[];
+};
 export type PullToRefreshBoxProps = {
     /**
      * Whether the content is refreshing.
@@ -17,21 +36,13 @@ export type PullToRefreshBoxProps = {
      */
     contentAlignment?: ContentAlignment;
     /**
-     * Color of the loading indicator spinner.
+     * Configuration for the loading indicator shown during pull-to-refresh.
      */
-    indicatorColor?: ColorValue;
-    /**
-     * Background color of the loading indicator container.
-     */
-    indicatorContainerColor?: ColorValue;
+    indicator?: PullToRefreshIndicatorProps;
     /**
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
-    /**
-     * Modifiers for the loading indicator.
-     */
-    loadingIndicatorModifiers?: ModifierConfig[];
     /**
      * The content to refresh.
      */

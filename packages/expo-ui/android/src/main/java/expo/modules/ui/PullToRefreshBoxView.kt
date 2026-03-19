@@ -16,13 +16,17 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.convertibles.ContentAlignment
 
+data class PullToRefreshIndicatorProps(
+  val color: Color? = null,
+  val containerColor: Color? = null,
+  val modifiers: ModifierList = emptyList()
+)
+
 data class PullToRefreshBoxProps(
   val isRefreshing: Boolean = false,
   val contentAlignment: ContentAlignment? = null,
-  val indicatorColor: Color? = null,
-  val indicatorContainerColor: Color? = null,
-  val modifiers: ModifierList = emptyList(),
-  val loadingIndicatorModifiers: ModifierList = emptyList()
+  val indicator: PullToRefreshIndicatorProps = PullToRefreshIndicatorProps(),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
@@ -39,9 +43,9 @@ fun FunctionalComposableScope.PullToRefreshBoxContent(props: PullToRefreshBoxPro
       PullToRefreshDefaults.LoadingIndicator(
         isRefreshing = isRefreshing,
         state = pullToRefreshState,
-        modifier = ModifierRegistry.applyModifiers(props.loadingIndicatorModifiers, appContext, composableScope, globalEventDispatcher),
-        color = props.indicatorColor.composeOrNull ?: MaterialTheme.colorScheme.primary,
-        containerColor = props.indicatorContainerColor.composeOrNull ?: MaterialTheme.colorScheme.surfaceContainerHigh
+        modifier = ModifierRegistry.applyModifiers(props.indicator.modifiers, appContext, composableScope, globalEventDispatcher),
+        color = props.indicator.color.composeOrNull ?: MaterialTheme.colorScheme.primary,
+        containerColor = props.indicator.containerColor.composeOrNull ?: MaterialTheme.colorScheme.surfaceContainerHigh
       )
     },
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)

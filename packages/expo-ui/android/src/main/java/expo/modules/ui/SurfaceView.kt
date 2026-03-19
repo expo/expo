@@ -40,7 +40,6 @@ fun FunctionalComposableScope.SurfaceContent(
   onClick: () -> Unit,
   onCheckedChange: (Boolean) -> Unit
 ) {
-  android.util.Log.d("SurfaceView", "shape=${props.shape}, shapeType=${props.shape?.shapeType}, type=${props.shape?.type}")
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   val color = props.color?.compose ?: MaterialTheme.colorScheme.surface
   val contentColor = props.contentColor?.compose ?: contentColorFor(color)

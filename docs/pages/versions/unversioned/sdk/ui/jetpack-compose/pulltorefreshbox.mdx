@@ -19,6 +19,8 @@ Expo UI PullToRefreshBox matches the official Jetpack Compose [PullToRefreshBox]
 
 ### Basic pull to refresh
 
+Wrap scrollable content in a `PullToRefreshBox` to add pull-to-refresh behavior.
+
 ```tsx BasicPullToRefresh.tsx
 import { useState, useCallback } from 'react';
 import { Host, PullToRefreshBox, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
@@ -51,6 +53,8 @@ export default function BasicPullToRefresh() {
 
 ### Custom indicator colors
 
+Use the `indicator` prop to customize the spinner and container colors.
+
 ```tsx CustomIndicatorColors.tsx
 import { useState, useCallback } from 'react';
 import { Host, PullToRefreshBox, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
@@ -70,8 +74,7 @@ export default function CustomIndicatorColors() {
       <PullToRefreshBox
         isRefreshing={refreshing}
         onRefresh={onRefresh}
-        indicatorColor="#6200EE"
-        indicatorContainerColor="#F5F5F5">
+        indicator={{ color: '#6200EE', containerColor: '#F5F5F5' }}>
         <LazyColumn>
           <ListItem headline="Item 1" />
           <ListItem headline="Item 2" />
