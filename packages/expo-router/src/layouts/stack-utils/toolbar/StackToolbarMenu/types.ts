@@ -156,6 +156,8 @@ export interface NativeToolbarMenuProps {
   tintColor?: ColorValue;
   variant?: 'plain' | 'done' | 'prominent';
   elementSize?: 'auto' | 'small' | 'medium' | 'large';
+  /** @platform android */
+  source?: ImageSourcePropType;
 }
 
 export interface StackToolbarMenuActionProps {
@@ -227,4 +229,7 @@ export interface StackToolbarMenuActionProps {
   hidden?: boolean;
 }
 
-export type NativeToolbarMenuActionProps = LinkMenuActionProps;
+export interface NativeToolbarMenuActionProps extends LinkMenuActionProps {
+  /** @platform android */
+  source?: ImageSourcePropType;
+}
