@@ -5,11 +5,13 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.RecomposeScope
 import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.key
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
@@ -225,6 +227,180 @@ class FunctionalComposableScope(
   inline fun <reified T> EventDispatcher(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
     return view.EventDispatcher<T>(coalescingKey)
   }
+
+  /**
+   * Creates a [AsyncFunctionHandlerScope] for a function declared with
+   * [ComposeViewFunctionDefinitionBuilder.Function].
+   * The returned scope can be passed to child composables, which call it with
+   * a handler lambda that has access to local compose state.
+   *
+   * This is the counterpart to [EventDispatcher] — events push data to JS,
+   * while function handlers receive calls from JS.
+   *
+   * Usage in the ExpoUIView composable:
+   * ```
+   * val onHide = AsyncFunctionHandler("hide")
+   * ModalBottomSheetContent(props, onHide) { ... }
+   * ```
+   * Usage in the content composable:
+   * ```
+   * onHide { sheetState.hide() }
+   * ```
+   */
+  fun AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope<Unit> {
+    return AsyncFunctionHandlerScope(name, view)
+  }
+
+  @JvmName("AsyncFunctionHandler1")
+  fun <P0> AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope<P0> {
+    return AsyncFunctionHandlerScope(name, view)
+  }
+
+  @JvmName("AsyncFunctionHandler2")
+  fun <P0, P1> AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope2<P0, P1> {
+    return AsyncFunctionHandlerScope2(name, view)
+  }
+
+  @JvmName("AsyncFunctionHandler3")
+  fun <P0, P1, P2> AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope3<P0, P1, P2> {
+    return AsyncFunctionHandlerScope3(name, view)
+  }
+
+  @JvmName("AsyncFunctionHandler4")
+  fun <P0, P1, P2, P3> AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope4<P0, P1, P2, P3> {
+    return AsyncFunctionHandlerScope4(name, view)
+  }
+
+  @JvmName("AsyncFunctionHandler5")
+  fun <P0, P1, P2, P3, P4> AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope5<P0, P1, P2, P3, P4> {
+    return AsyncFunctionHandlerScope5(name, view)
+  }
+
+  @JvmName("AsyncFunctionHandler6")
+  fun <P0, P1, P2, P3, P4, P5> AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope6<P0, P1, P2, P3, P4, P5> {
+    return AsyncFunctionHandlerScope6(name, view)
+  }
+
+  @JvmName("AsyncFunctionHandler7")
+  fun <P0, P1, P2, P3, P4, P5, P6> AsyncFunctionHandler(name: String): AsyncFunctionHandlerScope7<P0, P1, P2, P3, P4, P5, P6> {
+    return AsyncFunctionHandlerScope7(name, view)
+  }
+}
+
+/**
+ * Scope objects returned by [FunctionalComposableScope.AsyncFunctionHandler].
+ * Call [invoke] with a typed suspend lambda to register the handler.
+ * The handler is updated on recomposition and cleaned up on disposal.
+ *
+ * For no-argument functions (`AsyncFunctionHandlerScope<Unit>`), the lambda parameter
+ * is `Unit` and can be ignored: `onHide { doStuff() }`.
+ */
+class AsyncFunctionHandlerScope<P0>(
+  private val name: String,
+  private val view: ComposeFunctionHolder<*>
+) {
+  @Suppress("UNCHECKED_CAST")
+  @Composable
+  operator fun invoke(handler: suspend (P0) -> Any?) {
+    val currentHandler = rememberUpdatedState(handler)
+    DisposableEffect(name) {
+      view.functionHandlers[name] = { args ->
+        val arg = if (args.isEmpty()) Unit as P0 else args[0] as P0
+        currentHandler.value(arg)
+      }
+      onDispose { view.functionHandlers.remove(name) }
+    }
+  }
+}
+
+class AsyncFunctionHandlerScope2<P0, P1>(
+  private val name: String,
+  private val view: ComposeFunctionHolder<*>
+) {
+  @Suppress("UNCHECKED_CAST")
+  @Composable
+  operator fun invoke(handler: suspend (P0, P1) -> Any?) {
+    val currentHandler = rememberUpdatedState(handler)
+    DisposableEffect(name) {
+      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1) }
+      onDispose { view.functionHandlers.remove(name) }
+    }
+  }
+}
+
+class AsyncFunctionHandlerScope3<P0, P1, P2>(
+  private val name: String,
+  private val view: ComposeFunctionHolder<*>
+) {
+  @Suppress("UNCHECKED_CAST")
+  @Composable
+  operator fun invoke(handler: suspend (P0, P1, P2) -> Any?) {
+    val currentHandler = rememberUpdatedState(handler)
+    DisposableEffect(name) {
+      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2) }
+      onDispose { view.functionHandlers.remove(name) }
+    }
+  }
+}
+
+class AsyncFunctionHandlerScope4<P0, P1, P2, P3>(
+  private val name: String,
+  private val view: ComposeFunctionHolder<*>
+) {
+  @Suppress("UNCHECKED_CAST")
+  @Composable
+  operator fun invoke(handler: suspend (P0, P1, P2, P3) -> Any?) {
+    val currentHandler = rememberUpdatedState(handler)
+    DisposableEffect(name) {
+      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3) }
+      onDispose { view.functionHandlers.remove(name) }
+    }
+  }
+}
+
+class AsyncFunctionHandlerScope5<P0, P1, P2, P3, P4>(
+  private val name: String,
+  private val view: ComposeFunctionHolder<*>
+) {
+  @Suppress("UNCHECKED_CAST")
+  @Composable
+  operator fun invoke(handler: suspend (P0, P1, P2, P3, P4) -> Any?) {
+    val currentHandler = rememberUpdatedState(handler)
+    DisposableEffect(name) {
+      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4) }
+      onDispose { view.functionHandlers.remove(name) }
+    }
+  }
+}
+
+class AsyncFunctionHandlerScope6<P0, P1, P2, P3, P4, P5>(
+  private val name: String,
+  private val view: ComposeFunctionHolder<*>
+) {
+  @Suppress("UNCHECKED_CAST")
+  @Composable
+  operator fun invoke(handler: suspend (P0, P1, P2, P3, P4, P5) -> Any?) {
+    val currentHandler = rememberUpdatedState(handler)
+    DisposableEffect(name) {
+      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5) }
+      onDispose { view.functionHandlers.remove(name) }
+    }
+  }
+}
+
+class AsyncFunctionHandlerScope7<P0, P1, P2, P3, P4, P5, P6>(
+  private val name: String,
+  private val view: ComposeFunctionHolder<*>
+) {
+  @Suppress("UNCHECKED_CAST")
+  @Composable
+  operator fun invoke(handler: suspend (P0, P1, P2, P3, P4, P5, P6) -> Any?) {
+    val currentHandler = rememberUpdatedState(handler)
+    DisposableEffect(name) {
+      view.functionHandlers[name] = { args -> currentHandler.value(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6) }
+      onDispose { view.functionHandlers.remove(name) }
+    }
+  }
 }
 
 @SuppressLint("ViewConstructor")
@@ -236,6 +412,9 @@ class ComposeFunctionHolder<Props : ComposeProps>(
   override val props: Props
 ) : ExpoComposeView<Props>(context, appContext), ViewFunctionHolder {
   val propsMutableState = mutableStateOf(props)
+
+  @PublishedApi
+  internal val functionHandlers = mutableMapOf<String, suspend (Array<out Any?>) -> Any?>()
 
   @Composable
   override fun ComposableScope.Content() {

@@ -6,7 +6,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.remember
-import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.viewevent.getValue
@@ -101,22 +100,6 @@ class ExpoUIModule : Module() {
 
     View(RNHostView::class)
 
-    View(TextFieldView::class) {
-      Events("onValueChange", "onFocusChanged", "onKeyboardAction")
-      Prop("defaultValue", "") { view: TextFieldView, text: String ->
-        if (view.text == null) { view.text = text }
-      }
-      AsyncFunction("setText") { view: TextFieldView, text: String ->
-        view.text = text
-      }
-      AsyncFunction("focus") { view: TextFieldView ->
-        view.focus()
-      }
-      AsyncFunction("blur") { view: TextFieldView ->
-        view.blur()
-      }
-    }
-
     View(SlotView::class) {
       Events("onSlotEvent")
     }
@@ -124,15 +107,26 @@ class ExpoUIModule : Module() {
     View(LazyColumnView::class)
     View(LazyRowView::class)
 
+    // Class-based views so TooltipBoxView can detect them by type via findChildOfType
+    View(PlainTooltipView::class)
+    View(RichTooltipView::class)
+
     //endregion Views use expo-modules-core DSL for uncommon features
 
     //region Expo UI views
 
-    View(ModalBottomSheetView::class) {
-      Events("onDismissRequest")
-      AsyncFunction("hide") Coroutine { view: ModalBottomSheetView ->
-        view.hide()
+    ExpoUIView(
+      "ModalBottomSheetView",
+      events = {
+        Events("onDismissRequest")
+      },
+      functions = {
+        AsyncFunction("hide")
       }
+    ) { props: ModalBottomSheetViewProps ->
+      val onHide = AsyncFunctionHandler("hide")
+      val onDismissRequest by remember { EventDispatcher<Unit>() }
+      ModalBottomSheetContent(props, onHide) { onDismissRequest(Unit) }
     }
 
     ExpoUIView("SingleChoiceSegmentedButtonRowView") { props: SingleChoiceSegmentedButtonRowProps ->
@@ -473,17 +467,42 @@ class ExpoUIModule : Module() {
       AnimatedVisibilityContent(props)
     }
 
-    // Class-based views so TooltipBoxView can detect them by type via findChildOfType
-    View(PlainTooltipView::class)
-    View(RichTooltipView::class)
+    ExpoUIView("TooltipBoxView",
+      functions = {
+        AsyncFunction("show")
+        AsyncFunction("dismiss")
+      }
+    ) { props: TooltipBoxViewProps ->
+      val onShow = AsyncFunctionHandler("show")
+      val onDismiss = AsyncFunctionHandler("dismiss")
+      TooltipBoxContent(props, onShow, onDismiss)
+    }
 
-    View(TooltipBoxView::class) {
-      AsyncFunction("show") Coroutine { view: TooltipBoxView ->
-        view.show()
+    ExpoUIView("TextFieldView",
+      events = {
+        Events("onValueChange", "onFocusChanged", "onKeyboardAction")
+      },
+      functions = {
+        AsyncFunction<String>("setText")
+        AsyncFunction("focus")
+        AsyncFunction("blur")
       }
-      AsyncFunction("dismiss") Coroutine { view: TooltipBoxView ->
-        view.dismiss()
-      }
+    ) { props: TextFieldProps ->
+      val onSetText = AsyncFunctionHandler<String>("setText")
+      val onFocus = AsyncFunctionHandler("focus")
+      val onBlur = AsyncFunctionHandler("blur")
+      val onValueChange by remember { EventDispatcher<GenericEventPayload1<String>>() }
+      val onFocusChanged by remember { EventDispatcher<GenericEventPayload1<Boolean>>() }
+      val onKeyboardAction by remember { EventDispatcher<KeyboardActionEvent>() }
+      TextFieldContent(
+        props,
+        onSetText,
+        onFocus,
+        onBlur,
+        onValueChanged = { onValueChange(it) },
+        onFocusChange = { onFocusChanged(it) },
+        onKeyboardActionTriggered = { onKeyboardAction(it) }
+      )
     }
 
     ExpoUIView("RadioButtonView", events = {
