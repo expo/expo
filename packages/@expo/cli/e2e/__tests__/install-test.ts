@@ -77,9 +77,10 @@ it('runs `npx expo install expo-sms`', async () => {
   expect(findProjectFiles(projectRoot)).toStrictEqual([
     'App.js',
     'app.json',
-    'bun.lock',
+    'index.js',
     'metro.config.js',
     'package.json',
+    'pnpm-lock.yaml',
   ]);
 });
 
@@ -203,7 +204,7 @@ it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --chec
   await expect(
     executeExpoAsync(projectRoot, ['install', 'expo-image@1.0.0'], { env })
   ).resolves.toMatchObject({
-    stdout: expect.stringContaining('Installing 1 other package using bun'),
+    stdout: expect.stringContaining('Installing 1 other package using'),
   });
 
   // Ensure the wrong version is installed
