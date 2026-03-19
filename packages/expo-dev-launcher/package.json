@@ -17,7 +17,7 @@
   "dependencies": {
     "@expo/schema-utils": "^55.0.2",
     "expo-dev-menu": "55.0.16",
-    "expo-manifests": "~55.0.10"
+    "expo-manifests": "~55.0.11"
   },
   "peerDependencies": {
     "expo": "*"

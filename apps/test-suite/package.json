@@ -25,7 +25,7 @@
     "expo-camera": "~55.0.10",
     "expo-cellular": "~55.0.9",
     "expo-checkbox": "~55.0.3",
-    "expo-constants": "~55.0.8",
+    "expo-constants": "~55.0.9",
     "expo-contacts": "~55.0.9",
     "expo-crypto": "~55.0.10",
     "expo-device": "~55.0.10",

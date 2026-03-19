@@ -48,7 +48,7 @@
     "expo-asset": "~55.0.10",
     "expo-blur": "~55.0.10",
     "expo-camera": "~55.0.10",
-    "expo-constants": "~55.0.8",
+    "expo-constants": "~55.0.9",
     "expo-device": "~55.0.10",
     "expo-font": "~55.0.4",
     "expo-linear-gradient": "~55.0.9",
