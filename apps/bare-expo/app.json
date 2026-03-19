@@ -92,6 +92,12 @@
           }
         }
       ],
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": true
+        }
+      ],
       "./plugins/withAndroidNetworkSecurityConfig",
       "./plugins/withBenchmarkModules"
     ],
