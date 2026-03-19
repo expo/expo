@@ -14,13 +14,20 @@ import androidx.compose.ui.Modifier
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.ui.convertibles.ContentAlignment
 
-data class PullToRefreshIndicatorProps(
-  val color: Color? = null,
-  val containerColor: Color? = null,
+class PullToRefreshIndicatorProps : Record {
+  @Field
+  val color: Color? = null
+
+  @Field
+  val containerColor: Color? = null
+
+  @Field
   val modifiers: ModifierList = emptyList()
-)
+}
 
 data class PullToRefreshBoxProps(
   val isRefreshing: Boolean = false,

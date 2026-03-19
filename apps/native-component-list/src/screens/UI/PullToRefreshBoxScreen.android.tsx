@@ -18,7 +18,10 @@ export default function PullToRefreshBoxScreen() {
 
   return (
     <Host matchContents>
-      <PullToRefreshBox isRefreshing={basic.refreshing} onRefresh={basic.onRefresh} contentAlignment="topCenter">
+      <PullToRefreshBox
+        isRefreshing={basic.refreshing}
+        onRefresh={basic.onRefresh}
+        contentAlignment="topCenter">
         <LazyColumn modifiers={[fillMaxSize()]}>
           <ListItem headline="Item 1" />
           <ListItem headline="Item 2" />
