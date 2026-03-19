@@ -64,6 +64,8 @@ jobs:
       - uses: eas/install_node_modules
       - name: Build Expo CLI
         run: yarn workspace @expo/cli prepare
+      - name: Remove EAS Gradle init script
+        run: rm -f /home/expo/.gradle/init.gradle
       - name: Build and publish Android brownfield artifacts
         working_directory: ../brownfield-tester/expo-app
         run: |
