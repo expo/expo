@@ -1,12 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import CryptoKit
 import Foundation
 
 @objc
 public class EASClientID : NSObject {
   private static let EAS_CLIENT_ID_SHARED_PREFERENCES_KEY = "expo.eas-client-id"
-
-  private static let MAX_52BIT: Double = 0xFFFFFFFFFFFFF // 4503599627370495
 
   @objc public static func uuid() -> UUID {
     return UUID.init(uuidString: UserDefaults.standard.computeStringIfAbsent(forKey: EAS_CLIENT_ID_SHARED_PREFERENCES_KEY) {
@@ -14,13 +13,13 @@ public class EASClientID : NSObject {
     })!
   }
 
-  /// Converts a UUID to a deterministic value in [0, 1] by interpreting
-  /// the first 52 bits (13 hex chars) as a fraction of the 52-bit max.
-  /// 52 bits is the maximum that fits exactly in a Double's mantissa.
+  /// Converts a UUID to a deterministic value in [0, 1] by hashing its raw bytes
+  /// with SHA-256 and interpreting the first 8 bytes as a UInt64 fraction.
   public static func uuidToInterval(_ uuid: UUID) -> Double {
-    let hex = uuid.uuidString.replacingOccurrences(of: "-", with: "")
-    let first13 = String(hex.prefix(13))
-    return Double(UInt64(first13, radix: 16)!) / MAX_52BIT
+    let uuidBytes = withUnsafeBytes(of: uuid.uuid) { Data($0) }
+    let hash = SHA256.hash(data: uuidBytes)
+    let value = hash.withUnsafeBytes { $0.load(as: UInt64.self).bigEndian }
+    return Double(value) / Double(UInt64.max)
   }
 }
 

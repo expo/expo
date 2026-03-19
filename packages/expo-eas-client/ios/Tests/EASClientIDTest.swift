@@ -13,18 +13,10 @@ class EASClientIdTests : XCTestCase {
     XCTAssertEqual(easClientId, easClientId2)
   }
 
-  func testUuidToIntervalBoundaries() {
-    let zero = UUID(uuidString: "00000000-0000-0000-0000-000000000000")!
-    XCTAssertEqual(EASClientID.uuidToInterval(zero), 0.0)
-
-    let max = UUID(uuidString: "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF")!
-    XCTAssertEqual(EASClientID.uuidToInterval(max), 1.0)
-  }
-
-  func testUuidToIntervalMidpoint() {
-    let mid = UUID(uuidString: "80000000-0000-0000-0000-000000000000")!
-    let interval = EASClientID.uuidToInterval(mid)
-    XCTAssertEqual(interval, 0.5, accuracy: 0.001)
+  func testUuidToIntervalKnownValue() {
+    let uuid = UUID(uuidString: "A1B2C3D4-E5F6-7890-ABCD-EF1234567890")!
+    let interval = EASClientID.uuidToInterval(uuid)
+    XCTAssertEqual(interval, 0.9211200650509653, accuracy: 1e-15)
   }
 
   func testUuidToIntervalRange() {

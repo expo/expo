@@ -22,12 +22,11 @@ class EASClientIDTest {
   }
 
   @Test
-  fun testUuidToIntervalBoundaries() {
-    val zero = UUID.fromString("00000000-0000-0000-0000-000000000000")
-    EASClientID.uuidToInterval(zero) shouldBeEqualTo 0.0
-
-    val max = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff")
-    EASClientID.uuidToInterval(max) shouldBeEqualTo 1.0
+  fun testUuidToIntervalKnownValue() {
+    val uuid = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+    val interval = EASClientID.uuidToInterval(uuid)
+    // SHA-256 of UUID bytes, first 8 bytes as UInt64 big-endian / UInt64.MAX
+    kotlin.test.assertEquals(0.9211200650509653, interval, 1e-15)
   }
 
   @Test
