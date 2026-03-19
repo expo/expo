@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
-import { type ViewEvent, type ExpoModifier } from '../../types';
-import { align } from '../modifiers';
+import { type ViewEvent, type ModifierConfig } from '../../types';
+import { type ContentAlignment } from '../layout-types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type PullToRefreshBoxProps = {
@@ -11,20 +12,30 @@ export type PullToRefreshBoxProps = {
    */
   isRefreshing?: boolean;
   /**
-   * Callback to call when the content is refreshed.
+   * Callback that is called when the user pulls to refresh.
    */
   onRefresh?: () => void;
   /**
+   * Alignment of children within the box.
+   * @default 'topStart'
+   */
+  contentAlignment?: ContentAlignment;
+  /**
+   * Color of the loading indicator spinner.
+   */
+  indicatorColor?: ColorValue;
+  /**
+   * Background color of the loading indicator container.
+   */
+  indicatorContainerColor?: ColorValue;
+  /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
-
+  modifiers?: ModifierConfig[];
   /**
    * Modifiers for the loading indicator.
-   * @default [align('topCenter'), padding(0, 10, 0, 0)]
    */
-  loadingIndicatorModifiers?: ExpoModifier[];
-
+  loadingIndicatorModifiers?: ModifierConfig[];
   /**
    * The content to refresh.
    */
@@ -40,11 +51,6 @@ const NativePullToRefreshBoxView: React.ComponentType<NativePullToRefreshBoxProp
 function transformProps(props: PullToRefreshBoxProps): NativePullToRefreshBoxProps {
   const { isRefreshing, modifiers, onRefresh, ...restProps } = props;
 
-  const loadingIndicatorModifiers = props.loadingIndicatorModifiers ?? [
-    align('topCenter'),
-    // padding(0, 10, 0, 0),
-  ];
-
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
@@ -53,13 +59,12 @@ function transformProps(props: PullToRefreshBoxProps): NativePullToRefreshBoxPro
     onRefresh: () => {
       onRefresh?.();
     },
-    loadingIndicatorModifiers,
   };
 }
 
 /**
- * Renders a `PullToRefreshBox` component.
- * A box that allows the user to pull down to refresh the content.
+ * A pull-to-refresh container that wraps scrollable content and shows a refresh indicator when pulled,
+ * matching Compose's `PullToRefreshBox`.
  */
 export function PullToRefreshBox(props: PullToRefreshBoxProps) {
   return <NativePullToRefreshBoxView {...transformProps(props)} />;
