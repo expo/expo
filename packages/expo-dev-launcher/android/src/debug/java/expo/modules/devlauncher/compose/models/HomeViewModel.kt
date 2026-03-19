@@ -18,6 +18,8 @@ import expo.modules.devlauncher.services.ErrorRegistryService
 import expo.modules.devlauncher.services.NsdPreferences
 import expo.modules.devlauncher.services.PackagerInfo
 import expo.modules.devlauncher.services.PackagerService
+import expo.modules.devlauncher.services.SessionService
+import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -46,6 +48,7 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
   val packagerService = inject<PackagerService>()
   val errorRegistryService = inject<ErrorRegistryService>()
   private val nsdPreferences = inject<NsdPreferences>()
+  private val sessionService = inject<SessionService>()
 
   private val appPackageName: String = devLauncherController.context.packageName
 
@@ -82,6 +85,15 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
     packagerService.resumeHealthCheck()
     ProcessLifecycleOwner.get().lifecycle.addObserver(this)
     nsdPreferences.addOnChangeListener(nsdListener)
+
+    sessionService
+      .user
+      .onEach {
+        _state.value = _state.value.copy(
+          runningPackagers = filterPackagers(allPackagers)
+        )
+      }
+      .launchIn(viewModelScope)
   }
 
   override fun onResume(owner: LifecycleOwner) {
@@ -108,6 +120,14 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
     val slugFilter = nsdPreferences.filterBySlug
     if (slugFilter.isNotBlank()) {
       filtered = filtered.filter { it.slug == slugFilter }.toSet()
+    }
+
+    if (nsdPreferences.filterByUsername) {
+      val currentUsername = (sessionService.user.value as? UserState.LoggedIn)
+        ?.data?.meUserActor?.username
+      if (currentUsername != null) {
+        filtered = filtered.filter { it.username == currentUsername }.toSet()
+      }
     }
 
     return filtered

@@ -1,4 +1,3 @@
-import { getConfig } from '@expo/config';
 import { load as loadEnv } from '@expo/env';
 import chalk from 'chalk';
 
@@ -6,6 +5,7 @@ import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/chec
 import { resolveChecksInScope } from './utils/checkResolver';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
+import { getProjectConfigAsync } from './utils/getProjectConfig';
 import { isInteractive } from './utils/interactive';
 import { Log } from './utils/log';
 import { setNodeEnv } from './utils/nodeEnv';
@@ -133,7 +133,7 @@ export async function actionAsync(projectRoot: string, showVerboseTestResults: b
     setNodeEnv('development');
     loadEnv(projectRoot);
 
-    const projectConfig = getConfig(projectRoot);
+    const projectConfig = await getProjectConfigAsync(projectRoot);
 
     // expo-doctor relies on versioned CLI, which is only available for 44+
     if (ltSdkVersion(projectConfig.exp, '46.0.0')) {

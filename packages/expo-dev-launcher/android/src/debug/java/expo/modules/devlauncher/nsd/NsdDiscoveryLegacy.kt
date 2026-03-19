@@ -24,6 +24,7 @@ internal class NsdDiscoveryLegacy(
         val name = resolved.getAttribute("name")
         val slug = resolved.getAttribute("slug")
         val androidPackage = resolved.getAttribute("androidPackage")
+        val username = resolved.getAttribute("username")
 
         if (url != null && name != null) {
           val isAlive = checkPackagerStatus(url)
@@ -35,7 +36,8 @@ internal class NsdDiscoveryLegacy(
               url,
               name,
               slug,
-              androidPackage
+              androidPackage,
+              username
             )
           } else {
             removeDiscoveredPackager(serviceName)

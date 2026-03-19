@@ -192,6 +192,24 @@ export function createFallbackModuleResolver({
       }
     }
 
+    // Self-resolution
+    const pkg = immutableContext.getPackageForModule(immutableContext.originModulePath);
+    const pkgName = pkg?.packageJson.name;
+    if (pkgName && dependenciesToRegex([pkgName]).test(moduleName)) {
+      const context: ResolutionContext = {
+        ...immutableContext,
+        nodeModulesPaths: [],
+        // NOTE(@kitten): Metro currently fails self-resolution, so if the package failed to resolve itself
+        // from within itself, we add a hint to where to find itself to the `extraNodeModules` lookups
+        extraNodeModules: {
+          [pkgName]: pkg.rootPath,
+        },
+      };
+      const res = getStrictResolver(context, platform)(moduleName);
+      debug(`Self resolution for ${platform}: ${moduleName} -> from origin: ${pkg.rootPath}`);
+      return res;
+    }
+
     return null;
   };
 }

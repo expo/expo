@@ -1104,7 +1104,7 @@ jobs:
       maestro_version: string # optional. Version of Maestro to use for the tests. If not provided, the latest version will be used.
       android_system_image_package: string # optional. Android emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
-      output_format?: string # optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+      output_format?: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
 ```
 
 #### `maestro-cloud`
@@ -1741,7 +1741,6 @@ jobs:
     params:
       build_id: '123-abc'
       flow_path: 'path/to/flow.yaml'
-      output_format: 'junit'
   my_job:
     needs: [maestro_tests]
     steps:
