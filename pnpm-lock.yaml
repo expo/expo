@@ -153,6 +153,9 @@ importers:
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
+      expo-video:
+        specifier: workspace:*
+        version: link:../../packages/expo-video
       lottie-react-native:
         specifier: ^7.3.4
         version: 7.3.6(@lottiefiles/dotlottie-react@0.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.85.0-rc.5(@babel/core@7.29.0)(@react-native/jest-preset@0.85.0-rc.5(@babel/core@7.29.0)(react@19.2.3))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
