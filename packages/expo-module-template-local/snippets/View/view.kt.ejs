@@ -1,0 +1,25 @@
+package <%- project.package %>
+
+import android.content.Context
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import expo.modules.kotlin.AppContext
+<% if (project.features.includes('ViewEvent')) { %>import expo.modules.kotlin.viewevent.EventDispatcher
+<% } %>import expo.modules.kotlin.views.ExpoView
+
+class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+<% if (project.features.includes('ViewEvent')) { %>  private val onLoad by EventDispatcher()
+
+<% } %>  internal val webView = WebView(context).apply {
+    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+<% if (project.features.includes('ViewEvent')) { %>    webViewClient = object : WebViewClient() {
+      override fun onPageFinished(view: WebView, url: String) {
+        onLoad(mapOf("url" to url))
+      }
+    }
+<% } %>  }
+
+  init {
+    addView(webView)
+  }
+}

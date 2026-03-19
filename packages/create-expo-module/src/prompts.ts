@@ -3,6 +3,7 @@ import type { Answers, PromptObject } from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
 import { ensureSafeModuleName } from './appleFrameworks';
+import { ALL_FEATURES } from './types';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 
@@ -124,6 +125,20 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
     },
   ];
+}
+
+export function getFeaturesPrompt(): PromptObject {
+  return {
+    type: 'multiselect',
+    name: 'features',
+    message: 'Which feature examples should this module include?',
+    choices: ALL_FEATURES.map((f) => ({
+      title: f,
+      value: f,
+      selected: false,
+    })),
+    hint: '- Space to select. Enter to confirm (empty = minimal module).',
+  };
 }
 
 export async function getLocalSubstitutionDataPrompts(

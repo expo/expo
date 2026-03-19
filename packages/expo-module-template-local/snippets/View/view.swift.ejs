@@ -5,24 +5,24 @@ import WebKit
 // to apply the proper styling (e.g. border radius and shadows).
 class <%- project.viewName %>: ExpoView {
   let webView = WKWebView()
-  let onLoad = EventDispatcher()
+<% if (project.features.includes('ViewEvent')) { %>  let onLoad = EventDispatcher()
   var delegate: WebViewDelegate?
-
+<% } %>
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     clipsToBounds = true
-    delegate = WebViewDelegate { url in
+<% if (project.features.includes('ViewEvent')) { %>    delegate = WebViewDelegate { url in
       self.onLoad(["url": url])
     }
     webView.navigationDelegate = delegate
-    addSubview(webView)
+<% } %>    addSubview(webView)
   }
 
   override func layoutSubviews() {
     webView.frame = bounds
   }
 }
-
+<% if (project.features.includes('ViewEvent')) { %>
 class WebViewDelegate: NSObject, WKNavigationDelegate {
   let onUrlChange: (String) -> Void
 
@@ -36,3 +36,4 @@ class WebViewDelegate: NSObject, WKNavigationDelegate {
     }
   }
 }
+<% } %>
