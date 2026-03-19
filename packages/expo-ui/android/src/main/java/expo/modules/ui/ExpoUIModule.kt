@@ -312,8 +312,16 @@ class ExpoUIModule : Module() {
       PullToRefreshBoxContent(props) { onRefresh(Unit) }
     }
 
-    ExpoUIView("CarouselView") { props: CarouselProps ->
-      CarouselContent(props)
+    ExpoUIView("HorizontalCenteredHeroCarouselView") { props: HorizontalCenteredHeroCarouselProps ->
+      HorizontalCenteredHeroCarouselContent(props)
+    }
+
+    ExpoUIView("HorizontalMultiBrowseCarouselView") { props: HorizontalMultiBrowseCarouselProps ->
+      HorizontalMultiBrowseCarouselContent(props)
+    }
+
+    ExpoUIView("HorizontalUncontainedCarouselView") { props: HorizontalUncontainedCarouselProps ->
+      HorizontalUncontainedCarouselContent(props)
     }
 
     ExpoUIView("AlertDialogView", events = {

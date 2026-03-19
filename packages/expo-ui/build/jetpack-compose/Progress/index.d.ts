@@ -7,7 +7,7 @@ export type StrokeCap = 'round' | 'butt' | 'square';
 /**
  * Common props shared by all progress indicator variants.
  */
-type BaseProgressProps = {
+export type ProgressCommonConfig = {
     /**
      * The current progress value between `0` and `1`. Omit for indeterminate.
      */
@@ -43,7 +43,7 @@ export type DrawStopIndicatorConfig = {
      */
     stopSize?: number;
 };
-export type LinearProgressIndicatorProps = BaseProgressProps & {
+export type LinearProgressIndicatorProps = ProgressCommonConfig & {
     /**
      * Stroke cap style for the indicator ends.
      * @default 'round'
@@ -64,7 +64,7 @@ export type LinearProgressIndicatorProps = BaseProgressProps & {
  * Matches the Jetpack Compose `LinearProgressIndicator`.
  */
 export declare const LinearProgressIndicator: import("react").ComponentType<LinearProgressIndicatorProps>;
-export type CircularProgressIndicatorProps = BaseProgressProps & {
+export type CircularProgressIndicatorProps = ProgressCommonConfig & {
     /**
      * Width of the circular stroke in dp.
      */
@@ -85,7 +85,7 @@ export type CircularProgressIndicatorProps = BaseProgressProps & {
  * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
 export declare const CircularProgressIndicator: import("react").ComponentType<CircularProgressIndicatorProps>;
-export type LinearWavyProgressIndicatorProps = BaseProgressProps & {
+export type LinearWavyProgressIndicatorProps = ProgressCommonConfig & {
     /**
      * Size of the stop indicator in dp at the end of the determinate progress track.
      */
@@ -97,12 +97,11 @@ export type LinearWavyProgressIndicatorProps = BaseProgressProps & {
  * Matches the Jetpack Compose `LinearWavyProgressIndicator`.
  */
 export declare const LinearWavyProgressIndicator: import("react").ComponentType<LinearWavyProgressIndicatorProps>;
-export type CircularWavyProgressIndicatorProps = BaseProgressProps;
+export type CircularWavyProgressIndicatorProps = ProgressCommonConfig;
 /**
  * A circular progress indicator with wavy animation style.
  *
  * Matches the Jetpack Compose `CircularWavyProgressIndicator`.
  */
-export declare const CircularWavyProgressIndicator: import("react").ComponentType<BaseProgressProps>;
-export {};
+export declare const CircularWavyProgressIndicator: import("react").ComponentType<ProgressCommonConfig>;
 //# sourceMappingURL=index.d.ts.map
