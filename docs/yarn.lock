@@ -812,20 +812,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-base@npm:^2.0.5":
-  version: 2.0.5
-  resolution: "@expo/styleguide-base@npm:2.0.5"
+"@expo/styleguide-base@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@expo/styleguide-base@npm:3.0.0"
   dependencies:
     "@radix-ui/colors": "npm:^3.0.0"
   peerDependencies:
-    react: ">= 16"
-  checksum: 10c0/5525cf265c494dcd1321e4aefbd9eb65ecfd15f6b1579f3561f37773ff85c7962d93547b0daca838a35e9055d7a6533ce8322b57d679a043b7e8985449a76ec0
+    react: ">= 19"
+  checksum: 10c0/cf182d5f4f715b77b087c82acb82dce0ee8c574e22d44ffb1ffd3c7161260eab21fef77216d1f72422a5f80eba420ef566cff57b93bd96686cd456e443e5dcbd
   languageName: node
   linkType: hard
 
-"@expo/styleguide-cookie-consent@npm:^0.1.13":
-  version: 0.1.13
-  resolution: "@expo/styleguide-cookie-consent@npm:0.1.13"
+"@expo/styleguide-cookie-consent@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@expo/styleguide-cookie-consent@npm:2.0.0"
   dependencies:
     "@radix-ui/react-accordion": "npm:^1.2.4"
     "@radix-ui/react-slot": "npm:^1.2.0"
@@ -834,28 +834,28 @@ __metadata:
     zustand: "npm:^5.0.3"
   peerDependencies:
     react: ">= 19"
-  checksum: 10c0/165284e01ceb731ac8d611ecc6e1910171420d5d2813bd38b287970fd8b35cc1870351821e7a7fdf6da3bc93ef7085668a72ef335d3dffb8fd3764cb055217f0
+  checksum: 10c0/50273701604e01a6e95ea9ba43f425089469496be0bcd354ca134cce16698cc14df96cf996dc0608656c49dbbc8e42c22b9387c7ba88cb2333645d3b5ff84f1e
   languageName: node
   linkType: hard
 
-"@expo/styleguide-icons@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@expo/styleguide-icons@npm:3.0.1"
+"@expo/styleguide-icons@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@expo/styleguide-icons@npm:4.0.0"
   dependencies:
-    tailwind-merge: "npm:^3.0.0"
+    tailwind-merge: "npm:^3.5.0"
   peerDependencies:
-    react: ">= 16"
-    tailwindcss: ^4.0.0
-  checksum: 10c0/e7cde09667243e54bc1ca4a30e259446d9b0fd0aca3981f097c21ae46388165c5a2f3b46b9ad9fcc31211cdd07b999811a9c5783a163f19ec84ab54aafe23e35
+    react: ">= 19"
+    tailwindcss: ^4.2.1
+  checksum: 10c0/2283fb08817b1fb893de74eb197a0ec21bba5f341baafa26daff6791124e48775ae2f8a608bada3281184763a6357bd724a6c5fea83672af26af3edc68b3f2d2
   languageName: node
   linkType: hard
 
-"@expo/styleguide-search-ui@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "@expo/styleguide-search-ui@npm:5.0.1"
+"@expo/styleguide-search-ui@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@expo/styleguide-search-ui@npm:7.0.0"
   dependencies:
-    "@expo/styleguide": "npm:^11.0.1"
-    "@expo/styleguide-icons": "npm:^3.0.1"
+    "@expo/styleguide": "npm:^13.0.0"
+    "@expo/styleguide-icons": "npm:^4.0.0"
     "@kapaai/react-sdk": "npm:^0.5.1"
     "@sanity/client": "npm:^7.13.2"
     "@sanity/image-url": "npm:^2.0.2"
@@ -868,23 +868,22 @@ __metadata:
   peerDependencies:
     next: ">= 13"
     react: ">= 19"
-    tailwindcss: ^4.0.0
-  checksum: 10c0/f7f3fd3add654d87b46f06e69c2ecb5158921e0e463f264e1cfcf76081f21e57e627937ebda2361220df876cff332a8e84a12df0dce1a8f1e269fc38d61249fc
+    tailwindcss: ^4.2.1
+  checksum: 10c0/9bfaaaa5c05ca559f9bef18dd1d5a050109c14ef9ab787682e5f947885988dd66fa0cc44c02f996caf05afe17285a617546e55c102175c6350c53dd83595a668
   languageName: node
   linkType: hard
 
-"@expo/styleguide@npm:^11.0.1":
-  version: 11.0.1
-  resolution: "@expo/styleguide@npm:11.0.1"
+"@expo/styleguide@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@expo/styleguide@npm:13.0.0"
   dependencies:
-    "@expo/styleguide-base": "npm:^2.0.5"
-    tailwind-merge: "npm:^3.0.0"
-    use-effect-event: "npm:^2.0.3"
+    "@expo/styleguide-base": "npm:^3.0.0"
+    tailwind-merge: "npm:^3.5.0"
   peerDependencies:
     next: ">= 13"
     react: ">= 19"
-    tailwindcss: ^4.0.0
-  checksum: 10c0/e09d6e0eefb27ee0f019b71df1bda7668f8814f3f05d44aa61bacf8c8313026a8164aff2b8a40c46e48267d7a31c22a4a3642937bd1c8a9689ce0dda11089c6b
+    tailwindcss: ^4.2.1
+  checksum: 10c0/dac3e47faa1ee053940098ae35d9b5d3784a4defe38a6d92ed21c0c55956b891cbd7897d0c96699496c6cbf9d2639047b9cb34ced90a0f3c48b888da7b1e84c2
   languageName: node
   linkType: hard
 
@@ -7984,11 +7983,11 @@ __metadata:
   dependencies:
     "@apidevtools/json-schema-ref-parser": "npm:^11.9.3"
     "@expo/spawn-async": "npm:^1.7.2"
-    "@expo/styleguide": "npm:^11.0.1"
-    "@expo/styleguide-base": "npm:^2.0.5"
-    "@expo/styleguide-cookie-consent": "npm:^0.1.13"
-    "@expo/styleguide-icons": "npm:^3.0.1"
-    "@expo/styleguide-search-ui": "npm:^5.0.1"
+    "@expo/styleguide": "npm:^13.0.0"
+    "@expo/styleguide-base": "npm:^3.0.0"
+    "@expo/styleguide-cookie-consent": "npm:^2.0.0"
+    "@expo/styleguide-icons": "npm:^4.0.0"
+    "@expo/styleguide-search-ui": "npm:^7.0.0"
     "@kapaai/react-sdk": "npm:^0.9.0"
     "@mdx-js/loader": "npm:^3.1.1"
     "@mdx-js/mdx": "npm:^3.1.1"
@@ -14681,7 +14680,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwind-merge@npm:^3.0.0":
+"tailwind-merge@npm:^3.5.0":
   version: 3.5.0
   resolution: "tailwind-merge@npm:3.5.0"
   checksum: 10c0/4dc588f5b5296ba3f38e1ebb41f02b6d24a8c5bb45e44b33748c118fb4b5767dd0efc464431ca3e75404056b618b5f67bec3708158baa65fed8a2fc9201e0c53
