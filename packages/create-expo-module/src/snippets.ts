@@ -112,7 +112,7 @@ export async function buildAppSnippets(
   snippetsDir: string,
   features: string[],
   data: object,
-  section: 'react-imports' | 'external-imports' | 'hooks' | 'jsx'
+  section: 'imports' | 'react-imports' | 'external-imports' | 'hooks' | 'jsx'
 ): Promise<string> {
   const selected = APP_SNIPPET_FEATURES.filter((f) => features.includes(f));
   const parts = await Promise.all(

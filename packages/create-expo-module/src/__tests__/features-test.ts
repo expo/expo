@@ -1,4 +1,4 @@
-import { resolveFeatures } from '../create-expo-module';
+import { resolveFeatures } from '../features';
 
 describe('resolveFeatures', () => {
   it('returns empty array when no features provided in non-interactive mode', () => {

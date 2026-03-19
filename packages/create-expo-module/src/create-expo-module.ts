@@ -10,6 +10,7 @@ import validateNpmPackage from 'validate-npm-package-name';
 
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
+import { resolveFeatures } from './features';
 import {
   installDependencies,
   formatRunCommand,
@@ -224,23 +225,7 @@ async function resolvePlatformsAsync(
   return platforms as Platform[];
 }
 
-/**
- * Validates, deduplicates, and applies ViewEvent→View auto-include.
- * Does not produce any side effects (no I/O). Exported for testing.
- */
-export function resolveFeatures(selected: string[], fullExample = false): Feature[] {
-  if (fullExample) {
-    return [...ALL_FEATURES];
-  }
-  const valid = selected.filter((f): f is Feature =>
-    (ALL_FEATURES as readonly string[]).includes(f)
-  );
-  if (valid.includes('ViewEvent') && !valid.includes('View')) {
-    valid.unshift('View');
-  }
-
-  return [...new Set(valid)] as Feature[];
-}
+export { resolveFeatures };
 
 /**
  * Priority: --full-example flag → --features flag → interactive prompt → empty.
@@ -1088,6 +1073,8 @@ program.hook('postAction', async () => {
   await getTelemetryClient().flush?.();
 });
 
-if (!process.env.JEST_WORKER_ID) {
+const isInProcessUnitTest =
+  !!process.env.JEST_WORKER_ID && !process.argv[1]?.includes('create-expo-module');
+if (!isInProcessUnitTest) {
   program.parse(process.argv);
 }

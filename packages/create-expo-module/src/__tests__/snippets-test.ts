@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+
 import {
   buildAppSnippets,
   buildModuleSnippets,
@@ -30,10 +31,7 @@ const mockData = {
 };
 
 // Path to the actual snippets directory in the template package
-const SNIPPETS_DIR = path.resolve(
-  __dirname,
-  '../../../../packages/expo-module-template/snippets'
-);
+const SNIPPETS_DIR = path.resolve(__dirname, '../../../../packages/expo-module-template/snippets');
 
 describe('buildModuleSnippets', () => {
   it('returns empty string when no features are selected', async () => {
@@ -58,15 +56,18 @@ describe('buildModuleSnippets', () => {
 
   it('joins multiple snippets', async () => {
     const result = await buildModuleSnippets(
-      SNIPPETS_DIR, ['Function', 'AsyncFunction'], mockData, 'swift'
+      SNIPPETS_DIR,
+      ['Function', 'AsyncFunction'],
+      mockData,
+      'swift'
     );
     expect(result).toContain('Function("hello")');
     expect(result).toContain('AsyncFunction("setValueAsync")');
   });
 
-  it('includes SharedObject factory snippet for swift when SharedObject feature selected', async () => {
+  it('includes SharedObject class definition for swift when SharedObject feature selected', async () => {
     const result = await buildModuleSnippets(SNIPPETS_DIR, ['SharedObject'], mockData, 'swift');
-    expect(result).toContain('Function("createMyModuleModuleSharedObject")');
+    expect(result).toContain('Class(MyModuleModuleSharedObject.self)');
   });
 });
 
@@ -155,7 +156,12 @@ describe('buildAppSnippets', () => {
       ...mockData,
       project: { ...mockData.project, features: ['View', 'ViewEvent'] },
     };
-    const result = await buildAppSnippets(SNIPPETS_DIR, ['View', 'ViewEvent'], dataWithViewEvent, 'jsx');
+    const result = await buildAppSnippets(
+      SNIPPETS_DIR,
+      ['View', 'ViewEvent'],
+      dataWithViewEvent,
+      'jsx'
+    );
     expect(result).toContain('onLoad');
   });
 
@@ -180,7 +186,10 @@ describe('copyFileSnippets', () => {
     try {
       await copyFileSnippets(SNIPPETS_DIR, ['View'], mockData, tmpDir);
       const viewTsx = path.join(tmpDir, 'src', `${mockData.project.viewName}.tsx`);
-      const exists = await fs.promises.access(viewTsx).then(() => true).catch(() => false);
+      const exists = await fs.promises
+        .access(viewTsx)
+        .then(() => true)
+        .catch(() => false);
       expect(exists).toBe(true);
     } finally {
       await fs.promises.rm(tmpDir, { recursive: true, force: true });
@@ -196,7 +205,10 @@ describe('copyFileSnippets', () => {
     try {
       await copyFileSnippets(SNIPPETS_DIR, ['View'], dataWithoutApple, tmpDir);
       const viewSwift = path.join(tmpDir, 'ios', `${mockData.project.viewName}.swift`);
-      const exists = await fs.promises.access(viewSwift).then(() => true).catch(() => false);
+      const exists = await fs.promises
+        .access(viewSwift)
+        .then(() => true)
+        .catch(() => false);
       expect(exists).toBe(false);
     } finally {
       await fs.promises.rm(tmpDir, { recursive: true, force: true });
