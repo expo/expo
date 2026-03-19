@@ -113,7 +113,7 @@ fun SettingsScreen(
     Spacer(NewAppTheme.spacing.`3`)
 
     NewText(
-      "Filter discovered packagers by the current app's package name or a specific project slug. Only matching development servers will be shown on the home screen.",
+      "Filter discovered packagers by the current app's package name, your Expo account, or a specific project slug. Only matching development servers will be shown on the home screen.",
       style = NewAppTheme.font.md.merge(
         lineHeight = 21.sp
       ),
@@ -252,6 +252,32 @@ private fun NSDSection(state: SettingsState, onAction: (SettingsAction) -> Unit)
           color = NewAppTheme.colors.border.default
         )
 
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            LauncherIcons.User(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(
+              text = "Filter by Expo account"
+            )
+          },
+          rightComponent = {
+            ToggleSwitch(
+              isToggled = state.filterByUsername
+            )
+          },
+          onClick = { onAction(SettingsAction.ToggleFilterByUsername(!state.filterByUsername)) }
+        )
+
+        Divider(
+          thickness = 0.5.dp,
+          color = NewAppTheme.colors.border.default
+        )
+
         Column(
           modifier = Modifier
             .background(NewAppTheme.colors.background.subtle)
@@ -328,6 +354,7 @@ fun SettingsScreenPreview() {
           projectUrl = "https://u.expo.dev/01980973-2cf9-71fb-a891-a53444132a6e"
         ),
         filterByPackageName = true,
+        filterByUsername = false,
         filterBySlug = "bare-expo"
       )
     )
