@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog API](https://developer.android.com/develop/ui/compose/components/dialog) and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
+Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
 
 ## Installation
 
@@ -21,22 +21,48 @@ Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog 
 
 ```tsx BasicAlertDialogExample.tsx
 import { useState } from 'react';
-import { Host, BasicAlertDialog, Button, Text, Surface, Column } from '@expo/ui/jetpack-compose';
-import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  BasicAlertDialog,
+  Button,
+  TextButton,
+  Text,
+  Surface,
+  Column,
+  Spacer,
+} from '@expo/ui/jetpack-compose';
+import {
+  padding,
+  wrapContentWidth,
+  wrapContentHeight,
+  clip,
+  height,
+  align,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function BasicAlertDialogExample() {
   const [visible, setVisible] = useState(false);
 
   return (
     <Host matchContents>
-      <Button onPress={() => setVisible(true)}>Show Dialog</Button>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open dialog</Text>
+      </Button>
       {visible && (
         <BasicAlertDialog onDismissRequest={() => setVisible(false)}>
-          <Surface color="#FFFFFF" modifiers={[paddingAll(24)]}>
-            <Column verticalArrangement={{ spacedBy: 8 }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Custom Dialog</Text>
-              <Text>This dialog contains fully custom content defined as children.</Text>
-              <Button onPress={() => setVisible(false)}>Close</Button>
+          <Surface
+            tonalElevation={6}
+            modifiers={[wrapContentWidth(), wrapContentHeight(), clip(Shapes.RoundedCorner(28))]}>
+            <Column modifiers={[padding(16, 16, 16, 16)]}>
+              <Text>
+                This area typically contains the supportive text which presents the details
+                regarding the Dialog's purpose.
+              </Text>
+              <Spacer modifiers={[height(24)]} />
+              <TextButton onClick={() => setVisible(false)} modifiers={[align('centerEnd')]}>
+                <Text>Confirm</Text>
+              </TextButton>
             </Column>
           </Surface>
         </BasicAlertDialog>
