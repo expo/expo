@@ -172,8 +172,9 @@ async function spawnNpmPackAsync({
   outputDir: string;
 }): Promise<string> {
   const { stdout } = await spawnAsync(
-    'pnpm',
-    ['pack', '--json', '--pack-destination', outputDir],
+    'npm',
+    // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
+    ['--foreground-scripts=false', 'pack', '--json', '--pack-destination', outputDir],
     { cwd, stdio: 'pipe' }
   );
 
@@ -834,7 +835,7 @@ export async function initAsync(
   await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
   // Install node modules with local tarballs
-  await spawnAsync('pnpm', [], {
+  await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
@@ -873,7 +874,7 @@ export async function initAsync(
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
-  await spawnAsync('pnpm', [], {
+  await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
