@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Resolve project config by spawning `expo config` CLI instead of importing `@expo/config` directly ([#44044](https://github.com/expo/expo/pull/44044) by [@entiendonull](https://github.com/entiendonull))
+
 ## 1.18.13 — 2026-03-18
 
 ### 💡 Others
