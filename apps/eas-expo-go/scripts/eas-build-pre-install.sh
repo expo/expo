@@ -40,7 +40,6 @@ if [ -n "${EAS_BUILD_NPM_CACHE_URL-}" ]; then
 fi
 
 pushd $ROOT_DIR/tools
-yarn
 
 if [ "$EAS_BUILD_PROFILE" = "release-client" ] && [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
   et eas remove-background-permissions-from-info-plist
