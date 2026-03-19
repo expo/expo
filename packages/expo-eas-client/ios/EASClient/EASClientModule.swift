@@ -7,5 +7,7 @@ public class EASClientModule: Module {
     Name("EASClient")
 
     Constant("clientID") { EASClientID.uuid().uuidString }
+
+    Constant("clientInterval") { EASClientID.uuidToInterval(EASClientID.uuid()) }
   }
 }

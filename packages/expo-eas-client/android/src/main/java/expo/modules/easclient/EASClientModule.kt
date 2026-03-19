@@ -13,5 +13,7 @@ class EASClientModule : Module() {
     Name("EASClient")
 
     Constant("clientID") { EASClientID(context).uuid.toString() }
+
+    Constant("clientInterval") { EASClientID.uuidToInterval(EASClientID(context).uuid) }
   }
 }
