@@ -897,6 +897,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fingerprintjs/fingerprintjs-pro-spa@npm:^1.3.0":
+  version: 1.3.3
+  resolution: "@fingerprintjs/fingerprintjs-pro-spa@npm:1.3.3"
+  dependencies:
+    "@fingerprintjs/fingerprintjs-pro": "npm:^3.12.0"
+    tslib: "npm:^2.7.0"
+  checksum: 10c0/1049753761ed0fe25085b874529d9dfa377326fb82aa6e1c09cdfacd2d059b5d8b5f5e27d1c56ed3b08ea39ce36de5746e793d3294eba124d8f91af7ca394b76
+  languageName: node
+  linkType: hard
+
 "@fingerprintjs/fingerprintjs-pro-spa@npm:^1.3.2":
   version: 1.3.2
   resolution: "@fingerprintjs/fingerprintjs-pro-spa@npm:1.3.2"
@@ -913,6 +923,13 @@ __metadata:
   dependencies:
     tslib: "npm:^2.4.1"
   checksum: 10c0/1561bf86ecac3943d90379705fec9e0776e9d73ecacad66848c980b7923e0261ffce607742e26754c0bdc4678a3c8338a07cfbd0b5d05bfc2675d21035d05086
+  languageName: node
+  linkType: hard
+
+"@fingerprintjs/fingerprintjs-pro@npm:^3.12.0":
+  version: 3.12.9
+  resolution: "@fingerprintjs/fingerprintjs-pro@npm:3.12.9"
+  checksum: 10c0/99d403a10d8baf6feb227e1b85372ae768a70112655c1e6e2eecac10743648fa2e2f8c608858cd143f0e83eb3501d60f84c83279019d7c7ca1d11cbb1dc8c9cc
   languageName: node
   linkType: hard
 
@@ -1598,11 +1615,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kapaai/react-sdk@npm:^0.9.0":
-  version: 0.9.0
-  resolution: "@kapaai/react-sdk@npm:0.9.0"
+"@kapaai/react-sdk@npm:^0.9.3":
+  version: 0.9.3
+  resolution: "@kapaai/react-sdk@npm:0.9.3"
   dependencies:
     "@fingerprintjs/fingerprintjs-pro-react": "npm:^2.7.0"
+    "@fingerprintjs/fingerprintjs-pro-spa": "npm:^1.3.0"
     "@hcaptcha/react-hcaptcha": "npm:^1.12.0"
     "@tanstack/react-query": "npm:^5.74.3"
     js-cookie: "npm:^3.0.5"
@@ -1610,7 +1628,7 @@ __metadata:
   peerDependencies:
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
-  checksum: 10c0/d3fc9de9b2b5e176d2905ef75d012b130320be281cab236154e8faac8b5e0cc574c4b23c07da7ffd2bdccbf2ea281828ec222c2d80d6214092ec4295896f5c09
+  checksum: 10c0/928fce22c1a8f790e08ee1a4c8cafdea45325b0fd0c9cdc81e7db8e5597a798059849e480253f13c2e7bf662a7f4556910e1c6a79a2a1902f821c273e0b81c6b
   languageName: node
   linkType: hard
 
@@ -5030,23 +5048,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xyflow/react@npm:^12.10.0":
-  version: 12.10.0
-  resolution: "@xyflow/react@npm:12.10.0"
+"@xyflow/react@npm:^12.10.1":
+  version: 12.10.1
+  resolution: "@xyflow/react@npm:12.10.1"
   dependencies:
-    "@xyflow/system": "npm:0.0.74"
+    "@xyflow/system": "npm:0.0.75"
     classcat: "npm:^5.0.3"
     zustand: "npm:^4.4.0"
   peerDependencies:
     react: ">=17"
     react-dom: ">=17"
-  checksum: 10c0/cadc1410ef5c7ac1852bac5f222cae9d599963c0ad2552a17dbf49f57aae6647cc13e13f9d82367dc089e4508e1673feb99dd1106851561e8ebeb117050ab6c6
+  checksum: 10c0/7fbcbb99a67f2a74a30408d070dba5dab006658add73949773e7475d91563f3762dd40ac2ece4007fc2e7c2918c3448615048875f0dd634e56e1b3b513a6fc39
   languageName: node
   linkType: hard
 
-"@xyflow/system@npm:0.0.74":
-  version: 0.0.74
-  resolution: "@xyflow/system@npm:0.0.74"
+"@xyflow/system@npm:0.0.75":
+  version: 0.0.75
+  resolution: "@xyflow/system@npm:0.0.75"
   dependencies:
     "@types/d3-drag": "npm:^3.0.7"
     "@types/d3-interpolate": "npm:^3.0.4"
@@ -5057,7 +5075,7 @@ __metadata:
     d3-interpolate: "npm:^3.0.1"
     d3-selection: "npm:^3.0.0"
     d3-zoom: "npm:^3.0.0"
-  checksum: 10c0/fe3116a9e21ca5b4c5c98c363f3894a477dc133bbe453beb820104eff15a4265db930cbd383b00ea95a71a462395ade0d26fc868f526cbfa776ba4a2a81a48c2
+  checksum: 10c0/d7d838465825e6267bd43b169b97ff11b08b313397dde5e249634c2526e1728e0f5bc4b092650d0c970eb13950f1415677926d46dc371faf79a2f46ea1e91ede
   languageName: node
   linkType: hard
 
@@ -5128,6 +5146,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: 10c0/dec73ff59b7d6628a01eebaece7f2bdb8bb62b9b5926dcad0f8931f2b8b79c2be21f6c68ac095592adb5adb15831a3635d9343e6a91d028bbe85d564875ec3ec
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.16.0":
+  version: 8.16.0
+  resolution: "acorn@npm:8.16.0"
+  bin:
+    acorn: bin/acorn
+  checksum: 10c0/c9c52697227661b68d0debaf972222d4f622aa06b185824164e153438afa7b08273432ca43ea792cadb24dada1d46f6f6bb1ef8de9956979288cc1b96bf9914e
   languageName: node
   linkType: hard
 
@@ -7988,7 +8015,7 @@ __metadata:
     "@expo/styleguide-cookie-consent": "npm:^2.0.0"
     "@expo/styleguide-icons": "npm:^4.0.0"
     "@expo/styleguide-search-ui": "npm:^7.0.0"
-    "@kapaai/react-sdk": "npm:^0.9.0"
+    "@kapaai/react-sdk": "npm:^0.9.3"
     "@mdx-js/loader": "npm:^3.1.1"
     "@mdx-js/mdx": "npm:^3.1.1"
     "@mdx-js/react": "npm:^3.1.1"
@@ -8019,8 +8046,8 @@ __metadata:
     "@types/semver": "npm:^7.7.1"
     "@types/turndown": "npm:^5.0.6"
     "@vvago/vale": "npm:3.12.0"
-    "@xyflow/react": "npm:^12.10.0"
-    acorn: "npm:^8.15.0"
+    "@xyflow/react": "npm:^12.10.1"
+    acorn: "npm:^8.16.0"
     axios: "npm:^1.12.2"
     cheerio: "npm:^1.2.0"
     clipboard-copy: "npm:^4.0.1"
@@ -8034,9 +8061,9 @@ __metadata:
     eslint-plugin-mdx: "npm:^3.6.2"
     eslint-plugin-testing-library: "npm:^7.13.4"
     eslint-plugin-unicorn: "npm:^62.0.0"
-    framer-motion: "npm:^12.23.26"
+    framer-motion: "npm:^12.38.0"
     front-matter: "npm:^4.0.2"
-    fs-extra: "npm:^11.3.2"
+    fs-extra: "npm:^11.3.4"
     github-slugger: "npm:^2.0.0"
     http-server: "npm:^14.1.1"
     jest: "npm:^29.7.0"
@@ -8077,10 +8104,10 @@ __metadata:
     turndown-plugin-gfm: "npm:^1.0.2"
     typescript: "npm:~5.8.3"
     unist-builder: "npm:^4.0.0"
-    unist-util-visit: "npm:^5.0.0"
+    unist-util-visit: "npm:^5.1.0"
     user-agent-data-types: "npm:^0.4.2"
     wrangler: "npm:^4.63.0"
-    yet-another-react-lightbox: "npm:^3.28.0"
+    yet-another-react-lightbox: "npm:^3.29.1"
   languageName: unknown
   linkType: soft
 
@@ -8384,12 +8411,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^12.23.26":
-  version: 12.23.26
-  resolution: "framer-motion@npm:12.23.26"
+"framer-motion@npm:^12.38.0":
+  version: 12.38.0
+  resolution: "framer-motion@npm:12.38.0"
   dependencies:
-    motion-dom: "npm:^12.23.23"
-    motion-utils: "npm:^12.23.6"
+    motion-dom: "npm:^12.38.0"
+    motion-utils: "npm:^12.36.0"
     tslib: "npm:^2.4.0"
   peerDependencies:
     "@emotion/is-prop-valid": "*"
@@ -8402,7 +8429,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/7dbbc4a392b969804e04a056e3d89a55bf31572dc7f6cd79050b90616fbb84a1762e4ac4e2537c735d347bbf4ceebea126f5c090234149b12cffa3ea6c518a34
+  checksum: 10c0/bca830d85606ba49e84a1b12fb2b5353622a992809a4ae302084f06fd142e21d790f07ca3678c27e4fb75a8b8e687f42f2ae0cbb13345f2e5730a3fa2c4a5ecf
   languageName: node
   linkType: hard
 
@@ -8422,14 +8449,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^11.3.2":
-  version: 11.3.2
-  resolution: "fs-extra@npm:11.3.2"
+"fs-extra@npm:^11.3.4":
+  version: 11.3.4
+  resolution: "fs-extra@npm:11.3.4"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10c0/f5d629e1bb646d5dedb4d8b24c5aad3deb8cc1d5438979d6f237146cd10e113b49a949ae1b54212c2fbc98e2d0995f38009a9a1d0520f0287943335e65fe919b
+  checksum: 10c0/e08276f767a62496ae97d711aaa692c6a478177f24a85979b6a2881c9db9c68b8c2ad5da0bcf92c0b2a474cea6e935ec245656441527958fd8372cb647087df0
   languageName: node
   linkType: hard
 
@@ -11796,19 +11823,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"motion-dom@npm:^12.23.23":
-  version: 12.23.23
-  resolution: "motion-dom@npm:12.23.23"
+"motion-dom@npm:^12.38.0":
+  version: 12.38.0
+  resolution: "motion-dom@npm:12.38.0"
   dependencies:
-    motion-utils: "npm:^12.23.6"
-  checksum: 10c0/139705731085063519b88f23fcc5b1c13e15707a4ff3365da02ef9a4bf2a2d8ebed9a151c57e7f215ccd9e822365d93c16e28e619fbf25611f61dcff5ee81d75
+    motion-utils: "npm:^12.36.0"
+  checksum: 10c0/ce41da75c240568abd9708cc859cbffb7d6aa490913619e20d23df57abe232ad6cce961c129933535c92b64bfb886958d73e5d162bcd5ddf174378f869977bbe
   languageName: node
   linkType: hard
 
-"motion-utils@npm:^12.23.6":
-  version: 12.23.6
-  resolution: "motion-utils@npm:12.23.6"
-  checksum: 10c0/c058e8ba6423b3baa63e985bcc669877ee7d9579d938f5348b4e60c5ea1b4b33dd7f4877434436a4a5807f3cf00370d3fd4079a6fdd6309c5c87aa62b311a897
+"motion-utils@npm:^12.36.0":
+  version: 12.36.0
+  resolution: "motion-utils@npm:12.36.0"
+  checksum: 10c0/fe08231759064eef5d351a869379246f1e1b2031bda357a6197d2a99ff6b472bce69f8250212713d8bff2ff46978f354ca8c3b8c8f0c5bd337d26a6793ba42fa
   languageName: node
   linkType: hard
 
@@ -15402,6 +15429,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unist-util-visit@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "unist-util-visit@npm:5.1.0"
+  dependencies:
+    "@types/unist": "npm:^3.0.0"
+    unist-util-is: "npm:^6.0.0"
+    unist-util-visit-parents: "npm:^6.0.0"
+  checksum: 10c0/a56e1bbbf63fcb55abe379e660b9a3367787e8be1e2473bdb7e86cfa6f32b6c1fa0092432d7040b8a30b2fc674bbbe024ffe6d03c3d6bf4839b064f584463a4e
+  languageName: node
+  linkType: hard
+
 "universalify@npm:^0.2.0":
   version: 0.2.0
   resolution: "universalify@npm:0.2.0"
@@ -16132,9 +16170,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yet-another-react-lightbox@npm:^3.28.0":
-  version: 3.28.0
-  resolution: "yet-another-react-lightbox@npm:3.28.0"
+"yet-another-react-lightbox@npm:^3.29.1":
+  version: 3.29.1
+  resolution: "yet-another-react-lightbox@npm:3.29.1"
   peerDependencies:
     "@types/react": ^16 || ^17 || ^18 || ^19
     "@types/react-dom": ^16 || ^17 || ^18 || ^19
@@ -16145,7 +16183,7 @@ __metadata:
       optional: true
     "@types/react-dom":
       optional: true
-  checksum: 10c0/cf737a507abd73f9a9ed0249f73367cf3035c63ed1786b4e8b393fb66cdf90fb9aae1940cca5d086d010c789db0e320bb1c961c19aa1366329dfc55a9f695774
+  checksum: 10c0/198b7721b24b1a0c0459ac1fb12838f7bef2d604514a0884a22e27fc33d4d68fe6e1481519a6786e8f45fab4dbe8f9c380aae50128d5d383a542a96d80c8bc04
   languageName: node
   linkType: hard
 
