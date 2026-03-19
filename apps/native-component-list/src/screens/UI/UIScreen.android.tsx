@@ -19,6 +19,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BasicAlertDialog component',
+    route: 'ui/basic-alert-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BasicAlertDialogScreen'));
+    },
+  },
+  {
     name: 'Card component',
     route: 'ui/card',
     options: {},
