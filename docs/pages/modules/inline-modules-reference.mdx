@@ -10,8 +10,6 @@ Inline modules is a set of functionalities which allow for simple native module 
 
 ## Configuration
 
-### App config
-
 <PaddedAPIBox header="expo.experiments.inlineModules">
 When defined, enables inline modules functionality in Expo CLI and Expo Modules Autolinking.
 
@@ -27,7 +25,7 @@ When defined, enables inline modules functionality in Expo CLI and Expo Modules 
 
 </PaddedAPIBox>
 
-<PaddedAPIBox header="expo.inlineModules.watchedDirectories">
+<PaddedAPIBox header="expo.experiments.inlineModules.watchedDirectories">
 Configures in which directories the inline modules can be created.
  
 ```json app.json
@@ -43,13 +41,32 @@ Configures in which directories the inline modules can be created.
 ```
 
 Files inside nested directories will also be used, for example if `watchedDirectories = ["app"]`
-and there exists a `app/nested/directory/SomeModule.kt` then the SomeModule will be used.
+and there exists a `app/nested/directory/SomeModule.kt` then the `SomeModule` will be used.
 
 A directory in `watchedDirectories`:
 
-- needs to be inside a JS project, that is have an ancestor in the directory tree which has `package.json`. For example `watchedDirectories: ["app", "src/some/directory", pathToOtherProject]` should work and `"watchedDirectories": ["/", pathToFolderNotInNodeProject] won't.
+- needs to be inside a JS project, that is have an ancestor in the directory tree which has `package.json`. For example `"watchedDirectories": ["app", "src/some/directory", pathToOtherProject]` should work and `"watchedDirectories": ["/", pathToFolderNotInNodeProject]` won't.
 - cannot be the whole project directory `"./"`, nor an ancestor of it (for example `../`).
-- cannot be a subdirectory of other directory in `watchedDirectories`. For example `watchedDirectories` cannot be ["app", "app/nested/directory"], however you can just set `watchedDirectories` to `["app"]`.
+- cannot be a subdirectory of other directory in `watchedDirectories`. For example `watchedDirectories` cannot be `["app", "app/nested/directory"]`, however you can just set `watchedDirectories` to `["app"]`.
 - cannot contain special characters like `" ", "(", ")", "$"`. Note that this means you cannot have `"app/(tabs)"` in the `watchedDirectories`, but you can have `"app"` and it should still use native files from `"app/(tabs)"` directory.
 
 </PaddedAPIBox>
+
+> **Warning** You need to run `yarn expo prebuild` after changing the `app.json` configuration, for it to take effect.
+
+## General information
+
+Inline module file name has to match the native module name. This means that if you have a `SimpleModule.kt` then the inline module inside it has to be:
+
+```kt
+// SimpleModule.kt
+// ...
+class SimpleModule: Module() { // Note that the class name has to match the filename.
+    public func definition() -> ModuleDefinition {
+        // Name("SimpleModule") // Note that `Name` also has to match the filename. So you can just omit it.
+    }
+}
+
+```
+
+This means that you cannot have different inline modules with the same name in different directories.
