@@ -53,9 +53,8 @@ jobs:
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: E2E Test @expo/fingerprint
         run: |
-          bun run tsc
-          bun run tsc --build cli
-          bun run jest --config e2e/jest.config.js --ci --runInBand
+          pnpm tsc
+          pnpm jest --config e2e/jest.config.js --ci --runInBand
         working-directory: packages/@expo/fingerprint
       - name: ⚙️  Create temp project
         run: |
