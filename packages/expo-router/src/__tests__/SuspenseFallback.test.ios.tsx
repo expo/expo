@@ -67,8 +67,9 @@ it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
     return <Text testID="route-content">{value}</Text>;
   }
 
-  const LayoutFallback = ({ route }: SuspenseFallbackProps) =>
-    renderFallback(route, 'layout-fallback');
+  const LayoutFallback = jest.fn(({ route }: SuspenseFallbackProps) =>
+    renderFallback(route, 'layout-fallback')
+  );
 
   renderRouter(
     {
@@ -84,6 +85,7 @@ it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', () => {
   expect(screen.queryByTestId('route-content')).toBeNull();
   expect(screen.getByTestId('layout-fallback')).toBeOnTheScreen();
   expect(screen.getByText('Loading ./(app)/profile/[id].js...')).toBeOnTheScreen();
+  expect(LayoutFallback).toHaveBeenCalledTimes(1);
 });
 
 it('prefers route `<SuspenseFallback>` over inherited layout fallback in sync mode', () => {
@@ -94,8 +96,9 @@ it('prefers route `<SuspenseFallback>` over inherited layout fallback in sync mo
     return <Text testID="route-content">{value}</Text>;
   }
 
-  const LayoutFallback = ({ route }: SuspenseFallbackProps) =>
-    renderFallback(route, 'layout-fallback');
+  const LayoutFallback = jest.fn(({ route }: SuspenseFallbackProps) =>
+    renderFallback(route, 'layout-fallback')
+  );
   const RouteFallback = ({ route }: SuspenseFallbackProps) =>
     renderFallback(route, 'route-fallback');
 
@@ -116,6 +119,7 @@ it('prefers route `<SuspenseFallback>` over inherited layout fallback in sync mo
   expect(screen.queryByTestId('route-content')).toBeNull();
   expect(screen.getByTestId('route-fallback')).toBeOnTheScreen();
   expect(screen.queryByTestId('layout-fallback')).toBeNull();
+  expect(LayoutFallback).not.toHaveBeenCalled();
   expect(screen.getByText('Loading ./(app)/profile/[id].js...')).toBeOnTheScreen();
 });
 
