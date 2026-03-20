@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `deterministicUniformValue` constant ([#44075](https://github.com/expo/expo/pull/44075) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
