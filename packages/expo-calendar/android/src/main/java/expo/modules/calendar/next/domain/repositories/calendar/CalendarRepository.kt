@@ -50,7 +50,8 @@ class CalendarRepository(private val contentResolver: ContentResolver) {
     val calendarId = requireNotNull(calendarUri.lastPathSegment) {
       "Couldn't decode calendar ID from inserted content URI"
     }
-    CalendarId(calendarId.toLongOrNull() ?: throw IllegalStateException("Couldn't parse calendar ID: $calendarId"))
+    CalendarId(calendarId.toLongOrNull()
+      ?: throw IllegalStateException("Couldn't parse calendar ID: $calendarId"))
   }
 
   suspend fun update(id: CalendarId, calendarUpdate: CalendarUpdate): Boolean = withContext(Dispatchers.IO) {
@@ -79,15 +80,18 @@ class CalendarRepository(private val contentResolver: ContentResolver) {
     put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, calendarTimeZone)
     put(
       CalendarContract.Calendars.ALLOWED_REMINDERS,
-      allowedReminders.joinToString(",") { it.value.toString() }
+      allowedReminders.takeIf { it.isNotEmpty() }
+        ?.joinToString(",") { it.value.toString() }
     )
     put(
       CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-      allowedAvailability.joinToString(",") { it.value.toString() }
+      allowedAvailability.takeIf { it.isNotEmpty() }
+        ?.joinToString(",") { it.value.toString() }
     )
     put(
       CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
-      allowedAttendeeTypes.joinToString(",") { it.value.toString() }
+      allowedAttendeeTypes.takeIf { it.isNotEmpty() }
+        ?.joinToString(",") { it.value.toString() }
     )
   }
 

@@ -2,10 +2,10 @@ package expo.modules.calendar.next.domain.repositories.calendar
 
 import android.database.Cursor
 import android.provider.CalendarContract
-import expo.modules.calendar.next.domain.model.calendar.AllowedAttendeeType as DomainAttendeeType
-import expo.modules.calendar.next.domain.model.calendar.AllowedAvailability as DomainAllowedAvailability
-import expo.modules.calendar.next.domain.model.calendar.AllowedReminder as DomainAllowedReminder
-import expo.modules.calendar.next.domain.model.calendar.CalendarAccessLevel as DomainCalendarAccessLevel
+import expo.modules.calendar.next.domain.model.calendar.AllowedAttendeeType
+import expo.modules.calendar.next.domain.model.calendar.AllowedAvailability
+import expo.modules.calendar.next.domain.model.calendar.AllowedReminder
+import expo.modules.calendar.next.domain.model.calendar.CalendarAccessLevel
 import expo.modules.calendar.next.domain.model.calendar.CalendarEntity
 import expo.modules.calendar.next.domain.repositories.getList
 import expo.modules.calendar.next.domain.repositories.getOptionalInt
@@ -21,16 +21,16 @@ fun Cursor.toCalendarEntity() = CalendarEntity(
   accountName = getOptionalString(CalendarContract.Calendars.ACCOUNT_NAME),
   accountType = getOptionalString(CalendarContract.Calendars.ACCOUNT_TYPE),
   allowedAttendeeTypes = getList(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES) { value ->
-    DomainAttendeeType.entries.find { it.value == value }
+    AllowedAttendeeType.entries.find { it.value == value }
   }.filterNotNull(),
   allowedAvailability = getList(CalendarContract.Calendars.ALLOWED_AVAILABILITY) { value ->
-    DomainAllowedAvailability.entries.find { it.value == value }
+    AllowedAvailability.entries.find { it.value == value }
   }.filterNotNull(),
   allowedReminders = getList(CalendarContract.Calendars.ALLOWED_REMINDERS) { value ->
-    DomainAllowedReminder.entries.find { it.value == value }
+    AllowedReminder.entries.find { it.value == value }
   }.filterNotNull(),
   calendarAccessLevel = getOptionalInt(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)?.let { value ->
-    DomainCalendarAccessLevel.entries.find { it.value == value }
+    CalendarAccessLevel.entries.find { it.value == value }
   },
   calendarColor = getOptionalInt(CalendarContract.Calendars.CALENDAR_COLOR),
   calendarDisplayName = getOptionalString(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME),
