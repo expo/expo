@@ -11,23 +11,31 @@ internal class ResponseSink {
     private set
 
   internal fun appendBufferBody(data: ByteArray) {
-    bodyUsed = true
-    bodyQueue.add(data)
+    synchronized(this) {
+      if (isFinalized) return
+      bodyUsed = true
+      bodyQueue.add(data)
+    }
   }
 
   fun finalize(directBuffer: Boolean): ByteBuffer {
-    val size = bodyQueue.sumOf { it.size }
-    val byteBuffer = if (directBuffer) {
-      ByteBuffer.allocateDirect(size)
-    } else {
-      ByteBuffer.allocate(size)
+    synchronized(this) {
+      if (isFinalized) {
+        return if (directBuffer) ByteBuffer.allocateDirect(0) else ByteBuffer.allocate(0)
+      }
+      val size = bodyQueue.sumOf { it.size }
+      val byteBuffer = if (directBuffer) {
+        ByteBuffer.allocateDirect(size)
+      } else {
+        ByteBuffer.allocate(size)
+      }
+      for (byteArray in bodyQueue) {
+        byteBuffer.put(byteArray)
+      }
+      bodyQueue.clear()
+      bodyUsed = true
+      isFinalized = true
+      return byteBuffer
     }
-    for (byteArray in bodyQueue) {
-      byteBuffer.put(byteArray)
-    }
-    bodyQueue.clear()
-    bodyUsed = true
-    isFinalized = true
-    return byteBuffer
   }
 }
