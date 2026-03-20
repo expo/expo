@@ -19,11 +19,12 @@
 - [android] rename ContextMenu to DropdownMenu ([#43794](https://github.com/expo/expo/pull/43794) by [@Ubax](https://github.com/Ubax))
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
 - [android] control ContextMenu expanded state from JS ([#43793](https://github.com/expo/expo/pull/43793) by [@Ubax](https://github.com/Ubax))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - [android] Added `outlined` variant to `TextInput` component. ([#43719](https://github.com/expo/expo/pull/43719) by [@benjaminkomen](https://github.com/benjaminkomen))
-- Added `@expo/ui/datetimepicker` — a cross-platform `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`.  ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
+- Added `@expo/ui/datetimepicker` — a cross-platform `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`. ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `locale` and `timeZone` support to `modifiers`. ([#44013](https://github.com/expo/expo/pull/44013) by [@vonovak](https://github.com/vonovak))
 - [android] Added `ref.hide()` for animated dismiss and more configurable props (`containerColor`, `contentColor`, `scrimColor`, `showDragHandle`, `sheetGesturesEnabled`, `properties`, `DragHandle` slot) to `BottomSheet`. ([#43972](https://github.com/expo/expo/pull/43972) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `date`, `dateStyle`, `timerInterval`, `countsDown`, and `pauseTime` props to `Text` component for displaying auto-updating dates, timers, and countdowns using SwiftUI's `Text.DateStyle`. ([#43552](https://github.com/expo/expo/pull/43552) by [@LouisRaverdy](https://github.com/LouisRaverdy))
