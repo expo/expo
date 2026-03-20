@@ -322,10 +322,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
-        ? undefined
-        : (UserSuspenseFallback ?? InheritedSuspenseFallback);
+        ? DefaultSuspenseFallback
+        : (UserSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
     const providedSuspenseFallback =
-      value.type === 'layout' ? ResolvedSuspenseFallback : InheritedSuspenseFallback;
+      value.type === 'layout'
+        ? (UserSuspenseFallback ?? InheritedSuspenseFallback)
+        : InheritedSuspenseFallback;
 
     if (isFocused) {
       const state = navigation.getState();
@@ -373,13 +375,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           <ZoomTransitionTargetContextProvider route={route}>
             <ZoomTransitionEnabler route={route} />
             <React.Suspense
-              fallback={
-                ResolvedSuspenseFallback ? (
-                  <ResolvedSuspenseFallback route={value.contextKey} />
-                ) : (
-                  <DefaultSuspenseFallback route={value} />
-                )
-              }>
+              fallback={<ResolvedSuspenseFallback route={value.contextKey} />}>
               <WrappedScreenComponent
                 {...props}
                 // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
