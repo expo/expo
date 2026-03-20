@@ -1,4 +1,2 @@
-import { type ConfigPlugin } from 'expo/config-plugins';
-import { PluginConfigType } from './pluginConfig';
-declare const _default: ConfigPlugin<PluginConfigType>;
+declare const _default: any;
 export default _default;
