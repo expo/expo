@@ -13,44 +13,66 @@ class DevMenuTouchInterceptor {
   static var isInstalled: Bool = false {
     willSet {
       if isInstalled != newValue {
-        // Capture touch gesture from any window by swizzling default implementation from UIWindow.
-        swizzle()
+        let newValue = newValue
+        let block = {
+          if newValue {
+            // Add the gesture recognizer to the current key window.
+            addRecognizerToKeyWindow()
+            // Observe future key window changes to keep the recognizer on the active window.
+            NotificationCenter.default.addObserver(
+              DevMenuTouchInterceptor.self,
+              selector: #selector(windowDidBecomeKey(_:)),
+              name: UIWindow.didBecomeKeyNotification,
+              object: nil
+            )
+          } else {
+            // Remove the gesture recognizer and stop observing.
+            recognizer.view?.removeGestureRecognizer(recognizer)
+            NotificationCenter.default.removeObserver(
+              DevMenuTouchInterceptor.self,
+              name: UIWindow.didBecomeKeyNotification,
+              object: nil
+            )
+          }
 
-        // Make sure recognizer is enabled/disabled accordingly.
-        recognizer.isEnabled = newValue
+          // Make sure recognizer is enabled/disabled accordingly.
+          recognizer.isEnabled = newValue
+        }
+
+        if Thread.isMainThread {
+          block()
+        } else {
+          DispatchQueue.main.async(execute: block)
+        }
       }
     }
   }
 
-  static private func swizzle() {
-    DevMenuUtils.swizzle(
-      selector: #selector(getter: UIWindow.gestureRecognizers),
-      withSelector: #selector(getter: UIWindow.EXDevMenu_gestureRecognizers),
-      forClass: UIWindow.self
-    )
-  }
-}
-
-extension UIWindow {
-  @objc open var EXDevMenu_gestureRecognizers: [UIGestureRecognizer]? {
-    // Just for thread safety, someone may uninstall the interceptor in the meantime and we would fall into recursive loop.
-    if !DevMenuTouchInterceptor.isInstalled {
-      return self.gestureRecognizers
+  @objc static func windowDidBecomeKey(_ notification: Notification) {
+    guard let newKeyWindow = notification.object as? UIWindow,
+          // Only attach to normal-level app windows; skip system overlays (keyboard, alerts, etc.).
+          newKeyWindow.windowLevel == .normal,
+          // Do not move the recognizer to the dev menu's own overlay window.
+          !(newKeyWindow is DevMenuWindow) else {
+      return
     }
-
-    // Check for the case where singleton instance of gesture recognizer is not created yet or is attached to different window.
-    let recognizer = DevMenuTouchInterceptor.recognizer
-    if recognizer.view != self {
-      // Remove it from the window it's attached to.
+    if recognizer.view != newKeyWindow {
       recognizer.view?.removeGestureRecognizer(recognizer)
-
-      // Attach to this window.
-      self.addGestureRecognizer(recognizer)
+      newKeyWindow.addGestureRecognizer(recognizer)
     }
+  }
 
-    // `EXDevMenu_gestureRecognizers` implementation has been swizzled with `gestureRecognizers`
-    // It might be confusing that we call it recursively, but we don't.
-    return self.EXDevMenu_gestureRecognizers
+  private static func addRecognizerToKeyWindow() {
+    // Find the current key window at normal window level, excluding dev menu overlay windows.
+    let keyWindow = UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .flatMap { $0.windows }
+      .first(where: { $0.isKeyWindow && $0.windowLevel == .normal && !($0 is DevMenuWindow) })
+
+    if let window = keyWindow, recognizer.view != window {
+      recognizer.view?.removeGestureRecognizer(recognizer)
+      window.addGestureRecognizer(recognizer)
+    }
   }
 }
 

@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix app freeze when dismissing a `fullScreenModal` by replacing `UIWindow.gestureRecognizers` swizzling with a notification-based approach for attaching the dev menu touch gesture recognizer. ([#44039](https://github.com/expo/expo/pull/44039) by [@WolffM](https://github.com/WolffM))
 - [iOS] Fix support for react-native 0.84 ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fix crash in FabState coerceTo ([#43752](https://github.com/expo/expo/pull/43752) by [@kot331107](https://github.com/kot331107))
 
