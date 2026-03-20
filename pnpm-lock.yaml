@@ -428,51 +428,162 @@ importers:
       expo-asset:
         specifier: workspace:*
         version: link:../../packages/expo-asset
+      expo-audio:
+        specifier: workspace:*
+        version: link:../../packages/expo-audio
+      expo-background-fetch:
+        specifier: workspace:*
+        version: link:../../packages/expo-background-fetch
+      expo-background-task:
+        specifier: workspace:*
+        version: link:../../packages/expo-background-task
+      expo-battery:
+        specifier: workspace:*
+        version: link:../../packages/expo-battery
+      expo-blob:
+        specifier: workspace:*
+        version: link:../../packages/expo-blob
       expo-blur:
         specifier: workspace:*
         version: link:../../packages/expo-blur
+      expo-brightness:
+        specifier: workspace:*
+        version: link:../../packages/expo-brightness
+      expo-calendar:
+        specifier: workspace:*
+        version: link:../../packages/expo-calendar
       expo-camera:
         specifier: workspace:*
         version: link:../../packages/expo-camera
+      expo-cellular:
+        specifier: workspace:*
+        version: link:../../packages/expo-cellular
+      expo-clipboard:
+        specifier: workspace:*
+        version: link:../../packages/expo-clipboard
       expo-constants:
         specifier: workspace:*
         version: link:../../packages/expo-constants
+      expo-contacts:
+        specifier: workspace:*
+        version: link:../../packages/expo-contacts
+      expo-crypto:
+        specifier: workspace:*
+        version: link:../../packages/expo-crypto
+      expo-dev-menu:
+        specifier: workspace:*
+        version: link:../../packages/expo-dev-menu
       expo-device:
         specifier: workspace:*
         version: link:../../packages/expo-device
+      expo-document-picker:
+        specifier: workspace:*
+        version: link:../../packages/expo-document-picker
       expo-font:
         specifier: workspace:*
         version: link:../../packages/expo-font
+      expo-gl:
+        specifier: workspace:*
+        version: link:../../packages/expo-gl
+      expo-haptics:
+        specifier: workspace:*
+        version: link:../../packages/expo-haptics
+      expo-image-loader:
+        specifier: workspace:*
+        version: link:../../packages/expo-image-loader
+      expo-image-manipulator:
+        specifier: workspace:*
+        version: link:../../packages/expo-image-manipulator
+      expo-image-picker:
+        specifier: workspace:*
+        version: link:../../packages/expo-image-picker
+      expo-intent-launcher:
+        specifier: workspace:*
+        version: link:../../packages/expo-intent-launcher
       expo-linear-gradient:
         specifier: workspace:*
         version: link:../../packages/expo-linear-gradient
       expo-linking:
         specifier: workspace:*
         version: link:../../packages/expo-linking
+      expo-local-authentication:
+        specifier: workspace:*
+        version: link:../../packages/expo-local-authentication
+      expo-localization:
+        specifier: workspace:*
+        version: link:../../packages/expo-localization
       expo-location:
         specifier: workspace:*
         version: link:../../packages/expo-location
+      expo-mail-composer:
+        specifier: workspace:*
+        version: link:../../packages/expo-mail-composer
+      expo-media-library:
+        specifier: workspace:*
+        version: link:../../packages/expo-media-library
+      expo-navigation-bar:
+        specifier: workspace:*
+        version: link:../../packages/expo-navigation-bar
+      expo-network:
+        specifier: workspace:*
+        version: link:../../packages/expo-network
       expo-notifications:
         specifier: workspace:*
         version: link:../../packages/expo-notifications
+      expo-print:
+        specifier: workspace:*
+        version: link:../../packages/expo-print
       expo-router:
         specifier: workspace:*
         version: link:../../packages/expo-router
+      expo-screen-capture:
+        specifier: workspace:*
+        version: link:../../packages/expo-screen-capture
       expo-screen-orientation:
         specifier: workspace:*
         version: link:../../packages/expo-screen-orientation
+      expo-secure-store:
+        specifier: workspace:*
+        version: link:../../packages/expo-secure-store
+      expo-sensors:
+        specifier: workspace:*
+        version: link:../../packages/expo-sensors
+      expo-sharing:
+        specifier: workspace:*
+        version: link:../../packages/expo-sharing
+      expo-sms:
+        specifier: workspace:*
+        version: link:../../packages/expo-sms
+      expo-speech:
+        specifier: workspace:*
+        version: link:../../packages/expo-speech
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
+      expo-sqlite:
+        specifier: workspace:*
+        version: link:../../packages/expo-sqlite
       expo-store-review:
         specifier: workspace:*
         version: link:../../packages/expo-store-review
+      expo-system-ui:
+        specifier: workspace:*
+        version: link:../../packages/expo-system-ui
       expo-task-manager:
         specifier: workspace:*
         version: link:../../packages/expo-task-manager
+      expo-tracking-transparency:
+        specifier: workspace:*
+        version: link:../../packages/expo-tracking-transparency
       expo-updates:
         specifier: workspace:*
         version: link:../../packages/expo-updates
+      expo-video:
+        specifier: workspace:*
+        version: link:../../packages/expo-video
+      expo-video-thumbnails:
+        specifier: workspace:*
+        version: link:../../packages/expo-video-thumbnails
       expo-web-browser:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser

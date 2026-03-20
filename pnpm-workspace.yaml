@@ -42,4 +42,4 @@ preferWorkspacePackages: true
 # in their directory name, and the '=' breaks Android's prefab CLI which
 # misparses it as a command-line option. A low enough limit forces pnpm
 # to replace the full suffix with a short hex hash (no '=' character).
-virtualStoreDirMaxLength: 60
+virtualStoreDirMaxLength: 80
