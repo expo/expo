@@ -10,7 +10,6 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -38,6 +37,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     private set
   var redirectMode: NativeRequestRedirect? = null
   private var coalescer: ChunkCoalescer? = null
+  private val routingLock = Any()
 
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
@@ -59,15 +59,19 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
       return null
     }
     if (state == ResponseState.RESPONSE_RECEIVED) {
-      state = ResponseState.BODY_STREAMING_STARTED
-      coalescer = ChunkCoalescer(coroutineScope = coroutineScope) { chunk ->
-        emit("didReceiveResponseData", chunk)
-      }
-      val queuedData = this.sink.finalize(directBuffer = true)
-      // After finalize(), position == size and remaining == 0.
-      // Check position > 0 because wrap() calls rewind() internally.
-      if (queuedData.position() > 0) {
-        emit("didReceiveResponseData", NativeArrayBuffer.wrap(queuedData))
+      // Hold routingLock to prevent the pump loop from reading state + routing data
+      // between our state change and sink.finalize(). See expo/expo#42161.
+      synchronized(routingLock) {
+        state = ResponseState.BODY_STREAMING_STARTED
+        coalescer = ChunkCoalescer(coroutineScope = coroutineScope) { chunk ->
+          emit("didReceiveResponseData", chunk)
+        }
+        val queuedData = this.sink.finalize(directBuffer = true)
+        // After finalize(), position == size and remaining == 0.
+        // Check position > 0 because wrap() calls rewind() internally.
+        if (queuedData.position() > 0) {
+          emit("didReceiveResponseData", NativeArrayBuffer.wrap(queuedData))
+        }
       }
     } else if (state == ResponseState.BODY_COMPLETED) {
       val queuedData = this.sink.finalize(directBuffer = true)
@@ -150,7 +154,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     responseInit = createResponseInit(response)
     state = ResponseState.RESPONSE_RECEIVED
 
-    coroutineScope.launch {
+    coroutineScope.launch(Dispatchers.IO) {
       val stream = response.body?.source() ?: return@launch
       pumpResponseBodyStream(stream)
       response.close()
@@ -195,28 +199,27 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     )
   }
 
-  private suspend fun pumpResponseBodyStream(stream: BufferedSource) {
+  private fun pumpResponseBodyStream(stream: BufferedSource) {
     try {
-      while (true) {
-        val data = withContext(Dispatchers.IO) {
-          if (stream.exhausted()) null else stream.buffer.readByteArray()
-        } ?: break
-
-        if (isInvalidState(
-            ResponseState.RESPONSE_RECEIVED,
-            ResponseState.BODY_STREAMING_STARTED,
-            ResponseState.BODY_STREAMING_CANCELED
-          )
-        ) {
-          break
+      while (!stream.exhausted()) {
+        val data = stream.buffer.readByteArray()
+        // Hold routingLock so that state check + data routing is atomic.
+        // This prevents startStreaming() from finalizing the sink between
+        // our state read and appendBufferBody() call. See expo/expo#42161.
+        val shouldContinue = synchronized(routingLock) {
+          when (state) {
+            ResponseState.RESPONSE_RECEIVED -> {
+              sink.appendBufferBody(data)
+              true
+            }
+            ResponseState.BODY_STREAMING_STARTED -> {
+              coalescer?.append(data)
+              true
+            }
+            else -> false
+          }
         }
-        if (state == ResponseState.RESPONSE_RECEIVED) {
-          sink.appendBufferBody(data)
-        } else if (state == ResponseState.BODY_STREAMING_STARTED) {
-          coalescer?.append(data)
-        } else {
-          break
-        }
+        if (!shouldContinue) break
       }
     } catch (e: IOException) {
       this.error = e
