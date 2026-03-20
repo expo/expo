@@ -57,9 +57,15 @@ export async function resolveReactNativeModule(
     return null;
   }
 
-  const libraryConfig = (await loadConfigAsync(
-    resolution.path
-  )) as RNConfigReactNativeLibraryConfig;
+  // Workaround for Android Gradle/Prefab issue with special characters in paths.
+  // pnpm creates virtual store paths with '=' characters (e.g., _patch_hash=abc123),
+  // which cause build failures on Android due to Prefab not properly escaping them.
+  // See: https://github.com/google/prefab/issues/187
+  const shouldUseOriginPath =
+    platform === 'android' && resolution.path.includes('=') && resolution.path.includes('.pnpm');
+  const modulePath = shouldUseOriginPath ? resolution.originPath : resolution.path;
+
+  const libraryConfig = (await loadConfigAsync(modulePath)) as RNConfigReactNativeLibraryConfig;
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
     ...projectConfig?.dependencies?.[resolution.name],
@@ -92,7 +98,7 @@ export async function resolveReactNativeModule(
     | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
-      resolution.path,
+      modulePath,
       reactNativeConfig.platforms?.android,
       maybeExpoModuleConfig
     );
@@ -111,7 +117,7 @@ export async function resolveReactNativeModule(
   }
   return (
     platformData && {
-      root: resolution.path,
+      root: modulePath,
       name: resolution.name,
       platforms: {
         [platform]: platformData,
