@@ -5,7 +5,8 @@ import { getDynamicConfig, getStaticConfig } from '../getConfig';
 
 const mockConfigContext = {} as any;
 
-jest.mock('fs');
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
 
 // NOTE: For testing, we need to bypass the jest-require here and only eval
 jest.mock('@expo/require-utils', () => {
