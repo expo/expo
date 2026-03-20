@@ -33,7 +33,7 @@ it('renders custom `<SuspenseFallback>` when one is available', () => {
   expect(screen.getByText('Loading ./index.js...')).toBeOnTheScreen();
 });
 
-it('passes the full nested route path to custom `<SuspenseFallback>`', () => {
+it('passes the full nested route context key to custom `<SuspenseFallback>`', () => {
   const pending = new Promise<string>(() => {}); // Promise that never resolves
 
   function SuspendingRoute() {

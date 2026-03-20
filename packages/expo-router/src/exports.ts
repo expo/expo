@@ -26,7 +26,7 @@ export { Sitemap } from './views/Sitemap';
 export { useSitemap, SitemapType } from './views/useSitemap';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
-export { SuspenseFallbackProps } from './views/SuspenseFallback';
+export type { SuspenseFallbackProps } from './views/SuspenseFallback';
 export type { ScreenProps } from './useScreens';
 
 // Platform

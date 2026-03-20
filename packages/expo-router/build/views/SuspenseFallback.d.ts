@@ -10,8 +10,9 @@ export type SuspenseFallbackProps = {
     /**
      * The route module's `contextKey`
      *
-     * @example `./index.tsx`
-     * @example `./profile/[id].tsx`
+     * @example
+     * `./index.tsx`
+     * `./profile/[id].tsx`
      */
     route: string;
 };

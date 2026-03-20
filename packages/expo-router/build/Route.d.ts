@@ -59,6 +59,7 @@ export type RouteNode = {
     /** Middleware function for server-side request processing. Only present on the root route node. */
     middleware?: MiddlewareNode;
 };
+/** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes */
 export declare const SuspenseFallbackContext: import("react").Context<ComponentType<SuspenseFallbackProps> | undefined>;
 export declare const LocalRouteParamsContext: import("react").Context<object | undefined>;
 /** Return the RouteNode at the current contextual boundary. */

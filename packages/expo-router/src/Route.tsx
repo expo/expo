@@ -65,6 +65,7 @@ export type RouteNode = {
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
+/** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes */
 export const SuspenseFallbackContext = createContext<
   ComponentType<SuspenseFallbackProps> | undefined
 >(undefined);

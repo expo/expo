@@ -11,6 +11,7 @@ const sortRoutes_1 = require("./sortRoutes");
 Object.defineProperty(exports, "sortRoutesWithInitial", { enumerable: true, get: function () { return sortRoutes_1.sortRoutesWithInitial; } });
 Object.defineProperty(exports, "sortRoutes", { enumerable: true, get: function () { return sortRoutes_1.sortRoutes; } });
 const CurrentRouteContext = (0, react_1.createContext)(null);
+/** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes */
 exports.SuspenseFallbackContext = (0, react_1.createContext)(undefined);
 exports.LocalRouteParamsContext = (0, react_1.createContext)({});
 if (process.env.NODE_ENV !== 'production') {
