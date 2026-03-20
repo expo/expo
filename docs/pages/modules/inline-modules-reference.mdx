@@ -1,0 +1,55 @@
+---
+title: Inline modules reference
+description: A reference of Expo inline modules.
+sidebar_title: Inline modules reference
+---
+
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+
+Inline modules is a set of functionalities which allow for simple native module creation and usage.
+
+## Configuration
+
+### App config
+
+<PaddedAPIBox header="expo.experiments.inlineModules">
+When defined, enables inline modules functionality in Expo CLI and Expo Modules Autolinking.
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "inlineModules": {}
+    }
+  }
+}
+```
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="expo.inlineModules.watchedDirectories">
+Configures in which directories the inline modules can be created.
+ 
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": ["app", "src"]
+      }
+    }
+  }
+}
+```
+
+Files inside nested directories will also be used, for example if `watchedDirectories = ["app"]`
+and there exists a `app/nested/directory/SomeModule.kt` then the SomeModule will be used.
+
+A directory in `watchedDirectories`:
+
+- needs to be inside a JS project, that is have an ancestor in the directory tree which has `package.json`. For example `watchedDirectories: ["app", "src/some/directory", pathToOtherProject]` should work and `"watchedDirectories": ["/", pathToFolderNotInNodeProject] won't.
+- cannot be the whole project directory `"./"`, nor an ancestor of it (for example `../`).
+- cannot be a subdirectory of other directory in `watchedDirectories`. For example `watchedDirectories` cannot be ["app", "app/nested/directory"], however you can just set `watchedDirectories` to `["app"]`.
+- cannot contain special characters like `" ", "(", ")", "$"`. Note that this means you cannot have `"app/(tabs)"` in the `watchedDirectories`, but you can have `"app"` and it should still use native files from `"app/(tabs)"` directory.
+
+</PaddedAPIBox>
