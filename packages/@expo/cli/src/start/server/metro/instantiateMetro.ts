@@ -243,6 +243,7 @@ export async function loadMetroConfigAsync(
     config,
     exp,
     platformBundlers,
+    serverRoot,
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isExporting,

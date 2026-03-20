@@ -150,13 +150,23 @@ function getFileWithExtensions(fromDirectory, moduleId, extensions) {
   }
   return null;
 }
+const _metroServerRootCache = new Map();
 
 /** Get the Metro server root, when working in monorepos */
 function getMetroServerRoot(projectRoot) {
   if (_env().env.EXPO_NO_METRO_WORKSPACE_ROOT) {
     return projectRoot;
   }
-  return (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot) ?? projectRoot;
+  projectRoot = _path().default.resolve(projectRoot);
+  let serverRoot = _metroServerRootCache.get(projectRoot);
+  if (serverRoot != null) {
+    return serverRoot;
+  }
+  serverRoot = (0, _resolveWorkspaceRoot().resolveWorkspaceRoot)(projectRoot);
+  if (serverRoot != null) {
+    _metroServerRootCache.set(projectRoot, serverRoot);
+  }
+  return serverRoot ?? projectRoot;
 }
 
 /**

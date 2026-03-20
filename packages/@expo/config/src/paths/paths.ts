@@ -118,13 +118,27 @@ export function getFileWithExtensions(
   return null;
 }
 
+const _metroServerRootCache = new Map<string, string>();
+
 /** Get the Metro server root, when working in monorepos */
 export function getMetroServerRoot(projectRoot: string): string {
   if (env.EXPO_NO_METRO_WORKSPACE_ROOT) {
     return projectRoot;
   }
 
-  return resolveWorkspaceRoot(projectRoot) ?? projectRoot;
+  projectRoot = path.resolve(projectRoot);
+
+  let serverRoot: string | null | undefined = _metroServerRootCache.get(projectRoot);
+  if (serverRoot != null) {
+    return serverRoot;
+  }
+
+  serverRoot = resolveWorkspaceRoot(projectRoot);
+  if (serverRoot != null) {
+    _metroServerRootCache.set(projectRoot, serverRoot);
+  }
+
+  return serverRoot ?? projectRoot;
 }
 
 /**
