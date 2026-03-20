@@ -197,7 +197,8 @@ const renderType = (
           includePlatforms={false}
           afterContent={defaultValueElement}
         />
-        {declaration.children && renderTypeDeclarationTable(declaration, sdkVersion)}
+        {(declaration.children || declaration.indexSignatures) &&
+          renderTypeDeclarationTable(declaration, sdkVersion)}
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
