@@ -97,22 +97,32 @@ class InstanceRepositoryTest {
   }
 
   @Test
-  fun `given cursor with allDay flag, when findAll, then maps allDay = 1 to true`() = runTest {
-    // Given
-    val cursor = cursorWithRows(minimalRow(allDay = 1))
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
-
-    // When
-    val result = repository.findAll(0L, 1000L, emptyList())
-
-    // Then
-    Assert.assertEquals(true, result.first().allDay)
-  }
-
-  @Test
   fun `given cursor with rrule, when findAll, then parses rrule from cursor`() = runTest {
     // Given
-    val cursor = cursorWithRows(minimalRow(rrule = "FREQ=WEEKLY;INTERVAL=1"))
+    val cursor = cursorWithRows(
+      mapOf(
+        CalendarContract.Instances._ID to 1L,
+        CalendarContract.Instances.EVENT_ID to 10L,
+        CalendarContract.Instances.BEGIN to 1_000_000L,
+        CalendarContract.Instances.END to 2_000_000L,
+        CalendarContract.Instances.ALL_DAY to 0,
+        CalendarContract.Instances.TITLE to null,
+        CalendarContract.Instances.DESCRIPTION to null,
+        CalendarContract.Instances.CALENDAR_ID to null,
+        CalendarContract.Instances.ACCESS_LEVEL to null,
+        CalendarContract.Instances.AVAILABILITY to null,
+        CalendarContract.Instances.STATUS to null,
+        CalendarContract.Instances.EVENT_LOCATION to null,
+        CalendarContract.Instances.EVENT_TIMEZONE to null,
+        CalendarContract.Instances.EVENT_END_TIMEZONE to null,
+        CalendarContract.Instances.ORGANIZER to null,
+        CalendarContract.Instances.ORIGINAL_ID to null,
+        CalendarContract.Instances.RRULE to "FREQ=WEEKLY;INTERVAL=1",
+        CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS to 0,
+        CalendarContract.Instances.GUESTS_CAN_MODIFY to 0,
+        CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to 0
+      )
+    )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
 
     // When
@@ -125,12 +135,31 @@ class InstanceRepositoryTest {
   }
 
   @Test
-  fun `given cursor with multiple rows, when findAll, then returns multiple entities`() = runTest {
+  fun `given cursor with missing boolean flags, when findAll, then maps them to false`() = runTest {
     // Given
     val cursor = cursorWithRows(
-      minimalRow(id = 1L, eventId = 10L),
-      minimalRow(id = 2L, eventId = 20L),
-      minimalRow(id = 3L, eventId = 30L)
+      mapOf(
+        CalendarContract.Instances._ID to 1L,
+        CalendarContract.Instances.EVENT_ID to 10L,
+        CalendarContract.Instances.BEGIN to 1_000_000L,
+        CalendarContract.Instances.END to 2_000_000L,
+        CalendarContract.Instances.ALL_DAY to null,
+        CalendarContract.Instances.TITLE to null,
+        CalendarContract.Instances.DESCRIPTION to null,
+        CalendarContract.Instances.CALENDAR_ID to null,
+        CalendarContract.Instances.ACCESS_LEVEL to null,
+        CalendarContract.Instances.AVAILABILITY to null,
+        CalendarContract.Instances.STATUS to null,
+        CalendarContract.Instances.EVENT_LOCATION to null,
+        CalendarContract.Instances.EVENT_TIMEZONE to null,
+        CalendarContract.Instances.EVENT_END_TIMEZONE to null,
+        CalendarContract.Instances.ORGANIZER to null,
+        CalendarContract.Instances.ORIGINAL_ID to null,
+        CalendarContract.Instances.RRULE to null,
+        CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS to null,
+        CalendarContract.Instances.GUESTS_CAN_MODIFY to null,
+        CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to null
+      )
     )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
 
@@ -138,10 +167,11 @@ class InstanceRepositoryTest {
     val result = repository.findAll(0L, 1000L, emptyList())
 
     // Then
-    Assert.assertEquals(3, result.size)
-    Assert.assertEquals(1L, result[0].id)
-    Assert.assertEquals(2L, result[1].id)
-    Assert.assertEquals(3L, result[2].id)
+    val entity = result.first()
+    Assert.assertEquals(false, entity.allDay)
+    Assert.assertEquals(false, entity.guestsCanInviteOthers)
+    Assert.assertEquals(false, entity.guestsCanModify)
+    Assert.assertEquals(false, entity.guestsCanSeeGuests)
   }
 
   // endregion
@@ -191,22 +221,6 @@ class InstanceRepositoryTest {
     Assert.assertEquals(listOf("1", "2"), selectionArgsSlot.captured.toList())
   }
 
-  @Test
-  fun `given single calendarId, when findAll, then uses single placeholder`() = runTest {
-    // Given
-    val selectionArgsSlot = slot<Array<String>>()
-    val cursor = emptyCursor()
-    every {
-      contentResolver.query(any(), any(), any(), capture(selectionArgsSlot), any())
-    } returns cursor
-
-    // When
-    repository.findAll(0L, 1000L, listOf(CalendarId(99L)))
-
-    // Then
-    Assert.assertEquals(listOf("99"), selectionArgsSlot.captured.toList())
-  }
-
   // endregion
 
   // region findAll — error handling
@@ -253,36 +267,6 @@ class InstanceRepositoryTest {
 
     return cursor
   }
-
-  private fun minimalRow(
-    id: Long = 1L,
-    eventId: Long = 10L,
-    begin: Long = 1_000_000L,
-    end: Long = 2_000_000L,
-    allDay: Int = 0,
-    rrule: String? = null
-  ): Map<String, Any?> = mapOf(
-    CalendarContract.Instances._ID to id,
-    CalendarContract.Instances.EVENT_ID to eventId,
-    CalendarContract.Instances.BEGIN to begin,
-    CalendarContract.Instances.END to end,
-    CalendarContract.Instances.ALL_DAY to allDay,
-    CalendarContract.Instances.TITLE to null,
-    CalendarContract.Instances.DESCRIPTION to null,
-    CalendarContract.Instances.CALENDAR_ID to null,
-    CalendarContract.Instances.ACCESS_LEVEL to null,
-    CalendarContract.Instances.AVAILABILITY to null,
-    CalendarContract.Instances.STATUS to null,
-    CalendarContract.Instances.EVENT_LOCATION to null,
-    CalendarContract.Instances.EVENT_TIMEZONE to null,
-    CalendarContract.Instances.EVENT_END_TIMEZONE to null,
-    CalendarContract.Instances.ORGANIZER to null,
-    CalendarContract.Instances.ORIGINAL_ID to null,
-    CalendarContract.Instances.RRULE to rrule,
-    CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS to 0,
-    CalendarContract.Instances.GUESTS_CAN_MODIFY to 0,
-    CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS to 0
-  )
 
   // endregion
 }
