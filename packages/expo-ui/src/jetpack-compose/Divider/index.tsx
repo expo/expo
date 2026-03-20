@@ -6,8 +6,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type DividerCommonConfig = {
   /**
-   * Thickness of the divider line in dp.
-   * Use `StyleSheet.hairlineWidth` for a single-pixel line regardless of density.
+   * Thickness of the divider line. Accepts dp values; use `StyleSheet.hairlineWidth` for a single-pixel line.
    */
   thickness?: number;
   /**
