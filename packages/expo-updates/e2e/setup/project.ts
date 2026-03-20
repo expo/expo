@@ -33,7 +33,7 @@ function getExpoDependencyChunks({
   includeSplashScreen: boolean;
 }) {
   return [
-    ['expo-task-manager'],
+    ['@expo/config-plugins'], // NOTE(@kitten): Added for detox which is missing a dependency for this
     ['expo', 'expo-asset', '@expo/inline-modules'],
     ['expo-manifests'],
     ['expo-constants'],
@@ -318,7 +318,7 @@ async function preparePackageJson(
   // NOTE(@kitten): Fixture dependencies (fixtures/project_files/*); This is really hard to maintain, please replace this harness setup
   const extraDevDependencies = configureE2E
     ? {
-        '@config-plugins/detox': '^9.0.0',
+        '@config-plugins/detox': '^11.0.0',
         '@types/express': '^5.0.3',
         '@expo/spawn-async': '^1.7.2',
         '@expo/xcpretty': '^4.4.1',
