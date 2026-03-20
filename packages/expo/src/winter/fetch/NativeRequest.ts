@@ -19,7 +19,7 @@ export interface NativeRequestInit {
 }
 
 export type NativeResponseEvents = {
-  didReceiveResponseData(data: Uint8Array): void;
+  didReceiveResponseData(data: ArrayBuffer): void;
   didComplete(): void;
   didFailWithError(error: string): void;
   readyForJSFinalization(): void;
@@ -32,7 +32,7 @@ export declare class NativeResponse extends SharedObject<NativeResponseEvents> {
   readonly statusText: string;
   readonly url: string;
   readonly redirected: boolean;
-  startStreaming(): Promise<Uint8Array<ArrayBuffer> | null>;
+  startStreaming(): Promise<ArrayBuffer | null>;
   cancelStreaming(reason: string): void;
   arrayBuffer(): Promise<ArrayBuffer>;
   text(): Promise<string>;

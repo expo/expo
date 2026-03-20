@@ -35,9 +35,9 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
           if (response.streamingState === 'completed') {
             return;
           }
-          response.addListener('didReceiveResponseData', (data: Uint8Array<ArrayBuffer>) => {
+          response.addListener('didReceiveResponseData', (data: ArrayBuffer) => {
             if (!isControllerClosed) {
-              controller.enqueue(data);
+              controller.enqueue(new Uint8Array(data));
             }
           });
 
@@ -53,10 +53,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
         },
         async pull(controller) {
           if (response.streamingState === 'none') {
-            const completedData = await response.startStreaming();
+            const completedData: ArrayBuffer | null = await response.startStreaming();
             if (completedData != null) {
               if (!isControllerClosed) {
-                controller.enqueue(completedData);
+                controller.enqueue(new Uint8Array(completedData));
                 controller.close();
                 isControllerClosed = true;
               }
