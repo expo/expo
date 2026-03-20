@@ -5,6 +5,7 @@ package expo.modules.fetch
 import android.util.Log
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   var error: Exception? = null
     private set
   var redirectMode: NativeRequestRedirect? = null
+  private var coalescer: ChunkCoalescer? = null
 
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
@@ -51,17 +53,24 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     state = ResponseState.STARTED
   }
 
-  fun startStreaming(): ByteArray? {
+  fun startStreaming(): NativeArrayBuffer? {
     if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
       return null
     }
     if (state == ResponseState.RESPONSE_RECEIVED) {
       state = ResponseState.BODY_STREAMING_STARTED
-      val queuedData = this.sink.finalize(directBuffer = false).array()
-      emit("didReceiveResponseData", queuedData)
+      coalescer = ChunkCoalescer(coroutineScope = coroutineScope) { chunk ->
+        emit("didReceiveResponseData", chunk)
+      }
+      val queuedData = this.sink.finalize(directBuffer = true)
+      // After finalize(), position == size and remaining == 0.
+      // Check position > 0 because wrap() calls rewind() internally.
+      if (queuedData.position() > 0) {
+        emit("didReceiveResponseData", NativeArrayBuffer.wrap(queuedData))
+      }
     } else if (state == ResponseState.BODY_COMPLETED) {
-      val queuedData = this.sink.finalize(directBuffer = false).array()
-      return queuedData
+      val queuedData = this.sink.finalize(directBuffer = true)
+      return NativeArrayBuffer.wrap(queuedData)
     }
     return null
   }
@@ -70,6 +79,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
       return
     }
+    coalescer?.cancel()
     state = ResponseState.BODY_STREAMING_CANCELED
   }
 
@@ -77,6 +87,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     val error = FetchRequestCanceledException()
     this.error = error
     if (state == ResponseState.BODY_STREAMING_STARTED) {
+      coalescer?.cancel()
       emit("didFailWithError", error.localizedMessageWithCauseLocalizedMessage())
     }
     state = ResponseState.ERROR_RECEIVED
@@ -142,6 +153,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
       val stream = response.body?.source() ?: return@launch
       pumpResponseBodyStream(stream)
       response.close()
+      coalescer?.flush()
 
       if (this@NativeResponse.state == ResponseState.BODY_STREAMING_STARTED) {
         emit("didComplete")
@@ -196,7 +208,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         if (state == ResponseState.RESPONSE_RECEIVED) {
           sink.appendBufferBody(stream.buffer.readByteArray())
         } else if (state == ResponseState.BODY_STREAMING_STARTED) {
-          emit("didReceiveResponseData", stream.buffer.readByteArray())
+          coalescer?.append(stream.buffer.readByteArray())
         } else {
           break
         }
