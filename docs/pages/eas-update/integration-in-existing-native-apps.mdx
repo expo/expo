@@ -54,12 +54,6 @@ Pass in the environment variable to CocoaPods installation to disable automatic 
 
 The next step is to integrate `expo-updates` into your Android and iOS projects so that your app will use `expo-updates` as the source of your app JavaScript in release builds.
 
-<Collapsible summary="Example">
-
-A complete working example is available at [this GitHub repository](https://github.com/expo/CustomRNView) .
-
-</Collapsible>
-
 ### Integrating expo-updates with your React Native bundling
 
 1. Ensure that your Metro config extends the Expo config, as in this example:
@@ -108,58 +102,106 @@ A complete working example is available at [this GitHub repository](https://gith
 
 ### Integrating expo-updates on Android
 
-The following instructions assume you have an app written in Kotlin, with one or more native activities. Open **android/app/src/main/java/com/\<your-app-name\>/MainActivity.kt** and follow the steps below.
+The following instructions assume you have an app written in Kotlin. You will need to update two files: **MainApplication.kt** and **MainActivity.kt**.
+
+#### MainApplication changes
+
+Open **android/app/src/main/java/com/\<your-app-name\>/MainApplication.kt** and follow the steps below.
+
+1. Your application class should implement `ReactApplication`.
+2. Override `reactHost` to use `ExpoReactHostFactory.getDefaultReactHost()`. This sets up the React host with proper expo-updates integration.
+3. In `onCreate()`, call `loadReactNative()` and `ApplicationLifecycleDispatcher.onApplicationCreate()` to initialize Expo modules.
+
+```kotlin android/app/src/main/java/com/<your-app-name>/MainApplication.kt
+package com.yourpackagename
+
+import android.app.Application
+import android.content.res.Configuration
+
+import com.facebook.react.PackageList
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
+import com.facebook.react.ReactHost
+import com.facebook.react.common.ReleaseLevel
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+
+import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ExpoReactHostFactory
+
+// Step 1
+class MainApplication : Application(), ReactApplication {
+
+  // Step 2
+  override val reactHost: ReactHost by lazy {
+    ExpoReactHostFactory.getDefaultReactHost(
+      context = applicationContext,
+      packageList =
+        PackageList(this).packages.apply {
+          // Packages that cannot be autolinked yet can be added manually here, for example:
+          // add(MyReactNativePackage())
+        }
+    )
+  }
+
+  // Step 3
+  override fun onCreate() {
+    super.onCreate()
+    DefaultNewArchitectureEntryPoint.releaseLevel = try {
+      ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
+    } catch (e: IllegalArgumentException) {
+      ReleaseLevel.STABLE
+    }
+    loadReactNative(this)
+    ApplicationLifecycleDispatcher.onApplicationCreate(this)
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+  }
+}
+```
+
+#### MainActivity changes
+
+Open **android/app/src/main/java/com/\<your-app-name\>/MainActivity.kt** and follow the steps below.
 
 1. Your React Native activity should subclass `com.facebook.react.ReactActivity`.
-2. In this activity, add code to `onCreate()` to initialize the updates system. The initialization should not happen in the main thread (otherwise a lockup and ANR will occur).
-3. Override `getMainComponentName()` to return the name of the app you registered in your JS entry point above.
-4. Show the React Native view, by overriding the `createReactActivityDelegate()` method as shown below.
+2. Override `getMainComponentName()` to return the name of the app you registered in your JS entry point above.
+3. Override `createReactActivityDelegate()` using `ReactActivityDelegateWrapper` as shown below.
 
 ```kotlin android/app/src/main/java/com/<your-app-name>/MainActivity.kt
 package com.yourpackagename
 
-import android.content.Context
 import android.os.Bundle
+
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+
 import expo.modules.ReactActivityDelegateWrapper
-import expo.modules.updates.UpdatesController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 // Step 1
 class MainActivity : ReactActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        CoroutineScope(Dispatchers.IO).launch {
-            startUpdatesController(applicationContext)
-        }
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(null)
+  }
 
-    // Step 2
-    private fun startUpdatesController(context: Context) {
-        UpdatesController.initialize(context)
-        // Call the synchronous `launchAssetFile()` function to wait for updates ready
-        UpdatesController.instance.launchAssetFile
-    }
+  // Step 2
+  override fun getMainComponentName(): String = "App"
 
-    // Step 3
-    override fun getMainComponentName(): String = "App"
-
-    // Step 4
-    override fun createReactActivityDelegate(): ReactActivityDelegate {
-        return ReactActivityDelegateWrapper(
-            this,
-            BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
-            object : DefaultReactActivityDelegate(
-                this,
-                mainComponentName,
-                fabricEnabled
-            ) {})
-    }
+  // Step 3
+  override fun createReactActivityDelegate(): ReactActivityDelegate {
+    return ReactActivityDelegateWrapper(
+      this,
+      BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
+      object : DefaultReactActivityDelegate(
+        this,
+        mainComponentName,
+        fabricEnabled
+      ) {})
+  }
 }
 ```
 
