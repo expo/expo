@@ -16,6 +16,8 @@ import expo.modules.calendar.next.domain.repositories.safeUpdate
 import expo.modules.calendar.next.domain.wrappers.EventId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.TimeZone
+import kotlin.time.Duration.Companion.milliseconds
 
 class EventRepository(private val contentResolver: ContentResolver) {
   suspend fun findById(id: EventId): EventEntity? = withContext(Dispatchers.IO) {
@@ -59,6 +61,69 @@ class EventRepository(private val contentResolver: ContentResolver) {
     )
   }
 
+  private fun EventInput.toContentValues() = ContentValues().apply {
+    dtStart?.let {
+      put(CalendarContract.Events.DTSTART, it)
+    }
+    dtEnd?.let {
+      put(CalendarContract.Events.DTEND, it)
+    }
+    rrule?.let { recurrence ->
+      if (recurrence.frequency.isEmpty()) {
+        return@let
+      }
+
+      if (recurrence.endDate == null && recurrence.occurrence == null) {
+        val eventStartDate = requireNotNull(dtStart)
+        val eventEndDate = requireNotNull(dtEnd)
+        val duration = (eventEndDate - eventStartDate).milliseconds.inWholeSeconds
+
+        putNull(CalendarContract.Events.LAST_DATE)
+        putNull(CalendarContract.Events.DTEND)
+        put(CalendarContract.Events.DURATION, "PT${duration}S")
+      }
+      put(CalendarContract.Events.RRULE, recurrence.toRuleString())
+    }
+
+    availability?.let {
+      put(CalendarContract.Events.AVAILABILITY, it.value)
+    }
+    title?.let {
+      put(CalendarContract.Events.TITLE, it)
+    }
+    description?.let {
+      put(CalendarContract.Events.DESCRIPTION, it)
+    }
+    eventLocation?.let {
+      put(CalendarContract.Events.EVENT_LOCATION, it)
+    }
+    organizer?.let {
+      put(CalendarContract.Events.ORGANIZER, it)
+    }
+    allDay?.let {
+      put(CalendarContract.Events.ALL_DAY, it)
+    }
+    guestsCanModify?.let {
+      put(CalendarContract.Events.GUESTS_CAN_MODIFY, it)
+    }
+    guestsCanInviteOthers?.let {
+      put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, it)
+    }
+    guestsCanSeeGuests?.let {
+      put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, it)
+    }
+    accessLevel?.let {
+      put(CalendarContract.Events.ACCESS_LEVEL, it.value)
+    }
+
+    val defaultTimezoneId = TimeZone.getDefault().id
+    put(CalendarContract.Events.EVENT_TIMEZONE, eventTimezone ?: defaultTimezoneId)
+    put(CalendarContract.Events.EVENT_END_TIMEZONE, eventEndTimezone ?: defaultTimezoneId)
+    calendarId?.let {
+      put(CalendarContract.Events.CALENDAR_ID, it.value)
+    }
+  }
+
   private fun EventUpdate.toContentValues() = ContentValues().apply {
     if (!dtStart.isUndefined) {
       put(CalendarContract.Events.DTSTART, dtStart.optional)
@@ -71,10 +136,11 @@ class EventRepository(private val contentResolver: ContentResolver) {
       val recurrence = rrule.optional
       if (recurrence != null && recurrence.frequency.isNotEmpty()) {
         if (recurrence.endDate == null && recurrence.occurrence == null) {
-          val eventStartDate = getAsLong(CalendarContract.Events.DTSTART)
-          val eventEndDate = getAsLong(CalendarContract.Events.DTEND)
-          val duration = (eventEndDate - eventStartDate) / 1000
-
+          val eventStartDate= dtStart.optional
+            ?: throw IllegalArgumentException("Start date must be provided when updating recurrence rule without end date or occurrence count")
+          val eventEndDate = dtEnd.optional
+            ?: throw IllegalArgumentException("End date must be provided when updating recurrence rule without end date or occurrence count")
+          val duration = (eventEndDate - eventStartDate).milliseconds.inWholeSeconds
           putNull(CalendarContract.Events.LAST_DATE)
           putNull(CalendarContract.Events.DTEND)
           put(CalendarContract.Events.DURATION, "PT${duration}S")

@@ -3,8 +3,6 @@ package expo.modules.calendar.next.domain.dto.event
 import android.content.ContentValues
 import android.provider.CalendarContract
 
-// This class represents an exception for a recurring event.
-// It can be used to cancel a single instance of a recurring event or to modify it in the future (not implemented).
 sealed interface EventExceptionInput {
   val instanceStartDate: Long // in milliseconds
   fun toContentValues(): ContentValues
