@@ -1,12 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 /**
- Production variant of SwiftUIVirtualView's ObjC layer.
- Inherits from NSObject (not UIView) for minimal overhead.
- UIView hierarchy stubs prevent crashes if incorrectly placed.
+ Dev-mode variant of SwiftUIVirtualView's ObjC layer.
+ Inherits from UIView so that `_isAncestorOfFirstResponder` is safe when the component
+ is incorrectly placed without a `<Host>` wrapper.
  */
 
-#import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
+#import <ExpoModulesCore/SwiftUIVirtualViewObjCDev.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 
@@ -78,12 +78,11 @@ static NSString *normalizeEventName(NSString *eventName)
 } // namespace
 
 /**
- Cache for component flavors, where the key is a view class name and value is the flavor.
- Flavors must be cached in order to keep using the same component handle after app reloads.
+ Shared flavor cache — same static as the production class so both resolve identically.
  */
 static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flavor> _componentFlavorsCache;
 
-@implementation SwiftUIVirtualViewObjC {
+@implementation SwiftUIVirtualViewObjCDev {
   react::SharedViewProps _props;
   react::SharedViewEventEmitter _eventEmitter;
   expo::ExpoViewShadowNode<>::ConcreteState::Shared _state;
@@ -91,127 +90,40 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
 
 - (instancetype)init
 {
-  if (self = [super init]) {
+  if (self = [super initWithFrame:CGRectZero]) {
     static const auto defaultProps = std::make_shared<const expo::SwiftUIViewProps>();
     _props = defaultProps;
+    self.hidden = YES;
+#if TARGET_OS_IOS || TARGET_OS_TV
+    self.userInteractionEnabled = NO;
+#endif
   }
   return self;
 }
 
-// Detect when this NSObject is incorrectly inserted into a UIKit view hierarchy.
-// UIKit calls a private selector early in `_isAncestorOfFirstResponder.
-// We intercept it here and throw before the insertion proceeds.
-// The selector name is constructed from fragments to
-// avoid a literal private API string in the binary.
-- (id)forwardingTargetForSelector:(SEL)aSelector
-{
-  NSString *selName = [@[@"_", @"isAncestor", @"OfFirst", @"Responder"] componentsJoinedByString:@""];
-  if (aSelector == NSSelectorFromString(selName)) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:
-                                     @"A SwiftUI view \"%@\" (tag: %ld) is being mounted inside a standard UIView. "
-                                     @"Wrap your component with `<Host>` from '@expo/ui/swift-ui'.",
-                                     self.componentName ?: NSStringFromClass([self class]), (long)self.tag]
-                                 userInfo:nil];
-  }
-
-  return [super forwardingTargetForSelector:aSelector];
-}
-
-#pragma mark - UIView(UIViewHierarchy)
-
-- (nullable UIView *)superview
-{
-  return nil;
-}
-
-- (NSArray<UIView *> *)subviews
-{
-  return @[];
-}
-
-- (nullable UIWindow *)window
-{
-  return nil;
-}
-
-- (void)removeFromSuperview
-{
-}
-
-- (void)insertSubview:(UIView *)view atIndex:(NSInteger)index
-{
-}
-
-- (void)exchangeSubviewAtIndex:(NSInteger)index1 withSubviewAtIndex:(NSInteger)index2
-{
-}
-
-- (void)addSubview:(UIView *)view
-{
-}
-
-- (void)insertSubview:(UIView *)view belowSubview:(UIView *)siblingSubview
-{
-}
-
-- (void)insertSubview:(UIView *)view aboveSubview:(UIView *)siblingSubview
-{
-}
-
-- (void)bringSubviewToFront:(UIView *)view
-{
-}
-
-- (void)sendSubviewToBack:(UIView *)view
-{
-}
-
-- (void)didAddSubview:(UIView *)subview
-{
-}
-
-- (void)willRemoveSubview:(UIView *)subview
-{
-}
-
-- (void)willMoveToSuperview:(nullable UIView *)newSuperview
-{
-}
-
+#if TARGET_OS_IOS || TARGET_OS_TV
 - (void)didMoveToSuperview
 {
+  [super didMoveToSuperview];
+  if (self.superview != nil) {
+    RCTLogError(@"A SwiftUI view \"%@\" (tag: %ld) is being mounted inside a standard UIView. "
+                @"Double check that in JSX you have wrapped your component with "
+                @"`<Host>` from '@expo/ui/swift-ui'.",
+                self.componentName ?: NSStringFromClass([self class]), (long)self.tag);
+  }
 }
-
-- (void)willMoveToWindow:(nullable UIWindow *)newWindow
+#else
+- (void)viewDidMoveToSuperview
 {
+  [super viewDidMoveToSuperview];
+  if (self.superview != nil) {
+    RCTLogError(@"A SwiftUI view \"%@\" (tag: %ld) is being mounted inside a standard NSView. "
+                @"Double check that in JSX you have wrapped your component with "
+                @"`<Host>` from '@expo/ui/swift-ui'.",
+                self.componentName ?: NSStringFromClass([self class]), (long)self.tag);
+  }
 }
-
-- (void)didMoveToWindow
-{
-}
-
-- (BOOL)isDescendantOfView:(UIView *)view
-{
-  return NO;
-}
-
-- (nullable UIView *)viewWithTag:(NSInteger)tag
-{
-  return nil;
-}
-
-- (void)setNeedsLayout
-{
-}
-
-- (void)layoutIfNeeded
-{
-}
-
-- (void)layoutSubviews
-{
-}
+#endif // TARGET_OS_IOS || TARGET_OS_TV
 
 #include "SwiftUIVirtualViewSharedImpl+Private.h"
 

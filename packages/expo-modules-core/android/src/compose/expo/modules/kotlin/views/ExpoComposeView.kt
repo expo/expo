@@ -2,6 +2,7 @@ package expo.modules.kotlin.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.viewevent.CoalescingKey
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -90,6 +92,29 @@ abstract class ExpoComposeView<T : ComposeProps>(
         }
       }
     }
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    if (!withHostingView) {
+      validateHostingAncestor()
+    }
+  }
+
+  /**
+   * Validates that this non-hosting Compose view has a valid Compose parent.
+   * In a valid hierarchy the immediate parent is always an ExpoComposeView or ComposeView.
+   * If the parent is a regular ViewGroup (e.g. ReactViewGroup), the `<Host>` wrapper is missing.
+   */
+  private fun validateHostingAncestor() {
+    val parentView = parent
+    if (parentView is ExpoComposeView<*> || parentView is ComposeView) {
+      return
+    }
+    val componentName = (this as? ViewFunctionHolder)?.name ?: this.javaClass.simpleName
+    val exception = MissingHostException(componentName)
+    Log.e("ExpoComposeView", "", exception)
+    appContext.jsLogger?.error(exception.message ?: "Missing <Host>")
   }
 
   @Composable
@@ -479,3 +504,9 @@ class ComposeFunctionHolder<Props : ComposeProps>(
     }
   }
 }
+
+internal class MissingHostException(componentName: String) :
+  CodedException(
+    "A Jetpack Compose view \"$componentName\" must be rendered inside a <Host> component. " +
+      "Wrap your component with `<Host>` from '@expo/ui/jetpack-compose'."
+  )
