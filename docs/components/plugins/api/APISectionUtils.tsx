@@ -248,7 +248,7 @@ export const resolveTypeName = (
       return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
     } else if (elementType?.declaration) {
       if (type === 'array') {
-        const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
+        const { parameters, type: paramType } = elementType.declaration.indexSignatures?.[0] ?? {};
         if (parameters && paramType) {
           return (
             <>
