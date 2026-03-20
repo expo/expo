@@ -900,22 +900,26 @@ export async function withMetroMultiPlatformAsync(
     config,
     exp,
     platformBundlers,
+    serverRoot,
+
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
     isExporting,
-
     isReactServerComponentsEnabled,
+
     getMetroBundler,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
+    serverRoot?: string | undefined;
+
     isAutolinkingResolverEnabled?: boolean;
     isExporting?: boolean;
-
     isReactServerComponentsEnabled: boolean;
     isNamedRequiresEnabled: boolean;
+
     getMetroBundler: () => Bundler;
   }
 ) {
@@ -928,7 +932,8 @@ export async function withMetroMultiPlatformAsync(
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
-  if (!isDirectoryIn(__dirname, projectRoot)) {
+  // NOTE(@kitten): If `projectRoot` is used without `serverRoot` being available this can mistrigger for user monorepos!
+  if (!isDirectoryIn(__dirname, serverRoot ?? projectRoot)) {
     const watchFolders = (config.watchFolders as string[]) || [];
     asWritable(config).watchFolders = watchFolders;
 
