@@ -375,7 +375,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           <ZoomTransitionTargetContextProvider route={route}>
             <ZoomTransitionEnabler route={route} />
             <React.Suspense
-              fallback={<ResolvedSuspenseFallback route={value.contextKey} />}>
+              fallback={
+                <ResolvedSuspenseFallback
+                  route={value.contextKey}
+                  params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
+                />
+              }>
               <WrappedScreenComponent
                 {...props}
                 // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`

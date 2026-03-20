@@ -9,7 +9,7 @@ const Toast_1 = require("./Toast");
 function SuspenseFallback({ route }) {
     if (__DEV__) {
         return (<Toast_1.ToastWrapper>
-        <Toast_1.Toast filename={route?.contextKey}>Bundling...</Toast_1.Toast>
+        <Toast_1.Toast filename={route}>Bundling...</Toast_1.Toast>
       </Toast_1.ToastWrapper>);
     }
     return null;

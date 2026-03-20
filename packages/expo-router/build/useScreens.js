@@ -212,9 +212,11 @@ function getQualifiedRouteComponent(value) {
         const store = (0, storeContext_1.useExpoRouterStore)();
         const InheritedSuspenseFallback = (0, react_1.use)(Route_1.SuspenseFallbackContext);
         const ResolvedSuspenseFallback = import_mode_1.default === 'lazy'
-            ? undefined
-            : (UserSuspenseFallback ?? InheritedSuspenseFallback);
-        const providedSuspenseFallback = value.type === 'layout' ? ResolvedSuspenseFallback : InheritedSuspenseFallback;
+            ? SuspenseFallback_1.SuspenseFallback
+            : (UserSuspenseFallback ?? InheritedSuspenseFallback ?? SuspenseFallback_1.SuspenseFallback);
+        const providedSuspenseFallback = value.type === 'layout'
+            ? (UserSuspenseFallback ?? InheritedSuspenseFallback)
+            : InheritedSuspenseFallback;
         if (isFocused) {
             const state = navigation.getState();
             const isLeaf = !(state && 'state' in state.routes[state.index]);
@@ -249,7 +251,7 @@ function getQualifiedRouteComponent(value) {
           {navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
           <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
             <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
-            <react_1.default.Suspense fallback={ResolvedSuspenseFallback ? (<ResolvedSuspenseFallback route={value.contextKey}/>) : (<SuspenseFallback_1.SuspenseFallback route={value}/>)}>
+            <react_1.default.Suspense fallback={<ResolvedSuspenseFallback route={value.contextKey} params={(route?.params ?? {})}/>}>
               <WrappedScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
