@@ -4,6 +4,7 @@ import CoreMotion
 import ExpoModulesCore
 
 private let EVENT_PEDOMETER_UPDATE = "Exponent.pedometerUpdate"
+private let EVENT_PEDOMETER_EVENT = "Exponent.pedometerEvent"
 
 // This class should always be kept in sync with PedometerModuleDisabled
 public final class PedometerModule: Module {
@@ -11,11 +12,12 @@ public final class PedometerModule: Module {
 
   private var watchStartDate: Date?
   private var watchHandler: CMPedometerHandler?
+  private var eventHandler: CMPedometerEventHandler?
 
   public func definition() -> ModuleDefinition {
     Name("ExponentPedometer")
 
-    Events(EVENT_PEDOMETER_UPDATE)
+    Events(EVENT_PEDOMETER_UPDATE, EVENT_PEDOMETER_EVENT)
 
     AsyncFunction("isAvailableAsync") {
       #if EXPO_DISABLE_MOTION_PERMISSION
@@ -23,6 +25,83 @@ public final class PedometerModule: Module {
       #else
       return CMPedometer.isStepCountingAvailable()
       #endif
+    }
+
+    AsyncFunction("isRecordingAvailableAsync") {
+      // iOS keeps collecting history automatically (up to seven days), so recording is
+      // effectively "available" whenever step counting is available.
+      return CMPedometer.isStepCountingAvailable()
+    }
+
+    AsyncFunction("isEventTrackingAvailableAsync") {
+      return CMPedometer.isPedometerEventTrackingAvailable()
+    }
+
+    AsyncFunction("startEventUpdates") { (promise: Promise) in
+      if eventHandler != nil {
+        promise.resolve(true)
+        return
+      }
+
+      guard CMPedometer.isPedometerEventTrackingAvailable() else {
+        promise.resolve(false)
+        return
+      }
+
+      let authorizationStatus = CMPedometer.authorizationStatus()
+      guard authorizationStatus == .authorized else {
+        promise.reject(PedometerMotionPermissionException(status: authorizationStatus))
+        return
+      }
+
+      let handler: CMPedometerEventHandler = { [weak self] event, error in
+        if let error {
+          self?.pedometer.stopEventUpdates()
+          self?.eventHandler = nil
+          return
+        }
+
+        guard let self, let event else {
+          return
+        }
+
+        let type: String
+        switch event.type {
+        case .pause:
+          type = "pause"
+        case .resume:
+          type = "resume"
+        @unknown default:
+          return
+        }
+
+        self.sendEvent(
+          EVENT_PEDOMETER_EVENT,
+          [
+            "type": type,
+            "date": event.date.timeIntervalSince1970 * 1000
+          ]
+        )
+      }
+
+      pedometer.startPedometerEventUpdates(handler)
+      eventHandler = handler
+      promise.resolve(true)
+    }
+
+    AsyncFunction("stopEventUpdates") {
+      pedometer.stopEventUpdates()
+      eventHandler = nil
+    }
+
+    // iOS does not expose a way to start recording history
+    AsyncFunction("subscribeRecordingAsync") { (promise: Promise) in
+      promise.resolve(nil)
+    }
+
+    // iOS does not expose a way to stop recording history
+    AsyncFunction("unsubscribeRecordingAsync") { (promise: Promise) in
+      promise.resolve(nil)
     }
 
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
@@ -104,6 +183,8 @@ public final class PedometerModule: Module {
 
     OnDestroy {
       stopUpdates()
+      pedometer.stopEventUpdates()
+      eventHandler = nil
     }
   }
 
@@ -121,5 +202,24 @@ public final class PedometerModule: Module {
 internal final class PedometerQueryException: Exception {
   override var reason: String {
     "An error occurred while querying pedometer data"
+  }
+}
+
+internal final class PedometerMotionPermissionException: Exception {
+  private let status: CMAuthorizationStatus
+
+  init(status: CMAuthorizationStatus) {
+    self.status = status
+  }
+
+  override var reason: String {
+    switch status {
+    case .notDetermined:
+      return "Motion permission is required to start pedometer event updates. Call `Pedometer.requestPermissionsAsync()` first."
+    case .denied, .restricted:
+      return "Motion permission has not been granted for pedometer event updates."
+    @unknown default:
+      return "Motion permission is required to start pedometer event updates."
+    }
   }
 }
