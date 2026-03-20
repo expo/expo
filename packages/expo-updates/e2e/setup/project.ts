@@ -503,6 +503,10 @@ function transformAppJsonForE2E(
           'expo-channel-name': 'default',
         },
       },
+      experiments: {
+        // NOTE(@kitten): Deduplicate `react` and native module code automatically as we're symlinking modules
+        autolinkingModuleResolution: true
+      },
       extra: {
         eas: {
           projectId: '55685a57-9cf3-442d-9ba8-65c7b39849ef',
@@ -650,6 +654,10 @@ export function transformAppJsonForUpdatesDisabledE2E(
       updates: {
         enabled: false,
         useNativeDebug: true,
+      },
+      experiments: {
+        // NOTE(@kitten): Deduplicate `react` and native module code automatically as we're symlinking modules
+        autolinkingModuleResolution: true
       },
       extra: {
         eas: {
