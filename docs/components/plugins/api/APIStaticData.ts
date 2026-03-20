@@ -329,11 +329,8 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     NativeModule: '/versions/v54.0.0/sdk/expo/#nativemoduletype',
     SharedObject: '/versions/v54.0.0/sdk/expo/#sharedobjecttype',
     SharedRef: '/versions/v54.0.0/sdk/expo/#sharedreftype',
-    VectorIconProps: '/versions/v54.0.0/sdk/router/#vectoriconprops',
   },
   'v55.0.0': {
-    BaseNativeTabsTriggerIconProps:
-      '/versions/v55.0.0/sdk/router/native-tabs/#basenativetabstriggericonprops',
     BufferOptions: '/versions/v55.0.0/sdk/video/#bufferoptions-1',
     ButtonElementColors: '/versions/v55.0.0/sdk/ui/jetpack-compose/button/#buttonelementcolors',
     CameraPosition: '/versions/v55.0.0/sdk/maps/#cameraposition-2',
@@ -359,8 +356,6 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     VectorIconProps: '/versions/v55.0.0/sdk/router/#vectoriconprops',
   },
   latest: {
-    BaseNativeTabsTriggerIconProps:
-      '/versions/latest/sdk/router/native-tabs/#basenativetabstriggericonprops',
     BufferOptions: '/versions/latest/sdk/video/#bufferoptions-1',
     ButtonElementColors: '/versions/latest/sdk/ui/jetpack-compose/button/#buttonelementcolors',
     CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
@@ -407,7 +402,7 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     SharedObject: '/versions/unversioned/sdk/expo/#sharedobjecttype',
     SharedRef: '/versions/unversioned/sdk/expo/#sharedreftype',
     SharedRefType: '/versions/unversioned/sdk/expo/#sharedreftype',
-    SingularOptions: '/versions/unversioned/sdk/router/stack/#singularoptions',
+    SingularOptions: '/versions/unversioned/sdk/router/#singularoptions',
     StackToolbarBadgeProps: '/versions/unversioned/sdk/router/stack/#stacktoolbarbadgeprops',
     StackToolbarIconProps: '/versions/unversioned/sdk/router/stack/#stacktoolbariconprops',
     StackToolbarLabelProps: '/versions/unversioned/sdk/router/stack/#stacktoolbarlabelprops',
