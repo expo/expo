@@ -12,6 +12,7 @@
 
 - Deduplicate assets listed in `metadata.json` ([#44095](https://github.com/expo/expo/pull/44095) by [@quinlanj](https://github.com/quinlanj))
 - Fix device being incorrectly tracked for `run:ios --device` invocation ([#43673](https://github.com/expo/expo/pull/43673) by [@kitten](https://github.com/kitten))
+- Prevent out-of-monorepo `expo/expo` CLI detection to not mistrigger for user monorepos and update for pnpm compatibility ([#44101](https://github.com/expo/expo/pull/44101) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

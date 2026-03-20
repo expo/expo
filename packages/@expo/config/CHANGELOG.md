@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Memoize server root detection ([#44101](https://github.com/expo/expo/pull/44101) by [@kitten](https://github.com/kitten))
+
 ## 55.0.10 — 2026-03-18
 
 _This version does not introduce any user-facing changes._
