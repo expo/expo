@@ -8,14 +8,16 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.nio.ByteBuffer
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Accumulates small network chunks into larger buffers before flushing.
  * Reduces the number of JS thread dispatches by coalescing multiple small chunks
  * into fewer, larger NativeArrayBuffer emissions.
  *
- * Thread safety: all methods must be called from the same coroutine context
- * (the IO pump loop). The timer job runs in the same CoroutineScope.
+ * Thread safety: all mutable state is protected by [lock]. The [onFlush] callback
+ * is always called outside the lock to avoid holding it during JS thread dispatch.
  */
 internal class ChunkCoalescer(
   private val sizeThreshold: Int = DEFAULT_SIZE_THRESHOLD,
@@ -25,6 +27,7 @@ internal class ChunkCoalescer(
 ) {
   private var buffer: ByteBuffer = ByteBuffer.allocateDirect(sizeThreshold)
   private var timerJob: Job? = null
+  private val lock = ReentrantLock()
 
   /**
    * Append a chunk to the coalescing buffer.
@@ -34,22 +37,30 @@ internal class ChunkCoalescer(
   fun append(data: ByteArray) {
     if (data.size > sizeThreshold) {
       // Oversized chunk: flush pending data, then emit this chunk directly
-      if (buffer.position() > 0) {
-        flushBuffer()
+      val pending = lock.withLock {
+        cancelTimerLocked()
+        flushBufferLocked()
       }
-      cancelTimer()
+      pending?.let { onFlush(it) }
       val directBuffer = ByteBuffer.allocateDirect(data.size)
       directBuffer.put(data)
       onFlush(NativeArrayBuffer.wrap(directBuffer))
       return
     }
 
-    if (buffer.remaining() < data.size) {
-      flushBuffer()
+    val pending = lock.withLock {
+      if (buffer.remaining() < data.size) {
+        val flushed = flushBufferLocked()
+        buffer.put(data)
+        resetTimerLocked()
+        flushed
+      } else {
+        buffer.put(data)
+        resetTimerLocked()
+        null
+      }
     }
-
-    buffer.put(data)
-    resetTimer()
+    pending?.let { onFlush(it) }
   }
 
   /**
@@ -57,43 +68,48 @@ internal class ChunkCoalescer(
    * Cancels the timer to prevent races.
    */
   fun flush() {
-    cancelTimer()
-    if (buffer.position() > 0) {
-      flushBuffer()
+    val pending = lock.withLock {
+      cancelTimerLocked()
+      flushBufferLocked()
     }
+    pending?.let { onFlush(it) }
   }
 
   /**
    * Discard any pending data and cancel the timer.
    */
   fun cancel() {
-    cancelTimer()
-    buffer.clear()
-  }
-
-  private fun flushBuffer() {
-    // Slice the buffer to [0..position] and wrap as NativeArrayBuffer
-    val size = buffer.position()
-    val slice = ByteBuffer.allocateDirect(size)
-    buffer.flip()
-    slice.put(buffer)
-    onFlush(NativeArrayBuffer.wrap(slice))
-
-    // Reset for next batch
-    buffer = ByteBuffer.allocateDirect(sizeThreshold)
-  }
-
-  private fun resetTimer() {
-    timerJob?.cancel()
-    timerJob = coroutineScope.launch {
-      delay(timeoutMs)
-      if (buffer.position() > 0) {
-        flushBuffer()
-      }
+    lock.withLock {
+      cancelTimerLocked()
+      buffer.clear()
     }
   }
 
-  private fun cancelTimer() {
+  // All *Locked methods must be called with lock held.
+
+  private fun flushBufferLocked(): NativeArrayBuffer? {
+    val size = buffer.position()
+    if (size == 0) return null
+
+    val slice = ByteBuffer.allocateDirect(size)
+    buffer.flip()
+    slice.put(buffer)
+    buffer = ByteBuffer.allocateDirect(sizeThreshold)
+    return NativeArrayBuffer.wrap(slice)
+  }
+
+  private fun resetTimerLocked() {
+    timerJob?.cancel()
+    timerJob = coroutineScope.launch {
+      delay(timeoutMs)
+      val pending = lock.withLock {
+        flushBufferLocked()
+      }
+      pending?.let { onFlush(it) }
+    }
+  }
+
+  private fun cancelTimerLocked() {
     timerJob?.cancel()
     timerJob = null
   }
