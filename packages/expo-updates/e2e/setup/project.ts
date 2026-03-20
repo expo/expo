@@ -925,7 +925,10 @@ export async function initAsync(
 
   // Cleanup local updates module if needed
   if (cleanupLocalUpdatesModule) {
-    await cleanupLocalUpdatesModule();
+    // NOTE(@kitten): Modifying the repo root is dangerous
+    // This previously relied on the tarball packing, but we should optimally just create a local module
+    // We can't clean up the changes, since otherwise the modifications will be discarded before the native build
+    // await cleanupLocalUpdatesModule();
   }
 
   return projectRoot;
