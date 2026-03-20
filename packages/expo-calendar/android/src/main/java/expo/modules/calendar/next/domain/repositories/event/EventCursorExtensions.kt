@@ -2,6 +2,7 @@ package expo.modules.calendar.next.domain.repositories.event
 
 import android.database.Cursor
 import android.provider.CalendarContract
+import expo.modules.calendar.next.domain.model.event.AccessLevel
 import expo.modules.calendar.next.domain.model.event.Availability
 import expo.modules.calendar.next.domain.model.event.EventEntity
 import expo.modules.calendar.next.domain.model.event.RecurrenceRule
@@ -18,6 +19,9 @@ fun Cursor.toEventEntity(): EventEntity {
       getOptionalLong(CalendarContract.Events._ID)
         ?: throw IllegalStateException("event ID must not be null")
     ),
+    accessLevel = getOptionalInt(CalendarContract.Events.ACCESS_LEVEL)?.let {
+      AccessLevel.fromAndroidValue(it)
+    },
     allDay = getOptionalInt(CalendarContract.Events.ALL_DAY) != 0,
     availability = getOptionalInt(CalendarContract.Events.AVAILABILITY)?.let {
       Availability.fromAndroidValue(it)
@@ -44,6 +48,6 @@ fun Cursor.toEventEntity(): EventEntity {
       ?.takeIf { it.isNotBlank() }
       ?.let { RecurrenceRule.fromRuleString(it) },
     status = getOptionalInt(CalendarContract.Events.STATUS)?.let { Status.fromAndroidValue(it) },
-    title = getOptionalString(CalendarContract.Events.TITLE)
+    title = getOptionalString(CalendarContract.Events.TITLE),
   )
 }

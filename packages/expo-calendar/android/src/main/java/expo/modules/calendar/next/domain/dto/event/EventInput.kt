@@ -27,21 +27,20 @@ class EventInput(
 ) {
   fun toExistingEntity(id: EventId) = EventEntity(
     id = id,
-    calendarId = calendarId,
-    title = title,
-    description = description,
-    dtStart = dtStart,
-    dtEnd = dtEnd,
-    availability = availability,
-    allDay = allDay,
-    eventLocation = eventLocation,
-    organizer = organizer,
-    guestsCanModify = guestsCanModify,
-    guestsCanInviteOthers = guestsCanInviteOthers,
-    guestsCanSeeGuests = guestsCanSeeGuests,
-    eventTimezone = eventTimezone,
-    eventEndTimezone = eventEndTimezone,
     accessLevel = accessLevel,
+    allDay = allDay,
+    availability = availability,
+    calendarId = calendarId,
+    description = description,
+    dtEnd = dtEnd,
+    dtStart = dtStart,
+    eventEndTimezone = eventEndTimezone,
+    eventLocation = eventLocation,
+    guestsCanInviteOthers = guestsCanInviteOthers,
+    guestsCanModify = guestsCanModify,
+    guestsCanSeeGuests = guestsCanSeeGuests,
+    organizer = organizer,
+    originalId = null,
     rrule = rrule?.let {
       RecurrenceRule(
         frequency = it.frequency,
@@ -49,6 +48,9 @@ class EventInput(
         occurrence = it.occurrence,
         endDate = it.endDate
       )
-    }
+    },
+    status = null,
+    title = title,
+    eventTimezone = eventTimezone
   )
 }
