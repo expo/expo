@@ -266,7 +266,7 @@ async function preparePackageJson(
 
   const extraScriptsGenerateTestUpdateBundlesPart = shouldGenerateTestUpdateBundles
     ? {
-        'generate-test-update-bundles': 'npx ts-node ./scripts/generate-test-update-bundles',
+        'generate-test-update-bundles': 'pnpm ts-node ./scripts/generate-test-update-bundles',
       }
     : {
         'generate-test-update-bundles': 'echo 1',
@@ -274,11 +274,11 @@ async function preparePackageJson(
 
   const extraScriptsAssetExclusion = {
     'reset-to-embedded':
-      'npx ts-node ./scripts/reset-app.ts App.tsx.embedded; (rm -rf android/build android/app/build)',
+      'pnpm ts-node ./scripts/reset-app.ts App.tsx.embedded; (rm -rf android/build android/app/build)',
     'set-to-update-1':
-      'npx ts-node ./scripts/reset-app.ts App.tsx.update1; eas update --branch=main --message=Update1',
+      'pnpm ts-node ./scripts/reset-app.ts App.tsx.update1; eas update --branch=main --message=Update1',
     'set-to-update-2':
-      'npx ts-node ./scripts/reset-app.ts App.tsx.update2; eas update --branch=main --message=Update2',
+      'pnpm ts-node ./scripts/reset-app.ts App.tsx.update2; eas update --branch=main --message=Update2',
   };
 
   // Additional scripts and dependencies for Maestro testing
@@ -305,12 +305,12 @@ async function preparePackageJson(
         'maestro:ios:uninstall': 'xcrun simctl uninstall booted dev.expo.updatese2e',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
-        'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
+        'check-android-emulator': 'pnpm ts-node ./scripts/check-android-emulator.ts',
         'tvos:build':
           'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
         'start:dev-client':
-          'CI=false npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
+          'CI=false pnpm expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;

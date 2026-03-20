@@ -100,7 +100,7 @@ async function createUpdateBundleAsync(projectRoot: string, platform?: string) {
     args.push('--platform', 'ios');
     args.push('--platform', 'android');
   }
-  await spawnAsync('npx', args, {
+  await spawnAsync('pnpm', args, {
     cwd: projectRoot,
     stdio: 'inherit',
   });
