@@ -4,6 +4,13 @@
   "description": "Provides a way to share files directly with other compatible applications.",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
+  "exports": {
+    ".": "./build/src/index.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

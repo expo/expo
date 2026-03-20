@@ -14,6 +14,13 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
+  "exports": {
+    "./package.json": "./package.json",
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "dependencies": {
     "@expo/schema-utils": "workspace:^55.0.2",
     "expo-dev-menu": "workspace:55.0.9",

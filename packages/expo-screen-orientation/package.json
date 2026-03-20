@@ -4,6 +4,13 @@
   "description": "Expo universal module for managing device's screen orientation",
   "main": "build/ScreenOrientation.js",
   "types": "build/ScreenOrientation.d.ts",
+  "exports": {
+    ".": "./build/ScreenOrientation.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

@@ -4,6 +4,12 @@
   "description": "Config plugin to customize native build properties on prebuild",
   "main": "build/withBuildProperties.js",
   "types": "build/withBuildProperties.d.ts",
+  "exports": {
+    ".": "./build/withBuildProperties.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./plugin": "./build/index.js"
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

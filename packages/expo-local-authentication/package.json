@@ -4,6 +4,13 @@
   "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "main": "build/LocalAuthentication.js",
   "types": "build/LocalAuthentication.d.ts",
+  "exports": {
+    ".": "./build/LocalAuthentication.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

@@ -4,6 +4,13 @@
   "description": "Interact with system UI elements",
   "main": "build/SystemUI.js",
   "types": "build/SystemUI.d.ts",
+  "exports": {
+    ".": "./build/SystemUI.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

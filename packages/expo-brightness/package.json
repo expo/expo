@@ -4,6 +4,13 @@
   "description": "Provides an API to get and set screen brightness.",
   "main": "build/Brightness.js",
   "types": "build/Brightness.d.ts",
+  "exports": {
+    ".": "./build/Brightness.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

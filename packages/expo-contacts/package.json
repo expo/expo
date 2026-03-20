@@ -4,6 +4,20 @@
   "description": "Provides access to the phone's system contacts.",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./next": {
+      "types": "./build/next/index.d.ts",
+      "default": "./src/next/index.ts"
+    },
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

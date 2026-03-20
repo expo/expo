@@ -4,6 +4,13 @@
   "description": "A library for tracking app users and managing tracking permissions",
   "main": "build/TrackingTransparency.js",
   "types": "build/TrackingTransparency.d.ts",
+  "exports": {
+    ".": "./build/TrackingTransparency.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",

@@ -4,6 +4,13 @@
   "description": "Expo module that provides support for tasks that can run in the background.",
   "main": "build/TaskManager.js",
   "types": "build/TaskManager.d.ts",
+  "exports": {
+    ".": "./build/TaskManager.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

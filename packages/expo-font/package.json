@@ -20,6 +20,7 @@
     "./app.plugin": "./app.plugin.js",
     "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json",
+    "./plugin": "./plugin/build/index.js",
     ".": {
       "react-server": "./build/index.server.js",
       "default": "./build/index.js"

@@ -4,6 +4,14 @@
   "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "main": "build/Calendar.js",
   "types": "build/Calendar.d.ts",
+  "exports": {
+    ".": "./build/Calendar.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js",
+    "./build/*": "./build/*.js",
+    "./next": "./build/next/index.js",
+    "./plugin": "./plugin/build/index.js"
+  },
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

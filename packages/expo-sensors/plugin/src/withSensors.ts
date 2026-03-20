@@ -8,10 +8,16 @@ import {
 const pkg = require('../../package.json');
 const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to access your device motion';
 
-const withSensors: ConfigPlugin<{ motionPermission?: string | false } | void> = (
-  config,
-  { motionPermission } = {}
-) => {
+export type Props = {
+  /**
+   * A string to set the `NSMotionUsageDescription` permission message, or `false` to disable.
+   * @default "Allow $(PRODUCT_NAME) to access your device motion"
+   * @platform ios
+   */
+  motionPermission?: string | false;
+};
+
+const withSensors: ConfigPlugin<Props | void> = (config, { motionPermission } = {}) => {
   if (motionPermission === false) {
     config = withPodfileProperties(config, (config) => {
       config.modResults.MOTION_PERMISSION = 'false';

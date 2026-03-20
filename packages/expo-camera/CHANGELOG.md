@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 - [Web] Fix `isAvailableAsync` returning `true` on devices without a camera. ([#43932](https://github.com/expo/expo/pull/43932) by [@alanjhughes](https://github.com/alanjhughes))

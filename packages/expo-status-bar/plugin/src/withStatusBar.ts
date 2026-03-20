@@ -15,7 +15,9 @@ type LegacyStatusBarStyle = NonNullable<NonNullable<ExpoConfig['androidStatusBar
 type StatusBarStyle = 'light' | 'dark';
 
 export type Props = {
+  /** Determines whether the status bar starts hidden. */
   hidden?: boolean;
+  /** Determines which style the status bar starts with. */
   style?: StatusBarStyle;
 };
 
