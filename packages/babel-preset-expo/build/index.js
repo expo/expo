@@ -181,15 +181,13 @@ function babelPresetExpo(api, options = {}) {
     if (bundler !== 'webpack') {
         extraPlugins.push(expo_inline_manifest_plugin_1.expoInlineManifestPlugin);
     }
-    if ((0, common_1.hasModule)('expo-router')) {
-        extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
-        // Process `loader()` functions for client, loader and server bundles (excluding RSC)
-        // - Client bundles: Remove loader exports, they run on server only
-        // - Server bundles: Keep loader exports (needed for SSG)
-        // - Loader-only bundles: Keep only loader exports, remove everything else
-        if (!isReactServer) {
-            extraPlugins.push(server_data_loaders_plugin_1.serverDataLoadersPlugin);
-        }
+    extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
+    // Process `loader()` functions for client, loader and server bundles (excluding RSC)
+    // - Client bundles: Remove loader exports, they run on server only
+    // - Server bundles: Keep loader exports (needed for SSG)
+    // - Loader-only bundles: Keep only loader exports, remove everything else
+    if (!isReactServer) {
+        extraPlugins.push(server_data_loaders_plugin_1.serverDataLoadersPlugin);
     }
     extraPlugins.push(client_module_proxy_plugin_1.reactClientReferencesPlugin);
     // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
