@@ -295,11 +295,11 @@ async function preparePackageJson(
           'adb install android/app/build/outputs/apk/release/app-release.apk',
         'maestro:android:uninstall': 'adb uninstall dev.expo.updatese2e',
         'maestro:ios:debug:build':
-          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | pnpm excpretty',
         'maestro:ios:debug:install':
           'xcrun simctl install booted ios/build/Build/Products/Debug-iphonesimulator/updatese2e.app',
         'maestro:ios:release:build':
-          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | pnpm excpretty',
         'maestro:ios:release:install':
           'xcrun simctl install booted ios/build/Build/Products/Release-iphonesimulator/updatese2e.app',
         'maestro:ios:uninstall': 'xcrun simctl uninstall booted dev.expo.updatese2e',
@@ -307,7 +307,7 @@ async function preparePackageJson(
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'pnpm ts-node ./scripts/check-android-emulator.ts',
         'tvos:build':
-          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | pnpm excpretty',
         postinstall: 'patch-package',
         'start:dev-client':
           'CI=false pnpm expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
@@ -315,14 +315,21 @@ async function preparePackageJson(
       }
     : extraScriptsAssetExclusion;
 
+  // NOTE(@kitten): Fixture dependencies (fixtures/project_files/*); This is really hard to maintain, please replace this harness setup
   const extraDevDependencies = configureE2E
     ? {
         '@config-plugins/detox': '^9.0.0',
         '@types/express': '^5.0.3',
+        '@expo/spawn-async': '^1.7.2',
+        '@expo/xcpretty': '^4.4.1',
         express: '^5.1.0',
         'form-data': '^4.0.0',
+        'resolve-from': '^5.0.0',
+        'structured-headers': '^2.0.2',
+        'nullthrows': '^1.1.1',
         prettier: '^2.8.1',
         'patch-package': '^8.0.0',
+        'ts-node': '~10.9.2',
       }
     : {};
 
@@ -341,21 +348,21 @@ async function preparePackageJson(
       ...extraScripts,
     },
     dependencies: {
-      ...expoResolutions,
+      '@expo-google-fonts/inter': '~0.4.2',
       ...packageJson.dependencies,
+      ...expoResolutions,
     },
     devDependencies: {
       '@types/react': '~19.0.10',
-      ...extraDevDependencies,
       ...packageJson.devDependencies,
-      'ts-node': '10.9.2',
-      typescript: '5.8.3',
+      ...extraDevDependencies,
+      typescript: '~5.9.3',
+      'ts-node': '~10.9.2',
     },
     resolutions: {
-      ...expoResolutions,
       ...packageJson.resolutions,
-      typescript: '5.8.3',
-      '@isaacs/cliui': 'npm:cliui@8.0.1', // Fix string-width ESM error
+      ...expoResolutions,
+      typescript: '~5.9.3',
     },
   };
 
@@ -933,12 +940,6 @@ export async function setupE2EAppAsync(
     ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV }
   );
-
-  // install extra fonts package
-  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
 
 export async function setupManualTestAppAsync(projectRoot: string, repoRoot: string) {
@@ -982,12 +983,6 @@ export async function setupUpdatesDisabledE2EAppAsync(
       isTV: false,
     }
   );
-
-  // install extra fonts package
-  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
 
 export async function setupUpdatesErrorRecoveryE2EAppAsync(
@@ -999,12 +994,6 @@ export async function setupUpdatesErrorRecoveryE2EAppAsync(
     ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
-
-  // install extra fonts package
-  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
 
 export async function setupUpdatesFingerprintE2EAppAsync(
@@ -1024,12 +1013,6 @@ export async function setupUpdatesFingerprintE2EAppAsync(
     ],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
-
-  // install extra fonts package
-  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
 
 export async function setupUpdatesStartupE2EAppAsync(
@@ -1041,12 +1024,6 @@ export async function setupUpdatesStartupE2EAppAsync(
     ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
-
-  // install extra fonts package
-  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
 
 export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
@@ -1058,12 +1035,6 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
     ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: false }
   );
-
-  // install extra fonts package
-  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
 
 export async function setupUpdatesDevClientE2EAppAsync(
@@ -1075,10 +1046,4 @@ export async function setupUpdatesDevClientE2EAppAsync(
     ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', repoRoot, isTV: isTV ?? false }
   );
-
-  // install extra fonts package
-  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
