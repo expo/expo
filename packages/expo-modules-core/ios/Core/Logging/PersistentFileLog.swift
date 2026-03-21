@@ -43,10 +43,12 @@ public class PersistentFileLog {
    Read entries from log file
    */
   public func readEntries() -> [String] {
-    if getFileSize() == 0 {
-      return []
+    return PersistentFileLog.serialQueue.sync {
+      if getFileSize() == 0 {
+        return []
+      }
+      return (try? self.readFileSync()) ?? []
     }
-    return (try? self.readFileSync()) ?? []
   }
 
   /**
