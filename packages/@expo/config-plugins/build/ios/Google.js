@@ -123,16 +123,20 @@ function setGoogleServicesFile(config, {
   }
   const googleServiceFilePath = _path().default.resolve(projectRoot, googleServicesFileRelativePath);
   _fs().default.copyFileSync(googleServiceFilePath, _path().default.join((0, _Paths().getSourceRoot)(projectRoot), 'GoogleService-Info.plist'));
-  const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
-  const plistFilePath = `${projectName}/GoogleService-Info.plist`;
-  if (!project.hasFile(plistFilePath)) {
-    project = (0, _Xcodeproj().addResourceFileToGroup)({
-      filepath: plistFilePath,
-      groupName: projectName,
-      project,
-      isBuildFile: true,
-      verbose: true
-    });
+
+  // TODO: Deprecate support for non-synchronized groups after SDK 55.
+  if (!(0, _Xcodeproj().isAppTargetUsingFileSystemSynchronizedGroups)(project)) {
+    const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
+    const plistFilePath = `${projectName}/GoogleService-Info.plist`;
+    if (!project.hasFile(plistFilePath)) {
+      project = (0, _Xcodeproj().addResourceFileToGroup)({
+        filepath: plistFilePath,
+        groupName: projectName,
+        project,
+        isBuildFile: true,
+        verbose: true
+      });
+    }
   }
   return project;
 }

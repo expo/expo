@@ -63,7 +63,9 @@ function setPrivacyInfo(projectConfig, privacyManifests) {
   const mergedContent = mergePrivacyInfo(parsedContent, privacyManifests);
   const contents = _plist().default.build(mergedContent);
   ensureFileExists(privacyFilePath, contents);
-  if (!projectConfig.modResults.hasFile(privacyFilePath)) {
+  if (
+  // TODO: Deprecate support for non-synchronized groups after SDK 55.
+  !(0, _Xcodeproj().isAppTargetUsingFileSystemSynchronizedGroups)(projectConfig.modResults) && !projectConfig.modResults.hasFile(privacyFilePath)) {
     projectConfig.modResults = (0, _Xcodeproj().addResourceFileToGroup)({
       filepath: _path().default.join(projectName, 'PrivacyInfo.xcprivacy'),
       groupName: projectName,

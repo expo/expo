@@ -28,6 +28,10 @@ function _withIosSplashScreenStoryboard() {
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 const debug = require('debug')('expo:prebuild-config:expo-splash-screen:ios:xcodeproj');
+
+/**
+ * @deprecated templates for SDK +55 should use PBXFileSystemSynchronizedRootGroup for the splash screen storyboard.
+ */
 const withIosSplashXcodeProject = config => {
   return (0, _configPlugins().withXcodeProject)(config, async config => {
     config.modResults = await setSplashStoryboardAsync({
@@ -41,6 +45,7 @@ const withIosSplashXcodeProject = config => {
 /**
  * Modifies `.pbxproj` by:
  * - adding reference for `.storyboard` file
+ * @deprecated templates for SDK +55 should use PBXFileSystemSynchronizedRootGroup for the splash screen storyboard.
  */
 exports.withIosSplashXcodeProject = withIosSplashXcodeProject;
 async function setSplashStoryboardAsync({
@@ -51,12 +56,14 @@ async function setSplashStoryboardAsync({
   // Path relative to `ios` directory
   const storyboardFilePath = _path().default.join(projectName, _withIosSplashScreenStoryboard().STORYBOARD_FILE_PATH);
   if (!project.hasFile(storyboardFilePath)) {
-    debug(`Adding ${storyboardFilePath} to Xcode project`);
-    _configPlugins().IOSConfig.XcodeUtils.addResourceFileToGroup({
-      filepath: storyboardFilePath,
-      groupName: projectName,
-      project
-    });
+    if (!_configPlugins().IOSConfig.XcodeUtils.isAppTargetUsingFileSystemSynchronizedGroups(project)) {
+      debug(`Adding ${storyboardFilePath} to Xcode project`);
+      _configPlugins().IOSConfig.XcodeUtils.addResourceFileToGroup({
+        filepath: storyboardFilePath,
+        groupName: projectName,
+        project
+      });
+    }
   }
   return project;
 }
