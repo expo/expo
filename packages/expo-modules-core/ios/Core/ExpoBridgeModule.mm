@@ -36,7 +36,6 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  [self maybeSetupAppContext];
 }
 
 - (void)maybeSetupAppContext
@@ -46,10 +45,15 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   }
   EXRuntime *runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:_bridge];
 
+  if (!runtime) {
+    NSLog(@"Unable to get the JSI runtime from the bridge instance, make sure to use ExpoReactNativeFactory for newer bridgeless integration");
+    return;
+  }
+
   // If `global.expo` is defined, the app context has already been initialized from `ExpoReactNativeFactory`.
   // The factory was introduced in SDK 55 and requires migration in bare workflow projects.
   // We keep this as an alternative way during the transitional period.
-  if (runtime && ![[runtime global] hasProperty:@"expo"]) {
+  if (![[runtime global] hasProperty:@"expo"]) {
     NSLog(@"Expo is being initialized from the deprecated ExpoBridgeModule, make sure to migrate to ExpoReactNativeFactory in your project");
 
     _appContext.reactBridge = _bridge;
