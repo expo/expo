@@ -118,7 +118,8 @@ export const SQLiteProvider = memo(
     prevProps.directory === nextProps.directory &&
     prevProps.onInit === nextProps.onInit &&
     prevProps.onError === nextProps.onError &&
-    prevProps.useSuspense === nextProps.useSuspense
+    prevProps.useSuspense === nextProps.useSuspense &&
+    prevProps.children === nextProps.children
 );
 
 /**
@@ -189,9 +190,14 @@ function SQLiteProviderNonSuspense({
   onInit,
   onError,
 }: Omit<SQLiteProviderProps, 'useSuspense'>) {
+  const optionsRef = useRef<SQLiteOpenOptions | undefined>(undefined);
   const databaseRef = useRef<SQLiteDatabase | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  if (deepEqual(optionsRef.current, options) === false) {
+    optionsRef.current = options;
+  }
 
   useEffect(() => {
     async function setup() {
@@ -226,7 +232,7 @@ function SQLiteProviderNonSuspense({
       databaseRef.current = null;
       setLoading(true);
     };
-  }, [databaseName, directory, options, onInit]);
+  }, [databaseName, directory, optionsRef.current, onInit]);
 
   if (error != null) {
     const handler =
@@ -256,7 +262,7 @@ function getDatabaseAsync({
     databaseInstance?.promise != null &&
     databaseInstance?.databaseName === databaseName &&
     databaseInstance?.directory === directory &&
-    databaseInstance?.options === options &&
+    deepEqual(databaseInstance?.options, options) &&
     databaseInstance?.onInit === onInit
   ) {
     return databaseInstance.promise;
