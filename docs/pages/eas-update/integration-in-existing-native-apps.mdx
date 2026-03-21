@@ -40,7 +40,7 @@ The next step is to disable the default behavior of `expo-updates` to automatica
 
 ### Disable automatic setup on Android
 
-Modify **android/settings.gradle** to set the property that disables automatic updates initialization, as in the example below:
+Modify **android/gradle.properties** to set the property that disables automatic updates initialization, as in the example below:
 
 <DiffBlock source="/static/diffs/eas-update-custom-initialization.diff" />
 
@@ -56,7 +56,7 @@ The next step is to integrate `expo-updates` into your Android and iOS projects 
 
 <Collapsible summary="Example">
 
-A complete working example is available at [this GitHub repository](https://github.com/expo/CustomRNView) .
+A complete working example is available in the [expo-template-bare-minimum](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/) template and the [brownfield-tester](https://github.com/expo/expo/tree/main/apps/brownfield-tester) app in the Expo repository.
 
 </Collapsible>
 
@@ -108,60 +108,49 @@ A complete working example is available at [this GitHub repository](https://gith
 
 ### Integrating expo-updates on Android
 
-The following instructions assume you have an app written in Kotlin, with one or more native activities. Open **android/app/src/main/java/com/\<your-app-name\>/MainActivity.kt** and follow the steps below.
+The following instructions assume you have an app written in Kotlin. Use `ExpoReactHostFactory` in your **MainApplication.kt** so that `expo-updates` can correctly provide the bundle URL for OTA updates. Without this, OTA updates may download but will not be applied.
 
-1. Your React Native activity should subclass `com.facebook.react.ReactActivity`.
-2. In this activity, add code to `onCreate()` to initialize the updates system. The initialization should not happen in the main thread (otherwise a lockup and ANR will occur).
-3. Override `getMainComponentName()` to return the name of the app you registered in your JS entry point above.
-4. Show the React Native view, by overriding the `createReactActivityDelegate()` method as shown below.
+Open **android/app/src/main/java/com/\<your-app-name\>/MainApplication.kt** (or the equivalent path for your app's package name) and ensure your `Application` class implements `ReactApplication` and provides the React Host via `ExpoReactHostFactory.getDefaultReactHost()`, as shown below:
 
-```kotlin android/app/src/main/java/com/<your-app-name>/MainActivity.kt
+```kotlin android/app/src/main/java/com/<your-app-name>/MainApplication.kt
 package com.yourpackagename
 
-import android.content.Context
-import android.os.Bundle
-import com.facebook.react.ReactActivity
-import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
-import com.facebook.react.defaults.DefaultReactActivityDelegate
-import expo.modules.ReactActivityDelegateWrapper
-import expo.modules.updates.UpdatesController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import android.app.Application
+import android.content.res.Configuration
+import com.facebook.react.PackageList
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
+import com.facebook.react.ReactHost
+import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ExpoReactHostFactory
 
-// Step 1
-class MainActivity : ReactActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        CoroutineScope(Dispatchers.IO).launch {
-            startUpdatesController(applicationContext)
+class MainApplication : Application(), ReactApplication {
+
+  override val reactHost: ReactHost by lazy {
+    ExpoReactHostFactory.getDefaultReactHost(
+      context = applicationContext,
+      packageList =
+        PackageList(this).packages.apply {
+          // Packages that cannot be autolinked yet can be added manually here, for example:
+          // add(MyReactNativePackage())
         }
-    }
+    )
+  }
 
-    // Step 2
-    private fun startUpdatesController(context: Context) {
-        UpdatesController.initialize(context)
-        // Call the synchronous `launchAssetFile()` function to wait for updates ready
-        UpdatesController.instance.launchAssetFile
-    }
+  override fun onCreate() {
+    super.onCreate()
+    loadReactNative(this)
+    ApplicationLifecycleDispatcher.onApplicationCreate(this)
+  }
 
-    // Step 3
-    override fun getMainComponentName(): String = "App"
-
-    // Step 4
-    override fun createReactActivityDelegate(): ReactActivityDelegate {
-        return ReactActivityDelegateWrapper(
-            this,
-            BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
-            object : DefaultReactActivityDelegate(
-                this,
-                mainComponentName,
-                fabricEnabled
-            ) {})
-    }
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+  }
 }
 ```
+
+The `ExpoReactHostFactory` integrates with `expo-updates` through the `ReactNativeHostHandler` interface, which ensures the correct bundle (from OTA updates or the embedded asset) is loaded at runtime.
 
 ### Integrating expo-updates on iOS
 
