@@ -3,16 +3,8 @@ try {
 } catch {}
 
 try {
-  require('react-native-reanimated');
-  jest.mock('react-native-reanimated', () => {
-    try {
-      const Reanimated = require('react-native-reanimated/mock');
-      Reanimated.default.call = () => {}; // Override `call` with a no-op if needed
-      return Reanimated;
-    } catch {
-      return {};
-    }
-  });
+  require.resolve('react-native-worklets/src/mock');
+  jest.mock('react-native-worklets', () => require('react-native-worklets/src/mock'));
 } catch {}
 
 jest.mock('expo-linking', () => {

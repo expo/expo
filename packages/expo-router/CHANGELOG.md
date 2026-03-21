@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Replace stale `react-native-reanimated` mock with a `react-native-worklets` mock in `expo-router/testing-library`. The old reanimated mock prevented `setUpTests()` and `getAnimatedStyle()` from working. Users who depend on reanimated in tests should configure reanimated's own `setUpTests()` as described in the [reanimated testing docs](https://docs.swmansion.com/react-native-reanimated/docs/guides/testing). ([#43694](https://github.com/expo/expo/pull/43694) by [@pachun](https://github.com/pachun))
+
 ### 🎉 New features
 
 - [android] add toolbar support ([#43970](https://github.com/expo/expo/pull/43970) by [@Ubax](https://github.com/Ubax))

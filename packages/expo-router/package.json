@@ -94,6 +94,7 @@
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 5.4.0",
+    "react-native-worklets": "*",
     "react-native-screens": "~4.24.0",
     "react-native-web": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
@@ -118,6 +119,9 @@
       "optional": true
     },
     "@react-navigation/drawer": {
+      "optional": true
+    },
+    "react-native-worklets": {
       "optional": true
     }
   },
