@@ -403,6 +403,14 @@ class ExpoUIModule : Module() {
       ListItemContent(props)
     }
 
+    ExpoUIView("SwipeToDismissBoxView", events = {
+      Events("onStartToEnd", "onEndToStart")
+    }) { props: SwipeToDismissBoxProps ->
+      val onStartToEnd by remember { EventDispatcher<Unit>() }
+      val onEndToStart by remember { EventDispatcher<Unit>() }
+      SwipeToDismissBoxContent(props, { onStartToEnd(Unit) }, { onEndToStart(Unit) })
+    }
+
     ExpoUIView("SpacerView") { props: SpacerProps ->
       SpacerContent(props)
     }

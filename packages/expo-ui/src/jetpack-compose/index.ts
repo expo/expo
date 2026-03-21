@@ -32,6 +32,7 @@ export * from './FloatingActionButton';
 export * from './PullToRefreshBox';
 export * from './RadioButton';
 export * from './Surface';
+export * from './SwipeToDismissBox';
 export * from './Text';
 
 export * from './AnimatedVisibility';
