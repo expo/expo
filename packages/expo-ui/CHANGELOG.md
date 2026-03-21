@@ -22,7 +22,7 @@
 
 ### 🎉 New features
 
-- [android] Added `SwipeToDismissBox` component wrapping Jetpack Compose's `SwipeToDismissBox` for swipe-to-dismiss gestures. Supports direction-specific background slots (`BackgroundStartToEnd`, `BackgroundEndToStart`) and dynamically sized backgrounds that grow with the swipe. ([#44136](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [android] Added `SwipeToDismissBox` component wrapping Jetpack Compose's `SwipeToDismissBox` for swipe-to-dismiss gestures. Supports direction-specific background slots (`BackgroundStartToEnd`, `BackgroundEndToStart`) and dynamically sized backgrounds that grow with the swipe. ([#44136](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#44136](https://github.com/expo/expo/pull/44136) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `outlined` variant to `TextInput` component. ([#43719](https://github.com/expo/expo/pull/43719) by [@benjaminkomen](https://github.com/benjaminkomen))
 - Added `@expo/ui/datetimepicker` — a cross-platform `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`.  ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `locale` and `timeZone` support to `modifiers`. ([#44013](https://github.com/expo/expo/pull/44013) by [@vonovak](https://github.com/vonovak))
