@@ -9,7 +9,7 @@ exports[`APISection expo-apple-authentication 1`] = `
   >
     Component
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#component"
     >
       <span
@@ -60,7 +60,7 @@ exports[`APISection expo-apple-authentication 1`] = `
           AppleAuthenticationButton
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationbutton"
         >
           <span
@@ -366,7 +366,7 @@ for more details.
               buttonStyle
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#buttonstyle"
             >
               <span
@@ -447,7 +447,7 @@ for more details.
               buttonType
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#buttontype"
             >
               <span
@@ -528,7 +528,7 @@ for more details.
               cornerRadius
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#cornerradius"
             >
               <span
@@ -613,7 +613,7 @@ for more details.
               onPress
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#onpress"
             >
               <span
@@ -713,7 +713,7 @@ in here.
               style
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
               href="#style"
             >
               <span
@@ -855,7 +855,7 @@ properties.
         >
           Inherited Props
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#inherited-props"
           >
             <span
@@ -920,7 +920,7 @@ properties.
   >
     Methods
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#methods"
     >
       <span
@@ -971,7 +971,7 @@ properties.
           formatFullName(fullName, formatStyle)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#formatfullnamefullname-formatstyle"
         >
           <span
@@ -1214,7 +1214,7 @@ properties.
           getCredentialStateAsync(user)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#getcredentialstateasyncuser"
         >
           <span
@@ -1507,7 +1507,7 @@ value depending on the state of the credential.
           isAvailableAsync()
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#isavailableasync"
         >
           <span
@@ -1657,7 +1657,7 @@ value depending on the state of the credential.
           refreshAsync(options)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#refreshasyncoptions"
         >
           <span
@@ -1910,7 +1910,7 @@ refresh operation.
           signInAsync(options)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#signinasyncoptions"
         >
           <span
@@ -2209,7 +2209,7 @@ sign-in operation.
           signOutAsync(options)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#signoutasyncoptions"
         >
           <span
@@ -2485,7 +2485,7 @@ sign-out operation.
   >
     Event Subscriptions
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#event-subscriptions"
     >
       <span
@@ -2536,7 +2536,7 @@ sign-out operation.
           addRevokeListener(listener)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#addrevokelistenerlistener"
         >
           <span
@@ -2681,7 +2681,7 @@ sign-out operation.
   >
     Interfaces
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#interfaces"
     >
       <span
@@ -2732,7 +2732,7 @@ sign-out operation.
           Subscription
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#subscription"
         >
           <span
@@ -2839,7 +2839,7 @@ sign-out operation.
             remove()
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#remove"
           >
             <span
@@ -2932,7 +2932,7 @@ After calling this function, the listener will no longer receive any events from
   >
     Types
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#types"
     >
       <span
@@ -2983,7 +2983,7 @@ After calling this function, the listener will no longer receive any events from
           AppleAuthenticationCredential
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationcredential"
         >
           <span
@@ -3572,7 +3572,7 @@ developers.
           AppleAuthenticationFullName
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationfullname"
         >
           <span
@@ -3937,7 +3937,7 @@ may be
           AppleAuthenticationFullNameFormatStyle
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationfullnameformatstyle"
         >
           <span
@@ -4131,7 +4131,7 @@ for more details.
           AppleAuthenticationRefreshOptions
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationrefreshoptions"
         >
           <span
@@ -4463,7 +4463,7 @@ OAuth 2.0 protocol
           AppleAuthenticationSignInOptions
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationsigninoptions"
         >
           <span
@@ -4815,7 +4815,7 @@ OAuth 2.0 protocol
           AppleAuthenticationSignOutOptions
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationsignoutoptions"
         >
           <span
@@ -5062,7 +5062,7 @@ OAuth 2.0 protocol
   >
     Enums
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#enums"
     >
       <span
@@ -5113,7 +5113,7 @@ OAuth 2.0 protocol
           AppleAuthenticationButtonStyle
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationbuttonstyle"
         >
           <span
@@ -5187,7 +5187,7 @@ OAuth 2.0 protocol
             WHITE
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#white"
           >
             <span
@@ -5256,7 +5256,7 @@ OAuth 2.0 protocol
             WHITE_OUTLINE
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#white_outline"
           >
             <span
@@ -5325,7 +5325,7 @@ OAuth 2.0 protocol
             BLACK
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#black"
           >
             <span
@@ -5395,7 +5395,7 @@ OAuth 2.0 protocol
           AppleAuthenticationButtonType
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationbuttontype"
         >
           <span
@@ -5469,7 +5469,7 @@ OAuth 2.0 protocol
             SIGN_IN
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#sign_in"
           >
             <span
@@ -5538,7 +5538,7 @@ OAuth 2.0 protocol
             CONTINUE
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#continue"
           >
             <span
@@ -5607,7 +5607,7 @@ OAuth 2.0 protocol
             SIGN_UP
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#sign_up"
           >
             <span
@@ -5713,7 +5713,7 @@ OAuth 2.0 protocol
           AppleAuthenticationCredentialState
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationcredentialstate"
         >
           <span
@@ -5845,7 +5845,7 @@ for more details.
             REVOKED
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#revoked"
           >
             <span
@@ -5907,7 +5907,7 @@ for more details.
             AUTHORIZED
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#authorized"
           >
             <span
@@ -5969,7 +5969,7 @@ for more details.
             NOT_FOUND
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#not_found"
           >
             <span
@@ -6031,7 +6031,7 @@ for more details.
             TRANSFERRED
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#transferred"
           >
             <span
@@ -6094,7 +6094,7 @@ for more details.
           AppleAuthenticationOperation
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationoperation"
         >
           <span
@@ -6149,7 +6149,7 @@ for more details.
             IMPLICIT
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#implicit"
           >
             <span
@@ -6218,7 +6218,7 @@ for more details.
             LOGIN
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#login"
           >
             <span
@@ -6280,7 +6280,7 @@ for more details.
             REFRESH
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#refresh"
           >
             <span
@@ -6342,7 +6342,7 @@ for more details.
             LOGOUT
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#logout"
           >
             <span
@@ -6405,7 +6405,7 @@ for more details.
           AppleAuthenticationScope
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationscope"
         >
           <span
@@ -6585,7 +6585,7 @@ for more details.
             FULL_NAME
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#full_name"
           >
             <span
@@ -6647,7 +6647,7 @@ for more details.
             EMAIL
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#email"
           >
             <span
@@ -6710,7 +6710,7 @@ for more details.
           AppleAuthenticationUserDetectionStatus
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#appleauthenticationuserdetectionstatus"
         >
           <span
@@ -6830,7 +6830,7 @@ for more details.
             UNSUPPORTED
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#unsupported"
           >
             <span
@@ -6899,7 +6899,7 @@ for more details.
             UNKNOWN
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#unknown"
           >
             <span
@@ -6968,7 +6968,7 @@ for more details.
             LIKELY_REAL
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#likely_real"
           >
             <span
@@ -7032,7 +7032,7 @@ exports[`APISection expo-pedometer 1`] = `
   >
     Methods
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#methods"
     >
       <span
@@ -7083,7 +7083,7 @@ exports[`APISection expo-pedometer 1`] = `
           getPermissionsAsync()
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#getpermissionsasync"
         >
           <span
@@ -7205,7 +7205,7 @@ exports[`APISection expo-pedometer 1`] = `
           getStepCountAsync(start, end)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#getstepcountasyncstart-end"
         >
           <span
@@ -7585,7 +7585,7 @@ a start date that is more than seven days in the past returns only the available
           isAvailableAsync()
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#isavailableasync"
         >
           <span
@@ -7729,7 +7729,7 @@ available on this device.
           requestPermissionsAsync()
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#requestpermissionsasync"
         >
           <span
@@ -7851,7 +7851,7 @@ available on this device.
           watchStepCount(callback)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#watchstepcountcallback"
         >
           <span
@@ -8137,7 +8137,7 @@ On iOS, the
   >
     Interfaces
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#interfaces"
     >
       <span
@@ -8188,7 +8188,7 @@ On iOS, the
           Subscription
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#subscription"
         >
           <span
@@ -8295,7 +8295,7 @@ On iOS, the
             remove()
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
             href="#remove"
           >
             <span
@@ -8388,7 +8388,7 @@ After calling this function, the listener will no longer receive any events from
   >
     Types
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#types"
     >
       <span
@@ -8439,7 +8439,7 @@ After calling this function, the listener will no longer receive any events from
           PedometerResult
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#pedometerresult"
         >
           <span
@@ -8569,7 +8569,7 @@ After calling this function, the listener will no longer receive any events from
           PedometerUpdateCallback(result)
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#pedometerupdatecallbackresult"
         >
           <span
@@ -8738,7 +8738,7 @@ After calling this function, the listener will no longer receive any events from
           PermissionExpiration
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#permissionexpiration"
         >
           <span
@@ -8841,7 +8841,7 @@ After calling this function, the listener will no longer receive any events from
           PermissionResponse
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#permissionresponse"
         >
           <span
@@ -9083,7 +9083,7 @@ in order to enable/disable the permission.
   >
     Enums
     <a
-      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+      class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex size-[25px] min-w-[25px] justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#enums"
     >
       <span
@@ -9134,7 +9134,7 @@ in order to enable/disable the permission.
           PermissionStatus
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
           href="#permissionstatus"
         >
           <span
@@ -9189,7 +9189,7 @@ in order to enable/disable the permission.
             DENIED
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#denied"
           >
             <span
@@ -9258,7 +9258,7 @@ in order to enable/disable the permission.
             GRANTED
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#granted"
           >
             <span
@@ -9327,7 +9327,7 @@ in order to enable/disable the permission.
             UNDETERMINED
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px] font-medium!"
             href="#undetermined"
           >
             <span
