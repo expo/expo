@@ -142,7 +142,10 @@ data class CircleRecord(
   val lineColor: Int? = null,
 
   @Field
-  val lineWidth: Float? = null
+  val lineWidth: Float? = null,
+
+  @Field
+  val clickCoordinates: Coordinates? = null
 ) : Record
 
 data class UserLocationRecord(
