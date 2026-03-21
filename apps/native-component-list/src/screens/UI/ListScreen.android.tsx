@@ -9,7 +9,8 @@ import {
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
-const settingsIcon = require('../../../assets/icons/api/Camera.png');
+const wifiIcon = require('../../../assets/icons/ui/wifi.xml');
+const bluetoothIcon = require('../../../assets/icons/ui/bluetooth.xml');
 
 export default function ListScreen() {
   const [wifiEnabled, setWifiEnabled] = React.useState(true);
@@ -29,7 +30,7 @@ export default function ListScreen() {
             <ComposeText>With Leading Icon</ComposeText>
           </ListItem.HeadlineContent>
           <ListItem.LeadingContent>
-            <Icon source={settingsIcon} size={24} />
+            <Icon source={wifiIcon} size={24} />
           </ListItem.LeadingContent>
         </ListItem>
 
@@ -59,7 +60,7 @@ export default function ListScreen() {
             <ComposeText>Wi-Fi</ComposeText>
           </ListItem.HeadlineContent>
           <ListItem.LeadingContent>
-            <Icon source={settingsIcon} size={24} />
+            <Icon source={wifiIcon} size={24} />
           </ListItem.LeadingContent>
           <ListItem.SupportingContent>
             <ComposeText>{wifiEnabled ? 'Connected' : 'Disabled'}</ComposeText>
@@ -74,7 +75,7 @@ export default function ListScreen() {
             <ComposeText>Bluetooth</ComposeText>
           </ListItem.HeadlineContent>
           <ListItem.LeadingContent>
-            <Icon source={settingsIcon} size={24} />
+            <Icon source={bluetoothIcon} size={24} />
           </ListItem.LeadingContent>
           <ListItem.SupportingContent>
             <ComposeText>{bluetoothEnabled ? 'On' : 'Off'}</ComposeText>
