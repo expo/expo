@@ -74,6 +74,10 @@ export const expoExport: Command = async (argv) => {
   }).catch(logCmdError);
 
   const projectRoot = path.resolve(parsed.projectRoot);
+  const { setNodeEnv, loadEnvFiles } = await import('../utils/nodeEnv.js');
+  setNodeEnv(!args['--no-dev'] ? 'development' : 'production');
+  loadEnvFiles(projectRoot);
+
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, {
     ...args,
