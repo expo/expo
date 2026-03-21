@@ -43,7 +43,7 @@ fun FunctionalComposableScope.SwipeToDismissBoxContent(
         when (value) {
           SwipeToDismissBoxValue.StartToEnd -> onStartToEnd()
           SwipeToDismissBoxValue.EndToStart -> onEndToStart()
-          else -> {}
+          SwipeToDismissBoxValue.Settled -> {}
         }
       }
   }
@@ -71,11 +71,7 @@ fun FunctionalComposableScope.SwipeToDismissBoxContent(
 
       if (activeSlot != null) {
         val widthDp = with(LocalDensity.current) { abs(offset).toDp() }
-        val alignment = when {
-          offset > 0 -> Alignment.CenterStart
-          offset < 0 -> Alignment.CenterEnd
-          else -> Alignment.CenterStart
-        }
+        val alignment = if (offset < 0) Alignment.CenterEnd else Alignment.CenterStart
 
         Box(
           modifier = Modifier.fillMaxSize(),
@@ -84,11 +80,9 @@ fun FunctionalComposableScope.SwipeToDismissBoxContent(
           Box(
             modifier = Modifier
               .fillMaxHeight()
-              .width(widthDp.coerceAtLeast(0.dp))
+              .width(widthDp)
           ) {
-            with(ComposableScope()) {
-              with(activeSlot) { Content() }
-            }
+            activeSlot.renderSlot()
           }
         }
       }
