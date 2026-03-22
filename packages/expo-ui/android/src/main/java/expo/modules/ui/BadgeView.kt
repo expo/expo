@@ -1,10 +1,12 @@
 package expo.modules.ui
 
 import android.graphics.Color
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgeDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
 import androidx.core.view.size
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
@@ -23,8 +25,9 @@ fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
   val hasChildren = view.size > 0
 
   if (hasChildren) {
+    // Enforce 16dp minimum width per M3 spec so single-digit badges render as circles
     Badge(
-      modifier = modifier,
+      modifier = modifier.defaultMinSize(minWidth = 16.dp),
       containerColor = resolvedContainerColor,
       contentColor = props.contentColor.composeOrNull ?: contentColorFor(resolvedContainerColor)
     ) {
