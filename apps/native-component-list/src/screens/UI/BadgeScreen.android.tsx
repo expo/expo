@@ -1,7 +1,6 @@
 import {
   Badge,
   BadgedBox,
-  Box,
   Button,
   Column,
   Host,
@@ -20,7 +19,10 @@ export default function BadgeScreen() {
 
   return (
     <Host style={{ flex: 1, padding: 16 }}>
-      <Column horizontalAlignment="center" verticalArrangement={{ spacedBy: 32 }} modifiers={[padding(0, 16, 0, 0)]}>
+      <Column
+        horizontalAlignment="center"
+        verticalArrangement={{ spacedBy: 32 }}
+        modifiers={[padding(0, 16, 0, 0)]}>
         {/* Simple dot badge */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
@@ -32,13 +34,11 @@ export default function BadgeScreen() {
           <ComposeText>Dot indicator</ComposeText>
         </Row>
 
-        {/* Badge with count */}
+        {/* Badge with count (uses text prop for correct M3 sizing) */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
             <BadgedBox.Badge>
-              <Badge>
-                <ComposeText>5</ComposeText>
-              </Badge>
+              <Badge text="5" />
             </BadgedBox.Badge>
             <Icon source={personIcon} size={24} />
           </BadgedBox>
@@ -49,11 +49,7 @@ export default function BadgeScreen() {
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
             <BadgedBox.Badge>
-              {count > 0 ? (
-                <Badge>
-                  <ComposeText>{String(count)}</ComposeText>
-                </Badge>
-              ) : null}
+              {count > 0 ? <Badge text={String(count)} /> : null}
             </BadgedBox.Badge>
             <Icon source={mailIcon} size={24} />
           </BadgedBox>
@@ -83,12 +79,10 @@ export default function BadgeScreen() {
         </Row>
 
         {/* Large count badge (999+) */}
-        <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
+        <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 48 }}>
           <BadgedBox>
             <BadgedBox.Badge>
-              <Badge>
-                <ComposeText>999+</ComposeText>
-              </Badge>
+              <Badge text="999+" />
             </BadgedBox.Badge>
             <Icon source={mailIcon} size={24} />
           </BadgedBox>
@@ -98,10 +92,8 @@ export default function BadgeScreen() {
         {/* Large badge at trailing edge (no overlap with text) */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <Icon source={mailIcon} size={24} />
-          <ComposeText>Custom colors</ComposeText>
-          <Badge containerColor="#4CAF50" contentColor="#FFFFFF">
-            <ComposeText>NEW</ComposeText>
-          </Badge>
+          <ComposeText>Trailing badge</ComposeText>
+          <Badge text="NEW" containerColor="#4CAF50" contentColor="#FFFFFF" />
         </Row>
       </Column>
     </Host>
