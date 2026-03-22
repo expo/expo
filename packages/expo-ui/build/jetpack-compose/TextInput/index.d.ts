@@ -76,28 +76,30 @@ export type TextInputProps = {
      */
     autoCapitalize?: 'characters' | 'none' | 'sentences' | 'unspecified' | 'words';
     /**
-     * The label text that floats above the text field when focused or filled.
-     *
-     * The label provides a description of the field's purpose and animates smoothly.
-     * - When empty and unfocused: appears inside the field
-     * - When focused or has text: floats above and shrinks
-     *
-     * @platform android
-     */
-    label?: string;
-    /**
      * Placeholder text shown inside the field when empty and focused.
      *
      */
     placeholder?: string;
     /** Modifiers for the component */
     modifiers?: ExpoModifier[];
+    /**
+     * Slot children (e.g. `TextInput.Label`).
+     */
+    children?: React.ReactNode;
 };
-export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText'> & {} & ViewEvent<'onValueChanged', {
+export type NativeTextInputProps = Omit<TextInputProps, 'onChangeText' | 'children'> & {
+    children?: React.ReactNode;
+} & ViewEvent<'onValueChanged', {
     value: string;
 }>;
 /**
  * Renders a `TextInput` component.
  */
-export declare function TextInput(props: TextInputProps): import("react").JSX.Element;
+declare function TextInputComponent(props: TextInputProps): import("react").JSX.Element;
+declare namespace TextInputComponent {
+    var Label: (props: {
+        children: React.ReactNode;
+    }) => import("react").JSX.Element;
+}
+export { TextInputComponent as TextInput };
 //# sourceMappingURL=index.d.ts.map

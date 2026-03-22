@@ -33,7 +33,6 @@ data class TextInputProps(
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList()),
-  val label: MutableState<String?> = mutableStateOf(null),
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -92,10 +91,10 @@ class TextInputView(context: Context, appContext: AppContext) :
       autoCorrectEnabled = props.autocorrection.value,
       capitalization = props.autoCapitalize.value.autoCapitalize()
     )
-    val labelText = props.label.value
-    val label: (@Composable () -> Unit)? = if (!labelText.isNullOrEmpty()) {
-      { Text(text = labelText) }
-    } else null
+    val labelSlotView = findChildSlotView(this@TextInputView, "label")
+    val label: (@Composable () -> Unit)? = labelSlotView?.let {
+      { with(ComposableScope()) { with(it) { Content() } } }
+    }
     val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
 
     if (props.variant.value == TextInputViewVariant.OUTLINED) {
