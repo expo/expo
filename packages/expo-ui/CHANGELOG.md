@@ -22,7 +22,7 @@
 
 ### 🎉 New features
 
-- [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/XXXXX) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/44139) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `outlined` variant to `TextInput` component. ([#43719](https://github.com/expo/expo/pull/43719) by [@benjaminkomen](https://github.com/benjaminkomen))
 - Added `@expo/ui/datetimepicker` — a cross-platform `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`.  ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `locale` and `timeZone` support to `modifiers`. ([#44013](https://github.com/expo/expo/pull/44013) by [@vonovak](https://github.com/vonovak))
