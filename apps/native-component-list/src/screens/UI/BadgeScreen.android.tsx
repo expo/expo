@@ -82,6 +82,19 @@ export default function BadgeScreen() {
           <ComposeText>Custom color dot</ComposeText>
         </Row>
 
+        {/* Large count badge (999+) */}
+        <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
+          <BadgedBox>
+            <BadgedBox.Badge>
+              <Badge>
+                <ComposeText>999+</ComposeText>
+              </Badge>
+            </BadgedBox.Badge>
+            <Icon source={mailIcon} size={24} />
+          </BadgedBox>
+          <ComposeText>Large count</ComposeText>
+        </Row>
+
         {/* Large badge at trailing edge (no overlap with text) */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <Icon source={mailIcon} size={24} />
