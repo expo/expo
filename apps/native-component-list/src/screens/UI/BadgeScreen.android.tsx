@@ -9,7 +9,7 @@ import {
   Row,
   Text as ComposeText,
 } from '@expo/ui/jetpack-compose';
-import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+import { padding, paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
 const mailIcon = require('../../../assets/icons/ui/mail.xml');
@@ -20,7 +20,7 @@ export default function BadgeScreen() {
 
   return (
     <Host style={{ flex: 1, padding: 16 }}>
-      <Column horizontalAlignment="center" verticalArrangement={{ spacedBy: 32 }}>
+      <Column horizontalAlignment="center" verticalArrangement={{ spacedBy: 32 }} modifiers={[padding(0, 16, 0, 0)]}>
         {/* Simple dot badge */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
@@ -71,17 +71,15 @@ export default function BadgeScreen() {
           </Button>
         </Row>
 
-        {/* Custom colors */}
+        {/* Custom color dot */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
             <BadgedBox.Badge>
-              <Badge containerColor="#4CAF50" contentColor="#FFFFFF">
-                <ComposeText>NEW</ComposeText>
-              </Badge>
+              <Badge containerColor="#4CAF50" />
             </BadgedBox.Badge>
             <Icon source={mailIcon} size={24} />
           </BadgedBox>
-          <ComposeText>Custom colors</ComposeText>
+          <ComposeText>Custom color dot</ComposeText>
         </Row>
       </Column>
     </Host>
