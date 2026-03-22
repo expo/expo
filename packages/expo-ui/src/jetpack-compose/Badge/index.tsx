@@ -22,9 +22,6 @@ export type BadgeProps = {
   /**
    * Optional content inside the badge (e.g., a `Text` with a count).
    * When omitted, renders as a small indicator dot.
-   *
-   * For correct M3 sizing (16dp circle for single digits), use
-   * `Text` with `style={{ typography: 'labelSmall' }}` as the child.
    */
   children?: React.ReactNode;
 };
