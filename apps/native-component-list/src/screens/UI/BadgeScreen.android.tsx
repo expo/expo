@@ -14,6 +14,8 @@ import * as React from 'react';
 const mailIcon = require('../../../assets/icons/ui/mail.xml');
 const personIcon = require('../../../assets/icons/ui/person.xml');
 
+const badgeTextStyle = { typography: 'labelSmall' as const };
+
 export default function BadgeScreen() {
   const [count, setCount] = React.useState(3);
 
@@ -34,11 +36,13 @@ export default function BadgeScreen() {
           <ComposeText>Dot indicator</ComposeText>
         </Row>
 
-        {/* Badge with count (uses text prop for correct M3 sizing) */}
+        {/* Badge with count */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
             <BadgedBox.Badge>
-              <Badge text="5" />
+              <Badge>
+                <ComposeText style={badgeTextStyle}>5</ComposeText>
+              </Badge>
             </BadgedBox.Badge>
             <Icon source={personIcon} size={24} />
           </BadgedBox>
@@ -49,7 +53,11 @@ export default function BadgeScreen() {
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
             <BadgedBox.Badge>
-              {count > 0 ? <Badge text={String(count)} /> : null}
+              {count > 0 ? (
+                <Badge>
+                  <ComposeText style={badgeTextStyle}>{String(count)}</ComposeText>
+                </Badge>
+              ) : null}
             </BadgedBox.Badge>
             <Icon source={mailIcon} size={24} />
           </BadgedBox>
@@ -82,7 +90,9 @@ export default function BadgeScreen() {
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 48 }}>
           <BadgedBox>
             <BadgedBox.Badge>
-              <Badge text="999+" />
+              <Badge>
+                <ComposeText style={badgeTextStyle}>999+</ComposeText>
+              </Badge>
             </BadgedBox.Badge>
             <Icon source={mailIcon} size={24} />
           </BadgedBox>
@@ -93,7 +103,9 @@ export default function BadgeScreen() {
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <Icon source={mailIcon} size={24} />
           <ComposeText>Trailing badge</ComposeText>
-          <Badge text="NEW" containerColor="#4CAF50" contentColor="#FFFFFF" />
+          <Badge containerColor="#4CAF50" contentColor="#FFFFFF">
+            <ComposeText style={badgeTextStyle}>NEW</ComposeText>
+          </Badge>
         </Row>
       </Column>
     </Host>
