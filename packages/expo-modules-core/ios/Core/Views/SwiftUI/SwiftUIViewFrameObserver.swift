@@ -26,7 +26,7 @@ extension ExpoSwiftUI {
 
         // Update layout metrics of the `Child` view. The `origin` needs to be frame's origin,
         // as `bounds` refers to coordinates relative to view's own space (instead of the parent's space).
-        callback(CGRect(origin: view.frame.origin, size: newValue.size))
+        MainActor.assumeIsolated { callback(CGRect(origin: view.frame.origin, size: newValue.size)) }
       }
     }
   }

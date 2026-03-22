@@ -3,7 +3,7 @@
 /**
  Shared URLSessionDelegate instance and delete calls back to ExpoRequestInterceptorProtocol instances.
  */
-public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate {
+public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate, @unchecked Sendable {
   private let dispatchQueue: DispatchQueue
   private var delegateMap: [AnyHashable: URLSessionDataDelegate] = [:]
 

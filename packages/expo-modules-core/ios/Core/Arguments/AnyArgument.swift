@@ -3,6 +3,7 @@
 /**
  A protocol for classes/structs accepted as an argument of functions.
  */
+@MainActor
 public protocol AnyArgument {
   nonisolated static func getDynamicType() -> AnyDynamicType
 }

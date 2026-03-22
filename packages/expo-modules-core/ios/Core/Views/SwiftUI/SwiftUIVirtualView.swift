@@ -193,7 +193,7 @@ extension ExpoSwiftUI {
 
 // MARK: - ViewWrapper
 
-extension ExpoSwiftUI.SwiftUIVirtualView: @MainActor ExpoSwiftUI.ViewWrapper {
+extension ExpoSwiftUI.SwiftUIVirtualView: ExpoSwiftUI.ViewWrapper {
   func getWrappedView() -> Any {
     if let wrapper = contentView as? ExpoSwiftUI.ViewWrapper {
       return wrapper.getWrappedView()
