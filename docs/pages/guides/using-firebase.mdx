@@ -49,7 +49,7 @@ Firebase JS SDK does not support all services for mobile apps. Some of these ser
 
 ### Install and initialize Firebase JS SDK
 
-> **warning** Expo SDK 53 and later only support `firebase@^12.0.0`. Versions before this version cause ES module resolution errors.
+> **warning** Starting from Expo SDK 53, only `firebase@^12.0.0` is supported. Earlier versions of the Firebase JS SDK cause ES module resolution errors.
 
 <Step label="1">
 #### Install the SDK
@@ -68,7 +68,6 @@ To initialize the Firebase instance in your Expo project, you must create a conf
 The config object requires an API key and other unique identifiers. To obtain these values, you will have to register a web app in your Firebase project. You can find these instructions in the [Firebase documentation](https://firebase.google.com/docs/web/setup#register-app).
 
 After you have the API key and other identifiers, you can paste the following code snippet by creating a new **firebaseConfig.js** file in your project's root directory or any other directory where you keep the configuration files.
-
 ```js firebaseConfig.js
 import { initializeApp } from 'firebase/app';
 
