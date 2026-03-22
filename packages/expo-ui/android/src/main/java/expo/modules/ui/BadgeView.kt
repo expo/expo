@@ -1,10 +1,15 @@
 package expo.modules.ui
 
 import android.graphics.Color
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgeDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.view.size
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
@@ -27,7 +32,18 @@ fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
       containerColor = resolvedContainerColor,
       contentColor = props.contentColor.composeOrNull ?: contentColorFor(resolvedContainerColor)
     ) {
-      Children(ComposableScope())
+      // Ensure the content area is at least square so single-digit badges
+      // render as circles. Bridge-rendered text doesn't pick up the Badge's
+      // internal LabelSmall typography, which can make it taller than wide.
+      Box(
+        modifier = Modifier.defaultMinSize(
+          minWidth = LargeBadgeSize,
+          minHeight = LargeBadgeSize
+        ),
+        contentAlignment = Alignment.Center
+      ) {
+        Children(ComposableScope())
+      }
     }
   } else {
     // No content lambda → renders as small 6dp dot per M3 spec
@@ -37,3 +53,6 @@ fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
     )
   }
 }
+
+// M3 large badge size (BadgeTokens.LargeSize is internal)
+private val LargeBadgeSize = 16.dp
