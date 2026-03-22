@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgeDefaults
 import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.tokens.BadgeTokens
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.view.size
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
@@ -38,8 +38,8 @@ fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
       // the badge to be taller than wide. This ensures a square minimum.
       Box(
         modifier = Modifier.defaultMinSize(
-          minWidth = BadgeTokens.LargeSize,
-          minHeight = BadgeTokens.LargeSize
+          minWidth = LargeBadgeSize,
+          minHeight = LargeBadgeSize
         ),
         contentAlignment = Alignment.Center
       ) {
@@ -54,3 +54,6 @@ fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
     )
   }
 }
+
+// M3 large badge size (BadgeTokens.LargeSize is internal)
+private val LargeBadgeSize = 16.dp
