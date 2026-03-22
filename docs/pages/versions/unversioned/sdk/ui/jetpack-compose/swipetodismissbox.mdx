@@ -23,8 +23,23 @@ Swipe right-to-left to delete an item. The background grows with the swipe gestu
 
 ```tsx SwipeToDelete.tsx
 import { useState } from 'react';
-import { Host, LazyColumn, ListItem, Box, Icon, SwipeToDismissBox, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxSize, fillMaxWidth, clip, background, paddingAll, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  LazyColumn,
+  ListItem,
+  Box,
+  Icon,
+  SwipeToDismissBox,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxSize,
+  fillMaxWidth,
+  clip,
+  background,
+  paddingAll,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 const deleteIcon = require('./assets/delete.xml');
 
@@ -38,11 +53,11 @@ export default function SwipeToDelete() {
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn modifiers={[fillMaxWidth()]}>
-        {items.map((item) => (
+        {items.map(item => (
           <SwipeToDismissBox
             key={item.id}
             enableDismissFromStartToEnd={false}
-            onEndToStart={() => setItems((prev) => prev.filter((i) => i.id !== item.id))}>
+            onEndToStart={() => setItems(prev => prev.filter(i => i.id !== item.id))}>
             <SwipeToDismissBox.BackgroundContent>
               <Box
                 contentAlignment="center"
@@ -74,25 +89,38 @@ Use `BackgroundStartToEnd` and `BackgroundEndToStart` to show different backgrou
 
 ```tsx SwipeBothWays.tsx
 import { useState } from 'react';
-import { Host, LazyColumn, ListItem, Box, Icon, SwipeToDismissBox, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxSize, fillMaxWidth, clip, background, paddingAll, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  LazyColumn,
+  ListItem,
+  Box,
+  Icon,
+  SwipeToDismissBox,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxSize,
+  fillMaxWidth,
+  clip,
+  background,
+  paddingAll,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 const archiveIcon = require('./assets/archive.xml');
 const deleteIcon = require('./assets/delete.xml');
 
 export default function SwipeBothWays() {
-  const [items, setItems] = useState([
-    { id: '1', title: 'Swipe either way' },
-  ]);
+  const [items, setItems] = useState([{ id: '1', title: 'Swipe either way' }]);
 
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn modifiers={[fillMaxWidth()]}>
-        {items.map((item) => (
+        {items.map(item => (
           <SwipeToDismissBox
             key={item.id}
-            onStartToEnd={() => setItems((prev) => prev.filter((i) => i.id !== item.id))}
-            onEndToStart={() => setItems((prev) => prev.filter((i) => i.id !== item.id))}>
+            onStartToEnd={() => setItems(prev => prev.filter(i => i.id !== item.id))}
+            onEndToStart={() => setItems(prev => prev.filter(i => i.id !== item.id))}>
             <SwipeToDismissBox.BackgroundStartToEnd>
               <Box
                 contentAlignment="center"
