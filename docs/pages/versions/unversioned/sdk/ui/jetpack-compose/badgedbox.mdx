@@ -72,7 +72,7 @@ export default function InteractiveBadge() {
           </BadgedBox.Badge>
           <Icon source={cartIcon} size={24} />
         </BadgedBox>
-        <Button onPress={() => setCount(c => c + 1)}>
+        <Button onClick={() => setCount(c => c + 1)}>
           <Text>Add item</Text>
         </Button>
       </Column>
