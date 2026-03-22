@@ -13,7 +13,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix Swift 6 / Xcode 16 strict concurrency compliance for static framework builds. ([#44106](https://github.com/expo/expo/issues/44106))
+- [iOS] Fix Swift 6 / Xcode 16 strict concurrency compliance for static framework builds. ([#44141](https://github.com/expo/expo/pull/44141))
 - [Android] Added support for CSS `rgb(...)` and `rgba(...)` color strings when converting JS color values to `android.graphics.Color`. ([#44023](https://github.com/expo/expo/pull/44023) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [Android] Fixed Compose view clipping that caused Material ripple effects to be cut off (e.g., Switch thumb ripple). ([#43656](https://github.com/expo/expo/pull/43656) by [@vonovak](https://github.com/vonovak))
 - [iOS] Fix memory leak due to retain cycle in SwiftUI views. ([#43468](https://github.com/expo/expo/pull/43468) by [@nishan](https://github.com/intergalacticspacehighway))
