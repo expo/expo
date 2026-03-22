@@ -1,4 +1,5 @@
 import { SharedObject } from 'expo';
+import { NowPlayingActionSlot } from './NowPlayingActionSlot';
 import { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
 /**
@@ -218,6 +219,22 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      *
      */
     scrubbingModeOptions: ScrubbingModeOptions;
+    /**
+     * An array of actions that will be displayed in the now playing notification and the lock screen controls when the video is playing.
+     *
+     * @default null
+     * @platform android
+     */
+    nowPlayingActions: NowPlayingAction[] | null;
+    /**
+     * Determines the custom actions to show in Picture in Picture (PiP) mode.
+     *
+     * > **Note:** The default playback controls are provided by [MediaSession](https://developer.android.com/develop/ui/views/picture-in-picture#add_controls)(Previous, Play/Pause and Next).
+     *
+     * @default null
+     * @platform android 8+
+     */
+    pictureInPictureActions: PictureInPictureAction[] | null;
     /**
      * Initializes a new video player instance with the given source.
      *
@@ -696,6 +713,56 @@ export type ScrubbingModeOptions = {
      * @default true
      */
     allowSkippingMediaCodecFlush?: boolean;
+};
+/**
+ * Specifies a custom action to be displayed in the now playing notification and lock screen.
+ * @platform android
+ */
+export type NowPlayingAction = {
+    /**
+     * The name of the icon to be displayed in the now playing notification and lock screen.
+     * > **Note**: The icon must be included in the `icons` list property of `app.json`.
+     *
+     * > **Note**: The name of the icon is the file name without the extension. For example, if the icon file is named `heart_icon.png`, the `iconName` should be `heart_icon`.
+     */
+    iconName: string;
+    /**
+     * The display name of the action.
+     */
+    displayName: string;
+    /**
+     * The action that will be passed to the `nowPlayingActionPressed` event when the action is pressed.
+     */
+    action: string;
+    /**
+     * The button is only allowed in the defined slots. If none of the slots can display the button, either because the slots do not exist, are already occupied or the UI surface does not allow the specific type of button in these slots, the button will not be displayed at all.
+     */
+    slots?: NowPlayingActionSlot[];
+};
+/**
+ * Determines the custom action to show in Picture in Picture(PiP) mode.
+ * @platform android 8+
+ */
+export type PictureInPictureAction = {
+    /**
+     * The action that will be passed to the `pictureInPictureActionPressed` event when the action is pressed.
+     */
+    action: string;
+    /**
+     * The title of the Picture In Picture action.
+     */
+    title: string;
+    /**
+     * The description of the Picture In Picture action.
+     */
+    description: string;
+    /**
+     * The name of the icon to be displayed in the Picture In Picture action.
+     * > **Note**: The icon must be included in the `icons` list property of `app.json`
+     *
+     * > **Note**: The name of the icon is the file name without the extension. For example, if the icon file is named `pip_icon.png`, the `iconName` should be `pip_icon`.
+     */
+    iconName: string;
 };
 /**
  * Options to apply to the player builder before the native constructor is invoked

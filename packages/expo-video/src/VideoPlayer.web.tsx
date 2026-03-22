@@ -12,6 +12,8 @@ import type {
   AudioTrack,
   ScrubbingModeOptions,
   SeekTolerance,
+  NowPlayingAction,
+  PictureInPictureAction,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -91,6 +93,8 @@ export default class VideoPlayerWeb
   keepScreenOnWhilePlaying: boolean = false; // Not supported on web. Dummy to match the interface
   seekTolerance: SeekTolerance = {} as SeekTolerance; // Not supported on web. Dummy to match the interface.
   scrubbingModeOptions: ScrubbingModeOptions = {} as ScrubbingModeOptions; // Not supported on web. Dummy to match the interface.
+  nowPlayingActions: NowPlayingAction[] = []; // Not supported on web. Dummy to match the interface.
+  pictureInPictureActions: PictureInPictureAction[] = []; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
