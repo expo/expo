@@ -11,6 +11,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Badge component',
+    route: 'ui/badge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BadgeScreen'));
+    },
+  },
+  {
     name: 'AlertDialog component',
     route: 'ui/alert-dialog',
     options: {},
