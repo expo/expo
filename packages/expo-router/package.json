@@ -39,6 +39,8 @@
     "ios",
     "unstable-native-tabs.js",
     "unstable-native-tabs.d.ts",
+    "unstable-native-stack-view.js",
+    "unstable-native-stack-view.d.ts",
     "unstable-split-view.js",
     "unstable-split-view.d.ts",
     "node",

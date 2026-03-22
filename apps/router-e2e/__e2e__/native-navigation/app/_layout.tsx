@@ -1,4 +1,5 @@
-import { Stack, unstable_navigationEvents } from 'expo-router';
+import { unstable_navigationEvents } from 'expo-router';
+import { NativeStack as Stack } from 'expo-router/unstable-native-stack-view';
 
 const appStart = Date.now();
 

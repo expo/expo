@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeStack.d.ts","sourceRoot":"","sources":["../../src/native-stack-view/NativeStack.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,EAAE,kBAAkB,EAAE,gBAAgB,EAAE,MAAM,SAAS,CAAC;AAEpE,OAAO,EAAU,KAAK,WAAW,EAAE,MAAM,iBAAiB,CAAC;AAE3D;;;;;;;;;;;;;;GAcG;AACH,eAAO,MAAM,WAAW,WACd,gBAAgB;YAIJ,CAAC,KAAK,EAAE,WAAW,CAAC,kBAAkB,CAAC,KAAK,IAAI;;CAGrE,CAAC"}
