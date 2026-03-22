@@ -1,4 +1,5 @@
 import { Console } from 'node:console';
+import fs from 'node:fs';
 import path from 'node:path';
 
 import type { EventBuilder, EventLoggerBuilder, EventShape } from './builder';
@@ -12,6 +13,8 @@ interface InitMetadata {
 
 let logPath = process.cwd();
 let logStream: LogStream | undefined;
+let projectLogStream: LogStream | undefined;
+let earlyBuffer: string[] = [];
 
 function parseLogTarget(env: string | undefined) {
   let logDestination: string | number | undefined;
@@ -105,11 +108,17 @@ export const events: EventLoggerBuilder = ((
   _fn: (builder: EventBuilder) => readonly EventShape<string>[]
 ) => {
   function log(event: string, data: any) {
+    const _e = `${category}:${String(event)}`;
+    const _t = Date.now();
+    const payload = JSON.stringify({ _e, _t, ...data });
+    const line = payload + '\n';
     if (logStream) {
-      const _e = `${category}:${String(event)}`;
-      const _t = Date.now();
-      const payload = JSON.stringify({ _e, _t, ...data });
-      logStream._write(payload + '\n');
+      logStream._write(line);
+    }
+    if (projectLogStream) {
+      projectLogStream._write(line);
+    } else if (earlyBuffer.length < 1000) {
+      earlyBuffer.push(line);
     }
   }
   log.category = category;
@@ -130,5 +139,26 @@ export const events: EventLoggerBuilder = ((
 // These are built-in events: We choose an ambiguous name on purpose,
 // since we don't assume this implementation will necessarily only be in `@expo/cli`
 export const rootEvent = events('root', (t) => [t.event<'init', InitMetadata>()]);
+
+/**
+ * Activates the project log stream, writing JSONL events to `.expo/dev/logs/<command>.log`.
+ * Any events emitted before this call are buffered and flushed to the file.
+ * This is idempotent — subsequent calls are no-ops.
+ */
+export function setProjectLogRoot(projectRoot: string, command: string) {
+  if (projectLogStream) return;
+  const logFile = path.join(projectRoot, '.expo', 'dev', 'logs', `${command}.log`);
+  fs.mkdirSync(path.dirname(logFile), { recursive: true });
+  fs.writeFileSync(logFile, ''); // truncate from previous run
+  projectLogStream = new LogStream(logFile);
+  for (const line of earlyBuffer) {
+    projectLogStream._write(line);
+  }
+  earlyBuffer.length = 0;
+}
+
+process.once('exit', () => {
+  projectLogStream?._end();
+});
 
 export type { EventLogger } from './builder';
