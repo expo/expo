@@ -1,12 +1,10 @@
 package expo.modules.ui
 
 import android.graphics.Color
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgeDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.core.view.size
@@ -20,38 +18,39 @@ data class BadgeProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+/**
+ * Layout modifier that ensures width is at least as large as height.
+ * Applied to the Badge composable so single-digit badges render as circles,
+ * while multi-digit badges ("999+") naturally grow wider into a pill shape.
+ *
+ * Needed because bridge-rendered text doesn't pick up Badge's internal
+ * LabelSmall typography, causing badges to be taller than wide.
+ */
+private fun Modifier.ensureMinWidthMatchesHeight() = layout { measurable, constraints ->
+  val placeable = measurable.measure(constraints)
+  val width = maxOf(placeable.width, placeable.height)
+  layout(width, placeable.height) {
+    placeable.placeRelative((width - placeable.width) / 2, 0)
+  }
+}
+
 @Composable
 fun FunctionalComposableScope.BadgeContent(props: BadgeProps) {
   val resolvedContainerColor = props.containerColor.composeOrNull ?: BadgeDefaults.containerColor
-  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+  val baseModifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
 
   if (view.size > 0) {
     Badge(
-      modifier = modifier,
+      modifier = baseModifier.ensureMinWidthMatchesHeight(),
       containerColor = resolvedContainerColor,
       contentColor = props.contentColor.composeOrNull ?: contentColorFor(resolvedContainerColor)
     ) {
-      // Bridge-rendered text doesn't pick up the Badge's internal LabelSmall
-      // typography, which can make it taller than wide. This layout modifier
-      // ensures the width is at least as large as the height, so single-digit
-      // badges render as circles. Multi-digit badges naturally grow wider.
-      Box(
-        modifier = Modifier.layout { measurable, constraints ->
-          val placeable = measurable.measure(constraints)
-          val width = maxOf(placeable.width, placeable.height)
-          layout(width, placeable.height) {
-            placeable.placeRelative((width - placeable.width) / 2, 0)
-          }
-        },
-        contentAlignment = Alignment.Center
-      ) {
-        Children(ComposableScope())
-      }
+      Children(ComposableScope())
     }
   } else {
     // No content lambda → renders as small 6dp dot per M3 spec
     Badge(
-      modifier = modifier,
+      modifier = baseModifier,
       containerColor = resolvedContainerColor
     )
   }
