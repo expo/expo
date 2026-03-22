@@ -65,12 +65,10 @@ export default function BadgeScreen() {
         </Row>
 
         <Row horizontalArrangement={{ spacedBy: 8 }}>
-          <Button onClick={() => setCount(c => c + 1)} modifiers={[paddingAll(8)]}>
+          <Button onClick={() => setCount((c) => c + 1)} modifiers={[paddingAll(8)]}>
             <ComposeText>Add</ComposeText>
           </Button>
-          <Button
-            onClick={() => setCount(c => Math.max(0, c - 1))}
-            modifiers={[paddingAll(8)]}>
+          <Button onClick={() => setCount((c) => Math.max(0, c - 1))} modifiers={[paddingAll(8)]}>
             <ComposeText>Remove</ComposeText>
           </Button>
         </Row>
