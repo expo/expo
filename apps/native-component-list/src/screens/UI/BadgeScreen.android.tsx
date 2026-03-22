@@ -71,7 +71,7 @@ export default function BadgeScreen() {
           </Button>
         </Row>
 
-        {/* Custom color dot */}
+        {/* Custom color dot (small badge avoids overlap) */}
         <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
           <BadgedBox>
             <BadgedBox.Badge>
@@ -80,6 +80,15 @@ export default function BadgeScreen() {
             <Icon source={mailIcon} size={24} />
           </BadgedBox>
           <ComposeText>Custom color dot</ComposeText>
+        </Row>
+
+        {/* Large badge at trailing edge (no overlap with text) */}
+        <Row verticalAlignment="center" horizontalArrangement={{ spacedBy: 16 }}>
+          <Icon source={mailIcon} size={24} />
+          <ComposeText>Custom colors</ComposeText>
+          <Badge containerColor="#4CAF50" contentColor="#FFFFFF">
+            <ComposeText>NEW</ComposeText>
+          </Badge>
         </Row>
       </Column>
     </Host>
