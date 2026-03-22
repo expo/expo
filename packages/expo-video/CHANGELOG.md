@@ -58,6 +58,7 @@ _This version does not introduce any user-facing changes._
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
+[Android] Add `pictureInPictureActions` and `nowPlayingActions` props to `VideoPlayer`. ([#44138](https://github.com/expo/expo/pull/44138) by [@edgarjmesquita](https://github.com/edgarjmesquita))
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [iOS] Add `keepFullscreenOnPiPStop` property. ([#44811](https://github.com/expo/expo/pull/44811) by [@behenate](https://github.com/behenate))

@@ -30,6 +30,9 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
+  "dependencies": {
+    "@expo/image-utils": "workspace:^0.10.1"
+  },
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",

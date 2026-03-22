@@ -6,5 +6,6 @@
       android:supportsPictureInPicture="true"
       android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|navigation"
       android:theme="@style/Fullscreen" />
+    <receiver android:name="expo.modules.video.receivers.PiPActionReceiver" />
   </application>
 </manifest>
