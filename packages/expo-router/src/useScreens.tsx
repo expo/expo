@@ -48,13 +48,13 @@ export type ScreenProps<
   initialParams?: Record<string, any>;
   options?:
     | TOptions
-    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
+    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: NavigationProp<ParamListBase> }) => TOptions);
 
   listeners?:
     | ScreenListeners<TState, TEventMap>
     | ((prop: {
         route: RouteProp<ParamListBase, string>;
-        navigation: any;
+        navigation: NavigationProp<ParamListBase>;
       }) => ScreenListeners<TState, TEventMap>);
 
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
