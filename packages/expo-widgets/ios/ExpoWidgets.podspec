@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
     :script => %Q{
       echo "Preparing ExpoWidgets.bundle..."
       source="#{__dir__}/../bundle/build/ExpoWidgets.bundle"
-      dest="${TARGET_BUILD_DIR}/ExpoWidgets.bundle/ExpoWidgets.bundle"
+      dest="${BUILT_PRODUCTS_DIR}/ExpoWidgets.bundle"
       echo "Copying ${source} to ${dest}"
       cp "${source}" "${dest}"
     },
