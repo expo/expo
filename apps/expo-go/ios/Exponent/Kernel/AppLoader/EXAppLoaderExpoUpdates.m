@@ -387,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
     @"alg": @"rsa-v1_5-sha256",
   };
   updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
-  updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
+  updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @NO;
 
   // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives
   // (no update available, roll back) don't have any practical use outside of standalone apps
