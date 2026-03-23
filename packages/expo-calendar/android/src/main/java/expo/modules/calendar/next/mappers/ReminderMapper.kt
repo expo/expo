@@ -1,7 +1,7 @@
 package expo.modules.calendar.next.mappers
 
 import expo.modules.calendar.next.domain.dto.reminder.ReminderInput
-import expo.modules.calendar.next.domain.model.reminder.AlarmMethod
+import expo.modules.calendar.next.domain.model.reminder.Method
 import expo.modules.calendar.next.domain.model.reminder.ReminderEntity
 import expo.modules.calendar.next.records.AlarmMethod as RecordAlarmMethod
 import expo.modules.calendar.next.records.AlarmRecord
@@ -18,18 +18,18 @@ class ReminderMapper {
   )
 
   private fun RecordAlarmMethod.toDomain() = when (this) {
-    RecordAlarmMethod.ALARM -> AlarmMethod.ALARM
-    RecordAlarmMethod.ALERT -> AlarmMethod.ALERT
-    RecordAlarmMethod.EMAIL -> AlarmMethod.EMAIL
-    RecordAlarmMethod.SMS -> AlarmMethod.SMS
-    RecordAlarmMethod.DEFAULT -> AlarmMethod.DEFAULT
+    RecordAlarmMethod.ALARM -> Method.ALARM
+    RecordAlarmMethod.ALERT -> Method.ALERT
+    RecordAlarmMethod.EMAIL -> Method.EMAIL
+    RecordAlarmMethod.SMS -> Method.SMS
+    RecordAlarmMethod.DEFAULT -> Method.DEFAULT
   }
 
-  private fun AlarmMethod.toRecord() = when (this) {
-    AlarmMethod.ALARM -> RecordAlarmMethod.ALARM
-    AlarmMethod.ALERT -> RecordAlarmMethod.ALERT
-    AlarmMethod.EMAIL -> RecordAlarmMethod.EMAIL
-    AlarmMethod.SMS -> RecordAlarmMethod.SMS
-    AlarmMethod.DEFAULT -> RecordAlarmMethod.DEFAULT
+  private fun Method.toRecord() = when (this) {
+    Method.ALARM -> RecordAlarmMethod.ALARM
+    Method.ALERT -> RecordAlarmMethod.ALERT
+    Method.EMAIL -> RecordAlarmMethod.EMAIL
+    Method.SMS -> RecordAlarmMethod.SMS
+    Method.DEFAULT -> RecordAlarmMethod.DEFAULT
   }
 }
