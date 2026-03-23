@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed sync worker result length encoding for `SharedArrayBuffer` results in `WorkerChannel`, preventing truncated JSON deserialization errors.
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
