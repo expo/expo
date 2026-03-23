@@ -50,8 +50,10 @@ class CalendarRepository(private val contentResolver: ContentResolver) {
     val calendarId = requireNotNull(calendarUri.lastPathSegment) {
       "Couldn't decode calendar ID from inserted content URI"
     }
-    CalendarId(calendarId.toLongOrNull()
-      ?: throw IllegalStateException("Couldn't parse calendar ID: $calendarId"))
+    CalendarId(
+      calendarId.toLongOrNull()
+        ?: throw IllegalStateException("Couldn't parse calendar ID: $calendarId")
+    )
   }
 
   suspend fun update(id: CalendarId, calendarUpdate: CalendarUpdate): Boolean = withContext(Dispatchers.IO) {
