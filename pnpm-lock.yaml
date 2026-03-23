@@ -2109,6 +2109,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      sharp:
+        specifier: ~0.34.2
+        version: 0.34.2
       sharp-cli:
         specifier: ^5.2.0
         version: 5.2.0
