@@ -1,6 +1,7 @@
 package expo.modules.calendar.next.domain.repositories.reminder
 
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.provider.CalendarContract
 import expo.modules.calendar.next.domain.dto.reminder.ReminderInput
 import expo.modules.calendar.next.domain.model.reminder.ReminderEntity
@@ -29,7 +30,14 @@ class ReminderRepository(private val contentResolver: ContentResolver) {
   suspend fun create(eventId: EventId, input: ReminderInput): Long = withContext(Dispatchers.IO) {
     val uri = contentResolver.safeInsert(
       uri = CalendarContract.Reminders.CONTENT_URI,
-      values = input.toContentValues(eventId)
+      values = ContentValues().apply {
+        put(CalendarContract.Reminders.EVENT_ID, eventId.value)
+        put(
+          CalendarContract.Reminders.METHOD,
+          input.method?.value ?: CalendarContract.Reminders.METHOD_DEFAULT
+        )
+        put(CalendarContract.Reminders.MINUTES, input.minutes)
+      }
     )
     uri.lastPathSegment
       ?.toLong()
