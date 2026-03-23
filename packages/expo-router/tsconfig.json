@@ -13,10 +13,7 @@
     ]
   },
   "include": [
-    "./src",
-    "./types/expect.d.ts",
-    "../@expo/cli/ts-declarations",
-    "../expo/src/ts-declarations"
+    "./src"
   ],
   "exclude": [
     "**/__tests__/",
