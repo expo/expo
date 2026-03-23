@@ -1,11 +1,13 @@
 package expo.modules.calendar.next.domain.repositories.attendee
 
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import android.provider.CalendarContract
 import expo.modules.calendar.next.domain.dto.attendee.AttendeeInput
+import expo.modules.calendar.next.domain.dto.attendee.AttendeeUpdate
 import expo.modules.calendar.next.domain.model.attendee.AttendeeRole
 import expo.modules.calendar.next.domain.model.attendee.AttendeeStatus
 import expo.modules.calendar.next.domain.model.attendee.AttendeeType
@@ -13,6 +15,7 @@ import expo.modules.calendar.next.domain.wrappers.AttendeeId
 import expo.modules.calendar.next.domain.wrappers.EventId
 import expo.modules.calendar.next.exceptions.CouldNotExecuteQueryException
 import expo.modules.calendar.next.exceptions.PermissionException
+import expo.modules.kotlin.types.ValueOrUndefined
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -93,24 +96,6 @@ class AttendeeRepositoryTest {
     Assert.assertEquals(listOf("42"), selectionArgsSlot.captured?.toList())
   }
 
-  @Test
-  fun `given cursor with multiple rows, when findAllByEventId, then returns multiple entities`() = runTest {
-    // Given
-    val cursor = cursorWithRows(
-      minimalRow(id = 1L, email = "a@example.com"),
-      minimalRow(id = 2L, email = "b@example.com")
-    )
-    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
-
-    // When
-    val result = repository.findAllByEventId(EventId(1L))
-
-    // Then
-    Assert.assertEquals(2, result.size)
-    Assert.assertEquals(AttendeeId(1L), result[0].id)
-    Assert.assertEquals(AttendeeId(2L), result[1].id)
-  }
-
   // endregion
 
   // region findById
@@ -118,7 +103,16 @@ class AttendeeRepositoryTest {
   @Test
   fun `given cursor has a row, when findById, then returns entity`() = runTest {
     // Given
-    val cursor = cursorWithRows(minimalRow(id = 7L, email = "bob@example.com"))
+    val cursor = cursorWithRows(
+      mapOf(
+        CalendarContract.Attendees._ID to 7L,
+        CalendarContract.Attendees.ATTENDEE_EMAIL to "bob@example.com",
+        CalendarContract.Attendees.ATTENDEE_NAME to "Bob",
+        CalendarContract.Attendees.ATTENDEE_RELATIONSHIP to CalendarContract.Attendees.RELATIONSHIP_ORGANIZER,
+        CalendarContract.Attendees.ATTENDEE_STATUS to CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED,
+        CalendarContract.Attendees.ATTENDEE_TYPE to CalendarContract.Attendees.TYPE_OPTIONAL
+      )
+    )
     every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursor
 
     // When
@@ -127,6 +121,10 @@ class AttendeeRepositoryTest {
     // Then
     Assert.assertEquals(AttendeeId(7L), result?.id)
     Assert.assertEquals("bob@example.com", result?.email)
+    Assert.assertEquals("Bob", result?.name)
+    Assert.assertEquals(AttendeeRole.ORGANIZER, result?.role)
+    Assert.assertEquals(AttendeeStatus.DECLINED, result?.status)
+    Assert.assertEquals(AttendeeType.OPTIONAL, result?.type)
   }
 
   @Test
@@ -139,6 +137,24 @@ class AttendeeRepositoryTest {
 
     // Then
     Assert.assertNull(result)
+  }
+
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when findById, then throws PermissionException`() = runTest {
+    // Given
+    every { contentResolver.query(any(), any(), any(), any(), any()) } throws SecurityException()
+
+    // When / Then
+    repository.findById(AttendeeId(7L))
+  }
+
+  @Test(expected = CouldNotExecuteQueryException::class)
+  fun `given null cursor, when findById, then throws CouldNotExecuteQueryException`() = runTest {
+    // Given
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns null
+
+    // When / Then
+    repository.findById(AttendeeId(7L))
   }
 
   // endregion
@@ -162,6 +178,155 @@ class AttendeeRepositoryTest {
 
     // Then
     Assert.assertEquals(AttendeeId(88L), result)
+  }
+
+  @Test
+  fun `given AttendeeInput, when create, then inserts correct values`() = runTest {
+    // Given
+    val valuesSlot = slot<ContentValues>()
+    val mockUri = mockk<Uri>()
+    every { mockUri.lastPathSegment } returns "88"
+    every { contentResolver.insert(any(), capture(valuesSlot)) } returns mockUri
+
+    val input = AttendeeInput(
+      eventId = EventId(1L),
+      email = "new@example.com",
+      name = "New User",
+      role = AttendeeRole.ATTENDEE,
+      status = AttendeeStatus.ACCEPTED,
+      type = AttendeeType.REQUIRED
+    )
+
+    // When
+    repository.create(input)
+
+    // Then
+    Assert.assertEquals(1L, valuesSlot.captured.getAsLong(CalendarContract.Attendees.EVENT_ID).toLong())
+    Assert.assertEquals("new@example.com", valuesSlot.captured.getAsString(CalendarContract.Attendees.ATTENDEE_EMAIL))
+    Assert.assertEquals("New User", valuesSlot.captured.getAsString(CalendarContract.Attendees.ATTENDEE_NAME))
+    Assert.assertEquals(CalendarContract.Attendees.RELATIONSHIP_ATTENDEE, valuesSlot.captured.getAsInteger(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP).toInt())
+    Assert.assertEquals(CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED, valuesSlot.captured.getAsInteger(CalendarContract.Attendees.ATTENDEE_STATUS).toInt())
+    Assert.assertEquals(CalendarContract.Attendees.TYPE_REQUIRED, valuesSlot.captured.getAsInteger(CalendarContract.Attendees.ATTENDEE_TYPE).toInt())
+  }
+
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when create, then throws PermissionException`() = runTest {
+    // Given
+    every { contentResolver.insert(any(), any()) } throws SecurityException()
+
+    // When / Then
+    repository.create(AttendeeInput(eventId = EventId(1L)))
+  }
+
+  @Test(expected = IllegalStateException::class)
+  fun `given inserted URI without last path segment, when create, then throws IllegalStateException`() = runTest {
+    // Given
+    val mockUri = mockk<Uri>()
+    every { mockUri.lastPathSegment } returns null
+    every { contentResolver.insert(any(), any()) } returns mockUri
+
+    // When / Then
+    repository.create(AttendeeInput(eventId = EventId(1L)))
+  }
+
+  @Test(expected = IllegalArgumentException::class)
+  fun `given inserted URI with non numeric last path segment, when create, then throws IllegalArgumentException`() = runTest {
+    // Given
+    val mockUri = mockk<Uri>()
+    every { mockUri.lastPathSegment } returns "abc"
+    every { contentResolver.insert(any(), any()) } returns mockUri
+
+    // When / Then
+    repository.create(AttendeeInput(eventId = EventId(1L)))
+  }
+
+  // endregion
+
+  // region update
+
+  @Test
+  fun `given AttendeeUpdate with defined fields, when update, then updates only those fields`() = runTest {
+    // Given
+    val valuesSlot = slot<ContentValues>()
+    every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
+
+    val update = AttendeeUpdate(
+      id = AttendeeId(10L),
+      email = ValueOrUndefined.Value("updated@example.com"),
+      name = ValueOrUndefined.Value("Updated User"),
+      role = ValueOrUndefined.Value(AttendeeRole.ORGANIZER),
+      status = ValueOrUndefined.Value(AttendeeStatus.TENTATIVE),
+      type = ValueOrUndefined.Value(AttendeeType.RESOURCE)
+    )
+
+    // When
+    repository.update(update)
+
+    // Then
+    Assert.assertEquals("updated@example.com", valuesSlot.captured.getAsString(CalendarContract.Attendees.ATTENDEE_EMAIL))
+    Assert.assertEquals("Updated User", valuesSlot.captured.getAsString(CalendarContract.Attendees.ATTENDEE_NAME))
+    Assert.assertEquals(CalendarContract.Attendees.RELATIONSHIP_ORGANIZER, valuesSlot.captured.getAsInteger(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP).toInt())
+    Assert.assertEquals(CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE, valuesSlot.captured.getAsInteger(CalendarContract.Attendees.ATTENDEE_STATUS).toInt())
+    Assert.assertEquals(CalendarContract.Attendees.TYPE_RESOURCE, valuesSlot.captured.getAsInteger(CalendarContract.Attendees.ATTENDEE_TYPE).toInt())
+  }
+
+  @Test
+  fun `given AttendeeUpdate with null values, when update, then clears supported nullable fields`() = runTest {
+    // Given
+    val valuesSlot = slot<ContentValues>()
+    every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
+
+    val update = AttendeeUpdate(
+      id = AttendeeId(10L),
+      email = ValueOrUndefined.Value<String?>(null),
+      name = ValueOrUndefined.Value<String?>(null),
+      role = ValueOrUndefined.Value<AttendeeRole?>(null),
+      status = ValueOrUndefined.Value<AttendeeStatus?>(null),
+      type = ValueOrUndefined.Value<AttendeeType?>(null)
+    )
+
+    // When
+    repository.update(update)
+
+    // Then
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Attendees.ATTENDEE_EMAIL))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Attendees.ATTENDEE_NAME))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Attendees.ATTENDEE_STATUS))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Attendees.ATTENDEE_TYPE))
+  }
+
+  @Test
+  fun `given updated rows, when update, then returns true`() = runTest {
+    // Given
+    every { contentResolver.update(any(), any(), any(), any()) } returns 1
+
+    // When
+    val result = repository.update(AttendeeUpdate(id = AttendeeId(10L)))
+
+    // Then
+    Assert.assertTrue(result)
+  }
+
+  @Test
+  fun `given zero updated rows, when update, then returns false`() = runTest {
+    // Given
+    every { contentResolver.update(any(), any(), any(), any()) } returns 0
+
+    // When
+    val result = repository.update(AttendeeUpdate(id = AttendeeId(10L)))
+
+    // Then
+    Assert.assertFalse(result)
+  }
+
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when update, then throws PermissionException`() = runTest {
+    // Given
+    every { contentResolver.update(any(), any(), any(), any()) } throws SecurityException()
+
+    // When / Then
+    repository.update(AttendeeUpdate(id = AttendeeId(10L)))
   }
 
   // endregion
@@ -203,6 +368,15 @@ class AttendeeRepositoryTest {
 
     // Then
     Assert.assertEquals("33", uriSlot.captured.lastPathSegment)
+  }
+
+  @Test(expected = PermissionException::class)
+  fun `given SecurityException, when delete, then throws PermissionException`() = runTest {
+    // Given
+    every { contentResolver.delete(any(), any(), any()) } throws SecurityException()
+
+    // When / Then
+    repository.delete(AttendeeId(10L))
   }
 
   // endregion
@@ -251,18 +425,6 @@ class AttendeeRepositoryTest {
 
     return cursor
   }
-
-  private fun minimalRow(
-    id: Long = 1L,
-    email: String? = null
-  ): Map<String, Any?> = mapOf(
-    CalendarContract.Attendees._ID to id,
-    CalendarContract.Attendees.ATTENDEE_EMAIL to email,
-    CalendarContract.Attendees.ATTENDEE_NAME to null,
-    CalendarContract.Attendees.ATTENDEE_RELATIONSHIP to null,
-    CalendarContract.Attendees.ATTENDEE_STATUS to null,
-    CalendarContract.Attendees.ATTENDEE_TYPE to null
-  )
 
   // endregion
 }
