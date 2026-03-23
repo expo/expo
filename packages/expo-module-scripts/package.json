@@ -45,6 +45,7 @@
       "import": "./*/jest-preset.cjs",
       "require": "./*/jest-preset.cjs"
     },
+    "./types/*": "./types/*",
     "./tsconfig.*": "./tsconfig.*.json",
     "./tsconfig": "./tsconfig.json"
   },
